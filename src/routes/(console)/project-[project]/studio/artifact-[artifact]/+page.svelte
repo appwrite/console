@@ -8,7 +8,7 @@
     import { Layout, Icon, Divider } from '@appwrite.io/pink-svelte';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
 
-    const previewUrl = 'https://www.aloyoga.com/';
+    const previewUrl = 'https://torsten.work';
 
     let iframeRef: HTMLIFrameElement | null = null;
     $: previewFrameRef.set(iframeRef);

@@ -13,12 +13,14 @@
     import { base } from '$app/paths';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
+        IconAppwrite,
         IconChevronDoubleUp,
         IconChevronDown,
-        IconTerminal
+        IconPlusSm,
+        IconTerminal,
+        IconWifi
     } from '@appwrite.io/pink-icons-svelte';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
-    import type { Terminal as XTerm } from '@xterm/xterm';
     import {
         disableBodySelect,
         enabledBodySelect,
@@ -204,7 +206,7 @@
                 <Layout.Stack direction="row" justify="space-between">
                     <Layout.Stack direction="row" alignItems="center" gap="xs">
                         <Icon icon={IconTerminal} color="--fgcolor-neutral-tertiary" />
-                        <Typography.Text>Terminal</Typography.Text>
+                        <Typography.Text>Terminals</Typography.Text>
                     </Layout.Stack>
                     <Icon icon={IconChevronDoubleUp} color="--fgcolor-neutral-tertiary" />
                 </Layout.Stack>
@@ -215,6 +217,7 @@
                         {root}
                         selected={currentTerminal === mainTerminalId}
                         on:click={() => (currentTerminal = mainTerminalId)}>
+                        <Icon icon={IconAppwrite} />
                         Imagine
                     </Tab>
                     {#each terminals as [symbol] (symbol)}
@@ -222,10 +225,13 @@
                             {root}
                             on:click={() => (currentTerminal = symbol)}
                             selected={currentTerminal === symbol}>
+                            <Icon icon={IconTerminal} />
                             Terminal
                         </Tab>
                     {/each}
-                    <Tab {root} on:click={createTerminal}>+</Tab>
+                    <Tab {root} on:click={createTerminal}>
+                        <Icon icon={IconPlusSm} size="s" />
+                    </Tab>
                 </Tabs>
             </Layout.Stack>
             <div style:display={currentTerminal === mainTerminalId ? 'contents' : 'none'}>
