@@ -21,7 +21,7 @@
     const menuItems: Array<
         { type: 'divider' } | { type: 'item'; label: string; path: string; icon: ComponentType }
     > = [
-        { type: 'item', label: 'Studio', path: 'studio', icon: IconViewGrid },
+        { type: 'item', label: 'Studio', path: 'studio', icon: IconTemplate },
         { type: 'divider' },
         { type: 'item', label: 'Auth', path: 'auth', icon: IconUserGroup },
         { type: 'item', label: 'Databases', path: 'databases', icon: IconDatabase },
@@ -37,12 +37,11 @@
         <Layout.Stack gap="xs" inline>
             {#each menuItems as menuItem}
                 {#if menuItem.type === 'item'}
+                    {@const isActive = page.url.pathname.includes(menuItem.path)}
                     <ActionMenu.Item.Anchor
                         style={`--space-5: 8px; background-color: ${
-                            page.url.pathname.includes(menuItem.path)
-                                ? 'var(--overlay-neutral-hover)'
-                                : 'auto'
-                        }`}
+                            isActive ? 'var(--overlay-neutral-hover)' : 'auto'
+                        }; --icon-fill: ${isActive ? 'var(--fgcolor-neutral-primary)' : 'var(--fgcolor-neutral-tertiary)'}`}
                         href={`${base}/project-${project.$id}/${menuItem.path}`}
                         leadingIcon={menuItem.icon}
                         size="l"
@@ -74,6 +73,7 @@
         z-index: 10;
 
         @media (min-width: 768px) {
+            padding-block-start: 18px;
             width: 48px;
         }
     }
