@@ -403,6 +403,7 @@
                                 <SubNavigation />
                                 <div
                                     style:padding-left="200px"
+                                    style:width="100%"
                                     style:min-height="calc(100vh - 98px)">
                                     <Layout.Stack>
                                         {#if page.data?.header}
@@ -608,10 +609,13 @@
     }
 
     :global(.sub-navigation nav) {
-        margin-left: -25px;
+        margin-inline-start: -17px;
+        margin-block-start: 6px;
         border-top-left-radius: var(--border-radius-m);
+        height: calc(100% - 65px) !important;
         border-left-width: 1px;
         border-top-width: 1px;
+        border-bottom: 0;
         border-style: solid;
         border-color: var(--border-neutral);
     }
