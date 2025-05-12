@@ -9,7 +9,6 @@
         synapse: Synapse;
     };
     let { height, synapse }: Props = $props();
-    let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
 
     const terminal: Action = (node) => {
         const init = async () => {
