@@ -5,13 +5,28 @@
     import { synapse } from '$lib/components/studio/synapse.svelte';
 
     let instance: Editor;
+    let currentFile: string = $state(null);
 
     function getLanguageFromExtensions(path: string) {
-        if (path.endsWith('.js') || path.endsWith('.jsx')) return 'javascript';
-        if (path.endsWith('.ts') || path.endsWith('.tsx')) return 'typescript';
-        if (path.endsWith('.html')) return 'html';
-        if (path.endsWith('.css')) return 'css';
-        return 'file';
+        switch (true) {
+            case path.endsWith('.md'):
+                return 'markdown';
+            case path.endsWith('.js'):
+            case path.endsWith('.jsx'):
+                return 'javascript';
+            case path.endsWith('.ts'):
+            case path.endsWith('.tsx'):
+                return 'typescript';
+            case path.endsWith('.svg'):
+            case path.endsWith('.html'):
+                return 'html';
+            case path.endsWith('.css'):
+                return 'css';
+            case path.endsWith('.json'):
+                return 'json';
+            default:
+                return null;
+        }
     }
 
     async function openFile(path: string) {
@@ -22,7 +37,9 @@
             }
         });
         instance?.loadCode(message.data as string, getLanguageFromExtensions(path));
+        currentFile = path;
     }
+
     async function openFolder(path: string) {
         const message = await synapse.dispatch('fs', {
             operation: 'getFolder',
@@ -41,11 +58,21 @@
             });
         }
     }
+
+    async function saveFile(content: string) {
+        await synapse.dispatch('fs', {
+            operation: 'updateFile',
+            params: {
+                content,
+                filepath: currentFile
+            }
+        });
+    }
 </script>
 
 <main>
     <Filesystem files={$filesystem} onopenfile={openFile} onopenfolder={openFolder} />
-    <Editor bind:this={instance} />
+    <Editor bind:this={instance} onsave={saveFile} />
 </main>
 
 <style lang="scss">

@@ -7,7 +7,9 @@ import {
     IconSvelte,
     IconCss3,
     IconDocument,
-    IconHtml5
+    IconHtml5,
+    IconVariable,
+    IconDocumentText
 } from '@appwrite.io/pink-icons-svelte';
 
 export const icons: Record<Icon, ComponentType> = {
@@ -18,10 +20,22 @@ export const icons: Record<Icon, ComponentType> = {
     folderOpen: IconFolderOpen,
     js: IconJs,
     highlight: IconArrowLeft,
-    css: IconCss3
+    css: IconCss3,
+    config: IconVariable,
+    document: IconDocumentText
 };
 
-type Icon = 'svelte' | 'folder' | 'folderOpen' | 'html' | 'js' | 'css' | 'file' | 'highlight';
+type Icon =
+    | 'svelte'
+    | 'folder'
+    | 'folderOpen'
+    | 'html'
+    | 'js'
+    | 'css'
+    | 'file'
+    | 'config'
+    | 'document'
+    | 'highlight';
 
 export type TreeItem = {
     path: string;
@@ -31,12 +45,25 @@ export type TreeItem = {
 };
 
 function getIcon(filename: string): Icon {
-    if (filename.endsWith('.js')) return 'js';
-    if (filename.endsWith('.ts')) return 'js';
-    if (filename.endsWith('.html')) return 'html';
-    if (filename.endsWith('.css')) return 'css';
-    if (filename.endsWith('.svelte')) return 'svelte';
-
+    switch (true) {
+        case filename.endsWith('.js'):
+            return 'js';
+        case filename.endsWith('.ts'):
+            return 'js';
+        case filename.endsWith('.html'):
+            return 'html';
+        case filename.endsWith('.css'):
+            return 'css';
+        case filename.endsWith('.svelte'):
+            return 'svelte';
+        case filename.endsWith('.md'):
+            return 'document';
+        case filename.endsWith('.json'):
+        case filename.endsWith('.jsonc'):
+        case filename.endsWith('.yml'):
+        case filename.endsWith('.yaml'):
+            return 'config';
+    }
     return 'file';
 }
 
@@ -57,10 +84,9 @@ export function treeFromFilesystem(files: string[]): TreeItem[] {
             const existingItem = currentLevel.find((item) => item.title === part);
 
             if (existingItem) {
-                if (!existingItem.children) {
-                    existingItem.children = [];
+                if (existingItem.children) {
+                    currentLevel = existingItem.children;
                 }
-                currentLevel = existingItem.children;
             } else {
                 const isFile = index === parts.length - 1 && !path.endsWith('/');
                 const currentPath = parts.slice(0, index + 1).join('/');
@@ -79,6 +105,24 @@ export function treeFromFilesystem(files: string[]): TreeItem[] {
             }
         });
     }
+
+    const sort = (value: TreeItem[]) => {
+        value.sort((a, b) => {
+            const aIsFolder = a.children !== undefined;
+            const bIsFolder = b.children !== undefined;
+            if (aIsFolder && !bIsFolder) return -1;
+            if (!aIsFolder && bIsFolder) return 1;
+            return a.title.localeCompare(b.title);
+        });
+
+        value.forEach((item) => {
+            if (item.children) {
+                sort(item.children);
+            }
+        });
+    };
+
+    sort(tree);
 
     return tree;
 }

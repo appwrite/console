@@ -1,3 +1,5 @@
+import { page } from '$app/state';
+
 type WebSocketEvent = 'connect' | 'disconnect' | 'reconnect';
 type SynapseMessageType = 'terminal' | 'fs' | 'synapse';
 type SynapseMessageOperations = {
@@ -171,4 +173,14 @@ export class Synapse {
 }
 
 export const endpoint = 'wss://terminal.appwrite.torsten.work';
-export const synapse = new Synapse(endpoint);
+export function createSynapse(endpoint: string, workdir?: string) {
+    const url = new URL(endpoint);
+    if (workdir) {
+        url.searchParams.set('workdir', workdir);
+    } else if (page.params.artifact) {
+        url.searchParams.set('workdir', `/artifact/${page.params.artifact}`);
+    }
+
+    return new Synapse(url.toString());
+}
+export const synapse = createSynapse(endpoint);

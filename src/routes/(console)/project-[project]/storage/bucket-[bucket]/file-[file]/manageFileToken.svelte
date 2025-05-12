@@ -14,7 +14,8 @@
     import { Link } from '@appwrite.io/pink-svelte';
     import { type Models } from '@appwrite.io/console';
     import { Permissions } from '$lib/components/permissions';
-    import { Confirm, ExpirationInput, Modal } from '$lib/components';
+    import { Confirm, Modal } from '$lib/components';
+    import ExpirationInput from '$routes/(console)/project-[project]/overview/(components)/expirationInput.svelte';
 
     export let show = false;
     export let isDelete = false;
@@ -86,11 +87,7 @@
         {#if isUpdatePermissions}
             <Permissions bind:permissions={fileToken.$permissions} hideOnClick />
         {:else}
-            <ExpirationInput
-                bind:value={expire}
-                resourceType="token"
-                selectorLabel="Expiry"
-                dateSelectorLabel="Expiry date" />
+            <ExpirationInput bind:value={expire} keyType="api" />
         {/if}
 
         <svelte:fragment slot="footer">
