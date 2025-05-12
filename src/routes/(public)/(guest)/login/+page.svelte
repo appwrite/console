@@ -110,21 +110,23 @@
     <UnauthenticatedStudio title="Sign in"
         ><Form onSubmit={login}>
             <Layout.Stack>
-                <InputEmail
-                    id="email"
-                    label="Email"
-                    placeholder="Email"
-                    autofocus={true}
-                    required={true}
-                    bind:value={mail} />
-                <InputPassword
-                    id="password"
-                    label="Password"
-                    placeholder="Password"
-                    required={true}
-                    bind:value={pass} />
-                <Button fullWidth submit {disabled}>Sign in</Button>
-                {#if isCloud && (consoleProfile.hasGithubLogin || consoleProfile.hasGoogleLogin)}
+                {#if consoleProfile.hasAccountLogin}
+                    <InputEmail
+                        id="email"
+                        label="Email"
+                        placeholder="Email"
+                        autofocus={true}
+                        required={true}
+                        bind:value={mail} />
+                    <InputPassword
+                        id="password"
+                        label="Password"
+                        placeholder="Password"
+                        required={true}
+                        bind:value={pass} />
+                    <Button fullWidth submit {disabled}>Sign in</Button>
+                {/if}
+                {#if isCloud && consoleProfile.hasAccountLogin && (consoleProfile.hasGithubLogin || consoleProfile.hasGoogleLogin)}
                     <span class="with-separators eyebrow-heading-3">or</span>
                 {/if}
                 {#if isCloud && consoleProfile.hasGoogleLogin}
@@ -140,18 +142,20 @@
                     </Button>
                 {/if}
 
-                <div></div>
-                <Layout.Stack direction="row" justifyContent="center">
-                    <a href={`${base}/recover`}
-                        ><Typography.Text variant="m-500" color="--neutral-750"
-                            >Forgot password?</Typography.Text
-                        ></a>
-                    <span>&bull;</span>
-                    <a href={`${base}/register${page?.url?.search ?? ''}`}>
-                        <Typography.Text variant="m-500" color="--neutral-750"
-                            >Sign up</Typography.Text>
-                    </a>
-                </Layout.Stack>
+                {#if consoleProfile.hasAccountLogin}
+                    <div></div>
+                    <Layout.Stack direction="row" justifyContent="center">
+                        <a href={`${base}/recover`}
+                            ><Typography.Text variant="m-500" color="--neutral-750"
+                                >Forgot password?</Typography.Text
+                            ></a>
+                        <span>&bull;</span>
+                        <a href={`${base}/register${page?.url?.search ?? ''}`}>
+                            <Typography.Text variant="m-500" color="--neutral-750"
+                                >Sign up</Typography.Text>
+                        </a>
+                    </Layout.Stack>
+                {/if}
             </Layout.Stack>
         </Form></UnauthenticatedStudio>
 {:else}
