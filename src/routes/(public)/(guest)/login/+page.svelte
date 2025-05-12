@@ -70,10 +70,34 @@
             }
         }
         sdk.forConsole.account.createOAuth2Session(
-            OAuthProvider.Github,
+            consoleProfile.githubLoginProvider as OAuthProvider,
             window.location.origin + url,
             window.location.origin,
             ['read:user', 'user:email']
+        );
+    }
+
+    function onGoogleLogin() {
+        let url = window.location.origin;
+
+        if (page.url.searchParams) {
+            const redirect = page.url.searchParams.get('redirect');
+            page.url.searchParams.delete('redirect');
+            if (redirect) {
+                url = `${redirect}${page.url.search}`;
+            } else {
+                url = `${base}${page.url.search ?? ''}`;
+            }
+        }
+        sdk.forConsole.account.createOAuth2Session(
+            OAuthProvider.Google,
+            window.location.origin + url,
+            window.location.origin,
+            [
+                'https://www.googleapis.com/auth/userinfo.email',
+                'https://www.googleapis.com/auth/userinfo.profile',
+                'openid'
+            ]
         );
     }
 </script>
@@ -100,20 +124,29 @@
                     required={true}
                     bind:value={pass} />
                 <Button fullWidth submit {disabled}>Sign in</Button>
-                {#if isCloud}
+                {#if isCloud && (consoleProfile.hasGithubLogin || consoleProfile.hasGoogleLogin)}
                     <span class="with-separators eyebrow-heading-3">or</span>
+                {/if}
+                {#if isCloud && consoleProfile.hasGoogleLogin}
+                    <Button secondary fullWidth on:click={onGoogleLogin} {disabled}>
+                        <span class="icon-google" aria-hidden="true"></span>
+                        <span class="text">Sign in with Google</span>
+                    </Button>
+                {/if}
+                {#if isCloud && consoleProfile.hasGithubLogin}
                     <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
                         <span class="icon-github" aria-hidden="true"></span>
                         <span class="text">Sign in with GitHub</span>
                     </Button>
                 {/if}
+
                 <div></div>
                 <Layout.Stack direction="row" justifyContent="center">
                     <a href={`${base}/recover`}
                         ><Typography.Text variant="m-500" color="--neutral-750"
-                            >Forgot Password?</Typography.Text
+                            >Forgot password?</Typography.Text
                         ></a>
-                    <span>-</span>
+                    <span>&bull;</span>
                     <a href={`${base}/register${page?.url?.search ?? ''}`}>
                         <Typography.Text variant="m-500" color="--neutral-750"
                             >Sign up</Typography.Text>
