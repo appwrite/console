@@ -7,8 +7,9 @@
     type Props = {
         height: number;
         synapse: Synapse;
+        readonly?: boolean;
     };
-    let { height, synapse }: Props = $props();
+    let { height, synapse, readonly = false }: Props = $props();
 
     const terminal: Action = (node) => {
         const init = async () => {
@@ -26,7 +27,12 @@
             const fitAddon = new FitAddon();
             term.loadAddon(fitAddon);
             term.open(node);
-            term.onKey(({ key }) => {
+            term.onKey(({ key, domEvent }) => {
+                if (readonly) {
+                    domEvent.preventDefault();
+                    domEvent.stopPropagation();
+                    return;
+                }
                 synapse.dispatch('terminal', {
                     operation: 'createCommand',
                     params: {
