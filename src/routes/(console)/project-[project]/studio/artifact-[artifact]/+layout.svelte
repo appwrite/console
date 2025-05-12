@@ -194,7 +194,7 @@
                     >Dashboard</ActionMenu.Item.Button>
             {/if}
 
-            <Layout.Stack gap="xxs" direction="row" alignItems="center" inline>
+            <Layout.Stack gap="s" direction="row" alignItems="center" inline>
                 <InputSelect
                     id="artificat-version"
                     options={[
