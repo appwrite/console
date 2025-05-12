@@ -34,7 +34,7 @@
 
 <nav style:--icon-fill="var(--fgcolor-neutral-tertiary)" class="project-sidebar" class:isOpen>
     <Layout.Stack direction="column" justifyContent="space-between" height="100%">
-        <Layout.Stack gap="xs" inline>
+        <Layout.Stack gap="s" inline>
             {#each menuItems as menuItem}
                 {#if menuItem.type === 'item'}
                     {@const isActive = page.url.pathname.includes(menuItem.path)}
@@ -73,7 +73,7 @@
         z-index: 10;
 
         @media (min-width: 768px) {
-            padding-block-start: 18px;
+            padding-block-start: 16px;
             width: 48px;
         }
     }
