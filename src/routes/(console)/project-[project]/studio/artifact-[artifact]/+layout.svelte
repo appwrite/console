@@ -66,18 +66,20 @@
     const mainTerminalId = Symbol();
     const terminals = new SvelteMap<symbol, Synapse>();
     let currentTerminal: symbol = $state(mainTerminalId);
-    synapse.dispatch('synapse', {
-        operation: 'updateWorkDir',
-        params: {
-            workdir: `/artifact/${page.params.artifact}`
-        }
-    });
     synapse
-        .dispatch('fs', {
-            operation: 'getFolder',
+        .dispatch('synapse', {
+            operation: 'updateWorkDir',
             params: {
-                folderpath: `/artifact/${page.params.artifact}`
+                workdir: `/artifact/${page.params.artifact}`
             }
+        })
+        .then(() => {
+            return synapse.dispatch('fs', {
+                operation: 'getFolder',
+                params: {
+                    folderpath: `.`
+                }
+            });
         })
         .then((message) => {
             const data = message.data as Array<{ name: string; isDirectory: boolean }>;
