@@ -158,7 +158,7 @@
     <Layout.Stack direction="column" gap="none">
         {#if $isSmallViewport}
             <Layout.Stack direction="row" gap="none" justifyContent="center">
-                <div style:margin-block-start="4px">
+                <div>
                     <ActionMenu.Item.Button trailingIcon={IconChevronDown}
                         >Dashboard</ActionMenu.Item.Button>
                 </div>
@@ -302,7 +302,7 @@
     }
 
     .divider-wrapper-artifacts {
-        margin-block-start: 12px;
+        margin-block-start: 8px;
         margin-block-end: 8px;
         margin-inline-start: calc(-1 * var(--space-4));
         width: calc(100% + var(--space-7));
