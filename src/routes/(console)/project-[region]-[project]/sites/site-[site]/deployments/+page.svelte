@@ -4,7 +4,7 @@
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { View } from '$lib/helpers/load';
-    import { ActionMenu, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Alert, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
     import Table from './table.svelte';
     import RedeployModal from '../../redeployModal.svelte';
     import CreateGitDeploymentModal from './createGitDeploymentModal.svelte';
@@ -29,6 +29,7 @@
     let hasInstallation = !!data.installations?.total;
     let showConnectCLI = false;
     let showConnectManual = false;
+    let showAlert = true;
 
     onMount(() => {
         if (page.url.searchParams.has('createDeployment')) {
@@ -75,6 +76,13 @@
 
 <Container>
     <Layout.Stack gap="xxxl">
+        {#if data?.activeDeployment && !data.site.live && showAlert}
+            <Alert.Inline status="warning" dismissible on:dismiss={() => (showAlert = false)}>
+                Some configuration options are not live yet. Redeploy your function to apply latest
+                changes.
+            </Alert.Inline>
+        {/if}
+
         <DeploymentMetrics />
 
         <Layout.Stack gap="l">
