@@ -170,4 +170,5 @@ export class Synapse {
     }
 }
 
-export const synapse = new Synapse('wss://terminal.appwrite.torsten.work');
+export const endpoint = 'wss://terminal.appwrite.torsten.work';
+export const synapse = new Synapse(endpoint);

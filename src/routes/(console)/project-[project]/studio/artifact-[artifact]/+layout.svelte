@@ -27,11 +27,12 @@
         saveTerminalHeightToPrefs,
         saveTerminalOpenToPrefs
     } from '$lib/helpers/studioLayout';
-    import { synapse } from '$lib/components/studio/synapse.svelte';
+    import { endpoint, Synapse, synapse } from '$lib/components/studio/synapse.svelte';
     import { showChat } from '$lib/stores/chat';
     import { default as IconChatLayout } from '../assets/chat-layout.svelte';
     import { filesystem } from '$lib/components/editor/filesystem';
     import { InputSelect } from '$lib/elements/forms/index.js';
+    import { SvelteMap } from 'svelte/reactivity';
 
     const { children } = $props();
 
@@ -53,6 +54,10 @@
             hasChildren: true
         }
     ];
+    const mainTerminalId = Symbol();
+    const terminals = new SvelteMap<symbol, Synapse>();
+    let currentTerminal: symbol = $state(mainTerminalId);
+
     synapse.dispatch('synapse', {
         operation: 'updateWorkDir',
         params: {
@@ -134,6 +139,12 @@
             $previewFrameRef.style.pointerEvents = '';
         }
     }
+
+    function createTerminal() {
+        const symbol = Symbol();
+        terminals.set(symbol, new Synapse(endpoint));
+        currentTerminal = symbol;
+    }
 </script>
 
 <Layout.Stack
@@ -198,7 +209,33 @@
                     <Icon icon={IconChevronDoubleUp} color="--fgcolor-neutral-tertiary" />
                 </Layout.Stack>
             </summary>
-            <Terminal height={terminalHeight} {synapse}></Terminal>
+            <Layout.Stack>
+                <Tabs let:root>
+                    <Tab
+                        {root}
+                        selected={currentTerminal === mainTerminalId}
+                        on:click={() => (currentTerminal = mainTerminalId)}>
+                        Imagine
+                    </Tab>
+                    {#each terminals as [symbol] (symbol)}
+                        <Tab
+                            {root}
+                            on:click={() => (currentTerminal = symbol)}
+                            selected={currentTerminal === symbol}>
+                            Terminal
+                        </Tab>
+                    {/each}
+                    <Tab {root} on:click={createTerminal}>+</Tab>
+                </Tabs>
+            </Layout.Stack>
+            <div style:display={currentTerminal === mainTerminalId ? 'contents' : 'none'}>
+                <Terminal height={terminalHeight} {synapse} readonly></Terminal>
+            </div>
+            {#each terminals as [symbol, synapse] (symbol)}
+                <div style:display={currentTerminal === symbol ? 'contents' : 'none'}>
+                    <Terminal height={terminalHeight} {synapse}></Terminal>
+                </div>
+            {/each}
         </details>
     </aside>
 </Layout.Stack>
