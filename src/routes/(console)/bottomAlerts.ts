@@ -12,12 +12,12 @@ const listOfPromotions: BottomModalAlertItem[] = [];
 if (isCloud) {
     const title = 'Join Init 19-23 May';
     const message =
-        'Change the way you build with Appwrite forever. Claim your ticket and register for the event.';
+        'This release will change the way you build with Appwrite forever. Register for Init and join the giveaway.';
 
     const callToAction = {
         external: true,
         hideOnClick: true,
-        text: 'Register and join the give away',
+        text: 'Claim your ticket',
         link: () => 'https://apwr.dev/clcon'
     };
 
