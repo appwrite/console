@@ -43,12 +43,14 @@
                     const template = page.url.searchParams.get('template');
                     const templateConfig = page.url.searchParams.get('templateConfig');
                     goto(
-                        `${base}/project-${project}/functions/create-function/template-${template}?templateConfig=${templateConfig}`
+                        `${base}/project-${page.params.region}-${project}/functions/create-function/template-${template}?templateConfig=${templateConfig}`
                     );
                     break;
                 }
                 case 'cover':
-                    goto(`${base}/project-${project}/functions/create-function`);
+                    goto(
+                        `${base}/project-${page.params.region}-${project}/functions/create-function`
+                    );
                     break;
             }
         }
@@ -61,7 +63,8 @@
     $: $registerCommands([
         {
             label: 'Create function',
-            callback: () => goto(`${base}/project-${project}/functions/create-function`),
+            callback: () =>
+                goto(`${base}/project-${page.params.region}-${project}/functions/create-function`),
             keys: ['c'],
             disabled:
                 $wizard.show ||
@@ -79,7 +82,7 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery placeholder="Search by name or ID" />
 
-        <Button href={`${base}/project-${project}/functions/create-function`}>
+        <Button href={`${base}/project-${page.params.region}-${project}/functions/create-function`}>
             <Icon icon={IconPlus} slot="start" />
             Create function
         </Button>
@@ -92,9 +95,11 @@
             event="functions"
             total={data.functions.total}
             service="functions"
-            on:click={() => goto(`${base}/project-${project}/functions/create-function`)}>
+            on:click={() =>
+                goto(`${base}/project-${page.params.region}-${project}/functions/create-function`)}>
             {#each data.functions.functions as func (func.$id)}
-                <GridItem1 href={`${base}/project-${project}/functions/function-${func.$id}`}>
+                <GridItem1
+                    href={`${base}/project-${page.params.region}-${project}/functions/function-${func.$id}`}>
                     <svelte:fragment slot="title">
                         <Layout.Stack gap="l" alignItems="center" direction="row" inline>
                             <Avatar alt={func.name} size="m">
@@ -140,6 +145,9 @@
             allowCreate={$canWriteFunctions}
             href="https://appwrite.io/docs/products/functions"
             target="function"
-            on:click={() => goto(`${base}/project-${project}/functions/create-function`)} />
+            on:click={() =>
+                goto(
+                    `${base}/project-${page.params.region}-${project}/functions/create-function`
+                )} />
     {/if}
 </Container>
