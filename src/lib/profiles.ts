@@ -15,6 +15,7 @@ type Profile = {
     hasGithubLogin: boolean;
     githubLoginProvider?: string;
     hasGoogleLogin: boolean;
+    hasAccountLogin: boolean;
 };
 
 export const ConsoleCloudProfile: Profile = {
@@ -31,7 +32,8 @@ export const ConsoleCloudProfile: Profile = {
     hasChat: false,
     hasGithubLogin: true,
     githubLoginProvider: OAuthProvider.Github,
-    hasGoogleLogin: false
+    hasGoogleLogin: false,
+    hasAccountLogin: true
 };
 
 export const ConsoleSelfhostedProfile: Profile = {
@@ -47,7 +49,8 @@ export const ConsoleSelfhostedProfile: Profile = {
     defaultProjectName: 'Appwrite project',
     hasChat: false,
     hasGithubLogin: false,
-    hasGoogleLogin: false
+    hasGoogleLogin: false,
+    hasAccountLogin: true
 };
 
 export const StudioProfile: Profile = {
@@ -64,5 +67,6 @@ export const StudioProfile: Profile = {
     hasChat: true,
     hasGithubLogin: true,
     githubLoginProvider: 'github2',
-    hasGoogleLogin: true
+    hasGoogleLogin: true,
+    hasAccountLogin: true
 };

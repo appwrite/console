@@ -249,7 +249,10 @@
 
 <main>
     <Layout.Stack>
-        <header>
+        <header
+            style:background-color={$isSmallViewport
+                ? 'var(--bgcolor-neutral-primary)'
+                : 'var(--bgcolor-neutral-default)'}>
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Layout.Stack direction="row" alignItems="center" gap="none">
                     <div class="only-mobile-tablet">
@@ -267,18 +270,20 @@
                     </div>
                     <Breadcrumbs {organizations} />
                 </Layout.Stack>
-                <Link.Button
-                    on:click={() => {
-                        showAccountMenu = !showAccountMenu;
-                        shouldAnimateThemeToggle = false;
-                        if (showAccountMenu) {
-                            trackEvent(Click.MenuDropDownClick);
-                        }
-                    }}>
-                    <div style:user-select="none">
-                        <AvatarInitials name={$user?.name ?? ''} size="s" />
-                    </div>
-                </Link.Button>
+                <Layout.Stack inline height="32px">
+                    <Link.Button
+                        on:click={() => {
+                            showAccountMenu = !showAccountMenu;
+                            shouldAnimateThemeToggle = false;
+                            if (showAccountMenu) {
+                                trackEvent(Click.MenuDropDownClick);
+                            }
+                        }}>
+                        <div style:user-select="none" style:width="32px">
+                            <AvatarInitials name={$user?.name ?? ''} size="s" />
+                        </div>
+                    </Link.Button>
+                </Layout.Stack>
 
                 {#if showAccountMenu}
                     <div class="account-container">
@@ -364,7 +369,7 @@
                 {#if hasProjectSidebar}
                     <Chat {parser} width={chatWidth} hasSubNavigation={page.data?.subNavigation} />
                 {/if}
-                <Card.Base>
+                <Card.Base padding="xxs" radius={$isSmallViewport ? 'none' : 'm'}>
                     <Layout.Stack>
                         {#if page.data?.subNavigation}
                             {@const Component = page.data.subNavigation}
@@ -398,6 +403,7 @@
                                 <SubNavigation />
                                 <div
                                     style:padding-left="200px"
+                                    style:width="100%"
                                     style:min-height="calc(100vh - 98px)">
                                     <Layout.Stack>
                                         {#if page.data?.header}
@@ -512,7 +518,6 @@
         width: 100%;
         padding: var(--space-4);
         z-index: 10;
-        background-color: var(--bgcolor-neutral-default);
     }
 
     .studio-wrapper {
@@ -520,19 +525,18 @@
     }
 
     .studio-content {
-        min-height: calc(100vh - 54px);
-        margin-top: 56px;
+        min-height: calc(100vh - 50px);
+        margin-top: 50px;
         width: 100vw;
         position: relative;
 
-        padding-right: var(--space-4);
-        padding-left: var(--space-4);
-
         @media (min-width: 1024px) {
+            min-height: calc(100vh - 54px);
             width: calc(100vw - 200px);
             margin-left: 200px;
             margin-top: 54px;
             padding-left: 0;
+            padding-right: var(--space-4);
         }
 
         &.project-sidebar {
@@ -605,10 +609,13 @@
     }
 
     :global(.sub-navigation nav) {
-        margin-left: -25px;
+        margin-inline-start: -17px;
+        margin-block-start: 6px;
         border-top-left-radius: var(--border-radius-m);
+        height: calc(100% - 65px) !important;
         border-left-width: 1px;
         border-top-width: 1px;
+        border-bottom: 0;
         border-style: solid;
         border-color: var(--border-neutral);
     }

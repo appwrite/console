@@ -14,6 +14,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAppwrite,
+        IconChevronDoubleDown,
         IconChevronDoubleUp,
         IconChevronDown,
         IconPlusSm,
@@ -32,6 +33,7 @@
     import { endpoint, Synapse, synapse } from '$lib/components/studio/synapse.svelte';
     import { showChat } from '$lib/stores/chat';
     import { default as IconChatLayout } from '../assets/chat-layout.svelte';
+    import { default as IconImagine } from '../assets/icon-imagine.svelte';
     import { filesystem } from '$lib/components/editor/filesystem';
     import { InputSelect } from '$lib/elements/forms/index.js';
     import { SvelteMap } from 'svelte/reactivity';
@@ -139,9 +141,20 @@
 
 <Layout.Stack
     direction="column"
-    height={$isSmallViewport ? 'calc(100vh - 218px)' : 'calc(100vh - 88px)'}
+    height={$isSmallViewport ? 'calc(100vh - 154px)' : 'calc(100vh - 88px)'}
     gap="none">
     <Layout.Stack direction="column" gap="none">
+        {#if $isSmallViewport}
+            <Layout.Stack direction="row" gap="none" justifyContent="center">
+                <div>
+                    <ActionMenu.Item.Button trailingIcon={IconChevronDown}
+                        >Dashboard</ActionMenu.Item.Button>
+                </div>
+            </Layout.Stack>
+            <div class="divider-wrapper-artifacts">
+                <Divider />
+            </div>
+        {/if}
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
             <Layout.Stack gap="xxs" direction="row" alignItems="center" inline>
                 {#if !$showChat}
@@ -164,28 +177,28 @@
                     {/each}
                 </Tabs>
             </Layout.Stack>
-
-            <ActionMenu.Item.Button trailingIcon={IconChevronDown}
-                >Dashboard</ActionMenu.Item.Button>
             {#if !$isSmallViewport}
-                <Layout.Stack gap="xxs" direction="row" alignItems="center" inline>
-                    <InputSelect
-                        id="artificat-version"
-                        options={[
-                            { value: '0.2', label: 'v0.2' },
-                            { value: '0.1', label: 'v0.1' }
-                        ]}
-                        value="0.2" />
-                    <Button.Button size="s" variant="primary">Release</Button.Button>
-                </Layout.Stack>
+                <ActionMenu.Item.Button trailingIcon={IconChevronDown}
+                    >Dashboard</ActionMenu.Item.Button>
             {/if}
+
+            <Layout.Stack gap="s" direction="row" alignItems="center" inline>
+                <InputSelect
+                    id="artificat-version"
+                    options={[
+                        { value: '0.2', label: 'v0.2' },
+                        { value: '0.1', label: 'v0.1' }
+                    ]}
+                    value="0.2" />
+                <Button.Button size="s" variant="primary">Release</Button.Button>
+            </Layout.Stack>
         </Layout.Stack>
         <div class="divider-wrapper">
             <Divider />
         </div>
     </Layout.Stack>
     {@render children()}
-    <aside bind:this={asideRef}>
+    <aside bind:this={asideRef} style:padding-block-end={terminalOpen ? 0 : '8px'}>
         <details bind:open={terminalOpen}>
             <summary
                 onmousedown={startResize}
@@ -196,32 +209,36 @@
                         <Icon icon={IconTerminal} color="--fgcolor-neutral-tertiary" />
                         <Typography.Text>Terminals</Typography.Text>
                     </Layout.Stack>
-                    <Icon icon={IconChevronDoubleUp} color="--fgcolor-neutral-tertiary" />
+                    <Icon
+                        icon={terminalOpen ? IconChevronDoubleDown : IconChevronDoubleUp}
+                        color="--fgcolor-neutral-tertiary" />
                 </Layout.Stack>
             </summary>
-            <Layout.Stack>
-                <Tabs let:root>
-                    <Tab
-                        {root}
-                        selected={currentTerminal === mainTerminalId}
-                        on:click={() => (currentTerminal = mainTerminalId)}>
-                        <Icon icon={IconAppwrite} />
-                        Imagine
-                    </Tab>
-                    {#each terminals as [symbol] (symbol)}
+            <div class="terminal-tabs">
+                <Layout.Stack>
+                    <Tabs let:root>
                         <Tab
                             {root}
-                            on:click={() => (currentTerminal = symbol)}
-                            selected={currentTerminal === symbol}>
-                            <Icon icon={IconTerminal} />
-                            Terminal
+                            selected={currentTerminal === mainTerminalId}
+                            on:click={() => (currentTerminal = mainTerminalId)}>
+                            <Icon icon={IconImagine} />
+                            Imagine
                         </Tab>
-                    {/each}
-                    <Tab {root} on:click={createTerminal}>
-                        <Icon icon={IconPlusSm} size="s" />
-                    </Tab>
-                </Tabs>
-            </Layout.Stack>
+                        {#each terminals as [symbol] (symbol)}
+                            <Tab
+                                {root}
+                                on:click={() => (currentTerminal = symbol)}
+                                selected={currentTerminal === symbol}>
+                                <Icon icon={IconTerminal} />
+                                Terminal
+                            </Tab>
+                        {/each}
+                        <Tab {root} on:click={createTerminal}>
+                            <Icon icon={IconPlusSm} size="m" />
+                        </Tab>
+                    </Tabs>
+                </Layout.Stack>
+            </div>
             <div style:display={currentTerminal === mainTerminalId ? 'contents' : 'none'}>
                 <Terminal height={terminalHeight} {synapse} readonly></Terminal>
             </div>
@@ -238,36 +255,56 @@
     aside {
         background-color: var(--bgcolor-neutral-default);
 
-        margin-inline-start: -25px;
+        margin-inline-start: -9px;
         margin-block-end: calc(-1 * var(--base-8));
-        padding: var(--space-3);
-        border-bottom-right-radius: var(--border-radius-m);
+        padding: var(--space-3) 0;
 
         border: 1px solid var(--border-neutral);
-        width: calc(100% - var(--space-7));
+        width: 100%;
 
         position: fixed;
-        bottom: 116px;
+        bottom: 67px;
 
         @media (min-width: 768px) {
             width: calc(100% + 2 * var(--space-7));
             margin-inline-start: calc(-1 * var(--space-7));
+            border-bottom-right-radius: var(--border-radius-m);
             position: static;
             border: 0;
         }
     }
     summary {
         cursor: pointer;
+        padding-inline: var(--space-3);
     }
 
     .terminal-slider {
         cursor: row-resize;
     }
 
+    .terminal-tabs {
+        background-color: white;
+        padding: var(--space-4) var(--space-4);
+        margin-inline-start: calc(-1 * var(--space-1));
+        width: calc(100% + 1px);
+    }
+
+    .divider-wrapper-artifacts {
+        margin-block-start: 8px;
+        margin-block-end: 8px;
+        margin-inline-start: calc(-1 * var(--space-4));
+        width: calc(100% + var(--space-7));
+    }
+
     .divider-wrapper {
         margin-block-start: 7.5px;
-        margin-inline-start: calc(-1 * var(--space-7));
         margin-block-end: 8px;
-        width: calc(100% + var(--space-10));
+        margin-inline-start: calc(-1 * var(--space-4));
+        width: calc(100% + var(--space-7));
+
+        @media (min-width: 768px) {
+            margin-inline-start: calc(-1 * var(--space-7));
+            width: calc(100% + var(--space-10));
+        }
     }
 </style>

@@ -1,6 +1,7 @@
 <script lang="ts">
     import DesktopLight from '../../routes/(public)/(guest)/login/assets/desktop-light.png';
-    import { Card, Divider, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Card, Divider, Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import { default as IconImagine } from '../../routes/(console)/project-[project]/studio/assets/icon-imagine.svelte';
 
     let { title }: { title: string } = $props();
 </script>
@@ -9,10 +10,12 @@
     <div class="modal">
         <Card.Base padding="s">
             <Layout.Stack direction="column">
+                <Layout.Stack direction="row" justifyContent="center">
+                    <div class="icon-container">
+                        <svelte:component this={IconImagine}></svelte:component>
+                    </div>
+                </Layout.Stack>
                 <Typography.Title size="m">{title}</Typography.Title>
-                <div class="divider">
-                    <Divider />
-                </div>
                 <slot />
             </Layout.Stack>
         </Card.Base>
@@ -36,9 +39,12 @@
             width: 600px;
         }
 
-        .divider {
-            margin-left: calc(-1 * var(--space-7));
-            width: calc(100% + (2 * var(--space-7)));
+        .icon-container {
+            color: var(--fgcolor-neutral-primary);
+        }
+        :global(.icon-container svg) {
+            width: 36px;
+            height: 36px;
         }
     }
 
