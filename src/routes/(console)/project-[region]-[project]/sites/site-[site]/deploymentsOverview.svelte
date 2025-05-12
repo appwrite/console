@@ -59,7 +59,7 @@
                 <Table.Header.Cell {root}>Updated</Table.Header.Cell>
                 <Table.Header.Cell {root} />
             </svelte:fragment>
-            {#each deploymentList?.deployments as deployment}
+            {#each deploymentList?.deployments as deployment (deployment.$id)}
                 <Table.Row.Link
                     {root}
                     href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`}>

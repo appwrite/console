@@ -222,7 +222,7 @@
                                         <Badge
                                             variant="secondary"
                                             content={projectOption.badge}
-                                            size="s" />
+                                            size="xs" />
                                     {/if}
                                 </span>
                             </a>

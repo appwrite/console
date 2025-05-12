@@ -26,20 +26,20 @@
                     selectedDeployment?.buildId || undefined
                 );
 
-            addNotification({
-                type: 'success',
-                message: `Redeploying ${$func.name}`
-            });
             trackEvent(Submit.FunctionRedeploy);
 
             invalidate(Dependencies.FUNCTION);
             invalidate(Dependencies.DEPLOYMENTS);
+            show = false;
+            addNotification({
+                type: 'success',
+                message: `Redeploying ${$func.name}`
+            });
             if (redirect) {
                 goto(
                     `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/deployments/deployment-${deployment.$id}`
                 );
             }
-            show = false;
         } catch (e) {
             error = e.message;
 
