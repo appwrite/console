@@ -30,7 +30,12 @@
         saveTerminalHeightToPrefs,
         saveTerminalOpenToPrefs
     } from '$lib/helpers/studioLayout';
-    import { endpoint, Synapse, synapse } from '$lib/components/studio/synapse.svelte';
+    import {
+        createSynapse,
+        endpoint,
+        Synapse,
+        synapse
+    } from '$lib/components/studio/synapse.svelte';
     import { showChat } from '$lib/stores/chat';
     import { default as IconChatLayout } from '../assets/chat-layout.svelte';
     import { default as IconImagine } from '../assets/icon-imagine.svelte';
@@ -61,12 +66,17 @@
     const mainTerminalId = Symbol();
     const terminals = new SvelteMap<symbol, Synapse>();
     let currentTerminal: symbol = $state(mainTerminalId);
-
+    synapse.dispatch('synapse', {
+        operation: 'updateWorkDir',
+        params: {
+            workdir: `/artifact/${page.params.artifact}`
+        }
+    });
     synapse
         .dispatch('fs', {
             operation: 'getFolder',
             params: {
-                folderpath: '.'
+                folderpath: `/artifact/${page.params.artifact}`
             }
         })
         .then((message) => {
@@ -134,7 +144,7 @@
 
     function createTerminal() {
         const symbol = Symbol();
-        terminals.set(symbol, new Synapse(endpoint));
+        terminals.set(symbol, createSynapse(endpoint, page.params.artifact));
         currentTerminal = symbol;
     }
 </script>
@@ -240,7 +250,7 @@
                 </Layout.Stack>
             </div>
             <div style:display={currentTerminal === mainTerminalId ? 'contents' : 'none'}>
-                <Terminal height={terminalHeight} {synapse} readonly></Terminal>
+                <Terminal height={terminalHeight} {synapse}></Terminal>
             </div>
             {#each terminals as [symbol, synapse] (symbol)}
                 <div style:display={currentTerminal === symbol ? 'contents' : 'none'}>
