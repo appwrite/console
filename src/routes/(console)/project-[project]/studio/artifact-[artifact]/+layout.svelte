@@ -33,6 +33,7 @@
     import { endpoint, Synapse, synapse } from '$lib/components/studio/synapse.svelte';
     import { showChat } from '$lib/stores/chat';
     import { default as IconChatLayout } from '../assets/chat-layout.svelte';
+    import { default as IconImagine } from '../assets/icon-imagine.svelte';
     import { filesystem } from '$lib/components/editor/filesystem';
     import { InputSelect } from '$lib/elements/forms/index.js';
     import { SvelteMap } from 'svelte/reactivity';
@@ -225,29 +226,31 @@
                         color="--fgcolor-neutral-tertiary" />
                 </Layout.Stack>
             </summary>
-            <Layout.Stack>
-                <Tabs let:root>
-                    <Tab
-                        {root}
-                        selected={currentTerminal === mainTerminalId}
-                        on:click={() => (currentTerminal = mainTerminalId)}>
-                        <Icon icon={IconAppwrite} />
-                        Imagine
-                    </Tab>
-                    {#each terminals as [symbol] (symbol)}
+            <div class="terminal-tabs">
+                <Layout.Stack>
+                    <Tabs let:root>
                         <Tab
                             {root}
-                            on:click={() => (currentTerminal = symbol)}
-                            selected={currentTerminal === symbol}>
-                            <Icon icon={IconTerminal} />
-                            Terminal
+                            selected={currentTerminal === mainTerminalId}
+                            on:click={() => (currentTerminal = mainTerminalId)}>
+                            <Icon icon={IconImagine} />
+                            Imagine
                         </Tab>
-                    {/each}
-                    <Tab {root} on:click={createTerminal}>
-                        <Icon icon={IconPlusSm} size="s" />
-                    </Tab>
-                </Tabs>
-            </Layout.Stack>
+                        {#each terminals as [symbol] (symbol)}
+                            <Tab
+                                {root}
+                                on:click={() => (currentTerminal = symbol)}
+                                selected={currentTerminal === symbol}>
+                                <Icon icon={IconTerminal} />
+                                Terminal
+                            </Tab>
+                        {/each}
+                        <Tab {root} on:click={createTerminal}>
+                            <Icon icon={IconPlusSm} size="m" />
+                        </Tab>
+                    </Tabs>
+                </Layout.Stack>
+            </div>
             <div style:display={currentTerminal === mainTerminalId ? 'contents' : 'none'}>
                 <Terminal height={terminalHeight} {synapse} readonly></Terminal>
             </div>
@@ -288,6 +291,13 @@
 
     .terminal-slider {
         cursor: row-resize;
+    }
+
+    .terminal-tabs {
+        background-color: white;
+        padding: var(--space-4) var(--space-7);
+        margin-inline-start: calc(-1 * var(--space-4));
+        width: calc(100% + 14px);
     }
 
     .divider-wrapper-artifacts {
