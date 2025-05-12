@@ -37,7 +37,6 @@
 <style>
     .subMenu {
         min-width: 244px;
-        margin-inline: -4px;
         margin-block: -4px;
     }
 </style>

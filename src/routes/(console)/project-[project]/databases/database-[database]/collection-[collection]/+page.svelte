@@ -13,14 +13,20 @@
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
     import CreateAttribute from './createAttribute.svelte';
-    import { collection, columns } from './store';
+    import { collection, columns, isCsvImportInProgress } from './store';
     import Table from './table.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import FilePicker from '$lib/components/filePicker.svelte';
+    import type { Models } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     export let data: PageData;
 
+    let showImportCSV = false;
     let showCreateAttribute = false;
     let selectedAttribute: Option['name'] = null;
 
@@ -38,18 +44,65 @@
     );
     $: hasAttributes = !!$collection.attributes.length;
     $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
+
+    async function onSelect(file: Models.File) {
+        $isCsvImportInProgress = true;
+
+        try {
+            await sdk.forProject.migrations.createCsvMigration(
+                file.bucketId,
+                file.$id,
+                `${page.params.database}:${page.params.collection}`
+            );
+
+            addNotification({
+                type: 'success',
+                message: 'Documents import from csv has started'
+            });
+
+            trackEvent(Submit.DatabaseImportCsv);
+        } catch (e) {
+            trackError(e, Submit.DatabaseImportCsv);
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        } finally {
+            $isCsvImportInProgress = false;
+        }
+    }
 </script>
 
 {#key page.params.collection}
     <Container>
-        <Layout.Stack direction="row" justifyContent="space-between">
-            <Filters
-                query={data.query}
-                {columns}
-                disabled={!(hasAttributes && hasValidAttributes)}
-                analyticsSource="database_documents" />
-            <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                <ViewSelector view={data.view} {columns} hideView />
+        <Layout.Stack direction="column" gap="xl">
+            <Layout.Stack direction="row" justifyContent="space-between">
+                <Filters
+                    query={data.query}
+                    {columns}
+                    disabled={!(hasAttributes && hasValidAttributes)}
+                    analyticsSource="database_documents" />
+                <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+                    <ViewSelector view={data.view} {columns} hideView />
+                    <Button
+                        secondary
+                        event={Click.DatabaseImportCsv}
+                        disabled={!(hasAttributes && hasValidAttributes)}
+                        on:click={() => (showImportCSV = true)}>
+                        Import CSV
+                    </Button>
+                    {#if !$isSmallViewport}
+                        <Button
+                            disabled={!(hasAttributes && hasValidAttributes)}
+                            href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                            event="create_document">
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Create document
+                        </Button>
+                    {/if}
+                </Layout.Stack>
+            </Layout.Stack>
+            {#if $isSmallViewport}
                 <Button
                     disabled={!(hasAttributes && hasValidAttributes)}
                     href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
@@ -57,7 +110,7 @@
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create document
                 </Button>
-            </Layout.Stack>
+            {/if}
         </Layout.Stack>
 
         {#if hasAttributes && hasValidAttributes}
@@ -148,4 +201,17 @@
     <CreateAttribute
         bind:showCreate={showCreateAttribute}
         bind:selectedOption={selectedAttribute} />
+{/if}
+
+{#if showImportCSV}
+    <!-- CSVs can be text/plain or text/csv sometimes! -->
+    <FilePicker
+        {onSelect}
+        mimeTypeQuery="text/"
+        allowedExtension="csv"
+        bind:show={showImportCSV}
+        gridImageDimensions={{
+            imageHeight: 32,
+            imageWidth: 32
+        }} />
 {/if}

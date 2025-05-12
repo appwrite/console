@@ -186,11 +186,11 @@
         </svelte:fragment>
         <svelte:fragment slot="links">
             <li class="inline-links-item">
-                <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
+                <a href={`${base}/recover`}><span class="text">Forgot password?</span></a>
             </li>
             <li class="inline-links-item">
                 <a href={`${base}/register${page?.url?.search ?? ''}`}>
-                    <span class="text">Sign Up</span>
+                    <span class="text">Sign up</span>
                 </a>
             </li>
         </svelte:fragment>

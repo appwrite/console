@@ -25,6 +25,7 @@
         canWriteSites
     } from '$lib/stores/roles';
     import { consoleProfile } from '$lib/system';
+    import CsvImportBox from '$lib/components/csvImportBox.svelte';
 
     onMount(() => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
@@ -119,6 +120,7 @@
         <UploadBox />
         <MigrationBox />
         <BackupRestoreBox />
+        <CsvImportBox />
     </div>
 {/if}
 

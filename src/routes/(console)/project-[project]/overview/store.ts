@@ -1,7 +1,8 @@
 import { sdk } from '$lib/stores/sdk';
 import { cachedStore } from '$lib/helpers/cache';
-import { writable, type Writable } from 'svelte/store';
+import { get, readable, writable, type Writable } from 'svelte/store';
 import type { Models, ProjectUsageRange } from '@appwrite.io/console';
+import type { Column } from '$lib/helpers/types';
 
 export const usage = cachedStore<
     Models.UsageProject,
@@ -17,4 +18,17 @@ export const usage = cachedStore<
     };
 });
 
-export const selectedTab: Writable<'platforms' | 'keys'> = writable('platforms');
+export const selectedTab: Writable<'platforms' | 'keys' | 'dev-keys'> = writable('platforms');
+
+export const showDevKeysCreateModal: Writable<boolean> = writable(false);
+
+export const devKeyColumns = readable<Column[]>([
+    { id: 'name', title: 'Name', type: 'string', width: { min: 120 } },
+    { id: 'last_accessed', title: 'Last accessed', type: 'datetime', width: { min: 120 } },
+    { id: 'expiration', title: 'Expiration date', type: 'datetime', width: { min: 120 } }
+]);
+
+export const keyColumns = readable<Column[]>([
+    ...get(devKeyColumns),
+    { id: 'scopes', title: 'Scopes', type: 'string', width: { min: 120 } }
+]);
