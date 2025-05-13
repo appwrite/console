@@ -35,7 +35,7 @@
         chatWidth = resizerLeftPosition - resizerLeftOffset;
     });
 
-    let isResizing = false;
+    let isResizing = $state(false);
 
     function startResize() {
         isResizing = true;
@@ -121,10 +121,14 @@
             convo.data.artifactId,
             convo.data.$id
         );
-        const text = messages.reduce((curr, next) => {
-            return curr + next.content;
-        }, '');
-        parser.init(text);
+
+        for (const message of messages) {
+            const from = message.role === 'assistant' ? 'system' : 'user';
+            parser.chunk(message.content, from, {
+                silent: true
+            });
+            parser.end();
+        }
     });
 
     parser.on('complete', async (action) => {
