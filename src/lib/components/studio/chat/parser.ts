@@ -2,18 +2,19 @@ import { writable, type Readable } from 'svelte/store';
 
 export type ActionType = 'file' | 'shell';
 
-export interface Action {
+interface Base {
     id: symbol;
-    type: ActionType;
-    src?: string;
+    from: 'user' | 'system' | 'error';
     content: string;
     complete: boolean;
 }
 
-export interface TextChunk {
-    id: symbol;
-    content: string;
+export interface Action extends Base {
+    type: ActionType;
+    src?: string;
 }
+
+export interface TextChunk extends Base {}
 
 export function isActionType(type: string): type is ActionType {
     return ['file', 'shell'].includes(type);
@@ -24,6 +25,7 @@ export type ParsedItem = Action | TextChunk;
 export class StreamParser {
     private items: ParsedItem[] = [];
     private store = writable<ParsedItem[]>([]);
+    private currentFrom: Base['from'] = 'system';
     private currentAction: Action | null = null;
     private currentTextChunk: TextChunk | null = null;
     private buffer = '';
@@ -34,6 +36,9 @@ export class StreamParser {
     private callbacks: Record<'complete', Array<(action: Action) => void | Promise<void>>> = {
         complete: []
     };
+    /**
+     * The store of parsed items that can be subscribed to for reactivity
+     */
     public parsed: Readable<ParsedItem[]> = this.store;
 
     constructor() {}
@@ -43,20 +48,42 @@ export class StreamParser {
         this.callbacks.complete.forEach((callback) => callback(action));
     }
 
+    /**
+     * Register a callback to be called when an action is completed
+     * @param event The event to listen for ('complete')
+     * @param callback Function to call when an action is completed
+     */
     public on(event: 'complete', callback: (action: Action) => void | Promise<void>): void {
         this.callbacks[event].push(callback);
     }
 
-    public init(text: string): void {
-        this.reset();
-        this.callbacksEnabled = false;
-        this.chunk(text);
-        this.callbacksEnabled = true;
-    }
+    /**
+     * Process a chunk of text from a specific source
+     *
+     * @param text The text chunk to process
+     * @param from The source of the text ('system', 'user', or 'error')
+     * @param options Additional options
+     *   - silent: If true, callbacks won't be triggered for actions completed in this chunk
+     */
+    public chunk(
+        text: string,
+        from: Base['from'],
+        options: { silent: boolean } = { silent: false }
+    ): void {
+        // If the source changes, complete the current text chunk
+        if (this.currentFrom !== from) {
+            if (this.currentTextChunk) {
+                this.currentTextChunk.complete = true;
+                this.updateStore();
+                this.currentTextChunk = null;
+            }
+        }
 
-    public chunk(text: string): void {
+        this.currentFrom = from;
+        this.callbacksEnabled = !options.silent;
         this.buffer += text;
         this.parse();
+        this.callbacksEnabled = true;
     }
 
     private parse(): void {
@@ -128,6 +155,13 @@ export class StreamParser {
                     this.buffer = this.buffer.substring(closeTagIndex + 9); // 9 is length of </action>
                     this.currentAction = null;
                     this.skipCurrentAction = false;
+
+                    // If transitioning between actions, ensure any existing text chunk is completed
+                    if (this.currentTextChunk) {
+                        this.currentTextChunk.complete = true;
+                        this.updateStore();
+                        this.currentTextChunk = null;
+                    }
                 }
             } else {
                 // Look for opening action tag
@@ -180,9 +214,16 @@ export class StreamParser {
 
                         const type = attributes.type;
                         if (isActionType(type)) {
-                            this.currentTextChunk = null;
+                            // Complete the current text chunk if it exists before switching to an action
+                            if (this.currentTextChunk) {
+                                this.currentTextChunk.complete = true;
+                                this.updateStore();
+                                this.currentTextChunk = null;
+                            }
+
                             this.currentAction = {
                                 id: Symbol(),
+                                from: this.currentFrom,
                                 type,
                                 src: attributes.src,
                                 content: '',
@@ -224,7 +265,9 @@ export class StreamParser {
         }
     }
 
-    // Reset the parser state
+    /**
+     * Reset the parser state back to its initial state
+     */
     public reset(): void {
         this.items = [];
         this.callbacksEnabled = true;
@@ -245,7 +288,9 @@ export class StreamParser {
         } else {
             this.currentTextChunk = {
                 id: Symbol(),
-                content: text
+                from: this.currentFrom,
+                content: text,
+                complete: false
             };
             this.items.push(this.currentTextChunk);
         }
@@ -263,6 +308,10 @@ export class StreamParser {
         this.store.set([...filteredItems]);
     }
 
+    /**
+     * Finalizes the current chunks, marks them as complete, and
+     * prepares for a new chunk on the next call to chunk().
+     */
     public end(): void {
         // Flush any pending text
         this.flushPendingText();
@@ -313,8 +362,25 @@ export class StreamParser {
             this.updateStore();
         }
 
+        // Mark the current text chunk as complete if it exists
+        if (this.currentTextChunk) {
+            this.currentTextChunk.complete = true;
+            this.updateStore();
+        }
+
+        // Find and complete any unfinished text chunks
+        for (const item of this.items) {
+            if (!('type' in item) && !item.complete) {
+                item.complete = true;
+            }
+        }
+        this.updateStore();
+
         this.currentAction = null;
         this.skipCurrentAction = false;
+
+        // Clear current text chunk reference to ensure a new one is created on next chunk() call
+        this.currentTextChunk = null;
     }
 }
 
