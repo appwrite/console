@@ -172,8 +172,7 @@
                 {#if !$showChat}
                     <Button.Button
                         variant="compact"
-                        color="--fgcolor-neutral-secondary"
-                        style="--p-button-padding-block:0"
+                        style="--p-button-padding-block:0; margin-inline-start: -2px; margin-inline-end: 4px; color:var(--fgcolor-neutral-tertiary)"
                         on:click={() => {
                             showChat.set(true);
                         }}><Icon icon={IconChatLayout} size="l"></Icon></Button.Button>
@@ -295,10 +294,10 @@
     }
 
     .terminal-tabs {
-        background-color: white;
+        background-color: var(--bgcolor-neutral-primary);
         padding: var(--space-4) var(--space-4);
-        margin-inline-start: calc(-1 * var(--space-1));
-        width: calc(100% + 1px);
+        margin-inline-start: calc(-1 * var(--space-1) + 1px);
+        width: calc(100%);
     }
 
     .divider-wrapper-artifacts {

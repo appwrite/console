@@ -11,6 +11,7 @@ import type { Plan } from '$lib/sdk/billing';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ARTIFACTS);
+    sdk.forProject.project.client.setProject(params.project);
 
     try {
         return {

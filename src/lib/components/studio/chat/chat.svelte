@@ -258,7 +258,10 @@
         }
 
         @media (min-width: 768px) {
-            margin-block-end: var(--space-7);
+            margin-block-end: var(--space-4);
+            margin-inline-start: calc(-1 * var(--space-4));
+            border-radius: var(--border-radius-xs);
+            width: calc(100% + 2 * var(--space-4));
         }
     }
 
