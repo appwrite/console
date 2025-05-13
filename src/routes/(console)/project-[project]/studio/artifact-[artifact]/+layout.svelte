@@ -294,10 +294,10 @@
     }
 
     .terminal-tabs {
-        background-color: white;
+        background-color: var(--bgcolor-neutral-primary);
         padding: var(--space-4) var(--space-4);
-        margin-inline-start: calc(-1 * var(--space-1));
-        width: calc(100% + 1px);
+        margin-inline-start: calc(-1 * var(--space-1) + 1px);
+        width: calc(100%);
     }
 
     .divider-wrapper-artifacts {
