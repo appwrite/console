@@ -114,7 +114,7 @@
                                     size: f.size,
                                     name: f.name,
                                     removable: true,
-                                    extension: f.type,
+                                    extension: f.type
                                 };
                             })}
                             on:remove={(e) => (files = removeFile(e.detail, files))} />

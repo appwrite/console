@@ -3,7 +3,7 @@
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { columns, file, tokens } from './store';
-    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
+    import { diffDays, toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
@@ -19,6 +19,7 @@
     import {
         ActionMenu,
         Alert,
+        Badge,
         Button as PinkButton,
         InteractiveText,
         Layout,
@@ -189,6 +190,20 @@
         return [...groups].join(', ');
     }
 
+    function getExpiryDetails(token: Models.ResourceToken): {
+        status: 'success' | 'warning' | 'error' | null;
+        message: string | null;
+    } {
+        if (token.expire === '') token.expire = null;
+        const isExpired = token.expire !== null && new Date(token.expire) < new Date();
+        const isExpiring = token.expire && diffDays(new Date(), new Date(token.expire)) < 14;
+
+        return {
+            status: isExpired ? 'error' : isExpiring ? 'warning' : null,
+            message: isExpired ? 'Expired' : isExpiring ? 'Expires soon' : null
+        };
+    }
+
     onMount(async () => {
         filePermissions = $file?.$permissions;
     });
@@ -240,119 +255,125 @@
             </svelte:fragment>
         </CardGrid>
 
-        <div class="tokens-section">
-            <CardGrid>
-                <svelte:fragment slot="title">File tokens</svelte:fragment>
-                Use tokens to provide public access to the file.
-                <svelte:fragment slot="aside">
-                    {#if $tokens.total}
-                        <Layout.Stack
-                            justifyContent="flex-end"
-                            direction={$isSmallViewport ? 'column' : 'row'}>
-                            <Button secondary on:click={() => (showManageToken = true)}>
-                                <Icon size="s" icon={IconPlus} />
-                                <span class="text">Create token</span>
-                            </Button>
-                        </Layout.Stack>
+        <CardGrid>
+            <svelte:fragment slot="title">File tokens</svelte:fragment>
+            Use tokens to provide public access to the file.
+            <svelte:fragment slot="aside">
+                {#if $tokens.total}
+                    <Layout.Stack
+                        justifyContent="flex-end"
+                        direction={$isSmallViewport ? 'column' : 'row'}>
+                        <Button secondary on:click={() => (showManageToken = true)}>
+                            <Icon size="s" icon={IconPlus} />
+                            <span class="text">Create token</span>
+                        </Button>
+                    </Layout.Stack>
 
-                        <Table.Root columns={$columns} let:root>
-                            <svelte:fragment slot="header" let:root>
-                                {#each $columns as { id, title } (id)}
-                                    <Table.Header.Cell column={id} {root}
-                                        >{title}</Table.Header.Cell>
-                                {/each}
-                            </svelte:fragment>
+                    <Table.Root columns={$columns} let:root>
+                        <svelte:fragment slot="header" let:root>
+                            {#each $columns as { id, title } (id)}
+                                <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
+                            {/each}
+                        </svelte:fragment>
 
-                            {#each $tokens.tokens as token}
-                                <Table.Row.Base {root}>
-                                    <Table.Cell column="created" {root}
-                                        >{toLocaleDate(token.$createdAt)}</Table.Cell>
+                        {#each $tokens.tokens as token}
+                            <Table.Row.Base {root}>
+                                <Table.Cell column="created" {root}
+                                    >{toLocaleDate(token.$createdAt)}</Table.Cell>
 
-                                    <Table.Cell column="expiry" {root}
-                                        >{token.expire
-                                            ? cleanFormattedDate(token.expire)
-                                            : 'never'}</Table.Cell>
+                                <Table.Cell column="expire" {root}>
+                                    <Layout.Stack gap="s" direction="row">
+                                        {@const expiration = getExpiryDetails(token)}
+                                        {token.expire ? cleanFormattedDate(token.expire) : 'Never'}
 
-                                    <Table.Cell column="last_accessed" {root}
-                                        >{token.accessedAt
-                                            ? cleanFormattedDate(token.accessedAt, true)
-                                            : 'never'}</Table.Cell>
-
-                                    <Table.Cell column="permissions" {root}>
-                                        {#if token.$permissions.length}
-                                            <Typography.Text truncate slot="tooltip">
-                                                {getPermissionGroups(token.$permissions)}
-                                            </Typography.Text>
-                                        {:else}
-                                            none
+                                        {#if expiration.status}
+                                            <Badge
+                                                size="s"
+                                                variant="secondary"
+                                                type={expiration.status}
+                                                content={expiration.message} />
                                         {/if}
-                                    </Table.Cell>
+                                    </Layout.Stack>
+                                </Table.Cell>
 
-                                    <Table.Cell column="actions" {root}>
-                                        <Layout.Stack alignItems="flex-end">
-                                            <Menu>
-                                                <PinkButton.Button icon variant="ghost">
-                                                    <Icon size="s" icon={IconDotsHorizontal} />
-                                                </PinkButton.Button>
+                                <Table.Cell column="last_accessed" {root}
+                                    >{token.accessedAt
+                                        ? cleanFormattedDate(token.accessedAt, true)
+                                        : 'Never'}</Table.Cell>
 
-                                                <svelte:fragment slot="menu" let:toggle>
-                                                    <ActionMenu.Root>
-                                                        <ActionMenu.Root noPadding>
-                                                            <ActionMenu.Item.Button
-                                                                on:click={() => {
-                                                                    toggle();
-                                                                    showCopyUrlModal = true;
-                                                                    selectedFileToken = token;
-                                                                }}
-                                                                leadingIcon={IconDuplicate}>
-                                                                Copy URL
-                                                            </ActionMenu.Item.Button>
-                                                        </ActionMenu.Root>
+                                <Table.Cell column="permissions" {root}>
+                                    {#if token.$permissions.length}
+                                        <Typography.Text truncate slot="tooltip">
+                                            {getPermissionGroups(token.$permissions)}
+                                        </Typography.Text>
+                                    {:else}
+                                        none
+                                    {/if}
+                                </Table.Cell>
+
+                                <Table.Cell column="actions" {root}>
+                                    <Layout.Stack alignItems="flex-end">
+                                        <Menu>
+                                            <PinkButton.Button icon variant="ghost">
+                                                <Icon size="s" icon={IconDotsHorizontal} />
+                                            </PinkButton.Button>
+
+                                            <svelte:fragment slot="menu" let:toggle>
+                                                <ActionMenu.Root>
+                                                    <ActionMenu.Root noPadding>
                                                         <ActionMenu.Item.Button
-                                                            leadingIcon={IconPencil}
                                                             on:click={() => {
                                                                 toggle();
-                                                                showManageToken = true;
+                                                                showCopyUrlModal = true;
                                                                 selectedFileToken = token;
-                                                            }}>
-                                                            Edit expiry
-                                                        </ActionMenu.Item.Button>
-                                                        <ActionMenu.Item.Button
-                                                            leadingIcon={IconKey}
-                                                            on:click={() => {
-                                                                toggle();
-                                                                showManageToken = true;
-                                                                tokenPermissionsMode = true;
-                                                                selectedFileToken = token;
-                                                            }}>
-                                                            Edit Permissions
-                                                        </ActionMenu.Item.Button>
-                                                        <ActionMenu.Item.Button
-                                                            status="danger"
-                                                            leadingIcon={IconTrash}
-                                                            on:click={async (e) => {
-                                                                toggle();
-                                                                tokenDeleteMode = true;
-                                                                showManageToken = true;
-                                                                selectedFileToken = token;
-                                                            }}>
-                                                            Delete
+                                                            }}
+                                                            leadingIcon={IconDuplicate}>
+                                                            Copy URL
                                                         </ActionMenu.Item.Button>
                                                     </ActionMenu.Root>
-                                                </svelte:fragment>
-                                            </Menu>
-                                        </Layout.Stack>
-                                    </Table.Cell>
-                                </Table.Row.Base>
-                            {/each}
-                        </Table.Root>
-                    {:else}
-                        <Empty on:click={() => (showManageToken = true)}
-                            >Create new file token</Empty>
-                    {/if}
-                </svelte:fragment>
-            </CardGrid>
-        </div>
+                                                    <ActionMenu.Item.Button
+                                                        leadingIcon={IconPencil}
+                                                        on:click={() => {
+                                                            toggle();
+                                                            showManageToken = true;
+                                                            selectedFileToken = token;
+                                                        }}>
+                                                        Edit expiry
+                                                    </ActionMenu.Item.Button>
+                                                    <ActionMenu.Item.Button
+                                                        leadingIcon={IconKey}
+                                                        on:click={() => {
+                                                            toggle();
+                                                            showManageToken = true;
+                                                            tokenPermissionsMode = true;
+                                                            selectedFileToken = token;
+                                                        }}>
+                                                        Edit permissions
+                                                    </ActionMenu.Item.Button>
+                                                    <ActionMenu.Item.Button
+                                                        status="danger"
+                                                        leadingIcon={IconTrash}
+                                                        on:click={async (e) => {
+                                                            toggle();
+                                                            tokenDeleteMode = true;
+                                                            showManageToken = true;
+                                                            selectedFileToken = token;
+                                                        }}>
+                                                        Delete
+                                                    </ActionMenu.Item.Button>
+                                                </ActionMenu.Root>
+                                            </svelte:fragment>
+                                        </Menu>
+                                    </Layout.Stack>
+                                </Table.Cell>
+                            </Table.Row.Base>
+                        {/each}
+                    </Table.Root>
+                {:else}
+                    <Empty on:click={() => (showManageToken = true)}>Create new file token</Empty>
+                {/if}
+            </svelte:fragment>
+        </CardGrid>
 
         <CardGrid>
             <svelte:fragment slot="title">Permissions</svelte:fragment>
@@ -424,9 +445,3 @@
     on:deleted={async () => await deleteFileToken(selectedFileToken)} />
 
 <FileTokensCopyUrl file={$file} bind:token={selectedFileToken} bind:show={showCopyUrlModal} />
-
-<style>
-    :global(.tokens-section div) {
-        overflow: auto;
-    }
-</style>
