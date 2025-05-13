@@ -176,7 +176,7 @@
         <Table.Header.Cell column="$created" {root}>Created</Table.Header.Cell>
         <Table.Header.Cell column="$updated" {root}>Updated</Table.Header.Cell>
     </svelte:fragment>
-    {#each data.documents.documents as document}
+    {#each data.documents.documents as document (document.$id)}
         <Table.Row.Link
             {root}
             id={document.$id}
@@ -262,19 +262,21 @@
 <RelationshipsModal bind:show={showRelationships} {selectedRelationship} data={relationshipData} />
 
 {#if selectedRows.length > 0}
-    <FloatingActionBar>
-        <svelte:fragment slot="start">
-            <Badge content={selectedRows.length.toString()} />
-            <span>
-                {selectedRows.length > 1 ? 'documents' : 'document'}
-                selected
-            </span>
-        </svelte:fragment>
-        <svelte:fragment slot="end">
-            <ConsoleButton text on:click={() => (selectedRows = [])}>Cancel</ConsoleButton>
-            <ConsoleButton secondary on:click={() => (showDelete = true)}>Delete</ConsoleButton>
-        </svelte:fragment>
-    </FloatingActionBar>
+    <div class="floating-action-bar">
+        <FloatingActionBar>
+            <svelte:fragment slot="start">
+                <Badge content={selectedRows.length.toString()} />
+                <span>
+                    {selectedRows.length > 1 ? 'documents' : 'document'}
+                    selected
+                </span>
+            </svelte:fragment>
+            <svelte:fragment slot="end">
+                <ConsoleButton text on:click={() => (selectedRows = [])}>Cancel</ConsoleButton>
+                <ConsoleButton secondary on:click={() => (showDelete = true)}>Delete</ConsoleButton>
+            </svelte:fragment>
+        </FloatingActionBar>
+    </div>
 {/if}
 
 <Confirm title="Delete Documents" bind:open={showDelete} onSubmit={handleDelete}>
@@ -330,3 +332,10 @@
         {/if}
     </div>
 </Confirm>
+
+<style>
+    .floating-action-bar :global(div:first-of-type) {
+        /* 50% > 60% because we have sub-navigation */
+        left: calc(60% - var(--p-floating-action-bar-width) / 2);
+    }
+</style>
