@@ -16,13 +16,15 @@
     import Create from './createDocument.svelte';
     import { collection, columns } from './store';
     import Table from './table.svelte';
-    import { derived, type Readable } from 'svelte/store';
+    import { writable } from 'svelte/store';
 
     export let data: PageData;
 
     let showCreateAttribute = false;
     let showCreateDropdown = false;
     let selectedAttribute: Option['name'] = null;
+
+    const filterColumns = writable<Column[]>([]);
 
     $: selected = preferences.getCustomCollectionColumns(
         $page.params.project,
@@ -39,6 +41,15 @@
             elements: 'elements' in attribute ? attribute.elements : null
         }))
     );
+    $: filterColumns.set([
+        ...$columns,
+        ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
+            id,
+            title: id,
+            show: true,
+            type: (id === '$id' ? 'string' : 'datetime') as ColumnType
+        }))
+    ]);
 
     function openWizard() {
         if (!$canWriteDocuments) return;
@@ -48,16 +59,6 @@
     $: hasAttributes = !!$collection.attributes.length;
 
     $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
-
-    const filterColumns: Readable<Column[]> = derived(columns, ($collectionColumns) => [
-        ...$collectionColumns,
-        ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
-            id,
-            title: id,
-            show: true,
-            type: id === '$id' ? 'string' : 'datetime'
-        }))
-    ]);
 </script>
 
 {#key $page.params.collection}
