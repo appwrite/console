@@ -67,9 +67,12 @@
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
 
+            const group = Symbol();
             let chunk = await reader.read();
             while (!chunk.done) {
-                parser.chunk(decoder.decode(chunk.value), 'system');
+                parser.chunk(decoder.decode(chunk.value), 'system', {
+                    group
+                });
                 chunk = await reader.read();
             }
             parser.end();

@@ -14,6 +14,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { filesystem } from '$lib/components/editor/filesystem';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
+    import { queue } from './chat/queue.svelte';
 
     $effect(() => {
         if ($isSmallViewport || page.params.artifact) {
@@ -125,13 +126,15 @@
         for (const message of messages) {
             const from = message.role === 'assistant' ? 'system' : 'user';
             parser.chunk(message.content, from, {
-                silent: true
+                silent: true,
+                group: message.$id
             });
             parser.end();
         }
     });
 
     parser.on('complete', async (action) => {
+        queue.enqueue(action.group, action);
         switch (action.type) {
             case 'file':
                 await synapse.dispatch('fs', {

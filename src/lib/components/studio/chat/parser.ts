@@ -5,6 +5,7 @@ export type ActionType = 'file' | 'shell';
 interface Base {
     id: symbol;
     from: 'user' | 'system' | 'error';
+    group: string | symbol | null;
     content: string;
     complete: boolean;
 }
@@ -25,6 +26,7 @@ export type ParsedItem = Action | TextChunk;
 export class StreamParser {
     private items: ParsedItem[] = [];
     private store = writable<ParsedItem[]>([]);
+    private currentGroup: Base['group'] = null;
     private currentFrom: Base['from'] = 'system';
     private currentAction: Action | null = null;
     private currentTextChunk: TextChunk | null = null;
@@ -45,7 +47,7 @@ export class StreamParser {
 
     private triggerCallbacks(event: keyof typeof this.callbacks, action: Action) {
         if (!this.callbacksEnabled) return;
-        this.callbacks.complete.forEach((callback) => callback(action));
+        this.callbacks[event].forEach((callback) => callback(action));
     }
 
     /**
@@ -68,7 +70,7 @@ export class StreamParser {
     public chunk(
         text: string,
         from: Base['from'],
-        options: { silent: boolean } = { silent: false }
+        options: { silent?: boolean; group?: Base['group'] } = { silent: false, group: null }
     ): void {
         // If the source changes, complete the current text chunk
         if (this.currentFrom !== from) {
@@ -79,6 +81,7 @@ export class StreamParser {
             }
         }
 
+        this.currentGroup = options.group;
         this.currentFrom = from;
         this.callbacksEnabled = !options.silent;
         this.buffer += text;
@@ -224,6 +227,7 @@ export class StreamParser {
                             this.currentAction = {
                                 id: Symbol(),
                                 from: this.currentFrom,
+                                group: this.currentGroup,
                                 type,
                                 src: attributes.src,
                                 content: '',
@@ -289,6 +293,7 @@ export class StreamParser {
             this.currentTextChunk = {
                 id: Symbol(),
                 from: this.currentFrom,
+                group: this.currentGroup,
                 content: text,
                 complete: false
             };
