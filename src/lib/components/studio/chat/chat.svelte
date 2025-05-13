@@ -41,7 +41,7 @@
         try {
             sending = true;
             const response = await fetch(
-                `${sdk.forProject.client.config.endpoint}/imagine/artifacts/${$conversation.artifactId}/conversations/${$conversation.$id}/messages`,
+                `${sdk.forProject.client.config.endpoint}/imagine/artifacts/${$conversation.data.artifactId}/conversations/${$conversation.data.$id}/messages`,
                 {
                     method: 'POST',
                     headers: {
