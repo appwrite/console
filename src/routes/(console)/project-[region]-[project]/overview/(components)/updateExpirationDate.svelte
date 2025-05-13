@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Alert } from '@appwrite.io/pink-svelte';
-    import ExpirationInput from './expirationInput.svelte';
+    import { ExpirationInput } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
 

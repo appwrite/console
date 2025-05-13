@@ -4,7 +4,7 @@
     import { Icon, Modal, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Form, InputText } from '$lib/elements/forms/index.js';
-    import ExpirationInput from '../(components)/expirationInput.svelte';
+    import { ExpirationInput } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';

@@ -173,14 +173,14 @@
         }
     }
 
-    function getPermissionGroups(permissions: string[]): string {
+    function getPermissionGroups(token: Models.ResourceToken): string {
         const map = {
             read: 'Read',
             update: 'Update',
             delete: 'Delete'
         };
 
-        const groups = permissions.reduce((set, perm) => {
+        const groups = token.$permissions.reduce((set, perm) => {
             const match = perm.match(/^(\w+)\(/);
             const key = match?.[1];
             if (key && map[key]) set.add(map[key]);
@@ -304,7 +304,7 @@
                                 <Table.Cell column="permissions" {root}>
                                     {#if token.$permissions.length}
                                         <Typography.Text truncate slot="tooltip">
-                                            {getPermissionGroups(token.$permissions)}
+                                            {getPermissionGroups(token)}
                                         </Typography.Text>
                                     {:else}
                                         none

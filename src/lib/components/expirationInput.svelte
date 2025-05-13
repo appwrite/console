@@ -83,8 +83,14 @@
 
         return result;
     }
+
+    // dd/mm/yy format for selecting dates only!
+    function splitDateValue(value: string): string {
+        return value.slice(0, 10);
+    }
+
     let expirationSelect = initExpirationSelect();
-    let expirationCustom: string | null = value ?? null;
+    let expirationCustom: string | null = value ? splitDateValue(value) : null;
 
     $: {
         if (!isSameDay(new Date(expirationSelect), new Date(value))) {

@@ -36,7 +36,6 @@
                     size="s"
                     ariaLabel="create {target}">Documentation</Button>
                 <Button
-                    {href}
                     secondary
                     on:mousedown
                     on:click

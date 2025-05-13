@@ -222,7 +222,11 @@
         <Empty
             single
             target="file"
-            href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`} />
+            href="https://appwrite.io/docs/products/storage/upload-download"
+            on:click={() =>
+                goto(
+                    `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`
+                )} />
     {/if}
 </Container>
 
