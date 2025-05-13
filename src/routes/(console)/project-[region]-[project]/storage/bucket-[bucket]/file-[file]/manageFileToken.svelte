@@ -21,7 +21,7 @@
     export let isUpdatePermissions = false;
     export let fileToken: Models.ResourceToken | null = null;
 
-    let expire = null;
+    $: expire = fileToken?.expire ?? null;
 
     const dispatch = createEventDispatcher();
 
@@ -75,8 +75,18 @@
         <!-- TODO: docs link needed-->
         <svelte:fragment slot="description">
             {#if fileToken}
-                {@const formattedDate = cleanFormattedDate(fileToken.$createdAt)}
-                Edit the expiry of the file token created on <b>{formattedDate}</b>
+                {#if isUpdatePermissions}
+                    Choose who can access or update your file using this token.
+                    <Link.Anchor
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="https://appwrite.io/docs/advanced/platform/permissions">
+                        Learn more
+                    </Link.Anchor>.
+                {:else}
+                    {@const formattedDate = cleanFormattedDate(fileToken.$createdAt)}
+                    Edit the expiry of the file token created on <b>{formattedDate}</b>.
+                {/if}
             {:else}
                 Create a file token to grant access to a file.
                 <Link.Anchor href="https://appwrite.com/docs/">Learn more</Link.Anchor>.
