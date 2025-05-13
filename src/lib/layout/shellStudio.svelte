@@ -372,6 +372,12 @@
 
     .studio-wrapper {
         position: relative;
+        height: calc(100dvh - 64px);
+    }
+
+    :global(.studio-wrapper > div) {
+        height: 100%;
+        overflow-y: scroll;
     }
 
     .studio-content {
