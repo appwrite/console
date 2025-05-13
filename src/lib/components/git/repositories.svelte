@@ -42,7 +42,7 @@
     } = $props();
 
     let search = $state('');
-    let selectedInstallation = $state(null);
+    let selectedInstallation = null;
 
     async function loadInstallations() {
         if (installationList) {
@@ -76,9 +76,6 @@
             await fetchRepos(installationId, search);
         }
 
-        $repositories.search = search;
-        $repositories.installationId = installationId;
-
         if ($repositories.repositories.length && action === 'select') {
             selectedRepository = $repositories.repositories[0].id;
             $repository = $repositories.repositories[0];
@@ -108,6 +105,9 @@
                     )) as unknown as Models.ProviderRepositoryFrameworkList
             ).frameworkProviderRepositories;
         }
+
+        $repositories.search = search;
+        $repositories.installationId = installationId;
     }
 </script>
 
