@@ -36,7 +36,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { conversation, showChat } from '$lib/stores/chat';
     import { createStreamParser } from '$lib/components/studio/chat/parser';
-    import { setContext, type Snippet } from 'svelte';
+    import { type Snippet } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { filesystem } from '$lib/components/editor/filesystem';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
@@ -196,9 +196,10 @@
     const parser = createStreamParser();
 
     async function getConversation(artifactId: string) {
+        parser.reset();
         const { conversations } = await sdk.forProject.imagine.listConversations(artifactId);
         if (conversations.length === 0) {
-            const convo = await sdk.forProject.imagine.createConversation(
+            const convo = sdk.forProject.imagine.createConversation(
                 artifactId,
                 `Conversation ${new Date().getTime()}`
             );
@@ -209,14 +210,17 @@
     }
 
     $effect(() => {
-        if (page.params.artifact && !$conversation) {
+        if (page.params.artifact && $conversation.data?.artifactId !== page.params.artifact) {
             getConversation(page.params.artifact);
         }
     });
 
     conversation.subscribe(async (convo) => {
-        if (!convo) return;
-        const { messages } = await sdk.forProject.imagine.listMessages(convo.artifactId, convo.$id);
+        if (!convo.data) return;
+        const { messages } = await sdk.forProject.imagine.listMessages(
+            convo.data.artifactId,
+            convo.data.$id
+        );
         const text = messages.reduce((curr, next) => {
             return curr + next.content;
         }, '');
