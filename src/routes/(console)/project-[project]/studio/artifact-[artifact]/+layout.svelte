@@ -9,7 +9,7 @@
     } from '@appwrite.io/pink-svelte';
     import { isTabSelected } from '$lib/helpers/load';
     import { page } from '$app/state';
-    import { Tab, Tabs, Terminal } from '$lib/components';
+    import { ActionDropdown, Tab, Tabs, Terminal } from '$lib/components';
     import { base } from '$app/paths';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
@@ -19,7 +19,7 @@
         IconChevronDown,
         IconPlusSm,
         IconTerminal,
-        IconWifi
+        IconPlus
     } from '@appwrite.io/pink-icons-svelte';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
     import {
@@ -42,6 +42,7 @@
     import { filesystem } from '$lib/components/editor/filesystem';
     import { InputSelect } from '$lib/elements/forms/index.js';
     import { SvelteMap } from 'svelte/reactivity';
+    import { createArtifact } from '$lib/helpers/artifact';
 
     const { children } = $props();
 
@@ -149,7 +150,33 @@
         terminals.set(symbol, createSynapse(endpoint, page.params.artifact));
         currentTerminal = symbol;
     }
+
+    let artifacts = $derived.by(() => {
+        const mappedArtifacts = page.data.artifacts?.artifacts
+            ? page.data.artifacts.artifacts.map((artifact) => {
+                  return {
+                      name: artifact.name,
+                      isActive: page.params.artifact === artifact.$id,
+                      href: `${base}/project-${page.params.project}/studio/artifact-${artifact.$id}`
+                  };
+              })
+            : [];
+
+        mappedArtifacts.push({
+            name: 'Create artifact',
+            isActive: false,
+            onClick: createArtifact,
+            icon: IconPlus
+        });
+        return mappedArtifacts;
+    });
 </script>
+
+{#snippet artifactSelector()}
+    {#if page.data.artifacts?.artifacts}
+        <ActionDropdown items={artifacts} />
+    {/if}
+{/snippet}
 
 <Layout.Stack
     direction="column"
@@ -159,8 +186,7 @@
         {#if $isSmallViewport}
             <Layout.Stack direction="row" gap="none" justifyContent="center">
                 <div>
-                    <ActionMenu.Item.Button trailingIcon={IconChevronDown}
-                        >Dashboard</ActionMenu.Item.Button>
+                    {@render artifactSelector()}
                 </div>
             </Layout.Stack>
             <div class="divider-wrapper-artifacts">
@@ -189,8 +215,7 @@
                 </Tabs>
             </Layout.Stack>
             {#if !$isSmallViewport}
-                <ActionMenu.Item.Button trailingIcon={IconChevronDown}
-                    >Dashboard</ActionMenu.Item.Button>
+                {@render artifactSelector()}
             {/if}
 
             <Layout.Stack gap="s" direction="row" alignItems="center" inline>
