@@ -46,11 +46,10 @@
 
     const { children } = $props();
 
-    const projectId = page.params.project;
-    const artifactId = page.params.artifact;
-
-    const path = `${base}/project-${projectId}/studio/artifact-${artifactId}`;
-    const tabs = [
+    const path = $derived(
+        `${base}/project-${page.params.project}/studio/artifact-${page.params.artifact}`
+    );
+    const tabs = $derived([
         {
             href: path,
             title: 'Preview',
@@ -63,7 +62,7 @@
             event: 'code',
             hasChildren: true
         }
-    ];
+    ]);
     const mainTerminalId = Symbol();
     const terminals = new SvelteMap<symbol, Synapse>();
     let currentTerminal: symbol = $state(mainTerminalId);
