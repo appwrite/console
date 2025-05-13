@@ -14,6 +14,9 @@
         </Button.Anchor>
     </span>
 {/if}
-<Typography.Title truncate color="--fgcolor-neutral-primary" size={$isSmallViewport ? 'm' : 'l'}>
+<Typography.Title
+    truncate
+    color="--fgcolor-neutral-primary"
+    size={isStudio ? 's' : $isSmallViewport ? 'm' : 'l'}>
     <slot />
 </Typography.Title>
