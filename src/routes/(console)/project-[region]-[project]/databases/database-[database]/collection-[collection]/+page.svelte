@@ -54,6 +54,7 @@
         ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
             id,
             title: id,
+            show: true,
             type: id === '$id' ? 'string' : 'datetime'
         }))
     ]);
