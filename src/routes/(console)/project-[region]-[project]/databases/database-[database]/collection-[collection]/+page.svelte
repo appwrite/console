@@ -4,7 +4,7 @@
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
-    import type { ColumnType } from '$lib/helpers/types';
+    import type { Column, ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
@@ -16,7 +16,7 @@
     import Create from './createDocument.svelte';
     import { collection, columns } from './store';
     import Table from './table.svelte';
-    import { derived } from 'svelte/store';
+    import { derived, type Readable } from 'svelte/store';
 
     export let data: PageData;
 
@@ -49,16 +49,12 @@
 
     $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
 
-    const filterColumns = derived(columns, ($columns) => [
-        ...$columns,
+    const filterColumns: Readable<Column[]> = derived(columns, ($collectionColumns) => [
+        ...$collectionColumns,
         ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
             id,
             title: id,
-            type: 'string',
-            show: true,
-            array: false,
-            format: 'string',
-            elements: null
+            type: id === '$id' ? 'string' : 'datetime'
         }))
     ]);
 </script>
