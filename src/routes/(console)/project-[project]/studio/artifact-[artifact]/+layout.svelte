@@ -70,7 +70,7 @@
         .dispatch('synapse', {
             operation: 'updateWorkDir',
             params: {
-                workdir: `/artifact/${page.params.artifact}`
+                workDir: `/artifact/${page.params.artifact}`
             }
         })
         .then(() => {

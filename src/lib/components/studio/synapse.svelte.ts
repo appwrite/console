@@ -1,13 +1,11 @@
-import { browser } from '$app/environment';
 import { page } from '$app/state';
 import { SvelteURL } from 'svelte/reactivity';
-import { writable } from 'svelte/store';
 
 type WebSocketEvent = 'connect' | 'disconnect' | 'reconnect';
 type SynapseMessageType = 'terminal' | 'fs' | 'synapse';
 type SynapseMessageOperations = {
     operation: 'updateWorkDir';
-    params: { workdir: string };
+    params: { workDir: string };
 };
 type SynapseMessageOperationFileSystem =
     | {
