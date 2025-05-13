@@ -61,7 +61,7 @@
                 throw new Error(`${response.status} Error: ${await response.text()}`);
             }
 
-            parser.chunk(`\n\n${message}\n\n`);
+            parser.chunk(message, 'user');
             message = '';
 
             const reader = response.body.getReader();
@@ -69,12 +69,13 @@
 
             let chunk = await reader.read();
             while (!chunk.done) {
-                parser.chunk(decoder.decode(chunk.value));
+                parser.chunk(decoder.decode(chunk.value), 'system');
                 chunk = await reader.read();
             }
+            parser.end();
         } catch (error) {
             if (error instanceof Error) {
-                parser.chunk(error.message);
+                parser.chunk(error.message, 'error');
             }
             console.error(error);
         } finally {

@@ -96,22 +96,22 @@
                     {/if}
                 {/key}
             {:else}
-                <Markdown md={item.content} {plugins} />
+                {#snippet text()}
+                    <Markdown md={item.content} {plugins} />
+                {/snippet}
+                {#if item.from === 'user'}
+                    <div class="message">
+                        {@render text()}
+                    </div>
+                {:else if item.from === 'error'}
+                    <div class="message">
+                        {@render text()}
+                    </div>
+                {:else}
+                    {@render text()}
+                {/if}
             {/if}
         {/each}
-        {#if !streaming}
-            <!-- <Layout.Stack>
-                <Fieldset legend="Demo">
-                    <Layout.Stack>
-                        <Input.Number required label="chunk size" bind:value={chunkSize} />
-                        <Input.Number required label="delay (ms)" bind:value={delayMs} />
-                        <Button.Button on:click={() => exampleStream()}>demo stream</Button.Button>
-                        <Button.Button variant="secondary" on:click={() => parser.reset()}
-                            >reset</Button.Button>
-                    </Layout.Stack>
-                </Fieldset>
-            </Layout.Stack> -->
-        {/if}
         <div id="bottom"></div>
     </section>
 
@@ -146,6 +146,23 @@
     .actions {
         position: sticky;
         bottom: 1rem;
+    }
+    .message {
+        width: 90%;
+        float: right;
+        display: inline-flex;
+        padding: 0.5rem;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 0.25rem;
+        flex-shrink: 0;
+        margin-inline-start: auto;
+        border-radius: 0.5rem 0px 0.5rem 0.5rem;
+        background: var(--bgColor-neutral-default, #fafafb);
+        box-shadow:
+            0px 1.022px 4.089px 0px rgba(55, 59, 77, 0.1),
+            0px 1.022px 4.089px -1.022px rgba(55, 59, 77, 0.1);
     }
 
     :global(pre) {

@@ -23,7 +23,7 @@ describe('stream parser', () => {
 
     it('should parse text chunks correctly', () => {
         const text = 'Hello, world!';
-        parser.chunk(text);
+        parser.chunk(text, 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -38,7 +38,7 @@ describe('stream parser', () => {
 
     it('should parse file actions correctly', () => {
         const actionText = '<action type="file" src="test.js">console.log("test");</action>';
-        parser.chunk(actionText);
+        parser.chunk(actionText, 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -58,7 +58,7 @@ describe('stream parser', () => {
 
     it('should parse shell actions correctly', () => {
         const actionText = '<action type="shell">npm install</action>';
-        parser.chunk(actionText);
+        parser.chunk(actionText, 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -77,7 +77,7 @@ describe('stream parser', () => {
 
     it('should handle mixed content correctly', () => {
         const text = 'Text before <action type="shell">npm install</action> Text after';
-        parser.chunk(text);
+        parser.chunk(text, 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -98,13 +98,13 @@ describe('stream parser', () => {
     });
 
     it('should handle chunked input correctly', () => {
-        parser.chunk('Text before ');
-        parser.chunk('<action type="file" ');
-        parser.chunk('src="test.js">');
-        parser.chunk('console.log');
-        parser.chunk('("test");');
-        parser.chunk('</action>');
-        parser.chunk(' Text after');
+        parser.chunk('Text before ', 'system');
+        parser.chunk('<action type="file" ', 'system');
+        parser.chunk('src="test.js">', 'system');
+        parser.chunk('console.log', 'system');
+        parser.chunk('("test");', 'system');
+        parser.chunk('</action>', 'system');
+        parser.chunk(' Text after', 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -128,7 +128,7 @@ describe('stream parser', () => {
 
     it('should skip actions with invalid types', () => {
         const text = '<action type="invalid">Invalid content</action>';
-        parser.chunk(text);
+        parser.chunk(text, 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -141,7 +141,7 @@ describe('stream parser', () => {
 
     it('should trim newlines correctly from action content', () => {
         const text = '<action type="file" src="test.js">\nconsole.log("test");\n</action>';
-        parser.chunk(text);
+        parser.chunk(text, 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -156,9 +156,9 @@ describe('stream parser', () => {
     });
 
     it('should reset parser state correctly', () => {
-        parser.chunk('Text before <action type="shell">npm install</action>');
+        parser.chunk('Text before <action type="shell">npm install</action>', 'system');
         parser.reset();
-        parser.chunk('New text');
+        parser.chunk('New text', 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -193,7 +193,7 @@ const client = new Client();
 </action>
 `;
 
-        parser.chunk(complexExample);
+        parser.chunk(complexExample, 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -233,7 +233,7 @@ const client = new Client();
     it('should handle nested HTML correctly', () => {
         const text =
             '<action type="file" src="component.tsx">function Component() { return <div>Hello</div>; }</action>';
-        parser.chunk(text);
+        parser.chunk(text, 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -250,8 +250,8 @@ const client = new Client();
     });
 
     it('should handle partially closed action tags correctly', () => {
-        parser.chunk('<action type="file" src="test.js">console.log("test");</ac');
-        parser.chunk('tion>');
+        parser.chunk('<action type="file" src="test.js">console.log("test");</ac', 'system');
+        parser.chunk('tion>', 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -268,7 +268,8 @@ const client = new Client();
 
     it('should handle multiple adjacent actions without text between', () => {
         parser.chunk(
-            '<action type="file" src="file1.js">code1</action><action type="file" src="file2.js">code2</action>'
+            '<action type="file" src="file1.js">code1</action><action type="file" src="file2.js">code2</action>',
+            'system'
         );
         parser.end();
 
@@ -288,7 +289,7 @@ const client = new Client();
     });
 
     it('should handle empty action content correctly', () => {
-        parser.chunk('<action type="shell"></action>');
+        parser.chunk('<action type="shell"></action>', 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -304,7 +305,7 @@ const client = new Client();
     });
 
     it('should filter out empty text chunks', () => {
-        parser.chunk('  \n  <action type="shell">command</action>  \n  ');
+        parser.chunk('  \n  <action type="shell">command</action>  \n  ', 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -320,8 +321,8 @@ const client = new Client();
     });
 
     it('should handle malformed action tags gracefully', () => {
-        parser.chunk('<action type="file" src="test.js" unclosed');
-        parser.chunk('>content</action>');
+        parser.chunk('<action type="file" src="test.js" unclosed', 'system');
+        parser.chunk('>content</action>', 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -337,10 +338,10 @@ const client = new Client();
 
     it('should handle large content streaming properly', () => {
         const largeText = 'A'.repeat(1000);
-        parser.chunk('Text before ');
-        parser.chunk('<action type="file" src="large.txt">');
-        parser.chunk(largeText);
-        parser.chunk('</action>');
+        parser.chunk('Text before ', 'system');
+        parser.chunk('<action type="file" src="large.txt">', 'system');
+        parser.chunk(largeText, 'system');
+        parser.chunk('</action>', 'system');
         parser.end();
 
         let items: ParsedItem[] = [];
@@ -356,7 +357,7 @@ const client = new Client();
     });
 
     it('should handle end() call with incomplete action', () => {
-        parser.chunk('<action type="file" src="test.js">content');
+        parser.chunk('<action type="file" src="test.js">content', 'system');
         // No closing tag, but end() is called
         parser.end();
 
@@ -370,5 +371,120 @@ const client = new Client();
         expectAction(item);
         expect(item.content).toBe('content');
         expect(item.complete).toBe(true);
+    });
+
+    it('should mark TextChunks as complete when end() is called', () => {
+        parser.chunk('This is some text', 'system');
+        parser.end();
+
+        let items: ParsedItem[] = [];
+        parser.parsed.subscribe((value) => {
+            items = value;
+        })();
+
+        expect(items.length).toBe(1);
+        const [item] = items;
+        expectText(item);
+        expect(item.content).toBe('This is some text');
+        expect(item.complete).toBe(true);
+    });
+
+    it('should mark all TextChunks as complete when end() is called', () => {
+        parser.chunk('First text chunk', 'system');
+        parser.chunk('<action type="shell">command</action>', 'system');
+        parser.chunk('Second text chunk', 'system');
+        parser.end();
+
+        let items: ParsedItem[] = [];
+        parser.parsed.subscribe((value) => {
+            items = value;
+        })();
+
+        expect(items.length).toBe(3);
+        const [text1, action, text2] = items;
+        expectText(text1);
+        expectAction(action);
+        expectText(text2);
+        expect(text1.complete).toBe(true);
+        expect(action.complete).toBe(true);
+        expect(text2.complete).toBe(true);
+    });
+
+    it('should separate chunks from different sources', () => {
+        // Stream from system
+        parser.chunk('System message', 'system');
+        parser.end(); // Complete the system chunk
+
+        // Stream from user
+        parser.chunk('User message', 'user');
+        parser.end();
+
+        let items: ParsedItem[] = [];
+        parser.parsed.subscribe((value) => {
+            items = value;
+        })();
+
+        expect(items.length).toBe(2);
+        const [systemChunk, userChunk] = items;
+
+        expectText(systemChunk);
+        expectText(userChunk);
+
+        expect(systemChunk.from).toBe('system');
+        expect(systemChunk.content).toBe('System message');
+        expect(systemChunk.complete).toBe(true);
+
+        expect(userChunk.from).toBe('user');
+        expect(userChunk.content).toBe('User message');
+        expect(userChunk.complete).toBe(true);
+    });
+
+    it('should create separate chunks when end() is called even with same source', () => {
+        // First chunk
+        parser.chunk('First part', 'system');
+        parser.end();
+
+        // Second chunk with same source
+        parser.chunk('Second part', 'system');
+        parser.end();
+
+        let items: ParsedItem[] = [];
+        parser.parsed.subscribe((value) => {
+            items = value;
+        })();
+
+        expect(items.length).toBe(2);
+        const [chunk1, chunk2] = items;
+
+        expectText(chunk1);
+        expectText(chunk2);
+
+        expect(chunk1.from).toBe('system');
+        expect(chunk1.content).toBe('First part');
+        expect(chunk1.complete).toBe(true);
+
+        expect(chunk2.from).toBe('system');
+        expect(chunk2.content).toBe('Second part');
+        expect(chunk2.complete).toBe(true);
+    });
+
+    it('should append text to chunk until end() is called', () => {
+        // Stream in multiple parts to the same chunk
+        parser.chunk('First part ', 'system');
+        parser.chunk('Second part', 'system');
+        parser.end();
+
+        let items: ParsedItem[] = [];
+        parser.parsed.subscribe((value) => {
+            items = value;
+        })();
+
+        expect(items.length).toBe(1);
+        const [chunk] = items;
+
+        expectText(chunk);
+        expect(chunk.from).toBe('system');
+        expect(chunk.content).toBe('First part Second part');
+        expect(chunk.complete).toBe(true);
     });
 });

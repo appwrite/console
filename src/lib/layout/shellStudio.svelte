@@ -221,10 +221,13 @@
             convo.data.artifactId,
             convo.data.$id
         );
-        const text = messages.reduce((curr, next) => {
-            return curr + next.content;
-        }, '');
-        parser.init(text);
+        let t = 0;
+        for (const message of messages) {
+            parser.chunk(message.content, message.role === 'assistant' ? 'system' : 'user', {
+                silent: true
+            });
+            parser.end();
+        }
     });
 
     parser.on('complete', async (action) => {
