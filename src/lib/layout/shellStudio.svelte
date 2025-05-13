@@ -58,7 +58,9 @@
 
     $effect(() => {
         isOnEditorPage =
-            page.url.pathname.includes('studio') && page.url.pathname.includes('artifact');
+            page.url.pathname.includes('studio') &&
+            page.url.pathname.includes('artifact') &&
+            'artifact' in page.params;
     });
 
     function updateTheme(theme: 'light' | 'dark' | 'auto') {

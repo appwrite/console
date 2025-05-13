@@ -172,8 +172,7 @@
                 {#if !$showChat}
                     <Button.Button
                         variant="compact"
-                        color="--fgcolor-neutral-secondary"
-                        style="--p-button-padding-block:0"
+                        style="--p-button-padding-block:0; margin-inline-start: -2px; margin-inline-end: 4px; color:var(--fgcolor-neutral-tertiary)"
                         on:click={() => {
                             showChat.set(true);
                         }}><Icon icon={IconChatLayout} size="l"></Icon></Button.Button>
