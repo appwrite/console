@@ -62,20 +62,8 @@
         }
     } = createMenu();
 
-    const {
-        elements: {
-            trigger: triggerArtifacts,
-            menu: menuArtifacts,
-            item: itemArtifacts,
-            separator: separatorArtifacts
-        }
-    } = createMenu();
-
     export let organizations: Organization[] = [];
 
-    $: displayArtifacts = (
-        $page.url.pathname.includes('artifact') && isStudio ? $page.data.artifacts.artifacts : []
-    ) as Artifact[];
     $: selectedOrg = organizations.find((organization) => organization.isSelected);
     $: selectedProject = selectedOrg?.projects.find((project) => project.isSelected);
 

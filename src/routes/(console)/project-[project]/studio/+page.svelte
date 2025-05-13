@@ -8,15 +8,9 @@
     import { ID } from '@appwrite.io/console';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { createArtifact } from '$lib/helpers/artifact.js';
 
     const { data } = $props();
-
-    async function createArtifact() {
-        const artifact = await sdk.forProject.imagine.create(ID.unique());
-
-        await goto(`${base}/project-${page.params.project}/studio/artifact-${artifact.$id}`);
-        invalidate(Dependencies.ARTIFACTS);
-    }
 </script>
 
 <Layout.Stack>
