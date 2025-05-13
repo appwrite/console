@@ -275,27 +275,4 @@
             height: 20px;
         }
     }
-
-    .overlay {
-        background-color: rgba(0, 0, 0, 0.4);
-        width: 100vw;
-        height: 100vh;
-        position: fixed;
-        top: 0;
-        left: 0;
-        background-color: #56565c1a;
-        backdrop-filter: blur(5px);
-        transition:
-            backdrop-filter 0.5s ease-in-out,
-            background-color 0.35s ease-in-out;
-        z-index: 1;
-        margin-top: 0 !important;
-    }
-
-    .overlay-button {
-        margin-top: calc(-1 * var(--space-6));
-        @media (min-width: 768px) {
-            display: none;
-        }
-    }
 </style>
