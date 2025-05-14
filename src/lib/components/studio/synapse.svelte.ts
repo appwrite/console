@@ -158,7 +158,7 @@ export class Synapse {
                     clearTimeout(timeout);
                     this.ws.removeEventListener('message', callback);
                 };
-                // workaround for awaiting temrinal answers
+                // workaround for awaiting terminal answers
                 if (type === 'terminal') {
                     if (String(response.data).endsWith('# \u001b[6n')) {
                         finish();

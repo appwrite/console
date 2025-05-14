@@ -63,6 +63,7 @@
                             }
                         },
                         {
+                            noReturn: action.content.endsWith('run dev'),
                             timeout: 30_000
                         }
                     );
@@ -134,7 +135,7 @@
                         alignItems="center"
                         justifyContent="space-between">
                         <Typography.Text variant="m-500">Version 0</Typography.Text>
-                        {#if message.complete}
+                        {#if !message.complete}
                             <Spinner />
                         {/if}
                     </Layout.Stack>
@@ -175,6 +176,11 @@
                             </Layout.Stack>
                         {/if}
                     {/each}
+                    {#if !message.complete}
+                        <Typography.Code size="s">
+                            <ShimmerText>thinking...</ShimmerText>
+                        </Typography.Code>
+                    {/if}
                 </div>
             </Card.Base>
         {/if}

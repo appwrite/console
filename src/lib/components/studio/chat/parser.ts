@@ -161,10 +161,7 @@ export class StreamParser {
                         this.currentAction.complete = true;
                         this.triggerCallbacks('complete', this.currentAction);
 
-                        // Mark the actions container as complete if this was the last action in it
-                        if (this.currentActionsContainer) {
-                            this.currentActionsContainer.complete = true;
-                        }
+                        // Don't mark the actions container as complete yet - that happens only when all actions are complete
                         this.updateStore();
                     }
 
@@ -387,10 +384,7 @@ export class StreamParser {
                     this.currentAction.complete = true;
                     this.triggerCallbacks('complete', this.currentAction);
 
-                    // Mark the actions container as complete if this was the last action in it
-                    if (this.currentActionsContainer) {
-                        this.currentActionsContainer.complete = true;
-                    }
+                    // Don't automatically mark the actions container as complete
                 } else {
                     this.addToTextChunk(this.buffer);
                 }
@@ -432,6 +426,21 @@ export class StreamParser {
 
         // Clear current text chunk reference to ensure a new one is created on next chunk() call
         this.currentTextChunk = null;
+
+        // Mark any remaining action containers as complete if all their actions are complete
+        for (const item of this.items) {
+            if ('type' in item && item.type === 'actions') {
+                const container = item as ActionsContainer;
+                if (!container.complete) {
+                    // Check if all actions in this container are complete
+                    const allActionsComplete = container.actions.every((action) => action.complete);
+                    if (allActionsComplete) {
+                        container.complete = true;
+                    }
+                }
+            }
+        }
+        this.updateStore();
     }
 }
 

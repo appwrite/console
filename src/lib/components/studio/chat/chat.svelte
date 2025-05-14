@@ -29,7 +29,7 @@
 
     const onkeydown: EventHandler<KeyboardEvent, HTMLTextAreaElement> = (event) => {
         if (event.key === 'Enter') {
-            if (!event.metaKey && !event.ctrlKey) return;
+            if (event.shiftKey) return;
             event.preventDefault();
             createMessage();
         }
