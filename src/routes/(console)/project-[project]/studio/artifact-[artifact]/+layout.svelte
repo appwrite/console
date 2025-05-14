@@ -155,7 +155,9 @@
         mappedArtifacts.push({
             name: 'Create artifact',
             isActive: false,
-            onClick: createArtifact,
+            onClick: () => {
+                createArtifact();
+            },
             icon: IconPlus
         });
         return mappedArtifacts;

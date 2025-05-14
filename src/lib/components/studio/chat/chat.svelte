@@ -25,6 +25,8 @@
     let message = $state('');
     let sending = $state(false);
 
+    let chatTextareaRef: HTMLTextAreaElement | null = $state(null);
+
     const onkeydown: EventHandler<KeyboardEvent, HTMLTextAreaElement> = (event) => {
         if (event.key === 'Enter') {
             if (!event.metaKey && !event.ctrlKey) return;
@@ -36,6 +38,13 @@
         event.preventDefault();
         createMessage();
     };
+
+    $effect(() => {
+        void page.url.pathname;
+        if (chatTextareaRef) {
+            chatTextareaRef.focus();
+        }
+    });
 
     async function createMessage() {
         try {
@@ -128,6 +137,7 @@
                 <textarea
                     {onkeydown}
                     disabled={sending}
+                    bind:this={chatTextareaRef}
                     bind:value={message}
                     name="conversation"
                     placeholder="Chat with Imagine..."

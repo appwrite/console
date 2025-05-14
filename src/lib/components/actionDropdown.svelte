@@ -16,7 +16,9 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { page } from '$app/stores';
     import type { Artifact } from '$lib/sdk/imagine';
+    import { previewFrameRef } from '$routes/(console)/project-[project]/store';
     import type { SubMenu } from '$lib/components/bottom-sheet';
+    import type { ComponentType } from 'svelte';
 
     type Item = {
         name: string;
@@ -29,7 +31,7 @@
     const {
         elements: { menubar },
         builders: { createMenu }
-    } = createMenubar({ closeOnItemClick: true });
+    } = createMenubar();
 
     const {
         elements: { trigger: triggerItems, menu: menuItems }
@@ -62,6 +64,26 @@
             bottomSheetOpen = false;
         }
     }
+
+    function disablePointerEvents() {
+        if ($previewFrameRef) {
+            $previewFrameRef.style.pointerEvents = 'none';
+        }
+    }
+
+    let pointerEventsSet = false;
+
+    $effect(() => {
+        if ($previewFrameRef) {
+            if ($triggerItems['data-state'] === 'open' && !pointerEventsSet) {
+                $previewFrameRef.style.pointerEvents = 'none';
+                pointerEventsSet = true;
+            } else if ($triggerItems['data-state'] === 'closed' && pointerEventsSet) {
+                pointerEventsSet = false;
+                $previewFrameRef.style.pointerEvents = '';
+            }
+        }
+    });
 </script>
 
 <svelte:window on:resize={onResize} />
@@ -94,14 +116,16 @@
     <div class="menu" use:melt={$menuItems}>
         <Card.Base padding="xxxs" shadow={true}>
             {#each items as item}
-                <ActionMenu.Root>
-                    {#if item.href}
-                        <ActionMenu.Item.Anchor href={item.href}
-                            >{item.name}</ActionMenu.Item.Anchor>
-                    {:else if item.onClick}
-                        <ActionMenu.Item.Button on:click={item.onClick} leadingIcon={item.icon}
-                            >{item.name}</ActionMenu.Item.Button>
-                    {/if}</ActionMenu.Root>
+                <div use:melt={$triggerItems}>
+                    <ActionMenu.Root>
+                        {#if item.href}
+                            <ActionMenu.Item.Anchor href={item.href}
+                                >{item.name}</ActionMenu.Item.Anchor>
+                        {:else if item.onClick}
+                            <ActionMenu.Item.Button on:click={item.onClick} leadingIcon={item.icon}
+                                >{item.name}</ActionMenu.Item.Button>
+                        {/if}</ActionMenu.Root>
+                </div>
             {/each}
         </Card.Base>
     </div>
