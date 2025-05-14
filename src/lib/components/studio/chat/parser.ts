@@ -26,6 +26,8 @@ export function isActionType(type: string): type is ActionType {
     return ['file', 'shell'].includes(type);
 }
 
+type ParserEvents = 'complete' | 'chunk';
+
 export type ParsedItem = Action | TextChunk | ActionsContainer;
 
 export class StreamParser {
@@ -41,8 +43,9 @@ export class StreamParser {
     private skipCurrentAction = false;
     private pendingText = '';
     private callbacksEnabled = true;
-    private callbacks: Record<'complete', Array<(action: Action) => void | Promise<void>>> = {
-        complete: []
+    private callbacks: Record<ParserEvents, Array<(action: Action) => void | Promise<void>>> = {
+        complete: [],
+        chunk: []
     };
     /**
      * The store of parsed items that can be subscribed to for reactivity
@@ -58,10 +61,10 @@ export class StreamParser {
 
     /**
      * Register a callback to be called when an action is completed
-     * @param event The event to listen for ('complete')
+     * @param event The event to listen for
      * @param callback Function to call when an action is completed
      */
-    public on(event: 'complete', callback: (action: Action) => void | Promise<void>): void {
+    public on(event: ParserEvents, callback: (action: Action) => void | Promise<void>): void {
         this.callbacks[event].push(callback);
     }
 

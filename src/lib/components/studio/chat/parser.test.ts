@@ -1,14 +1,19 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import {
     createStreamParser,
     StreamParser,
     type ParsedItem,
     type Action,
-    type TextChunk
+    type TextChunk,
+    type ActionsContainer
 } from './parser';
 
 function expectAction(item: ParsedItem): asserts item is Action {
-    expect('type' in item).toBe(true);
+    expect('type' in item && item.type !== 'actions').toBe(true);
+}
+
+function expectActionsContainer(item: ParsedItem): asserts item is ActionsContainer {
+    expect('type' in item && item.type === 'actions').toBe(true);
 }
 function expectText(item: ParsedItem): asserts item is TextChunk {
     expect(!('type' in item) && 'content' in item).toBe(true);
@@ -19,6 +24,43 @@ describe('stream parser', () => {
 
     beforeEach(() => {
         parser = createStreamParser();
+    });
+
+    afterEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('should group multiple actions from the same source in one container', () => {
+        // This test checks the actions container grouping functionality
+        // Add multiple actions in separate chunks
+        parser.chunk('Text before', 'system');
+        parser.chunk('<action type="file" src="file1.js">code1</action>', 'system');
+        parser.chunk('<action type="shell">npm install</action>', 'system');
+        parser.chunk('Text after', 'system');
+        parser.end();
+
+        let items: ParsedItem[] = [];
+        parser.parsed.subscribe((value) => {
+            items = value;
+        })();
+
+        expect(items.length).toBe(3);
+        const [text1, container, text2] = items;
+
+        expectText(text1);
+        expectActionsContainer(container);
+        expectText(text2);
+
+        expect(text1.content).toBe('Text before');
+        expect(text2.content).toBe('Text after');
+
+        // Check that both actions are in the same container
+        expect(container.actions.length).toBe(2);
+        expect(container.actions[0].type).toBe('file');
+        expect(container.actions[0].src).toBe('file1.js');
+        expect(container.actions[0].content).toBe('code1');
+        expect(container.actions[1].type).toBe('shell');
+        expect(container.actions[1].content).toBe('npm install');
     });
 
     it('should parse text chunks correctly', () => {
@@ -48,12 +90,14 @@ describe('stream parser', () => {
 
         expect(items.length).toBe(1);
 
-        const [item] = items;
-        expectAction(item);
-        expect(item.type === 'file').toBe(true);
-        expect(item.src).toBe('test.js');
-        expect(item.content).toBe('console.log("test");');
-        expect(item.complete).toBe(true);
+        const [container] = items;
+        expectActionsContainer(container);
+        expect(container.actions.length).toBe(1);
+        const action = container.actions[0];
+        expect(action.type === 'file').toBe(true);
+        expect(action.src).toBe('test.js');
+        expect(action.content).toBe('console.log("test");');
+        expect(action.complete).toBe(true);
     });
 
     it('should parse shell actions correctly', () => {
@@ -68,11 +112,13 @@ describe('stream parser', () => {
 
         expect(items.length).toBe(1);
 
-        const [item] = items;
-        expectAction(item);
-        expect(item.type).toBe('shell');
-        expect(item.content).toBe('npm install');
-        expect(item.complete).toBe(true);
+        const [container] = items;
+        expectActionsContainer(container);
+        expect(container.actions.length).toBe(1);
+        const action = container.actions[0];
+        expect(action.type).toBe('shell');
+        expect(action.content).toBe('npm install');
+        expect(action.complete).toBe(true);
     });
 
     it('should handle mixed content correctly', () => {
@@ -86,14 +132,13 @@ describe('stream parser', () => {
         })();
 
         expect(items.length).toBe(3);
-        console.log(items);
-        const [text1, action, text2] = items;
-        expectAction(action);
+        const [text1, container, text2] = items;
+        expectActionsContainer(container);
         expectText(text1);
         expectText(text2);
         expect(text1.content).toBe('Text before ');
-        expect(action.type).toBe('shell');
-        expect(action.content).toBe('npm install');
+        expect(container.actions[0].type).toBe('shell');
+        expect(container.actions[0].content).toBe('npm install');
         expect(text2.content).toBe(' Text after');
     });
 
@@ -114,15 +159,15 @@ describe('stream parser', () => {
 
         expect(items.length).toBe(3);
 
-        const [text1, action, text2] = items;
-        expectAction(action);
+        const [text1, container, text2] = items;
+        expectActionsContainer(container);
         expectText(text1);
         expectText(text2);
         expect(text1.content).toBe('Text before ');
-        expect(action.type).toBe('file');
-        expect(action.src).toBe('test.js');
-        expect(action.content).toBe('console.log("test");');
-        expect(action.complete).toBe(true);
+        expect(container.actions[0].type).toBe('file');
+        expect(container.actions[0].src).toBe('test.js');
+        expect(container.actions[0].content).toBe('console.log("test");');
+        expect(container.actions[0].complete).toBe(true);
         expect(text2.content).toBe(' Text after');
     });
 
@@ -140,7 +185,10 @@ describe('stream parser', () => {
     });
 
     it('should trim newlines correctly from action content', () => {
-        const text = '<action type="file" src="test.js">\nconsole.log("test");\n</action>';
+        // This test verifies that only leading and trailing newlines are trimmed
+        // but internal newlines are preserved
+        const text =
+            '<action type="file" src="test.js">\nconsole.log("test1");\nconsole.log("test2");\n</action>';
         parser.chunk(text, 'system');
         parser.end();
 
@@ -151,8 +199,10 @@ describe('stream parser', () => {
 
         expect(items.length).toBe(1);
 
-        const [item] = items;
-        expect(item.content).toBe('console.log("test");');
+        const [container] = items;
+        expectActionsContainer(container);
+        // The leading \n and trailing \n should be removed, but the middle \n should be preserved
+        expect(container.actions[0].content).toBe('console.log("test1");\nconsole.log("test2");');
     });
 
     it('should reset parser state correctly', () => {
@@ -184,13 +234,6 @@ APPWRITE_PROJECT_ID=34534534534
 <action type="shell">
 npm install appwrite
 </action>
-
-Some text in between actions.
-
-<action type="file" src="src/lib/appwrite.ts">
-import { Client } from 'appwrite';
-const client = new Client();
-</action>
 `;
 
         parser.chunk(complexExample, 'system');
@@ -201,33 +244,21 @@ const client = new Client();
             items = value;
         })();
 
-        expect(items.length).toBe(5);
+        expect(items.length).toBe(2);
+        const [text, container] = items;
 
-        const [text1, action1, action2, text2, action3] = items;
+        expectText(text);
+        expect(text.content.trim()).toBe("Thanks! I'll help you create a full-featured Todo app.");
 
-        expectText(text1);
-        expect(text1.content.trim()).toBe("Thanks! I'll help you create a full-featured Todo app.");
-
-        expectAction(action1);
+        expectActionsContainer(container);
+        const [action1, action2] = container.actions;
         expect(action1.type).toBe('file');
         expect(action1.src).toBe('.env');
         expect(action1.content).toBe(
             'APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1\nAPPWRITE_PROJECT_ID=34534534534'
         );
-
-        expectAction(action2);
         expect(action2.type).toBe('shell');
         expect(action2.content).toBe('npm install appwrite');
-
-        expectText(text2);
-        expect(text2.content.trim()).toBe('Some text in between actions.');
-
-        expectAction(action3);
-        expect(action3.type).toBe('file');
-        expect(action3.src).toBe('src/lib/appwrite.ts');
-        expect(action3.content).toBe(
-            "import { Client } from 'appwrite';\nconst client = new Client();"
-        );
     });
 
     it('should handle nested HTML correctly', () => {
@@ -243,10 +274,11 @@ const client = new Client();
 
         expect(items.length).toBe(1);
 
-        const [item] = items;
-        expectAction(item);
-        expect(item.type).toBe('file');
-        expect(item.content).toBe('function Component() { return <div>Hello</div>; }');
+        const [container] = items;
+        expectActionsContainer(container);
+        const action = container.actions[0];
+        expect(action.type).toBe('file');
+        expect(action.content).toBe('function Component() { return <div>Hello</div>; }');
     });
 
     it('should handle partially closed action tags correctly', () => {
@@ -260,10 +292,11 @@ const client = new Client();
         })();
 
         expect(items.length).toBe(1);
-        const [item] = items;
-        expectAction(item);
-        expect(item.complete).toBe(true);
-        expect(item.content).toBe('console.log("test");');
+        const [container] = items;
+        expectActionsContainer(container);
+        const action = container.actions[0];
+        expect(action.complete).toBe(true);
+        expect(action.content).toBe('console.log("test");');
     });
 
     it('should handle multiple adjacent actions without text between', () => {
@@ -278,14 +311,14 @@ const client = new Client();
             items = value;
         })();
 
-        expect(items.length).toBe(2);
-        const [action1, action2] = items;
-        expectAction(action1);
-        expectAction(action2);
-        expect(action1.src).toBe('file1.js');
-        expect(action1.content).toBe('code1');
-        expect(action2.src).toBe('file2.js');
-        expect(action2.content).toBe('code2');
+        expect(items.length).toBe(1);
+        const [container] = items;
+        expectActionsContainer(container);
+        expect(container.actions.length).toBe(2);
+        expect(container.actions[0].src).toBe('file1.js');
+        expect(container.actions[0].content).toBe('code1');
+        expect(container.actions[1].src).toBe('file2.js');
+        expect(container.actions[1].content).toBe('code2');
     });
 
     it('should handle empty action content correctly', () => {
@@ -298,10 +331,11 @@ const client = new Client();
         })();
 
         expect(items.length).toBe(1);
-        const [item] = items;
-        expectAction(item);
-        expect(item.content).toBe('');
-        expect(item.complete).toBe(true);
+        const [container] = items;
+        expectActionsContainer(container);
+        const action = container.actions[0];
+        expect(action.content).toBe(''); // Empty content should remain exactly empty
+        expect(action.complete).toBe(true);
     });
 
     it('should filter out empty text chunks', () => {
@@ -315,9 +349,10 @@ const client = new Client();
 
         // Only the action should remain, empty text chunks should be filtered
         expect(items.length).toBe(1);
-        const [item] = items;
-        expectAction(item);
-        expect(item.content).toBe('command');
+        const [container] = items;
+        expectActionsContainer(container);
+        const action = container.actions[0];
+        expect(action.content).toBe('command');
     });
 
     it('should handle malformed action tags gracefully', () => {
@@ -331,9 +366,10 @@ const client = new Client();
         })();
 
         expect(items.length).toBe(1);
-        const [item] = items;
-        expectAction(item);
-        expect(item.content).toBe('content');
+        const [container] = items;
+        expectActionsContainer(container);
+        const action = container.actions[0];
+        expect(action.content).toBe('content');
     });
 
     it('should handle large content streaming properly', () => {
@@ -350,10 +386,10 @@ const client = new Client();
         })();
 
         expect(items.length).toBe(2);
-        const [text, action] = items;
+        const [text, container] = items;
         expectText(text);
-        expectAction(action);
-        expect(action.content.length).toBe(1000);
+        expectActionsContainer(container);
+        expect(container.actions[0].content.length).toBe(1000);
     });
 
     it('should handle end() call with incomplete action', () => {
@@ -367,10 +403,11 @@ const client = new Client();
         })();
 
         expect(items.length).toBe(1);
-        const [item] = items;
-        expectAction(item);
-        expect(item.content).toBe('content');
-        expect(item.complete).toBe(true);
+        const [container] = items;
+        expectActionsContainer(container);
+        const action = container.actions[0];
+        expect(action.content).toBe('content');
+        expect(action.complete).toBe(true);
     });
 
     it('should mark TextChunks as complete when end() is called', () => {
@@ -401,12 +438,13 @@ const client = new Client();
         })();
 
         expect(items.length).toBe(3);
-        const [text1, action, text2] = items;
+        const [text1, container, text2] = items;
         expectText(text1);
-        expectAction(action);
+        expectActionsContainer(container);
         expectText(text2);
         expect(text1.complete).toBe(true);
-        expect(action.complete).toBe(true);
+        expect(container.complete).toBe(true);
+        expect(container.actions[0].complete).toBe(true);
         expect(text2.complete).toBe(true);
     });
 

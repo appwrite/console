@@ -41,10 +41,22 @@ class Queue<T> {
         return item;
     }
 
-    public update(list: keyof Lists<T>, id: symbol, status: Item<T>['status']): void {
+    public update(
+        list: keyof Lists<T>,
+        id: symbol,
+        value?: {
+            status?: Item<T>['status'];
+            data?: T;
+        }
+    ): void {
         const item = this.lists[list].find((item) => item.id === id);
-        if (item) {
-            item.status = status;
+        if (!item) return;
+
+        if (value.status) {
+            item.status = value.status;
+        }
+        if (value.data) {
+            item.data = value.data;
         }
     }
 }

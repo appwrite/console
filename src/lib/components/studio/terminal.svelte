@@ -33,20 +33,32 @@
                     domEvent.stopPropagation();
                     return;
                 }
-                synapse.dispatch('terminal', {
-                    operation: 'createCommand',
-                    params: {
-                        command: key
+                synapse.dispatch(
+                    'terminal',
+                    {
+                        operation: 'createCommand',
+                        params: {
+                            command: key
+                        }
+                    },
+                    {
+                        noReturn: true
                     }
-                });
+                );
             });
             term.textarea.addEventListener('paste', (e) => {
-                synapse.dispatch('terminal', {
-                    operation: 'createCommand',
-                    params: {
-                        command: e.clipboardData.getData('text/plain')
+                synapse.dispatch(
+                    'terminal',
+                    {
+                        operation: 'createCommand',
+                        params: {
+                            command: e.clipboardData.getData('text/plain')
+                        }
+                    },
+                    {
+                        noReturn: true
                     }
-                });
+                );
             });
             synapse.addEventListener('terminal', ({ message }) => {
                 const { data } = message;
@@ -57,13 +69,19 @@
                 if (term.cols === cols && term.rows === rows) return;
                 if (!Number.isInteger(cols) || !Number.isInteger(rows)) return;
                 term.resize(cols - 1, rows - 1);
-                synapse.dispatch('terminal', {
-                    operation: 'updateSize',
-                    params: {
-                        rows: rows - 0.5,
-                        cols: cols - 0.5
+                synapse.dispatch(
+                    'terminal',
+                    {
+                        operation: 'updateSize',
+                        params: {
+                            rows: rows - 0.5,
+                            cols: cols - 0.5
+                        }
+                    },
+                    {
+                        noReturn: true
                     }
-                });
+                );
             }, 50);
 
             const observer = new ResizeObserver(resizer);

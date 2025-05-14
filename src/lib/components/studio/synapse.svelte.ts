@@ -129,6 +129,7 @@ export class Synapse {
         }[T],
         options?: {
             timeout?: number;
+            noReturn?: boolean;
         }
     ): Promise<BaseMessage> {
         const requestId = String(Date.now().toString() + ++this.requestCounter);
@@ -140,8 +141,14 @@ export class Synapse {
             requestId
         };
         const response = new Promise<BaseMessage>((resolve, reject) => {
+            const noReturn = options?.noReturn === true;
             const timeout = setTimeout(() => {
-                reject(new Error('Request timed out'));
+                if (noReturn) return;
+                reject(
+                    new Error('Request timed out', {
+                        cause: message.operation
+                    })
+                );
             }, options?.timeout ?? 5000);
             const callback = (message: MessageEvent<string>) => {
                 const response = JSON.parse(message.data);
@@ -161,7 +168,8 @@ export class Synapse {
                     finish();
                 }
             };
-            this.ws.addEventListener('message', callback);
+            if (!noReturn) this.ws.addEventListener('message', callback);
+            else resolve(null);
         });
         this.ws.send(JSON.stringify(message));
 

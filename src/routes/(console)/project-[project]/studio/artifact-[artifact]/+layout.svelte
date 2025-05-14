@@ -58,12 +58,18 @@
     const terminals = new SvelteMap<symbol, Synapse>();
     let currentTerminal: symbol = $state(mainTerminalId);
     synapse
-        .dispatch('synapse', {
-            operation: 'updateWorkDir',
-            params: {
-                workDir: `/artifact/${page.params.artifact}`
+        .dispatch(
+            'synapse',
+            {
+                operation: 'updateWorkDir',
+                params: {
+                    workDir: `/artifact/${page.params.artifact}`
+                }
+            },
+            {
+                noReturn: true
             }
-        })
+        )
         .then(() => {
             return synapse.dispatch('fs', {
                 operation: 'getFolder',
