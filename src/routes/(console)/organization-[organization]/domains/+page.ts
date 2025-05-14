@@ -4,7 +4,7 @@ import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpe
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { queries, queryParamToMap } from '$lib/components/filters';
 
-export const load = async ({ depends, url, route }) => {
+export const load = async ({ depends, url, route, params }) => {
     depends(Dependencies.DOMAINS);
     const page = getPage(url);
     const limit = getLimit(url, route, PAGE_LIMIT);

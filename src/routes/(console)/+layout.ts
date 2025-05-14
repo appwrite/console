@@ -53,6 +53,11 @@ export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
         projects = orgProjects.projects.length > 0 ? orgProjects.projects : [];
     }
 
+    // set `default` if no region!
+    for (const project of projects) {
+        project.region ??= 'default';
+    }
+
     return {
         consoleVariables: variables,
         version: data?.version ?? null,

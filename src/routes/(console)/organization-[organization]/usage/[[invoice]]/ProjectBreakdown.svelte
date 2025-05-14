@@ -37,7 +37,12 @@
     }
 
     function getProjectUsageLink(projectId: string): string {
-        return `${base}/project-${projectId}/settings/usage`;
+        const region = data.projects[projectId]?.region ?? 'fra';
+        return `${base}/project-${region}-${projectId}/settings/usage`;
+    }
+
+    function getProjectName(projectId: string): string {
+        return data.projects[projectId]?.name ?? 'Unknown';
     }
 
     function groupByProject(
@@ -53,12 +58,14 @@
     }> {
         const data = [];
         for (const project of projects) {
+            const projectId = project.projectId;
+
             if (metric) {
                 const usage = project[metric];
                 if (!usage) continue;
 
                 data.push({
-                    projectId: project.projectId,
+                    projectId,
                     usage: usage ?? 0,
                     estimate: estimate ? project[estimate] : undefined
                 });
@@ -68,7 +75,7 @@
 
                 if (reads || writes) {
                     data.push({
-                        projectId: project.projectId,
+                        projectId,
                         databasesReads: reads,
                         databasesWrites: writes
                     });

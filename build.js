@@ -24,6 +24,7 @@ async function main() {
     log(bold().magenta('APPWRITE CONSOLE'));
     log();
     logEnv('CONSOLE MODE', env?.PUBLIC_CONSOLE_MODE);
+    logEnv('MULTI REGION', env?.PUBLIC_APPWRITE_MULTI_REGION);
     logEnv('APPWRITE ENDPOINT', env?.PUBLIC_APPWRITE_ENDPOINT, 'relative');
     logEnv('GROWTH ENDPOINT', env?.PUBLIC_GROWTH_ENDPOINT);
     log();

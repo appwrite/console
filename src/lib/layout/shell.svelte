@@ -2,7 +2,6 @@
     import { beforeNavigate } from '$app/navigation';
     import { Navbar, Sidebar } from '$lib/components';
     import type { NavbarProject } from '$lib/components/navbar.svelte';
-    import { page } from '$app/stores';
     import { wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
     import { setContext } from 'svelte';
@@ -18,6 +17,7 @@
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen } from '$lib/stores/sidebar';
     import { BillingPlan } from '$lib/constants';
+    import { page } from '$app/stores';
 
     export let showSideNavigation = false;
     export let showHeader = true;

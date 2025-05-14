@@ -39,6 +39,7 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=cloud"
+                      "PUBLIC_APPWRITE_MULTI_REGION=true"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY }}"
                       "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
@@ -77,6 +78,7 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=cloud"
+                      "PUBLIC_APPWRITE_MULTI_REGION=true"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY_STAGE }}"
     publish-self-hosted:
@@ -113,4 +115,5 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=self-hosted"
+                      "PUBLIC_APPWRITE_MULTI_REGION=false"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"

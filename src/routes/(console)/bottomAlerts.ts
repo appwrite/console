@@ -1,32 +1,46 @@
-import { base } from '$app/paths';
-import BackupsDark from '$lib/images/backups/promo/backups-dark.png';
-import BackupsLight from '$lib/images/backups/promo/backups-light.png';
+import Init3Promo from '$lib/images/promo-init3.png';
 
-import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
+import {
+    type BottomModalAlertItem,
+    setMobileSingleAlertLayout,
+    showBottomModalAlert
+} from '$lib/stores/bottom-alerts';
 import { isCloud } from '$lib/system';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
+    const title = 'Join Init 19-23 May';
+    const message =
+        'This release will change the way you build with Appwrite forever. Register for Init and join the giveaway.';
+
+    const callToAction = {
+        external: true,
+        hideOnClick: true,
+        text: 'Claim your ticket',
+        link: () => 'https://apwr.dev/clcon'
+    };
+
     listOfPromotions.push({
-        id: 'modal:databaseBackups',
+        id: 'modal:init3',
         src: {
-            dark: BackupsDark,
-            light: BackupsLight
+            dark: Init3Promo,
+            light: Init3Promo
         },
-        title: 'Database Backups are available now',
-        message: 'Protect your data and ensure quick recovery with our new backups',
-        plan: 'pro',
-        scope: 'project',
+        title,
+        message,
+        plan: 'free',
         importance: 8,
-        cta: {
-            text: 'Try now',
-            link: ({ project }) => `${base}/project-${project.$id}/databases`
-        },
-        learnMore: {
-            text: 'Learn more',
-            link: () => 'https://appwrite.io/docs/products/databases/backups'
-        }
+        scope: 'everywhere',
+        cta: callToAction
+    });
+
+    // there's only one item.
+    setMobileSingleAlertLayout({
+        title,
+        message,
+        enabled: true,
+        cta: callToAction
     });
 }
 

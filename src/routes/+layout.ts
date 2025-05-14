@@ -33,8 +33,10 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
             : await sdk.forConsole.billing.listOrganization();
 
         return {
-            account,
-            organizations
+            account: account,
+            organizations: !isCloud
+                ? await sdk.forConsole.teams.list()
+                : await sdk.forConsole.billing.listOrganization()
         };
     }
 

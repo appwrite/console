@@ -12,6 +12,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import RepositoryBehaviour from '$lib/components/git/repositoryBehaviour.svelte';
+    import { page } from '$app/state';
 
     let {
         show = $bindable(false),
@@ -38,7 +39,9 @@
     let error = $state('');
 
     onMount(async () => {
-        installations = await sdk.forProject.vcs.listInstallations();
+        installations = await sdk
+            .forProject(page.params.region, page.params.project)
+            .vcs.listInstallations();
         if (!$installation?.$id && installations?.total) {
             $installation = installations.installations[0];
         }
@@ -51,11 +54,9 @@
     async function connectRepo() {
         try {
             if (repositoryBehaviour === 'new') {
-                const repo = await sdk.forProject.vcs.createRepository(
-                    $installation.$id,
-                    repositoryName,
-                    repositoryPrivate
-                );
+                const repo = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.createRepository($installation.$id, repositoryName, repositoryPrivate);
                 repository.set(repo);
                 selectedRepository = repo.id;
             }
