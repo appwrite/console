@@ -235,15 +235,17 @@
                     <ChatWrapper />
                 {/if}
 
-                <Card.Base padding="xxs" radius={$isSmallViewport ? 'none' : 'm'}>
-                    <Layout.Stack>
-                        {#if page.data?.subNavigation}
-                            {@const Component = page.data.subNavigation}
-                            <Component />
-                        {/if}
-                        {@render children()}
-                    </Layout.Stack>
-                </Card.Base>
+                <div class="card-wrapper">
+                    <Card.Base padding="xxs" radius={$isSmallViewport ? 'none' : 'm'}>
+                        <Layout.Stack>
+                            {#if page.data?.subNavigation}
+                                {@const Component = page.data.subNavigation}
+                                <Component />
+                            {/if}
+                            {@render children()}
+                        </Layout.Stack>
+                    </Card.Base>
+                </div>
             {:else}
                 <div class="studio-wrapper">
                     <Card.Base padding={isOnEditorPage ? 'xxs' : 's'}>
@@ -478,5 +480,9 @@
         flex-grow: 1;
         padding-inline: var(--space-4);
         width: 0;
+    }
+
+    :global(.card-wrapper > div) {
+        padding-bottom: 0 !important;
     }
 </style>
