@@ -2,14 +2,13 @@
     import { Card, Layout, Button } from '@appwrite.io/pink-svelte';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
-    import { ID, Region, type Models } from '@appwrite.io/console';
+    import { ID, Region } from '@appwrite.io/console';
     import Loading from './loading.svelte';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
-    import { tierToPlan } from '$lib/stores/billing';
     import CreateProject from '$lib/layout/createProject.svelte';
 
     let isLoading = false;
@@ -17,39 +16,13 @@
     let startAnimation = false;
     let projectName = 'Appwrite project';
     let region = Region.Fra;
-    export let data: { regions: Models.ConsoleRegionList | null };
+    export let data;
 
     async function createProject() {
         isLoading = true;
 
-        let org;
-        try {
-            org = isCloud
-                ? await sdk.forConsole.billing.createOrganization(
-                      ID.unique(),
-                      'Personal projects',
-                      BillingPlan.FREE,
-                      null,
-                      null
-                  )
-                : await sdk.forConsole.teams.create(ID.unique(), 'Personal projects');
-        } catch (e) {
-            isLoading = false;
-            trackError(e, Submit.OrganizationCreate);
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
-        }
-
-        trackEvent(Submit.OrganizationCreate, {
-            plan: tierToPlan(BillingPlan.FREE)?.name,
-            budget_cap_enabled: false,
-            members_invited: 0
-        });
-
-        if (org) {
-            const teamId = org.$id;
+        if (data.organization) {
+            const teamId = data.organization.$id;
             try {
                 const project = await sdk.forConsole.projects.create(
                     id ?? ID.unique(),
