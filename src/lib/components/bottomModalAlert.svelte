@@ -373,7 +373,7 @@
             </div>
         {:else}
             {@const mobileConfig = getMobileWindowConfig()}
-            <button
+            <div
                 class:showing={!openModalOnMobile}
                 class="card notification-card u-width-full-line"
                 on:click={() => {
@@ -387,8 +387,8 @@
                 <div class="u-flex-vertical u-gap-4">
                     <div class="u-flex u-cross-center u-main-space-between">
                         <h3 class="body-text-2 u-bold">{mobileConfig.title}</h3>
-                        <button on:click={hideAllModalAlerts}>
-                            <span class="icon-x" />
+                        <button on:click={hideAllModalAlerts} aria-label="Close">
+                            <span class="icon-x"></span>
                         </button>
                     </div>
 
@@ -400,7 +400,7 @@
                         {/if}
                     </span>
                 </div>
-            </button>
+            </div>
         {/if}
     </div>
 {/if}

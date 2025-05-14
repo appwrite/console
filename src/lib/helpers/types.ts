@@ -59,7 +59,7 @@ export type TableRootProp = {
     selectedAll: boolean;
     selectedNone: boolean;
     selectedSome: boolean;
-    columns: Record<Column['id'], Column>;
+    columns: Record<PinkColumn['id'], PinkColumn>;
     toggle: (id: string) => void;
     toggleAll: () => void;
     addAvailableId: (id: string) => void;

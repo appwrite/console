@@ -48,7 +48,7 @@
         {value}
         {step}
         helper={error}
-        on:change={(event) => (value = event.target.value)}
+        on:change={(event) => (value = (event.target as HTMLInputElement).value)}
         autocomplete={autocomplete ? 'on' : 'off'}>
         {#if nullable}
             <Selector.Checkbox
