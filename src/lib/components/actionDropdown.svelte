@@ -29,7 +29,7 @@
     const {
         elements: { menubar },
         builders: { createMenu }
-    } = createMenubar({ closeOnItemClick: true });
+    } = createMenubar();
 
     const {
         elements: { trigger: triggerItems, menu: menuItems }
@@ -94,14 +94,16 @@
     <div class="menu" use:melt={$menuItems}>
         <Card.Base padding="xxxs" shadow={true}>
             {#each items as item}
-                <ActionMenu.Root>
-                    {#if item.href}
-                        <ActionMenu.Item.Anchor href={item.href}
-                            >{item.name}</ActionMenu.Item.Anchor>
-                    {:else if item.onClick}
-                        <ActionMenu.Item.Button on:click={item.onClick} leadingIcon={item.icon}
-                            >{item.name}</ActionMenu.Item.Button>
-                    {/if}</ActionMenu.Root>
+                <div use:melt={$triggerItems}>
+                    <ActionMenu.Root>
+                        {#if item.href}
+                            <ActionMenu.Item.Anchor href={item.href}
+                                >{item.name}</ActionMenu.Item.Anchor>
+                        {:else if item.onClick}
+                            <ActionMenu.Item.Button on:click={item.onClick} leadingIcon={item.icon}
+                                >{item.name}</ActionMenu.Item.Button>
+                        {/if}</ActionMenu.Root>
+                </div>
             {/each}
         </Card.Base>
     </div>
