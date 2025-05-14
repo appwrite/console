@@ -455,6 +455,7 @@
         border-bottom: 0;
         border-style: solid;
         border-color: var(--border-neutral);
+        z-index: 1 !important;
     }
 
     .account-container {
