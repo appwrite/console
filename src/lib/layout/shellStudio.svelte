@@ -392,10 +392,10 @@
         position: relative;
 
         @media (min-width: 1024px) {
-            min-height: calc(100vh - 54px);
+            min-height: calc(100vh - 48px);
             width: calc(100vw - 200px);
             margin-left: 200px;
-            margin-top: 54px;
+            margin-top: 48px;
             padding-left: 0;
             padding-right: var(--space-4);
         }
