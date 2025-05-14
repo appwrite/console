@@ -5,6 +5,7 @@ export type ActionType = 'file' | 'shell';
 interface Base {
     id: symbol;
     from: 'user' | 'system' | 'error';
+    group: string | symbol | null;
     content: string;
     complete: boolean;
 }
@@ -16,18 +17,25 @@ export interface Action extends Base {
 
 export interface TextChunk extends Base {}
 
+export interface ActionsContainer extends Base {
+    type: 'actions';
+    actions: Action[];
+}
+
 export function isActionType(type: string): type is ActionType {
     return ['file', 'shell'].includes(type);
 }
 
-export type ParsedItem = Action | TextChunk;
+export type ParsedItem = Action | TextChunk | ActionsContainer;
 
 export class StreamParser {
     private items: ParsedItem[] = [];
     private store = writable<ParsedItem[]>([]);
+    private currentGroup: Base['group'] = null;
     private currentFrom: Base['from'] = 'system';
     private currentAction: Action | null = null;
     private currentTextChunk: TextChunk | null = null;
+    private currentActionsContainer: ActionsContainer | null = null;
     private buffer = '';
     private isFirstActionContent = false;
     private skipCurrentAction = false;
@@ -45,7 +53,7 @@ export class StreamParser {
 
     private triggerCallbacks(event: keyof typeof this.callbacks, action: Action) {
         if (!this.callbacksEnabled) return;
-        this.callbacks.complete.forEach((callback) => callback(action));
+        this.callbacks[event].forEach((callback) => callback(action));
     }
 
     /**
@@ -68,7 +76,7 @@ export class StreamParser {
     public chunk(
         text: string,
         from: Base['from'],
-        options: { silent: boolean } = { silent: false }
+        options: { silent?: boolean; group?: Base['group'] } = { silent: false, group: null }
     ): void {
         // If the source changes, complete the current text chunk
         if (this.currentFrom !== from) {
@@ -79,6 +87,7 @@ export class StreamParser {
             }
         }
 
+        this.currentGroup = options.group;
         this.currentFrom = from;
         this.callbacksEnabled = !options.silent;
         this.buffer += text;
@@ -148,6 +157,11 @@ export class StreamParser {
 
                         this.currentAction.complete = true;
                         this.triggerCallbacks('complete', this.currentAction);
+
+                        // Mark the actions container as complete if this was the last action in it
+                        if (this.currentActionsContainer) {
+                            this.currentActionsContainer.complete = true;
+                        }
                         this.updateStore();
                     }
 
@@ -224,6 +238,7 @@ export class StreamParser {
                             this.currentAction = {
                                 id: Symbol(),
                                 from: this.currentFrom,
+                                group: this.currentGroup,
                                 type,
                                 src: attributes.src,
                                 content: '',
@@ -231,7 +246,26 @@ export class StreamParser {
                             };
 
                             this.isFirstActionContent = true;
-                            this.items.push(this.currentAction);
+
+                            // If we have an existing actions container from the same source, add to it
+                            if (
+                                this.currentActionsContainer &&
+                                this.currentActionsContainer.from === this.currentFrom
+                            ) {
+                                this.currentActionsContainer.actions.push(this.currentAction);
+                            } else {
+                                // Create a new actions container
+                                this.currentActionsContainer = {
+                                    id: Symbol(),
+                                    from: this.currentFrom,
+                                    group: this.currentGroup,
+                                    type: 'actions',
+                                    actions: [this.currentAction],
+                                    content: '',
+                                    complete: false
+                                };
+                                this.items.push(this.currentActionsContainer);
+                            }
                             this.updateStore();
                         } else {
                             // Invalid action type, skip this action
@@ -273,6 +307,7 @@ export class StreamParser {
         this.callbacksEnabled = true;
         this.currentAction = null;
         this.currentTextChunk = null;
+        this.currentActionsContainer = null;
         this.isFirstActionContent = false;
         this.skipCurrentAction = false;
         this.buffer = '';
@@ -289,6 +324,7 @@ export class StreamParser {
             this.currentTextChunk = {
                 id: Symbol(),
                 from: this.currentFrom,
+                group: this.currentGroup,
                 content: text,
                 complete: false
             };
@@ -301,7 +337,13 @@ export class StreamParser {
     private updateStore(): void {
         // Filter out empty text chunks before updating the store
         const filteredItems = this.items.filter((item) => {
-            if ('type' in item) return true; // Keep all actions
+            if ('type' in item) {
+                if (item.type === 'actions') {
+                    // Keep actions containers with at least one action
+                    return (item as ActionsContainer).actions.length > 0;
+                }
+                return true; // Keep all other typed items (individual actions outside containers)
+            }
             return item.content.trim() !== ''; // Only keep non-empty text chunks
         });
 
@@ -341,6 +383,11 @@ export class StreamParser {
                     }
                     this.currentAction.complete = true;
                     this.triggerCallbacks('complete', this.currentAction);
+
+                    // Mark the actions container as complete if this was the last action in it
+                    if (this.currentActionsContainer) {
+                        this.currentActionsContainer.complete = true;
+                    }
                 } else {
                     this.addToTextChunk(this.buffer);
                 }
@@ -378,6 +425,7 @@ export class StreamParser {
 
         this.currentAction = null;
         this.skipCurrentAction = false;
+        this.currentActionsContainer = null;
 
         // Clear current text chunk reference to ensure a new one is created on next chunk() call
         this.currentTextChunk = null;

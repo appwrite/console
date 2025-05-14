@@ -10,10 +10,11 @@
     } from '$lib/helpers/studioLayout.js';
     import { createStreamParser } from '$lib/components/studio/chat/parser.js';
     import { sdk } from '$lib/stores/sdk.js';
-    import { synapse } from '$lib/components/studio/synapse.svelte.js';
+    import { synapse } from '$lib/components/studio/synapse.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { filesystem } from '$lib/components/editor/filesystem';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
+    import { queue } from './chat/queue.svelte';
 
     $effect(() => {
         if ($isSmallViewport || page.params.artifact) {
@@ -124,34 +125,16 @@
 
         for (const message of messages) {
             const from = message.role === 'assistant' ? 'system' : 'user';
+            queue.forceListStatus(message.$id, 'done');
             parser.chunk(message.content, from, {
-                silent: true
+                group: message.$id
             });
             parser.end();
         }
     });
 
     parser.on('complete', async (action) => {
-        switch (action.type) {
-            case 'file':
-                await synapse.dispatch('fs', {
-                    operation: 'updateFile',
-                    params: {
-                        filepath: action.src,
-                        content: action.content
-                    }
-                });
-                $filesystem = [...$filesystem, action.src];
-                break;
-            case 'shell':
-                synapse.dispatch('terminal', {
-                    operation: 'createCommand',
-                    params: {
-                        command: action.content + '\n'
-                    }
-                });
-                break;
-        }
+        queue.enqueue(action.group, action);
     });
 </script>
 

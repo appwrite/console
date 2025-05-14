@@ -1,22 +1,13 @@
 <script lang="ts">
-    import {
-        Layout,
-        Typography,
-        Divider,
-        Icon,
-        Button,
-        ActionMenu
-    } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Divider, Icon, Button } from '@appwrite.io/pink-svelte';
     import { isTabSelected } from '$lib/helpers/load';
     import { page } from '$app/state';
     import { ActionDropdown, Tab, Tabs, Terminal } from '$lib/components';
     import { base } from '$app/paths';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
-        IconAppwrite,
         IconChevronDoubleDown,
         IconChevronDoubleUp,
-        IconChevronDown,
         IconPlusSm,
         IconTerminal,
         IconPlus

@@ -232,7 +232,7 @@
             class:sub-navigation={page.data.subNavigation}>
             {#if $isSmallViewport}
                 {#if isOnEditorPage}
-                    <ChatWrapper />
+                    <!-- <ChatWrapper /> -->
                 {/if}
 
                 <div class="card-wrapper">

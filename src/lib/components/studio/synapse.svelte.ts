@@ -126,7 +126,10 @@ export class Synapse {
             synapse: SynapseMessageOperations;
             fs: SynapseMessageOperationFileSystem;
             terminal: SynapseMessageOperationTerminal;
-        }[T]
+        }[T],
+        options?: {
+            timeout?: number;
+        }
     ): Promise<BaseMessage> {
         const requestId = String(Date.now().toString() + ++this.requestCounter);
 
@@ -137,17 +140,25 @@ export class Synapse {
             requestId
         };
         const response = new Promise<BaseMessage>((resolve, reject) => {
-            if (type === 'terminal') resolve(null);
             const timeout = setTimeout(() => {
                 reject(new Error('Request timed out'));
-            }, 5000);
+            }, options?.timeout ?? 5000);
             const callback = (message: MessageEvent<string>) => {
                 const response = JSON.parse(message.data);
                 if (!this.isMessage(response)) return;
-                if (response.requestId === requestId) {
+                const finish = () => {
                     resolve(response);
                     clearTimeout(timeout);
                     this.ws.removeEventListener('message', callback);
+                };
+                // workaround for awaiting temrinal answers
+                if (type === 'terminal') {
+                    if (String(response.data).endsWith('# \u001b[6n')) {
+                        finish();
+                    }
+                }
+                if (response.requestId === requestId) {
+                    finish();
                 }
             };
             this.ws.addEventListener('message', callback);
