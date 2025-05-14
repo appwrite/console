@@ -302,7 +302,6 @@
         margin-inline-start: -9px;
         margin-block-end: 0;
 
-        border-top: 1px solid var(--border-neutral);
         width: 100%;
 
         position: fixed;
@@ -318,6 +317,13 @@
 
     .terminal-slider {
         cursor: row-resize;
+        border-top: 1px solid var(--border-neutral);
+        transition: all 0.2s ease-in-out;
+
+        &:hover {
+            border-top: 2px solid var(--border-neutral-strong);
+            background-color: var(--border-neutral-strong);
+        }
     }
 
     .terminal-tabs {
