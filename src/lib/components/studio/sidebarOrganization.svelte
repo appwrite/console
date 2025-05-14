@@ -30,7 +30,6 @@
                 label: 'Settings'
             }
         ];
-        console.log(page.url.pathname);
         return items.map((item) => {
             return { ...item, isActive: page.url.pathname === item.path };
         });
