@@ -45,6 +45,7 @@
     import { isCloud } from '$lib/system.js';
     import { user } from '$lib/stores/user';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { page } from '$app/stores';
 
     let showSupport = false;
 
@@ -125,7 +126,7 @@
         {#if selectedProject && selectedProject.pingCount === 0}
             <div class="only-desktop" style:margin-inline-start="-16px">
                 <Button.Anchor
-                    href={`${base}/project-${selectedProject.$id}/get-started`}
+                    href={`${base}/project-${selectedProject.region}-${selectedProject.$id}/get-started`}
                     variant="secondary"
                     size="xs">Connect</Button.Anchor>
             </div>
