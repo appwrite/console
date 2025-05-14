@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Layout, ActionMenu, Icon, Divider } from '@appwrite.io/pink-svelte';
+    import { Layout, ActionMenu, Icon, Divider, Tooltip } from '@appwrite.io/pink-svelte';
     import {
         IconAnnotation,
         IconCog,
@@ -38,19 +38,22 @@
             {#each menuItems as menuItem}
                 {#if menuItem.type === 'item'}
                     {@const isActive = page.url.pathname.includes(menuItem.path)}
-                    <ActionMenu.Item.Anchor
-                        style={`--space-5: 8px; background-color: ${
-                            isActive ? 'var(--overlay-neutral-hover)' : 'auto'
-                        }; --icon-fill: ${isActive ? 'var(--fgcolor-neutral-primary)' : 'var(--fgcolor-neutral-tertiary)'}`}
-                        href={`${base}/project-${project.$id}/${menuItem.path}`}
-                        leadingIcon={menuItem.icon}
-                        size="l"
-                        on:click={() => {
-                            if ($isSmallViewport) {
-                                isOpen = false;
-                            }
-                        }}
-                        >{#if $isSmallViewport}{menuItem.label}{/if}</ActionMenu.Item.Anchor>
+                    <Tooltip placement="right">
+                        <ActionMenu.Item.Anchor
+                            style={`--space-5: 8px; background-color: ${
+                                isActive ? 'var(--overlay-neutral-hover)' : 'auto'
+                            }; --icon-fill: ${isActive ? 'var(--fgcolor-neutral-primary)' : 'var(--fgcolor-neutral-tertiary)'}`}
+                            href={`${base}/project-${project.$id}/${menuItem.path}`}
+                            leadingIcon={menuItem.icon}
+                            size="l"
+                            on:click={() => {
+                                if ($isSmallViewport) {
+                                    isOpen = false;
+                                }
+                            }}
+                            >{#if $isSmallViewport}{menuItem.label}{/if}</ActionMenu.Item.Anchor>
+                        <span slot="tooltip">{menuItem.label}</span>
+                    </Tooltip>
                 {:else if menuItem.type === 'divider'}
                     <Divider />
                 {/if}
