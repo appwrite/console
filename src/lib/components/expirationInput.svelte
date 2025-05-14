@@ -1,3 +1,10 @@
+<script context="module" lang="ts">
+    export type ExpirationOptions = {
+        label: string;
+        value: string;
+    };
+</script>
+
 <script lang="ts">
     import { InputDateTime, InputSelect } from '$lib/elements/forms';
     import { isSameDay, isValidDate, toLocaleDate } from '$lib/helpers/date';
@@ -19,7 +26,7 @@
         return date.toISOString();
     }
 
-    const defaultOptions = [
+    const defaultOptions: ExpirationOptions[] = [
         {
             label: 'Never',
             value: null
@@ -46,7 +53,7 @@
         }
     ];
 
-    const limitedOptions = [
+    const limitedOptions: ExpirationOptions[] = [
         {
             label: '1 Day',
             value: incrementToday(1, 'day')
@@ -62,9 +69,16 @@
     ];
 
     export let value: string | null = null;
-    export let keyType: 'api' | 'dev' = 'api';
+    export let dateSelectorLabel: string | undefined = undefined;
+    export let selectorLabel: string | undefined = 'Expiration date';
+    export let resourceType: string | 'key' | 'token' | undefined = 'key';
+    export let expiryOptions: 'default' | 'limited' | ExpirationOptions[] = 'default';
 
-    const options = keyType === 'api' ? defaultOptions : limitedOptions;
+    const options = Array.isArray(expiryOptions)
+        ? expiryOptions
+        : expiryOptions === 'default'
+          ? defaultOptions
+          : limitedOptions;
 
     function initExpirationSelect() {
         if (value === null || !isValidDate(value)) {
@@ -84,7 +98,9 @@
         return result;
     }
 
-    // dd/mm/yy format for selecting dates only!
+    /**
+     * Custom picker only supports `dd/mm/yy` format.
+     */
     function splitDateValue(value: string): string {
         return value.slice(0, 10);
     }
@@ -100,8 +116,8 @@
 
     $: helper =
         expirationSelect !== 'custom' && expirationSelect !== null
-            ? `Your key will expire in ${toLocaleDate(value)}`
-            : undefined;
+            ? `Your ${resourceType} will expire in ${toLocaleDate(value)}`
+            : null;
 </script>
 
 <InputSelect
@@ -109,9 +125,9 @@
     {helper}
     {options}
     id="preset"
-    label="Expiration date"
+    label={selectorLabel}
     bind:value={expirationSelect} />
 
 {#if expirationSelect === 'custom'}
-    <InputDateTime required id="expire" label="" bind:value={expirationCustom} />
+    <InputDateTime required id="expire" label={dateSelectorLabel} bind:value={expirationCustom} />
 {/if}

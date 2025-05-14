@@ -19,6 +19,7 @@
 
     const isApiKey = keyType === 'api';
     const label = isApiKey ? 'API' : 'Dev';
+    const expiryOptions = isApiKey ? 'default' : 'limited';
     const dependency = isApiKey ? Dependencies.KEY : Dependencies.DEV_KEY;
     const event = isApiKey ? Submit.KeyUpdateExpire : Submit.DevKeyUpdateExpire;
 
@@ -90,7 +91,7 @@
                     Update the expiration date to keep the key active
                 </Alert.Inline>
             {/if}
-            <ExpirationInput bind:value={expiration} {keyType} />
+            <ExpirationInput bind:value={expiration} {expiryOptions} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

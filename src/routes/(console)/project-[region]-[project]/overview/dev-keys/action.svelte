@@ -69,7 +69,7 @@
                     required
                     bind:value={name} />
 
-                <ExpirationInput bind:value={expire} keyType="dev" />
+                <ExpirationInput bind:value={expire} expiryOptions="limited" />
             </Layout.Stack>
 
             <Layout.Stack direction="row" justifyContent="flex-end" slot="footer">

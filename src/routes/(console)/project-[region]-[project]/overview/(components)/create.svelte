@@ -75,7 +75,7 @@
                         required
                         bind:value={name} />
 
-                    <ExpirationInput bind:value={expire} keyType="api" />
+                    <ExpirationInput bind:value={expire} />
                 </Layout.Stack>
             </Fieldset>
 

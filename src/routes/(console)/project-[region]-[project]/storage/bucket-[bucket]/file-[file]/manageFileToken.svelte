@@ -30,6 +30,7 @@
         expire = null;
         isDelete = false;
         fileToken = null;
+        isUpdatePermissions = false;
     }
 
     function handleFileToken() {
