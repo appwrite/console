@@ -16,7 +16,9 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { page } from '$app/stores';
     import type { Artifact } from '$lib/sdk/imagine';
+    import { previewFrameRef } from '$routes/(console)/project-[project]/store';
     import type { SubMenu } from '$lib/components/bottom-sheet';
+    import type { ComponentType } from 'svelte';
 
     type Item = {
         name: string;
@@ -62,6 +64,26 @@
             bottomSheetOpen = false;
         }
     }
+
+    function disablePointerEvents() {
+        if ($previewFrameRef) {
+            $previewFrameRef.style.pointerEvents = 'none';
+        }
+    }
+
+    let pointerEventsSet = false;
+
+    $effect(() => {
+        if ($previewFrameRef) {
+            if ($triggerItems['data-state'] === 'open' && !pointerEventsSet) {
+                $previewFrameRef.style.pointerEvents = 'none';
+                pointerEventsSet = true;
+            } else if ($triggerItems['data-state'] === 'closed' && pointerEventsSet) {
+                pointerEventsSet = false;
+                $previewFrameRef.style.pointerEvents = '';
+            }
+        }
+    });
 </script>
 
 <svelte:window on:resize={onResize} />
