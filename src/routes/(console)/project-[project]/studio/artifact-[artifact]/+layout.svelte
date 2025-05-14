@@ -176,7 +176,7 @@
 
 <Layout.Stack
     direction="column"
-    height={$isSmallViewport ? 'calc(100vh - 119px)' : 'calc(100vh - 75px)'}
+    height={$isSmallViewport ? 'calc(100vh - 119px)' : 'calc(100vh - 76px)'}
     gap="none">
     <Layout.Stack direction="column" gap="none">
         {#if $isSmallViewport}
@@ -322,7 +322,7 @@
 
     .terminal-tabs {
         background-color: var(--bgcolor-neutral-primary);
-        padding: var(--space-2) var(--space-4);
+        padding: var(--space-2) var(--space-7);
         margin-inline-start: calc(-1 * var(--space-1) + 1px);
         width: calc(100%);
     }
