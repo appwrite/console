@@ -19,6 +19,7 @@
         name: string;
         $id: string;
         isSelected: boolean;
+        region: string;
     };
     type Organization = {
         name: string;

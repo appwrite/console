@@ -46,7 +46,6 @@
     import { isCloud } from '$lib/system.js';
     import { user } from '$lib/stores/user';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { page } from '$app/stores';
 
     let showSupport = false;
 
