@@ -315,9 +315,6 @@
             position: static;
         }
     }
-    summary {
-        cursor: pointer;
-    }
 
     .terminal-slider {
         cursor: row-resize;
