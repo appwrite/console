@@ -73,7 +73,6 @@
             }
 
             invalidate(Dependencies.ARTIFACTS);
-            console.log('invalidating artifacts');
 
             parser.chunk(message, 'user');
             message = '';
