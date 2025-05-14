@@ -88,6 +88,11 @@
     });
 
     $effect(() => {
+        void page.url.pathname;
+        showAccountMenu = false;
+    });
+
+    $effect(() => {
         showSideNavigation = !($isTabletViewport || $isSmallViewport);
     });
 
