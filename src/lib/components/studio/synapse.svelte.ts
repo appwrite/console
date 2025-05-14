@@ -127,7 +127,7 @@ export class Synapse {
             fs: SynapseMessageOperationFileSystem;
             terminal: SynapseMessageOperationTerminal;
         }[T],
-        options: {
+        options?: {
             timeout?: number;
         }
     ): Promise<BaseMessage> {
