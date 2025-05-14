@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { page } from '$app/state';
     import { Empty, EmptySearch, PaginationWithLimit } from '$lib/components';
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
-    import type { ColumnType } from '$lib/helpers/types';
+    import type { Column, ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
@@ -15,20 +14,24 @@
     import CreateAttribute from './createAttribute.svelte';
     import { collection, columns, isCsvImportInProgress } from './store';
     import Table from './table.svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { base } from '$app/paths';
-    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { writable } from 'svelte/store';
     import FilePicker from '$lib/components/filePicker.svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { base } from '$app/paths';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let data: PageData;
 
     let showImportCSV = false;
     let showCreateAttribute = false;
     let selectedAttribute: Option['name'] = null;
+
+    const filterColumns = writable<Column[]>([]);
 
     $: selected = preferences.getCustomCollectionColumns(page.params.collection);
     $: columns.set(
@@ -42,6 +45,16 @@
             elements: 'elements' in attribute ? attribute.elements : null
         }))
     );
+    $: filterColumns.set([
+        ...$columns,
+        ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
+            id,
+            title: id,
+            show: true,
+            type: (id === '$id' ? 'string' : 'datetime') as ColumnType
+        }))
+    ]);
+
     $: hasAttributes = !!$collection.attributes.length;
     $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
 
