@@ -13,6 +13,8 @@
     import type { EventHandler } from 'svelte/elements';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     type Props = {
         width: number;
@@ -69,6 +71,9 @@
             if (!response.ok) {
                 throw new Error(`${response.status} Error: ${await response.text()}`);
             }
+
+            invalidate(Dependencies.ARTIFACTS);
+            console.log('invalidating artifacts');
 
             parser.chunk(message, 'user');
             message = '';
