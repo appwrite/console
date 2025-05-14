@@ -382,6 +382,7 @@
 
     :global(.studio-wrapper > div) {
         height: 100%;
+        scrollbar-width: none;
         overflow-y: scroll;
     }
 

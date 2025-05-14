@@ -105,14 +105,18 @@
     });
 
     function startResize() {
-        isResizing = true;
-        window.addEventListener('mousemove', resize);
-        window.addEventListener('mouseup', stopResize);
-        window.addEventListener('touchmove', resize);
-        window.addEventListener('touchend', stopResize);
-        disableBodySelect();
-        if ($previewFrameRef) {
-            $previewFrameRef.style.pointerEvents = 'none';
+        if (!terminalOpen) {
+            terminalOpen = true;
+        } else {
+            isResizing = true;
+            window.addEventListener('mousemove', resize);
+            window.addEventListener('mouseup', stopResize);
+            window.addEventListener('touchmove', resize);
+            window.addEventListener('touchend', stopResize);
+            disableBodySelect();
+            if ($previewFrameRef) {
+                $previewFrameRef.style.pointerEvents = 'none';
+            }
         }
     }
 
@@ -181,7 +185,7 @@
 
 <Layout.Stack
     direction="column"
-    height={$isSmallViewport ? 'calc(100vh - 154px)' : 'calc(100vh - 88px)'}
+    height={$isSmallViewport ? 'calc(100vh - 154px)' : 'calc(100vh - 75px)'}
     gap="none">
     <Layout.Stack direction="column" gap="none">
         {#if $isSmallViewport}
@@ -235,47 +239,56 @@
         </div>
     </Layout.Stack>
     {@render children()}
-    <aside bind:this={asideRef} style:padding-block-end={terminalOpen ? 0 : '8px'}>
+    <aside bind:this={asideRef}>
         <details bind:open={terminalOpen}>
             <summary
                 onmousedown={startResize}
                 ontouchmove={startResize}
+                onclick={(event) => {
+                    event.preventDefault();
+                }}
                 class:terminal-slider={terminalOpen}>
-                <Layout.Stack direction="row" justify="space-between">
-                    <Layout.Stack direction="row" alignItems="center" gap="xs">
-                        <Icon icon={IconTerminal} color="--fgcolor-neutral-tertiary" />
-                        <Typography.Text>Terminals</Typography.Text>
-                    </Layout.Stack>
-                    <Icon
-                        icon={terminalOpen ? IconChevronDoubleDown : IconChevronDoubleUp}
-                        color="--fgcolor-neutral-tertiary" />
-                </Layout.Stack>
-            </summary>
-            <div class="terminal-tabs">
-                <Layout.Stack>
-                    <Tabs let:root>
-                        <Tab
-                            {root}
-                            selected={currentTerminal === mainTerminalId}
-                            on:click={() => (currentTerminal = mainTerminalId)}>
-                            <Icon icon={IconImagine} />
-                            Imagine
-                        </Tab>
-                        {#each terminals as [symbol] (symbol)}
+                <div class="terminal-tabs">
+                    <Layout.Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center">
+                        <Tabs let:root>
                             <Tab
                                 {root}
-                                on:click={() => (currentTerminal = symbol)}
-                                selected={currentTerminal === symbol}>
-                                <Icon icon={IconTerminal} />
-                                Terminal
+                                selected={currentTerminal === mainTerminalId}
+                                on:click={() => (currentTerminal = mainTerminalId)}>
+                                <Icon icon={IconImagine} />
+                                Imagine
                             </Tab>
-                        {/each}
-                        <Tab {root} on:click={createTerminal}>
-                            <Icon icon={IconPlusSm} size="m" />
-                        </Tab>
-                    </Tabs>
-                </Layout.Stack>
-            </div>
+                            {#each terminals as [symbol] (symbol)}
+                                <Tab
+                                    {root}
+                                    on:click={() => (currentTerminal = symbol)}
+                                    selected={currentTerminal === symbol}>
+                                    <Icon icon={IconTerminal} />
+                                    Terminal
+                                </Tab>
+                            {/each}
+                            <Tab {root} on:click={createTerminal}>
+                                <Icon icon={IconPlusSm} size="m" />
+                            </Tab>
+                        </Tabs>
+                        <Button.Button
+                            variant="compact"
+                            onclick={() => {
+                                if (terminalOpen) {
+                                    terminalOpen = false;
+                                }
+                            }}>
+                            <Icon
+                                icon={terminalOpen ? IconChevronDoubleDown : IconChevronDoubleUp}
+                                color="--fgcolor-neutral-tertiary" />
+                        </Button.Button>
+                    </Layout.Stack>
+                </div>
+            </summary>
+
             <div style:display={currentTerminal === mainTerminalId ? 'contents' : 'none'}>
                 <Terminal height={terminalHeight} {synapse}></Terminal>
             </div>
@@ -293,10 +306,9 @@
         background-color: var(--bgcolor-neutral-default);
 
         margin-inline-start: -9px;
-        margin-block-end: calc(-1 * var(--base-8));
-        padding: var(--space-3) 0;
+        margin-block-end: 0;
 
-        border: 1px solid var(--border-neutral);
+        border-top: 1px solid var(--border-neutral);
         width: 100%;
 
         position: fixed;
@@ -307,12 +319,10 @@
             margin-inline-start: calc(-1 * var(--space-7));
             border-bottom-right-radius: var(--border-radius-m);
             position: static;
-            border: 0;
         }
     }
     summary {
         cursor: pointer;
-        padding-inline: var(--space-3);
     }
 
     .terminal-slider {
@@ -321,7 +331,7 @@
 
     .terminal-tabs {
         background-color: var(--bgcolor-neutral-primary);
-        padding: var(--space-4) var(--space-4);
+        padding: var(--space-2) var(--space-4);
         margin-inline-start: calc(-1 * var(--space-1) + 1px);
         width: calc(100%);
     }
