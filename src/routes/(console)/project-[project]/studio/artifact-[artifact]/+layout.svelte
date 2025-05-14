@@ -96,18 +96,14 @@
     });
 
     function startResize() {
-        if (!terminalOpen) {
-            terminalOpen = true;
-        } else {
-            isResizing = true;
-            window.addEventListener('mousemove', resize);
-            window.addEventListener('mouseup', stopResize);
-            window.addEventListener('touchmove', resize);
-            window.addEventListener('touchend', stopResize);
-            disableBodySelect();
-            if ($previewFrameRef) {
-                $previewFrameRef.style.pointerEvents = 'none';
-            }
+        isResizing = true;
+        window.addEventListener('mousemove', resize);
+        window.addEventListener('mouseup', stopResize);
+        window.addEventListener('touchmove', resize);
+        window.addEventListener('touchend', stopResize);
+        disableBodySelect();
+        if ($previewFrameRef) {
+            $previewFrameRef.style.pointerEvents = 'none';
         }
     }
 
@@ -143,6 +139,7 @@
         const symbol = Symbol();
         terminals.set(symbol, createSynapse(endpoint, page.params.artifact));
         currentTerminal = symbol;
+        terminalOpen = true;
     }
 
     let artifacts = $derived.by(() => {
@@ -237,33 +234,46 @@
                         direction="row"
                         justifyContent="space-between"
                         alignItems="center">
-                        <Tabs let:root>
-                            <Tab
-                                {root}
-                                selected={currentTerminal === mainTerminalId}
-                                on:click={() => (currentTerminal = mainTerminalId)}>
-                                <Icon icon={IconImagine} />
-                                Imagine
-                            </Tab>
-                            {#each terminals as [symbol] (symbol)}
+                        <Layout.Stack direction="row" gap="s">
+                            <Tabs let:root>
                                 <Tab
                                     {root}
-                                    on:click={() => (currentTerminal = symbol)}
-                                    selected={currentTerminal === symbol}>
-                                    <Icon icon={IconTerminal} />
-                                    Terminal
+                                    selected={currentTerminal === mainTerminalId}
+                                    on:click={() => {
+                                        currentTerminal = mainTerminalId;
+                                        terminalOpen = true;
+                                    }}>
+                                    <Icon icon={IconImagine} />
+                                    Imagine
                                 </Tab>
-                            {/each}
-                            <Tab {root} on:click={createTerminal}>
-                                <Icon icon={IconPlusSm} size="m" />
-                            </Tab>
-                        </Tabs>
+                                {#each terminals as [symbol] (symbol)}
+                                    <Tab
+                                        {root}
+                                        on:click={() => (currentTerminal = symbol)}
+                                        selected={currentTerminal === symbol}>
+                                        <Icon icon={IconTerminal} />
+                                        Terminal
+                                    </Tab>
+                                {/each}
+                            </Tabs>
+                            <Button.Button
+                                variant="compact"
+                                size="s"
+                                on:click={(event) => {
+                                    console.log('clicked');
+                                    event.preventDefault();
+                                    createTerminal();
+                                }}>
+                                <Icon
+                                    icon={IconPlusSm}
+                                    size="m"
+                                    color="--fgcolor-neutral-tertiary" />
+                            </Button.Button>
+                        </Layout.Stack>
                         <Button.Button
                             variant="compact"
                             onclick={() => {
-                                if (terminalOpen) {
-                                    terminalOpen = false;
-                                }
+                                terminalOpen = !terminalOpen;
                             }}>
                             <Icon
                                 icon={terminalOpen ? IconChevronDoubleDown : IconChevronDoubleUp}
