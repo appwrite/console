@@ -131,7 +131,7 @@
     });
 </script>
 
-{#if filteredModalAlerts.length > 0 && currentModalAlert && !$page.url.pathname.includes('console/onboarding')}
+{#if filteredModalAlerts.length > 0 && currentModalAlert && !page.url.pathname.includes('console/onboarding')}
     {@const shouldShowUpgrade = showUpgrade()}
     <div class="main-alert-wrapper is-not-mobile">
         <div class="alert-container">

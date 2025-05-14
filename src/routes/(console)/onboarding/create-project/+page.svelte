@@ -16,7 +16,7 @@
     let id: string;
     let startAnimation = false;
     let projectName = 'Appwrite project';
-    let region = Region.Default;
+    let region = Region.Fra;
     export let data: { regions: Models.ConsoleRegionList | null };
 
     async function createProject() {

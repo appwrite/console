@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, BoxAvatar, Heading, Alert } from '$lib/components';
+    import { CardGrid, BoxAvatar, Alert } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
@@ -58,7 +58,8 @@
 
 <Container>
     <CardGrid>
-        <Heading tag="h2" size="7">Metadata</Heading>
+        <svelte:fragment slot="title">Metadata</svelte:fragment>
+
         <svelte:fragment slot="aside">
             <div>
                 <p>Created: {toLocaleDateTime($doc.$createdAt)}</p>
@@ -67,7 +68,8 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <Heading tag="h6" size="7">Permissions</Heading>
+        <svelte:fragment slot="title">Permissions</svelte:fragment>
+
         <p>
             A user requires appropriate permissions at either the <b>collection level</b> or
             <b>document level</b> to access a document. If no permissions are configured, no user
@@ -116,8 +118,8 @@
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid danger>
-        <Heading tag="h6" size="7">Delete document</Heading>
+    <CardGrid>
+        <svelte:fragment slot="title">Delete document</svelte:fragment>
         <p>
             The document will be permanently deleted, including all the data within it. This action
             is irreversible.
