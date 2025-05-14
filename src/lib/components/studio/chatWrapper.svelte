@@ -157,7 +157,7 @@
         cursor: col-resize;
         margin-inline: 10px;
         position: absolute;
-        height: calc(100vh - 72px);
+        height: calc(100vh - 66px);
         margin-block-start: calc(-1 * var(--base-8));
         margin-inline-start: 0;
 

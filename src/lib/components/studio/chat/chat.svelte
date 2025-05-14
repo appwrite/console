@@ -13,6 +13,8 @@
     import type { EventHandler } from 'svelte/elements';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     type Props = {
         width: number;
@@ -69,6 +71,8 @@
             if (!response.ok) {
                 throw new Error(`${response.status} Error: ${await response.text()}`);
             }
+
+            invalidate(Dependencies.ARTIFACTS);
 
             parser.chunk(message, 'user');
             message = '';
@@ -271,7 +275,7 @@
         }
 
         @media (min-width: 768px) {
-            margin-block-end: var(--space-4);
+            margin-block-end: var(--space-2);
             margin-inline-start: calc(-1 * var(--space-4));
             border-radius: var(--border-radius-xs);
             width: calc(100% + 2 * var(--space-4));

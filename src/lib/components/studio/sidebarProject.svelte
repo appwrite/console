@@ -76,7 +76,7 @@
         z-index: 10;
 
         @media (min-width: 768px) {
-            padding-block-start: 16px;
+            padding-block-start: 10px;
             width: 48px;
         }
     }

@@ -235,15 +235,17 @@
                     <!-- <ChatWrapper /> -->
                 {/if}
 
-                <Card.Base padding="xxs" radius={$isSmallViewport ? 'none' : 'm'}>
-                    <Layout.Stack>
-                        {#if page.data?.subNavigation}
-                            {@const Component = page.data.subNavigation}
-                            <Component />
-                        {/if}
-                        {@render children()}
-                    </Layout.Stack>
-                </Card.Base>
+                <div class="card-wrapper">
+                    <Card.Base padding="xxs" radius={$isSmallViewport ? 'none' : 'm'}>
+                        <Layout.Stack>
+                            {#if page.data?.subNavigation}
+                                {@const Component = page.data.subNavigation}
+                                <Component />
+                            {/if}
+                            {@render children()}
+                        </Layout.Stack>
+                    </Card.Base>
+                </div>
             {:else}
                 <div class="studio-wrapper">
                     <Card.Base padding={isOnEditorPage ? 'xxs' : 's'}>
@@ -382,6 +384,7 @@
 
     :global(.studio-wrapper > div) {
         height: 100%;
+        scrollbar-width: none;
         overflow-y: scroll;
     }
 
@@ -392,10 +395,10 @@
         position: relative;
 
         @media (min-width: 1024px) {
-            min-height: calc(100vh - 54px);
+            min-height: calc(100vh - 48px);
             width: calc(100vw - 200px);
             margin-left: 200px;
-            margin-top: 54px;
+            margin-top: 48px;
             padding-left: 0;
             padding-right: var(--space-4);
         }
@@ -444,7 +447,6 @@
 
     :global(.sub-navigation nav) {
         margin-inline-start: -17px;
-        margin-block-start: 6px;
         border-top-left-radius: var(--border-radius-m);
         border-bottom-left-radius: var(--border-radius-m);
         height: calc(100% - 65px) !important;
@@ -453,6 +455,7 @@
         border-bottom: 0;
         border-style: solid;
         border-color: var(--border-neutral);
+        z-index: 1 !important;
     }
 
     .account-container {
@@ -477,5 +480,9 @@
         flex-grow: 1;
         padding-inline: var(--space-4);
         width: 0;
+    }
+
+    :global(.card-wrapper > div) {
+        padding-bottom: 0 !important;
     }
 </style>
