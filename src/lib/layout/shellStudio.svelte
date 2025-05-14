@@ -227,7 +227,7 @@
             class:sub-navigation={page.data.subNavigation}>
             {#if $isSmallViewport}
                 {#if isOnEditorPage}
-                    <ChatWrapper />
+                    <!-- <ChatWrapper /> -->
                 {/if}
 
                 <Card.Base padding="xxs" radius={$isSmallViewport ? 'none' : 'm'}>
