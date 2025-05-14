@@ -447,7 +447,6 @@
 
     :global(.sub-navigation nav) {
         margin-inline-start: -17px;
-        margin-block-start: 6px;
         border-top-left-radius: var(--border-radius-m);
         border-bottom-left-radius: var(--border-radius-m);
         height: calc(100% - 65px) !important;
