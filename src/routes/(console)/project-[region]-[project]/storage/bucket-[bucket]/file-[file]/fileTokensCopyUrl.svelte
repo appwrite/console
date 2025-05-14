@@ -1,79 +1,47 @@
 <script lang="ts">
-    import { cachedJwts } from './store';
+    import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { Modal, Card, CopyInput } from '$lib/components';
-    import { Button, InputSelect, InputText } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { Alert, Layout, Tabs, Typography } from '@appwrite.io/pink-svelte';
-    import { page } from '$app/state';
 
     export let show = false;
     export let file: Models.File;
     export let token: Models.ResourceToken;
 
-    let error = null;
-
-    let codeSnippets = {};
+    let tabContents = {};
     let selectedTab = 'Preview';
-
-    async function getJwtForToken(): Promise<string> {
-        // Return cached, if it's valid based on the token's expiration.
-        if ($cachedJwts.has(token.$id)) {
-            const cachedJwt = $cachedJwts.get(token.$id);
-            const isExpired = !!token.expire && new Date(token.expire) < new Date();
-
-            if (!isExpired) return cachedJwt;
-        }
-
-        const { jwt } = await sdk
-            .forProject(page.params.region, page.params.project)
-            .tokens.getJWT(token.$id);
-
-        // update the cached object!
-        cachedJwts.update((map) => {
-            map.set(token.$id, jwt);
-            return map;
-        });
-
-        return jwt;
-    }
 
     function copyPreviewWithToken(
         token: string,
         method: 'preview' | 'view' | 'download' = 'preview'
     ) {
-        error = false;
-
-        try {
-            let url: string;
-            if (method === 'view') {
-                url = sdk
-                    .forProject(page.params.region, page.params.project)
-                    .storage.getFileView(file.bucketId, file.$id);
-            } else if (method === 'download') {
-                url = sdk
-                    .forProject(page.params.region, page.params.project)
-                    .storage.getFileDownload(file.bucketId, file.$id);
-            } else {
-                url = sdk
-                    .forProject(page.params.region, page.params.project)
-                    .storage.getFilePreview(file.bucketId, file.$id);
-            }
-
-            url = `${url}&token=${token}`;
-
-            return url;
-        } catch (ignore) {
-            error = true;
+        let url: string;
+        if (method === 'view') {
+            url = sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.getFileView(file.bucketId, file.$id);
+        } else if (method === 'download') {
+            url = sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.getFileDownload(file.bucketId, file.$id);
+        } else {
+            url = sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.getFilePreview(file.bucketId, file.$id);
         }
+
+        url = `${url}&token=${token}`;
+
+        return url;
     }
 
-    async function setCodeSnippets() {
-        const jwt = await getJwtForToken();
-        return {
-            Preview: `${copyPreviewWithToken(jwt)}`,
-            View: `${copyPreviewWithToken(jwt, 'view')}`,
-            Download: `${copyPreviewWithToken(jwt, 'download')}`
+    function setUrlSnippets() {
+        tabContents = {
+            Preview: `${copyPreviewWithToken(token.secret)}`,
+            View: `${copyPreviewWithToken(token.secret, 'view')}`,
+            Download: `${copyPreviewWithToken(token.secret, 'download')}`
         };
     }
 
@@ -98,42 +66,37 @@
     }
 
     $: if (show) {
-        setCodeSnippets().then((snippets) => (codeSnippets = snippets));
+        setUrlSnippets();
     }
 </script>
 
 <Modal title="Copy File URL" bind:show hideFooter>
+    {@const tokenUrl = tabContents[selectedTab]}
     <span slot="description"> Use the token-based URL below to access this file securely. </span>
 
-    {#if error}
-        <Alert.Inline title="Error" status="error">
-            Something went wrong, could not generate the URL.
-        </Alert.Inline>
-    {:else}
-        {@const tokenUrl = codeSnippets[selectedTab]}
-        <Layout.Stack gap="xl">
-            <Tabs.Root let:root stretch>
-                {#each ['Preview', 'View', 'Download'] as cat}
-                    <Tabs.Item.Button
-                        {root}
-                        on:click={() => (selectedTab = cat)}
-                        active={selectedTab === cat}>
-                        {cat}
-                    </Tabs.Item.Button>
-                {/each}
-            </Tabs.Root>
+    <Layout.Stack gap="xl">
+        <Tabs.Root let:root stretch>
+            {#each ['Preview', 'View', 'Download'] as cat}
+                <Tabs.Item.Button
+                    {root}
+                    on:click={() => (selectedTab = cat)}
+                    active={selectedTab === cat}>
+                    {cat}
+                </Tabs.Item.Button>
+            {/each}
+        </Tabs.Root>
 
-            <Typography.Text variant="m-400">
-                {getMoreInfo()}
-            </Typography.Text>
-            {#if !token.expire}
-                <Alert.Inline title="No expiration date" status="warning">
-                    This token doesn't expire. Be cautious when sharing links.
-                </Alert.Inline>
-            {/if}
-            <CopyInput value={tokenUrl} />
-        </Layout.Stack>
-    {/if}
+        <Typography.Text variant="m-400">
+            {getMoreInfo()}
+        </Typography.Text>
+        {#if !token.expire}
+            <Alert.Inline title="No expiration date" status="warning">
+                This token doesn't expire. Be cautious when sharing links.
+            </Alert.Inline>
+        {/if}
+        <CopyInput value={tokenUrl} />
+    </Layout.Stack>
+
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Close</Button>
     </svelte:fragment>

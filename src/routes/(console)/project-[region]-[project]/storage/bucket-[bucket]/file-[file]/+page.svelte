@@ -52,7 +52,6 @@
     let showManageToken = false;
     let tokenDeleteMode = false;
     let showCopyUrlModal = false;
-    let tokenPermissionsMode = false;
     let selectedFileToken: Models.ResourceToken | null = null;
 
     const getPreview = (fileId: string) =>
@@ -126,9 +125,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .tokens.createFileToken($file.bucketId, $file.$id, expiry, [
-                    Permission.read(Role.any())
-                ]);
+                .tokens.createFileToken($file.bucketId, $file.$id, expiry);
 
             await invalidate(Dependencies.FILE_TOKENS);
             addNotification({
@@ -151,11 +148,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .tokens.update(
-                    selectedFileToken.$id,
-                    fileToken.expire ? fileToken.expire : null,
-                    fileToken.$permissions
-                );
+                .tokens.update(selectedFileToken.$id, fileToken.expire ? fileToken.expire : null);
             await invalidate(Dependencies.FILE_TOKENS);
             addNotification({
                 message: 'File token updated',
@@ -171,23 +164,6 @@
         } finally {
             selectedFileToken = null;
         }
-    }
-
-    function getPermissionGroups(token: Models.ResourceToken): string {
-        const map = {
-            read: 'Read',
-            update: 'Update',
-            delete: 'Delete'
-        };
-
-        const groups = token.$permissions.reduce((set, perm) => {
-            const match = perm.match(/^(\w+)\(/);
-            const key = match?.[1];
-            if (key && map[key]) set.add(map[key]);
-            return set;
-        }, new Set<string>());
-
-        return [...groups].join(', ');
     }
 
     function getExpiryDetails(token: Models.ResourceToken): {
@@ -301,16 +277,6 @@
                                         ? cleanFormattedDate(token.accessedAt, true)
                                         : 'Never'}</Table.Cell>
 
-                                <Table.Cell column="permissions" {root}>
-                                    {#if token.$permissions.length}
-                                        <Typography.Text truncate slot="tooltip">
-                                            {getPermissionGroups(token)}
-                                        </Typography.Text>
-                                    {:else}
-                                        none
-                                    {/if}
-                                </Table.Cell>
-
                                 <Table.Cell column="actions" {root}>
                                     <Layout.Stack alignItems="flex-end">
                                         <Menu>
@@ -322,8 +288,8 @@
                                                 <ActionMenu.Root>
                                                     <ActionMenu.Root noPadding>
                                                         <ActionMenu.Item.Button
-                                                            on:click={() => {
-                                                                toggle();
+                                                            on:click={(e) => {
+                                                                toggle(e);
                                                                 showCopyUrlModal = true;
                                                                 selectedFileToken = token;
                                                             }}
@@ -333,28 +299,18 @@
                                                     </ActionMenu.Root>
                                                     <ActionMenu.Item.Button
                                                         leadingIcon={IconPencil}
-                                                        on:click={() => {
-                                                            toggle();
+                                                        on:click={(e) => {
+                                                            toggle(e);
                                                             showManageToken = true;
                                                             selectedFileToken = token;
                                                         }}>
                                                         Edit expiry
                                                     </ActionMenu.Item.Button>
                                                     <ActionMenu.Item.Button
-                                                        leadingIcon={IconKey}
-                                                        on:click={() => {
-                                                            toggle();
-                                                            showManageToken = true;
-                                                            tokenPermissionsMode = true;
-                                                            selectedFileToken = token;
-                                                        }}>
-                                                        Edit permissions
-                                                    </ActionMenu.Item.Button>
-                                                    <ActionMenu.Item.Button
                                                         status="danger"
                                                         leadingIcon={IconTrash}
                                                         on:click={async (e) => {
-                                                            toggle();
+                                                            toggle(e);
                                                             tokenDeleteMode = true;
                                                             showManageToken = true;
                                                             selectedFileToken = token;
@@ -439,7 +395,6 @@
     bind:show={showManageToken}
     bind:isDelete={tokenDeleteMode}
     bind:fileToken={selectedFileToken}
-    bind:isUpdatePermissions={tokenPermissionsMode}
     on:created={({ detail: expiry }) => createFileToken(expiry)}
     on:updated={({ detail: token }) => updateFileToken(token)}
     on:deleted={async () => await deleteFileToken(selectedFileToken)} />
