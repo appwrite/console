@@ -3,7 +3,7 @@
     import { Input, Layout, Selector } from '@appwrite.io/pink-svelte';
 
     export let id: string;
-    export let label: string; // TODO: make label optional, here and in the library!
+    export let label: string = '';
     export let value: string;
     export let required = false;
     export let nullable = false;

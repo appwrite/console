@@ -52,3 +52,16 @@ export function isValueOfStringEnum<T extends Record<string, string>>(
 ): value is T[keyof T] {
     return Object.values<string>(enumType).includes(value);
 }
+
+export type TableRootProp = {
+    allowSelection: boolean;
+    selectedRows: string[];
+    selectedAll: boolean;
+    selectedNone: boolean;
+    selectedSome: boolean;
+    columns: Record<Column['id'], Column>;
+    toggle: (id: string) => void;
+    toggleAll: () => void;
+    addAvailableId: (id: string) => void;
+    removeAvailableId: (id: string) => void;
+};

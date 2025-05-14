@@ -7,6 +7,15 @@
         platformCount: number;
         pingCount: number;
     };
+
+    export type BaseNavbarProps = HTMLAttributes<HTMLHeadElement> & {
+        logo: {
+            src: string;
+            alt: string;
+        };
+        avatar: string;
+        sideBarIsOpen: boolean;
+    };
 </script>
 
 <script lang="ts">
@@ -24,7 +33,6 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
-    import type { BaseNavbarProps } from '@appwrite.io/pink-svelte/dist/navbar/Base.svelte';
     import {
         IconChevronRight,
         IconLogoutRight,
@@ -46,6 +54,7 @@
     import { isCloud } from '$lib/system.js';
     import { user } from '$lib/stores/user';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import type { HTMLAttributes } from 'svelte/elements';
 
     let showSupport = false;
 

@@ -1,9 +1,24 @@
 <script lang="ts">
     import { Card, Tooltip, Icon } from '@appwrite.io/pink-svelte';
-    import { type ComponentProps } from 'svelte';
-    import type Selector from '@appwrite.io/pink-svelte/dist/card/Selector.svelte';
+    import type { HTMLAttributes } from 'svelte/elements';
+    import type { BaseCardProps } from './card.svelte';
+    import type { ComponentType } from 'svelte';
 
-    type Props = ComponentProps<Selector>;
+    type Props = BaseCardProps &
+        HTMLAttributes<HTMLInputElement> & {
+            name: string;
+            value: string;
+            group: string;
+            title: string;
+            info?: string | undefined;
+            icon?: ComponentType;
+            imageHeight?: number;
+            imageWidth?: number;
+            imageRadius?: 'xxs' | 'xs' | 's' | 'm' | 'l';
+            disabled?: boolean;
+            src?: string;
+            alt?: string | undefined;
+        };
 
     export let group: string;
     export let value: string;
