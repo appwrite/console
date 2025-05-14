@@ -4,7 +4,7 @@
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
-    import type { ColumnType } from '$lib/helpers/types';
+    import type { Column, ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
@@ -16,12 +16,15 @@
     import Create from './createDocument.svelte';
     import { collection, columns } from './store';
     import Table from './table.svelte';
+    import { writable } from 'svelte/store';
 
     export let data: PageData;
 
     let showCreateAttribute = false;
     let showCreateDropdown = false;
     let selectedAttribute: Option['name'] = null;
+
+    const filterColumns = writable<Column[]>([]);
 
     $: selected = preferences.getCustomCollectionColumns(
         $page.params.project,
@@ -38,6 +41,15 @@
             elements: 'elements' in attribute ? attribute.elements : null
         }))
     );
+    $: filterColumns.set([
+        ...$columns,
+        ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
+            id,
+            title: id,
+            show: true,
+            type: (id === '$id' ? 'string' : 'datetime') as ColumnType
+        }))
+    ]);
 
     function openWizard() {
         if (!$canWriteDocuments) return;
@@ -65,7 +77,7 @@
 
             <Filters
                 query={data.query}
-                {columns}
+                columns={filterColumns}
                 disabled={!(hasAttributes && hasValidAttributes)} />
 
             <div class="u-flex u-main-end u-gap-16">
