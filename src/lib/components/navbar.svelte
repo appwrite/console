@@ -2,6 +2,7 @@
     export type NavbarProject = {
         name: string;
         $id: string;
+        region: string;
         isSelected: boolean;
         platformCount: number;
         pingCount: number;
