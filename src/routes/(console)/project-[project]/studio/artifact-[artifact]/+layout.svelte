@@ -215,13 +215,6 @@
             {/if}
 
             <Layout.Stack gap="s" direction="row" alignItems="center" inline>
-                <InputSelect
-                    id="artificat-version"
-                    options={[
-                        { value: '0.2', label: 'v0.2' },
-                        { value: '0.1', label: 'v0.1' }
-                    ]}
-                    value="0.2" />
                 <Button.Button size="s" variant="primary">Release</Button.Button>
             </Layout.Stack>
         </Layout.Stack>
