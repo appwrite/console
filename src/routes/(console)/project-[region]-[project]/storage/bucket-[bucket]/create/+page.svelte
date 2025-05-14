@@ -111,6 +111,7 @@
                         <Upload.List
                             files={Array.from(files).map((f) => {
                                 return {
+                                    ...f,
                                     size: f.size,
                                     name: f.name,
                                     removable: true,
