@@ -17,7 +17,9 @@ class Studio {
 
     createTerminal() {
         const symbol = Symbol();
-        this.terminals.set(symbol, new Synapse(this.#endpoint));
+        const synapse = new Synapse(this.#endpoint);
+        synapse.connect();
+        this.terminals.set(symbol, synapse);
         this.activeTerminal = symbol;
     }
 

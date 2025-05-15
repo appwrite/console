@@ -73,8 +73,8 @@
         const resizer = throttle(() => {
             if (!editorElement) return;
             editor.layout({
-                height: editorElement.offsetHeight,
-                width: editorElement.offsetWidth
+                height: editorElement.parentElement.offsetHeight,
+                width: editorElement.parentElement.offsetWidth
             });
         }, 50);
         const observer = new ResizeObserver(resizer);

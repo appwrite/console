@@ -3,7 +3,6 @@
     import type { Action } from 'svelte/action';
     import type { Synapse } from './synapse.svelte';
     import { throttle } from '$lib/helpers/functions';
-    import { studio } from './studio.svelte';
 
     type Props = {
         height: number;
@@ -34,7 +33,7 @@
                     domEvent.stopPropagation();
                     return;
                 }
-                studio.synapse.dispatch(
+                synapse.dispatch(
                     'terminal',
                     {
                         operation: 'createCommand',
@@ -48,7 +47,7 @@
                 );
             });
             term.textarea.addEventListener('paste', (e) => {
-                studio.synapse.dispatch(
+                synapse.dispatch(
                     'terminal',
                     {
                         operation: 'createCommand',
@@ -61,7 +60,7 @@
                     }
                 );
             });
-            studio.synapse.addEventListener('terminal', ({ message }) => {
+            synapse.addEventListener('terminal', ({ message }) => {
                 const { data } = message;
                 if (typeof data === 'string') term.write(data);
             });
@@ -70,7 +69,7 @@
                 if (term.cols === cols && term.rows === rows) return;
                 if (!Number.isInteger(cols) || !Number.isInteger(rows)) return;
                 term.resize(cols - 1, rows - 1);
-                studio.synapse.dispatch(
+                synapse.dispatch(
                     'terminal',
                     {
                         operation: 'updateSize',
