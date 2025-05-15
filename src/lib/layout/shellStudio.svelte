@@ -39,9 +39,11 @@
     import { default as LogoImagine } from '../../routes/(console)/project-[project]/studio/assets/imagine-logo.svelte';
 
     let hasProjectSidebar = $state(false);
+    let hasOrganizationSidebar = $state(false);
 
     $effect(() => {
         hasProjectSidebar = page.url.pathname.startsWith(base + '/project');
+        hasOrganizationSidebar = page.url.pathname.startsWith(base + '/organization');
     });
 
     interface Props {
@@ -240,11 +242,12 @@
         </header>
         <div
             class="studio-content"
+            class:center-layout={!hasOrganizationSidebar && !hasProjectSidebar}
             class:project-sidebar={hasProjectSidebar}
             class:sub-navigation={page.data.subNavigation}>
             {#if $isSmallViewport}
                 {#if isOnEditorPage}
-                    <!-- <ChatWrapper /> -->
+                    <ChatWrapper />
                 {/if}
 
                 <div class="card-wrapper">
@@ -425,6 +428,15 @@
                 margin-left: 48px;
             }
         }
+    }
+
+    .center-layout {
+        margin-inline: auto;
+        max-width: 1200px;
+    }
+
+    .hidden {
+        opacity: 0;
     }
 
     @media (min-width: 1024px) {
