@@ -28,7 +28,6 @@
 
     export let data: PageData;
 
-    const projectId = page.params.project;
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
     let showRelationships = false;

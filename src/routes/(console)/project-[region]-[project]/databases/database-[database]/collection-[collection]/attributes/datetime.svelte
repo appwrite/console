@@ -2,7 +2,6 @@
     import type { Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import { get } from 'svelte/store';
 
     export async function submitDatetime(
         databaseId: string,

@@ -135,9 +135,6 @@
             </Accordion>
 
             <Accordion title="Environment variables" badge="Optional" hideDivider>
-                <svelte:fragment slot="title">
-                    Environment variables <Badge content="Optional" variant="secondary" />
-                </svelte:fragment>
                 <Layout.Stack gap="xl">
                     Set up environment variables to securely manage keys and settings for your
                     project.

@@ -16,7 +16,7 @@
     let showExitModal = false;
 
     let name = '',
-        events = [],
+        events: string[] = [],
         url = '',
         security = true,
         httpUser = '',

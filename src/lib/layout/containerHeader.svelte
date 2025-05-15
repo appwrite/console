@@ -135,7 +135,6 @@
                 <svelte:fragment slot="list">
                     <slot name="tooltip" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
                         {#if hasProjectLimitation}
-                            {@const count = limit > 1 ? serviceId : serviceId.replace('s', '')}
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.

@@ -18,7 +18,7 @@
     ];
 
     let range = SiteUsageRange.ThirtyDays;
-    let metrics = [
+    let metrics: { id: string; value: string | null; description: string }[] = [
         {
             id: 'buildsTotal',
             value: null,

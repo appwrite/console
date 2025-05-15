@@ -8,7 +8,6 @@
     import { Table } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
-    const projectId = page.params.project;
 </script>
 
 <Table.Root columns={$columns} let:root>

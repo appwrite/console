@@ -22,8 +22,6 @@
     let showFailed = false;
     let selectedWebhook: Models.Webhook;
 
-    const projectId = page.params.project;
-
     $: $updateCommandGroupRanks({ webhooks: 20, domains: 10 });
 </script>
 

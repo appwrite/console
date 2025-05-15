@@ -5,7 +5,6 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Fieldset } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { writable } from 'svelte/store';
@@ -17,7 +16,6 @@
 
     let formComponent: Form;
     let isSubmitting = $state(writable(false));
-    let showConnectRepo = $state(false);
     let domainName = $state('');
 
     onMount(() => {

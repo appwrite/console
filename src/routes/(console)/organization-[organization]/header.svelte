@@ -11,12 +11,13 @@
     import { members, newMemberModal, organization } from '$lib/stores/organization';
     import {
         canSeeBilling,
+        canSeeDomains,
         canSeeProjects,
         canSeeTeams,
         isBilling,
         isOwner
     } from '$lib/stores/roles';
-    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE, isCloud, SHOW_INIT_FEATURES } from '$lib/system';
     import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Tooltip, Typography, Layout, Badge } from '@appwrite.io/pink-svelte';
 
@@ -44,8 +45,7 @@
             href: `${path}/domains`,
             event: 'domains',
             title: 'Domains',
-            disabled: !isCloud
-            // disabled: !(isCloud && $canSeeDomains) //TODO: enable this before release
+            disabled: !isCloud || !$canSeeDomains || !SHOW_INIT_FEATURES
         },
         {
             href: `${path}/members`,

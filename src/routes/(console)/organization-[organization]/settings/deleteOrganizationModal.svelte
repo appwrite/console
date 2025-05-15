@@ -16,7 +16,7 @@
     import { Table, Tabs, Alert } from '@appwrite.io/pink-svelte';
     import DeleteOrganizationEstimation from './deleteOrganizationEstimation.svelte';
     import { onMount } from 'svelte';
-    import type { EstimationDeleteOrganization, Invoice, InvoiceList } from '$lib/sdk/billing';
+    import type { EstimationDeleteOrganization, InvoiceList } from '$lib/sdk/billing';
 
     export let showDelete = false;
     export let invoices: InvoiceList;

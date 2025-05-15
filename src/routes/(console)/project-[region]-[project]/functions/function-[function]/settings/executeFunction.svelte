@@ -2,9 +2,9 @@
     import { base } from '$app/paths';
     import { CardGrid, SvgIcon } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
-    import { Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
     import { capitalize } from '$lib/helpers/string';
 </script>

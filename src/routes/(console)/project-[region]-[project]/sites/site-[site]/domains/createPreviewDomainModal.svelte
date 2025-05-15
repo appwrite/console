@@ -18,7 +18,7 @@
     let domain = baseDomain;
     let domainStatus: 'complete' | 'failed' | 'pending' = 'complete';
 
-    let error = null;
+    let error: string = null;
     async function onSubmit() {
         try {
             await sdk

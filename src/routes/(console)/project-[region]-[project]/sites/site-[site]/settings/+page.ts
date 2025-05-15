@@ -1,6 +1,5 @@
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
-import { page } from '$app/state';
 
 export const load = async ({ params, depends, parent }) => {
     depends(Dependencies.VARIABLES);

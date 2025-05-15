@@ -2,7 +2,6 @@
     import {
         InputDomain,
         InputEmail,
-        InputFile,
         InputSelect,
         InputPhone,
         InputSwitch,

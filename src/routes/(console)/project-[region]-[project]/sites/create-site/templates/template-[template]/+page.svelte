@@ -24,7 +24,7 @@
     import Details from '../../details.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { Adapter, BuildRuntime, Framework, ID } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, ID, type Models } from '@appwrite.io/console';
     import {
         ConnectBehaviour,
         NewRepository,
@@ -56,12 +56,12 @@
     let rootDir = './';
     let connectBehaviour: 'now' | 'later' = 'now';
     let repositoryBehaviour: 'new' | 'existing' = 'new';
-    let repositoryName = undefined;
+    let repositoryName: string = undefined;
     let repositoryPrivate = true;
     let selectedInstallationId = '';
     let selectedRepository = '';
     let showSiteConfig = false;
-    let variables = [];
+    let variables: Partial<Models.TemplateVariable>[] = [];
     let silentMode = false;
 
     onMount(async () => {

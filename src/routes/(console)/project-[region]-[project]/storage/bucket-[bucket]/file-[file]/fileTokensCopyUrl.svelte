@@ -2,7 +2,7 @@
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { Modal, Card, CopyInput } from '$lib/components';
+    import { Modal, CopyInput } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Alert, Layout, Tabs, Typography } from '@appwrite.io/pink-svelte';
 

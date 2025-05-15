@@ -8,7 +8,7 @@
     import deepEqual from 'deep-equal';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import type { EmailTemplateLocale, EmailTemplateType } from '@appwrite.io/console';
-    import { Card, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     export let loading = false;

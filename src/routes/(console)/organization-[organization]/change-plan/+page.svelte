@@ -10,8 +10,8 @@
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
-    import { type Coupon, type PaymentList } from '$lib/sdk/billing';
-    import { isOrganization, plansInfo, type Tier, tierToPlan } from '$lib/stores/billing';
+    import { type Coupon } from '$lib/sdk/billing';
+    import { isOrganization, plansInfo, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';

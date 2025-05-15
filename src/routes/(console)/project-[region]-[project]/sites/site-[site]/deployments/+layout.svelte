@@ -12,7 +12,7 @@
     import { IconList, IconPlus, IconSearch } from '@appwrite.io/pink-icons-svelte';
 
     onMount(() => {
-        let previousStatus = null;
+        let previousStatus: string = null;
         return sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
             if (previousStatus === message.payload.status) {
                 return;

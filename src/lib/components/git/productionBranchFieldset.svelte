@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, InputSelect, InputText } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { Fieldset, Input, Layout, Selector, Skeleton } from '@appwrite.io/pink-svelte';
     import SelectRootModal from './selectRootModal.svelte';
     import { sdk } from '$lib/stores/sdk';

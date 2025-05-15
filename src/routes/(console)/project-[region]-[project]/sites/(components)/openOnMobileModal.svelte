@@ -8,7 +8,7 @@
     import { protocol } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Image, Input, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Image, Layout, Tooltip } from '@appwrite.io/pink-svelte';
 
     let {
         show = $bindable(),

@@ -75,20 +75,12 @@
         <svelte:fragment slot="title">Expiration date</svelte:fragment>
         Set a date after which your {label} key will expire.
         <svelte:fragment slot="aside">
-            {#if isExpired}
+            {#if isExpired || isExpiring}
                 <Alert.Inline
-                    status="error"
+                    status={isExpired && isApiKey ? 'error' : 'warning'}
                     on:dismiss={() => (alertsDismissed = true)}
-                    title="Your {label} key has expired">
-                    For security reasons, we recommend you delete your expired key and create a new
-                    one.
-                </Alert.Inline>
-            {:else if isExpiring}
-                <Alert.Inline
-                    status="warning"
-                    on:dismiss={() => (alertsDismissed = true)}
-                    title="Your {label} key is about to expire">
-                    Update the expiration date to keep the key active
+                    title={`Your ${label} key ${isExpired ? 'has expired' : 'is about to expire'}`}>
+                    Update the expiration date to keep the key active.
                 </Alert.Inline>
             {/if}
             <ExpirationInput bind:value={expiration} {expiryOptions} />

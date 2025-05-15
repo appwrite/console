@@ -5,15 +5,6 @@
     import { providerType, provider, providerParams } from './store';
     import SettingsFormList from '../settingsFormList.svelte';
 
-    import { MessagingProviderType } from '@appwrite.io/console';
-    import {
-        Collapsible,
-        CollapsibleItem,
-        ClickableList,
-        ClickableListItem
-    } from '$lib/components';
-    import { getProviderText } from '../../helper';
-
     let files: Record<string, FileList> = {};
     $: inputs = providers[$providerType].providers[$provider].configure;
 

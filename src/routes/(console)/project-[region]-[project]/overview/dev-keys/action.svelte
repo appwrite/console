@@ -58,7 +58,7 @@
     <Form onSubmit={create} isModal>
         <Modal title="Create dev key" bind:open={$showDevKeysCreateModal}>
             <span slot="description">
-                Test your app without rate limits and more detailed error messages.
+                Bypass Appwrite rate limits and CORS errors in your development environment.
             </span>
 
             <Layout.Stack>

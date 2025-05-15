@@ -10,7 +10,6 @@
     export let show = false;
     export let data: Partial<Models.Document>[];
     export let selectedRelationship: Models.AttributeRelationship = null;
-    const projectId = page.params.project;
     const databaseId = page.params.database;
     const limit = 10;
 

@@ -1,6 +1,5 @@
 import { Client, type Models, Sites, Storage } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
-import { createAdminClient } from '$lib/stores/sdk';
 import { getApiEndpoint } from '$lib/stores/sdk';
 import { page } from '$app/state';
 

@@ -18,7 +18,6 @@
         Icon,
         Layout,
         Logs,
-        Popover,
         Spinner,
         Typography
     } from '@appwrite.io/pink-svelte';
@@ -26,8 +25,7 @@
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
     import { app } from '$lib/stores/app';
-    import { getOutputDownload, getSourceDownload, showCreateDeployment } from '../store';
-    import { IconDotsHorizontal, IconRefresh, IconTerminal } from '@appwrite.io/pink-icons-svelte';
+    import { IconDotsHorizontal, IconRefresh } from '@appwrite.io/pink-icons-svelte';
     import { Menu } from '$lib/components/menu';
     import { canWriteFunctions } from '$lib/stores/roles';
     import { Click, trackEvent } from '$lib/actions/analytics';

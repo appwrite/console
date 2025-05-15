@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Component, ComponentType } from 'svelte';
+    import type { ComponentType } from 'svelte';
 
     // export let icon: Component;
     export let icon: ComponentType; //TODO: switch to Component after pink 2 uses svelte 5

@@ -6,7 +6,7 @@ import { isOrganization, tierToPlan } from '$lib/stores/billing';
 import { ID } from '@appwrite.io/console';
 import { BillingPlan } from '$lib/constants';
 import { redirect } from '@sveltejs/kit';
-import { base } from '$service-worker';
+import { base } from '$app/paths';
 
 export const load: PageLoad = async ({ parent }) => {
     const { organizations } = await parent();

@@ -41,9 +41,9 @@
         return `${base}/project-${region}-${projectId}/settings/usage`;
     }
 
-    function getProjectName(projectId: string): string {
-        return data.projects[projectId]?.name ?? 'Unknown';
-    }
+    // function getProjectName(projectId: string): string {
+    //     return data.projects[projectId]?.name ?? 'Unknown';
+    // }
 
     function groupByProject(
         metric: Metric | undefined,

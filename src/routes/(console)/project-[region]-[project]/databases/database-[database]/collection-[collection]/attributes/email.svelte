@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
     import type { Models } from '@appwrite.io/console';
-    import { get } from 'svelte/store';
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
 

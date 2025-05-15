@@ -22,7 +22,7 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let scopes = [];
+    let scopes: string[] = [];
     let name = '',
         expire = '';
 

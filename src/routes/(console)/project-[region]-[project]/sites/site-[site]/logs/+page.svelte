@@ -1,15 +1,13 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { EmptyFilter, PaginationWithLimit, ViewSelector } from '$lib/components';
+    import { EmptyFilter, PaginationWithLimit } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import Table from './table.svelte';
-    import { ParsedTagList, QuickFilters } from '$lib/components/filters';
-    import { Card, Empty, Layout } from '@appwrite.io/pink-svelte';
-    import { View } from '$lib/helpers/load';
+    import { Card, Empty } from '@appwrite.io/pink-svelte';
     import { columns } from './store';
 
     export let data;

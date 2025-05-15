@@ -20,8 +20,8 @@
     export let key: Models.DevKey | Models.Key;
     export let keyType: 'api' | 'dev' = 'api';
 
-    let name = null;
-    let scopes = null;
+    let name: string = null;
+    let scopes: string[] = null;
 
     let showDelete = false;
     const isApiKey = keyType === 'api';
@@ -184,7 +184,7 @@
 
     <CardGrid>
         <svelte:fragment slot="title">Delete {label} key</svelte:fragment>
-        The Dev key will be permanently deleted. This action is irreversible.
+        The {label} key will be permanently deleted. This action is irreversible.
         <svelte:fragment slot="aside">
             <Box>
                 <div class="u-flex u-gap-16">
