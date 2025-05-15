@@ -268,13 +268,14 @@
                                 {/each}
                             </Tabs>
                             <Button.Button
-                                variant="compact"
+                                variant="text"
                                 size="s"
                                 on:click={(event) => {
                                     console.log('clicked');
                                     event.preventDefault();
                                     createTerminal();
-                                }}>
+                                }}
+                                icon>
                                 <Icon
                                     icon={IconPlusSm}
                                     size="m"
