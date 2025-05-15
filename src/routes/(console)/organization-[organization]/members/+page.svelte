@@ -30,6 +30,8 @@
     import Delete from '../deleteMember.svelte';
     import type { PageData } from './$types';
     import Edit from './edit.svelte';
+    import { isCloud } from '$lib/system';
+    import { BillingPlan } from '$lib/constants';
 
     export let data: PageData;
 
@@ -74,8 +76,8 @@
             buttonText={$isOwner ? 'Invite' : ''}
             buttonMethod={() => newMemberModal.set(true)}
             customPillText="Members limited"
-            showPillMessage={!$currentPlan?.addons?.seats?.supported}
-            buttonDisabled={!$currentPlan?.addons?.seats?.supported} />
+            showPillMessage={isCloud && !$currentPlan?.addons?.seats?.supported}
+            buttonDisabled={isCloud && !$currentPlan?.addons?.seats?.supported} />
 
         <TableScroll>
             <TableHeader>
@@ -164,15 +166,18 @@
                                         <span class="icon-dots-horizontal" aria-hidden="true" />
                                     </button>
                                     <svelte:fragment slot="list">
-                                        <DropListItem
-                                            icon="pencil"
-                                            on:click={() => {
-                                                selectedMember = member;
-                                                showEdit = true;
-                                                showDropdown[index] = false;
-                                            }}>
-                                            Edit role
-                                        </DropListItem>
+                                        <!-- TODO: not good, we need data from backend! -->
+                                        {#if isCloud && $currentPlan.$id !== BillingPlan.FREE}
+                                            <DropListItem
+                                                icon="pencil"
+                                                on:click={() => {
+                                                    selectedMember = member;
+                                                    showEdit = true;
+                                                    showDropdown[index] = false;
+                                                }}>
+                                                Edit role
+                                            </DropListItem>
+                                        {/if}
                                         {#if member.invited && !member.joined}
                                             <DropListItem
                                                 icon="refresh"
