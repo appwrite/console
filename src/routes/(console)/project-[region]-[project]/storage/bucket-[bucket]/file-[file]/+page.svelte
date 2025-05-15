@@ -293,8 +293,8 @@
                                                     <ActionMenu.Root>
                                                         <ActionMenu.Root noPadding>
                                                             <ActionMenu.Item.Button
-                                                                on:click={(e) => {
-                                                                    toggle(e);
+                                                                on:click={() => {
+                                                                    toggle();
                                                                     showCopyUrlModal = true;
                                                                     selectedFileToken = token;
                                                                 }}
@@ -304,8 +304,8 @@
                                                         </ActionMenu.Root>
                                                         <ActionMenu.Item.Button
                                                             leadingIcon={IconPencil}
-                                                            on:click={(e) => {
-                                                                toggle(e);
+                                                            on:click={() => {
+                                                                toggle();
                                                                 showManageToken = true;
                                                                 selectedFileToken = token;
                                                             }}>
@@ -314,8 +314,8 @@
                                                         <ActionMenu.Item.Button
                                                             status="danger"
                                                             leadingIcon={IconTrash}
-                                                            on:click={async (e) => {
-                                                                toggle(e);
+                                                            on:click={() => {
+                                                                toggle();
                                                                 tokenDeleteMode = true;
                                                                 showManageToken = true;
                                                                 selectedFileToken = token;
