@@ -15,7 +15,6 @@
     import {
         disableBodySelect,
         enabledBodySelect,
-        getChatWidthFromPrefs,
         getTerminalHeightFromPrefs,
         getTerminalOpenFromPrefs,
         saveTerminalHeightToPrefs,
@@ -39,11 +38,10 @@
     });
 
     let terminalOpen = $state(getTerminalOpenFromPrefs());
-    let asideRef: HTMLElement;
     let isResizing = false;
 
     const minHeight = 350;
-    let resizerTopPosition = $state(minHeight);
+    let resizerTopPosition = $state(getTerminalHeightFromPrefs() ?? minHeight);
     const terminalTabsHeight = 50;
     let layoutElement = $state<HTMLDivElement | null>(null);
 
@@ -56,6 +54,9 @@
         if (terminalOpen !== undefined) {
             saveTerminalOpenToPrefs(terminalOpen);
         }
+    });
+
+    $effect(() => {
         if (terminalOpen === false) {
             editorHeight = layoutElement.offsetHeight - 46;
         } else if (terminalOpen) {
@@ -79,7 +80,7 @@
     function resize(event: MouseEvent | TouchEvent) {
         if (!isResizing) return;
         const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
-        const relativeY = clientY - 50; // y distance from top of card
+        const relativeY = clientY - 50;
 
         const maxHeight = window.innerHeight - 400;
         if (relativeY < minHeight) {
@@ -89,19 +90,12 @@
         } else {
             resizerTopPosition = relativeY;
         }
-
-        // let height =
-        //     asideRef.getBoundingClientRect().y -
-        //     clientY +
-        //     asideRef.getBoundingClientRect().height -
-        //     32;
-        //
-        // terminalHeight = height < maxHeight ? height : maxHeight;
     }
 
     function stopResize() {
         isResizing = false;
-        saveTerminalHeightToPrefs(terminalHeight);
+        saveTerminalHeightToPrefs(resizerTopPosition);
+        console.log('now');
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
         window.removeEventListener('touchmove', resize);
@@ -114,7 +108,9 @@
 
     function createTerminal() {
         studio.createTerminal();
-        terminalOpen = true;
+        if (studio.terminals.size > 1) {
+            terminalOpen = true;
+        }
     }
 
     const artifacts = $derived.by(() => {
@@ -227,7 +223,7 @@
                     ontouchmove={startResize}>
                 </div>
             {/if}
-            <aside bind:this={asideRef} style:top={`${editorHeight}px`}>
+            <aside style:top={`${editorHeight}px`}>
                 <details bind:open={terminalOpen}>
                     <summary
                         onclick={(event) => {
