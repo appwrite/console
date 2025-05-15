@@ -117,10 +117,6 @@
         }
     }
 
-    $effect(() => {
-        console.log(terminals);
-    });
-
     function createTerminal() {
         const symbol = Symbol();
         terminals.set(symbol, createSynapse(endpoint, page.params.artifact));

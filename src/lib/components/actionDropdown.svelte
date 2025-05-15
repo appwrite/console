@@ -8,15 +8,17 @@
     import type { SubMenu } from '$lib/components/bottom-sheet';
     import type { ComponentType } from 'svelte';
 
-    type Item =
-        | {
-              name: string;
-              isActive: boolean;
-              onClick?: () => void;
-              href?: string;
-              icon?: ComponentType;
-              type: 'item';
-          }
+    type Item = {
+        name: string;
+        isActive: boolean;
+        onClick?: () => void;
+        href?: string;
+        icon?: ComponentType;
+        type: 'item';
+    };
+
+    type MenuOption =
+        | Item
         | {
               type: 'divider';
           };
@@ -30,10 +32,10 @@
         elements: { trigger: triggerItems, menu: menuItems }
     } = createMenu();
 
-    let { items = [] }: { items: Item[] } = $props();
+    let { items = [] }: { items: MenuOption[] } = $props();
 
     const selectedItem = $derived.by(() => {
-        return items.find((item) => item.isActive);
+        return items.find((item) => item.type !== 'divider' && item.isActive) as Item;
     });
 
     let bottomSheetOpen = $state(false);
@@ -41,12 +43,14 @@
     const bottomSheetOptions: SubMenu = $derived.by(() => {
         return {
             top: {
-                items: items.map((item) => ({
-                    name: item.name,
-                    href: item.href,
-                    onClick: item.onClick,
-                    leadingIcon: item.icon
-                }))
+                items: items
+                    .filter((item) => item.type !== 'divider')
+                    .map((item) => ({
+                        name: item.name,
+                        href: item.href,
+                        onClick: item.onClick,
+                        leadingIcon: item.icon
+                    }))
             },
             bottom: undefined
         };
