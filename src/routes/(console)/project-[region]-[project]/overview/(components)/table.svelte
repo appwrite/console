@@ -34,8 +34,8 @@
         const isExpiring = key.expire && diffDays(new Date(), new Date(key.expire)) < 14;
 
         return {
-            status: isExpired ? 'error' : isExpiring ? 'warning' : null,
-            message: isExpired ? 'Expired' : isExpiring ? 'Expires soon' : null
+            message: isExpired ? 'Expired' : isExpiring ? 'Expires soon' : null,
+            status: isExpired ? (isApiKey ? 'error' : 'warning') : isExpiring ? 'warning' : null
         };
     }
 
@@ -48,7 +48,7 @@
         if (isApiKey)
             return 'Use API keys to authenticate your app’s requests in production, granting secure access to live data and services.';
         else
-            return 'Dev keys allow bypassing rate limits and accessing more detailed error messages while in development.';
+            return 'Dev keys allow bypassing rate limits and CORS errors in your development environment.';
     }
 
     const columns = isApiKey ? $keyColumns : $devKeyColumns;
