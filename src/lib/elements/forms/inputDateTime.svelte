@@ -3,7 +3,7 @@
     import { Input, Layout, Selector } from '@appwrite.io/pink-svelte';
 
     export let id: string;
-    export let label: string;
+    export let label: string = '';
     export let value: string;
     export let required = false;
     export let nullable = false;
@@ -48,7 +48,7 @@
         {value}
         {step}
         helper={error}
-        on:change={(event) => (value = event.target.value)}
+        on:change={(event) => (value = (event.target as HTMLInputElement).value)}
         autocomplete={autocomplete ? 'on' : 'off'}>
         {#if nullable}
             <Selector.Checkbox

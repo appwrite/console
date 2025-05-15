@@ -14,19 +14,19 @@
     const tabs = [
         {
             href: path,
-            title: 'Overview',
-            event: 'overview'
-        },
-        {
-            href: `${path}/data`,
             title: 'Data',
-            event: 'data',
-            hasChildren: true
+            event: 'data'
         },
         {
             href: `${path}/activity`,
             title: 'Activity',
             event: 'activity',
+            hasChildren: true
+        },
+        {
+            href: `${path}/settings`,
+            title: 'Settings',
+            event: 'settings',
             hasChildren: true
         }
     ];

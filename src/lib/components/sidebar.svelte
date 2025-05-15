@@ -39,10 +39,11 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
 
     import type { HTMLAttributes } from 'svelte/elements';
+    import type { NavbarProject } from '$lib/components/navbar.svelte';
 
     type $$Props = HTMLAttributes<HTMLElement> & {
         state?: 'closed' | 'open' | 'icons';
-        project: { $id: string } | undefined;
+        project: NavbarProject | undefined;
         avatar: string;
         progressCard?: {
             title: string;

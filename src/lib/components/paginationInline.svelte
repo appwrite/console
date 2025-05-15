@@ -54,7 +54,13 @@
 </script>
 
 {#if !hidePages}
-    <Pagination {limit} page={currentPage} {total} type="button" on:page={handleOptionClick} />
+    <Pagination
+        {limit}
+        page={currentPage}
+        {total}
+        type="button"
+        on:page={handleOptionClick}
+        createLink={undefined as never} />
 {:else}
     <Layout.Stack direction="row" inline>
         <Button.Button
