@@ -4,7 +4,8 @@
         IconArrowUp,
         IconChevronDown,
         IconChevronLeft,
-        IconPaperClip
+        IconPaperClip,
+        IconStop
     } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import Conversation from './conversation.svelte';
@@ -38,7 +39,8 @@
     };
     const onsubmit: EventHandler<SubmitEvent, HTMLFormElement> = (event) => {
         event.preventDefault();
-        createMessage();
+        if (sending) controller.abort();
+        else createMessage();
     };
 
     $effect(() => {
@@ -48,8 +50,11 @@
         }
     });
 
+    let controller: AbortController;
+
     async function createMessage() {
         try {
+            controller = new AbortController();
             sending = true;
             const response = await fetch(
                 `${sdk.forProject.client.config.endpoint}/imagine/artifacts/${$conversation.data.artifactId}/conversations/${$conversation.data.$id}/messages`,
@@ -64,7 +69,8 @@
                     body: JSON.stringify({
                         content: message,
                         type: 'text'
-                    })
+                    }),
+                    signal: controller.signal
                 }
             );
 
@@ -93,7 +99,6 @@
             if (error instanceof Error) {
                 parser.chunk(error.message, 'error');
             }
-            console.error(error);
         } finally {
             sending = false;
         }
@@ -140,7 +145,6 @@
                 alignItems={minimizeChat ? 'center' : 'flex-end'}>
                 <textarea
                     {onkeydown}
-                    disabled={sending}
                     bind:this={chatTextareaRef}
                     bind:value={message}
                     name="conversation"
@@ -153,14 +157,9 @@
                         <Button.Button type="button" icon variant="secondary" size="s">
                             <Icon icon={IconPaperClip} color="--fgcolor-neutral-tertiary" />
                         </Button.Button>
-                        <Button.Button
-                            icon
-                            variant="secondary"
-                            size="s"
-                            type="submit"
-                            disabled={sending}>
+                        <Button.Button icon variant="secondary" size="s" type="submit">
                             {#if sending}
-                                <Spinner size="s" />
+                                <Icon icon={IconStop} color="--fgcolor-neutral-tertiary" />
                             {:else}
                                 <Icon icon={IconArrowUp} color="--fgcolor-neutral-tertiary" />
                             {/if}
