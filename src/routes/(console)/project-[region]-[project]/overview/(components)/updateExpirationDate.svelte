@@ -80,7 +80,7 @@
                     status={isExpired && isApiKey ? 'error' : 'warning'}
                     on:dismiss={() => (alertsDismissed = true)}
                     title={`Your ${label} key ${isExpired ? 'has expired' : 'is about to expire'}`}>
-                    Update the expiration date to keep the key active{isExpired ? '.' : ''}
+                    Update the expiration date to keep the key active.
                 </Alert.Inline>
             {/if}
             <ExpirationInput bind:value={expiration} {expiryOptions} />
