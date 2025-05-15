@@ -9,7 +9,7 @@
     import { Runtime, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
-    import { sortBranches } from '$lib/stores/vcs';
+    import { installation, repository as repositoryStore, sortBranches } from '$lib/stores/vcs';
     import {
         Empty,
         Fieldset,
@@ -25,23 +25,28 @@
     import { ConnectGit, ConnectRepoModal, RepositoryCard } from '$lib/components/git';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { page } from '$app/state';
+    import SelectRootModal from '$lib/components/git/selectRootModal.svelte';
 
     export let func: Models.Function;
     export let installations: Models.InstallationList;
 
     let branchesList: Models.BranchList;
-    let selectedBranch: string;
-    let silentMode = false;
-    let selectedDir: string;
+    let selectedBranch = func?.providerBranch;
+    let silentMode = func?.providerSilentMode ?? false;
+    let selectedDir = func?.providerRootDirectory;
     let showDisconnect = false;
     let showConnectRepo = false;
+    let showSelectRoot = false;
     let repository: Models.ProviderRepository | null | false = false;
 
     onMount(() => {
         selectedBranch = func?.providerBranch;
         silentMode = func?.providerSilentMode ?? false;
         selectedDir = func?.providerRootDirectory;
-
+        const inst = installations?.installations.find(
+            (installation) => installation.$id === func?.installationId
+        );
+        installation.set(inst ?? installations?.installations[0]);
         loadRepository();
     });
 
@@ -51,6 +56,7 @@
                 repository = await sdk
                     .forProject(page.params.region, page.params.project)
                     .vcs.getRepository(func.installationId, func.providerRepositoryId);
+                repositoryStore.set(repository);
             }
         } catch (err) {
             console.warn(err);
@@ -222,7 +228,8 @@
                                     label="Root directory"
                                     placeholder="Select directory"
                                     bind:value={selectedDir} />
-                                <Button secondary size="s">Select</Button>
+                                <Button secondary size="s" on:click={() => (showSelectRoot = true)}
+                                    >Select</Button>
                             </Layout.Stack>
 
                             <Selector.Checkbox
@@ -265,4 +272,7 @@
 
 {#if showDisconnect}
     <DisconnectRepo bind:show={showDisconnect} on:success={loadRepository} />
+{/if}
+{#if showSelectRoot}
+    <SelectRootModal bind:show={showSelectRoot} product="sites" bind:rootDir={selectedDir} />
 {/if}

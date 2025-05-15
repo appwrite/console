@@ -144,6 +144,6 @@
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Save</Button>
+        <Button submit disabled={isLoading}>Save</Button>
     </svelte:fragment>
 </Modal>
