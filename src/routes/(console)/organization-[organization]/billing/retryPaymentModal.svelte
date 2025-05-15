@@ -71,20 +71,23 @@
             if (setAsDefault) {
                 await sdk.forConsole.billing.setDefaultPaymentMethod(paymentMethodId);
             }
-            const { clientSecret } = await sdk.forConsole.billing.retryPayment(
+            const { clientSecret, status } = await sdk.forConsole.billing.retryPayment(
                 $organization.$id,
                 invoice.$id,
                 paymentMethodId
             );
 
-            await confirmPayment(
-                $organization.$id,
-                clientSecret,
-                paymentMethodId ? paymentMethodId : $organization.paymentMethodId,
-                `${base}/organization-${$organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
-            );
+            if (status !== 'succeeded' && status !== 'cancelled') {
+                // probably still pending, confirm via stripe!
+                await confirmPayment(
+                    $organization.$id,
+                    clientSecret,
+                    paymentMethodId ? paymentMethodId : $organization.paymentMethodId,
+                    `${base}/organization-${$organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
+                );
 
-            await sdk.forConsole.billing.updateInvoiceStatus($organization.$id, invoice.$id);
+                await sdk.forConsole.billing.updateInvoiceStatus($organization.$id, invoice.$id);
+            }
 
             invalidate(Dependencies.ORGANIZATION);
             invalidate(Dependencies.INVOICES);
