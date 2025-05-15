@@ -13,6 +13,8 @@
 
     export let data;
 
+    let offset = 0;
+
     function applyFilter(filter: string, value: string, event: CustomEvent) {
         const target = new URL(page.url);
         if (event?.detail) {
@@ -31,6 +33,7 @@
             previous.forEach((n) => target.searchParams.append(filter, n));
         }
         target.searchParams.delete('page');
+        offset = 0;
         goto(target.toString());
     }
 
@@ -47,6 +50,8 @@
         }
 
         url.searchParams.delete('page');
+        offset = 0;
+
         goto(url.toString(), { keepFocus: true });
     }, 250);
 
@@ -125,7 +130,13 @@
     </svelte:fragment>
     <Layout.Stack gap="l">
         {#if data.templates?.length > 0}
-            <Paginator items={data.templates} limit={12} hidePages={false} hasLimit gap="m">
+            <Paginator
+                items={data.templates}
+                limit={12}
+                hidePages={false}
+                hasLimit
+                gap="m"
+                bind:offset>
                 {#snippet children(paginatedItems: typeof data.templates)}
                     <Layout.Grid columns={3} columnsXS={2} columnsXXS={1}>
                         {#each paginatedItems as template (template.name)}

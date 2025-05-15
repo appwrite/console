@@ -27,6 +27,8 @@
 
     export let data;
 
+    let offset = 0;
+
     function applyFilter(filter: string, value: string, event: CustomEvent) {
         const target = new URL(page.url);
         if (event?.detail) {
@@ -45,6 +47,7 @@
             previous.forEach((n) => target.searchParams.append(filter, n));
         }
         target.searchParams.delete('page');
+        offset = 0;
         goto(target.toString());
     }
 
@@ -140,7 +143,7 @@
         </Layout.Stack>
         <Layout.Stack gap="l">
             {#if data.templates?.length > 0}
-                <Paginator items={data.templates} limit={12} hidePages={false} hasLimit>
+                <Paginator items={data.templates} limit={12} hidePages={false} hasLimit bind:offset>
                     {#snippet children(paginatedItems: typeof data.templates)}
                         <Layout.Grid columns={2} columnsXL={3} columnsXS={1}>
                             {#each paginatedItems as template}

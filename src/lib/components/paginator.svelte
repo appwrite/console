@@ -12,6 +12,7 @@
         hasLimit = false,
         name = 'items',
         gap = 's',
+        offset = $bindable(0),
         children
     }: {
         items: T[];
@@ -23,12 +24,11 @@
         gap?:
             | ('none' | 'xxxs' | 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | 'xxl' | 'xxxl')
             | undefined;
+        offset?: number;
         children: Snippet<[T[], number]>;
     } = $props();
 
     let total = $derived(items.length);
-
-    let offset = $state(0);
 
     let paginatedItems = $derived(items.slice(offset, offset + limit));
 </script>
