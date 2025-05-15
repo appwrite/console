@@ -1,12 +1,13 @@
 <script lang="ts">
     import { createMenubar, melt } from '@melt-ui/svelte';
     import { Icon, ActionMenu, Card } from '@appwrite.io/pink-svelte';
-    import { IconChevronDown } from '@appwrite.io/pink-icons-svelte';
+    import { IconChevronDown, IconSearch } from '@appwrite.io/pink-icons-svelte';
     import { BottomSheet } from '$lib/components';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
     import type { SubMenu } from '$lib/components/bottom-sheet';
     import type { ComponentType } from 'svelte';
+    import { InputText } from '$lib/elements/forms/index.js';
 
     type Item = {
         name: string;
@@ -32,10 +33,14 @@
         elements: { trigger: triggerItems, menu: menuItems }
     } = createMenu();
 
-    let { items = [] }: { items: MenuOption[] } = $props();
+    let { items = [], hasSearch = false }: { items: MenuOption[]; hasSearch: boolean } = $props();
 
     const selectedItem = $derived.by(() => {
         return items.find((item) => item.type !== 'divider' && item.isActive) as Item;
+    });
+
+    let searchedItems = $derived.by(() => {
+        return items.filter((item) => item.type === 'divider' || item.name.includes(searchValue));
     });
 
     let bottomSheetOpen = $state(false);
@@ -62,12 +67,7 @@
         }
     }
 
-    function disablePointerEvents() {
-        if ($previewFrameRef) {
-            $previewFrameRef.style.pointerEvents = 'none';
-        }
-    }
-
+    let searchValue = $state('');
     let pointerEventsSet = false;
 
     $effect(() => {
@@ -111,9 +111,17 @@
         </button>
     {/if}
 
-    <div class="menu" use:melt={$menuItems}>
+    <div class="menu" use:melt={$menuItems} class:action-dropdown-search={hasSearch}>
         <Card.Base padding="xxxs" shadow={true}>
-            {#each items as item}
+            {#if hasSearch}
+                <div class="search-header">
+                    <InputText placeholder="Search" id="search" bind:value={searchValue}>
+                        <Icon slot="start" icon={IconSearch} />
+                    </InputText>
+                </div>
+                <div class="search-spacer"></div>
+            {/if}
+            {#each searchedItems as item}
                 {#if item.type === 'divider'}
                     <div class="divider"></div>
                 {:else}
@@ -139,6 +147,24 @@
     .menu {
         min-width: 244px;
         z-index: 20;
+    }
+
+    .search-header {
+        position: fixed;
+        width: 234px;
+    }
+
+    .action-dropdown-search {
+        max-height: 400px;
+    }
+    .search-spacer {
+        height: var(--base-36);
+    }
+
+    :global(.action-dropdown-search > div) {
+        max-height: inherit;
+        overflow-y: scroll;
+        scrollbar-width: none;
     }
 
     .trigger-content {

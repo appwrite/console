@@ -150,7 +150,7 @@
 
 {#snippet artifactSelector()}
     {#if page.data.artifacts?.artifacts}
-        <ActionDropdown items={artifacts} />
+        <ActionDropdown items={artifacts} hasSearch />
     {/if}
 {/snippet}
 
