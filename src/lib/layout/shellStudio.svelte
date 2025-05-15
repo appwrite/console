@@ -136,7 +136,10 @@
                     </div>
                     <Layout.Stack direction="row" alignItems="center">
                         {#if !$isSmallViewport && !$isTabletViewport}
-                            <LogoImagine />
+                            <a
+                                href={`${base}/organization-${page.data.organization.$id}`}
+                                style:margin-inline-start="5px"
+                                style:display="flex"><LogoImagine /></a>
                             <span style:margin-inline-end="-10px">/</span>
                         {/if}
                         <Breadcrumbs {organizations} />
