@@ -9,7 +9,7 @@
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
-    import { sortBranches } from '$lib/stores/vcs';
+    import { installation, repository as repositoryStore, sortBranches } from '$lib/stores/vcs';
     import {
         Empty,
         Fieldset,
@@ -25,22 +25,24 @@
     import { ConnectGit, ConnectRepoModal, RepositoryCard } from '$lib/components/git';
     import { showConnectRepo } from './store';
     import { page } from '$app/state';
+    import SelectRootModal from '$lib/components/git/selectRootModal.svelte';
 
     export let site: Models.Site;
     export let installations: Models.InstallationList;
 
     let branchesList: Models.BranchList;
-    let selectedBranch: string;
-    let silentMode = false;
-    let selectedDir: string;
+    let selectedBranch = site?.providerBranch;
+    let silentMode = site?.providerSilentMode ?? false;
+    let selectedDir = site?.providerRootDirectory;
     let showDisconnect = false;
+    let showSelectRoot = false;
     let repository: Models.ProviderRepository | null | false = false;
 
     onMount(() => {
-        selectedBranch = site?.providerBranch;
-        silentMode = site?.providerSilentMode ?? false;
-        selectedDir = site?.providerRootDirectory;
-
+        const inst = installations?.installations.find(
+            (installation) => installation.$id === site?.installationId
+        );
+        installation.set(inst ?? installations?.installations[0]);
         loadRepository();
     });
 
@@ -50,6 +52,7 @@
                 repository = await sdk
                     .forProject(page.params.region, page.params.project)
                     .vcs.getRepository(site.installationId, site.providerRepositoryId);
+                repositoryStore.set(repository);
             }
         } catch (err) {
             console.warn(err);
@@ -116,21 +119,21 @@
                     site.$id,
                     site.name,
                     site.framework as Framework,
-                    site.enabled,
-                    site.logging || undefined,
-                    site.timeout,
-                    site.installCommand,
-                    site.buildCommand,
-                    site.outputDirectory,
-                    site.buildRuntime as BuildRuntime,
+                    site?.enabled,
+                    site?.logging || undefined,
+                    site?.timeout,
+                    site?.installCommand,
+                    site?.buildCommand,
+                    site?.outputDirectory,
+                    site?.buildRuntime as BuildRuntime,
                     site.adapter as Adapter,
-                    site.fallbackFile,
+                    site?.fallbackFile,
                     selectedInstallationId,
                     selectedRepository,
                     'main',
                     undefined,
                     undefined,
-                    undefined
+                    site?.specification || undefined
                 );
             invalidate(Dependencies.SITE);
         } catch (error) {
@@ -219,7 +222,8 @@
                                     label="Root directory"
                                     placeholder="Select directory"
                                     bind:value={selectedDir} />
-                                <Button secondary size="s">Select</Button>
+                                <Button secondary size="s" on:click={() => (showSelectRoot = true)}
+                                    >Select</Button>
                             </Layout.Stack>
 
                             <Selector.Checkbox
@@ -262,4 +266,8 @@
 
 {#if showDisconnect}
     <DisconnectRepo bind:show={showDisconnect} {site} on:success={loadRepository} />
+{/if}
+
+{#if showSelectRoot}
+    <SelectRootModal bind:show={showSelectRoot} product="sites" bind:rootDir={selectedDir} />
 {/if}
