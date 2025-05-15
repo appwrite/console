@@ -36,6 +36,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { conversation, showChat } from '$lib/stores/chat';
     import { type Snippet } from 'svelte';
+    import { default as LogoImagine } from '../../routes/(console)/project-[project]/studio/assets/imagine-logo.svelte';
 
     let hasProjectSidebar = $state(false);
 
@@ -133,7 +134,13 @@
                                     color="--fgcolor-neutral-tertiary" /></Button.Button>
                         {/if}
                     </div>
-                    <Breadcrumbs {organizations} />
+                    <Layout.Stack direction="row" alignItems="center">
+                        {#if !$isSmallViewport && !$isTabletViewport}
+                            <LogoImagine />
+                            <span style:margin-inline-end="-10px">/</span>
+                        {/if}
+                        <Breadcrumbs {organizations} />
+                    </Layout.Stack>
                 </Layout.Stack>
                 <Layout.Stack inline height="32px">
                     <Link.Button
