@@ -4,10 +4,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import Placeholder from './assets/placeholder.svg';
-    import { sdk } from '$lib/stores/sdk';
-    import { ID } from '@appwrite.io/console';
-    import { goto, invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import { createArtifact } from '$lib/helpers/artifact.js';
 
     const { data } = $props();
@@ -18,7 +14,8 @@
         <Typography.Text variant="m-500" color="--fgcolor-neutral-secondary"
             >Artifacts</Typography.Text>
 
-        <Button size="s" on:click={createArtifact} event="create_artifact">Create artifact</Button>
+        <Button size="s" on:click={() => createArtifact()} event="create_artifact"
+            >Create artifact</Button>
     </Layout.Stack>
 
     <Divider />

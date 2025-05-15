@@ -1,21 +1,9 @@
 <script lang="ts">
     import { createMenubar, melt } from '@melt-ui/svelte';
-    import { Badge, Icon, type SheetMenu, ActionMenu, Card } from '@appwrite.io/pink-svelte';
-    import {
-        IconChevronDown,
-        IconChevronRight,
-        IconPlus,
-        IconPlusSm
-    } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, ActionMenu, Card } from '@appwrite.io/pink-svelte';
+    import { IconChevronDown } from '@appwrite.io/pink-icons-svelte';
     import { BottomSheet } from '$lib/components';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { isCloud, isStudio } from '$lib/system';
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { newOrgModal } from '$lib/stores/organization';
-    import { Click, trackEvent } from '$lib/actions/analytics';
-    import { page } from '$app/stores';
-    import type { Artifact } from '$lib/sdk/imagine';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
     import type { SubMenu } from '$lib/components/bottom-sheet';
     import type { ComponentType } from 'svelte';
@@ -44,13 +32,13 @@
 
     let { items = [] }: { items: Item[] } = $props();
 
-    let selectedItem = $derived.by(() => {
+    const selectedItem = $derived.by(() => {
         return items.find((item) => item.isActive);
     });
 
     let bottomSheetOpen = $state(false);
 
-    let bottomSheetOptions: SubMenu = $derived.by(() => {
+    const bottomSheetOptions: SubMenu = $derived.by(() => {
         return {
             top: {
                 items: items.map((item) => ({
@@ -108,12 +96,13 @@
         <button
             type="button"
             class="trigger-wrapper"
-            on:click={() => {
+            onclick={() => {
                 bottomSheetOpen = true;
             }}
             aria-label="Open tab">
-            <span class="orgName" class:noProjects={!selectedItem}
-                >{selectedItem?.name ?? 'Artifact'}</span>
+            <span class="orgName" class:noProjects={!selectedItem}>
+                {selectedItem?.name ?? 'Artifact'}
+            </span>
             <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
         </button>
     {/if}

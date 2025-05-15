@@ -10,9 +10,7 @@
     } from '$lib/helpers/studioLayout.js';
     import { createStreamParser } from '$lib/components/studio/chat/parser.js';
     import { sdk } from '$lib/stores/sdk.js';
-    import { synapse } from '$lib/components/studio/synapse.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { filesystem } from '$lib/components/editor/filesystem';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
     import { queue } from './chat/queue.svelte';
 
