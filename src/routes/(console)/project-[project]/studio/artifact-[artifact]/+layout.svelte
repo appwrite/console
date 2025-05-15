@@ -298,7 +298,7 @@
                             <Terminal height={terminalHeight} synapse={studio.synapse}></Terminal>
                         </div>
                     {/key}
-                    {#each studio.terminals as [symbol, synapse], i (symbol)}
+                    {#each studio.terminals as [symbol, synapse] (symbol)}
                         <div style:display={studio.activeTerminal === symbol ? 'contents' : 'none'}>
                             <Terminal height={terminalHeight} {synapse}></Terminal>
                         </div>
