@@ -209,10 +209,10 @@
             <Divider />
         </div>
     </Layout.Stack>
-    <div style:visibility={view === 'preview' ? 'visible' : 'hidden'}>
+    <div style:display={view === 'preview' ? 'contents' : 'none'}>
         {@render children()}
     </div>
-    <div style:visibility={view === 'editor' ? 'visible' : 'hidden'}>
+    <div style:display={view === 'editor' ? 'contents' : 'none'}>
         <Code />
     </div>
     <aside bind:this={asideRef}>
