@@ -39,13 +39,11 @@
             total={data.domains.total} />
     {:else if data?.search}
         <EmptySearch hidePages bind:search={data.search} target="domains" hidePagination>
-            <svelte:fragment slot="actions">
-                <Button
-                    secondary
-                    on:click={() => {
-                        data.search = '';
-                    }}>Clear search</Button>
-            </svelte:fragment>
+            <Button
+                secondary
+                on:click={() => {
+                    data.search = '';
+                }}>Clear search</Button>
         </EmptySearch>
     {:else}
         <Card.Base padding="none">

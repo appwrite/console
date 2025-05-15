@@ -180,7 +180,7 @@
 
         const groups = token.$permissions.reduce((set, perm) => {
             const match = perm.match(/^(\w+)\(/);
-            const key = match?.[1];
+            const key = match?.[1] as keyof typeof map;
             if (key && map[key]) set.add(map[key]);
             return set;
         }, new Set<string>());
@@ -308,7 +308,7 @@
 
                                     <Table.Cell column="permissions" {root}>
                                         {#if token.$permissions.length}
-                                            <Typography.Text truncate slot="tooltip">
+                                            <Typography.Text truncate>
                                                 {getPermissionGroups(token)}
                                             </Typography.Text>
                                         {:else}
