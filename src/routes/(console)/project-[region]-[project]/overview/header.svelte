@@ -19,7 +19,7 @@
             <Typography.Title color="--fgcolor-neutral-primary" size="xl">
                 {$project?.name}
             </Typography.Title>
-            <Layout.Stack alignItems="center">
+            <Layout.Stack alignItems="center" inline>
                 <Id value={$project.$id}>{$project.$id}</Id>
                 <RegionEndpoint />
             </Layout.Stack>
