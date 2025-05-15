@@ -27,10 +27,14 @@
     import Code from './code.svelte';
     import { studio } from '$lib/components/studio/studio.svelte';
     import { untrack } from 'svelte';
+    import Debug from './debug.svelte';
+    import { dev } from '$app/environment';
 
     const { children, data } = $props();
 
     let view: 'preview' | 'editor' = $state('preview');
+
+    let debug = $state(false);
 
     $effect(() => {
         const { artifact } = page.params;
@@ -203,6 +207,10 @@
                 {/if}
 
                 <Layout.Stack gap="s" direction="row" alignItems="center" inline>
+                    {#if dev}
+                        <Button.Button on:click={() => (debug = true)} size="s" variant="primary"
+                            >DEBUG</Button.Button>
+                    {/if}
                     <Button.Button size="s" variant="primary">Release</Button.Button>
                 </Layout.Stack>
             </Layout.Stack>
@@ -218,6 +226,7 @@
                 <Code />
             </div>
         </div>
+        <Debug bind:show={debug} />
         {#if view === 'editor'}
             {#if terminalOpen}
                 <div
