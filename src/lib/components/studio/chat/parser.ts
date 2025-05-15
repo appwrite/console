@@ -26,7 +26,7 @@ export function isActionType(type: string): type is ActionType {
     return ['file', 'shell'].includes(type);
 }
 
-type ParserEvents = 'complete' | 'chunk';
+type ParserEvents = 'complete' | 'update';
 
 export type ParsedItem = Action | TextChunk | ActionsContainer;
 
@@ -45,7 +45,7 @@ export class StreamParser {
     private callbacksEnabled = true;
     private callbacks: Record<ParserEvents, Array<(action: Action) => void | Promise<void>>> = {
         complete: [],
-        chunk: []
+        update: []
     };
     /**
      * The store of parsed items that can be subscribed to for reactivity
@@ -54,9 +54,11 @@ export class StreamParser {
 
     constructor() {}
 
-    private triggerCallbacks(event: keyof typeof this.callbacks, action: Action) {
+    private triggerCallbacks(events: Array<keyof typeof this.callbacks>, action: Action) {
         if (!this.callbacksEnabled) return;
-        this.callbacks[event].forEach((callback) => callback(action));
+        for (const event of events) {
+            this.callbacks[event].forEach((callback) => callback(action));
+        }
     }
 
     /**
@@ -95,6 +97,12 @@ export class StreamParser {
         this.callbacksEnabled = !options.silent;
         this.buffer += text;
         this.parse();
+
+        // Trigger update callback once after parsing the chunk
+        if (this.callbacksEnabled && this.currentAction) {
+            this.triggerCallbacks(['update'], this.currentAction);
+        }
+
         this.callbacksEnabled = true;
     }
 
@@ -159,8 +167,7 @@ export class StreamParser {
                         }
 
                         this.currentAction.complete = true;
-                        this.triggerCallbacks('complete', this.currentAction);
-
+                        this.triggerCallbacks(['update', 'complete'], this.currentAction);
                         // Don't mark the actions container as complete yet - that happens only when all actions are complete
                         this.updateStore();
                     }
@@ -382,8 +389,7 @@ export class StreamParser {
                         );
                     }
                     this.currentAction.complete = true;
-                    this.triggerCallbacks('complete', this.currentAction);
-
+                    this.triggerCallbacks(['update', 'complete'], this.currentAction);
                     // Don't automatically mark the actions container as complete
                 } else {
                     this.addToTextChunk(this.buffer);
@@ -402,7 +408,7 @@ export class StreamParser {
                 );
             }
             this.currentAction.complete = true;
-            this.triggerCallbacks('complete', this.currentAction);
+            this.triggerCallbacks(['complete'], this.currentAction);
             this.updateStore();
         }
 

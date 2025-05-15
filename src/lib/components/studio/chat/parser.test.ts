@@ -525,4 +525,102 @@ npm install appwrite
         expect(chunk.content).toBe('First part Second part');
         expect(chunk.complete).toBe(true);
     });
+
+    it('should trigger update callback when chunk is parsed', () => {
+        const updateSpy = vi.fn();
+        const completeSpy = vi.fn();
+        parser.on('update', updateSpy);
+        parser.on('complete', completeSpy);
+
+        // Add an action chunk
+        const actionText = '<action type="file" src="example.js">let x = 1;</action>';
+        parser.chunk(actionText, 'system');
+
+        // Both callbacks should be called exactly once for the chunk
+        expect(updateSpy).toHaveBeenCalledTimes(1);
+        expect(completeSpy).toHaveBeenCalledTimes(1);
+
+        // The callback should be called with the completed action
+        const updateArg = updateSpy.mock.calls[0][0];
+        expect(updateArg.type).toBe('file');
+        expect(updateArg.src).toBe('example.js');
+        expect(updateArg.content).toBe('let x = 1;');
+        expect(updateArg.complete).toBe(true);
+    });
+
+    it('should not trigger update callback in silent mode', () => {
+        const callbackSpy = vi.fn();
+        parser.on('update', callbackSpy);
+
+        // Add an action chunk in silent mode
+        const actionText = '<action type="file" src="example.js">console.log("silent");</action>';
+        parser.chunk(actionText, 'system', { silent: true });
+
+        // Callback should not be called in silent mode
+        expect(callbackSpy).not.toHaveBeenCalled();
+    });
+
+    it('should trigger update callback for each chunk in a sequence', () => {
+        // For this test, we need to manually track complete status
+        const updateCallsContent: string[] = [];
+        const updateCallsComplete: boolean[] = [];
+
+        const updateSpy = vi.fn().mockImplementation((action) => {
+            updateCallsContent.push(action.content);
+            updateCallsComplete.push(action.complete);
+        });
+        const completeSpy = vi.fn();
+
+        parser.on('update', updateSpy);
+        parser.on('complete', completeSpy);
+
+        // Send first chunk
+        parser.chunk('<action type="file" src="part1.js">// Part 1', 'system');
+
+        // Send second chunk
+        parser.chunk(' of file', 'system');
+
+        // Send closing tag
+        parser.chunk('</action>', 'system');
+
+        // Callback should be called for each chunk
+        expect(updateSpy).toHaveBeenCalledTimes(3);
+
+        // Verify content progression
+        expect(updateCallsContent[0]).toBe('// Part 1');
+        expect(updateCallsContent[1]).toBe('// Part 1 of file');
+        expect(updateCallsContent[2]).toBe('// Part 1 of file');
+
+        // The lastCompleted flag might be set differently based on internal implementation
+        // So we just verify the third call is complete
+        expect(updateCallsComplete[2]).toBe(true);
+
+        // Verify complete callback was called
+        expect(completeSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should trigger update and complete callbacks for completed action', () => {
+        const updateSpy = vi.fn();
+        const completeSpy = vi.fn();
+        parser.on('update', updateSpy);
+        parser.on('complete', completeSpy);
+
+        // Add a complete action in a single chunk
+        const actionText = '<action type="shell" src="ls">drwxr-xr-x</action>';
+        parser.chunk(actionText, 'system');
+
+        // Both callbacks should be called once
+        expect(updateSpy).toHaveBeenCalledTimes(1);
+        expect(completeSpy).toHaveBeenCalledTimes(1);
+
+        // Update should be called with completed action
+        const updateArg = updateSpy.mock.calls[0][0];
+        expect(updateArg.type).toBe('shell');
+        expect(updateArg.content).toBe('drwxr-xr-x');
+        expect(updateArg.complete).toBe(true);
+
+        // Should be the same action passed to both callbacks
+        const completeArg = completeSpy.mock.calls[0][0];
+        expect(completeArg).toBe(updateArg);
+    });
 });

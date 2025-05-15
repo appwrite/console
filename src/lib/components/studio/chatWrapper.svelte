@@ -133,6 +133,9 @@
     parser.on('complete', async (action) => {
         queue.enqueue(action.group, action);
     });
+    parser.on('update', async (action) => {
+        console.log(action.content);
+    });
 </script>
 
 <Chat {parser} width={chatWidth} hasSubNavigation={false} />
