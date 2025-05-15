@@ -77,7 +77,7 @@
             console.error('Error processing queue item:', error);
 
             if (message.group) {
-                queue.update(message.group, item.id, { status: 'done' });
+                queue.update(message.group, item.id, { status: 'failed' });
             }
         } finally {
             tickets.push(ticket);
@@ -159,6 +159,8 @@
                                             <ShimmerText>Generating</ShimmerText>
                                         {:else if actionInQueue.status === 'done'}
                                             Generated
+                                        {:else if actionInQueue.status === 'failed'}
+                                            <span style:color="var(--fgcolor-error)">Failed</span>
                                         {/if}
                                     </Typography.Code>
                                 {:else if action.type === 'shell'}
@@ -170,6 +172,8 @@
                                             <ShimmerText>Running</ShimmerText>
                                         {:else if actionInQueue.status === 'done'}
                                             Completed
+                                        {:else if actionInQueue.status === 'failed'}
+                                            <span style:color="var(--fgcolor-error)">Failed</span>
                                         {/if}
                                     </Typography.Code>
                                 {/if}

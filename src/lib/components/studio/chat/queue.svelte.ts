@@ -2,7 +2,7 @@ import type { Action } from './parser';
 
 interface Item<T> {
     id: symbol;
-    status: 'waiting' | 'processing' | 'done';
+    status: 'waiting' | 'processing' | 'done' | 'failed';
     data: T;
 }
 
