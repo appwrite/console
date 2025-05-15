@@ -6,7 +6,6 @@
     import { Cover, CoverTitle } from '$lib/layout';
     import { site } from './store';
 
-    $: projectId = page.params.project;
     $: path = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}`;
     $: tabs = [
         {

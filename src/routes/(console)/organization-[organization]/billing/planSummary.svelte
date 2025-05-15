@@ -35,7 +35,6 @@
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
         $plansInfo.get($organization.billingPlan)?.trialDays;
     const extraUsage = currentInvoice ? currentInvoice.amount - currentPlan?.price : 0;
-    const extraAddons = currentInvoice ? currentInvoice.usage?.length : 0;
 
     function usageNameToLabel(name: string): string {
         switch (name) {

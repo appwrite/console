@@ -8,7 +8,6 @@
     import type { Coupon } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
     import type { Campaign } from '$lib/stores/campaigns';
-    import { getApiEndpoint } from '$lib/stores/sdk';
     import { Typography, Layout, Avatar } from '@appwrite.io/pink-svelte';
     import { getCampaignImageUrl } from '$routes/(public)/card/helpers';
 

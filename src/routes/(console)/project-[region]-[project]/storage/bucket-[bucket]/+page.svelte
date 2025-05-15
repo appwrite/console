@@ -29,7 +29,6 @@
     let showDelete = false;
     let selectedFile: Models.File = null;
 
-    const projectId = page.params.project;
     const bucketId = page.params.bucket;
 
     function getPreview(fileId: string) {

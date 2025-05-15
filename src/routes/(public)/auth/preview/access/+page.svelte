@@ -103,9 +103,9 @@
         }
     }
 
-    async function requestAccess() {
-        //TODO: Implement request access
-    }
+    // async function requestAccess() {
+    //     //TODO: Implement request access
+    // }
 
     $: console.log(data);
 </script>

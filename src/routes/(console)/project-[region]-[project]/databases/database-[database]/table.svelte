@@ -16,7 +16,6 @@
     import Confirm from '$lib/components/confirm.svelte';
 
     export let data: PageData;
-    const projectId = page.params.project;
     const databaseId = page.params.database;
 
     let selectedRows: string[] = [];

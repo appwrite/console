@@ -6,7 +6,6 @@
     import { Cover } from '$lib/layout';
     import { Typography } from '@appwrite.io/pink-svelte';
 
-    $: projectId = page.params.project;
     $: path = `${base}/project-${page.params.region}-${page.params.project}/sites`;
     $: tabs = [
         {

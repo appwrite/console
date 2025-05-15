@@ -27,7 +27,6 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import {
-        IconChevronRight,
         IconDotsHorizontal,
         IconDuplicate,
         IconKey,

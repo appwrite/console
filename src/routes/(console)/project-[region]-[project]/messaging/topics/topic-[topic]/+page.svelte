@@ -25,7 +25,7 @@
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import { base } from '$app/paths';
-    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data;

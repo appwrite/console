@@ -11,7 +11,6 @@
         Typography,
         Icon,
         Avatar,
-        Skeleton,
         Button as PinkButton
     } from '@appwrite.io/pink-svelte';
     import { IconLockClosed, IconPlus } from '@appwrite.io/pink-icons-svelte';

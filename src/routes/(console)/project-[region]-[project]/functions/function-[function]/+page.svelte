@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { PaginationWithLimit, ViewSelector, EmptyFilter } from '$lib/components';
+    import { PaginationWithLimit, EmptyFilter } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { columns, deploymentList, func } from './store';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
@@ -9,7 +9,6 @@
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
     import Table from './table.svelte';
-    import { View } from '$lib/helpers/load';
     import DeploymentCard from './(components)/deploymentCard.svelte';
     import RedeployModal from './(modals)/redeployModal.svelte';
     import { canWriteFunctions } from '$lib/stores/roles';
@@ -23,7 +22,6 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { app } from '$lib/stores/app';
     import CreateActionMenu from './(components)/createActionMenu.svelte';
-    import { ParsedTagList, QuickFilters } from '$lib/components/filters';
     import { Menu } from '$lib/components/menu';
     import DownloadActionMenuItem from './(components)/downloadActionMenuItem.svelte';
 

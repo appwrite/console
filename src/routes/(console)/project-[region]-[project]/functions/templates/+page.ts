@@ -1,9 +1,9 @@
-import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+import { Dependencies } from '$lib/constants';
 import { getSearch } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, route, depends, parent, params }) => {
+export const load: PageLoad = async ({ url, depends, parent, params }) => {
     depends(Dependencies.FUNCTIONS);
 
     const search = getSearch(url);

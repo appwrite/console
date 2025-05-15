@@ -2,7 +2,7 @@
     import { Id } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
     import type { Models } from '@appwrite.io/console';
-    import { Badge, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Table, Typography } from '@appwrite.io/pink-svelte';
     import Sheet from './sheet.svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 

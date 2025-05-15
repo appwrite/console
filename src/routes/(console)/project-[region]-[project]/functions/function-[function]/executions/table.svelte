@@ -3,7 +3,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Column } from '$lib/helpers/types';
     import type { Models } from '@appwrite.io/console';
-    import { Badge, Layout, Status, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Status, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import Sheet from './sheet.svelte';
     import { capitalize } from '$lib/helpers/string';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { PaginationWithLimit, ViewSelector, EmptyFilter, Empty } from '$lib/components';
+    import { PaginationWithLimit, EmptyFilter, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
