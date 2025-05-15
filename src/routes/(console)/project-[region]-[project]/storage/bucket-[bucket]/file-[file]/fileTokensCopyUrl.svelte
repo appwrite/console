@@ -11,7 +11,7 @@
     export let file: Models.File;
     export let token: Models.ResourceToken;
 
-    let error = null;
+    let error: boolean = null;
 
     let codeSnippets = {};
     let selectedTab = 'Preview';

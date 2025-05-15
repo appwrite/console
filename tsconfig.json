@@ -11,6 +11,7 @@
         "strict": false,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
         "moduleResolution": "bundler"
     }
 }

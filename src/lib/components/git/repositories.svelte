@@ -42,7 +42,7 @@
     } = $props();
 
     let search = $state('');
-    let selectedInstallation = null;
+    let selectedInstallation: string = null;
     let isLoadingRepositories = $state(null);
 
     async function loadInstallations() {
@@ -110,6 +110,8 @@
         $repositories.search = search;
         $repositories.installationId = installationId;
     }
+
+    $inspect(selectedRepository);
 </script>
 
 {#if hasInstallations}
