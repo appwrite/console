@@ -282,12 +282,12 @@
                                             ? cleanFormattedDate(token.accessedAt, true)
                                             : 'Never'}</Table.Cell>
 
-                                <Table.Cell column="actions" {root}>
-                                    <Layout.Stack alignItems="flex-end">
-                                        <Menu>
-                                            <PinkButton.Button icon variant="ghost">
-                                                <Icon size="s" icon={IconDotsHorizontal} />
-                                            </PinkButton.Button>
+                                    <Table.Cell column="actions" {root}>
+                                        <Layout.Stack alignItems="flex-end">
+                                            <Menu>
+                                                <PinkButton.Button icon variant="ghost">
+                                                    <Icon size="s" icon={IconDotsHorizontal} />
+                                                </PinkButton.Button>
 
                                                 <svelte:fragment slot="menu" let:toggle>
                                                     <ActionMenu.Root>
@@ -313,8 +313,8 @@
                                                         </ActionMenu.Item.Button>
                                                         <ActionMenu.Item.Button
                                                             status="danger"
-                                                        leadingIcon={IconTrash}
-                                                        on:click={async () => {
+                                                            leadingIcon={IconTrash}
+                                                            on:click={async (e) => {
                                                                 toggle(e);
                                                                 tokenDeleteMode = true;
                                                                 showManageToken = true;
