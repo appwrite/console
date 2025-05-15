@@ -358,7 +358,7 @@
                                                         <ActionMenu.Item.Button
                                                             status="danger"
                                                             leadingIcon={IconTrash}
-                                                            on:click={async (e) => {
+                                                            on:click={async () => {
                                                                 toggle();
                                                                 tokenDeleteMode = true;
                                                                 showManageToken = true;

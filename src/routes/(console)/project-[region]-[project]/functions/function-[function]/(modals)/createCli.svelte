@@ -3,13 +3,12 @@
     import { Modal } from '$lib/components';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
-    import { func } from '../store';
     import { Alert, Code, Layout, Tabs } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
 
     export let show = false;
 
-    let lang = 'js';
+    // let lang = 'js';
     let codeSnippets = {};
     let os = 'unknown';
     let category = 'Unix';
@@ -17,8 +16,8 @@
     const functionId = page.params.function;
 
     onMount(() => {
-        lang = setLanguage($func.runtime);
-        codeSnippets = setCodeSnippets(lang);
+        // lang = setLanguage($func.runtime);
+        codeSnippets = setCodeSnippets();
         os = navigator['userAgentData']?.platform || navigator?.platform || 'unknown';
 
         if (os.includes('Win')) {
@@ -30,29 +29,29 @@
         }
     });
 
-    function setLanguage(runtime: string) {
-        if (runtime.includes('node') || runtime.includes('deno')) {
-            return 'js';
-        } else if (runtime.includes('php')) {
-            return 'php';
-        } else if (runtime.includes('python')) {
-            return 'py';
-        } else if (runtime.includes('dart')) {
-            return 'dart';
-        } else if (runtime.includes('dotnet')) {
-            return 'cs';
-        } else if (runtime.includes('ruby')) {
-            return 'rb';
-        } else if (runtime.includes('swift')) {
-            return 'swift';
-        } else if (runtime.includes('kotlin')) {
-            return 'kt';
-        } else if (runtime.includes('java')) {
-            return 'java';
-        }
-    }
+    // function setLanguage(runtime: string) {
+    //     if (runtime.includes('node') || runtime.includes('deno')) {
+    //         return 'js';
+    //     } else if (runtime.includes('php')) {
+    //         return 'php';
+    //     } else if (runtime.includes('python')) {
+    //         return 'py';
+    //     } else if (runtime.includes('dart')) {
+    //         return 'dart';
+    //     } else if (runtime.includes('dotnet')) {
+    //         return 'cs';
+    //     } else if (runtime.includes('ruby')) {
+    //         return 'rb';
+    //     } else if (runtime.includes('swift')) {
+    //         return 'swift';
+    //     } else if (runtime.includes('kotlin')) {
+    //         return 'kt';
+    //     } else if (runtime.includes('java')) {
+    //         return 'java';
+    //     }
+    // }
 
-    function setCodeSnippets(lang: string) {
+    function setCodeSnippets() {
         return {
             Unix: {
                 code: `appwrite client --projectId="${page.params.project}" && \\

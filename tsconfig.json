@@ -10,6 +10,7 @@
         "sourceMap": true,
         "strict": false,
         "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "moduleResolution": "bundler"
     }
 }
