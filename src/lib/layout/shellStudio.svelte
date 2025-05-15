@@ -122,7 +122,7 @@
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Layout.Stack direction="row" alignItems="center" gap="none">
                     <div class="only-mobile-tablet">
-                        {#if page.data.organization}
+                        {#if page.data?.organization}
                             <Button.Button
                                 variant="secondary"
                                 size="xs"
@@ -137,7 +137,7 @@
                     <Layout.Stack direction="row" alignItems="center">
                         {#if !$isSmallViewport && !$isTabletViewport}
                             <a
-                                href={`${base}/organization-${page.data.organization.$id}`}
+                                href={`${base}/organization-${page.data?.organization?.$id}`}
                                 style:margin-inline-start="5px"
                                 style:display="flex"><LogoImagine /></a>
                             <span style:margin-inline-end="-10px">/</span>
@@ -298,7 +298,7 @@
             {#if page.data.project}
                 <SidebarProject project={page.data.project} bind:isOpen={showSideNavigation} />
             {/if}
-        {:else if page.data.organization}
+        {:else if page.data?.organization}
             <SidebarOrganization
                 organization={page.data.organization}
                 bind:isOpen={showSideNavigation} />
@@ -423,10 +423,6 @@
                 margin-left: 48px;
             }
         }
-    }
-
-    .hidden {
-        opacity: 0;
     }
 
     @media (min-width: 1024px) {
