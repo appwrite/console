@@ -198,9 +198,12 @@ export class Synapse {
             if (!noReturn) this.ws.addEventListener('message', callback);
             else resolve(null);
         });
+
         // check if websocket is connected
-        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-            throw new Error('WebSocket is not connected');
+        if (this.ws?.readyState !== WebSocket.OPEN) {
+            await this.isConnected();
+            if (this.ws?.readyState !== WebSocket.OPEN)
+                throw new Error('WebSocket is not connected');
         }
         this.ws.send(JSON.stringify(message));
 
