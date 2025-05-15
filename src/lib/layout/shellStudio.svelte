@@ -254,7 +254,7 @@
                     </Card.Base>
                 </div>
             {:else}
-                <div class="studio-wrapper">
+                <div class="studio-wrapper" class:no-bottom-padding={isOnEditorPage}>
                     <Card.Base padding={isOnEditorPage ? 'xxs' : 's'}>
                         <Layout.Stack direction="row" gap={$showChat ? 'l' : 'none'}>
                             {#if isOnEditorPage}
@@ -387,6 +387,10 @@
     .studio-wrapper {
         position: relative;
         height: calc(100dvh - 64px);
+    }
+
+    :global(.no-bottom-padding > div) {
+        padding-bottom: 0 !important;
     }
 
     :global(.studio-wrapper > div) {
