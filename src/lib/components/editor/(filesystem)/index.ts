@@ -11,6 +11,7 @@ import {
     IconVariable,
     IconDocumentText
 } from '@appwrite.io/pink-icons-svelte';
+import type { SvelteSet } from 'svelte/reactivity';
 
 export const icons: Record<Icon, ComponentType> = {
     svelte: IconSvelte,
@@ -67,10 +68,10 @@ function getIcon(filename: string): Icon {
     return 'file';
 }
 
-export function treeFromFilesystem(files: string[]): TreeItem[] {
+export function treeFromFilesystem(files: SvelteSet<string>): TreeItem[] {
     const tree: TreeItem[] = [];
 
-    for (const path of files) {
+    for (const path of Array.from(files)) {
         const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
 
         if (!normalizedPath) continue;

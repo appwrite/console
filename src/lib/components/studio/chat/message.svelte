@@ -50,7 +50,7 @@
                             content: action.content
                         }
                     });
-                    studio.filesystem.push(action.src);
+                    studio.filesystem.add(action.src);
                     break;
                 case 'shell':
                     await studio.synapse.dispatch(

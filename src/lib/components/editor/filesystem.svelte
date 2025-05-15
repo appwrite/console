@@ -3,9 +3,10 @@
     import { setContext } from 'svelte';
     import { treeFromFilesystem } from './(filesystem)';
     import Tree from './(filesystem)/tree.svelte';
+    import type { SvelteSet } from 'svelte/reactivity';
 
     type Props = {
-        files: string[];
+        files: SvelteSet<string>;
         onopenfile: (path: string) => void;
         onopenfolder: (path: string) => void;
     };

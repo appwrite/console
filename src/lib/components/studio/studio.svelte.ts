@@ -1,4 +1,4 @@
-import { SvelteMap, SvelteURL } from 'svelte/reactivity';
+import { SvelteMap, SvelteSet, SvelteURL } from 'svelte/reactivity';
 import { Synapse } from './synapse.svelte';
 
 class Studio {
@@ -7,7 +7,7 @@ class Studio {
     readonly mainTerminalId = Symbol();
     terminals = new SvelteMap<symbol, Synapse>();
     activeTerminal = $state(this.mainTerminalId);
-    filesystem: string[] = $state([]);
+    filesystem: SvelteSet<string> = $state(new SvelteSet());
     synapse: Synapse;
 
     constructor(host: string) {
@@ -28,7 +28,7 @@ class Studio {
         this.terminals.clear();
     }
     #resetFileSystem() {
-        this.filesystem = [];
+        this.filesystem.clear();
     }
 
     async #initFileSystem() {
@@ -41,7 +41,10 @@ class Studio {
         const data = response.data as Array<{ name: string; isDirectory: boolean }>;
         if (!Array.isArray(data)) return;
 
-        this.filesystem = data.map(({ name, isDirectory }) => (isDirectory ? name + '/' : name));
+        for (const { name, isDirectory } of data) {
+            const key = isDirectory ? name + '/' : name;
+            this.filesystem.add(key);
+        }
     }
     get #endpoint(): string {
         const url = new SvelteURL(this.#host);
@@ -61,7 +64,7 @@ class Studio {
 
         for (const { name, isDirectory } of data) {
             const key = isDirectory ? name + '/' : name;
-            this.filesystem.push(path + '/' + key);
+            this.filesystem.add(path + '/' + key);
         }
     }
     async selectArtifact(artifact: string) {
