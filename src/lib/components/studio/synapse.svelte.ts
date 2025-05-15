@@ -1,10 +1,12 @@
 import { SvelteURL } from 'svelte/reactivity';
 
 type WebSocketEvent = 'connect' | 'disconnect' | 'reconnect';
-type SynapseMessageType = 'terminal' | 'fs' | 'synapse';
+type SynapseMessageType = 'terminal' | 'fs' | 'synapse' | 'syncWorkDir';
 type SynapseMessageOperations = {
     operation: 'updateWorkDir';
-    params: { workDir: string };
+    params: {
+        workDir: string;
+    };
 };
 type SynapseMessageOperationFileSystem =
     | {

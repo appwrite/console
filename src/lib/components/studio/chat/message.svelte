@@ -70,7 +70,8 @@
             }
 
             if (message.group) {
-                queue.update(message.group, item.id, { status: 'done' });
+                const status = action.complete ? 'done' : 'waiting';
+                queue.update(message.group, item.id, { status });
             }
         } catch (error) {
             console.error('Error processing queue item:', error);

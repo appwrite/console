@@ -28,6 +28,13 @@
         }
     }
 
+    studio.synapse.addEventListener('syncWorkDir', ({ message }) => {
+        const { path, content } = message.success as unknown as { path: string; content: string };
+        if (path === '/' + currentFile) {
+            instance?.loadCode(content as string, getLanguageFromExtensions(path));
+        }
+    });
+
     async function openFile(path: string) {
         const message = await studio.synapse.dispatch('fs', {
             operation: 'getFile',

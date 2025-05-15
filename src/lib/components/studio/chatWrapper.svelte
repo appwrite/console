@@ -131,10 +131,22 @@
         }
     });
     parser.on('complete', async (action) => {
-        queue.enqueue(action.group, action);
+        const job = queue.lists[action.group]?.find((item) => item.data.id === action.id);
+
+        queue.update(action.group, job.id, {
+            data: action,
+            status: 'done'
+        });
     });
     parser.on('update', async (action) => {
-        console.log(action.content);
+        const job = queue.lists[action.group]?.find((item) => item.data.id === action.id);
+        if (job) {
+            queue.update(action.group, job.id, {
+                data: action
+            });
+        } else {
+            queue.enqueue(action.group, action);
+        }
     });
 </script>
 
