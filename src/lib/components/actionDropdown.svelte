@@ -20,13 +20,18 @@
     import type { SubMenu } from '$lib/components/bottom-sheet';
     import type { ComponentType } from 'svelte';
 
-    type Item = {
-        name: string;
-        isActive: boolean;
-        onClick?: () => void;
-        href?: string;
-        icon?: ComponentType;
-    };
+    type Item =
+        | {
+              name: string;
+              isActive: boolean;
+              onClick?: () => void;
+              href?: string;
+              icon?: ComponentType;
+              type: 'item';
+          }
+        | {
+              type: 'divider';
+          };
 
     const {
         elements: { menubar },
@@ -116,16 +121,21 @@
     <div class="menu" use:melt={$menuItems}>
         <Card.Base padding="xxxs" shadow={true}>
             {#each items as item}
-                <div use:melt={$triggerItems}>
-                    <ActionMenu.Root>
-                        {#if item.href}
-                            <ActionMenu.Item.Anchor href={item.href}
-                                >{item.name}</ActionMenu.Item.Anchor>
-                        {:else if item.onClick}
-                            <ActionMenu.Item.Button on:click={item.onClick} leadingIcon={item.icon}
-                                >{item.name}</ActionMenu.Item.Button>
-                        {/if}</ActionMenu.Root>
-                </div>
+                {#if item.type === 'divider'}
+                    <div class="divider"></div>
+                {:else}
+                    <div use:melt={$triggerItems}>
+                        <ActionMenu.Root>
+                            {#if item.href}
+                                <ActionMenu.Item.Anchor href={item.href}
+                                    >{item.name}</ActionMenu.Item.Anchor>
+                            {:else if item.onClick}
+                                <ActionMenu.Item.Button
+                                    on:click={item.onClick}
+                                    leadingIcon={item.icon}>{item.name}</ActionMenu.Item.Button>
+                            {/if}</ActionMenu.Root>
+                    </div>
+                {/if}
             {/each}
         </Card.Base>
     </div>
@@ -224,14 +234,11 @@
                 var(--bgcolor-neutral-default, #fafafb),
             0 0 0 4px var(--border-focus, #818186);
     }
-    .separator {
+    .divider {
         height: 1px;
         margin-block: 2px;
         margin-inline-start: calc(var(--base-4) * -1);
         width: calc(100% + var(--base-8));
         background-color: var(--border-neutral);
-    }
-    .breadcrumb-separator {
-        color: var(--fgcolor-neutral-tertiary, #97979b);
     }
 </style>

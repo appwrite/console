@@ -154,18 +154,23 @@
                   return {
                       name: artifact.name,
                       isActive: page.params.artifact === artifact.$id,
-                      href: `${base}/project-${page.params.project}/studio/artifact-${artifact.$id}`
+                      href: `${base}/project-${page.params.project}/studio/artifact-${artifact.$id}`,
+                      type: 'item'
                   };
               })
             : [];
 
+        mappedArtifacts.push({
+            type: 'divider'
+        });
         mappedArtifacts.push({
             name: 'Create artifact',
             isActive: false,
             onClick: () => {
                 createArtifact();
             },
-            icon: IconPlus
+            icon: IconPlus,
+            type: 'item'
         });
         return mappedArtifacts;
     });
