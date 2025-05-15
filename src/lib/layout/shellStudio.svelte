@@ -124,7 +124,7 @@
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Layout.Stack direction="row" alignItems="center" gap="none">
                     <div class="only-mobile-tablet">
-                        {#if page.data.organization}
+                        {#if page.data?.organization}
                             <Button.Button
                                 variant="secondary"
                                 size="xs"
@@ -303,7 +303,7 @@
             {#if page.data.project}
                 <SidebarProject project={page.data.project} bind:isOpen={showSideNavigation} />
             {/if}
-        {:else if page.data.organization}
+        {:else if page.data?.organization}
             <SidebarOrganization
                 organization={page.data.organization}
                 bind:isOpen={showSideNavigation} />
