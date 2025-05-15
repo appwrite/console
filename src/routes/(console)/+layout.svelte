@@ -46,6 +46,9 @@
     import { base } from '$app/paths';
     import { canSeeProjects } from '$lib/stores/roles';
     import { BottomModalAlert } from '$lib/components';
+    import { browser, dev } from '$app/environment';
+    import { user } from '$lib/stores/user';
+    import { loadReoScript, type Reo, type ReoUserIdentifyConfig } from 'reodotdev';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -238,7 +241,34 @@
             rank: -1
         }
     ]);
+
+    function initReo() {
+        if (dev || !browser || !Object.keys($user).length) return;
+
+        const clientID = '144fa7eaa4904e8';
+        const reoPromise = loadReoScript({ clientID });
+
+        reoPromise.then(async (reo: Reo) => {
+            reo.init({ clientID });
+
+            const name = $user.name || $user.email;
+            const nameParts = name.trim().split(' ');
+            const lastname = nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined;
+
+            const reoIdentity: ReoUserIdentifyConfig = {
+                username: $user.email,
+                firstname: nameParts[0],
+                type: $user.password ? 'email' : 'github',
+                ...(lastname && { lastname })
+            };
+
+            reo.identify(reoIdentity);
+        });
+    }
+
     onMount(async () => {
+        initReo();
+
         loading.set(false);
         if (!localStorage.getItem('feedbackElapsed')) {
             localStorage.setItem('feedbackElapsed', '0');

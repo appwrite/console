@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { browser, dev } from '$app/environment';
+    import { browser } from '$app/environment';
     import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
@@ -106,41 +106,7 @@
             }
         }
     }
-
-    onMount(() => {
-        const reoIdentity = {
-            username: $user.email,
-            type: $user.password ? 'email' : 'github',
-            firstname: $user.name.split(' ')[0],
-            lastname: $user.name.split(' ')[1]
-        };
-
-        if (dev || !Object.keys($user).length) return;
-        // @ts-expect-error
-        Reo.identify(reoIdentity);
-    });
 </script>
-
-<svelte:head>
-    {#if !dev && browser}
-        <!-- Start of Reo Javascript -->
-        <script type="text/javascript">
-            !(function () {
-                var e, t, n;
-                (e = '144fa7eaa4904e8'),
-                    (t = function () {
-                        Reo.init({ clientID: '144fa7eaa4904e8' });
-                    }),
-                    ((n = document.createElement('script')).src =
-                        'https://static.reo.dev/' + e + '/reo.js'),
-                    (n.defer = !0),
-                    (n.onload = t),
-                    document.head.appendChild(n);
-            })();
-        </script>
-        <!-- End of Reo Javascript -->
-    {/if}
-</svelte:head>
 
 <Notifications />
 <!-- {#if isCloud}
