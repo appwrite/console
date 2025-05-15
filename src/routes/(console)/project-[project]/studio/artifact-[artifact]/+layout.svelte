@@ -146,6 +146,10 @@
             createTerminal();
         }
     });
+
+    function onViewportResize() {
+        resizerTopPosition--;
+    }
 </script>
 
 {#snippet artifactSelector()}
@@ -154,6 +158,7 @@
     {/if}
 {/snippet}
 
+<svelte:window on:resize={onViewportResize} />
 <div bind:this={layoutElement} class="layout">
     <Layout.Stack
         direction="column"
