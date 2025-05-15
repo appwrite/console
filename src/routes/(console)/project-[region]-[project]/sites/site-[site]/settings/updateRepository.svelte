@@ -68,20 +68,21 @@
                     site.$id,
                     site.name,
                     site?.framework as Framework,
-                    site.enabled || undefined,
-                    site.logging || undefined,
-                    site.timeout || undefined,
-                    site.installCommand || undefined,
-                    site.buildCommand || undefined,
-                    site.outputDirectory || undefined,
+                    site?.enabled || undefined,
+                    site?.logging || undefined,
+                    site?.timeout || undefined,
+                    site?.installCommand || undefined,
+                    site?.buildCommand || undefined,
+                    site?.outputDirectory || undefined,
                     (site?.buildRuntime as BuildRuntime) || undefined,
-                    site.adapter as Adapter,
-                    site.fallbackFile || undefined,
-                    site.installationId || undefined,
-                    site.providerRepositoryId || undefined,
+                    site?.adapter as Adapter,
+                    site?.fallbackFile || undefined,
+                    site?.installationId || undefined,
+                    site?.providerRepositoryId || undefined,
                     selectedBranch || undefined,
                     silentMode || undefined,
-                    selectedDir || undefined
+                    selectedDir || undefined,
+                    site?.specification || undefined
                 );
             await invalidate(Dependencies.SITE);
             addNotification({

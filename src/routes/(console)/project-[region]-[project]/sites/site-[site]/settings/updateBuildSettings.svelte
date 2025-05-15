@@ -112,7 +112,8 @@
                     site.providerRepositoryId || undefined,
                     site.providerBranch || undefined,
                     site.providerSilentMode || undefined,
-                    site.providerRootDirectory || undefined
+                    site.providerRootDirectory || undefined,
+                    site?.specification || undefined
                 );
             await invalidate(Dependencies.SITE);
             addNotification({

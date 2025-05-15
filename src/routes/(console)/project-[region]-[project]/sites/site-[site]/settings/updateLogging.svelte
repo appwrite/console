@@ -21,20 +21,21 @@
                     site.$id,
                     site.name,
                     site.framework as Framework,
-                    site.enabled || undefined,
+                    site?.enabled || undefined,
                     logging,
-                    site.timeout || undefined,
-                    site.installCommand || undefined,
-                    site.buildCommand || undefined,
-                    site.outputDirectory || undefined,
+                    site?.timeout || undefined,
+                    site?.installCommand || undefined,
+                    site?.buildCommand || undefined,
+                    site?.outputDirectory || undefined,
                     (site?.buildRuntime as BuildRuntime) || undefined,
-                    site.adapter as Adapter,
-                    site.fallbackFile || undefined,
-                    site.installationId || undefined,
-                    site.providerRepositoryId || undefined,
-                    site.providerBranch || undefined,
-                    site.providerSilentMode || undefined,
-                    site.providerRootDirectory || undefined
+                    site?.adapter as Adapter,
+                    site?.fallbackFile || undefined,
+                    site?.installationId || undefined,
+                    site?.providerRepositoryId || undefined,
+                    site?.providerBranch || undefined,
+                    site?.providerSilentMode || undefined,
+                    site?.providerRootDirectory || undefined,
+                    site?.specification || undefined
                 );
             await invalidate(Dependencies.SITE);
             addNotification({
