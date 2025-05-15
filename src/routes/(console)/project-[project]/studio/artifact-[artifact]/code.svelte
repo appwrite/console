@@ -77,7 +77,7 @@
 
 <style lang="scss">
     main {
-        height: 100%;
+        height: 50vh;
         display: grid;
         grid-template-columns: 25% 75%;
     }

@@ -1,4 +1,3 @@
-import { page } from '$app/state';
 import { SvelteURL } from 'svelte/reactivity';
 
 type WebSocketEvent = 'connect' | 'disconnect' | 'reconnect';
@@ -52,8 +51,35 @@ export class Synapse {
     private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
     public isReconnecting = $state(false);
 
-    constructor(endpoint: string) {
-        this.endpoint = endpoint;
+    constructor(endpoint: string, artifact?: string) {
+        const url = new SvelteURL(endpoint);
+
+        if (artifact) url.searchParams.set('workDir', `/artifact/${artifact}`);
+        this.endpoint = url.toString();
+        this.connect();
+    }
+
+    public async isConnected(): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            let tries = 0;
+            const interval = setInterval(() => {
+                if (++tries > 20) {
+                    reject(new Error('WebSocket is not connected'));
+                }
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                    clearInterval(interval);
+                    resolve(true);
+                }
+            }, 50);
+        });
+    }
+
+    public changeArtifact(endpoint: string, artifact?: string) {
+        const url = new SvelteURL(endpoint);
+
+        if (artifact) url.searchParams.set('workDir', `/artifact/${artifact}`);
+        this.endpoint = url.toString();
+
         this.connect();
     }
 
@@ -200,4 +226,5 @@ export function createSynapse(endpoint: string, artifact?: string) {
 
     return new Synapse(url.toString());
 }
-export const synapse = createSynapse(endpoint, page.params.artifact);
+
+export const synapse = createSynapse(endpoint);

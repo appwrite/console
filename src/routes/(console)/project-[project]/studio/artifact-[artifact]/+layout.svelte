@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Layout, Typography, Divider, Icon, Button } from '@appwrite.io/pink-svelte';
-    import { isTabSelected } from '$lib/helpers/load';
     import { page } from '$app/state';
     import { ActionDropdown, Tab, Tabs, Terminal } from '$lib/components';
     import { base } from '$app/paths';
@@ -21,65 +20,40 @@
         saveTerminalHeightToPrefs,
         saveTerminalOpenToPrefs
     } from '$lib/helpers/studioLayout';
-    import {
-        createSynapse,
-        endpoint,
-        Synapse,
-        synapse
-    } from '$lib/components/studio/synapse.svelte';
+    import { createSynapse, endpoint, synapse } from '$lib/components/studio/synapse.svelte';
     import { showChat } from '$lib/stores/chat';
     import { default as IconChatLayout } from '../assets/chat-layout.svelte';
     import { default as IconImagine } from '../assets/icon-imagine.svelte';
     import { filesystem } from '$lib/components/editor/filesystem';
-    import { InputSelect } from '$lib/elements/forms/index.js';
     import { SvelteMap } from 'svelte/reactivity';
     import { createArtifact } from '$lib/helpers/artifact';
+    import { untrack } from 'svelte';
+    import Code from './code.svelte';
 
-    const { children } = $props();
+    const { children, data } = $props();
 
-    const path = $derived(
-        `${base}/project-${page.params.project}/studio/artifact-${page.params.artifact}`
-    );
-    const tabs = $derived([
-        {
-            href: path,
-            title: 'Preview',
-            event: 'preview',
-            hasChildren: true
-        },
-        {
-            href: `${path}/code`,
-            title: 'Code',
-            event: 'code',
-            hasChildren: true
-        }
-    ]);
+    let view: 'preview' | 'editor' = $state('preview');
     const mainTerminalId = Symbol();
-    const terminals = new SvelteMap<symbol, Synapse>();
+    const terminals = new SvelteMap<symbol, ReturnType<typeof createSynapse>>();
     let currentTerminal: symbol = $state(mainTerminalId);
-    synapse
-        .dispatch(
-            'synapse',
-            {
-                operation: 'updateWorkDir',
-                params: {
-                    workDir: `/artifact/${page.params.artifact}`
-                }
-            },
-            {
-                noReturn: true
+
+    $effect(() => {
+        const { artifact } = page.params;
+        untrack(async () => {
+            synapse.changeArtifact(endpoint, artifact);
+            currentTerminal = mainTerminalId;
+            for (const id of terminals.keys()) {
+                if (id !== mainTerminalId) terminals.delete(id);
             }
-        )
-        .then(() => {
-            return synapse.dispatch('fs', {
+            filesystem.set([]);
+            await synapse.isConnected();
+            const fs = await synapse.dispatch('fs', {
                 operation: 'getFolder',
                 params: {
                     folderpath: `.`
                 }
             });
-        })
-        .then((message) => {
-            const data = message.data as Array<{ name: string; isDirectory: boolean }>;
+            const data = fs.data as Array<{ name: string; isDirectory: boolean }>;
             if (!Array.isArray(data)) return;
             for (const { name, isDirectory } of data) {
                 const key = isDirectory ? name + '/' : name;
@@ -90,6 +64,8 @@
                 });
             }
         });
+    });
+
     let terminalOpen = $state(getTerminalOpenFromPrefs());
     let asideRef: HTMLElement;
     let isResizing = false;
@@ -148,19 +124,22 @@
         terminalOpen = true;
     }
 
-    let artifacts = $derived.by(() => {
-        const mappedArtifacts = page.data.artifacts?.artifacts
-            ? page.data.artifacts.artifacts.map((artifact) => {
+    const artifacts = $derived.by(() => {
+        const mappedArtifacts = data.artifacts?.artifacts
+            ? data.artifacts.artifacts.map((artifact) => {
                   return {
                       name: artifact.name,
                       isActive: page.params.artifact === artifact.$id,
-                      href: `${base}/project-${page.params.project}/studio/artifact-${artifact.$id}`
+                      href: `${base}/project-${page.params.project}/studio/artifact-${artifact.$id}`,
+                      onClick: undefined,
+                      icon: undefined
                   };
               })
             : [];
 
         mappedArtifacts.push({
             name: 'Create artifact',
+            href: undefined,
             isActive: false,
             onClick: () => {
                 createArtifact();
@@ -203,14 +182,16 @@
                         }}><Icon icon={IconChatLayout} size="l"></Icon></Button.Button>
                 {/if}
                 <Tabs>
-                    {#each tabs as tab}
-                        <Tab
-                            href={tab.href}
-                            selected={isTabSelected(tab, page.url.pathname, path, tabs)}
-                            event={tab.event}>
-                            {tab.title}
-                        </Tab>
-                    {/each}
+                    <Tab
+                        selected={view === 'preview'}
+                        on:click={() => {
+                            view = 'preview';
+                        }}>Preview</Tab>
+                    <Tab
+                        selected={view === 'editor'}
+                        on:click={() => {
+                            view = 'editor';
+                        }}>Code</Tab>
                 </Tabs>
             </Layout.Stack>
             {#if !$isSmallViewport}
@@ -225,7 +206,12 @@
             <Divider />
         </div>
     </Layout.Stack>
-    {@render children()}
+    <div style:visibility={view === 'preview' ? 'visible' : 'hidden'}>
+        {@render children()}
+    </div>
+    <div style:visibility={view === 'editor' ? 'visible' : 'hidden'}>
+        <Code />
+    </div>
     <aside bind:this={asideRef}>
         <details bind:open={terminalOpen}>
             <summary
@@ -289,9 +275,11 @@
                 </div>
             </summary>
 
-            <div style:display={currentTerminal === mainTerminalId ? 'contents' : 'none'}>
-                <Terminal height={terminalHeight} {synapse}></Terminal>
-            </div>
+            {#key page.params.artifact}
+                <div style:display={currentTerminal === mainTerminalId ? 'contents' : 'none'}>
+                    <Terminal height={terminalHeight} {synapse}></Terminal>
+                </div>
+            {/key}
             {#each terminals as [symbol, synapse] (symbol)}
                 <div style:display={currentTerminal === symbol ? 'contents' : 'none'}>
                     <Terminal height={terminalHeight} {synapse}></Terminal>
