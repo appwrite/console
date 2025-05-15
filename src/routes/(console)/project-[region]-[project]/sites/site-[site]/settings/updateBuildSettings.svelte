@@ -15,19 +15,76 @@
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { page } from '$app/state';
 
-    export let site: Models.Site;
-    export let frameworks: Models.Framework[];
-    let selectedFramework: Models.Framework = frameworks.find(
-        (framework) => framework.key === site.framework
+    let {
+        site,
+        frameworks
+    }: {
+        site: Models.Site;
+        frameworks: Models.Framework[];
+    } = $props();
+
+    let frameworkKey = $state(site.framework);
+    let installCommand = $state(site?.installCommand);
+    let buildCommand = $state(site?.buildCommand);
+    let outputDirectory = $state(site?.outputDirectory);
+    let fallback = $state(site?.fallbackFile);
+    let adapter: Adapter = $state(site.adapter as Adapter);
+
+    let selectedFramework: Models.Framework = $derived(
+        frameworks.find((framework) => framework.key === site.framework)
     );
-    let frameworkKey = site.framework;
-    let adapter: Adapter = site.adapter as Adapter;
-    let installCommand = site?.installCommand;
-    let buildCommand = site?.buildCommand;
-    let outputDirectory = site?.outputDirectory;
-    let fallback = site?.fallbackFile;
-    let isButtonDisabled = true;
-    let showFallback = site.adapter === Adapter.Static;
+    let showFallback = $derived(adapter === Adapter.Static);
+    let hasChanges = $derived(
+        installCommand === site?.installCommand &&
+            buildCommand === site?.buildCommand &&
+            outputDirectory === site?.outputDirectory &&
+            selectedFramework?.key === site?.framework &&
+            fallback === (site?.fallbackFile || undefined) &&
+            adapter === site?.adapter
+    );
+    let frameworkAdapterData = $derived(
+        selectedFramework.adapters.find((a) => a.key === adapter) ?? selectedFramework.adapters[0]
+    );
+
+    $effect(() => {
+        if (selectedFramework?.key !== site.framework) {
+            //Update adapter
+            const singleAdapter = selectedFramework?.adapters?.length <= 1;
+            if (singleAdapter) {
+                const hasSSR = selectedFramework?.adapters?.some((a) => a?.key === Adapter.Ssr);
+                const hasStatic = selectedFramework?.adapters?.some(
+                    (a) => a?.key === Adapter.Static
+                );
+                if (!hasSSR) {
+                    adapter = Adapter.Static;
+                } else if (!hasStatic) {
+                    adapter = Adapter.Ssr;
+                }
+            }
+
+            //Update values
+            const data = selectedFramework.adapters.find((a) => a.key === adapter);
+            installCommand = data.installCommand;
+            buildCommand = data.buildCommand;
+            outputDirectory = data.outputDirectory;
+            adapter = selectedFramework.adapters[0].key as Adapter;
+        } else {
+            adapter = site.adapter as Adapter;
+            installCommand = site?.installCommand ?? frameworkAdapterData.installCommand;
+            buildCommand = site?.buildCommand ?? frameworkAdapterData.buildCommand;
+            outputDirectory = site?.outputDirectory ?? frameworkAdapterData.outputDirectory;
+        }
+    });
+
+    $effect(() => {
+        if (adapter === Adapter.Static) {
+            if (!fallback) {
+                fallback ||= selectedFramework.adapters.find(
+                    (a) => a.key === Adapter.Static
+                ).fallbackFile;
+            }
+        }
+    });
 
     async function update() {
         let adptr = selectedFramework.adapters.find((a) => a.key === adapter);
@@ -50,7 +107,7 @@
                     outputDirectory || undefined,
                     (site?.buildRuntime as BuildRuntime) || undefined,
                     (adptr?.key as Adapter) || undefined,
-                    fallback || undefined,
+                    adptr?.key === 'static' ? fallback || undefined : undefined,
                     site.installationId || undefined,
                     site.providerRepositoryId || undefined,
                     site.providerBranch || undefined,
@@ -72,41 +129,16 @@
         }
     }
 
-    $: if (
-        installCommand === site?.installCommand &&
-        buildCommand === site?.buildCommand &&
-        outputDirectory === site?.outputDirectory &&
-        selectedFramework?.key === site?.framework &&
-        fallback === (site?.fallbackFile || undefined) &&
-        adapter === site?.adapter
-    ) {
-        isButtonDisabled = true;
-    } else {
-        // console.log(adapter, site?.adapter);
-        isButtonDisabled = false;
-    }
+    function reset(type: 'installCommand' | 'buildCommand' | 'outputDirectory') {
+        const data = selectedFramework.adapters.find((a) => a.key === adapter);
 
-    $: frameworkAdapterData = selectedFramework.adapters.find((a) => a.key === adapter);
-
-    $: if (adapter === Adapter.Static) {
-        showFallback = true;
-        fallback ||= selectedFramework.adapters.find((a) => a.key === Adapter.Static).fallbackFile;
-    } else {
-        showFallback = false;
-        fallback = undefined;
-    }
-
-    $: if (fallback === '') {
-        fallback = null;
-    }
-
-    $: hasSSR = selectedFramework?.adapters?.some((a) => a?.key === Adapter.Ssr);
-    $: hasStatic = selectedFramework?.adapters?.some((a) => a?.key === Adapter.Static);
-    $: if (selectedFramework?.adapters?.length <= 1 || !hasSSR) {
-        adapter = Adapter.Static;
-    }
-    $: if (selectedFramework?.adapters?.length <= 1 || !hasStatic) {
-        adapter = Adapter.Ssr;
+        if (type === 'installCommand') {
+            installCommand = site?.installCommand ?? data.installCommand;
+        } else if (type === 'buildCommand') {
+            buildCommand = site?.buildCommand ?? data.buildCommand;
+        } else if (type === 'outputDirectory') {
+            outputDirectory = site?.outputDirectory ?? data.outputDirectory;
+        }
     }
 </script>
 
@@ -199,16 +231,10 @@
                                 id="installCommand"
                                 label="Install command"
                                 bind:value={installCommand}
-                                placeholder={frameworkAdapterData?.installCommand} />
+                                placeholder={frameworkAdapterData?.installCommand ||
+                                    'Enter install command'} />
 
-                            <Button
-                                secondary
-                                size="s"
-                                on:click={() =>
-                                    (installCommand =
-                                        site?.installCommand ??
-                                        selectedFramework.adapters[site.adapter]
-                                            ?.defaultInstallCommand)}>
+                            <Button secondary size="s" on:click={() => reset('installCommand')}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -217,15 +243,9 @@
                                 id="buildCommand"
                                 label="Build command"
                                 bind:value={buildCommand}
-                                placeholder={frameworkAdapterData?.buildCommand} />
-                            <Button
-                                secondary
-                                size="s"
-                                on:click={() =>
-                                    (buildCommand =
-                                        site?.buildCommand ??
-                                        selectedFramework.adapters[site.adapter]
-                                            ?.defaultBuildCommand)}>
+                                placeholder={frameworkAdapterData?.buildCommand ||
+                                    'Enter build command'} />
+                            <Button secondary size="s" on:click={() => reset('buildCommand')}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -234,15 +254,9 @@
                                 id="outputDirectory"
                                 label="Output directory"
                                 bind:value={outputDirectory}
-                                placeholder={frameworkAdapterData?.outputDirectory} />
-                            <Button
-                                secondary
-                                size="s"
-                                on:click={() =>
-                                    (outputDirectory =
-                                        site?.outputDirectory ??
-                                        selectedFramework.adapters[site.adapter]
-                                            ?.defaultOutputDirectory)}>
+                                placeholder={frameworkAdapterData?.outputDirectory ||
+                                    'Enter output directory'} />
+                            <Button secondary size="s" on:click={() => reset('outputDirectory')}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -267,7 +281,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={isButtonDisabled} submit>Update</Button>
+            <Button disabled={hasChanges} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
