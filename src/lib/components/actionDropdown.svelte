@@ -143,6 +143,7 @@
         align-items: center;
         gap: var(--gap-s);
         padding-inline: var(--space-4);
+        padding-block: var(--space-2);
         border-radius: var(--border-radius-xs);
         flex-direction: row;
 
