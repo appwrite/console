@@ -40,5 +40,6 @@
         display: flex;
         flex-direction: column;
         gap: 0;
+        overflow-y: scroll;
     }
 </style>
