@@ -34,6 +34,7 @@
     import { InputSelect } from '$lib/elements/forms/index.js';
     import { SvelteMap } from 'svelte/reactivity';
     import { createArtifact } from '$lib/helpers/artifact';
+    import { onMount } from 'svelte';
 
     const { children } = $props();
 
@@ -140,6 +141,10 @@
             $previewFrameRef.style.pointerEvents = '';
         }
     }
+
+    $effect(() => {
+        console.log(terminals);
+    });
 
     function createTerminal() {
         const symbol = Symbol();
@@ -271,7 +276,6 @@
                                 variant="text"
                                 size="s"
                                 on:click={(event) => {
-                                    console.log('clicked');
                                     event.preventDefault();
                                     createTerminal();
                                 }}
