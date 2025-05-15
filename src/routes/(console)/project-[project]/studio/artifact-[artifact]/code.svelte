@@ -1,8 +1,7 @@
 <script lang="ts">
     import Editor from '$lib/components/editor/editor.svelte';
-    import { filesystem } from '$lib/components/editor/filesystem';
     import Filesystem from '$lib/components/editor/filesystem.svelte';
-    import { synapse } from '$lib/components/studio/synapse.svelte';
+    import { studio } from '$lib/components/studio/studio.svelte';
 
     let instance: Editor;
     let currentFile: string = $state(null);
@@ -30,7 +29,7 @@
     }
 
     async function openFile(path: string) {
-        const message = await synapse.dispatch('fs', {
+        const message = await studio.synapse.dispatch('fs', {
             operation: 'getFile',
             params: {
                 filepath: path
@@ -40,27 +39,8 @@
         currentFile = path;
     }
 
-    async function openFolder(path: string) {
-        const message = await synapse.dispatch('fs', {
-            operation: 'getFolder',
-            params: {
-                folderpath: path
-            }
-        });
-        const data = message.data as Array<{ name: string; isDirectory: boolean }>;
-        if (!Array.isArray(data)) return;
-        for (const { name, isDirectory } of data) {
-            const key = isDirectory ? name + '/' : name;
-            filesystem.update((n) => {
-                n.push(path + '/' + key);
-                console.log(path + '/' + key);
-                return n;
-            });
-        }
-    }
-
     async function saveFile(content: string) {
-        await synapse.dispatch('fs', {
+        await studio.synapse.dispatch('fs', {
             operation: 'updateFile',
             params: {
                 content,
@@ -71,7 +51,10 @@
 </script>
 
 <main>
-    <Filesystem files={$filesystem} onopenfile={openFile} onopenfolder={openFolder} />
+    <Filesystem
+        files={studio.filesystem}
+        onopenfile={openFile}
+        onopenfolder={(path) => studio.loadFolder(path)} />
     <Editor bind:this={instance} onsave={saveFile} />
 </main>
 

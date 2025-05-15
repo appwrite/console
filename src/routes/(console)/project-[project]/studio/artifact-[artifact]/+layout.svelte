@@ -20,50 +20,21 @@
         saveTerminalHeightToPrefs,
         saveTerminalOpenToPrefs
     } from '$lib/helpers/studioLayout';
-    import { createSynapse, endpoint, synapse } from '$lib/components/studio/synapse.svelte';
     import { showChat } from '$lib/stores/chat';
     import { default as IconChatLayout } from '../assets/chat-layout.svelte';
     import { default as IconImagine } from '../assets/icon-imagine.svelte';
-    import { filesystem } from '$lib/components/editor/filesystem';
-    import { SvelteMap } from 'svelte/reactivity';
     import { createArtifact } from '$lib/helpers/artifact';
-    import { untrack } from 'svelte';
     import Code from './code.svelte';
+    import { studio } from '$lib/components/studio/studio.svelte';
+    import { untrack } from 'svelte';
 
     const { children, data } = $props();
 
     let view: 'preview' | 'editor' = $state('preview');
-    const mainTerminalId = Symbol();
-    const terminals = new SvelteMap<symbol, ReturnType<typeof createSynapse>>();
-    let currentTerminal: symbol = $state(mainTerminalId);
 
     $effect(() => {
         const { artifact } = page.params;
-        untrack(async () => {
-            synapse.changeArtifact(endpoint, artifact);
-            currentTerminal = mainTerminalId;
-            for (const id of terminals.keys()) {
-                if (id !== mainTerminalId) terminals.delete(id);
-            }
-            filesystem.set([]);
-            await synapse.isConnected();
-            const fs = await synapse.dispatch('fs', {
-                operation: 'getFolder',
-                params: {
-                    folderpath: `.`
-                }
-            });
-            const data = fs.data as Array<{ name: string; isDirectory: boolean }>;
-            if (!Array.isArray(data)) return;
-            for (const { name, isDirectory } of data) {
-                const key = isDirectory ? name + '/' : name;
-                filesystem.update((n) => {
-                    n.push(key);
-
-                    return n;
-                });
-            }
-        });
+        untrack(() => studio.selectArtifact(artifact));
     });
 
     let terminalOpen = $state(getTerminalOpenFromPrefs());
@@ -118,9 +89,7 @@
     }
 
     function createTerminal() {
-        const symbol = Symbol();
-        terminals.set(symbol, createSynapse(endpoint, page.params.artifact));
-        currentTerminal = symbol;
+        studio.createTerminal();
         terminalOpen = true;
     }
 
@@ -233,19 +202,19 @@
                             <Tabs let:root>
                                 <Tab
                                     {root}
-                                    selected={currentTerminal === mainTerminalId}
+                                    selected={studio.activeTerminal === studio.mainTerminalId}
                                     on:click={() => {
-                                        currentTerminal = mainTerminalId;
+                                        studio.activeTerminal = studio.mainTerminalId;
                                         terminalOpen = true;
                                     }}>
                                     <Icon icon={IconImagine} />
                                     Imagine
                                 </Tab>
-                                {#each terminals as [symbol] (symbol)}
+                                {#each studio.terminals as [symbol] (symbol)}
                                     <Tab
                                         {root}
-                                        on:click={() => (currentTerminal = symbol)}
-                                        selected={currentTerminal === symbol}>
+                                        on:click={() => (studio.activeTerminal = symbol)}
+                                        selected={studio.activeTerminal === symbol}>
                                         <Icon icon={IconTerminal} />
                                         Terminal
                                     </Tab>
@@ -279,12 +248,15 @@
             </summary>
 
             {#key page.params.artifact}
-                <div style:display={currentTerminal === mainTerminalId ? 'contents' : 'none'}>
-                    <Terminal height={terminalHeight} {synapse}></Terminal>
+                <div
+                    style:display={studio.activeTerminal === studio.mainTerminalId
+                        ? 'contents'
+                        : 'none'}>
+                    <Terminal height={terminalHeight} synapse={studio.synapse}></Terminal>
                 </div>
             {/key}
-            {#each terminals as [symbol, synapse] (symbol)}
-                <div style:display={currentTerminal === symbol ? 'contents' : 'none'}>
+            {#each studio.terminals as [symbol, synapse] (symbol)}
+                <div style:display={studio.activeTerminal === symbol ? 'contents' : 'none'}>
                     <Terminal height={terminalHeight} {synapse}></Terminal>
                 </div>
             {/each}

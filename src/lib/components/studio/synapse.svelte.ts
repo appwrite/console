@@ -26,6 +26,10 @@ type SynapseMessageOperationFileSystem =
     | {
           operation: 'updateFolderPath';
           params: { folderpath: string; newPath: string };
+      }
+    | {
+          operation: 'searchFiles';
+          params: { term: string };
       };
 type SynapseMessageOperationTerminal =
     | { operation: 'updateSize'; params: { cols: number; rows: number } }
@@ -51,12 +55,8 @@ export class Synapse {
     private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
     public isReconnecting = $state(false);
 
-    constructor(endpoint: string, artifact?: string) {
-        const url = new SvelteURL(endpoint);
-
-        if (artifact) url.searchParams.set('workDir', `/artifact/${artifact}`);
-        this.endpoint = url.toString();
-        this.connect();
+    constructor(endpoint: string) {
+        this.endpoint = endpoint;
     }
 
     public async isConnected(): Promise<boolean> {
@@ -74,16 +74,17 @@ export class Synapse {
         });
     }
 
-    public changeArtifact(endpoint: string, artifact?: string) {
+    public async changeArtifact(endpoint: string, artifact?: string) {
         const url = new SvelteURL(endpoint);
 
         if (artifact) url.searchParams.set('workDir', `/artifact/${artifact}`);
         this.endpoint = url.toString();
 
         this.connect();
+        await this.isConnected();
     }
 
-    private connect() {
+    public connect() {
         this.ws = new WebSocket(this.endpoint);
 
         this.ws.onopen = () => {
@@ -197,6 +198,10 @@ export class Synapse {
             if (!noReturn) this.ws.addEventListener('message', callback);
             else resolve(null);
         });
+        // check if websocket is connected
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+            throw new Error('WebSocket is not connected');
+        }
         this.ws.send(JSON.stringify(message));
 
         return response;
@@ -217,14 +222,3 @@ export class Synapse {
         };
     }
 }
-
-export const endpoint = 'wss://terminal.appwrite.torsten.work';
-export function createSynapse(endpoint: string, artifact?: string) {
-    const url = new SvelteURL(endpoint);
-
-    if (artifact) url.searchParams.set('workDir', `/artifact/${artifact}`);
-
-    return new Synapse(url.toString());
-}
-
-export const synapse = createSynapse(endpoint);

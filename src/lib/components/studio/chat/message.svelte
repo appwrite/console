@@ -13,8 +13,7 @@
     import Ol from './(markdown)/Ol.svelte';
     import rehypeHighlight from 'rehype-highlight';
     import { queue } from './queue.svelte';
-    import { synapse } from '../synapse.svelte';
-    import { filesystem } from '$lib/components/editor/filesystem';
+    import { studio } from '../studio.svelte';
 
     type Props = {
         message: ParsedItem;
@@ -44,17 +43,17 @@
             const action = item.data;
             switch (action.type) {
                 case 'file':
-                    await synapse.dispatch('fs', {
+                    await studio.synapse.dispatch('fs', {
                         operation: 'updateFile',
                         params: {
                             filepath: action.src,
                             content: action.content
                         }
                     });
-                    $filesystem = [...$filesystem, action.src];
+                    studio.filesystem.push(action.src);
                     break;
                 case 'shell':
-                    await synapse.dispatch(
+                    await studio.synapse.dispatch(
                         'terminal',
                         {
                             operation: 'createCommand',

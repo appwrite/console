@@ -32,6 +32,9 @@
 </script>
 
 <ul {...$tree}>
+    <!-- <Input.Text placeholder="Search" bind:value={search}>
+        <Icon icon={IconSearch} slot="start" />
+    </Input.Text> -->
     <Tree {items} />
 </ul>
 
