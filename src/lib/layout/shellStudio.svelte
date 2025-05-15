@@ -137,7 +137,9 @@
                     <Layout.Stack direction="row" alignItems="center">
                         {#if !$isSmallViewport && !$isTabletViewport}
                             <a
-                                href={`${base}/organization-${page.data?.organization?.$id}`}
+                                href={page.data.organization?.$id
+                                    ? `${base}/organization-${page.data.organization.$id}`
+                                    : '/'}
                                 style:margin-inline-start="5px"
                                 style:display="flex"><LogoImagine /></a>
                             <span style:margin-inline-end="-10px">/</span>
