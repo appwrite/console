@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Divider, Typography, Layout, Button, Icon, Spinner } from '@appwrite.io/pink-svelte';
+    import { Divider, Typography, Layout, Button, Icon } from '@appwrite.io/pink-svelte';
     import {
         IconArrowUp,
         IconChevronDown,
@@ -27,6 +27,7 @@
     let minimizeChat = $state($isSmallViewport ? true : false);
     let message = $state('');
     let sending = $state(false);
+    let firstByteReceived = $state(true);
 
     let chatTextareaRef: HTMLTextAreaElement | null = $state(null);
 
@@ -53,7 +54,11 @@
     let controller: AbortController;
 
     async function createMessage() {
+        const initialMessage = message;
         try {
+            parser.chunk(message, 'user');
+            firstByteReceived = false;
+            message = '';
             controller = new AbortController();
             sending = true;
             const response = await fetch(
@@ -67,7 +72,7 @@
                     },
                     credentials: 'include',
                     body: JSON.stringify({
-                        content: message,
+                        content: initialMessage,
                         type: 'text'
                     }),
                     signal: controller.signal
@@ -80,15 +85,13 @@
 
             invalidate(Dependencies.ARTIFACTS);
 
-            parser.chunk(message, 'user');
-            message = '';
-
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
 
             const group = Symbol();
             let chunk = await reader.read();
             while (!chunk.done) {
+                if (!firstByteReceived) firstByteReceived = true;
                 parser.chunk(decoder.decode(chunk.value), 'system', {
                     group
                 });
@@ -99,7 +102,9 @@
             if (error instanceof Error) {
                 parser.chunk(error.message, 'error');
             }
+            message = initialMessage;
         } finally {
+            firstByteReceived = true;
             sending = false;
         }
     }
@@ -137,7 +142,7 @@
                 <Divider />
             </div>
 
-            <Conversation {parser} />
+            <Conversation {parser} thinking={!firstByteReceived} />
         {/if}
         <form {onsubmit} class="input" class:minimize-chat={minimizeChat}>
             <Layout.Stack

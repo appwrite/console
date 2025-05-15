@@ -1,29 +1,24 @@
 <script lang="ts">
     import 'highlight.js/styles/atom-one-light.css';
     import { StreamParser } from './parser';
-    import { Badge, Card, Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
-    import Markdown, { type Plugin } from 'svelte-exmarkdown';
-    import Li from './(markdown)/Li.svelte';
-    import H1 from './(markdown)/H1.svelte';
-    import H2 from './(markdown)/H2.svelte';
-    import A from './(markdown)/A.svelte';
-    import Strong from './(markdown)/Strong.svelte';
-    import Em from './(markdown)/Em.svelte';
-    import Ul from './(markdown)/Ul.svelte';
-    import Ol from './(markdown)/Ol.svelte';
-    import rehypeHighlight from 'rehype-highlight';
-    import { IconArrowDown, IconCheck, IconClock, IconCog } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, ShimmerText, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import { IconArrowDown } from '@appwrite.io/pink-icons-svelte';
     import { slide } from 'svelte/transition';
     import type { UIEventHandler, WheelEventHandler } from 'svelte/elements';
-    import { queue } from './queue.svelte';
     import Message from './message.svelte';
 
     type Props = {
         parser: StreamParser;
         autoscroll?: boolean;
         streaming?: boolean;
+        thinking?: boolean;
     };
-    let { parser, autoscroll = $bindable(true), streaming = $bindable(false) }: Props = $props();
+    let {
+        parser,
+        autoscroll = $bindable(true),
+        thinking = false,
+        streaming = $bindable(false)
+    }: Props = $props();
 
     const chunks = parser.parsed;
 
@@ -58,6 +53,11 @@
         {#each $chunks as message (message.id)}
             <Message {message} />
         {/each}
+        {#if thinking}
+            <Typography.Code size="s">
+                <ShimmerText>thinking...</ShimmerText>
+            </Typography.Code>
+        {/if}
         <div id="bottom"></div>
     </section>
 
