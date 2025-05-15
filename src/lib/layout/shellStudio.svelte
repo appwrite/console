@@ -36,6 +36,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { conversation, showChat } from '$lib/stores/chat';
     import { type Snippet } from 'svelte';
+    import { default as LogoImagine } from '../../routes/(console)/project-[project]/studio/assets/imagine-logo.svelte';
 
     let hasProjectSidebar = $state(false);
 
@@ -133,7 +134,16 @@
                                     color="--fgcolor-neutral-tertiary" /></Button.Button>
                         {/if}
                     </div>
-                    <Breadcrumbs {organizations} />
+                    <Layout.Stack direction="row" alignItems="center">
+                        {#if !$isSmallViewport && !$isTabletViewport}
+                            <a
+                                href={`${base}/organization-${page.data.organization.$id}`}
+                                style:margin-inline-start="5px"
+                                style:display="flex"><LogoImagine /></a>
+                            <span style:margin-inline-end="-10px">/</span>
+                        {/if}
+                        <Breadcrumbs {organizations} />
+                    </Layout.Stack>
                 </Layout.Stack>
                 <Layout.Stack inline height="32px">
                     <Link.Button
@@ -247,7 +257,7 @@
                     </Card.Base>
                 </div>
             {:else}
-                <div class="studio-wrapper">
+                <div class="studio-wrapper" class:no-bottom-padding={isOnEditorPage}>
                     <Card.Base padding={isOnEditorPage ? 'xxs' : 's'}>
                         <Layout.Stack direction="row" gap={$showChat ? 'l' : 'none'}>
                             {#if isOnEditorPage}
@@ -380,6 +390,10 @@
     .studio-wrapper {
         position: relative;
         height: calc(100dvh - 64px);
+    }
+
+    :global(.no-bottom-padding > div) {
+        padding-bottom: 0 !important;
     }
 
     :global(.studio-wrapper > div) {

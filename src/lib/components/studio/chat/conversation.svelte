@@ -64,7 +64,7 @@
     <div class="actions">
         <Layout.Stack alignItems="center">
             {#if !autoscroll}
-                <span transition:slide>
+                <span transition:slide style="--badge-padding-inline: var(--space-3);">
                     <Tag
                         on:click={() => {
                             autoscroll = true;

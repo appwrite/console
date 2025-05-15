@@ -169,7 +169,7 @@
                                         {:else if actionInQueue.status === 'processing'}
                                             <ShimmerText>Running</ShimmerText>
                                         {:else if actionInQueue.status === 'done'}
-                                            Finished
+                                            Completed
                                         {/if}
                                     </Typography.Code>
                                 {/if}

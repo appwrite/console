@@ -131,12 +131,14 @@
                       name: artifact.name,
                       isActive: page.params.artifact === artifact.$id,
                       href: `${base}/project-${page.params.project}/studio/artifact-${artifact.$id}`,
-                      onClick: undefined,
-                      icon: undefined
+                      type: 'item'
                   };
               })
             : [];
 
+        mappedArtifacts.push({
+            type: 'divider'
+        });
         mappedArtifacts.push({
             name: 'Create artifact',
             href: undefined,
@@ -144,7 +146,8 @@
             onClick: () => {
                 createArtifact();
             },
-            icon: IconPlus
+            icon: IconPlus,
+            type: 'item'
         });
         return mappedArtifacts;
     });
@@ -158,7 +161,7 @@
 
 <Layout.Stack
     direction="column"
-    height={$isSmallViewport ? 'calc(100vh - 119px)' : 'calc(100vh - 76px)'}
+    height={$isSmallViewport ? 'calc(100vh - 119px)' : 'calc(100vh - 74px)'}
     gap="none">
     <Layout.Stack direction="column" gap="none">
         {#if $isSmallViewport}
@@ -249,13 +252,14 @@
                                 {/each}
                             </Tabs>
                             <Button.Button
-                                variant="compact"
+                                variant="text"
                                 size="s"
                                 on:click={(event) => {
                                     console.log('clicked');
                                     event.preventDefault();
                                     createTerminal();
-                                }}>
+                                }}
+                                icon>
                                 <Icon
                                     icon={IconPlusSm}
                                     size="m"
