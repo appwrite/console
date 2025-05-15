@@ -85,9 +85,9 @@
                     paymentMethodId ? paymentMethodId : $organization.paymentMethodId,
                     `${base}/organization-${$organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
                 );
-            }
 
-            await sdk.forConsole.billing.updateInvoiceStatus($organization.$id, invoice.$id);
+                await sdk.forConsole.billing.updateInvoiceStatus($organization.$id, invoice.$id);
+            }
 
             invalidate(Dependencies.ORGANIZATION);
             invalidate(Dependencies.INVOICES);
