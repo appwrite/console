@@ -48,7 +48,6 @@ export function getTerminalHeightFromPrefs(): number {
 
 export function saveTerminalHeightToPrefs(position: number) {
     const currentPrefs = userPreferences();
-    console.log('fire');
     const newPrefs = {
         ...currentPrefs,
         studioTerminalHeight: position
@@ -68,7 +67,6 @@ export function saveTerminalOpenToPrefs(isOpen: boolean) {
         ...currentPrefs,
         studioTerminalOpen: isOpen
     };
-    console.log('fire open');
     sdk.forConsole.account.updatePrefs(newPrefs);
 }
 
