@@ -327,17 +327,6 @@
         }
     }
 
-    //.terminal-slider {
-    //    cursor: row-resize;
-    //    border-top: 1px solid var(--border-neutral);
-    //    transition: all 0.2s ease-in-out;
-    //
-    //    &:hover {
-    //        border-top: 2px solid var(--border-neutral-strong);
-    //        background-color: var(--border-neutral-strong);
-    //    }
-    //}
-
     .resizer {
         position: absolute;
         height: 16px;
