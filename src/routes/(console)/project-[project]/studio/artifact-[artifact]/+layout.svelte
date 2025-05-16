@@ -237,7 +237,7 @@
                     ontouchmove={startResize}>
                 </div>
             {/if}
-            <aside style:top={`${editorHeight}px`}>
+            <aside style:top={`${editorHeight + 4}px`}>
                 <details bind:open={terminalOpen}>
                     <summary
                         onclick={(event) => {

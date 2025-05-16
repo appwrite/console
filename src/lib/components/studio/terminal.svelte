@@ -98,7 +98,6 @@
         display: grid;
         place-content: flex-start;
         padding: var(--space-3);
-        border-radius: var(--border-radius-xsmall);
         background-color: black;
         overflow: hidden;
     }
