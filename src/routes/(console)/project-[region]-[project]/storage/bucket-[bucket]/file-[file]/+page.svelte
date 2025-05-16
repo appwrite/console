@@ -29,14 +29,13 @@
     import {
         IconDotsHorizontal,
         IconDuplicate,
-        IconKey,
         IconPencil,
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import FileTokensCopyUrl from './fileTokensCopyUrl.svelte';
     import ManageFileTokenModal, { cleanFormattedDate } from './manageFileToken.svelte';
-    import { type Models, Permission, Role } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { Menu } from '$lib/components/menu';
     import { SHOW_INIT_FEATURES } from '$lib/system';

@@ -22,6 +22,7 @@
     import { page } from '$app/state';
     import Card from '../card.svelte';
     import SkeletonRepoList from './skeletonRepoList.svelte';
+    import { untrack } from 'svelte';
 
     let {
         action = $bindable('select'),
@@ -42,13 +43,13 @@
     } = $props();
 
     let search = $state('');
-    let selectedInstallation: string = null;
+    let selectedInstallation = $state(null);
     let isLoadingRepositories = $state(null);
 
     async function loadInstallations() {
         if (installationList) {
             if (installationList.installations.length) {
-                selectedInstallation = installationList.installations[0].$id;
+                untrack(() => selectedInstallation = installationList.installations[0].$id);
                 installation.set(
                     installationList.installations.find(
                         (entry) => entry.$id === selectedInstallation
@@ -61,7 +62,7 @@
                 .forProject(page.params.region, page.params.project)
                 .vcs.listInstallations();
             if (installations.length) {
-                selectedInstallation = installations[0].$id;
+                untrack(() => selectedInstallation = installations[0].$id);
                 installation.set(installations.find((entry) => entry.$id === selectedInstallation));
             }
             return installations;

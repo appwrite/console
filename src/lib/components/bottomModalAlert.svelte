@@ -373,7 +373,11 @@
             </div>
         {:else}
             {@const mobileConfig = getMobileWindowConfig()}
+            <!-- we don't need keydown because we show this only on mobile -->
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <div
+                tabindex="0"
+                role="button"
                 class:showing={!openModalOnMobile}
                 class="card notification-card u-width-full-line"
                 on:click={() => {

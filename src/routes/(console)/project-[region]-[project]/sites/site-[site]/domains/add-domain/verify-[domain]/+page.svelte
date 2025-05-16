@@ -29,15 +29,17 @@
     const ruleId = page.url.searchParams.get('rule');
     let isSubDomain = $derived(page.params.domain?.split('.')?.length >= 3);
 
-    let selectedTab: 'cname' | 'nameserver' | 'a' | 'aaaa' = $state(
-        !!$consoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain
-            ? 'cname'
-            : !!$consoleVariables._APP_DOMAIN_TARGET_A
-              ? 'a'
-              : !!$consoleVariables._APP_DOMAIN_TARGET_AAAA
-                ? 'aaaa'
-                : 'nameserver'
-    );
+    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
+    $effect(() => {
+        if ($consoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
+            selectedTab = 'cname';
+        } else if ($consoleVariables._APP_DOMAIN_TARGET_A) {
+            selectedTab = 'a';
+        } else if ($consoleVariables._APP_DOMAIN_TARGET_AAAA) {
+            selectedTab = 'aaaa';
+        }
+    });
+
     let verified = $state(false);
 
     let routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
