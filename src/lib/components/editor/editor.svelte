@@ -90,6 +90,7 @@
         :global(svg) {
             height: 128px;
             width: 128px;
+            color: var(--fgcolor-neutral-weak);
         }
     }
 </style>
