@@ -87,7 +87,7 @@
             use:melt={$triggerItems}
             aria-label="Open tab">
             <div class="trigger-content">
-                <span class="orgName">{selectedItem?.name ?? 'Artifact'}</span>
+                <span class="orgName">{selectedItem?.name ?? 'New artifact'}</span>
                 <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
             </div>
         </button>
@@ -100,7 +100,7 @@
             }}
             aria-label="Open tab">
             <span class="orgName" class:noProjects={!selectedItem}>
-                {selectedItem?.name ?? 'Artifact'}
+                {selectedItem?.name ?? 'New artifact'}
             </span>
             <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
         </button>
