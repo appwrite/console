@@ -1,17 +1,17 @@
 <script lang="ts">
-    import { onDestroy, onMount, untrack } from 'svelte';
+    import { untrack } from 'svelte';
     import { throttle } from '$lib/helpers/functions';
     import { app } from '$lib/stores/app';
     import { studio } from '../studio/studio.svelte';
     import * as monaco from 'monaco-editor';
+    import type { Action } from 'svelte/action';
+    import IconImagine from '$routes/(console)/project-[project]/studio/assets/icon-imagine.svelte';
 
     type Props = {
         onsave?: (code: string) => void | Promise<void>;
     };
 
     let { onsave }: Props = $props();
-
-    let editorElement: HTMLDivElement;
 
     export function openFile(code: string, path: string) {
         if (path.endsWith('/')) return;
@@ -30,28 +30,29 @@
             true
         );
     }
-
-    onMount(async () => {
-        await studio.initEditor(editorElement);
+    const editor: Action = (node) => {
+        studio.initEditor(node);
         studio.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
             onsave(studio.editor.getValue());
         });
         const resizer = throttle(() => {
-            if (!editorElement) return;
+            if (!node) return;
             studio.editor.layout({
-                height: editorElement.parentElement.offsetHeight,
-                width: editorElement.parentElement.offsetWidth
+                height: node.parentElement.offsetHeight,
+                width: node.parentElement.offsetWidth
             });
         }, 50);
         const observer = new ResizeObserver(resizer);
 
-        observer.observe(editorElement);
-    });
+        observer.observe(node);
 
-    onDestroy(() => {
-        monaco?.editor.getModels().forEach((model) => model.dispose());
-        studio.editor?.dispose();
-    });
+        return {
+            destroy() {
+                monaco?.editor.getModels().forEach((model) => model.dispose());
+                studio.editor?.dispose();
+            }
+        };
+    };
 
     $effect(() => {
         monaco.editor.setTheme($app.themeInUse === 'light' ? 'vs-light' : 'vs-dark');
@@ -66,11 +67,29 @@
     });
 </script>
 
-<div class="editor" role="presentation" bind:this={editorElement}></div>
+<div class="empty" style:display={studio.currentFile !== null ? 'none' : undefined}>
+    <IconImagine />
+</div>
+<div
+    style:display={studio.currentFile === null ? 'none' : 'contents'}
+    class="editor"
+    role="presentation"
+    use:editor>
+</div>
 
 <style lang="scss">
     .editor {
         height: 100%;
         overflow: hidden;
+    }
+    .empty {
+        display: grid;
+        place-content: center;
+        height: 100%;
+
+        :global(svg) {
+            height: 128px;
+            width: 128px;
+        }
     }
 </style>

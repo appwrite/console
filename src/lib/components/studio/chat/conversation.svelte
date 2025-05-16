@@ -13,11 +13,7 @@
         autoscroll?: boolean;
         thinking?: boolean;
     };
-    let {
-        parser,
-        autoscroll = $bindable(true),
-        thinking = false
-    }: Props = $props();
+    let { parser, autoscroll = $bindable(true), thinking = false }: Props = $props();
 
     const chunks = parser.parsed;
 

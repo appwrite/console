@@ -49,7 +49,7 @@ class Studio {
     #resetFileSystem() {
         this.filesystem.clear();
     }
-    async initEditor(node: HTMLElement) {
+    initEditor(node: HTMLElement) {
         self.MonacoEnvironment = {
             getWorker(_workerId: string, label: string) {
                 if (label === 'markdown') {
