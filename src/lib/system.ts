@@ -36,8 +36,7 @@ export function isMultiRegionSupported(): boolean {
     if (env.PUBLIC_APPWRITE_MULTI_REGION === 'true') return true;
 
     try {
-        const endpoint = getApiEndpoint();
-        return new URL(endpoint).hostname.endsWith('cloud.appwrite.io');
+        return new URL(getApiEndpoint()).hostname.endsWith('cloud.appwrite.io');
     } catch {
         return false;
     }
