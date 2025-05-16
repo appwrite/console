@@ -233,6 +233,8 @@
                     onmousedown={startResize}
                     ontouchmove={startResize}>
                 </div>
+            {:else}
+                <div class="absolute-border"></div>
             {/if}
             <aside style:top={`${editorHeight + 4}px`}>
                 <details bind:open={terminalOpen}>
@@ -335,6 +337,21 @@
             width: calc(100% + 2 * var(--space-7));
             margin-inline-start: -15px;
             border-bottom-right-radius: var(--border-radius-m);
+        }
+    }
+
+    .absolute-border {
+        position: absolute;
+        margin-inline-start: calc(-1 * var(--space-7));
+        width: calc(100% + 2 * var(--space-7));
+        z-index: 1;
+        bottom: 46px;
+        &::after {
+            content: '';
+            position: absolute;
+            height: 1px;
+            width: 100%;
+            background-color: var(--border-neutral);
         }
     }
 
