@@ -111,6 +111,8 @@
         $repositories.search = search;
         $repositories.installationId = installationId;
     }
+
+    selectedRepository;
 </script>
 
 {#if hasInstallations}
