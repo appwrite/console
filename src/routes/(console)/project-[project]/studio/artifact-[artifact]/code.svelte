@@ -60,7 +60,6 @@
     });
 
     function startResize() {
-        console.log('start resize');
         checkParentDimensions();
         isResizing = true;
         window.addEventListener('mousemove', resize);
