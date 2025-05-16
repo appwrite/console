@@ -14,7 +14,7 @@
     let editorElement: HTMLDivElement;
 
     export function openFile(code: string, path: string) {
-        if (!code || path.endsWith('/')) return;
+        if (path.endsWith('/')) return;
         const uri = monaco.Uri.parse(path);
         const model = monaco.editor.getModel(uri) ?? monaco.editor.createModel(code, null, uri);
         model.setValue(code);
@@ -68,7 +68,7 @@
 
 <div class="editor" role="presentation" bind:this={editorElement}></div>
 
-<style>
+<style lang="scss">
     .editor {
         height: 100%;
         overflow: hidden;

@@ -17,7 +17,7 @@ class Studio {
     terminals = new SvelteMap<symbol, Synapse>();
     activeTerminal = $state(this.mainTerminalId);
     filesystem: SvelteSet<string> = $state(new SvelteSet());
-    currentFile: string | null = null;
+    currentFile: string | null = $state(null);
     openFiles: SvelteSet<string> = $state(new SvelteSet());
     synapse: Synapse;
     editor: monaco.editor.IStandaloneCodeEditor;

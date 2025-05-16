@@ -12,11 +12,12 @@
     let mainRef: HTMLElement;
 
     studio.synapse.addEventListener('syncWorkDir', ({ message }) => {
-        if (studio.streaming) return;
+        if (studio.streaming === false) return;
         const { path, content, event } = message.data as SyncWorkDirData;
         if (event !== 'add' && event !== 'change') return;
-        studio.currentFile = path;
-        instance?.openFile(content, path);
+        const normalizedPath = path.startsWith('/') ? path.substring(1) : path;
+        studio.currentFile = normalizedPath;
+        instance?.openFile(content, normalizedPath);
     });
 
     async function openFile(path: string) {
