@@ -1,6 +1,5 @@
 import { env } from '$env/dynamic/public';
 import { dev } from '$app/environment';
-import { getApiEndpoint } from '$lib/stores/sdk';
 
 export const enum Mode {
     CLOUD = 'cloud',
@@ -32,11 +31,11 @@ export const GRACE_PERIOD_OVERRIDE = false;
 /**
  * Returns true if multi-region is supported.
  */
-export function isMultiRegionSupported(): boolean {
+export function isMultiRegionSupported(url: URL): boolean {
     if (env.PUBLIC_APPWRITE_MULTI_REGION === 'true') return true;
 
     try {
-        return new URL(getApiEndpoint()).hostname.endsWith('cloud.appwrite.io');
+        return url.hostname.endsWith('cloud.appwrite.io');
     } catch {
         return false;
     }
