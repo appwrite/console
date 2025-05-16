@@ -243,7 +243,7 @@
     ]);
 
     function initReo() {
-        if (dev || !browser || !Object.keys($user).length) return;
+        if (dev || !browser || !isCloud) return;
 
         const clientID = '144fa7eaa4904e8';
         const reoPromise = loadReoScript({ clientID });
@@ -251,18 +251,20 @@
         reoPromise.then(async (reo: Reo) => {
             reo.init({ clientID });
 
-            const name = $user.name || $user.email;
-            const nameParts = name.trim().split(' ');
-            const lastname = nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined;
+            if (Object.keys($user).length) {
+                const name = $user.name || $user.email;
+                const nameParts = name.trim().split(' ');
+                const lastname = nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined;
 
-            const reoIdentity: ReoUserIdentifyConfig = {
-                username: $user.email,
-                firstname: nameParts[0],
-                type: $user.password ? 'email' : 'github',
-                ...(lastname && { lastname })
-            };
+                const reoIdentity: ReoUserIdentifyConfig = {
+                    username: $user.email,
+                    firstname: nameParts[0],
+                    type: $user.password ? 'email' : 'github',
+                    ...(lastname && { lastname })
+                };
 
-            reo.identify(reoIdentity);
+                reo.identify(reoIdentity);
+            }
         });
     }
 
