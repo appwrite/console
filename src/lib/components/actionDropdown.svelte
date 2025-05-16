@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createMenubar, melt } from '@melt-ui/svelte';
-    import { Icon, ActionMenu, Card } from '@appwrite.io/pink-svelte';
+    import { Icon, ActionMenu, Card, Layout } from '@appwrite.io/pink-svelte';
     import { IconChevronDown, IconSearch } from '@appwrite.io/pink-icons-svelte';
     import { BottomSheet } from '$lib/components';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -15,14 +15,7 @@
         onClick?: () => void;
         href?: string;
         icon?: ComponentType;
-        type: 'item';
     };
-
-    type MenuOption =
-        | Item
-        | {
-              type: 'divider';
-          };
 
     const {
         elements: { menubar },
@@ -33,14 +26,18 @@
         elements: { trigger: triggerItems, menu: menuItems }
     } = createMenu();
 
-    let { items = [], hasSearch = false }: { items: MenuOption[]; hasSearch: boolean } = $props();
+    let {
+        items = [],
+        bottomItems = [],
+        hasSearch = false
+    }: { items: Item[]; bottomItems: Item[]; hasSearch: boolean } = $props();
 
     const selectedItem = $derived.by(() => {
-        return items.find((item) => item.type !== 'divider' && item.isActive) as Item;
+        return items.find((item) => item.isActive) as Item;
     });
 
     let searchedItems = $derived.by(() => {
-        return items.filter((item) => item.type === 'divider' || item.name.includes(searchValue));
+        return items.filter((item) => item.name.toLowerCase().includes(searchValue.toLowerCase()));
     });
 
     let bottomSheetOpen = $state(false);
@@ -48,14 +45,12 @@
     const bottomSheetOptions: SubMenu = $derived.by(() => {
         return {
             top: {
-                items: items
-                    .filter((item) => item.type !== 'divider')
-                    .map((item) => ({
-                        name: item.name,
-                        href: item.href,
-                        onClick: item.onClick,
-                        leadingIcon: item.icon
-                    }))
+                items: items.map((item) => ({
+                    name: item.name,
+                    href: item.href,
+                    onClick: item.onClick,
+                    leadingIcon: item.icon
+                }))
             },
             bottom: undefined
         };
@@ -112,32 +107,54 @@
     {/if}
 
     <div class="menu" use:melt={$menuItems} class:action-dropdown-search={hasSearch}>
-        <Card.Base padding="xxxs" shadow={true}>
-            {#if hasSearch}
-                <div class="search-header">
-                    <InputText placeholder="Search" id="search" bind:value={searchValue}>
-                        <Icon slot="start" icon={IconSearch} />
-                    </InputText>
-                </div>
-                <div class="search-spacer"></div>
-            {/if}
-            {#each searchedItems as item}
-                {#if item.type === 'divider'}
-                    <div class="divider"></div>
-                {:else}
-                    <div use:melt={$triggerItems}>
-                        <ActionMenu.Root>
-                            {#if item.href}
-                                <ActionMenu.Item.Anchor href={item.href}
-                                    >{item.name}</ActionMenu.Item.Anchor>
-                            {:else if item.onClick}
-                                <ActionMenu.Item.Button
-                                    on:click={item.onClick}
-                                    leadingIcon={item.icon}>{item.name}</ActionMenu.Item.Button>
-                            {/if}</ActionMenu.Root>
+        <Card.Base
+            padding="xxxs"
+            shadow={true}
+            style={`height: ${searchedItems.length > 7 ? '400px' : 'auto'}`}>
+            <Layout.Stack height="100%" gap="none">
+                {#if hasSearch}
+                    <div class="search-header">
+                        <InputText placeholder="Search" id="search" bind:value={searchValue}>
+                            <Icon slot="start" icon={IconSearch} />
+                        </InputText>
                     </div>
                 {/if}
-            {/each}
+                <div class="results">
+                    {#each searchedItems as item}
+                        <div use:melt={$triggerItems}>
+                            <ActionMenu.Root>
+                                {#if item.href}
+                                    <ActionMenu.Item.Anchor href={item.href}
+                                        >{item.name}</ActionMenu.Item.Anchor>
+                                {:else if item.onClick}
+                                    <ActionMenu.Item.Button
+                                        on:click={item.onClick}
+                                        leadingIcon={item.icon}>{item.name}</ActionMenu.Item.Button>
+                                {/if}</ActionMenu.Root>
+                        </div>
+                    {/each}
+                </div>
+                {#if bottomItems.length > 0}
+                    <div class="bottom-items">
+                        <div class="divider"></div>
+
+                        {#each bottomItems as item}
+                            <div use:melt={$triggerItems}>
+                                <ActionMenu.Root>
+                                    {#if item.href}
+                                        <ActionMenu.Item.Anchor href={item.href}
+                                            >{item.name}</ActionMenu.Item.Anchor>
+                                    {:else if item.onClick}
+                                        <ActionMenu.Item.Button
+                                            on:click={item.onClick}
+                                            leadingIcon={item.icon}
+                                            >{item.name}</ActionMenu.Item.Button>
+                                    {/if}</ActionMenu.Root>
+                            </div>
+                        {/each}
+                    </div>
+                {/if}
+            </Layout.Stack>
         </Card.Base>
     </div>
 </div>
@@ -149,22 +166,8 @@
         z-index: 20;
     }
 
-    .search-header {
-        position: fixed;
-        width: 234px;
-    }
-
-    .action-dropdown-search {
-        max-height: 400px;
-    }
-    .search-spacer {
-        height: var(--base-36);
-    }
-
-    :global(.action-dropdown-search > div) {
-        max-height: inherit;
+    .results {
         overflow-y: scroll;
-        scrollbar-width: none;
     }
 
     .trigger-content {
