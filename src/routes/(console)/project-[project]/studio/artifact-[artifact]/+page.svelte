@@ -49,7 +49,14 @@
                 }}
                 size="s"
                 ><Icon icon={IconDeviceMobile} color="--fgcolor-neutral-tertiary" /></Button.Button>
-            <Icon icon={IconExternalLink} color="--fgcolor-neutral-tertiary" />
+            <Button.Anchor
+                variant="extra-compact"
+                type="button"
+                href={previewUrl.toString()}
+                size="s"
+                external={true}
+                ><Icon icon={IconExternalLink} color="--fgcolor-neutral-tertiary" />
+            </Button.Anchor>
         </Layout.Stack>
     </form>
     <div class="divider-wrapper">
