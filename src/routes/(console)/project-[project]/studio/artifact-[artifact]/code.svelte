@@ -30,9 +30,8 @@
 
     studio.synapse.addEventListener('syncWorkDir', ({ message }) => {
         const { path, content } = message.success as unknown as { path: string; content: string };
-        if (path === '/' + currentFile) {
-            instance?.loadCode(content as string, getLanguageFromExtensions(path));
-        }
+        currentFile = path;
+        instance?.openFile(content as string, path);
     });
 
     async function openFile(path: string) {
@@ -42,7 +41,7 @@
                 filepath: path
             }
         });
-        instance?.loadCode(message.data as string, getLanguageFromExtensions(path));
+        instance?.openFile(message.data as string, path);
         currentFile = path;
     }
 
