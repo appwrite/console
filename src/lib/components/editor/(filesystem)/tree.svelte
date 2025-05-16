@@ -46,7 +46,14 @@
     </li>
 {/each}
 
-<style>
+<style lang="scss">
+    li {
+        padding-block-start: var(--space-2);
+
+        &:not(:last-child) {
+            padding-block-end: var(--space-2);
+        }
+    }
     button {
         display: flex;
         width: 100%;
@@ -71,13 +78,25 @@
             outline: 2px solid #007aff;
             outline-offset: -2px;
         }
+
+        span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     }
 
     .menuitem {
         display: flex;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        --icon-fill: var(--fgcolor-neutral-secondary);
     }
 
     .not-active {
         color: var(--fgcolor-neutral-tertiary);
+        --icon-fill: var(--fgcolor-neutral-tertiary);
     }
 </style>

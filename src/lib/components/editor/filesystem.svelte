@@ -4,6 +4,9 @@
     import { treeFromFilesystem } from './(filesystem)';
     import Tree from './(filesystem)/tree.svelte';
     import type { SvelteSet } from 'svelte/reactivity';
+    import { Layout, Icon } from '@appwrite.io/pink-svelte';
+    import { Button } from '$lib/elements/forms';
+    import { IconDocumentAdd, IconFolderAdd } from '@appwrite.io/pink-icons-svelte';
 
     type Props = {
         files: SvelteSet<string>;
@@ -33,13 +36,24 @@
 </script>
 
 <ul {...$tree}>
+    <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+        <span>FILES</span>
+        <Layout.Stack direction="row" justifyContent="flex-end" gap="s">
+            <div class="icon-container">
+                <Button compact><Icon icon={IconDocumentAdd} /></Button>
+            </div>
+            <div class="icon-container">
+                <Button compact><Icon icon={IconFolderAdd} /></Button>
+            </div>
+        </Layout.Stack>
+    </Layout.Stack>
     <!-- <Input.Text placeholder="Search" bind:value={search}>
         <Icon icon={IconSearch} slot="start" />
     </Input.Text> -->
     <Tree {items} />
 </ul>
 
-<style>
+<style lang="scss">
     ul {
         display: flex;
         flex-direction: column;
@@ -48,5 +62,18 @@
         background-color: var(--bgcolor-neutral-default);
         margin-block-start: calc(-1 * var(--space-4));
         padding: var(--space-4);
+    }
+
+    span {
+        font-family: var(--font-family-monospace);
+        font-size: var(--font-size-xs);
+    }
+
+    .icon-container {
+        --icon-fill: var(--fgcolor-neutral-tertiary);
+
+        &:hover {
+            --icon-fill: var(--fgcolor-neutral-secondary);
+        }
     }
 </style>
