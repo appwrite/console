@@ -44,7 +44,7 @@
     let terminalOpen = $state(getTerminalOpenFromPrefs());
     let isResizing = false;
 
-    const minHeight = 350;
+    const minHeight = 150;
     let resizerTopPosition = $state(getTerminalHeightFromPrefs() ?? minHeight);
     const terminalTabsHeight = 50;
     let layoutElement = $state<HTMLDivElement | null>(null);
