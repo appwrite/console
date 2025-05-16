@@ -88,8 +88,7 @@
         if (!isResizing) return;
         const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
         const relativeY = clientY - 50;
-
-        const maxHeight = window.innerHeight - 400;
+        const maxHeight = window.innerHeight - 200;
         if (relativeY < minHeight) {
             resizerTopPosition = minHeight;
         } else if (relativeY > maxHeight) {
@@ -97,6 +96,7 @@
         } else {
             resizerTopPosition = relativeY;
         }
+        console.log({ resizerTopPosition });
     }
 
     function stopResize() {
