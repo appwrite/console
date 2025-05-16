@@ -99,7 +99,6 @@
     function stopResize() {
         isResizing = false;
         saveTerminalHeightToPrefs(resizerTopPosition);
-        console.log('now');
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
         window.removeEventListener('touchmove', resize);
