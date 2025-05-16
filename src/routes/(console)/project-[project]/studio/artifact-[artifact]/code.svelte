@@ -6,10 +6,12 @@
     import { Layout } from '@appwrite.io/pink-svelte';
     import { disableBodySelect, enabledBodySelect } from '$lib/helpers/studioLayout';
     import { throttle } from '$lib/helpers/functions';
+    import { onDestroy, onMount } from 'svelte';
 
     let instance: Editor;
     let currentFile: string = $state(null);
     let resizerLeftPosition = $state(250);
+    let mainRef;
 
     studio.synapse.addEventListener('syncWorkDir', ({ message }) => {
         const { path, content, event } = message.data as SyncWorkDirData;
@@ -41,18 +43,25 @@
 
     let resizer = $state(null);
     let isResizing = $state(false);
+    let resizeObserver;
 
     let containerX = $state<null | number>(null);
     let maxContainerX = $state<null | number>(null);
 
-    $effect(() => {
-        if (resizer && !containerX) {
+    function checkParentDimensions(force = false) {
+        if ((resizer && !containerX) || containerX === 0 || force) {
             containerX = resizer.parentElement.getBoundingClientRect().x;
             maxContainerX = resizer.parentElement.getBoundingClientRect().width;
         }
+    }
+
+    $effect(() => {
+        checkParentDimensions();
     });
 
     function startResize() {
+        console.log('start resize');
+        checkParentDimensions();
         isResizing = true;
         window.addEventListener('mousemove', resize);
         window.addEventListener('mouseup', stopResize);
@@ -88,9 +97,25 @@
         window.removeEventListener('touchend', stopResize);
         enabledBodySelect();
     }
+
+    onMount(() => {
+        resizeObserver = new ResizeObserver(() => {
+            checkParentDimensions(true);
+        });
+
+        if (mainRef) {
+            resizeObserver.observe(mainRef);
+        }
+    });
+
+    onDestroy(() => {
+        if (resizeObserver) {
+            resizeObserver.disconnect();
+        }
+    });
 </script>
 
-<main>
+<main bind:this={mainRef}>
     <Layout.Stack direction="row" height="100%" gap="none">
         <div class="filesystem" style:width={resizerLeftPosition + 'px'}>
             <Filesystem
