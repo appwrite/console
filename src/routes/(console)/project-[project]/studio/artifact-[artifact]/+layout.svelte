@@ -60,13 +60,16 @@
         }
     });
 
-    $effect(() => {
+    function recalculateHeights() {
         if (terminalOpen === false) {
             editorHeight = layoutElement.offsetHeight - 46;
         } else if (terminalOpen) {
             editorHeight = resizerTopPosition + 1;
             terminalHeight = layoutElement.offsetHeight - resizerTopPosition - terminalTabsHeight;
         }
+    }
+    $effect(() => {
+        recalculateHeights();
     });
 
     function startResize() {
@@ -136,7 +139,7 @@
     });
 
     function onViewportResize() {
-        resizerTopPosition--;
+        recalculateHeights();
     }
 </script>
 
