@@ -19,9 +19,10 @@
     let editorElement: HTMLDivElement;
     let editor: monaco.editor.IStandaloneCodeEditor;
 
-    export function loadCode(code: string, language: string) {
-        const model = monaco.editor.createModel(code, language);
-
+    export function openFile(code: string, path: string) {
+        const uri = monaco.Uri.parse(path);
+        const model = monaco.editor.getModel(uri) ?? monaco.editor.createModel(code, null, uri);
+        model.setValue(code);
         editor.setModel(model);
     }
 

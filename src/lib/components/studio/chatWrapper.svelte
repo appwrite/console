@@ -131,14 +131,18 @@
         }
     });
     parser.on('complete', async (action) => {
+        if (action.type !== 'file') {
+            queue.enqueue(action.group, action);
+        }
         const job = queue.lists[action.group]?.find((item) => item.data.id === action.id);
-
-        queue.update(action.group, job.id, {
-            data: action,
-            status: 'done'
-        });
+        if (job)
+            queue.update(action.group, job.id, {
+                data: action,
+                status: 'done'
+            });
     });
     parser.on('update', async (action) => {
+        if (action.type !== 'file') return;
         const job = queue.lists[action.group]?.find((item) => item.data.id === action.id);
         if (job) {
             queue.update(action.group, job.id, {
