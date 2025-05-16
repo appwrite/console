@@ -68,11 +68,13 @@
             buildCommand = data.buildCommand;
             outputDirectory = data.outputDirectory;
             adapter = selectedFramework.adapters[0].key as Adapter;
+            fallback = data.fallbackFile;
         } else {
             adapter = site.adapter as Adapter;
             installCommand = site?.installCommand ?? frameworkAdapterData.installCommand;
             buildCommand = site?.buildCommand ?? frameworkAdapterData.buildCommand;
             outputDirectory = site?.outputDirectory ?? frameworkAdapterData.outputDirectory;
+            fallback = site?.fallbackFile ?? frameworkAdapterData.fallbackFile;
         }
     });
 
