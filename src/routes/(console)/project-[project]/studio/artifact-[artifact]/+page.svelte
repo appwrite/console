@@ -27,6 +27,7 @@
     };
 
     let refresh = $state(false);
+    let showMobileDevice = $state(false);
 </script>
 
 <Layout.Stack direction="column" gap="s">
@@ -40,7 +41,14 @@
                 <Icon icon={IconRefresh} color="--fgcolor-neutral-tertiary" />
             </Button.Button>
             <InputText name="path" id="previewUrl" value={previewUrl.pathname} />
-            <Icon icon={IconDeviceMobile} color="--fgcolor-neutral-tertiary" />
+            <Button.Button
+                variant="extra-compact"
+                type="button"
+                onclick={() => {
+                    showMobileDevice = !showMobileDevice;
+                }}
+                size="s"
+                ><Icon icon={IconDeviceMobile} color="--fgcolor-neutral-tertiary" /></Button.Button>
             <Icon icon={IconExternalLink} color="--fgcolor-neutral-tertiary" />
         </Layout.Stack>
     </form>
@@ -48,7 +56,7 @@
         <Divider />
     </div>
 </Layout.Stack>
-<div class="iframe-container">
+<div class="iframe-container" class:mobile-container={showMobileDevice}>
     {#key refresh}
         <iframe
             src={previewUrl.toString()}
@@ -67,6 +75,11 @@
             flex-grow: 1;
             height: auto;
         }
+    }
+
+    .mobile-container {
+        width: 400px;
+        margin: 0 auto;
     }
     iframe {
         border: none;
