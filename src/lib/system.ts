@@ -31,11 +31,11 @@ export const GRACE_PERIOD_OVERRIDE = false;
 /**
  * Returns true if multi-region is supported.
  */
-export function isMultiRegionSupported(): boolean {
+export function isMultiRegionSupported(url: URL): boolean {
     if (env.PUBLIC_APPWRITE_MULTI_REGION === 'true') return true;
 
     try {
-        return new URL(VARS.APPWRITE_ENDPOINT).hostname.endsWith('cloud.appwrite.io');
+        return url.hostname.endsWith('cloud.appwrite.io');
     } catch {
         return false;
     }
