@@ -133,6 +133,7 @@
     parser.on('complete', async (action) => {
         if (action.type !== 'file') {
             queue.enqueue(action.group, action);
+            return;
         }
         const job = queue.lists[action.group]?.find((item) => item.data.id === action.id);
         if (job)

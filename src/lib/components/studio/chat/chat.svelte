@@ -54,6 +54,19 @@
     let controller: AbortController;
 
     async function createMessage() {
+        if (message.startsWith('!')) {
+            const group = Symbol();
+            const [type, ...segments] = message.split(' ');
+            const content = segments.join(' ');
+            message = '';
+            const value = `<action type="${type.replace('!', '')}">${content}</action>`;
+            parser.chunk(value, 'system', {
+                group
+            });
+            parser.end();
+
+            return;
+        }
         const initialMessage = message;
         try {
             parser.chunk(message, 'user');
