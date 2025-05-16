@@ -32,8 +32,8 @@ export async function createRecord(record: Partial<DnsRecord>, domainId: string)
                 domainId,
                 record.name,
                 record.value,
-                record.priority || 10,
                 record.ttl,
+                record.priority || 10,
                 record?.comment || undefined
             );
         case 'TXT':

@@ -27,6 +27,8 @@
     let priority: number;
     let comment: string;
     let error = '';
+    let weight: number;
+    let port: number;
 
     async function handleSubmit() {
         const record = {
@@ -35,7 +37,9 @@
             value,
             ttl,
             priority,
-            comment
+            comment,
+            weight,
+            port
         };
         try {
             await createRecord(record, page.params.domain);
@@ -92,20 +96,32 @@
                     </span>
                 </Tooltip>
             </InputNumber>
-            <InputNumber
-                id="priority"
-                label="Priority"
-                placeholder="Enter number"
-                bind:value={priority}>
-                <Tooltip slot="info">
-                    <Icon icon={IconInfo} size="s" />
-                    <span slot="tooltip">
-                        Sets the priority for this DNS record. Lower numbers indicate higher
-                        priority (e.g., 10 is higher than 20).
-                    </span>
-                </Tooltip>
-            </InputNumber>
+            {#if type === 'MX'}
+                <InputNumber
+                    id="priority"
+                    label="Priority"
+                    placeholder="Enter number"
+                    bind:value={priority}>
+                    <Tooltip slot="info">
+                        <Icon icon={IconInfo} size="s" />
+                        <span slot="tooltip">
+                            Sets the priority for this DNS record. Lower numbers indicate higher
+                            priority (e.g., 10 is higher than 20).
+                        </span>
+                    </Tooltip>
+                </InputNumber>
+            {/if}
         </Layout.Stack>
+        {#if type === 'SRV'}
+            <Layout.Stack direction="row" gap="l">
+                <InputNumber id="port" label="Port" placeholder="Enter port" bind:value={port} />
+                <InputNumber
+                    id="weight"
+                    label="Weight"
+                    placeholder="Enter weight"
+                    bind:value={weight} />
+            </Layout.Stack>
+        {/if}
 
         <InputTextarea
             id="comment"
