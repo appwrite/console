@@ -4,9 +4,9 @@
     import { treeFromFilesystem } from './(filesystem)';
     import Tree from './(filesystem)/tree.svelte';
     import type { SvelteSet } from 'svelte/reactivity';
-    import { Layout, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Icon, Input } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
-    import { IconDocumentAdd, IconFolderAdd } from '@appwrite.io/pink-icons-svelte';
+    import { IconDocumentAdd, IconFolderAdd, IconSearch } from '@appwrite.io/pink-icons-svelte';
 
     type Props = {
         files: SvelteSet<string>;
@@ -36,6 +36,9 @@
 </script>
 
 <ul {...$tree}>
+    <Input.Text placeholder="Search">
+        <Icon icon={IconSearch} slot="start" />
+    </Input.Text>
     <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
         <span>FILES</span>
         <Layout.Stack direction="row" justifyContent="flex-end" gap="s">
@@ -47,9 +50,7 @@
             </div>
         </Layout.Stack>
     </Layout.Stack>
-    <!-- <Input.Text placeholder="Search" bind:value={search}>
-        <Icon icon={IconSearch} slot="start" />
-    </Input.Text> -->
+
     <Tree {items} />
 </ul>
 
