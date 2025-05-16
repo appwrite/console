@@ -36,9 +36,11 @@
 </script>
 
 <ul {...$tree}>
-    <Input.Text placeholder="Search">
-        <Icon icon={IconSearch} slot="start" />
-    </Input.Text>
+    <div class="search">
+        <Input.Text placeholder="Search">
+            <Icon icon={IconSearch} slot="start" />
+        </Input.Text>
+    </div>
     <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
         <span>FILES</span>
         <Layout.Stack direction="row" justifyContent="flex-end" gap="s">
@@ -65,6 +67,10 @@
         margin-block-start: calc(-1 * var(--space-4));
         height: calc(100% + var(--space-4));
         padding: var(--space-4);
+    }
+
+    .search {
+        padding-block-end: var(--space-4);
     }
 
     span {
