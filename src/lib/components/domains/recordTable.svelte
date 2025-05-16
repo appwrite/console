@@ -8,7 +8,8 @@
         Typography,
         Table,
         Icon,
-        InteractiveText
+        InteractiveText,
+        Alert
     } from '@appwrite.io/pink-svelte';
 
     export let domain: string;
@@ -69,12 +70,23 @@
     </Table.Root>
     <Layout.Stack gap="s" direction="row" alignItems="center">
         <Icon icon={IconInfo} size="s" color="--fgcolor-neutral-secondary" />
-        <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
-            A list of all domain providers and their DNS setting is available <Link
-                variant="muted"
-                external
-                href="https://appwrite.io/docs/advanced/platform/custom-domains">here</Link
-            >.
-        </Typography.Text>
+        {#if variant === 'cname'}
+            <Alert.Inline>
+                If your domain uses CAA records, ensure certainly.com is authorized — otherwise, SSL
+                setup may fail. A list of all domain providers and their DNS setting is available <Link
+                    variant="muted"
+                    external
+                    href="https://appwrite.io/docs/advanced/platform/custom-domains">here</Link
+                >.
+            </Alert.Inline>
+        {:else}
+            <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
+                A list of all domain providers and their DNS setting is available <Link
+                    variant="muted"
+                    external
+                    href="https://appwrite.io/docs/advanced/platform/custom-domains">here</Link
+                >.
+            </Typography.Text>
+        {/if}
     </Layout.Stack>
 </Layout.Stack>

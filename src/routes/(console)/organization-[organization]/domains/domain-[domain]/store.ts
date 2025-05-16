@@ -53,7 +53,7 @@ export const recordTypes = [
     {
         value: 'CAA',
         label: 'CAA',
-        helper: 'CAA records specify which certificate authorities are allowed to issue SSL certificates for your domain, helping to prevent unauthorized certificate issuance.'
+        helper: 'CAA records define which certificate authorities can issue SSL certificates for your domain. To avoid setup issues, make sure certainly.com is authorized.'
     },
     {
         value: 'HTTPS',
