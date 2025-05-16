@@ -19,8 +19,6 @@
         filterCols: FilterData[];
         analyticsSource?: string;
     } = $props();
-
-    $inspect(filterCols);
 </script>
 
 <Menu>

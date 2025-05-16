@@ -46,7 +46,7 @@
             $installation = installations.installations[0];
         }
         selectedInstallationId = installations.total ? installations.installations[0]?.$id : '';
-        if (!!installations?.total) {
+        if (installations?.total) {
             repositoryBehaviour = 'existing';
         }
     });

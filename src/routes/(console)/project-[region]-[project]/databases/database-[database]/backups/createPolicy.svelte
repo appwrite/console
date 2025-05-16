@@ -113,7 +113,7 @@
         });
     };
 
-    $: customPolicyDescription = (policy: UserBackupPolicy) => {
+    const customPolicyDescription = (policy: UserBackupPolicy) => {
         return backupPolicyDescription(
             policy.plainTextFrequency,
             null,
@@ -123,7 +123,7 @@
         );
     };
 
-    $: formPolicyDescription = () => {
+    const formPolicyDescription = () => {
         return backupPolicyDescription(
             policyFrequency,
             selectedTime,

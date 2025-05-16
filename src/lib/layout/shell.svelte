@@ -118,7 +118,7 @@
         showAccountMenu = false;
     }
 
-    $: progressCard = function getProgressCard() {
+    const progressCard = function getProgressCard() {
         if (selectedProject && !hasOnboardingDismissed(selectedProject.$id)) {
             const currentProject = projects.find((project) => project.$id === selectedProject.$id);
 

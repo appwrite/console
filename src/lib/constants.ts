@@ -379,6 +379,18 @@ export const scopes: {
         icon: 'globe'
     },
     {
+        scope: 'tokens.read',
+        description: "Access to read your project's file tokens",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'tokens.write',
+        description: 'Access to create file tokens',
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
         scope: 'sites.read',
         description: "Access to read your project's sites and deployments",
         category: 'Sites',

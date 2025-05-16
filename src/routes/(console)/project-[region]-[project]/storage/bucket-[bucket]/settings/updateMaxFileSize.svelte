@@ -20,7 +20,7 @@
     const options = units.map((v) => ({ label: v.name, value: v.name }));
     $: selectedUnit = $unit;
 
-    $: maxValue = function formMaxFileSize() {
+    const maxValue = function formMaxFileSize() {
         return (service * 1000 * 1000) / units.find((unit) => unit.name === selectedUnit).value;
     };
 

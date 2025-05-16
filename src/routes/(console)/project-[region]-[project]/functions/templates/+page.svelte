@@ -69,7 +69,7 @@
         return [...baseRuntimes.values()];
     }
 
-    $: isChecked = (useCase: string) => {
+    const isChecked = (useCase: string) => {
         return page.url.searchParams
             .getAll('useCase')
             .some((param) => param.toLowerCase() === useCase.toLowerCase());

@@ -111,8 +111,6 @@
             return arrayValue;
         }
     }
-
-    $inspect(subSheets);
 </script>
 
 <BottomSheet.Menu bind:isOpen={openBottomSheet} menu={filtersBottomSheet} />
