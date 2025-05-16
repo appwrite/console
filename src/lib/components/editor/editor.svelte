@@ -71,7 +71,7 @@
     <IconImagine />
 </div>
 <div
-    style:display={studio.currentFile === null ? 'none' : 'contents'}
+    style:display={studio.currentFile === null ? 'none' : undefined}
     class="editor"
     role="presentation"
     use:editor>
