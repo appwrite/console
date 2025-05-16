@@ -145,6 +145,7 @@
     .editor {
         flex-grow: 1;
         width: 0;
+        height: calc(100% - 1px);
     }
 
     .resizer {
