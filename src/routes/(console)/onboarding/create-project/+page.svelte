@@ -21,38 +21,32 @@
     async function createProject() {
         isLoading = true;
 
-        if (data.organization) {
+        try {
             const teamId = data.organization.$id;
-            try {
-                const project = await sdk.forConsole.projects.create(
-                    id ?? ID.unique(),
-                    projectName,
-                    teamId,
-                    region
-                );
-                trackEvent(Submit.ProjectCreate, {
-                    customId: !!id,
-                    teamId
-                });
+            const project = await sdk.forConsole.projects.create(
+                id ?? ID.unique(),
+                projectName,
+                teamId,
+                region
+            );
+            trackEvent(Submit.ProjectCreate, {
+                customId: !!id,
+                teamId
+            });
 
-                startAnimation = true;
+            startAnimation = true;
 
-                trackEvent(Submit.ProjectCreate, {
-                    teamId: teamId
-                });
-
-                setTimeout(async () => {
-                    await invalidate(Dependencies.ACCOUNT);
-                    goto(`${base}/project-${project.region}-${project.$id}`);
-                }, 3000);
-            } catch (e) {
-                trackError(e, Submit.ProjectCreate);
-                isLoading = false;
-                addNotification({
-                    type: 'error',
-                    message: e.message
-                });
-            }
+            setTimeout(async () => {
+                await invalidate(Dependencies.ACCOUNT);
+                goto(`${base}/project-${project.region}-${project.$id}`);
+            }, 3000);
+        } catch (e) {
+            trackError(e, Submit.ProjectCreate);
+            isLoading = false;
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
         }
     }
 </script>
