@@ -2,36 +2,16 @@
     import Editor from '$lib/components/editor/editor.svelte';
     import Filesystem from '$lib/components/editor/filesystem.svelte';
     import { studio } from '$lib/components/studio/studio.svelte';
+    import type { SyncWorkDirData } from '$lib/components/studio/synapse.svelte';
 
     let instance: Editor;
     let currentFile: string = $state(null);
 
-    function getLanguageFromExtensions(path: string) {
-        switch (true) {
-            case path.endsWith('.md'):
-                return 'markdown';
-            case path.endsWith('.js'):
-            case path.endsWith('.jsx'):
-                return 'javascript';
-            case path.endsWith('.ts'):
-            case path.endsWith('.tsx'):
-                return 'typescript';
-            case path.endsWith('.svg'):
-            case path.endsWith('.html'):
-                return 'html';
-            case path.endsWith('.css'):
-                return 'css';
-            case path.endsWith('.json'):
-                return 'json';
-            default:
-                return null;
-        }
-    }
-
     studio.synapse.addEventListener('syncWorkDir', ({ message }) => {
-        const { path, content } = message.success as unknown as { path: string; content: string };
+        const { path, content, event } = message.data as SyncWorkDirData;
+        if (event !== 'create' && event !== 'change') return;
         currentFile = path;
-        instance?.openFile(content as string, path);
+        instance?.openFile(content, path);
     });
 
     async function openFile(path: string) {

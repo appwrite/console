@@ -54,8 +54,8 @@
     let controller: AbortController;
 
     async function createMessage() {
+        const group = Symbol();
         if (message.startsWith('!')) {
-            const group = Symbol();
             const [type, ...segments] = message.split(' ');
             const content = segments.join(' ');
             message = '';
@@ -101,7 +101,6 @@
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
 
-            const group = Symbol();
             let chunk = await reader.read();
             while (!chunk.done) {
                 if (!firstByteReceived) firstByteReceived = true;

@@ -20,6 +20,7 @@
     let editor: monaco.editor.IStandaloneCodeEditor;
 
     export function openFile(code: string, path: string) {
+        if (!code || path.endsWith('/')) return;
         const uri = monaco.Uri.parse(path);
         const model = monaco.editor.getModel(uri) ?? monaco.editor.createModel(code, null, uri);
         model.setValue(code);

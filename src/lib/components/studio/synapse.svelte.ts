@@ -1,7 +1,8 @@
 import { SvelteURL } from 'svelte/reactivity';
 
 type WebSocketEvent = 'connect' | 'disconnect' | 'reconnect';
-type SynapseMessageType = 'terminal' | 'fs' | 'synapse' | 'syncWorkDir';
+type SynapseMessageType = 'terminal' | 'fs' | 'synapse';
+type SynapseResponseMessageType = SynapseMessageType | 'syncWorkDir';
 type SynapseMessageOperations = {
     operation: 'updateWorkDir';
     params: {
@@ -37,13 +38,30 @@ type SynapseMessageOperationTerminal =
     | { operation: 'updateSize'; params: { cols: number; rows: number } }
     | { operation: 'createCommand'; params: { command: string } };
 
-type Events = WebSocketEvent | SynapseMessageType;
-type BaseMessage = {
+type Events = WebSocketEvent | SynapseMessageType | SynapseResponseMessageType;
+type BaseMessage<T = unknown> = {
     success: boolean;
-    data: unknown;
+    data: T;
     type: SynapseMessageType;
     requestId: string;
 };
+
+export type SyncWorkDirData = {
+    path: string;
+} & (
+    | {
+          event: 'unlink';
+          content: null;
+      }
+    | {
+          event: 'add';
+          content: string;
+      }
+    | {
+          event: 'change';
+          content: string;
+      }
+);
 
 export class Synapse {
     private ws: WebSocket | null = null;
@@ -76,10 +94,11 @@ export class Synapse {
         });
     }
 
-    public async changeArtifact(endpoint: string, artifact?: string) {
+    public async changeArtifact(endpoint: string, artifact: string, syncWorkDir: boolean = false) {
         const url = new SvelteURL(endpoint);
+        url.searchParams.set('workDir', `/artifact/${artifact}`);
+        if (syncWorkDir) url.searchParams.set('syncWorkDir', 'true');
 
-        if (artifact) url.searchParams.set('workDir', `/artifact/${artifact}`);
         this.endpoint = url.toString();
 
         this.connect();

@@ -1,5 +1,5 @@
 import { SvelteMap, SvelteSet, SvelteURL } from 'svelte/reactivity';
-import { Synapse } from './synapse.svelte';
+import { Synapse, type SyncWorkDirData } from './synapse.svelte';
 
 class Studio {
     #host: string;
@@ -13,6 +13,11 @@ class Studio {
     constructor(host: string) {
         this.#host = host;
         this.synapse = new Synapse(host);
+        this.synapse.addEventListener('syncWorkDir', ({ message }) => {
+            const { path, event } = message.data as SyncWorkDirData;
+            if (event === 'add') this.filesystem.add(path);
+            if (event === 'unlink') this.filesystem.delete(path);
+        });
     }
 
     createTerminal() {
@@ -69,7 +74,7 @@ class Studio {
     }
     async selectArtifact(artifact: string) {
         this.#artifact = artifact;
-        this.synapse.changeArtifact(this.#endpoint, this.#artifact);
+        this.synapse.changeArtifact(this.#endpoint, this.#artifact, true);
         this.#resetTerminals();
         this.#resetFileSystem();
         await this.synapse.isConnected();
