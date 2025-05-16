@@ -96,7 +96,6 @@
         } else {
             resizerTopPosition = relativeY;
         }
-        console.log({ resizerTopPosition });
     }
 
     function stopResize() {
