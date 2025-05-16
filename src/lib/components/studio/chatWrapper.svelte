@@ -173,6 +173,7 @@
         height: calc(100vh - 66px);
         margin-block-start: calc(-1 * var(--base-8));
         margin-inline-start: 0;
+        z-index: 1;
 
         &::after {
             content: '';
