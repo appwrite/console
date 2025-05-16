@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/sveltekit';
 import { AppwriteException } from '@appwrite.io/console';
 import type { HandleClientError } from '@sveltejs/kit';
-import { isCloud, isProd } from '$lib/system';
+import { isCloud, isProd, isStudio } from '$lib/system';
 
 Sentry.init({
     enabled: isCloud && isProd,
@@ -10,6 +10,24 @@ Sentry.init({
     replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 0
 });
+
+function setFavicon() {
+    const favicon = isStudio ? 'imagine-icon.svg' : 'appwrite-icon.svg';
+    const maskIcon = isStudio ? 'imagine-icon.png' : 'appwrite-icon.png';
+    const link = document.createElement('link');
+    link.rel = 'icon';
+    link.href = '/console/logos/' + favicon;
+    link.type = 'image/svg+xml';
+    document.head.appendChild(link);
+
+    const maskLink = document.createElement('link');
+    maskLink.rel = 'mask-icon';
+    link.href = '/console/logos/' + maskIcon;
+    link.type = 'image/png';
+    document.head.appendChild(maskLink);
+}
+
+setFavicon();
 
 export const handleError: HandleClientError = Sentry.handleErrorWithSentry(
     async ({ error, message, status }) => {

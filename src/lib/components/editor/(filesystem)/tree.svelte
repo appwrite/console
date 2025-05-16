@@ -48,10 +48,10 @@
 
 <style lang="scss">
     li {
-        padding-block-start: var(--space-2);
+        padding-block-start: var(--space-1);
 
         &:not(:last-child) {
-            padding-block-end: var(--space-2);
+            padding-block-end: var(--space-1);
         }
     }
     button {

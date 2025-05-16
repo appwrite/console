@@ -60,13 +60,16 @@
         }
     });
 
-    $effect(() => {
+    function recalculateHeights() {
         if (terminalOpen === false) {
             editorHeight = layoutElement.offsetHeight - 46;
         } else if (terminalOpen) {
             editorHeight = resizerTopPosition + 1;
             terminalHeight = layoutElement.offsetHeight - resizerTopPosition - terminalTabsHeight;
         }
+    }
+    $effect(() => {
+        recalculateHeights();
     });
 
     function startResize() {
@@ -85,8 +88,7 @@
         if (!isResizing) return;
         const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
         const relativeY = clientY - 50;
-
-        const maxHeight = window.innerHeight - 400;
+        const maxHeight = window.innerHeight - 200;
         if (relativeY < minHeight) {
             resizerTopPosition = minHeight;
         } else if (relativeY > maxHeight) {
@@ -99,7 +101,6 @@
     function stopResize() {
         isResizing = false;
         saveTerminalHeightToPrefs(resizerTopPosition);
-        console.log('now');
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
         window.removeEventListener('touchmove', resize);
@@ -137,7 +138,7 @@
     });
 
     function onViewportResize() {
-        resizerTopPosition--;
+        recalculateHeights();
     }
 </script>
 
@@ -234,6 +235,8 @@
                     onmousedown={startResize}
                     ontouchmove={startResize}>
                 </div>
+            {:else}
+                <div class="absolute-border"></div>
             {/if}
             <aside style:top={`${editorHeight + 4}px`}>
                 <details bind:open={terminalOpen}>
@@ -336,6 +339,21 @@
             width: calc(100% + 2 * var(--space-7));
             margin-inline-start: -15px;
             border-bottom-right-radius: var(--border-radius-m);
+        }
+    }
+
+    .absolute-border {
+        position: absolute;
+        margin-inline-start: calc(-1 * var(--space-7));
+        width: calc(100% + 2 * var(--space-7));
+        z-index: 1;
+        bottom: 46px;
+        &::after {
+            content: '';
+            position: absolute;
+            height: 1px;
+            width: 100%;
+            background-color: var(--border-neutral);
         }
     }
 
