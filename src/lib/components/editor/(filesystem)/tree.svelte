@@ -1,7 +1,7 @@
 <script lang="ts">
     import { melt, type TreeView } from '@melt-ui/svelte';
     import { getContext } from 'svelte';
-    import { Icon, ActionMenu } from '@appwrite.io/pink-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { icons, type TreeItem } from '.';
 
     export let items: TreeItem[];
