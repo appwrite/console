@@ -1,5 +1,6 @@
 import { env } from '$env/dynamic/public';
 import { dev } from '$app/environment';
+import { getApiEndpoint } from '$lib/stores/sdk';
 
 export const enum Mode {
     CLOUD = 'cloud',
@@ -35,7 +36,8 @@ export function isMultiRegionSupported(): boolean {
     if (env.PUBLIC_APPWRITE_MULTI_REGION === 'true') return true;
 
     try {
-        return new URL(VARS.APPWRITE_ENDPOINT).hostname.endsWith('cloud.appwrite.io');
+        const endpoint = getApiEndpoint();
+        return new URL(endpoint).hostname.endsWith('cloud.appwrite.io');
     } catch {
         return false;
     }
