@@ -49,7 +49,7 @@
     async function loadInstallations() {
         if (installationList) {
             if (installationList.installations.length) {
-                untrack(() => selectedInstallation = installationList.installations[0].$id);
+                untrack(() => (selectedInstallation = installationList.installations[0].$id));
                 installation.set(
                     installationList.installations.find(
                         (entry) => entry.$id === selectedInstallation
@@ -62,7 +62,7 @@
                 .forProject(page.params.region, page.params.project)
                 .vcs.listInstallations();
             if (installations.length) {
-                untrack(() => selectedInstallation = installations[0].$id);
+                untrack(() => (selectedInstallation = installations[0].$id));
                 installation.set(installations.find((entry) => entry.$id === selectedInstallation));
             }
             return installations;
