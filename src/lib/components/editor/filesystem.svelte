@@ -45,5 +45,8 @@
         flex-direction: column;
         gap: 0;
         overflow-y: scroll;
+        background-color: var(--bgcolor-neutral-default);
+        margin-block-start: calc(-1 * var(--space-4));
+        padding: var(--space-4);
     }
 </style>

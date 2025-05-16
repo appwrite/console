@@ -1,7 +1,7 @@
 <script lang="ts">
     import { melt, type TreeView } from '@melt-ui/svelte';
     import { getContext } from 'svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, ActionMenu } from '@appwrite.io/pink-svelte';
     import { icons, type TreeItem } from '.';
 
     export let items: TreeItem[];
@@ -26,9 +26,13 @@
                 hasChildren: isFolder
             })}>
             {#if icon === 'folder' && isFolder && $isExpanded(path)}
-                <Icon icon={icons['folderOpen']} />
+                <div class="menuitem" class:not-active={!$isSelected(path)}>
+                    <Icon icon={icons['folderOpen']} />
+                </div>
             {:else}
-                <Icon icon={icons[icon]} />
+                <div class="menuitem" class:not-active={!$isSelected(path)}>
+                    <Icon icon={icons[icon]} />
+                </div>
             {/if}
 
             <span>{title}</span>
@@ -54,6 +58,7 @@
         padding: var(--space-3) var(--space-4);
         cursor: pointer;
         border-radius: var(--border-radius-s);
+        color: var(--fgcolor-neutral-secondary);
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 
         &.selected {
@@ -66,5 +71,13 @@
             outline: 2px solid #007aff;
             outline-offset: -2px;
         }
+    }
+
+    .menuitem {
+        display: flex;
+    }
+
+    .not-active {
+        color: var(--fgcolor-neutral-tertiary);
     }
 </style>
