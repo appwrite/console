@@ -3,7 +3,7 @@ import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { isOrganization, tierToPlan } from '$lib/stores/billing';
-import { ID } from '@appwrite.io/console';
+import { ID, Query } from '@appwrite.io/console';
 import { BillingPlan } from '$lib/constants';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
@@ -48,6 +48,20 @@ export const load: PageLoad = async ({ parent }) => {
             }
         } catch (e) {
             trackError(e, Submit.OrganizationCreate);
+        }
+    } else if (organizations?.total === 1) {
+        const org = organizations.teams[0];
+        const projects = await sdk.forConsole.projects.list([
+            Query.equal('teamId', org.$id),
+            Query.limit(1)
+        ]);
+        if (!projects.total) {
+            return {
+                organization: org,
+                regions: await sdk.forConsole.billing.listRegions(org.$id)
+            };
+        } else {
+            redirect(303, `${base}/console/organization-${org.$id}`);
         }
     } else {
         redirect(303, `${base}/console/organization-${organizations.teams[0].$id}`);
