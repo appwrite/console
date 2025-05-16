@@ -72,8 +72,10 @@ export function treeFromFilesystem(files: SvelteSet<string>): TreeItem[] {
     const tree: TreeItem[] = [];
 
     for (const path of Array.from(files)) {
-        const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
-
+        let normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
+        if (normalizedPath.startsWith('/')) {
+            normalizedPath = normalizedPath.slice(1);
+        }
         if (!normalizedPath) continue;
 
         const parts = normalizedPath.split('/');
