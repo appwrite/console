@@ -5,16 +5,15 @@
     import type { SyncWorkDirData } from '$lib/components/studio/synapse.svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { disableBodySelect, enabledBodySelect } from '$lib/helpers/studioLayout';
-    import { throttle } from '$lib/helpers/functions';
 
     let instance: Editor;
-    let currentFile: string = $state(null);
     let resizerLeftPosition = $state(250);
 
     studio.synapse.addEventListener('syncWorkDir', ({ message }) => {
+        if (studio.streaming) return;
         const { path, content, event } = message.data as SyncWorkDirData;
-        if (event !== 'create' && event !== 'change') return;
-        currentFile = path;
+        if (event !== 'add' && event !== 'change') return;
+        studio.currentFile = path;
         instance?.openFile(content, path);
     });
 
@@ -26,7 +25,7 @@
             }
         });
         instance?.openFile(message.data as string, path);
-        currentFile = path;
+        studio.currentFile = path;
     }
 
     async function saveFile(content: string) {
@@ -34,7 +33,7 @@
             operation: 'updateFile',
             params: {
                 content,
-                filepath: currentFile
+                filepath: studio.currentFile
             }
         });
     }

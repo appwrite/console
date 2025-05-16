@@ -6,18 +6,17 @@
     import { slide } from 'svelte/transition';
     import type { UIEventHandler, WheelEventHandler } from 'svelte/elements';
     import Message from './message.svelte';
+    import { studio } from '../studio.svelte';
 
     type Props = {
         parser: StreamParser;
         autoscroll?: boolean;
-        streaming?: boolean;
         thinking?: boolean;
     };
     let {
         parser,
         autoscroll = $bindable(true),
-        thinking = false,
-        streaming = $bindable(false)
+        thinking = false
     }: Props = $props();
 
     const chunks = parser.parsed;
@@ -29,11 +28,11 @@
     }
 
     const onwheel: WheelEventHandler<HTMLDivElement> = (event) => {
-        if (streaming) autoscroll = false;
+        if (studio.streaming) autoscroll = false;
     };
 
     const onscroll: UIEventHandler<HTMLDivElement> = (event) => {
-        if (streaming && autoscroll) return;
+        if (studio.streaming && autoscroll) return;
 
         // check if user is at the bottom of the chat
         const { currentTarget } = event;

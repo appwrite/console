@@ -16,6 +16,7 @@
     import { page } from '$app/state';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { studio } from '../studio.svelte';
 
     type Props = {
         width: number;
@@ -26,7 +27,6 @@
 
     let minimizeChat = $state($isSmallViewport ? true : false);
     let message = $state('');
-    let sending = $state(false);
     let firstByteReceived = $state(true);
 
     let chatTextareaRef: HTMLTextAreaElement | null = $state(null);
@@ -40,7 +40,7 @@
     };
     const onsubmit: EventHandler<SubmitEvent, HTMLFormElement> = (event) => {
         event.preventDefault();
-        if (sending) controller.abort();
+        if (studio.streaming) controller.abort();
         else createMessage();
     };
 
@@ -73,7 +73,7 @@
             firstByteReceived = false;
             message = '';
             controller = new AbortController();
-            sending = true;
+            studio.streaming = true;
             const response = await fetch(
                 `${sdk.forProject.client.config.endpoint}/imagine/artifacts/${$conversation.data.artifactId}/conversations/${$conversation.data.$id}/messages`,
                 {
@@ -117,7 +117,7 @@
             message = initialMessage;
         } finally {
             firstByteReceived = true;
-            sending = false;
+            studio.streaming = false;
         }
     }
 </script>
@@ -175,7 +175,7 @@
                             <Icon icon={IconPaperClip} color="--fgcolor-neutral-tertiary" />
                         </Button.Button>
                         <Button.Button icon variant="secondary" size="s" type="submit">
-                            {#if sending}
+                            {#if studio.streaming}
                                 <Icon icon={IconStop} color="--fgcolor-neutral-tertiary" />
                             {:else}
                                 <Icon icon={IconArrowUp} color="--fgcolor-neutral-tertiary" />

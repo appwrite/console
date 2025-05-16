@@ -7,6 +7,7 @@
     import { Layout, Icon, Input } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { IconDocumentAdd, IconFolderAdd, IconSearch } from '@appwrite.io/pink-icons-svelte';
+    import { studio } from '../studio/studio.svelte';
 
     type Props = {
         files: SvelteSet<string>;
@@ -33,6 +34,29 @@
             }
         }
     });
+
+    function createFile() {
+        const filepath = prompt('Enter filename:');
+        if (filepath === null || filepath === '' || filepath.endsWith('/')) return;
+        studio.synapse.dispatch('fs', {
+            operation: 'createFile',
+            params: {
+                content: '',
+                filepath
+            }
+        });
+    }
+
+    function createFolder() {
+        const folderpath = prompt('Enter folder path:');
+        if (folderpath === null || folderpath === '') return;
+        studio.synapse.dispatch('fs', {
+            operation: 'createFolder',
+            params: {
+                folderpath
+            }
+        });
+    }
 </script>
 
 <ul {...$tree}>
@@ -43,10 +67,10 @@
         <span>FILES</span>
         <Layout.Stack direction="row" justifyContent="flex-end" gap="s">
             <div class="icon-container">
-                <Button compact><Icon icon={IconDocumentAdd} /></Button>
+                <Button compact on:click={createFile}><Icon icon={IconDocumentAdd} /></Button>
             </div>
             <div class="icon-container">
-                <Button compact><Icon icon={IconFolderAdd} /></Button>
+                <Button compact on:click={createFolder}><Icon icon={IconFolderAdd} /></Button>
             </div>
         </Layout.Stack>
     </Layout.Stack>

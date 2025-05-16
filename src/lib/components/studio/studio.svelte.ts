@@ -1,5 +1,14 @@
 import { SvelteMap, SvelteSet, SvelteURL } from 'svelte/reactivity';
 import { Synapse, type SyncWorkDirData } from './synapse.svelte';
+import * as monaco from 'monaco-editor';
+import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
+import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
+import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
+import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
+import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
+import markdownWorker from 'monaco-editor/esm/vs/basic-languages/markdown/markdown?worker';
+import { app } from '$lib/stores/app';
+import { get } from 'svelte/store';
 
 class Studio {
     #host: string;
@@ -8,7 +17,12 @@ class Studio {
     terminals = new SvelteMap<symbol, Synapse>();
     activeTerminal = $state(this.mainTerminalId);
     filesystem: SvelteSet<string> = $state(new SvelteSet());
+    currentFile: string | null = null;
+    openFiles: SvelteSet<string> = $state(new SvelteSet());
     synapse: Synapse;
+    editor: monaco.editor.IStandaloneCodeEditor;
+    streaming: boolean = $state(false);
+    follow: boolean = $state(false);
 
     constructor(host: string) {
         this.#host = host;
@@ -35,7 +49,37 @@ class Studio {
     #resetFileSystem() {
         this.filesystem.clear();
     }
+    async initEditor(node: HTMLElement) {
+        self.MonacoEnvironment = {
+            getWorker(_workerId: string, label: string) {
+                if (label === 'markdown') {
+                    return new markdownWorker();
+                }
+                if (label === 'json') {
+                    return new jsonWorker();
+                }
+                if (label === 'css' || label === 'scss' || label === 'less') {
+                    return new cssWorker();
+                }
+                if (label === 'html') {
+                    return new htmlWorker();
+                }
+                if (label === 'typescript' || label === 'javascript') {
+                    return new tsWorker();
+                }
+                return new editorWorker();
+            }
+        };
 
+        monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
+        this.editor = monaco.editor.create(node, {
+            theme: get(app).themeInUse === 'light' ? 'vs-light' : 'vs-dark',
+            scrollbar: {
+                verticalScrollbarSize: 4,
+                horizontalScrollbarSize: 4
+            }
+        });
+    }
     async #initFileSystem() {
         const response = await this.synapse.dispatch('fs', {
             operation: 'getFolder',
