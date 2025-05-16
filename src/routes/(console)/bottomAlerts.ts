@@ -9,7 +9,7 @@ import { isCloud } from '$lib/system';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
-if (!isCloud) {
+if (isCloud) {
     const title = 'Join Init 19-23 May';
     const message =
         'This release will change the way you build with Appwrite forever. Register for Init and join the giveaway.';
