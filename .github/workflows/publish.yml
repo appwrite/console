@@ -153,5 +153,5 @@ jobs:
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=cloud"
                       "PUBLIC_APPWRITE_MULTI_REGION=false"
-                      "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY }}"
+                      "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY_STAGE }}"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
