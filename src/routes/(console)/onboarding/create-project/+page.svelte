@@ -21,13 +21,14 @@
     async function createProject() {
         isLoading = true;
 
+        console.log(data);
         try {
             const teamId = data.organization.$id;
             const project = await sdk.forConsole.projects.create(
                 id ?? ID.unique(),
                 projectName,
                 teamId,
-                region
+                region ?? Region.Fra
             );
             trackEvent(Submit.ProjectCreate, {
                 customId: !!id,

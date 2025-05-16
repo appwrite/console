@@ -10,60 +10,65 @@ import { base } from '$app/paths';
 
 export const load: PageLoad = async ({ parent }) => {
     const { organizations } = await parent();
-    if (!organizations?.total) {
-        try {
-            if (isCloud) {
-                const org = await sdk.forConsole.billing.createOrganization(
-                    ID.unique(),
-                    'Personal projects',
-                    BillingPlan.FREE,
-                    null,
-                    null
-                );
-                trackEvent(Submit.OrganizationCreate, {
-                    plan: tierToPlan(BillingPlan.FREE)?.name,
-                    budget_cap_enabled: false,
-                    members_invited: 0
-                });
-
-                if (isOrganization(org)) {
-                    return {
-                        organization: org,
-                        regions: await sdk.forConsole.billing.listRegions(org.$id)
-                    };
-                } else {
-                    const e = new Error(org.message, {
-                        cause: org
-                    });
-                    trackError(e, Submit.OrganizationCreate);
-                }
-            } else {
-                return {
-                    organization: await sdk.forConsole.teams.create(
+    try {
+        if (!organizations?.total) {
+            try {
+                if (isCloud) {
+                    const org = await sdk.forConsole.billing.createOrganization(
                         ID.unique(),
-                        'Personal projects'
-                    ),
-                    regions: null
-                };
+                        'Personal projects',
+                        BillingPlan.FREE,
+                        null,
+                        null
+                    );
+                    trackEvent(Submit.OrganizationCreate, {
+                        plan: tierToPlan(BillingPlan.FREE)?.name,
+                        budget_cap_enabled: false,
+                        members_invited: 0
+                    });
+
+                    if (isOrganization(org)) {
+                        return {
+                            organization: org,
+                            regions: await sdk.forConsole.billing.listRegions(org.$id)
+                        };
+                    } else {
+                        const e = new Error(org.message, {
+                            cause: org
+                        });
+                        trackError(e, Submit.OrganizationCreate);
+                    }
+                } else {
+                    return {
+                        organization: await sdk.forConsole.teams.create(
+                            ID.unique(),
+                            'Personal projects'
+                        ),
+                        regions: null
+                    };
+                }
+            } catch (e) {
+                trackError(e, Submit.OrganizationCreate);
             }
-        } catch (e) {
-            trackError(e, Submit.OrganizationCreate);
-        }
-    } else if (organizations?.total === 1) {
-        const org = organizations.teams[0];
-        const projects = await sdk.forConsole.projects.list([
-            Query.equal('teamId', org.$id),
-            Query.limit(1)
-        ]);
-        if (!projects.total) {
-            return {
-                organization: org,
-                regions: await sdk.forConsole.billing.listRegions(org.$id)
-            };
+        } else if (organizations?.total === 1) {
+            const org = organizations.teams[0];
+            const projects = await sdk.forConsole.projects.list([
+                Query.equal('teamId', org.$id),
+                Query.limit(1)
+            ]);
+            if (!projects.total) {
+                const regions = isCloud ? await sdk.forConsole.billing.listRegions(org.$id) : null;
+                return {
+                    organization: org,
+                    regions
+                };
+            } else {
+                redirect(303, `${base}/console/organization-${org.$id}`);
+            }
         } else {
-            redirect(303, `${base}/console/organization-${org.$id}`);
+            redirect(303, `${base}/console/organization-${organizations.teams[0].$id}`);
         }
-    } else {
-        redirect(303, `${base}/console/organization-${organizations.teams[0].$id}`);
+    } catch (error) {
+        console.error(error);
     }
 };
