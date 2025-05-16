@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Layout, Typography, Divider, Icon, Button } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Divider, Icon, Button, Status } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
     import { ActionDropdown, Tab, Tabs, Terminal } from '$lib/components';
     import { base } from '$app/paths';
@@ -206,6 +206,9 @@
                 {/if}
 
                 <Layout.Stack gap="s" direction="row" alignItems="center" inline>
+                    <Status
+                        label={studio.status}
+                        status={studio.status === 'connected' ? 'complete' : 'pending'} />
                     {#if dev}
                         <Button.Button on:click={() => (debug = true)} size="s" variant="primary"
                             >DEBUG</Button.Button>

@@ -94,6 +94,34 @@ export class Synapse {
         });
     }
 
+    public async *streamStatus(): AsyncGenerator<
+        'reconnecting' | 'closing' | 'closed' | 'connecting' | 'connected' | 'unknown'
+    > {
+        while (true) {
+            switch (true) {
+                case this.isReconnecting:
+                    yield 'reconnecting';
+                    break;
+                case this.ws && this.ws.readyState === WebSocket.CLOSING:
+                    yield 'closing';
+                    break;
+                case this.ws && this.ws.readyState === WebSocket.CLOSED:
+                    yield 'closed';
+                    break;
+                case this.ws && this.ws.readyState === WebSocket.CONNECTING:
+                    yield 'connecting';
+                    break;
+                case this.ws && this.ws.readyState === WebSocket.OPEN:
+                    yield 'connected';
+                    break;
+                default:
+                    yield 'unknown';
+                    break;
+            }
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+    }
+
     public async changeArtifact(endpoint: string, artifact: string, syncWorkDir: boolean = false) {
         const url = new SvelteURL(endpoint);
         url.searchParams.set('workDir', `/artifact/${artifact}`);

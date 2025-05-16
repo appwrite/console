@@ -23,6 +23,7 @@ class Studio {
     editor: monaco.editor.IStandaloneCodeEditor;
     streaming: boolean = $state(false);
     follow: boolean = $state(false);
+    status: string = $state('unknown');
 
     constructor(host: string) {
         this.#host = host;
@@ -32,6 +33,11 @@ class Studio {
             if (event === 'add') this.filesystem.add(path);
             if (event === 'unlink') this.filesystem.delete(path);
         });
+        (async () => {
+            for await (const status of this.synapse.streamStatus()) {
+                this.status = status;
+            }
+        })();
     }
 
     createTerminal() {
