@@ -22,8 +22,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         Query.orderDesc('')
     ]);
 
-    // set `default` or something else,
-    // `undefined` in the url looks really off!
+    // set `default` if no region!
     for (const project of projects.projects) {
         project.region ??= 'default';
     }

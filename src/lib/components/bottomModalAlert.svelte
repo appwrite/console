@@ -3,6 +3,7 @@
     import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import { app } from '$lib/stores/app';
     import {
+        type BottomModalAlertAction,
         type BottomModalAlertItem,
         bottomModalAlertsConfig,
         dismissBottomModalAlert,
@@ -111,6 +112,34 @@
         }
     }
 
+    // the button component cannot have both href and on:click!
+    function triggerWindowLink(alertAction: BottomModalAlertAction, event?: string) {
+        const shouldShowUpgrade = showUpgrade();
+        const url = shouldShowUpgrade
+            ? $upgradeURL
+            : alertAction.link({
+                  organization: $organization,
+                  project: $project
+              });
+
+        if (!shouldShowUpgrade && alertAction.external) {
+            window.open(url, '_blank');
+        } else {
+            goto(url);
+        }
+
+        if (alertAction?.hideOnClick === true) {
+            // be careful of this one.
+            // once clicked, its gone!
+            handleClose();
+        }
+
+        trackEvent(Click.PromoClick, {
+            promo: currentModalAlert.id,
+            type: shouldShowUpgrade ? 'upgrade' : (event ?? `cta_click_${currentModalAlert.id}`)
+        });
+    }
+
     function showUpgrade() {
         const plan = currentModalAlert.plan;
         const organizationPlan = $organization?.billingPlan;
@@ -208,40 +237,23 @@
                         <div
                             class="buttons u-flex u-flex-vertical-mobile u-gap-4 u-padding-inline-8 u-padding-block-8">
                             <Button
+                                fullWidthMobile
                                 secondary={!hasOnlyPrimaryCta}
                                 class={`${hasOnlyPrimaryCta ? 'only-primary-cta' : ''}`}
-                                href={shouldShowUpgrade
-                                    ? $upgradeURL
-                                    : currentModalAlert.cta.link({
-                                          organization: $organization,
-                                          project: $project
-                                      })}
-                                external={!!currentModalAlert.cta.external}
-                                fullWidthMobile
-                                on:click={() => {
-                                    if (currentModalAlert.cta?.hideOnClick === true) {
-                                        // be careful of this one.
-                                        // once clicked, its gone!
-                                        handleClose();
-                                    }
-
-                                    trackEvent(Click.PromoClick, {
-                                        promo: currentModalAlert.id,
-                                        type: shouldShowUpgrade ? 'upgrade' : 'try_now'
-                                    });
-                                }}>
+                                on:click={() => triggerWindowLink(currentModalAlert.cta)}>
                                 {currentModalAlert.cta.text}
                             </Button>
 
                             {#if currentModalAlert.learnMore}
+                                <!-- docs, learn-more, etc always external -->
                                 <Button
                                     text
                                     class="button"
                                     external
                                     fullWidthMobile
                                     href={currentModalAlert.learnMore.link({
-                                        organization: $organization,
-                                        project: $project
+                                        project: $project,
+                                        organization: $organization
                                     })}>
                                     {currentModalAlert.learnMore.text}
                                 </Button>
@@ -332,20 +344,10 @@
                                 <Button
                                     secondary={!hasOnlyPrimaryCta}
                                     class="button"
-                                    href={shouldShowUpgrade
-                                        ? $upgradeURL
-                                        : currentModalAlert.cta.link({
-                                              organization: $organization,
-                                              project: $project
-                                          })}
-                                    external={!!currentModalAlert.cta.external}
                                     fullWidthMobile
                                     on:click={() => {
                                         openModalOnMobile = false;
-                                        trackEvent(Click.PromoClick, {
-                                            promo: currentModalAlert.id,
-                                            type: shouldShowUpgrade ? 'upgrade' : 'try_now'
-                                        });
+                                        triggerWindowLink(currentModalAlert.cta);
                                     }}>
                                     {shouldShowUpgrade
                                         ? 'Upgrade plan'
@@ -353,6 +355,7 @@
                                 </Button>
 
                                 {#if currentModalAlert.learnMore}
+                                    <!-- docs, learn-more, etc always external -->
                                     <Button
                                         text
                                         class="button"
@@ -360,8 +363,8 @@
                                         fullWidthMobile
                                         on:click={() => (openModalOnMobile = false)}
                                         href={currentModalAlert.learnMore.link({
-                                            organization: $organization,
-                                            project: $project
+                                            project: $project,
+                                            organization: $organization
                                         })}>
                                         {currentModalAlert.learnMore.text}
                                     </Button>
@@ -433,6 +436,7 @@
         top: 1rem;
         right: 1rem;
 
+        cursor: pointer;
         background: #fff;
         position: absolute;
         display: inline-flex;
