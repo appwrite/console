@@ -9,10 +9,6 @@ type Metadata = {
 export async function createFreeProject(page: Page): Promise<Metadata> {
     const organizationId = await test.step('create organization', async () => {
         await page.goto('./');
-        await page.waitForURL('./onboarding');
-        await page.locator('id=name').fill('test org');
-        await page.locator('id=plan').selectOption('tier-0');
-        await page.getByRole('button', { name: 'get started' }).click();
         await page.waitForURL(/\/organization-[^/]+/);
         return getOrganizationIdFromUrl(page.url());
     });
@@ -20,12 +16,11 @@ export async function createFreeProject(page: Page): Promise<Metadata> {
     const projectId = await test.step('create project', async () => {
         await page.waitForURL(/\/organization-[^/]+/);
         await page.getByRole('button', { name: 'create project' }).first().click();
-        await page.locator('id=name').fill('test project');
-        await page.getByRole('button', { name: 'next' }).click();
-        await page.locator('label').filter({ hasText: 'Frankfurt' }).click();
-        await page.getByRole('button', { name: 'create' }).click();
-        await page.waitForURL(/\/project-(?:[a-z0-9]+-)?([^/]+)\/overview\/platforms/);
-        expect(page.url()).toContain('/console/project-');
+        const dialog = page.locator('dialog[open]');
+        await dialog.getByPlaceholder('Project name').fill('test project');
+        await dialog.getByRole('button', { name: 'create' }).click();
+        await page.waitForURL(/\/project-fra-[^/]+/);
+        expect(page.url()).toContain('/console/project-fra-');
 
         return getProjectIdFromUrl(page.url());
     });
