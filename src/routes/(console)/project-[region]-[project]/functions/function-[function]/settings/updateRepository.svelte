@@ -152,8 +152,8 @@
                     undefined
                 );
             await invalidate(Dependencies.FUNCTION);
-        } catch (error) {
-            console.log(error);
+        } catch {
+            return;
         }
     }
 </script>

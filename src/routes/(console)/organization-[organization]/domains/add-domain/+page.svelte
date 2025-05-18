@@ -20,7 +20,6 @@
     async function addDomain() {
         try {
             domain = await sdk.forConsole.domains.create(page.params.organization, domainName);
-            console.log(domain);
             invalidate(Dependencies.DOMAINS);
         } catch (error) {
             addNotification({

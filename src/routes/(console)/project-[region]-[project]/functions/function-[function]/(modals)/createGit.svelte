@@ -58,9 +58,8 @@
             }
 
             return sorted;
-        } catch (error) {
-            console.log(installations);
-            console.log(error);
+        } catch {
+            return;
         }
     }
 
@@ -121,8 +120,6 @@
             error = e.message;
         }
     }
-
-    $: console.log($repository);
 </script>
 
 <Modal title="Create Git deployment" bind:show onSubmit={createDeployment} bind:error>

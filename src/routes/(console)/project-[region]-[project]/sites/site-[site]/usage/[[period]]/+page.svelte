@@ -9,8 +9,6 @@
 
     // $: totalBuilds = data.buildsTotal;
     // $: countBuilds = data.builds;
-
-    $: console.log(data);
 </script>
 
 <Container>

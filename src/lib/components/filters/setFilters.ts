@@ -133,7 +133,6 @@ export function setStatusCodeFilter(filter: FilterData, columns: Column[]) {
                 tag: `**${filter.title}** is **${codeRange.label}**`,
                 value: statusCodeTag.value
             };
-            console.log(codeRange);
             parsedTags.update((tags) => {
                 tags.push(newTag);
                 return tags;

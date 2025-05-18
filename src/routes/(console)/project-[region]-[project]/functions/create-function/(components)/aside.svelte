@@ -12,8 +12,6 @@
     export let runtimes: Models.RuntimeList;
 
     $: selectedRuntime = runtimes?.runtimes.find((r) => r.$id === runtime);
-
-    $: console.log(runtimes);
 </script>
 
 <Card padding="s" radius="s">

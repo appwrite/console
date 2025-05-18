@@ -26,7 +26,6 @@
             if (message.events.includes('sites.*.deployments.*.update')) {
                 invalidate(Dependencies.DEPLOYMENTS);
                 invalidate(Dependencies.SITE);
-                console.log(message);
                 return;
             }
             if (message.events.includes('sites.*.deployments.*.delete')) {

@@ -15,8 +15,6 @@
                 checked: true
             };
         });
-
-    $: console.log(selectedScopes);
 </script>
 
 <Fieldset legend="Permissions">

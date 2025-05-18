@@ -99,7 +99,6 @@
                                         : capitalize(useCase)}
                                     checked={isChecked(useCase)}
                                     on:change={(e) => {
-                                        console.log(useCase, e);
                                         applyFilter('useCase', useCase, e);
                                     }} />
                             </Layout.Stack>

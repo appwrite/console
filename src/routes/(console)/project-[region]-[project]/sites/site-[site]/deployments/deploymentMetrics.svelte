@@ -55,13 +55,14 @@
     });
 
     async function fetchUsage() {
+        metrics = metrics.map((metric) => {
+            metric.value = null;
+
+            return metric;
+        });
+
         // Add timeout to make it look nicer
         setTimeout(async () => {
-            metrics.forEach((metric) => {
-                metric.value = null;
-            });
-            metrics = metrics;
-
             try {
                 const usage = await sdk
                     .forProject(page.params.region, page.params.project)
@@ -84,12 +85,10 @@
                     }
                     return metric;
                 });
-                metrics = metrics;
-                console.log(usage);
-            } catch (error) {
-                console.log(error);
+            } catch {
+                return;
             }
-        }, 800);
+        }, 500);
     }
 </script>
 

@@ -167,8 +167,6 @@
     }
 
     $: extension = allowedExtension === '*' ? mimeTypeQuery : `.${allowedExtension}`;
-
-    $: console.log(`Allowed extensions: ${allowedExtension}, MimeType: ${mimeTypeQuery}`);
 </script>
 
 <svelte:document on:visibilitychange={handleVisibilityChange} />

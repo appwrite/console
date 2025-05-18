@@ -76,6 +76,7 @@
         <Selector.Checkbox
             id="secret"
             label="Secret"
+            disabled={selectedVar.secret}
             bind:checked={pair.secret}
             description="If selected, you and your team won't be able to read the values after creation." />
     </Layout.Stack>
