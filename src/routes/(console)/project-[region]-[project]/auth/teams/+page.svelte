@@ -25,9 +25,10 @@
 
     export let data;
 
+    const region = page.params.region;
     const project = page.params.project;
     const teamCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
-        await goto(`${base}/project-${project}/auth/teams/team-${event.detail.$id}`);
+        await goto(`${base}/project-${region}-${project}/auth/teams/team-${event.detail.$id}`);
     };
 </script>
 
@@ -54,7 +55,7 @@
             {#each data.teams.teams as team}
                 <Table.Row.Link
                     {root}
-                    href={`${base}/project-${project}/auth/teams/team-${team.$id}`}>
+                    href={`${base}/project-${region}-${project}/auth/teams/team-${team.$id}`}>
                     <Table.Cell {root}>
                         <Layout.Stack direction="row" alignItems="center">
                             <AvatarInitials size="xs" name={team.name} />
@@ -78,10 +79,7 @@
             total={data.teams.total} />
     {:else if data.search}
         <EmptySearch target="teams" search={data.search} hidePagination={data.teams.total === 0}>
-            <Button
-                secondary
-                size="s"
-                href={`${base}/project-${page.params.region}-${page.params.project}/auth/teams`}>
+            <Button secondary size="s" href={`${base}/project-${region}-${project}/auth/teams`}>
                 Clear Search
             </Button>
         </EmptySearch>

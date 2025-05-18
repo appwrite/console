@@ -21,6 +21,7 @@
     let showDelete = false;
     let selectedMembership: Models.Membership;
 
+    const region = page.params.region;
     const project = page.params.project;
 
     async function memberCreated() {
@@ -55,7 +56,7 @@
                 {@const username = membership.userName ? membership.userName : '-'}
                 <Table.Row.Link
                     {root}
-                    href={`${base}/project-${project}/auth/user-${membership.userId}`}>
+                    href={`${base}/project-${region}-${project}/auth/user-${membership.userId}`}>
                     <Table.Cell column="name" {root}>
                         <Layout.Stack direction="row" alignItems="center">
                             <AvatarInitials size="xs" name={username} />

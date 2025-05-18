@@ -15,6 +15,7 @@
     import { BottomSheet } from '$lib/components';
 
     let data = $derived(page.data) as PageData;
+    let region = $derived(page.params.region);
     let project = $derived(page.params.project);
     let databaseId = $derived(page.params.database);
     let collectionId = $derived(page.params.collection);
@@ -41,7 +42,7 @@
     <Sidebar.Base state="open" resizable={false}>
         <section class="list-container" slot="top" style:width="100%">
             <a
-                href={`${base}/project-${project}/databases/database-${databaseId}`}
+                href={`${base}/project-${region}-${project}/databases/database-${databaseId}`}
                 class="database-name u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile is-selected">
                 <Icon icon={IconDatabase} size="s" color="--fgcolor-neutral-weak" />
                 {data.database?.name}
@@ -50,7 +51,7 @@
                 {#if data?.allCollections?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-8">
                         {#each sortedCollections as collection}
-                            {@const href = `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
+                            {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
                             {@const isSelected = collectionId === collection.$id}
                             <li class:is-selected={isSelected}>
                                 <a
@@ -88,7 +89,7 @@
             <Layout.Stack direction="row" alignItems="center" gap="s">
                 <Icon icon={IconDatabase} size="s" color="--neutral-300" />
                 <Link.Anchor
-                    href={`${base}/project-${project}/databases/database-${databaseId}`}
+                    href={`${base}/project-${region}-${project}/databases/database-${databaseId}`}
                     variant="quiet-muted">{data.database.name}</Link.Anchor>
                 <span style:margin-left="8px">/</span>
                 <button
@@ -114,7 +115,7 @@
                     return {
                         name: collection.name,
                         leadingIcon: IconTable,
-                        href: `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`
+                        href: `${base}/project-${region}-${project}/databases/database-${databaseId}/collection-${collection.$id}`
                     };
                 })
             },
@@ -125,7 +126,7 @@
                               {
                                   name: 'All collections',
                                   leadingIcon: IconTable,
-                                  href: `${base}/project-${project}/databases/database-${databaseId}`
+                                  href: `${base}/project-${region}-${project}/databases/database-${databaseId}`
                               }
                           ]
                       }
