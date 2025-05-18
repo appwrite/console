@@ -1,13 +1,11 @@
 <script lang="ts">
     import { Link } from '$lib/elements';
     import { consoleVariables } from '$routes/(console)/store';
-    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import {
         Badge,
         Layout,
         Typography,
         Table,
-        Icon,
         InteractiveText,
         Alert
     } from '@appwrite.io/pink-svelte';
@@ -69,7 +67,6 @@
         </Table.Row.Base>
     </Table.Root>
     <Layout.Stack gap="s" direction="row" alignItems="center">
-        <Icon icon={IconInfo} size="s" color="--fgcolor-neutral-secondary" />
         {#if variant === 'cname'}
             <Alert.Inline>
                 If your domain uses CAA records, ensure certainly.com is authorized — otherwise, SSL
