@@ -33,7 +33,7 @@ export function isMultiRegionSupported(url: URL): boolean {
     if (env.PUBLIC_APPWRITE_MULTI_REGION === 'true') return true;
 
     try {
-        return url.hostname.endsWith('cloud.appwrite.io');
+        return url.hostname === 'cloud.appwrite.io';
     } catch {
         return false;
     }
