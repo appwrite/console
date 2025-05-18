@@ -24,12 +24,12 @@
             show = false;
             addNotification({
                 type: 'success',
-                message: `${selectedDomain.domain} has been deleted`
+                message: `${selectedDomain.domain} has been verified`
             });
-            trackEvent(Submit.DomainDelete);
+            trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
             error = e;
-            trackError(e, Submit.DomainDelete);
+            trackError(e, Submit.DomainUpdateVerification);
         }
     }
 

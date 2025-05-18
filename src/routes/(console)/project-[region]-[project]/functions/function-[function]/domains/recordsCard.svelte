@@ -1,10 +1,18 @@
 <script lang="ts">
-    import { Copy } from '$lib/components';
     import { Link } from '$lib/elements';
     import type { Domain } from '$lib/sdk/domains';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { Badge, Layout, Typography, Table, Fieldset, Icon } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Layout,
+        Typography,
+        Table,
+        Fieldset,
+        Icon,
+        InteractiveText
+    } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
+    import { consoleVariables } from '$routes/(console)/store';
 
     export let domain: Domain | Models.ProxyRule;
 </script>
@@ -33,8 +41,10 @@
                     <Table.Cell {root}>CNAME</Table.Cell>
                     <Table.Cell {root}>{domain?.domain}</Table.Cell>
                     <Table.Cell {root}>
-                        <Copy value={globalThis?.location?.origin}
-                            >{globalThis?.location?.origin}</Copy>
+                        <InteractiveText
+                            variant="copy"
+                            isVisible
+                            text={$consoleVariables._APP_DOMAIN_TARGET_CNAME} />
                     </Table.Cell>
                 </Table.Row.Base>
             </Table.Root>
