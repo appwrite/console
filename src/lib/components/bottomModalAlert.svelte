@@ -18,6 +18,7 @@
     import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
@@ -223,7 +224,9 @@
                         {/if}
 
                         <div class="u-flex-vertical u-gap-4 u-padding-inline-8">
-                            <h3 class="body-text-2 u-bold">{currentModalAlert.title}</h3>
+                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                {currentModalAlert.title}
+                            </Typography.Text>
 
                             <span class="u-width-fit-content">
                                 {#if currentModalAlert.isHtml}
@@ -328,7 +331,9 @@
                             {/if}
 
                             <div class="u-flex-vertical u-gap-8 u-padding-inline-8">
-                                <h3 class="body-text-2 u-bold">{currentModalAlert.title}</h3>
+                                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                    {currentModalAlert.title}
+                                </Typography.Text>
 
                                 <span class="u-width-fit-content">
                                     {#if currentModalAlert.isHtml}
@@ -393,7 +398,9 @@
                 }}>
                 <div class="u-flex-vertical u-gap-4">
                     <div class="u-flex u-cross-center u-main-space-between">
-                        <h3 class="body-text-2 u-bold">{mobileConfig.title}</h3>
+                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                            {currentModalAlert.title}
+                        </Typography.Text>
                         <button on:click={hideAllModalAlerts} aria-label="Close">
                             <span class="icon-x"></span>
                         </button>

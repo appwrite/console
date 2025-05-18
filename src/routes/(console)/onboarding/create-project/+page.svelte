@@ -21,14 +21,13 @@
     async function createProject() {
         isLoading = true;
 
-        console.log(data);
         try {
             const teamId = data.organization.$id;
             const project = await sdk.forConsole.projects.create(
                 id ?? ID.unique(),
                 projectName,
                 teamId,
-                region ?? Region.Fra
+                isCloud ? region : undefined
             );
             trackEvent(Submit.ProjectCreate, {
                 customId: !!id,
@@ -39,7 +38,7 @@
 
             setTimeout(async () => {
                 await invalidate(Dependencies.ACCOUNT);
-                goto(`${base}/project-${project.region}-${project.$id}`);
+                goto(`${base}/project-${project.region ?? 'default'}-${project.$id}`);
             }, 3000);
         } catch (e) {
             trackError(e, Submit.ProjectCreate);

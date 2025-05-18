@@ -122,7 +122,7 @@ export function addBottomModalAlerts() {
 export function isPromoLive(
     date: string,
     time: string,
-    timeZone: string = 'Asia/Kolkata'
+    timeZone: string = 'Europe/Paris'
 ): boolean {
     const now = new Date();
     const targetString = `${date}T${time}:00`;
