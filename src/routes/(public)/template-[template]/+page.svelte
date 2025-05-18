@@ -95,7 +95,7 @@
                     id ?? ID.unique(),
                     projectName,
                     selectedOrg,
-                    isCloud ? (region as Region) : Region.Fra
+                    isCloud ? (region as Region) : undefined
                 );
                 trackEvent(Submit.ProjectCreate, {
                     customId: !!id,
