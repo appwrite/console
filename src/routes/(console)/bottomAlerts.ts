@@ -1,4 +1,8 @@
-import Init3Promo from '$lib/images/promo-init3.png';
+import Init3KeysPromo from '$lib/images/promos/init3-keys.png';
+import Init3SitesPromo from '$lib/images/promos/init3-sites.png';
+import Init3FlutterPromo from '$lib/images/promos/init3-flutter.png';
+import Init3ImagesPromo from '$lib/images/promos/init3-images.png';
+import Init3TokensPromo from '$lib/images/promos/init3-tokens.png';
 
 import {
     type BottomModalAlertItem,
@@ -9,41 +13,133 @@ import { isCloud } from '$lib/system';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
-if (isCloud) {
-    const title = 'Join Init 19-23 May';
-    const message =
-        'This release will change the way you build with Appwrite forever. Register for Init and join the giveaway.';
-
-    const callToAction = {
-        external: true,
-        hideOnClick: true,
-        text: 'Claim your ticket',
-        link: () => 'https://apwr.dev/clcon'
+if (!isCloud) {
+    const getSrc = (image: string) => {
+        return {
+            dark: image,
+            light: image
+        };
     };
 
-    listOfPromotions.push({
-        id: 'modal:init3',
-        src: {
-            dark: Init3Promo,
-            light: Init3Promo
-        },
-        title,
-        message,
-        plan: 'free',
-        importance: 8,
-        scope: 'everywhere',
-        cta: callToAction
+    const sharedCTA = (url: string) => ({
+        external: true,
+        link: () => url,
+        hideOnClick: true,
+        text: 'Read the announcement'
     });
 
-    // there's only one item.
-    setMobileSingleAlertLayout({
-        title,
-        message,
-        enabled: true,
-        cta: callToAction
-    });
+    const promos: BottomModalAlertItem[] = [
+        {
+            id: 'modal:init3_sites',
+            src: getSrc(Init3SitesPromo),
+            title: 'Announcing: Sites',
+            message:
+                'The open-source Vercel alternative. With Sites, you deploy and host your websites and web apps right inside Appwrite.',
+            plan: 'free',
+            importance: 8,
+            scope: 'everywhere',
+            cta: sharedCTA('https://apwr.dev/sites1'),
+
+            // Day 1 = Monday 9 AM CET
+            show: isPromoLive('2025-05-19', '09:00')
+        },
+        {
+            id: 'modal:init3_flutter',
+            src: getSrc(Init3FlutterPromo),
+            title: 'Announcing: Hosting for Flutter Web',
+            message: 'Deploy your Flutter web apps directly from Appwrite Sites.',
+            plan: 'free',
+            importance: 8,
+            scope: 'everywhere',
+            cta: sharedCTA('https://apwr.dev/sitesfl'),
+
+            // Day 2 = Tuesday 3 PM CET
+            show: isPromoLive('2025-05-20', '15:00')
+        },
+        {
+            id: 'modal:init3_keys',
+            src: getSrc(Init3KeysPromo),
+            title: 'Announcing: Dev Keys',
+            message:
+                'A new Appwrite feature that lets you bypass rate limits during local development.',
+            plan: 'free',
+            importance: 8,
+            scope: 'everywhere',
+            cta: sharedCTA('https://apwr.dev/devkeys'),
+
+            // Day 3 = Wednesday 3 PM CET
+            show: isPromoLive('2025-05-21', '15:00')
+        },
+        {
+            id: 'modal:init3_images',
+            src: getSrc(Init3ImagesPromo),
+            title: 'Announcing: New image formats',
+            message:
+                'We have added support for two new image formats in Appwrite Storage: HEIC and AVIF.',
+            plan: 'free',
+            importance: 8,
+            scope: 'everywhere',
+            cta: sharedCTA('https://apwr.dev/imagefo'),
+
+            // Day 4 = Thursday 3 PM CET
+            show: isPromoLive('2025-05-22', '15:00')
+        },
+        {
+            id: 'modal:init3_file_tokens',
+            src: getSrc(Init3TokensPromo),
+            title: 'Announcing: File Tokens',
+            message:
+                'File tokens let you share files easily and securely, without modifying permissions or changing project access.',
+            plan: 'free',
+            importance: 8,
+            scope: 'everywhere',
+            cta: sharedCTA('https://apwr.dev/filet'),
+
+            // Day 5 = Friday 3 PM CET
+            show: isPromoLive('2025-05-23', '15:00')
+        }
+    ];
+
+    const currentPromo = promos.find((promo) => promo.show);
+
+    if (currentPromo) {
+        listOfPromotions.push(currentPromo);
+
+        setMobileSingleAlertLayout({
+            title: currentPromo.title,
+            message: currentPromo.message,
+            enabled: true,
+            cta: currentPromo.cta
+        });
+    }
 }
 
 export function addBottomModalAlerts() {
     listOfPromotions.forEach((promotion) => showBottomModalAlert(promotion));
+}
+
+function isPromoLive(date: string, time: string, timeZone: string = 'Europe/Paris'): boolean {
+    const isoString = `${date}T${time}:00`;
+
+    const formatter = new Intl.DateTimeFormat('en', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23'
+    });
+
+    const parts = formatter.formatToParts(new Date(isoString));
+    const map = Object.fromEntries(
+        parts.filter((p) => p.type !== 'literal').map((p) => [p.type, p.value])
+    );
+
+    const target = new Date(`${map.year}-${map.month}-${map.day}T${map.hour}:${map.minute}:00`);
+
+    const now = new Date();
+    const isSameDay = now.toISOString().slice(0, 10) === target.toISOString().slice(0, 10);
+
+    return isSameDay && now >= target;
 }

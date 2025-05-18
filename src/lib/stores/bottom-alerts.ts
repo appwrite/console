@@ -3,7 +3,7 @@ import type { NotificationCoolOffOptions } from '$lib/helpers/notifications';
 import type { Organization } from '$lib/stores/organization';
 import type { Models } from '@appwrite.io/console';
 
-type BottomModalAlertAction = {
+export type BottomModalAlertAction = {
     text: string;
     hideOnClick?: boolean;
     link: (ctx: { organization: Organization; project: Models.Project }) => string;
