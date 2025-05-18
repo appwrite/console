@@ -25,11 +25,6 @@
             }
         });
     });
-
-    // $: console.log(data.site);
-    $: console.log(data.deployment);
-    $: console.log(data.deploymentList);
-    // $: console.log(data.proxyRuleList);
 </script>
 
 <Container>

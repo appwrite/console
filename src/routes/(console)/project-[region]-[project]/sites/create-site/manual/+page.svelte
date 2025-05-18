@@ -125,8 +125,6 @@
               };
           })
         : [];
-
-    $: console.log(files);
 </script>
 
 <svelte:head>

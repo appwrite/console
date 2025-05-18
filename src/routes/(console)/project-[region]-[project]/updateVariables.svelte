@@ -114,7 +114,6 @@
     }
     async function handleVariableSecret(event: CustomEvent<Models.Variable>) {
         const variable = event.detail;
-        console.log(variable);
         try {
             await sdkUpdateVariable(variable.$id, variable.key, variable.value, variable.secret);
             selectedVar = null;

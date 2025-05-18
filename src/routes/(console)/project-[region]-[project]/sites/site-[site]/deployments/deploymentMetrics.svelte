@@ -85,8 +85,8 @@
                     }
                     return metric;
                 });
-            } catch (error) {
-                console.log(error);
+            } catch {
+                return;
             }
         }, 500);
     }

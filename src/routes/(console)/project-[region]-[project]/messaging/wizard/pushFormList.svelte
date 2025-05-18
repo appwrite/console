@@ -59,9 +59,6 @@
     });
 
     async function sendTestMessage() {
-        const email = selected === 'self' ? $user.email : otherEmail;
-        console.log(email);
-
         // TODO: replace with test method
         sdk.forProject(page.params.region, page.params.project).messaging.createPush(
             ID.unique(),

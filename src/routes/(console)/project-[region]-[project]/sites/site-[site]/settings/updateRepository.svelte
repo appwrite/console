@@ -136,8 +136,8 @@
                     site?.specification || undefined
                 );
             invalidate(Dependencies.SITE);
-        } catch (error) {
-            console.log(error);
+        } catch {
+            return;
         }
     }
 

@@ -9,7 +9,6 @@
     export let variables: Partial<Models.Variable>[] = [];
 
     function deleteVariable() {
-        console.log(variables, currentVariable);
         variables = variables.filter((v) => v.key !== currentVariable.key);
         variables = [...variables];
         currentVariable = null;

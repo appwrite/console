@@ -175,7 +175,6 @@
                     `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
                 );
             } catch (e) {
-                console.log(e);
                 addNotification({
                     type: 'error',
                     message: e.message
