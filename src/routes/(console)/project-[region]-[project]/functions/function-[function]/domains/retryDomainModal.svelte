@@ -24,7 +24,7 @@
             show = false;
             addNotification({
                 type: 'success',
-                message: `${selectedDomain.domain} has been deleted`
+                message: `${selectedDomain.domain} has been verified`
             });
             trackEvent(Submit.DomainDelete);
         } catch (e) {
