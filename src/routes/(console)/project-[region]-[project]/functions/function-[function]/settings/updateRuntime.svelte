@@ -7,7 +7,6 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { specificationsList } from '$lib/stores/specifications';
@@ -16,29 +15,20 @@
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import Link from '$lib/elements/link.svelte';
 
-    export let runtimesList: Models.RuntimeList;
     const functionId = page.params.function;
-    let runtime: string = $func.runtime;
-    let entrypoint = $func.entrypoint;
+    export let runtimesList: Models.RuntimeList;
+    let { runtime, entrypoint, specification } = $func;
 
-    let options = [];
-    let specificationOptions = [];
-
-    onMount(async () => {
-        let allowedSpecifications = (await $specificationsList).specifications;
-        options = runtimesList.runtimes.map((runtime) => ({
-            label: `${runtime.name} - ${runtime.version}`,
-            value: runtime.$id
-        }));
-
-        specificationOptions = allowedSpecifications.map((size) => ({
-            label:
-                `${size.cpus} CPU, ${size.memory} MB RAM` +
-                (!size.enabled ? ` (Upgrade to use this)` : ''),
-            value: size.slug,
-            disabled: !size.enabled
-        }));
-    });
+    const options = runtimesList.runtimes.map((runtime) => ({
+        label: `${runtime.name} - ${runtime.version}`,
+        value: runtime.$id
+    }));
+    const specificationOptions = $specificationsList.specifications.map((size) => ({
+        label:
+            `${size.cpus} CPU, ${size.memory} MB RAM` +
+            (!size.enabled ? ` (Upgrade to use this)` : ''),
+        value: size.slug
+    }));
 
     async function updateRuntime() {
         try {
@@ -108,12 +98,12 @@
                     id="entrypoint"
                     required
                     placeholder="Enter entrypoint"
-                    bind:value={$func.entrypoint} />
+                    bind:value={entrypoint} />
                 <InputSelect
                     label="CPU and memory"
                     id="size"
                     placeholder="Select runtime specification"
-                    bind:value={$func.specification}
+                    bind:value={specification}
                     options={specificationOptions} />
             </Layout.Stack>
         </svelte:fragment>
