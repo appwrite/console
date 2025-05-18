@@ -2,7 +2,15 @@
     import { Link } from '$lib/elements';
     import type { Domain } from '$lib/sdk/domains';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { Badge, Layout, Typography, Table, Fieldset, Icon, InteractiveText } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Layout,
+        Typography,
+        Table,
+        Fieldset,
+        Icon,
+        InteractiveText
+    } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
     import { consoleVariables } from '$routes/(console)/store';
 
