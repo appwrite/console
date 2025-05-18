@@ -1,4 +1,4 @@
-import { VARS } from '$lib/system';
+import { isMultiRegionSupported, VARS } from '$lib/system';
 import {
     Account,
     Assistant,
@@ -46,7 +46,7 @@ export function getApiEndpoint(region?: string): string {
     const hostname = url.hostname;
 
     // If instance supports multi-region, add the region subdomain.
-    const subdomain = VARS.APPWRITE_MULTI_REGION ? getSubdomain(region) : '';
+    const subdomain = isMultiRegionSupported(url) ? getSubdomain(region) : '';
 
     return `${protocol}//${subdomain}${hostname}/v1`;
 }
