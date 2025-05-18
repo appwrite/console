@@ -209,5 +209,5 @@
 {/if}
 
 {#if showRetry}
-    <RetryDomainModal show={showRetry} {selectedDomain} />
+    <RetryDomainModal bind:show={showRetry} {selectedDomain} />
 {/if}
