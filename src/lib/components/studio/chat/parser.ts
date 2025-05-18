@@ -1,6 +1,6 @@
 import { writable, type Readable } from 'svelte/store';
 
-export type ActionType = 'file' | 'shell';
+export type ActionType = 'file' | 'shell' | 'appwrite';
 
 interface Base {
     id: symbol;
@@ -13,6 +13,8 @@ interface Base {
 export interface Action extends Base {
     type: ActionType;
     src?: string;
+    service?: string;
+    operation?: string;
 }
 
 export interface TextChunk extends Base {}
@@ -23,7 +25,7 @@ export interface ActionsContainer extends Base {
 }
 
 export function isActionType(type: string): type is ActionType {
-    return ['file', 'shell'].includes(type);
+    return ['file', 'shell', 'appwrite'].includes(type);
 }
 
 type ParserEvents = 'complete' | 'chunk';
@@ -242,7 +244,9 @@ export class StreamParser {
                                 type,
                                 src: attributes.src,
                                 content: '',
-                                complete: false
+                                complete: false,
+                                service: attributes.service,
+                                operation: attributes.method
                             };
 
                             this.isFirstActionContent = true;

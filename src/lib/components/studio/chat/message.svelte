@@ -42,6 +42,7 @@
 
         try {
             const action = item.data;
+            console.log(item)
             switch (action.type) {
                 case 'file':
                     await synapse.dispatch('fs', {
@@ -65,6 +66,18 @@
                         {
                             noReturn: action.content.endsWith('run dev'),
                             timeout: 30_000
+                        }
+                    );
+                    break;
+                case 'appwrite':
+                    await synapse.dispatch(
+                        'appwrite',
+                        {
+                            operation: action.operation,
+                            params: {
+                                service: action.service,
+                                payload: JSON.parse(action.content) ?? {}
+                            }
                         }
                     );
                     break;
@@ -163,6 +176,17 @@
                                     </Typography.Code>
                                 {:else if action.type === 'shell'}
                                     <Typography.Code size="s">{action.content}</Typography.Code>
+                                    <Typography.Code size="s">
+                                        {#if actionInQueue.status === 'waiting'}
+                                            Waiting
+                                        {:else if actionInQueue.status === 'processing'}
+                                            <ShimmerText>Running</ShimmerText>
+                                        {:else if actionInQueue.status === 'done'}
+                                            Finished
+                                        {/if}
+                                    </Typography.Code>
+                                {:else if action.type === 'appwrite'}
+                                    <Typography.Code size="s">{action.type} - {action.service} - {action.operation}</Typography.Code>
                                     <Typography.Code size="s">
                                         {#if actionInQueue.status === 'waiting'}
                                             Waiting

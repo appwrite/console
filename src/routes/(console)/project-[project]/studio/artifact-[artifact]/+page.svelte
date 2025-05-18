@@ -10,7 +10,7 @@
     import { SvelteURL } from 'svelte/reactivity';
     import type { EventHandler } from 'svelte/elements';
 
-    let previewUrl = new SvelteURL('https://preview.torsten.work');
+    let previewUrl = new SvelteURL('http://localhost:1234');
 
     let iframeRef: HTMLIFrameElement | null = $state(null);
     $effect(() => {

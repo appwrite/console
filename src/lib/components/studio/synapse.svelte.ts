@@ -2,7 +2,7 @@ import { page } from '$app/state';
 import { SvelteURL } from 'svelte/reactivity';
 
 type WebSocketEvent = 'connect' | 'disconnect' | 'reconnect';
-type SynapseMessageType = 'terminal' | 'fs' | 'synapse';
+type SynapseMessageType = 'terminal' | 'fs' | 'synapse' | 'appwrite';
 type SynapseMessageOperations = {
     operation: 'updateWorkDir';
     params: { workDir: string };
@@ -31,6 +31,16 @@ type SynapseMessageOperationFileSystem =
 type SynapseMessageOperationTerminal =
     | { operation: 'updateSize'; params: { cols: number; rows: number } }
     | { operation: 'createCommand'; params: { command: string } };
+
+type SynapseMessageAppwriteOperations = {
+    operation: string;
+    params: {
+        service: string;
+        payload: {
+            [key: string]: string;
+        };
+    };
+};
 
 type Events = WebSocketEvent | SynapseMessageType;
 type BaseMessage = {
@@ -126,6 +136,7 @@ export class Synapse {
             synapse: SynapseMessageOperations;
             fs: SynapseMessageOperationFileSystem;
             terminal: SynapseMessageOperationTerminal;
+            appwrite: SynapseMessageAppwriteOperations;
         }[T],
         options?: {
             timeout?: number;
@@ -133,13 +144,12 @@ export class Synapse {
         }
     ): Promise<BaseMessage> {
         const requestId = String(Date.now().toString() + ++this.requestCounter);
-
         const message = {
             type,
             operation: payload.operation,
             params: payload.params,
             requestId
-        };
+        };  
         const response = new Promise<BaseMessage>((resolve, reject) => {
             const noReturn = options?.noReturn === true;
             const timeout = setTimeout(() => {
@@ -192,7 +202,7 @@ export class Synapse {
     }
 }
 
-export const endpoint = 'wss://terminal.appwrite.torsten.work';
+export const endpoint = 'ws://localhost:3000';
 export function createSynapse(endpoint: string, artifact?: string) {
     const url = new SvelteURL(endpoint);
 
