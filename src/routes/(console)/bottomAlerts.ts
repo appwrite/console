@@ -10,6 +10,7 @@ import {
     showBottomModalAlert
 } from '$lib/stores/bottom-alerts';
 import { isCloud } from '$lib/system';
+import { isSameDay } from '$lib/helpers/date';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -118,28 +119,14 @@ export function addBottomModalAlerts() {
     listOfPromotions.forEach((promotion) => showBottomModalAlert(promotion));
 }
 
-function isPromoLive(date: string, time: string, timeZone: string = 'Europe/Paris'): boolean {
-    const isoString = `${date}T${time}:00`;
-
-    const formatter = new Intl.DateTimeFormat('en', {
-        timeZone,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hourCycle: 'h23'
-    });
-
-    const parts = formatter.formatToParts(new Date(isoString));
-    const map = Object.fromEntries(
-        parts.filter((p) => p.type !== 'literal').map((p) => [p.type, p.value])
-    );
-
-    const target = new Date(`${map.year}-${map.month}-${map.day}T${map.hour}:${map.minute}:00`);
-
+export function isPromoLive(
+    date: string,
+    time: string,
+    timeZone: string = 'Asia/Kolkata'
+): boolean {
     const now = new Date();
-    const isSameDay = now.toISOString().slice(0, 10) === target.toISOString().slice(0, 10);
+    const targetString = `${date}T${time}:00`;
+    const target = new Date(new Date(targetString).toLocaleString('en-US', { timeZone }));
 
-    return isSameDay && now >= target;
+    return isSameDay(now, target) && now >= target;
 }
