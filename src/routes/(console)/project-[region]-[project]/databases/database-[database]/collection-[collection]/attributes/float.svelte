@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
-    import { get } from 'svelte/store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
 
@@ -10,9 +9,8 @@
         key: string,
         data: Partial<Models.AttributeFloat>
     ) {
-        const $page = get(page);
         await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.createFloatAttribute(
                 databaseId,
                 collectionId,
@@ -31,9 +29,8 @@
         data: Partial<Models.AttributeFloat>,
         originalKey?: string
     ) {
-        const $page = get(page);
         await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.updateFloatAttribute(
                 databaseId,
                 collectionId,
@@ -48,7 +45,7 @@
 </script>
 
 <script lang="ts">
-    import { InputNumber, InputChoice } from '$lib/elements/forms';
+    import { InputNumber } from '$lib/elements/forms';
 
     export let editing = false;
     export let data: Partial<Models.AttributeFloat> = {
@@ -60,6 +57,7 @@
     };
 
     import { createConservative } from '$lib/helpers/stores';
+    import { Layout, Selector } from '@appwrite.io/pink-svelte';
 
     let savedDefault = data.default;
 
@@ -85,28 +83,22 @@
     $: handleDefaultState($required || $array);
 </script>
 
-<div>
-    <ul class="u-flex u-gap-16">
-        <li class="u-flex-basis-50-percent">
-            <InputNumber
-                id="min"
-                label="Min"
-                placeholder="Enter size"
-                bind:value={data.min}
-                step="any"
-                required={editing} />
-        </li>
-        <li class="u-flex-basis-50-percent">
-            <InputNumber
-                id="max"
-                label="Max"
-                placeholder="Enter size"
-                bind:value={data.max}
-                step="any"
-                required={editing} />
-        </li>
-    </ul>
-</div>
+<Layout.Stack direction="row" gap="s">
+    <InputNumber
+        id="min"
+        label="Min"
+        placeholder="Enter size"
+        bind:value={data.min}
+        step="any"
+        required={editing} />
+    <InputNumber
+        id="max"
+        label="Max"
+        placeholder="Enter size"
+        bind:value={data.max}
+        step="any"
+        required={editing} />
+</Layout.Stack>
 <InputNumber
     id="default"
     label="Default value"
@@ -117,10 +109,18 @@
     disabled={data.required || data.array}
     nullable={!data.required && !data.array}
     step="any" />
-<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
-    Indicate whether this is a required attribute
-</InputChoice>
-<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
-    Indicate whether this attribute should act as an array, with the default value set as an empty
-    array.
-</InputChoice>
+<Selector.Checkbox
+    size="s"
+    id="required"
+    label="Required"
+    bind:checked={data.required}
+    disabled={data.array}
+    description="Indicate whether this attribute is required" />
+<Selector.Checkbox
+    size="s"
+    id="array"
+    label="Array"
+    bind:checked={data.array}
+    disabled={data.required || editing}
+    description="Indicate whether this attribute should act as an array, with the default value set as an empty
+    array." />

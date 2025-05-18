@@ -1,4 +1,4 @@
-import type { SvelteComponent } from 'svelte';
+import type { Component } from 'svelte';
 import { writable } from 'svelte/store';
 import Boolean, { submitBoolean, updateBoolean } from './boolean.svelte';
 import Email, { submitEmail, updateEmail } from './email.svelte';
@@ -11,6 +11,18 @@ import Url, { submitUrl, updateUrl } from './url.svelte';
 import Datetime, { submitDatetime, updateDatetime } from './datetime.svelte';
 import type { Attributes } from '../store';
 import Relationship, { submitRelationship, updateRelationship } from './relationship.svelte';
+import {
+    IconCalendar,
+    IconHashtag,
+    IconLink,
+    IconLocationMarker,
+    IconMail,
+    IconRelationship,
+    IconText,
+    IconToggle,
+    IconViewList
+} from '@appwrite.io/pink-icons-svelte';
+import type { ComponentType } from 'svelte';
 
 export type Option = {
     name:
@@ -24,7 +36,8 @@ export type Option = {
         | 'URL'
         | 'Enum'
         | 'Relationship';
-    component: typeof SvelteComponent<unknown>;
+    sentenceName: string;
+    component: Component;
     type: 'string' | 'integer' | 'double' | 'boolean' | 'datetime' | 'relationship';
     create: (
         databaseId: string,
@@ -39,93 +52,103 @@ export type Option = {
         originalKey: string
     ) => Promise<void>;
     format?: 'email' | 'ip' | 'url' | 'enum';
-    icon: string;
+    icon: ComponentType;
 };
 
 export const attributeOptions: Option[] = [
     {
         name: 'String',
+        sentenceName: 'string',
         component: String,
         type: 'string',
         create: submitString,
         update: updateString,
-        icon: 'text'
+        icon: IconText
     },
     {
         name: 'Integer',
+        sentenceName: 'integer',
         component: Integer,
         type: 'integer',
         create: submitInteger,
         update: updateInteger,
-        icon: 'hashtag'
+        icon: IconHashtag
     },
     {
         name: 'Float',
+        sentenceName: 'float',
         component: Float,
         type: 'double',
         create: submitFloat,
         update: updateFloat,
-        icon: 'hashtag'
+        icon: IconHashtag
     },
     {
         name: 'Boolean',
+        sentenceName: 'boolean',
         component: Boolean,
         type: 'boolean',
         create: submitBoolean,
         update: updateBoolean,
-        icon: 'toggle'
+        icon: IconToggle
     },
     {
         name: 'Datetime',
+        sentenceName: 'datetime',
         component: Datetime,
         type: 'datetime',
         create: submitDatetime,
         update: updateDatetime,
-        icon: 'calendar'
+        icon: IconCalendar
     },
     {
         name: 'Email',
+        sentenceName: 'email',
         component: Email,
         type: 'string',
         format: 'email',
         create: submitEmail,
         update: updateEmail,
-        icon: 'mail'
+        icon: IconMail
     },
     {
         name: 'IP',
+        sentenceName: 'IP',
         component: Ip,
         type: 'string',
         format: 'ip',
         create: submitIp,
         update: updateIp,
-        icon: 'location-marker'
+        icon: IconLocationMarker
     },
     {
         name: 'URL',
+        sentenceName: 'URL',
         component: Url,
         type: 'string',
         format: 'url',
         create: submitUrl,
         update: updateUrl,
-        icon: 'link'
+        icon: IconLink
     },
     {
         name: 'Enum',
+        sentenceName: 'enum',
         component: Enum,
         type: 'string',
         format: 'enum',
         create: submitEnum,
         update: updateEnum,
-        icon: 'view-list'
+        icon: IconViewList
     },
     {
         name: 'Relationship',
+        sentenceName: 'relationship',
         component: Relationship,
         type: 'relationship',
         create: submitRelationship,
         update: updateRelationship,
-        icon: 'relationship'
+        icon: IconRelationship
     }
 ];
 

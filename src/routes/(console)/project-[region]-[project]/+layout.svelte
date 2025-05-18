@@ -14,19 +14,21 @@
         teamSearcher,
         userSearcher
     } from '$lib/commandCenter/searchers';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { base } from '$app/paths';
     import {
         canSeeBuckets,
         canSeeDatabases,
         canSeeFunctions,
         canSeeMessages,
-        canWriteProjects
+        canWriteProjects,
+        canWriteSites
     } from '$lib/stores/roles';
+    import CsvImportBox from '$lib/components/csvImportBox.svelte';
 
     onMount(() => {
         return realtime
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .subscribe(['project', 'console'], (response) => {
                 if (response.events.includes('stats.connections')) {
                     for (const [projectId, value] of Object.entries(response.payload)) {
@@ -69,7 +71,7 @@
                 goto(`${base}/project-${$project.region}-${$project.$id}/messaging`);
             },
             keys: ['g', 'm'],
-            disabled: $page.url.pathname.endsWith('messaging') || !$canSeeMessages,
+            disabled: page.url.pathname.endsWith('messaging') || !$canSeeMessages,
             group: 'navigation'
         },
         {
@@ -91,6 +93,15 @@
             disabled: !$canWriteProjects
         },
         {
+            label: 'Go to Sites',
+            callback: () => {
+                goto(`${base}/project-${$project.region}-${$project.$id}/sites`);
+            },
+            keys: ['g', 'i'],
+            group: 'navigation',
+            disabled: !$canWriteSites
+        },
+        {
             label: 'Go to Overview',
             callback: () => {
                 goto(`${base}/project-${$project.region}-${$project.$id}`);
@@ -109,11 +120,13 @@
     <UploadBox />
     <MigrationBox />
     <BackupRestoreBox />
+    <CsvImportBox />
 </div>
 
 <style>
     .layout-level-progress-bars {
         gap: 1rem;
+        z-index: 1;
         display: flex;
         flex-direction: column;
 

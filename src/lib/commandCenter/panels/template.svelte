@@ -8,6 +8,9 @@
     import { getCommandCenterCtx } from '../commandCenter.svelte';
 
     import { clearSubPanels, popSubPanel, subPanels } from '../subPanels';
+    import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Keyboard, Layout } from '@appwrite.io/pink-svelte';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     /* eslint no-undef: "off" */
     type Option = $$Generic<Omit<Command, 'group'> & { group?: string }>;
@@ -20,6 +23,7 @@
     let selected = 0;
     let usingKeyboard = false;
     let contentEl: HTMLElement;
+    let didSearch = false;
 
     async function triggerOption(option: Option) {
         const prevPanels = $subPanels.length;
@@ -40,6 +44,14 @@
     function handleKeyDown(event: KeyboardEvent) {
         if (!open) return;
         usingKeyboard = true;
+
+        if (search.length > 0) {
+            didSearch = true;
+        }
+
+        if (search === '' && didSearch) {
+            trackEvent(Submit.SearchClear);
+        }
 
         let canceled = false;
         dispatch('keydown', {
@@ -250,7 +262,7 @@
             {@const isLast = i === breadcrumbs.length - 1}
             <button class="crumb" on:click={() => handleCrumbClick(i)}>
                 <span>{crumb}</span>
-                <i class="icon-x" />
+                <i class="icon-x"></i>
             </button>
             {#if !isLast}
                 <span style="opacity: 50%">/</span>
@@ -284,7 +296,7 @@
                             class:first-nested={isFirstNested(i)}
                             class:last-nested={isLastNested(i)}>
                             {#if isSelected}
-                                <div class="bg" />
+                                <div class="bg"></div>
                             {/if}
                             <button
                                 class="option"
@@ -293,12 +305,22 @@
                                 on:mouseleave={getOptionBlurHandler()}
                                 on:focus={getOptionFocusHandler(item)}>
                                 <slot name="option" option={castOption(item)}>
-                                    <div class="u-flex u-gap-8 u-cross-center">
-                                        <i class="icon-{item.icon ?? 'arrow-sm-right'}" />
+                                    <Layout.Stack direction="column" gap="s">
+                                        {#if item.icon}
+                                            <Icon
+                                                icon={item.icon}
+                                                size="s"
+                                                color="--fgcolor-neutral-tertiary" />
+                                        {:else}
+                                            <Icon
+                                                icon={IconArrowSmRight}
+                                                size="s"
+                                                color="--fgcolor-neutral-tertiary" />
+                                        {/if}
                                         <span>
                                             {item.label}
                                         </span>
-                                    </div>
+                                    </Layout.Stack>
                                 </slot>
                             </button>
                         </li>
@@ -316,15 +338,17 @@
 
     <div class="footer">
         <slot name="footer">
-            <div class=" u-flex u-flex u-cross-center u-main-space-between">
-                <div class="u-flex u-cross-center u-gap-4">
-                    <kbd class="kbd">Enter</kbd> <span>to select</span>
-                </div>
-                <div class="u-flex u-cross-center u-gap-4">
-                    <kbd class="kbd">Esc</kbd>
-                    <span>to {$subPanels.length > 1 ? 'go back' : 'close'}</span>
-                </div>
-            </div>
+            <Layout.Stack direction="row" justifyContent="space-between"
+                ><Layout.Stack direction="row" alignItems="center" gap="xxs">
+                    <Keyboard key="Enter" autoWidth={true} /> <span>to select</span></Layout.Stack>
+                <Layout.Stack
+                    direction="row"
+                    justifyContent="flex-end"
+                    alignItems="center"
+                    gap="xxs">
+                    <Keyboard key="Esc" autoWidth={true} />
+                    <span>to {$subPanels.length > 1 ? 'go back' : 'close'}</span></Layout.Stack>
+            </Layout.Stack>
         </slot>
     </div>
 </div>
@@ -363,45 +387,16 @@
         animation: scale-up 150ms cubic-bezier(0.5, 1, 0.89, 1);
     }
 
-    // Theme
-    :global(.theme-light) .card {
-        --cmd-center-bg: hsl(var(--color-neutral-0));
-        --cmd-center-border: hsl(var(--color-neutral-10));
-        --cmd-center-shadow: 0px 16px 32px 0px rgba(55, 59, 77, 0.04);
-
-        --kbd-bg: hsl(var(--color-neutral-15));
-        --kbd-color: hsl(var(--color-neutral-60));
-
-        --crumb-bg: hsl(var(--color-neutral-10));
-        --crumb-color: hsl(var(--color-neutral-100));
-
-        --result-bg: hsl(var(--color-neutral-10));
-        --footer-bg: linear-gradient(180deg, #fff 0%, #e8e9f0 100%);
-
-        --icon-color: hsl(var(--color-neutral-50));
-        --label-color: hsl(var(--color-neutral-60));
-    }
-
-    :global(.theme-dark) .card {
-        --cmd-center-bg: hsl(var(--color-neutral-90));
-        --cmd-center-border: hsl(var(--color-neutral-80));
-        --cmd-center-shadow: 0px 16px 32px 0px #14141f;
-
-        --kbd-bg: hsl(var(--color-neutral-80));
-        --kbd-color: hsl(var(--color-neutral-15));
-
-        --crumb-bg: hsl(var(--color-neutral-150));
-        --crumb-color: hsl(var(--color-neutral-30));
-
-        --result-bg: hsl(var(--color-neutral-85));
-        --footer-bg: linear-gradient(
-            180deg,
-            hsl(var(--color-neutral-100)) 0%,
-            hsl(var(--color-neutral-85)) 100%
-        );
-
-        --icon-color: hsl(var(--color-neutral-70));
-        --label-color: hsl(var(--color-neutral-15));
+    .card {
+        --cmd-center-bg: var(--bgcolor-neutral-primary);
+        --footer-bg: var(--bgcolor-neutral-primary);
+        --cmd-center-border: var(--border-neutral);
+        --result-bg: var(--overlay-neutral-hover);
+        --kbd-bg: var(--overlay-on-neutral);
+        --kbd-color: var(--fgcolor-neutral-secondary);
+        --icon-color: var(--fgcolor-neutral-tertiary);
+        --label-color: var(--fgcolor-neutral-secondary);
+        --crumb-color: var(--fgcolor-neutral-secondary);
     }
 
     // Elements
@@ -420,11 +415,14 @@
         max-height: min(calc(100vh - var(--top) - 4rem), var(--max-height, 32rem));
         overflow: hidden;
         padding: 0;
+        box-shadow:
+            0 56px 32px 0 rgba(0, 0, 0, 0.02),
+            0 6px 14px 0 rgba(0, 0, 0, 0.04),
+            0 24px 25px 0 rgba(0, 0, 0, 0.03);
 
         border-radius: 0.5rem;
         border: 1px solid var(--cmd-center-border);
         background: var(--cmd-center-bg);
-        box-shadow: var(--cmd-center-shadow);
         backdrop-filter: blur(6px);
 
         &.fullheight {
@@ -434,7 +432,7 @@
         :global(.kbd) {
             color: var(--kbd-color);
             background-color: var(--kbd-bg);
-            padding-inline: 0.25rem;
+            padding-inline: var(--space-2, 4px);
         }
     }
 
@@ -444,7 +442,7 @@
         align-items: center;
         width: 100%;
 
-        border-bottom: 1px solid hsl(var(--color-border));
+        border-bottom: 1px solid var(--border-neutral, #ededf0);
         font-size: 16px;
         padding: 1rem;
 
@@ -465,7 +463,6 @@
         gap: 0.25rem;
 
         border-radius: 0.25rem;
-        background: var(--crumb-bg);
         color: var(--crumb-color);
         text-align: center;
         font-family: Inter;
@@ -493,13 +490,14 @@
             padding: 1rem;
 
             .group {
-                color: hsl(var(--color-neutral-70));
+                color: var(--fgcolor-neutral-secondary, #56565c);
                 margin-inline-start: 0.25rem;
                 margin-block-end: 0.25rem;
                 position: relative;
                 z-index: 10;
 
-                font-size: 10px !important;
+                font-size: var(--font-size-xs, 12px);
+                font-weight: 500;
 
                 &:not(:first-child) {
                     margin-block-start: 1rem;
@@ -560,7 +558,7 @@
                         content: '';
                         position: absolute;
                         left: -8px;
-                        border-left: 1px solid hsl(var(--color-border));
+                        border-left: 1px solid var(--border-neutral, #ededf0);
                         height: 100%;
                     }
                 }
@@ -570,8 +568,8 @@
 
     .footer {
         background: var(--footer-bg);
-        border-top: 1px solid hsl(var(--color-border));
+        border-top: 1px solid var(--border-neutral, #ededf0);
 
-        padding: 0.5rem 1rem;
+        padding: 0.75rem 1rem;
     }
 </style>

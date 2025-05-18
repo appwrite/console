@@ -4,13 +4,14 @@
         addPlatform
     } from '$routes/(console)/project-[region]-[project]/overview/platforms/+page.svelte';
     import Template from './template.svelte';
+    import { IconAndroid, IconApple, IconCode, IconFlutter } from '@appwrite.io/pink-icons-svelte';
 
     let search = '';
 
     let platforms = [
         {
             label: 'Web',
-            icon: 'code',
+            icon: IconCode,
             group: 'platforms',
             callback: () => {
                 addPlatform(Platform.Web);
@@ -18,7 +19,7 @@
         },
         {
             label: 'Flutter',
-            icon: 'flutter',
+            icon: IconFlutter,
             group: 'platforms',
             callback: () => {
                 addPlatform(Platform.Flutter);
@@ -26,7 +27,7 @@
         },
         {
             label: 'Android',
-            icon: 'android',
+            icon: IconAndroid,
             group: 'platforms',
             callback: () => {
                 addPlatform(Platform.Android);
@@ -34,7 +35,7 @@
         },
         {
             label: 'Apple',
-            icon: 'apple',
+            icon: IconApple,
             group: 'platforms',
             callback: () => {
                 addPlatform(Platform.Apple);
@@ -49,7 +50,7 @@
 
 <Template options={filteredPlatforms} bind:search>
     <div class="u-flex u-cross-center u-gap-8" slot="option" let:option>
-        <i class="icon-{option.icon}" />
+        <i class="icon-{option.icon}"></i>
         <span>{option.label}</span>
     </div>
 </Template>

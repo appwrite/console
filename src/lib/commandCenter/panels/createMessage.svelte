@@ -67,7 +67,7 @@
 
 <Template options={filteredOptions} bind:search>
     <div class="u-flex u-cross-center u-gap-8" slot="option" let:option>
-        <i class="icon-{option.icon}" />
+        <i class="icon-{option.icon}"></i>
         <span>{option.label}</span>
     </div>
 </Template>

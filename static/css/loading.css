@@ -1,8 +1,11 @@
 body {
     margin: 0;
+    font-size: 100%;
+    width: 100%;
 }
 
 [data-loading='true'] .page-loader {
+    pointer-events: initial;
     visibility: visible;
     opacity: 1;
 }
@@ -19,6 +22,7 @@ body {
 }
 
 .page-loader {
+    pointer-events: none;
     visibility: hidden;
     opacity: 0;
     z-index: 100000;

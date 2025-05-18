@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, Code, Modal, Tab } from '$lib/components';
+    import { Alert, Modal, Tab } from '$lib/components';
     import Tabs from '$lib/components/tabs.svelte';
     import { total } from '$lib/helpers/array';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -7,6 +7,7 @@
     import { formatNum } from '$lib/helpers/string';
     import type { Models } from '@appwrite.io/console';
     import { ResourcesFriendly } from '$lib/stores/migration';
+    import { Card, Layout, Typography, Code } from '@appwrite.io/pink-svelte';
 
     export let migration: Models.Migration = null;
     export let show = false;
@@ -45,28 +46,34 @@
     let tab = 'details' as 'details' | 'logs';
 </script>
 
-<Modal bind:show size="big">
-    <svelte:fragment slot="title">
-        {#if migration.status === 'failed'}
-            Resolve migration issues
-        {:else}
-            Migration details
-        {/if}
-    </svelte:fragment>
-    <Tabs>
-        <Tab selected={tab === 'details'} on:click={() => (tab = 'details')}>Details</Tab>
-        <Tab selected={tab === 'logs'} on:click={() => (tab = 'logs')}>Logs</Tab>
+<Modal
+    bind:show
+    title={migration.status === 'failed' ? 'Resolve migration issues' : 'Migration details'}
+    hideFooter>
+    <Tabs stretch let:root>
+        <Tab {root} selected={tab === 'details'} on:click={() => (tab = 'details')}>Details</Tab>
+        <Tab {root} selected={tab === 'logs'} on:click={() => (tab = 'logs')}>Logs</Tab>
     </Tabs>
 
     {#if tab === 'logs'}
-        <Code code={JSON.stringify(migration, null, 2)} language="json" allowScroll />
+        <Code code={JSON.stringify(migration, null, 2)} lang="json" hideHeader />
     {:else if tab === 'details'}
-        <div class="box meta">
-            <span>Date</span>
-            <span>{toLocaleDateTime(migration.$createdAt)}</span>
-            <span>Source</span>
-            <span>{migration.source}</span>
-        </div>
+        <Card.Base variant="secondary" padding="s">
+            <Layout.Stack>
+                <Layout.Stack direction="row">
+                    <span style:flex-basis="50%">
+                        <Typography.Text variant="m-600">Date</Typography.Text>
+                    </span>
+                    <span>{toLocaleDateTime(migration.$createdAt)}</span>
+                </Layout.Stack>
+                <Layout.Stack direction="row">
+                    <span style:flex-basis="50%">
+                        <Typography.Text variant="m-600">Source</Typography.Text>
+                    </span>
+                    <span>{migration.source}</span>
+                </Layout.Stack>
+            </Layout.Stack>
+        </Card.Base>
 
         {#if Object.values(statusCounters).some(hasError)}
             <Alert
@@ -90,15 +97,15 @@
                     <div class="u-flex u-cross-center u-gap-16">
                         <div class="icon-wrapper">
                             {#if hasError(entityCounter)}
-                                <i class="icon-exclamation" />
+                                <i class="icon-exclamation"></i>
                             {:else if isLoading(entityCounter)}
                                 <div class="u-flex">
-                                    <span class="loader" />
+                                    <span class="loader"></span>
                                 </div>
                             {:else if hasSucceeded(entityCounter)}
-                                <i class="icon-check" />
+                                <i class="icon-check"></i>
                             {:else}
-                                <i class="icon-clock" />
+                                <i class="icon-clock"></i>
                             {/if}
                         </div>
 
@@ -124,19 +131,8 @@
             padding: 1.25rem;
 
             &:not(:last-child) {
-                border-bottom: 1px solid hsl(var(--color-border));
+                border-bottom: 1px solid hsl(var(--border));
             }
-        }
-    }
-
-    .meta {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.5rem;
-        padding: 1.5rem;
-
-        :nth-child(2n) {
-            font-weight: 600;
         }
     }
 

@@ -13,7 +13,6 @@
     {id}
     {label}
     {optionalText}
-    showLabel={!!label?.length}
     placeholder="Select a value"
     required={attribute.required}
     options={[

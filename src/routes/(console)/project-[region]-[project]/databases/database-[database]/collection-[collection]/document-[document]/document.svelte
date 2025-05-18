@@ -1,10 +1,10 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { collection } from '../store';
     import { doc } from './store';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
@@ -16,9 +16,9 @@
 
     let disableUpdate = true;
     let currentDoc: string;
-    const databaseId = $page.params.database;
-    const collectionId = $page.params.collection;
-    const documentId = $page.params.document;
+    const databaseId = page.params.database;
+    const collectionId = page.params.collection;
+    const documentId = page.params.document;
 
     const work = writable(
         Object.keys($doc)
@@ -53,7 +53,7 @@
     async function updateData() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .databases.updateDocument(
                     databaseId,
                     collectionId,
@@ -81,10 +81,10 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Data</Heading>
-    <p>Update document data based on the attributes created earlier.</p>
+    <svelte:fragment slot="title">Data</svelte:fragment>
+    Update document data based on the attributes created earlier.
     <svelte:fragment slot="aside">
-        <AttributeForm attributes={$collection.attributes} bind:formValues={$work} gap="16" />
+        <AttributeForm attributes={$collection.attributes} bind:formValues={$work} />
     </svelte:fragment>
 
     <svelte:fragment slot="actions">

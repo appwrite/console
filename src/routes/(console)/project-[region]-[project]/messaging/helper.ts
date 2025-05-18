@@ -1,15 +1,26 @@
-import { page } from '$app/stores';
+import { page } from '$app/state';
 import { sdk } from '$lib/stores/sdk';
-import { type Models } from '@appwrite.io/console';
-import { get } from 'svelte/store';
+import { MessagingProviderType, type Models } from '@appwrite.io/console';
+
+export function getProviderText(type: MessagingProviderType | Models.Provider['type']): string {
+    switch (type) {
+        case MessagingProviderType.Email:
+            return 'Email';
+        case MessagingProviderType.Sms:
+            return 'SMS';
+        case MessagingProviderType.Push:
+            return 'Push';
+        default:
+            return '';
+    }
+}
 
 /** Stores active polling intervals for messages. */
 const messageIntervals = new Map<string, ReturnType<typeof setInterval>>();
 
 /** Checks the status of a message and stops polling if it's no longer processing. */
 function checkMessageStatus(message: Models.Message) {
-    const $page = get(page);
-    sdk.forProject($page.params.region, $page.params.project)
+    sdk.forProject(page.params.region, page.params.project)
         .messaging.getMessage(message.$id)
         .then((msg) => {
             if (msg.status !== 'processing') {

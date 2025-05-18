@@ -2,15 +2,15 @@
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
+    import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../../store';
     import { key } from './store';
 
     export let showDelete = false;
+    let error: string;
 
     async function handleDelete() {
         try {
@@ -23,27 +23,13 @@
             });
             trackEvent(Submit.KeyDelete);
             await goto(`${base}/project-${$project.region}-${$project.$id}/overview/keys`);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.KeyDelete);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.KeyDelete);
         }
     }
 </script>
 
-<Modal
-    title="Delete API key"
-    bind:show={showDelete}
-    onSubmit={handleDelete}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
-    <p>The API key will be permanently deleted. This action is irreversible.</p>
-
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
-    </svelte:fragment>
-</Modal>
+<Confirm onSubmit={handleDelete} title="Delete API key" bind:open={showDelete} bind:error>
+    Are you sure you want to delete this execution?
+</Confirm>

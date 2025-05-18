@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, BoxAvatar, Heading } from '$lib/components';
+    import { CardGrid, BoxAvatar } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { topic, topicTotal } from '../store';
     import DeleteTopic from '../deleteTopic.svelte';
@@ -7,10 +7,8 @@
     let showDelete = false;
 </script>
 
-<CardGrid danger>
-    <div>
-        <Heading tag="h6" size="7">Delete topic</Heading>
-    </div>
+<CardGrid>
+    <svelte:fragment slot="title">Delete topic</svelte:fragment>
     <p>
         The topic will be permanently deleted, including all data associated with this topic. This
         action is irreversible.

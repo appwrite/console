@@ -1,12 +1,12 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
-    import { Cover, CoverTitle } from '$lib/layout';
+    import { Cover } from '$lib/layout';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
-    const projectId = $page.params.project;
-    const path = `${base}/project-${$page.params.region}-${projectId}/storage`;
+    const path = `${base}/project-${page.params.region}-${page.params.project}/storage`;
     const tabs = [
         {
             href: path,
@@ -25,13 +25,13 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>Storage</CoverTitle>
+        <Typography.Title color="--fgcolor-neutral-primary" size="xl">Storage</Typography.Title>
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}
             <Tab
                 href={tab.href}
-                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                selected={isTabSelected(tab, page.url.pathname, path, tabs)}
                 event={tab.event}>
                 {tab.title}
             </Tab>

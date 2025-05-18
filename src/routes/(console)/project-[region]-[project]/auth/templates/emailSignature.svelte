@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, EmptyCardImageCloud, Heading } from '$lib/components';
+    import { Click, trackEvent } from '$lib/actions/analytics';
+    import { CardGrid, EmptyCardImageCloud } from '$lib/components';
     import Button from '$lib/elements/forms/button.svelte';
     import { app } from '$lib/stores/app';
     import { upgradeURL } from '$lib/stores/billing';
@@ -11,11 +11,11 @@
 </script>
 
 <CardGrid>
-    <Heading size="7" tag="h3">Email signature</Heading>
-    <p class="text">Enable or disable Appwrite branding in your email template signature.</p>
+    <svelte:fragment slot="title">Email signature</svelte:fragment>
+    Enable or disable Appwrite branding in your email template signature.
 
     <svelte:fragment slot="aside">
-        <EmptyCardImageCloud source="email_signature_card" let:nextTier noAspectRatio>
+        <EmptyCardImageCloud source="email_signature_card" let:nextTier>
             <svelte:fragment slot="image">
                 <div class=" is-only-mobile u-width-full-line u-height-100-percent">
                     {#if $app.themeInUse === 'dark'}
@@ -60,7 +60,7 @@
                     fullWidth
                     href={$upgradeURL}
                     on:click={() => {
-                        trackEvent('click_organization_upgrade', {
+                        trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
                             source
                         });

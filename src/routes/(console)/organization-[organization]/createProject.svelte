@@ -3,11 +3,12 @@
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
-    import { Pill } from '$lib/elements';
-    import { InputText, Button, FormList } from '$lib/elements/forms';
+    import { InputText, Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
+    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
@@ -16,10 +17,10 @@
     const dispatch = createEventDispatcher();
 
     let id: string;
-    let name: string;
-    let showCustomId = false;
     let error: string;
+    let showCustomId = false;
     let disabled: boolean = false;
+    let name: string = 'Appwrite project';
 
     async function create() {
         try {
@@ -44,21 +45,21 @@
     }
 </script>
 
-<Modal title="Create project" {error} onSubmit={create} size="big" bind:show>
-    <FormList>
+<Modal title="Create project" {error} onSubmit={create} bind:show>
+    <Layout.Stack gap="l">
         <InputText id="name" label="Name" bind:value={name} required autofocus={true} />
         {#if !showCustomId}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                    <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Project ID
-                    </span>
-                </Pill>
-            </div>
+            <span>
+                <Tag size="s" on:click={() => (showCustomId = !showCustomId)}>
+                    <Icon icon={IconPencil} slot="start" size="s" />
+                    Project ID
+                </Tag>
+            </span>
         {:else}
             <CustomId autofocus bind:show={showCustomId} name="Project" isProject bind:id />
         {/if}
-    </FormList>
+    </Layout.Stack>
+
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
         <Button submit {disabled}>Create</Button>

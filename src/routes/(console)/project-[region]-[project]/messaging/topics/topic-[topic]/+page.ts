@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
     depends(Dependencies.MESSAGING_TOPIC_SUBSCRIBERS);
 
     const page = getPage(url);
-    const limit = getLimit(params.project, url, route, PAGE_LIMIT);
+    const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
     const search = getSearch(url);
     const query = getQuery(url);

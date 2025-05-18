@@ -1,4 +1,7 @@
 <script lang="ts" context="module">
+    import { total } from '$lib/helpers/array';
+    import type { Metric } from '$lib/sdk/usage';
+
     export function totalMetrics(set: Array<unknown>): number {
         if (!set) return 0;
         return total((set as Metric[]).map((c) => c.value));
@@ -6,34 +9,34 @@
 </script>
 
 <script lang="ts">
-    import { afterNavigate } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { PlatformsPanel } from '$lib/commandCenter/panels';
-    import { Heading, Tab } from '$lib/components';
+    import { Tab, Tabs } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Container, type UsagePeriods } from '$lib/layout';
-    import { onMount } from 'svelte';
-    import { onboarding, project } from '../store';
+    import { onMount, setContext, type Component } from 'svelte';
     import Bandwidth from './bandwidth.svelte';
-    import { createApiKey } from './keys/+page.svelte';
-    import Onboard from './onboard.svelte';
-    // import Realtime from './realtime.svelte';
     import Requests from './requests.svelte';
     import { usage } from './store';
     import { formatNum } from '$lib/helpers/string';
-    import { total } from '$lib/helpers/array';
-    import type { Metric } from '$lib/sdk/usage';
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { writable, type Writable } from 'svelte/store';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
+    import { SHOW_INIT_FEATURES } from '$lib/system';
 
-    $: projectId = $page.params.project;
-    $: path = `${base}/project-${$page.params.region}-${projectId}/overview`;
     let period: UsagePeriods = '30d';
+    $: path = `${base}/project-${page.params.region}-${page.params.project}/overview`;
 
     onMount(handle);
     afterNavigate(handle);
+
+    const action = setContext<Writable<Component>>('overview-action', writable(null));
 
     async function handle() {
         const promise = changePeriod(period);
@@ -49,6 +52,10 @@
         return usage.load(dates.start, dates.end, dates.period);
     }
 
+    function isTabSelected(key: string) {
+        return page.url.pathname === `${path}/${key}`;
+    }
+
     $: $registerCommands([
         {
             label: 'Add platform',
@@ -56,17 +63,27 @@
             callback() {
                 addSubPanel(PlatformsPanel);
             },
-            icon: 'plus',
+            icon: IconPlus,
             group: 'integrations',
             disabled: !$canWriteProjects
         },
         {
             label: 'Create API Key',
-            icon: 'plus',
+            icon: IconPlus,
             callback() {
-                createApiKey();
+                goto(`${path}/keys/create`);
             },
             keys: ['c', 'k'],
+            group: 'integrations',
+            disabled: !$canWriteProjects
+        },
+        {
+            label: 'Create Dev Key',
+            icon: IconPlus,
+            callback() {
+                goto(`${path}/dev-keys/create`);
+            },
+            keys: ['c', 'd', 'k'],
             group: 'integrations',
             disabled: !$canWriteProjects
         }
@@ -81,177 +98,154 @@
     <title>Console - Appwrite</title>
 </svelte:head>
 
-{#if $project}
-    <Container overlapCover>
-        {#if $onboarding}
-            <Onboard {projectId} />
-        {:else}
-            {#if $usage}
-                {@const storage = humanFileSize($usage.filesStorageTotal ?? 0)}
-                <section class="common-section">
-                    <div class="grid-dashboard-1s-2m-6l">
-                        <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
-                            <Bandwidth {period} on:change={(e) => changePeriod(e.detail)} />
+<Container overlapCover>
+    <Layout.Stack gap="xxl">
+        {#if $usage}
+            {@const storage = humanFileSize($usage.filesStorageTotal ?? 0)}
+            <Layout.Stack gap="xl">
+                <Layout.Stack gap="l" direction={$isSmallViewport ? 'column' : 'row'}>
+                    <Card.Base
+                        class="is-2-columns-medium-screen is-3-columns-large-screen"
+                        padding="s">
+                        <Bandwidth {period} on:change={(e) => changePeriod(e.detail)} />
+                    </Card.Base>
+                    <Card.Base
+                        class="is-2-columns-medium-screen is-3-columns-large-screen"
+                        padding="s">
+                        <Requests {period} on:change={(e) => changePeriod(e.detail)} />
+                    </Card.Base>
+                </Layout.Stack>
+
+                <Layout.Stack gap="xl" direction={$isSmallViewport ? 'column' : 'row'}>
+                    <Card.Link
+                        padding="s"
+                        href={`${base}/project-${page.params.region}-${page.params.project}/databases`}
+                        class="is-2-columns-large-screen">
+                        <div class="grid-item-1">
+                            <div class="grid-item-1-start-start">
+                                <div class="eyebrow-heading-3">
+                                    <span class="icon-database" aria-hidden="true"></span>
+                                    <span class="text">Database</span>
+                                </div>
+                            </div>
+
+                            <div class="grid-item-1-start-end"></div>
+
+                            <div class="grid-item-1-end-start">
+                                <Typography.Title>
+                                    {formatNum($usage.documentsTotal ?? 0)}
+                                </Typography.Title>
+                                <Typography.Text>Documents</Typography.Text>
+                            </div>
                         </div>
-                        <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
-                            <Requests {period} on:change={(e) => changePeriod(e.detail)} />
+                    </Card.Link>
+                    <Card.Link
+                        padding="s"
+                        href={`${base}/project-${page.params.region}-${page.params.project}/storage`}
+                        class="is-2-columns-large-screen">
+                        <div class="grid-item-1">
+                            <div class="grid-item-1-start-start">
+                                <div class="eyebrow-heading-3">
+                                    <span class="icon-folder" aria-hidden="true"></span>
+                                    <span class="text">Storage</span>
+                                </div>
+                            </div>
+
+                            <div class="grid-item-1-start-end"></div>
+
+                            <div class="grid-item-1-end-start">
+                                <Typography.Title>
+                                    {storage.value}
+                                    <span class="body-text-2">{storage.unit}</span>
+                                </Typography.Title>
+                                <Typography.Text>Storage</Typography.Text>
+                            </div>
                         </div>
-                        <a
-                            href={`${base}/project-${$page.params.region}-${projectId}/databases`}
-                            class="card is-2-columns-large-screen">
-                            <div class="grid-item-1">
-                                <div class="grid-item-1-start-start">
-                                    <div class="eyebrow-heading-3">
-                                        <span class="icon-database" aria-hidden="true" />
-                                        <span class="text">Database</span>
-                                    </div>
-                                </div>
-
-                                <div class="grid-item-1-start-end" />
-
-                                <div class="grid-item-1-end-start">
-                                    <div class="heading-level-4">
-                                        {formatNum($usage.documentsTotal ?? 0)}
-                                    </div>
-                                    <div>Documents</div>
-                                </div>
-
-                                <div class="grid-item-1-end-end">
-                                    <div class="text">
-                                        Databases: {formatNum($usage.databasesTotal ?? 0)}
-                                    </div>
+                    </Card.Link>
+                    <Card.Link
+                        padding="s"
+                        href={`${base}/project-${page.params.region}-${page.params.project}/auth`}
+                        class="is-2-columns-large-screen">
+                        <div class="grid-item-1">
+                            <div class="grid-item-1-start-start">
+                                <div class="eyebrow-heading-3">
+                                    <span class="icon-user-group" aria-hidden="true"></span>
+                                    <span class="text">Auth</span>
                                 </div>
                             </div>
-                        </a>
-                        <a
-                            href={`${base}/project-${$page.params.region}-${projectId}/storage`}
-                            class="card is-2-columns-large-screen">
-                            <div class="grid-item-1">
-                                <div class="grid-item-1-start-start">
-                                    <div class="eyebrow-heading-3">
-                                        <span class="icon-folder" aria-hidden="true" />
-                                        <span class="text">Storage</span>
-                                    </div>
-                                </div>
 
-                                <div class="grid-item-1-start-end" />
+                            <div class="grid-item-1-start-end"></div>
 
-                                <div class="grid-item-1-end-start">
-                                    <div class="heading-level-4">
-                                        {storage.value}
-                                        <span class="body-text-2">{storage.unit}</span>
-                                    </div>
-                                    <div>Storage</div>
-                                </div>
-
-                                <div class="grid-item-1-end-end">
-                                    <div class="text">
-                                        Buckets: {formatNum($usage.bucketsTotal ?? 0)}
-                                    </div>
+                            <div class="grid-item-1-end-start">
+                                <Typography.Title>
+                                    {formatNum($usage.usersTotal ?? 0)}
+                                </Typography.Title>
+                                <Typography.Text>Users</Typography.Text>
+                            </div>
+                        </div>
+                    </Card.Link>
+                    <Card.Link
+                        padding="s"
+                        href={`${base}/project-${page.params.region}-${page.params.project}/functions`}
+                        class="is-2-columns-large-screen">
+                        <div class="grid-item-1">
+                            <div class="grid-item-1-start-start">
+                                <div class="eyebrow-heading-3">
+                                    <span class="icon-lightning-bolt" aria-hidden="true"></span>
+                                    <span class="text">Functions</span>
                                 </div>
                             </div>
-                        </a>
-                        <a
-                            href={`${base}/project-${$page.params.region}-${projectId}/auth`}
-                            class="card is-2-columns-large-screen">
-                            <div class="grid-item-1">
-                                <div class="grid-item-1-start-start">
-                                    <div class="eyebrow-heading-3">
-                                        <span class="icon-user-group" aria-hidden="true" />
-                                        <span class="text">Auth</span>
-                                    </div>
-                                </div>
 
-                                <div class="grid-item-1-start-end" />
+                            <div class="grid-item-1-start-end"></div>
 
-                                <div class="grid-item-1-end-start">
-                                    <div class="heading-level-4">
-                                        {formatNum($usage.usersTotal ?? 0)}
-                                    </div>
-                                    <div>Users</div>
-                                </div>
+                            <div class="grid-item-1-end-start">
+                                <Typography.Title>
+                                    {formatNum($usage.executionsTotal ?? 0)}
+                                </Typography.Title>
+                                <Typography.Text>Executions</Typography.Text>
                             </div>
-                        </a>
-                        <a
-                            href={`${base}/project-${$page.params.region}-${projectId}/functions`}
-                            class="card is-2-columns-large-screen">
-                            <div class="grid-item-1">
-                                <div class="grid-item-1-start-start">
-                                    <div class="eyebrow-heading-3">
-                                        <span class="icon-lightning-bolt" aria-hidden="true" />
-                                        <span class="text">Functions</span>
-                                    </div>
-                                </div>
 
-                                <div class="grid-item-1-start-end" />
-
-                                <div class="grid-item-1-end-start">
-                                    <div class="heading-level-4">
-                                        {formatNum($usage.executionsTotal ?? 0)}
-                                    </div>
-                                    <div>Executions</div>
-                                </div>
-
-                                <div class="grid-item-1-end-end">
-                                    <div class="text" />
-                                </div>
+                            <div class="grid-item-1-end-end">
+                                <div class="text"></div>
                             </div>
-                        </a>
-                        <!--                        <div-->
-                        <!--                            class="card is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">-->
-                        <!--                            <Realtime />-->
-                        <!--                        </div>-->
-                    </div>
-                </section>
-            {/if}
-
-            <section class="common-section u-margin-block-start-100">
-                <Heading tag="h2" size="5" id="integrations">Integrations</Heading>
-                <div class="tabs u-margin-block-start-24 u-sep-block-end">
-                    <button
-                        class="tabs-button-scroll is-start u-hide"
-                        aria-label="Show items in start side">
-                        <span class="icon-cheveron-left" aria-hidden="true" />
-                    </button>
-                    <button
-                        class="tabs-button-scroll is-end u-hide"
-                        aria-label="Show items in end side">
-                        <span class="icon-cheveron-right" aria-hidden="true" />
-                    </button>
-                    <ul class="tabs-list" role="tablist" data-sveltekit-noscroll>
-                        <Tab
-                            href={`${path}/platforms`}
-                            selected={$page.url.pathname === `${path}/platforms`}
-                            event="platforms">Platforms</Tab>
-                        <Tab
-                            href={`${path}/keys`}
-                            selected={$page.url.pathname === `${path}/keys`}
-                            event="keys">API keys</Tab>
-                    </ul>
-                </div>
-
-                <div class="u-margin-block-start-40">
-                    <slot />
-                </div>
-            </section>
+                        </div>
+                    </Card.Link>
+                    <!--                    <Card.Base-->
+                    <!--                        padding="s"-->
+                    <!--                        class="is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">-->
+                    <!--                        <Realtime />-->
+                    <!--                    </Card.Base>-->
+                </Layout.Stack>
+            </Layout.Stack>
         {/if}
-    </Container>
-{/if}
 
-<style>
-    @media (min-width: 1199px) {
-        .grid-dashboard-1s-2m-6l {
-            grid-template-columns: repeat(12, 1fr);
-        }
-
-        .is-3-columns-large-screen {
-            /* 6/12 = half */
-            grid-column: span 6;
-        }
-
-        .is-2-columns-large-screen {
-            /* 3/12 = 1/4 → fits 4 items per row */
-            grid-column: span 3;
-        }
-    }
-</style>
+        <Layout.Stack gap="xl">
+            <Typography.Title>Integrations</Typography.Title>
+            <Layout.Stack gap="xl" direction="row" justifyContent="space-between">
+                <Tabs>
+                    <Tab
+                        noscroll
+                        event="platforms"
+                        href={`${path}/platforms`}
+                        selected={isTabSelected('platforms')}>Platforms</Tab>
+                    <Tab
+                        noscroll
+                        event="keys"
+                        href={`${path}/keys`}
+                        selected={isTabSelected('keys')}>API keys</Tab>
+                    {#if SHOW_INIT_FEATURES}
+                        <Tab
+                            noscroll
+                            event="keys"
+                            href={`${path}/dev-keys`}
+                            selected={isTabSelected('dev-keys')}>Dev keys</Tab>
+                    {/if}
+                </Tabs>
+                {#if $action}
+                    <svelte:component this={$action} />
+                {/if}
+            </Layout.Stack>
+            <slot />
+        </Layout.Stack>
+    </Layout.Stack>
+</Container>

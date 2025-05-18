@@ -1,9 +1,8 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
+    import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { AuthenticatorType } from '@appwrite.io/console';
@@ -34,21 +33,11 @@
     }
 </script>
 
-<Modal
-    title="Delete authentication method"
-    bind:show={showDelete}
+<Confirm
     onSubmit={deleteAuthenticator}
-    icon="exclamation"
-    state="warning"
-    bind:error
-    headerDivider={false}>
-    <p>
-        Are you sure you want to delete this authentication method? You will no longer be able to
-        use this method to authenticate your account.
-    </p>
-
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
-    </svelte:fragment>
-</Modal>
+    title="Delete authentication method"
+    bind:open={showDelete}
+    bind:error>
+    <p>Are you sure you want to delete this authentication method?</p>
+    <p>You will no longer be able to use this method to authenticate your account.</p>
+</Confirm>

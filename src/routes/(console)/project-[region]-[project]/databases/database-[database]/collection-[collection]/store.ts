@@ -26,3 +26,5 @@ export const attributes = derived(
 export const indexes = derived(page, ($page) => $page.data.collection.indexes as Models.Index[]);
 
 export const columns = writable<Column[]>([]);
+
+export const isCsvImportInProgress = writable(false);

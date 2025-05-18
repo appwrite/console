@@ -8,11 +8,13 @@
     import { Dependencies } from '$lib/constants';
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
     import SettingsFormList from '../settingsFormList.svelte';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
     import CreateMember from '$routes/(console)/organization-[organization]/createMember.svelte';
+    import { page } from '$app/state';
+    import { Link as PinkLink } from '@appwrite.io/pink-svelte';
+    import Link from '$lib/elements/link.svelte';
 
     export let inputs: (ProviderInput | ProviderInput[])[];
     export let providerType: MessagingProviderType;
@@ -80,7 +82,7 @@
             switch (provider) {
                 case Providers.Twilio:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateTwilioProvider(
                             providerId,
                             undefined,
@@ -92,7 +94,7 @@
                     break;
                 case Providers.Msg91:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateMsg91Provider(
                             providerId,
                             undefined,
@@ -104,7 +106,7 @@
                     break;
                 case Providers.Telesign:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateTelesignProvider(
                             providerId,
                             undefined,
@@ -116,7 +118,7 @@
                     break;
                 case Providers.Textmagic:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateTextmagicProvider(
                             providerId,
                             undefined,
@@ -128,7 +130,7 @@
                     break;
                 case Providers.Vonage:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateVonageProvider(
                             providerId,
                             undefined,
@@ -140,7 +142,7 @@
                     break;
                 case Providers.Mailgun:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateMailgunProvider(
                             providerId,
                             undefined,
@@ -156,7 +158,7 @@
                     break;
                 case Providers.Sendgrid:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateSendgridProvider(
                             providerId,
                             undefined,
@@ -170,7 +172,7 @@
                     break;
                 case Providers.SMTP:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateSmtpProvider(
                             providerId,
                             undefined,
@@ -189,7 +191,7 @@
                     break;
                 case Providers.FCM:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateFcmProvider(
                             providerId,
                             undefined,
@@ -199,7 +201,7 @@
                     break;
                 case Providers.APNS:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateApnsProvider(
                             providerId,
                             undefined,
@@ -239,18 +241,13 @@
 
 <Form onSubmit={update}>
     <CardGrid>
-        <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16" data-private>
-            <Heading tag="h6" size="7">Settings</Heading>
-        </div>
-        <p>
-            Configure the settings to <Button
-                link
-                href={`https://appwrite.io/docs/products/messaging/${provider}`}
-                external>enable {displayName}</Button> to send {message}, or <Button
-                link
-                on:click={() => (newMemberModal = true)}>invite a team member</Button> to complete the
-            provider settings.
-        </p>
+        <svelte:fragment slot="title">Settings</svelte:fragment>
+        Configure the settings to <Link
+            external
+            href={`https://appwrite.io/docs/products/messaging/${provider}`}
+            >enable {displayName}</Link> to send {message}, or <PinkLink.Button
+            on:click={() => (newMemberModal = true)}>invite a team member</PinkLink.Button> to complete
+        the provider settings.
         <svelte:fragment slot="aside">
             <!-- Must wait until ready or else the files input won't be set properly -->
             {#if ready}

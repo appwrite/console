@@ -1,4 +1,4 @@
-import { page } from '$app/stores';
+import { page } from '$app/state';
 import { get } from 'svelte/store';
 import { sdk } from '$lib/stores/sdk';
 import { projectRegion } from '$routes/(console)/project-[region]-[project]/store';
@@ -6,7 +6,7 @@ import { projectRegion } from '$routes/(console)/project-[region]-[project]/stor
 /**
  * Returns the current project ID.
  *
- * The function first checks for a `project` parameter in the Svelte `$page` store.
+ * The function first checks for a `project` parameter in the Svelte `page` store.
  * If not found, it extracts the project ID from the pathname.
  *
  * Supports:
@@ -20,7 +20,7 @@ import { projectRegion } from '$routes/(console)/project-[region]-[project]/stor
  */
 export function getProjectId(): string | null {
     // safety check!
-    const projectFromParams = get(page)?.params?.project;
+    const projectFromParams = page?.params?.project;
     if (projectFromParams) {
         return projectFromParams;
     }

@@ -1,9 +1,9 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { FormList, InputSwitch } from '$lib/elements/forms';
+    import { InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { services, type Service } from '$lib/stores/project-services';
     import { sdk } from '$lib/stores/sdk';
@@ -11,6 +11,7 @@
     import EnableAllServices from './enableAllServices.svelte';
     import DisableAllServices from './disableAllServices.svelte';
     import Button from '$lib/elements/forms/button.svelte';
+    import { Divider, Layout } from '@appwrite.io/pink-svelte';
 
     let showDisableAll = false;
     let showEnableAll = false;
@@ -80,38 +81,33 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Services</Heading>
-    <p class="text">
-        Choose services you wish to enable or disable for the client API. When disabled, the
-        services are not accessible to client SDKs but remain accessible to server SDKs.
-    </p>
+    <svelte:fragment slot="title">Services</svelte:fragment>
+    Choose services you wish to enable or disable for the client API. When disabled, the services are
+    not accessible to client SDKs but remain accessible to server SDKs.
     <svelte:fragment slot="aside">
-        <div>
-            <ul class="buttons-list u-main-end">
-                <li class="buttons-list-item">
-                    <Button text={true} on:click={() => toggleAllServices(true)}>Enable all</Button>
-                </li>
-                <li class="buttons-list-item">
-                    <Button text={true} on:click={() => toggleAllServices(false)}>
-                        Disable all
-                    </Button>
-                </li>
-            </ul>
-            <div class="u-sep-block-start u-padding-block-8 u-margin-block-start-8" />
-            <form class="form">
-                <FormList class="is-multiple">
+        <Layout.Stack gap="m">
+            <Layout.Stack direction="row" alignItems="center" gap="s">
+                <Button extraCompact on:click={() => toggleAllServices(true)}>Enable all</Button>
+                <span style:height="20px">
+                    <Divider vertical />
+                </span>
+                <Button extraCompact on:click={() => toggleAllServices(false)}>Disable all</Button>
+            </Layout.Stack>
+            <Layout.Stack gap="l">
+                <Divider />
+                <Layout.Stack direction="row" wrap="wrap">
                     {#each $services.list as service}
-                        <InputSwitch
-                            label={service.label}
-                            id={service.method}
-                            bind:value={service.value}
-                            on:change={() => {
-                                serviceUpdate(service);
-                            }} />
+                        <span style:flex-basis="30%">
+                            <InputSwitch
+                                label={service.label}
+                                id={service.method}
+                                bind:value={service.value}
+                                on:change={() => serviceUpdate(service)} />
+                        </span>
                     {/each}
-                </FormList>
-            </form>
-        </div>
+                </Layout.Stack>
+            </Layout.Stack>
+        </Layout.Stack>
     </svelte:fragment>
 </CardGrid>
 

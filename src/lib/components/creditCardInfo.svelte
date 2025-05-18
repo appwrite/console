@@ -1,41 +1,41 @@
 <script lang="ts">
     import type { PaymentMethodData } from '$lib/sdk/billing';
-    import { Alert } from '.';
+    import { Badge, Layout, Link, Popover, Table } from '@appwrite.io/pink-svelte';
     import CreditCardBrandImage from './creditCardBrandImage.svelte';
+    import type { TableRootProp } from '$lib/helpers/types';
 
-    export let isBox = false;
+    export let root: TableRootProp;
     export let paymentMethod: PaymentMethodData;
+    export let isBackup: boolean = false;
 </script>
 
-<div class:box={isBox}>
-    <div class="u-flex u-main-space-between u-cross-start" style="padding-block: 0.5rem;">
-        <div class="u-line-height-1-5 u-flex u-flex-vertical u-gap-2">
-            <span class="u-flex u-cross-center u-gap-8">
-                <p class="text u-bold">
-                    <span class="u-capitalize">{paymentMethod?.brand}</span> ending in {paymentMethod?.last4}
-                </p>
-                <CreditCardBrandImage brand={paymentMethod?.brand} />
-            </span>
-            <p class="text">
-                Expires {paymentMethod?.expiryMonth}/{paymentMethod?.expiryYear}
-            </p>
-            {#if paymentMethod?.name}
-                <p class="text">
-                    {paymentMethod.name}
-                </p>
-            {/if}
-        </div>
-
-        <slot />
-    </div>
-    {#if paymentMethod?.expired}
-        <Alert type="error" class="u-margin-block-start-16 u-width-full-line">
-            <svelte:fragment slot="title">This payment method has expired</svelte:fragment>
-        </Alert>
+<Table.Cell column="cc" {root}>
+    <Layout.Stack direction="row" alignItems="center" gap="s">
+        <CreditCardBrandImage brand={paymentMethod?.brand} />
+        <span>ending in {paymentMethod?.last4}</span>
+        {#if isBackup}
+            <Badge variant="secondary" content="Backup" />
+        {/if}
+    </Layout.Stack>
+</Table.Cell>
+<Table.Cell column="name" {root}>{paymentMethod?.name}</Table.Cell>
+<Table.Cell column="expiry" {root}
+    >{paymentMethod?.expiryMonth}/{paymentMethod?.expiryYear}</Table.Cell>
+<Table.Cell column="status" {root}>
+    {#if paymentMethod?.lastError || paymentMethod?.expired}
+        <Popover let:toggle>
+            <Layout.Stack gap="xs" direction="row">
+                <Badge variant="secondary" type="error" content="Failed" />
+                <Link.Button on:click={toggle}>Details</Link.Button>
+            </Layout.Stack>
+            <svelte:fragment slot="tooltip">
+                {#if paymentMethod?.expired}
+                    This payment method has expired
+                {/if}
+                {#if paymentMethod?.lastError}
+                    {paymentMethod.lastError}
+                {/if}
+            </svelte:fragment>
+        </Popover>
     {/if}
-    {#if paymentMethod?.lastError}
-        <Alert type="error" class="u-margin-block-start-16 u-width-full-line">
-            {paymentMethod.lastError}
-        </Alert>
-    {/if}
-</div>
+</Table.Cell>

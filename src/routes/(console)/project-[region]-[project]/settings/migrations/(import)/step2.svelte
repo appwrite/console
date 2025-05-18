@@ -1,7 +1,7 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import ResourceForm from '$routes/(console)/(migration-wizard)/resource-form.svelte';
     import { formData, provider } from '.';
 </script>
@@ -21,5 +21,5 @@
     <ResourceForm
         {formData}
         {provider}
-        projectSdk={sdk.forProject($page.params.region, $page.params.project)} />
+        projectSdk={sdk.forProject(page.params.region, page.params.project)} />
 </WizardStep>

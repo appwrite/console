@@ -1,16 +1,12 @@
-import { CARD_LIMIT, Dependencies } from '$lib/constants';
-import { getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
+import { Dependencies } from '$lib/constants';
+import { getSearch } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, route, depends, parent, params }) => {
+export const load: PageLoad = async ({ url, depends, parent, params }) => {
     depends(Dependencies.FUNCTIONS);
 
-    const limit = CARD_LIMIT;
-    const page = getPage(url);
     const search = getSearch(url);
-    const view = getView(params.project, url, route, View.Grid);
-    const offset = pageToOffset(page, limit);
     const filter = {
         useCases: url.searchParams.getAll('useCase'),
         runtimes: url.searchParams.getAll('runtime')
@@ -51,14 +47,11 @@ export const load: PageLoad = async ({ url, route, depends, parent, params }) =>
     });
 
     return {
-        offset,
-        limit,
-        view,
         filter,
         runtimes,
         useCases,
-        sum: templates.length,
-        templates: templates.splice(((page === 0 ? 1 : page) - 1) * limit, limit),
+        search,
+        templates,
         functions: await sdk.forProject(params.region, params.project).functions.list()
     };
 };

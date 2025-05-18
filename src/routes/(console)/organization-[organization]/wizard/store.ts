@@ -6,6 +6,6 @@ export const createProject = writable<{
     region: string;
 }>({
     id: null,
-    name: null,
+    name: 'Appwrite project',
     region: 'fra'
 });

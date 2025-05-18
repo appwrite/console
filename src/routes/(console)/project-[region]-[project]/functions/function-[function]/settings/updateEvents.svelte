@@ -1,15 +1,11 @@
 <script lang="ts">
     import CardGrid from '$lib/components/cardGrid.svelte';
     import Empty from '$lib/components/empty.svelte';
-    import Heading from '$lib/components/heading.svelte';
-
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import Form from '$lib/elements/forms/form.svelte';
-    import { TableCell, TableCellText } from '$lib/elements/table';
-    import TableList from '$lib/elements/table/tableList.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -17,17 +13,16 @@
     import { func } from '../store';
     import { EventModal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import DropList from '$lib/components/dropList.svelte';
-    import DropListItem from '$lib/components/dropListItem.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
+    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
 
-    const functionId = $page.params.function;
+    const functionId = page.params.function;
     const eventSet: Writable<Set<string>> = writable(new Set($func.events));
     let showEvents = false;
     let eventValue: string;
     let isDisabled = true;
-    let showDropdown: boolean[] = [];
 
     async function updateEvents() {
         try {
@@ -35,7 +30,7 @@
                 throw new Error(`Invalid runtime: ${$func.runtime}`);
             }
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .functions.update(
                     functionId,
                     $func.name,
@@ -96,57 +91,37 @@
 
 <Form onSubmit={updateEvents}>
     <CardGrid>
-        <Heading tag="h6" size="7" id="events">Events</Heading>
-        <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>
+        <svelte:fragment slot="title">Events</svelte:fragment>
+        Set the events that will trigger your function. Maximum 100 events allowed.
         <svelte:fragment slot="aside">
             {#if $eventSet.size}
-                <TableList>
-                    {#each Array.from($eventSet) as event, i}
-                        <li class="table-row">
-                            <TableCellText title="id">
-                                {event}
-                            </TableCellText>
-                            <TableCell showOverflow title="options" width={40}>
-                                <DropList
-                                    bind:show={showDropdown[i]}
-                                    placement="bottom-start"
-                                    noArrow>
-                                    <button
-                                        class="button is-text is-only-icon"
-                                        aria-label="more options"
-                                        on:click|preventDefault={() =>
-                                            (showDropdown[i] = !showDropdown[i])}>
-                                        <span class="icon-dots-horizontal" aria-hidden="true" />
-                                    </button>
-                                    <svelte:fragment slot="list">
-                                        <DropListItem
-                                            icon="pencil"
-                                            on:click={() => {
-                                                showDropdown[i] = false;
-                                                showEvents = true;
-                                                eventValue = event;
-                                            }}>
-                                            Edit
-                                        </DropListItem>
-                                        <DropListItem
-                                            icon="trash"
-                                            on:click={async () => {
-                                                $eventSet.delete(event);
-                                                eventSet.set($eventSet);
-                                            }}>
-                                            Delete
-                                        </DropListItem>
-                                    </svelte:fragment>
-                                </DropList>
-                            </TableCell>
-                        </li>
+                <Table.Root columns={1} let:root>
+                    {#each Array.from($eventSet) as event}
+                        <Table.Row.Base {root}>
+                            <Table.Cell {root}>
+                                <Layout.Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center">
+                                    {event}
+                                    <Button
+                                        extraCompact
+                                        ariaLabel="delete event"
+                                        on:click={() => {
+                                            $eventSet.delete(event);
+                                            eventSet.set($eventSet);
+                                        }}>
+                                        <Icon icon={IconX} size="s" />
+                                    </Button>
+                                </Layout.Stack>
+                            </Table.Cell>
+                        </Table.Row.Base>
                     {/each}
-                </TableList>
-
-                <div class="u-flex u-margin-block-start-16">
-                    <Button text noMargin on:click={() => (showEvents = true)}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="u-text">Add event</span>
+                </Table.Root>
+                <div>
+                    <Button secondary on:click={() => (showEvents = true)}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add event
                     </Button>
                 </div>
             {:else}
@@ -161,12 +136,12 @@
 </Form>
 
 <EventModal bind:show={showEvents} initialValue={eventValue} on:created={handleEvent}>
-    <p class="text">
-        Select events in your Appwrite project that will trigger your function. <a
+    <Typography.Text
+        >Select events in your Appwrite project that will trigger your function.
+        <Link.Anchor
             href="https://appwrite.io/docs/advanced/platform/events"
             target="_blank"
             rel="noopener noreferrer"
-            class="link">Learn more about Appwrite Events</a
-        >.
-    </p>
+            class="link">Learn more about Appwrite Events</Link.Anchor
+        >.</Typography.Text>
 </EventModal>

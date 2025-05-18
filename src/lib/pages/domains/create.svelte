@@ -1,24 +1,24 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
+    import { WizardWithSteps } from '$lib/layout';
     import { invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { dependencyStore, domain } from './wizard/store';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
     import { onMount } from 'svelte';
     import type { Models } from '@appwrite.io/console';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { realtime } from '$lib/stores/sdk';
 
     onMount(() => {
         domain.set({ $id: '', domain: '' });
 
         return realtime
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .subscribe<Models.ProxyRule>('console', (message) => {
                 if (
-                    message.channels.includes(`projects.${$page.params.project}`) &&
+                    message.channels.includes(`projects.${page.params.project}`) &&
                     message.events.includes('rules.*')
                 ) {
                     domain.set(message.payload);
@@ -42,7 +42,7 @@
     });
 </script>
 
-<Wizard
+<WizardWithSteps
     title="Create domain"
     steps={stepsComponents}
     finalAction="Go to console"

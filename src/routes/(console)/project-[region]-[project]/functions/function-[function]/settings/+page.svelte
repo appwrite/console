@@ -1,9 +1,7 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-
     import DangerZone from './dangerZone.svelte';
     import ExecuteFunction from './executeFunction.svelte';
-    import UpdateConfiguration from './updateConfiguration.svelte';
     import UpdateEvents from './updateEvents.svelte';
     import UpdateLogging from './updateLogging.svelte';
     import UpdateName from './updateName.svelte';
@@ -12,45 +10,51 @@
     import UpdateSchedule from './updateSchedule.svelte';
     import UpdateScopes from './updateScopes.svelte';
     import UpdateTimeout from './updateTimeout.svelte';
-    import UpdateVariables from '../../../updateVariables.svelte';
-
-    import { func } from '../store';
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { Alert, Heading } from '$lib/components';
+    import { Alert } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { trackEvent } from '$lib/actions/analytics';
-    import { page } from '$app/stores';
+    import { Click, trackEvent } from '$lib/actions/analytics';
+    import UpdateRepository from './updateRepository.svelte';
+    import UpdateBuildCommand from './updateBuildCommand.svelte';
+    import UpdateResourceLimits from './updateResourceLimits.svelte';
+    import { isCloud } from '$lib/system';
+    import UpdateVariables from '$routes/(console)/project-[region]-[project]/updateVariables.svelte';
+    import { page } from '$app/state';
 
     export let data;
     let showAlert = true;
 
-    const sdkCreateVariable = async (key: string, value: string) => {
+    const sdkCreateVariable = async (key: string, value: string, secret?: boolean) => {
         await sdk
-            .forProject($page.params.region, $page.params.project)
-            .functions.createVariable($func.$id, key, value);
+            .forProject(page.params.region, page.params.project)
+            .functions.createVariable(data.function.$id, key, value, secret);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 
-    const sdkUpdateVariable = async (variableId: string, key: string, value: string) => {
+    const sdkUpdateVariable = async (
+        variableId: string,
+        key: string,
+        value: string,
+        secret?: boolean
+    ) => {
         await sdk
-            .forProject($page.params.region, $page.params.project)
-            .functions.updateVariable($func.$id, variableId, key, value);
+            .forProject(page.params.region, page.params.project)
+            .functions.updateVariable(data.function.$id, variableId, key, value, secret);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 
     const sdkDeleteVariable = async (variableId: string) => {
         await sdk
-            .forProject($page.params.region, $page.params.project)
-            .functions.deleteVariable($func.$id, variableId);
+            .forProject(page.params.region, page.params.project)
+            .functions.deleteVariable(data.function.$id, variableId);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 </script>
 
 <Container>
-    <Heading tag="h2" size="5">Settings</Heading>
-    {#if $func.version === 'v2' && showAlert}
+    {#if data.function.version === 'v2' && showAlert}
         <Alert
             type="warning"
             dismissible
@@ -68,7 +72,7 @@
             <svelte:fragment slot="buttons">
                 <Button
                     on:click={() =>
-                        trackEvent('click_open_website', {
+                        trackEvent(Click.WebsiteOpenClick, {
                             from: 'button',
                             source: 'function_keys_card',
                             destination: 'docs'
@@ -83,20 +87,29 @@
     {/if}
     <ExecuteFunction />
     <UpdateName />
-    <UpdateRuntime />
-    <UpdateConfiguration />
-    <UpdateLogging />
-    <UpdatePermissions />
-    <UpdateEvents />
-    <UpdateSchedule />
+    <UpdateRuntime runtimesList={data.runtimesList} />
+    {#key data.function.providerRepositoryId}
+        <UpdateRepository func={data.function} installations={data.installations} />
+    {/key}
+
     <UpdateVariables
         {sdkCreateVariable}
         {sdkUpdateVariable}
         {sdkDeleteVariable}
         isGlobal={false}
         globalVariableList={data.globalVariables}
-        variableList={data.variables} />
+        variableList={data.variables}
+        analyticsSource="function_settings" />
+    <UpdateBuildCommand func={data.function} />
+
+    <UpdatePermissions />
+    {#if isCloud}
+        <UpdateResourceLimits func={data.function} specs={data.specificationsList} />
+    {/if}
+    <UpdateEvents />
+    <UpdateSchedule />
     <UpdateTimeout />
+    <UpdateLogging func={data.function} />
     <UpdateScopes />
     <DangerZone />
 </Container>

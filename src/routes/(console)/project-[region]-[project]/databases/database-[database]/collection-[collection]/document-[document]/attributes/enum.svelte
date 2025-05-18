@@ -29,5 +29,4 @@
     {label}
     {optionalText}
     required={attribute.required}
-    placeholder="Select a value"
-    showLabel={!!label?.length} />
+    placeholder="Select a value" />

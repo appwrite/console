@@ -12,8 +12,8 @@
     import EmptyLightTablet from '$lib/images/backups/upgrade/backups-tablet-light.png';
 
     import { upgradeURL } from '$lib/stores/billing';
-    import { Card } from '$lib/components';
     import { isCloud } from '$lib/system';
+    import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     const title = isCloud
         ? 'Backups are available on paid plans'
@@ -25,7 +25,7 @@
 </script>
 
 <div>
-    <Card style="--card-padding: 1rem; --card-padding-mobile: 1rem">
+    <Card.Base padding="xs">
         <div class="u-flex u-gap-24 u-flex-vertical-mobile u-cross-center">
             <div
                 style:--p-file-preview-border-color="transparent"
@@ -78,35 +78,32 @@
                     {/if}
                 </div>
             </div>
-            <div class="u-flex u-flex-vertical-mobile u-gap-mobile-6 u-cross-center">
-                <div class="u-flex-vertical u-gap-8">
-                    <h3 class="body-text-2 u-bold">
-                        {title}
-                    </h3>
-
+            <Layout.Stack direction="row" alignItems="center" wrap="wrap">
+                <Layout.Stack gap="xs">
+                    <Typography.Text variant="m-600">{title}</Typography.Text>
                     <span class="upgrade-description">
                         {message} Schedule automatic or manual backups to protect your data and ensure
                         quick recovery.
                     </span>
-                </div>
+                </Layout.Stack>
 
+                <span class="is-only-mobile-button">
+                    <Button
+                        external={!isCloud}
+                        href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}>
+                        {isCloud ? 'Upgrade plan' : 'Sign up'}
+                    </Button>
+                </span>
+            </Layout.Stack>
+            <div class="is-not-mobile">
                 <Button
                     external={!isCloud}
-                    class="is-not-mobile"
-                    href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}>
-                    {isCloud ? 'Upgrade plan' : 'Sign up'}
-                </Button>
-
-                <Button
-                    fullWidthMobile
-                    external={!isCloud}
-                    class="is-only-mobile-button u-margin-block-start-32"
                     href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}>
                     {isCloud ? 'Upgrade plan' : 'Sign up'}
                 </Button>
             </div>
         </div>
-    </Card>
+    </Card.Base>
 </div>
 
 <style>

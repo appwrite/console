@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     import Code from '$lib/components/code.svelte';
     import Modal from '$lib/components/modal.svelte';
@@ -11,10 +11,10 @@
     export let webhook: Models.Webhook;
     export let showUpdateButton: boolean = true;
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     $: webhookPath = webhook
-        ? `${base}/project-${$page.params.region}-${projectId}/settings/webhooks/` +
+        ? `${base}/project-${page.params.region}-${projectId}/settings/webhooks/` +
           (webhook['$id'] ?? '')
         : '';
 
@@ -24,11 +24,11 @@
     $: iconClass = enabled ? 'icon-check-circle' : 'icon-exclamation-circle';
 </script>
 
-<Modal title="Webhook error" headerDivider={false} bind:show size="big">
+<Modal title="Webhook error" bind:show>
     <div class="box u-flex-vertical u-gap-24">
         <div class="u-inline-flex u-cross-center u-gap-8">
             <p class="u-stretch">
-                <span class={`${iconClass} u-font-size-20`} aria-hidden="true" {style} />
+                <span class={`${iconClass} u-font-size-20`} aria-hidden="true" {style}></span>
                 <span>Webhook {webhook.enabled ? 'enabled' : 'disabled'}</span>
             </p>
 

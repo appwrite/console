@@ -1,21 +1,6 @@
 <script lang="ts">
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
-    import {
-        Table,
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
-    import {
-        CardGrid,
-        Heading,
-        Empty,
-        PaginationInline,
-        EmptySearch,
-        Alert
-    } from '$lib/components';
+    import { CardGrid, Empty, PaginationInline, EmptySearch } from '$lib/components';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -26,7 +11,9 @@
     import { Button, Form } from '$lib/elements/forms';
     import UserTargetsModal from '../userTargetsModal.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { page } from '$app/stores';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Alert, Icon, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     export let message: Models.Message & { data: Record<string, unknown> };
     export let selectedTargetsById: Record<string, Models.Target>;
@@ -58,15 +45,15 @@
         try {
             if (message.providerType == MessagingProviderType.Email) {
                 await sdk
-                    .forProject($page.params.region, $page.params.project)
+                    .forProject(page.params.region, page.params.project)
                     .messaging.updateEmail(message.$id, undefined, undefined, targetIds);
             } else if (message.providerType == MessagingProviderType.Sms) {
                 await sdk
-                    .forProject($page.params.region, $page.params.project)
+                    .forProject(page.params.region, page.params.project)
                     .messaging.updateSms(message.$id, undefined, undefined, targetIds);
             } else if (message.providerType == MessagingProviderType.Push) {
                 await sdk
-                    .forProject($page.params.region, $page.params.project)
+                    .forProject(page.params.region, page.params.project)
                     .messaging.updatePush(message.$id, undefined, undefined, targetIds);
             }
             await invalidate(Dependencies.MESSAGING_MESSAGE);
@@ -124,7 +111,7 @@
 
 <Form onSubmit={update}>
     <CardGrid hideFooter={!isDraft}>
-        <Heading tag="h6" size="7" id="variables">Targets</Heading>
+        <Typography.Title size="s">Targets</Typography.Title>
         <svelte:fragment slot="aside">
             {@const sum = targetIds.length || Object.values(recipients).length}
             {@const dataSource =
@@ -135,113 +122,82 @@
             {#if hasDeletedUsers}
                 <div class:u-padding-block-end-16={dataSource.length}>
                     {#if hasDeletedUsers && !dataSource.length}
-                        <Alert type="info">
-                            <svelte:fragment slot="title"
-                                >There are no targets to show</svelte:fragment>
-                            This message was sent to users who are no longer available, so their information
-                            cannot be displayed.
-                        </Alert>
+                        <Alert.Inline status="info" title="There are no targets to show">
+                            This message was sent to users who are no longer available, so their
+                            information cannot be displayed.
+                        </Alert.Inline>
                     {:else}
-                        <Alert
-                            type="info"
+                        <Alert.Inline
+                            status="info"
                             dismissible={dataSource.length > 0}
                             on:dismiss={() => (hasDeletedUsers = false)}>
                             This message was sent to users who are no longer available, so their
                             information cannot be displayed.
-                        </Alert>
+                        </Alert.Inline>
                     {/if}
                 </div>
             {/if}
 
             {#if sum && dataSource.length}
-                <div class="u-flex u-cross-center u-main-space-between">
-                    <div class="u-width-full-line u-flex u-main-space-between">
-                        <span class="eyebrow-heading-3">Target</span>
-
-                        {#if recipientsAvailable}
-                            <span class="eyebrow-heading-3">Identifier</span>
-
-                            <!-- empty header -->
-                            <span class="eyebrow-heading-3" />
-                        {/if}
-                    </div>
-                    {#if isDraft}
-                        <Button
-                            text
-                            noMargin
-                            on:click={() => {
-                                showTargets = true;
-                            }}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Add</span>
-                        </Button>
-                    {/if}
-                </div>
+                {#if isDraft}
+                    <Layout.Stack direction="row-reverse">
+                        <div>
+                            <Button secondary on:click={() => (showTargets = true)}>
+                                <Icon icon={IconPlus} slot="start" size="s" />
+                                Add
+                            </Button>
+                        </div>
+                    </Layout.Stack>
+                {/if}
 
                 <div class="u-flex u-flex-vertical u-gap-24">
-                    <Table noMargin noStyles>
-                        <TableHeader>
-                            <TableCellHead style="padding: 0" />
-
-                            {#if recipientsAvailable}
-                                <TableCellHead style="padding: 0" />
-                            {/if}
-
-                            <TableCellHead width={25} style="padding: 0" />
-                        </TableHeader>
-                        <TableBody>
-                            <TableRow />
-                            <!-- dataSource contains objects with $id, providerType, name & identifier -->
-                            {#each dataSource.slice(offset, offset + limit) as source (source['$id'])}
-                                <TableRow>
-                                    <TableCell title="Target">
-                                        <div class="u-flex u-cross-center">
-                                            <span class="title">
-                                                <span class="u-line-height-1-5">
-                                                    <span class="body-text-2" data-private>
-                                                        {#if source['providerType'] === MessagingProviderType.Push}
-                                                            {source['name']}
-                                                        {:else}
-                                                            {source['identifier']}
-                                                        {/if}
-                                                    </span>
-                                                </span></span>
-                                        </div>
-                                    </TableCell>
-                                    {#if recipientsAvailable}
-                                        <TableCell title="Identifier">
-                                            <span class="body-text-2" data-private>
-                                                {source['name']}
-                                            </span>
-                                        </TableCell>
+                    <Table.Root
+                        let:root
+                        columns={[
+                            { id: 'target' },
+                            { id: 'identifier', hide: !recipientsAvailable },
+                            { id: 'actions', width: 40 }
+                        ]}>
+                        <svelte:fragment slot="header" let:root>
+                            <Table.Header.Cell column="target" {root}>Target</Table.Header.Cell>
+                            <Table.Header.Cell column="identifier" {root}
+                                >Identifier</Table.Header.Cell>
+                            <Table.Header.Cell column="actions" {root} />
+                        </svelte:fragment>
+                        {#each dataSource.slice(offset, offset + limit) as source (source['$id'])}
+                            <Table.Row.Base {root}>
+                                <Table.Cell column="target" {root}>
+                                    {#if source['providerType'] === MessagingProviderType.Push}
+                                        {source['name']}
+                                    {:else}
+                                        {source['identifier']}
                                     {/if}
-
-                                    <TableCell title="Remove">
-                                        {#if isDraft}
-                                            <div
-                                                class="u-flex u-main-end"
-                                                style="--p-button-size: 1.25rem">
-                                                <Button
-                                                    text
-                                                    class="is-only-icon"
-                                                    ariaLabel="delete"
-                                                    disabled={!isDraft}
-                                                    on:click={() => removeTarget(source['$id'])}>
-                                                    <span
-                                                        class="icon-x u-font-size-20"
-                                                        aria-hidden="true" />
-                                                </Button>
-                                            </div>
-                                        {/if}
-                                    </TableCell>
-                                </TableRow>
-                            {/each}
-                        </TableBody>
-                    </Table>
-                    <div class="u-flex u-main-space-between">
-                        <p class="text">Total targets: {sum}</p>
-                        <PaginationInline {sum} {limit} bind:offset />
-                    </div>
+                                </Table.Cell>
+                                <Table.Cell column="identifier" {root}>
+                                    {source['name']}
+                                </Table.Cell>
+                                <Table.Cell column="actions" {root}>
+                                    {#if isDraft}
+                                        <Button
+                                            text
+                                            class="is-only-icon"
+                                            ariaLabel="delete"
+                                            disabled={!isDraft}
+                                            on:click={() => removeTarget(source['$id'])}>
+                                            <span class="icon-x u-font-size-20" aria-hidden="true"
+                                            ></span>
+                                        </Button>
+                                    {/if}
+                                </Table.Cell>
+                            </Table.Row.Base>
+                        {/each}
+                    </Table.Root>
+                    {#if sum > limit}
+                        <div class="u-flex u-main-space-between">
+                            <p class="text">Total targets: {sum}</p>
+                            <PaginationInline total={sum} {limit} bind:offset />
+                        </div>
+                    {/if}
                 </div>
             {:else if isDraft}
                 <Empty on:click={() => (showTargets = true)}>Add a target</Empty>
@@ -251,10 +207,7 @@
                         No targets have been selected.
                         <p>
                             Need a hand? Check out our <Button
-                                link
-                                external
-                                href="https://appwrite.io/docs/products/messaging/targets"
-                                text>
+                                href="https://appwrite.io/docs/products/messaging/targets">
                                 documentation</Button
                             >.
                         </p>

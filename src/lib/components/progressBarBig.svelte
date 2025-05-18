@@ -1,5 +1,6 @@
 <script lang="ts">
     import { ProgressBar, type ProgressbarData } from '$lib/components/progressbar';
+    import { Badge, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let currentValue: string | undefined = undefined;
     export let currentUnit: string | undefined = undefined;
@@ -16,22 +17,25 @@
 <section class="progress-bar">
     {#if currentValue !== undefined && currentUnit !== undefined && progress !== undefined}
         <div class="u-flex u-flex-vertical">
-            <div class="u-flex u-main-space-between">
-                <p>
-                    <span class="heading-level-4">{currentValue}</span>
-                    <span class="body-text-1 u-bold">{currentUnit}</span>
-                </p>
+            <Layout.Stack direction="row" alignItems="center">
+                <Layout.Stack gap="s" direction="row" alignItems="baseline">
+                    <Typography.Title>
+                        {currentValue}
+                    </Typography.Title>
+                    <Typography.Text>{currentUnit}</Typography.Text>
+                    {#if maxValue !== undefined}
+                        <Typography.Text color="--fgcolor-neutral-tertiary">
+                            {maxValue}
+                            {maxUnit ? maxUnit : ''}
+                        </Typography.Text>
+                    {/if}
+                </Layout.Stack>
                 {#if progressMax !== undefined}
-                    <p class="heading-level-4">{progress}%</p>
+                    <div>
+                        <Badge variant="secondary" size="xs" content={`${progress}%`} />
+                    </div>
                 {/if}
-            </div>
-
-            {#if maxValue !== undefined}
-                <p class="body-text-2">
-                    {maxValue}
-                    {maxUnit ? maxUnit : ''}
-                </p>
-            {/if}
+            </Layout.Stack>
         </div>
     {/if}
     {#if showBar && progressBarData.length > 0}

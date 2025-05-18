@@ -5,7 +5,7 @@
     const maximum = 0.994;
     const settleTime = 700;
     const intervalTime = 700;
-    const displayThresholdMs = 150;
+    const displayThresholdMs = 2000;
     const stepSizes = [0, 0.005, 0.01, 0.02];
 
     let running: boolean = false;
@@ -101,7 +101,7 @@
 </script>
 
 {#if width}
-    <div class="progress-bar" class:progress-bar-hiding={completed} style={barStyle} />
+    <div class="progress-bar" class:progress-bar-hiding={completed} style={barStyle}></div>
 {/if}
 
 <style>
@@ -111,7 +111,7 @@
         left: 0;
         height: 2px;
         transition: width 0.2s ease-in-out;
-        z-index: 5;
+        z-index: 15;
         background: hsl(var(--color-primary-200));
     }
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { FormItem, Helper } from '.';
-    import type { FormItemTag } from './formItem.svelte';
+    import { Selector } from '@appwrite.io/pink-svelte';
+    import { Helper } from '.';
 
     interface $$Props extends Partial<HTMLLabelElement> {
         id: string;
@@ -10,18 +10,18 @@
         disabled?: boolean;
         element?: HTMLInputElement | undefined;
         indeterminate?: boolean;
-        wrapperTag?: FormItemTag;
-        size?: 'small' | 'medium';
+        size?: 's' | 'm';
+        description?: string;
     }
 
-    export let id: string;
+    export let id: string = '';
     export let label: string | undefined = undefined;
     export let checked = false;
     export let required = false;
     export let disabled = false;
     export let element: HTMLInputElement | undefined = undefined;
-    export let wrapperTag: FormItemTag = 'li';
-    export let size: $$Props['size'] = 'medium';
+    export let size: $$Props['size'] = 's';
+    export let description = '';
     let error: string;
 
     const handleInvalid = (event: Event) => {
@@ -38,30 +38,27 @@
     }
 </script>
 
-<FormItem tag={wrapperTag}>
-    <label class="choice-item" for={id}>
+<div>
+    <div class="choice-item">
         <div class="input-text-wrapper">
-            <input
+            <Selector.Checkbox
+                bind:checked
+                {...$$restProps}
                 {id}
                 {disabled}
+                {size}
+                {label}
                 {required}
-                {...$$restProps}
-                class:is-small={size === 'small'}
-                type="checkbox"
-                bind:this={element}
-                bind:checked
+                {description}
                 on:invalid={handleInvalid}
                 on:click
                 on:change />
         </div>
         <div class="choice-item-content">
-            {#if label}
-                <div class="choice-item-title">{label}</div>
-            {/if}
             <slot name="description" />
         </div>
-    </label>
+    </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
     {/if}
-</FormItem>
+</div>

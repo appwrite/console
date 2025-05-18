@@ -2,7 +2,7 @@
     import { Alert } from '$lib/components';
     import { onMount } from 'svelte';
     import Form from '$lib/elements/forms/form.svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { clickOnEnter } from '$lib/helpers/a11y';
 
     export let show = false;
@@ -23,7 +23,7 @@
 
     function handleBLur(event: MouseEvent) {
         if (event.target === backdrop) {
-            trackEvent('click_close_modal', {
+            trackEvent(Click.ModalCloseClick, {
                 from: 'backdrop'
             });
             closeModal();
@@ -38,14 +38,14 @@
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
             event.preventDefault();
-            trackEvent('click_close_modal', {
+            trackEvent(Click.ModalCloseClick, {
                 from: 'escape'
             });
             closeModal();
         }
     }
 
-    $: if (backdrop) {
+    $: if (backdrop && show && !document.body.contains(backdrop)) {
         document.body.appendChild(backdrop);
     }
 
@@ -82,7 +82,7 @@
                                     class:is-warning={state === 'warning'}
                                     class:is-danger={state === 'error'}
                                     class:is-info={state === 'info'}>
-                                    <span class={`icon-${icon}`} aria-hidden="true" />
+                                    <span class={`icon-${icon}`} aria-hidden="true"></span>
                                 </div>
                             {/if}
 
@@ -100,11 +100,11 @@
                                 aria-label="Close Modal"
                                 title="Close Modal"
                                 on:click={() =>
-                                    trackEvent('click_close_modal', {
+                                    trackEvent(Click.ModalCloseClick, {
                                         from: 'button'
                                     })}
                                 on:click={closeModal}>
-                                <span class="icon-x" aria-hidden="true" />
+                                <span class="icon-x" aria-hidden="true"></span>
                             </button>
                         {/if}
                     </div>
@@ -149,8 +149,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        :global() {
-            background-color: hsl(240 5% 8% / 0.6);
+        background-color: hsl(240 5% 8% / 0.6);
+
+        & :global(.modal-form) {
+            position: unset;
         }
     }
 </style>

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, InputSwitch } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -9,9 +9,11 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import Provider, { Providers } from '../../provider.svelte';
-    import ProviderType from '../../providerType.svelte';
     import { provider as providerData } from './store';
-    import { page } from '$app/stores';
+    import { Typography } from '@appwrite.io/pink-svelte';
+    import { getProviderText } from '../../helper';
+    import { page } from '$app/state';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     let enabled: boolean = null;
 
@@ -26,32 +28,32 @@
             switch ($providerData.provider) {
                 case Providers.Twilio:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateTwilioProvider(providerId, undefined, enabled);
                     break;
                 case Providers.Msg91:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateMsg91Provider(providerId, undefined, enabled);
                     break;
                 case Providers.Telesign:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateTelesignProvider(providerId, undefined, enabled);
                     break;
                 case Providers.Textmagic:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateTextmagicProvider(providerId, undefined, enabled);
                     break;
                 case Providers.Vonage:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateVonageProvider(providerId, undefined, enabled);
                     break;
                 case Providers.Mailgun:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateMailgunProvider(
                             providerId,
                             undefined,
@@ -63,12 +65,12 @@
                     break;
                 case Providers.Sendgrid:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateSendgridProvider(providerId, undefined, enabled);
                     break;
                 case Providers.SMTP:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateSmtpProvider(
                             providerId,
                             undefined,
@@ -88,12 +90,12 @@
                     break;
                 case Providers.FCM:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateFcmProvider(providerId, undefined, enabled);
                     break;
                 case Providers.APNS:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.updateApnsProvider(providerId, undefined, enabled);
                     break;
             }
@@ -118,7 +120,7 @@
 <CardGrid>
     <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16" data-private>
         <Provider provider={$providerData.provider} size="l">
-            <Heading tag="h6" size="7">{$providerData.name}</Heading>
+            <Typography.Title size="s">{$providerData.name}</Typography.Title>
         </Provider>
     </div>
     <svelte:fragment slot="aside">
@@ -131,10 +133,10 @@
                         bind:value={enabled} />
                 </ul>
                 <div>
-                    <p class="title">
-                        Provider: <Provider noIcon provider={$providerData.provider} />
-                    </p>
-                    <p class="title">Type: <ProviderType noIcon type={$providerData.type} /></p>
+                    <Layout.Stack direction="row" gap="xs">
+                        <span>Provider:</span><Provider noIcon provider={$providerData.provider} />
+                    </Layout.Stack>
+                    <p class="title">Type: {getProviderText($providerData.type)}</p>
                     <p>Created: {toLocaleDateTime($providerData.$createdAt)}</p>
                 </div>
             </div>

@@ -1,15 +1,7 @@
 <script lang="ts">
     import { Copy } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import {
-        Table,
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
+    import { Table } from '@appwrite.io/pink-svelte';
     import { domain } from './store';
     import { getProjectEndpoint } from '$lib/helpers/project';
 
@@ -20,27 +12,27 @@
     $: target = new URL(getProjectEndpoint()).hostname;
 </script>
 
-<Table noMargin noStyles style="--p-table-bg-color: var(--transparent);">
-    <TableHeader>
-        <TableCellHead>Type</TableCellHead>
-        <TableCellHead>Name</TableCellHead>
-        <TableCellHead>Value</TableCellHead>
-        <TableCellHead width={50} />
-    </TableHeader>
-    <TableBody>
-        <TableRow>
-            <TableCellText title="Type">CNAME</TableCellText>
-            <TableCellText title="Name">{cnameValue}</TableCellText>
-            <TableCellText title="Value">
-                {target}
-            </TableCellText>
-            <TableCell>
-                <Button text>
-                    <Copy value={target}>
-                        <span class="icon-duplicate" aria-hidden="true" />
-                    </Copy>
-                </Button>
-            </TableCell>
-        </TableRow>
-    </TableBody>
-</Table>
+<Table.Root
+    let:root
+    columns={[{ id: 'type' }, { id: 'name' }, { id: 'value' }, { id: 'action', width: 40 }]}>
+    <svelte:fragment slot="header" let:root>
+        <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
+        <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+        <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
+        <Table.Header.Cell column="action" {root} />
+    </svelte:fragment>
+    <Table.Row.Base {root}>
+        <Table.Cell column="type" {root}>CNAME</Table.Cell>
+        <Table.Cell column="name" {root}>{cnameValue}</Table.Cell>
+        <Table.Cell column="value" {root}>
+            {target}
+        </Table.Cell>
+        <Table.Cell column="action" {root}>
+            <Button text>
+                <Copy value={target}>
+                    <span class="icon-duplicate" aria-hidden="true"></span>
+                </Copy>
+            </Button>
+        </Table.Cell>
+    </Table.Row.Base>
+</Table.Root>

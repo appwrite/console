@@ -1,8 +1,8 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -12,7 +12,7 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { topic } from '../store';
 
-    const topicId = $page.params.topic;
+    const topicId = page.params.topic;
 
     let arePermsDisabled = true;
     let permissions: string[] = [];
@@ -24,7 +24,7 @@
     async function updatePermissions() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .messaging.updateTopic(topicId, undefined, permissions);
             await invalidate(Dependencies.MESSAGING_TOPIC);
             addNotification({
@@ -46,7 +46,7 @@
 
 <Form onSubmit={updatePermissions}>
     <CardGrid>
-        <Heading tag="h6" size="7" id="permissions">Subscription access</Heading>
+        <svelte:fragment slot="title">Subscription access</svelte:fragment>
         <p>
             Choose who can subscribe to this topic using the client API. Learn more about <a
                 href="https://appwrite.io/docs/advanced/platform/permissions"

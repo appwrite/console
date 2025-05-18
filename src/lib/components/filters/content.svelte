@@ -5,15 +5,16 @@
         InputSelect,
         InputText,
         InputTags,
-        FormList,
         InputSelectCheckbox,
         InputDateTime
     } from '$lib/elements/forms';
     import { createEventDispatcher, onMount } from 'svelte';
-    import { tags, operators, addFilter, queries } from './store';
+    import { operators, addFilter, queries, type TagValue } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { TagList } from '.';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     // We cast to any to not cause type errors in the input components
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
@@ -41,6 +42,8 @@
 
     $: isDisabled = !operator;
 
+    let localTags: TagValue[] = [];
+
     onMount(() => {
         value = column?.array ? [] : null;
         if (column?.type === 'datetime') {
@@ -64,12 +67,12 @@
         clear: void;
         apply: { applied: number };
     }>();
-    dispatch('apply', { applied: $tags.length });
+    dispatch('apply', { applied: localTags.length });
 </script>
 
 <div>
     <form on:submit|preventDefault={addFilterAndReset}>
-        <ul class="selects u-flex u-gap-8 u-margin-block-start-16 u-flex-vertical-mobile">
+        <Layout.Stack gap="s" direction="row" alignItems="flex-start">
             <InputSelect
                 id="column"
                 options={$columns
@@ -86,30 +89,27 @@
                 options={operatorsForColumn}
                 placeholder="Select operator"
                 bind:value={operatorKey} />
-        </ul>
+        </Layout.Stack>
         {#if column && operator && !operator?.hideInput}
             {#if column?.array}
-                <FormList class="u-margin-block-start-8">
-                    {#if column.format === 'enum'}
-                        <InputSelectCheckbox
-                            name="value"
-                            bind:tags={arrayValues}
-                            placeholder="Select value"
-                            options={column?.elements?.map((e) => ({
-                                label: e?.label ?? e,
-                                value: e?.value ?? e,
-                                checked: arrayValues.includes(e?.value ?? e)
-                            }))}>
-                        </InputSelectCheckbox>
-                    {:else}
-                        <InputTags
-                            label="values"
-                            showLabel={false}
-                            id="value"
-                            bind:tags={arrayValues}
-                            placeholder="Enter values" />
-                    {/if}
-                </FormList>
+                {#if column.format === 'enum'}
+                    <InputSelectCheckbox
+                        name="value"
+                        bind:tags={arrayValues}
+                        placeholder="Select value"
+                        options={column?.elements?.map((e) => ({
+                            label: e?.label ?? e,
+                            value: e?.value ?? e,
+                            checked: arrayValues.includes(e?.value ?? e)
+                        }))}>
+                    </InputSelectCheckbox>
+                {:else}
+                    <InputTags
+                        label="values"
+                        id="value"
+                        bind:tags={arrayValues}
+                        placeholder="Enter values" />
+                {/if}
             {:else}
                 <ul class="u-margin-block-start-8">
                     {#if column.format === 'enum'}
@@ -120,9 +120,7 @@
                             options={column?.elements?.map((e) => ({
                                 label: e?.label ?? e,
                                 value: e?.value ?? e
-                            }))}
-                            label="Value"
-                            showLabel={false} />
+                            }))} />
                     {:else if column.type === 'integer' || column.type === 'double'}
                         <InputNumber id="value" bind:value placeholder="Enter value" />
                     {:else if column.type === 'boolean'}
@@ -137,12 +135,7 @@
                             bind:value />
                     {:else if column.type === 'datetime'}
                         {#key value}
-                            <InputDateTime
-                                id="value"
-                                bind:value
-                                label="value"
-                                showLabel={false}
-                                step={60} />
+                            <InputDateTime id="value" bind:value step={60} />
                         {/key}
                     {:else}
                         <InputText id="value" bind:value placeholder="Enter value" />
@@ -151,8 +144,8 @@
             {/if}
         {/if}
         {#if !singleCondition}
-            <Button text disabled={isDisabled} class="u-margin-block-start-4" noMargin submit>
-                <i class="icon-plus" />
+            <Button text disabled={isDisabled} class="u-margin-block-start-4" submit>
+                <Icon icon={IconPlus} slot="start" size="s" />
                 Add condition
             </Button>
         {/if}
@@ -160,21 +153,12 @@
 
     {#if !singleCondition}
         <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
-            <TagList />
+            <TagList
+                tags={localTags}
+                on:remove={(e) => {
+                    queries.removeFilter(e.detail);
+                    queries.apply();
+                }} />
         </ul>
     {/if}
 </div>
-
-<style lang="scss">
-    .selects {
-        :global(> *) {
-            flex: 1;
-        }
-    }
-
-    .tags {
-        :global(b) {
-            font-weight: bold;
-        }
-    }
-</style>

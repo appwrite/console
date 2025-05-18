@@ -1,14 +1,14 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
-    import { page } from '$app/stores';
+    import { Dialog, Layout } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
+    import { page } from '$app/state';
 
     export let show = false;
     export let message: Models.Message & { data: Record<string, unknown> };
@@ -31,7 +31,7 @@
         try {
             if (message.providerType == MessagingProviderType.Email) {
                 await sdk
-                    .forProject($page.params.region, $page.params.project)
+                    .forProject(page.params.region, page.params.project)
                     .messaging.updateEmail(
                         message.$id,
                         undefined,
@@ -43,7 +43,7 @@
                     );
             } else if (message.providerType == MessagingProviderType.Sms) {
                 await sdk
-                    .forProject($page.params.region, $page.params.project)
+                    .forProject(page.params.region, page.params.project)
                     .messaging.updateSms(
                         message.$id,
                         undefined,
@@ -54,7 +54,7 @@
                     );
             } else if (message.providerType == MessagingProviderType.Push) {
                 await sdk
-                    .forProject($page.params.region, $page.params.project)
+                    .forProject(page.params.region, page.params.project)
                     .messaging.updatePush(
                         message.$id,
                         undefined,
@@ -84,6 +84,7 @@
             });
             show = false;
         } catch (error) {
+            show = false;
             addNotification({
                 message: error.message,
                 type: 'error'
@@ -95,7 +96,7 @@
     };
 </script>
 
-<Modal title="Send message" bind:show onSubmit={update} headerDivider={false} size="small">
+<Dialog title="Send message" bind:open={show}>
     <div class="u-flex-vertical u-gap-16">
         <p data-private>
             You are about to send a message to an estimated <span class="u-bold"
@@ -105,7 +106,9 @@
         <p class="u-bold">This action is irreversible.</p>
     </div>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Send</Button>
+        <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
+            <Button text on:click={() => (show = false)}>Cancel</Button>
+            <Button on:click={update}>Send</Button>
+        </Layout.Stack>
     </svelte:fragment>
-</Modal>
+</Dialog>

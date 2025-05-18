@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
@@ -8,6 +8,8 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { hideNotification } from '$lib/helpers/notifications';
     import { backupsBannerId, showPolicyAlert } from '$lib/stores/database';
+    import { IconX } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     function handleClose() {
         showPolicyAlert.set(false);
@@ -15,7 +17,7 @@
     }
 </script>
 
-{#if $showPolicyAlert && isCloud && $organization?.$id && $page.url.pathname.match(/\/databases\/database-[^/]+$/)}
+{#if $showPolicyAlert && isCloud && $organization?.$id && page.url.pathname.match(/\/databases\/database-[^/]+$/)}
     {@const isFreePlan = $organization?.billingPlan === BillingPlan.FREE}
 
     {@const subtitle = isFreePlan
@@ -23,7 +25,7 @@
         : 'Protect your data by quickly adding a backup policy'}
 
     {@const ctaText = isFreePlan ? 'Upgrade plan' : 'Create policy'}
-    {@const ctaURL = isFreePlan ? $upgradeURL : `${$page.url.pathname}/backups`}
+    {@const ctaURL = isFreePlan ? $upgradeURL : `${page.url.pathname}/backups`}
 
     <HeaderAlert type="warning" title="Your database has no backup policy">
         <svelte:fragment>{subtitle}</svelte:fragment>
@@ -38,7 +40,7 @@
                 </Button>
 
                 <Button text on:click={handleClose} event="backup_banner_close">
-                    <span class="icon-x" aria-hidden="true"></span>
+                    <Icon icon={IconX} slot="start" size="s" />
                 </Button>
             </div>
         </svelte:fragment>

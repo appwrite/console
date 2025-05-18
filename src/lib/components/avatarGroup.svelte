@@ -1,44 +1,32 @@
 <script lang="ts">
+    import { AvatarGroup, Avatar, Icon } from '@appwrite.io/pink-svelte';
     import AvatarInitials from './avatarInitials.svelte';
+    import type { ComponentProps, ComponentType } from 'svelte';
 
     export let avatars: string[] = [];
-    export let icons: string[] = [];
+    export let icons: ComponentType[] = [];
     export let total = avatars.length;
-    export let size = 40;
-    export let avatarSize: keyof typeof Sizes = 'medium';
-    export let bordered = false;
-    export let color = '';
-
-    let classes = '';
-    export { classes as class };
-
-    enum Sizes {
-        xsmall = 'is-size-x-small',
-        small = 'is-size-small',
-        medium = '',
-        large = 'is-size-large',
-        xlarge = 'is-size-x-large'
-    }
+    export let size: ComponentProps<Avatar>['size'] = 'm';
 </script>
 
-<ul class="avatars-group {classes}" class:is-with-border={bordered}>
+<AvatarGroup>
     {#each avatars as name, index}
         {#if index < 2}
-            <li class="avatars-group-item">
-                <AvatarInitials {size} {name} />
-            </li>
+            <AvatarInitials {size} {name} />
         {/if}
     {/each}
 
     {#each icons as icon}
-        <li class="avatars-group-item">
-            <span class="avatar {Sizes[avatarSize]} {color}"><span class={`icon-${icon}`} /></span>
-        </li>
+        <Avatar {size}>
+            <Icon {icon} size="s" />
+        </Avatar>
     {/each}
 
     {#if total > 2}
-        <li class="avatars-group-item">
-            <div class="avatar {Sizes[avatarSize]} {color}">+{total - 2}</div>
-        </li>
+        <Avatar {size}>
+            <span style:font-size="10px">
+                +{total - 2}
+            </span>
+        </Avatar>
     {/if}
-</ul>
+</AvatarGroup>

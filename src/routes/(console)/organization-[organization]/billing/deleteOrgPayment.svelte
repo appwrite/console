@@ -1,12 +1,12 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan, Dependencies } from '$lib/constants';
+    import Confirm from '$lib/components/confirm.svelte';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let showDelete = false;
     export let isBackup = false;
@@ -55,37 +55,22 @@
 </script>
 
 {#if disabled}
-    <Modal
-        bind:show={showDelete}
-        icon="exclamation"
-        state="warning"
-        headerDivider={false}
-        title="Unable to delete payment method">
-        <p data-private>
+    <Confirm title="Unable to delete payment method" bind:open={showDelete} canDelete={false}>
+        <Typography.Text>
             The {isBackup ? 'backup' : 'default'} payment method cannot be removed as
             <b>{$organization?.name}</b>
             has an upcoming invoice. To proceed, set a {isBackup ? 'default' : 'backup'} or add a new
             {isBackup ? 'backup' : 'default'} payment method.
-        </p>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        </svelte:fragment>
-    </Modal>
+        </Typography.Text>
+    </Confirm>
 {:else}
-    <Modal
-        bind:show={showDelete}
-        bind:error
+    <Confirm
         onSubmit={isBackup ? removeBackuptMethod : removeDefaultMethod}
-        icon="exclamation"
-        state="warning"
-        headerDivider={false}
-        title="Remove payment method">
-        <p data-private>
+        title="Remove payment method"
+        bind:open={showDelete}
+        bind:error>
+        <Typography.Text>
             Are you sure you want to remove the payment method from <b>{$organization?.name}</b>?
-        </p>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button secondary submit>Remove</Button>
-        </svelte:fragment>
-    </Modal>
+        </Typography.Text>
+    </Confirm>
 {/if}

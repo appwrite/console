@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { tooltip } from '$lib/actions/tooltip';
     import type { ProgressbarData, ProgressbarProps } from '$lib/components';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     type $$Props = ProgressbarProps;
 
@@ -22,19 +22,19 @@
 
 <section class="progressbar__container">
     {#each $$props.data as item}
-        <div
-            class="progressbar__content"
-            style:background-color={item.color}
-            style:width={`${(item.size / maxSize) * 100}%`}
-            use:tooltip={{
-                disabled: !item.tooltip,
-                allowHTML: true,
-                content: `<span class="u-bold">${item.tooltip.title}</span> ${item.tooltip.label}`
-            }}>
-        </div>
+        <Tooltip disabled={!item.tooltip}>
+            <div
+                class="progressbar__content"
+                style:background-color={item.color}
+                style:width={`${(item.size / maxSize) * 100}%`}>
+            </div>
+            <div slot="tooltip">
+                <span class="u-bold">{item.tooltip.title}</span> ${item.tooltip.label}
+            </div>
+        </Tooltip>
     {/each}
     {#if remainder > 0}
-        <div class="progressbar__content" style:width={`${(remainder / maxSize) * 100}%`} />
+        <div class="progressbar__content" style:width={`${(remainder / maxSize) * 100}%`}></div>
     {/if}
 </section>
 

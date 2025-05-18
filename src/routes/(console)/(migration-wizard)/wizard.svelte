@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidateAll } from '$app/navigation';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import Wizard from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
+    import Wizard from '$lib/layout/wizardWithSteps.svelte';
     import { migrationFormToResources } from '$lib/stores/migration';
     import { wizard } from '$lib/stores/wizard';
     import { onDestroy } from 'svelte';

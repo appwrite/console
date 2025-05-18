@@ -1,67 +1,60 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { page } from '$app/state';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import {
         CardContainer,
         Empty,
+        EmptySearch,
         GridItem1,
         Id,
         PaginationWithLimit,
+        SearchQuery,
         SvgIcon
     } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import { isServiceLimited } from '$lib/stores/billing';
-    import { templatesList } from '$lib/stores/templates';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import Initial from '$lib/wizards/functions/cover.svelte';
-    import CreateTemplate from '$lib/wizards/functions/createTemplate.svelte';
-    import {
-        templateConfig as templateConfigStore,
-        template as templateStore
-    } from '$lib/wizards/functions/store.js';
+
     import { parseExpression } from 'cron-parser';
     import { onMount } from 'svelte';
-    import { functionsList } from './store';
     import { canWriteFunctions } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
+    import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconClock, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { goto } from '$app/navigation';
+    import { Button } from '$lib/elements/forms';
+    import Avatar from '$lib/components/avatar.svelte';
 
     export let data;
 
     let offset = 0;
 
-    const project = $page.params.project;
+    const project = page.params.project;
 
     onMount(async () => {
-        const from = $page.url.searchParams.get('from');
+        const from = page.url.searchParams.get('from');
         if (from === 'github') {
-            const to = $page.url.searchParams.get('to');
+            const to = page.url.searchParams.get('to');
             switch (to) {
                 case 'template': {
-                    const step = $page.url.searchParams.get('step');
-                    const template = $page.url.searchParams.get('template');
-                    const templateConfig = $page.url.searchParams.get('templateConfig');
-                    templateStore.set(
-                        (await $templatesList).templates.find((item) => item.id === template)
+                    const template = page.url.searchParams.get('template');
+                    const templateConfig = page.url.searchParams.get('templateConfig');
+                    goto(
+                        `${base}/project-${page.params.region}-${project}/functions/create-function/template-${template}?templateConfig=${templateConfig}`
                     );
-                    templateConfigStore.set(JSON.parse(templateConfig));
-                    wizard.start(CreateTemplate);
-                    wizard.setStep(Number(step));
                     break;
                 }
                 case 'cover':
-                    openWizard();
+                    goto(
+                        `${base}/project-${page.params.region}-${project}/functions/create-function`
+                    );
                     break;
             }
         }
     });
-
-    function openWizard() {
-        wizard.showCover(Initial);
-    }
 
     function getNextScheduledExecution(func: Models.Function) {
         return toLocaleDateTime(parseExpression(func.schedule, { utc: true }).next().toString());
@@ -70,13 +63,14 @@
     $: $registerCommands([
         {
             label: 'Create function',
-            callback: openWizard,
+            callback: () =>
+                goto(`${base}/project-${page.params.region}-${project}/functions/create-function`),
             keys: ['c'],
             disabled:
                 $wizard.show ||
-                isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total) ||
+                isServiceLimited('functions', $organization?.billingPlan, data.functions?.total) ||
                 !$canWriteFunctions,
-            icon: 'plus',
+            icon: IconPlus,
             group: 'functions'
         }
     ]);
@@ -85,43 +79,43 @@
 </script>
 
 <Container>
-    <ContainerHeader
-        title="Functions"
-        buttonText={$canWriteFunctions ? 'Create function' : ''}
-        buttonEvent="create_function"
-        buttonMethod={openWizard}
-        total={data.functions.total} />
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <SearchQuery placeholder="Search by name or ID" />
+
+        <Button href={`${base}/project-${page.params.region}-${project}/functions/create-function`}>
+            <Icon icon={IconPlus} slot="start" />
+            Create function
+        </Button>
+    </Layout.Stack>
 
     {#if data.functions.total}
         <CardContainer
             {offset}
-            showEmpty={$canWriteFunctions}
+            disableEmpty={!$canWriteFunctions}
             event="functions"
             total={data.functions.total}
-            on:click={openWizard}
-            service="functions">
-            {#each data.functions.functions as func}
+            service="functions"
+            on:click={() =>
+                goto(`${base}/project-${page.params.region}-${project}/functions/create-function`)}>
+            {#each data.functions.functions as func (func.$id)}
                 <GridItem1
-                    href={`${base}/project-${$page.params.region}-${project}/functions/function-${func.$id}`}>
+                    href={`${base}/project-${page.params.region}-${project}/functions/function-${func.$id}`}>
                     <svelte:fragment slot="title">
-                        <div class="u-flex u-gap-16 u-cross-center">
-                            <div class="avatar is-medium">
-                                <SvgIcon name={func.runtime.split('-')[0]}></SvgIcon>
-                            </div>
-                            <span class="text">{func.name}</span>
-                        </div>
+                        <Layout.Stack gap="l" alignItems="center" direction="row" inline>
+                            <Avatar alt={func.name} size="m">
+                                <SvgIcon name={func.runtime.split('-')[0]} />
+                            </Avatar>
+                            {func.name}
+                        </Layout.Stack>
                     </svelte:fragment>
                     <svelte:fragment slot="icons">
                         {#if func.schedule}
-                            <li>
-                                <span
-                                    class="icon-clock"
-                                    aria-hidden="true"
-                                    use:tooltip={{
-                                        content: `Next execution:
-                                        ${getNextScheduledExecution(func)}`
-                                    }} />
-                            </li>
+                            <Tooltip>
+                                <Icon icon={IconClock} size="s" />
+                                <span slot="tooltip"
+                                    >{`Next execution:
+                                        ${getNextScheduledExecution(func)}`}</span>
+                            </Tooltip>
                         {/if}
                     </svelte:fragment>
                     <Id value={func.$id} event="function">{func.$id}</Id>
@@ -137,12 +131,23 @@
             limit={data.limit}
             offset={data.offset}
             total={data.functions.total} />
+    {:else if data?.search}
+        <EmptySearch hidePages bind:search={data.search} target="functions">
+            <Button
+                secondary
+                href={`${base}/project-${page.params.region}-${page.params.project}/functions`}>
+                Clear search
+            </Button>
+        </EmptySearch>
     {:else}
         <Empty
             single
             allowCreate={$canWriteFunctions}
             href="https://appwrite.io/docs/products/functions"
             target="function"
-            on:click={openWizard} />
+            on:click={() =>
+                goto(
+                    `${base}/project-${page.params.region}-${project}/functions/create-function`
+                )} />
     {/if}
 </Container>

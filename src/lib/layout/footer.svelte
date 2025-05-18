@@ -1,96 +1,175 @@
 <script>
     import { isCloud } from '$lib/system';
     import { version } from '$routes/(console)/store';
+    import { IconCloud, IconDiscord, IconGithub } from '@appwrite.io/pink-icons-svelte';
+    import {
+        Layout,
+        Typography,
+        Link,
+        Icon,
+        Divider,
+        Button,
+        Badge
+    } from '@appwrite.io/pink-svelte';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
 
     const currentYear = new Date().getFullYear();
 </script>
 
-<footer class="main-footer u-cross-center">
-    <div class="main-footer-start">
-        <ul class="inline-links is-no-padding-first-and-last u-x-small u-flex-wrap u-gap-16">
-            <li class="inline-links-item" style="line-height: 1.02;">
-                <div class="u-flex u-cross-center u-gap-8">
-                    {#if isCloud}
-                        <span class="icon-cloud" />
-                    {/if}
+<footer>
+    <Divider />
+    <Layout.Stack direction={$isSmallViewport ? 'column-reverse' : 'row'}>
+        <Layout.Stack
+            direction="row"
+            alignItems="center"
+            gap={$isSmallViewport ? 'm' : 'l'}
+            inline={$isTabletViewport}
+            justifyContent="flex-start">
+            <Typography.Caption variant="400">
+                ⓒ {currentYear} Appwrite. All rights reserved.
+            </Typography.Caption>
+            <span class="divider-wrapper">
+                <Divider vertical />
+            </span>
+            <Layout.Stack direction="row" gap="xxs" inline>
+                <Button.Anchor
+                    icon
+                    size="xs"
+                    variant="ghost"
+                    href="https://github.com/appwrite/appwrite"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Appwrite on Github">
+                    <Icon size="s" icon={IconGithub} />
+                </Button.Anchor>
+                <Button.Anchor
+                    icon
+                    size="xs"
+                    variant="ghost"
+                    href="https://appwrite.io/discord"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Appwrite on Discord">
+                    <Icon size="s" icon={IconDiscord} />
+                </Button.Anchor>
+            </Layout.Stack>
+        </Layout.Stack>
+        {#if isCloud && $isSmallViewport}
+            <div class="extra-margin">
+                <Layout.Stack direction="row" justifyContent={'flex-start'} alignItems="center">
                     {#if $version}
-                        <a
-                            class="text"
+                        {#if isCloud}
+                            <Icon size="s" icon={IconCloud} />
+                        {/if}
+                        <Link.Anchor
+                            size="s"
+                            variant="quiet"
                             href="https://github.com/appwrite/appwrite/releases"
                             aria-label="Appwrite releases on Github"
                             target="_blank"
                             rel="noreferrer">
                             Version {$version}
-                        </a>
+                        </Link.Anchor>
+                        <span class="divider-wrapper">
+                            <Divider vertical />
+                        </span>
                     {/if}
-                </div>
-            </li>
-            <li class="inline-links-item">
-                <a href="https://appwrite.io/docs" target="_blank" rel="noreferrer">
-                    <span class="text">Docs</span>
-                </a>
-            </li>
-            <li class="inline-links-item">
-                <a href="https://appwrite.io/terms" target="_blank" rel="noreferrer">
-                    <span class="text">Terms</span>
-                </a>
-            </li>
-            <li class="inline-links-item">
-                <a href="https://appwrite.io/privacy" target="_blank" rel="noreferrer">
-                    <span class="text">Privacy</span>
-                </a>
-            </li>
+                    <Badge size="xs" variant="secondary" content="BETA" />
+                </Layout.Stack>
+            </div>
+        {/if}
+        <Layout.Stack
+            direction="row"
+            justifyContent={$isSmallViewport ? 'flex-start' : 'flex-end'}
+            alignItems="center">
             {#if isCloud}
-                <li class="inline-links-item">
-                    <a href="https://appwrite.io/cookies" target="_blank" rel="noreferrer">
-                        <span class="text">Cookies</span>
-                    </a>
-                </li>
+                {#if !$isSmallViewport}<Badge size="xs" variant="secondary" content="BETA" /><Icon
+                        size="s"
+                        icon={IconCloud} />
+                    {#if $version}
+                        <Link.Anchor
+                            size="s"
+                            variant="quiet"
+                            href="https://github.com/appwrite/appwrite/releases"
+                            aria-label="Appwrite releases on Github"
+                            target="_blank"
+                            rel="noreferrer">
+                            Version {$version}
+                        </Link.Anchor>
+                        <span class="divider-wrapper">
+                            <Divider vertical />
+                        </span>
+                    {/if}
+                {/if}
             {/if}
-        </ul>
-    </div>
-    <div class="main-footer-end">
-        <ul class="inline-links is-no-padding-first-and-last u-x-small">
-            <li class="inline-links-item">
-                <span class="text">ⓒ {currentYear} Appwrite. All rights reserved.</span>
-            </li>
-            <li class="inline-links-item u-flex u-gap-8">
-                <a
-                    href="https://github.com/appwrite/appwrite"
+
+            <Link.Anchor
+                size="s"
+                variant="quiet"
+                href="https://appwrite.io/docs"
+                target="_blank"
+                rel="noreferrer">
+                Docs
+            </Link.Anchor>
+            <span class="divider-wrapper">
+                <Divider vertical />
+            </span>
+            <Link.Anchor
+                size="s"
+                variant="quiet"
+                href="https://appwrite.io/terms"
+                target="_blank"
+                rel="noreferrer">
+                Terms
+            </Link.Anchor>
+            <span class="divider-wrapper">
+                <Divider vertical />
+            </span>
+            <Link.Anchor
+                size="s"
+                variant="quiet"
+                href="https://appwrite.io/privacy"
+                target="_blank"
+                rel="noreferrer">
+                Privacy
+            </Link.Anchor>
+            {#if isCloud}
+                <span class="divider-wrapper">
+                    <Divider vertical />
+                </span>
+                <Link.Anchor
+                    size="s"
+                    variant="quiet"
+                    href="https://appwrite.io/cookies"
                     target="_blank"
-                    rel="noreferrer"
-                    aria-label="Appwrite on Github">
-                    <span class="icon-github" aria-hidden="true" />
-                </a>
-                <a
-                    href="https://appwrite.io/discord"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="Appwrite on Discord">
-                    <span class="icon-discord" aria-hidden="true" />
-                </a>
-            </li>
-        </ul>
-    </div>
+                    rel="noreferrer">
+                    Cookies
+                </Link.Anchor>
+            {/if}
+        </Layout.Stack>
+    </Layout.Stack>
 </footer>
 
 <style lang="scss">
-    .main-footer {
+    .divider-wrapper {
+        height: 18px;
+    }
+    footer {
         margin-block-start: auto;
+        padding-block: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-l);
+        margin-inline: 2rem;
     }
 
-    .main-footer-start .inline-links-item {
-        padding-inline-end: 1rem;
-        padding-inline-start: unset;
-    }
-
-    [class^='icon-']:not(.icon-cloud):not(:hover) {
-        color: hsl(var(--color-neutral-50));
-    }
-
-    @media (max-width: 1200px) {
-        .main-footer {
-            gap: 2rem;
+    :global(main:has(.sub-navigation)) footer {
+        @media (min-width: 1024px) {
+            margin-inline-start: -1.5rem;
+            margin-inline-end: 2rem;
         }
+    }
+    .extra-margin {
+        margin-block-start: var(--space-2, 4px);
     }
 </style>

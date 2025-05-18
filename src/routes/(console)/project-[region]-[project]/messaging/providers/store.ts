@@ -3,13 +3,26 @@ import { MessagingProviderType, SmtpEncryption } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
 import { base } from '$app/paths';
+import type { ComponentType } from 'svelte';
+import { IconAnnotation, IconDeviceMobile, IconMail } from '@appwrite.io/pink-icons-svelte';
+import {
+    IconApple,
+    IconFirebase,
+    IconMailgun,
+    IconMsg91,
+    IconSendgrid,
+    IconTelesign,
+    IconTextMagic,
+    IconTwilio,
+    IconVonage
+} from './components';
 
 export const columns = writable<Column[]>([
-    { id: '$id', title: 'Provider ID', type: 'string', show: true },
-    { id: 'name', title: 'Name', type: 'string', show: true },
-    { id: 'provider', title: 'Provider', type: 'string', show: true },
-    { id: 'type', title: 'Type', type: 'string', show: true },
-    { id: 'enabled', title: 'Status', type: 'boolean', show: true }
+    { id: '$id', title: 'Provider ID', type: 'string' },
+    { id: 'name', title: 'Name', type: 'string' },
+    { id: 'provider', title: 'Provider', type: 'string' },
+    { id: 'type', title: 'Type', type: 'string' },
+    { id: 'enabled', title: 'Status', type: 'boolean' }
 ]);
 
 export type ProviderInput = {
@@ -35,32 +48,34 @@ export type ProviderInput = {
     options?: { label: string; value: string | number | boolean }[];
 };
 
-type ProvidersMap = {
-    [key in MessagingProviderType]: {
-        name: string;
-        text: string;
-        icon: string;
-        providers: {
-            [key in Providers]?: {
-                imageIcon?: string;
-                classIcon?: string;
-                title: string;
-                description: string;
-                needAHand?: string[];
-                configure: (ProviderInput | ProviderInput[])[];
-            };
+export type ProviderMapValue = {
+    name: string;
+    text: string;
+    icon: ComponentType;
+    providers: {
+        [key in Providers]?: {
+            imageIcon?: ComponentType;
+            classIcon?: ComponentType;
+            title: string;
+            description: string;
+            needAHand?: string[];
+            configure: (ProviderInput | ProviderInput[])[];
         };
     };
+};
+
+export type ProvidersMap = {
+    [key in MessagingProviderType]: ProviderMapValue;
 };
 
 export const providers: ProvidersMap = {
     [MessagingProviderType.Push]: {
         name: 'Push notification',
         text: 'notifications',
-        icon: 'device-mobile',
+        icon: IconDeviceMobile,
         providers: {
             [Providers.FCM]: {
-                imageIcon: 'firebase',
+                imageIcon: IconFirebase,
                 title: 'FCM',
                 description: 'Firebase Cloud Messaging',
                 needAHand: [
@@ -92,7 +107,7 @@ export const providers: ProvidersMap = {
                 ]
             },
             [Providers.APNS]: {
-                imageIcon: 'apple',
+                imageIcon: IconApple,
                 title: 'APNS',
                 description: 'Apple Push Notification Service',
                 configure: [
@@ -185,10 +200,10 @@ export const providers: ProvidersMap = {
     [MessagingProviderType.Email]: {
         name: 'Email',
         text: 'emails',
-        icon: 'mail',
+        icon: IconMail,
         providers: {
             [Providers.Mailgun]: {
-                imageIcon: 'mailgun',
+                imageIcon: IconMailgun,
                 title: 'Mailgun',
                 description: '',
                 configure: [
@@ -255,7 +270,7 @@ export const providers: ProvidersMap = {
                 ]
             },
             [Providers.Sendgrid]: {
-                imageIcon: 'sendgrid',
+                imageIcon: IconSendgrid,
                 title: 'SendGrid',
                 description: '',
                 configure: [
@@ -304,7 +319,7 @@ export const providers: ProvidersMap = {
                 ]
             },
             [Providers.SMTP]: {
-                classIcon: 'mail',
+                classIcon: IconMail,
                 title: 'SMTP',
                 description: 'Generic SMTP server',
                 configure: [
@@ -400,10 +415,10 @@ export const providers: ProvidersMap = {
     [MessagingProviderType.Sms]: {
         name: 'SMS',
         text: 'SMS',
-        icon: 'annotation',
+        icon: IconAnnotation,
         providers: {
             [Providers.Twilio]: {
-                imageIcon: 'twilio',
+                imageIcon: IconTwilio,
                 title: 'Twilio',
                 description: '',
                 needAHand: [
@@ -445,7 +460,7 @@ export const providers: ProvidersMap = {
                 ]
             },
             [Providers.Msg91]: {
-                imageIcon: 'msg91',
+                imageIcon: IconMsg91,
                 title: 'MSG91',
                 description: '',
                 configure: [
@@ -483,7 +498,7 @@ export const providers: ProvidersMap = {
                 ]
             },
             [Providers.Telesign]: {
-                imageIcon: 'telesign',
+                imageIcon: IconTelesign,
                 title: 'Telesign',
                 description: '',
                 configure: [
@@ -513,7 +528,7 @@ export const providers: ProvidersMap = {
                 ]
             },
             [Providers.Textmagic]: {
-                imageIcon: 'textmagic',
+                imageIcon: IconTextMagic,
                 title: 'Textmagic',
                 description: '',
                 configure: [
@@ -543,7 +558,7 @@ export const providers: ProvidersMap = {
                 ]
             },
             [Providers.Vonage]: {
-                imageIcon: 'vonage',
+                imageIcon: IconVonage,
                 title: 'Vonage',
                 description: '',
                 configure: [

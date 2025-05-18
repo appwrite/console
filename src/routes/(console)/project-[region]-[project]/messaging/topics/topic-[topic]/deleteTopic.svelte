@@ -1,20 +1,20 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { topic } from './store';
     import { project } from '../../../store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let showDelete = false;
+    let error: string;
     const deleteTopic = async () => {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .messaging.deleteTopic($topic.$id);
 
             showDelete = false;
@@ -24,30 +24,15 @@
             });
             trackEvent(Submit.MessagingTopicDelete);
             await goto(
-                `${base}/project-${$page.params.region}-${$page.params.project}/messaging/topics`
+                `${base}/project-${page.params.region}-${page.params.project}/messaging/topics`
             );
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.MessagingTopicDelete);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.MessagingTopicDelete);
         }
     };
 </script>
 
-<Modal
-    title="Delete topic"
-    bind:show={showDelete}
-    onSubmit={deleteTopic}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
-    <p data-private>
-        Are you sure you want to delete <b>{$topic.name}</b> from '{$project.name}'?
-    </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
-    </svelte:fragment>
-</Modal>
+<Confirm onSubmit={deleteTopic} title="Delete topic" bind:open={showDelete} bind:error>
+    <span>Are you sure you want to delete <b>{$topic.name}</b> from '{$project.name}'?</span>
+</Confirm>

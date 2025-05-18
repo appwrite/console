@@ -1,14 +1,14 @@
 import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
-import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
+import { getLimit, getPage, getSearch, pageToOffset } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
-import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, depends, route, params }) => {
+export const load = async ({ url, depends, route, parent, params }) => {
     depends(Dependencies.FUNCTIONS);
-
+    const { templatesList } = await parent();
+    const search = getSearch(url);
     const page = getPage(url);
-    const limit = getLimit(params.project, url, route, CARD_LIMIT);
+    const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
 
     return {
@@ -16,6 +16,11 @@ export const load: PageLoad = async ({ url, depends, route, params }) => {
         limit,
         functions: await sdk
             .forProject(params.region, params.project)
-            .functions.list([Query.limit(limit), Query.offset(offset), Query.orderDesc('')])
+            .functions.list(
+                [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+                search
+            ),
+        search,
+        templatesList
     };
 };

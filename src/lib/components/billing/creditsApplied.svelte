@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { tooltip } from '$lib/actions/tooltip';
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Coupon } from '$lib/sdk/billing';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let couponData: Partial<Coupon> = {
         code: null,
@@ -15,13 +15,16 @@
     <span class="u-flex u-main-space-between">
         <div class="u-flex u-cross-center u-gap-4">
             <p class="text">
-                <span class="icon-tag u-color-text-success" aria-hidden="true" />
+                <span class="icon-tag u-color-text-success" aria-hidden="true"></span>
                 {#if couponData.credits >= 100}
                     {couponData?.code?.toUpperCase()}
                 {:else}
-                    <span use:tooltip={{ content: couponData?.code?.toUpperCase() }}>
-                        Credits applied
-                    </span>
+                    <span
+                        ><Tooltip
+                            >Credits applied <span slot="tooltip"
+                                >{couponData?.code?.toUpperCase()}</span
+                            ></Tooltip
+                        ></span>
                 {/if}
             </p>
             {#if !fixedCoupon}
@@ -37,7 +40,7 @@
                             status: null,
                             credits: null
                         })}>
-                    <span class="icon-x" aria-hidden="true" />
+                    <span class="icon-x" aria-hidden="true"></span>
                 </button>
             {/if}
         </div>

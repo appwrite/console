@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Provider from './wizard/provider.svelte';
     import Settings from './wizard/settings.svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -10,10 +8,18 @@
     import { base } from '$app/paths';
     import { project } from '../../store';
     import { wizard } from '$lib/stores/wizard';
-    import { provider, providerParams } from './wizard/store';
-    import { ID, type Models } from '@appwrite.io/console';
-    import { Providers } from '../provider.svelte';
-    import { page } from '$app/stores';
+    import { provider, providerParams, providerType } from './wizard/store';
+    import { ID, MessagingProviderType, type Models } from '@appwrite.io/console';
+    import { getProviderDisplayNameAndIcon, Providers } from '../provider.svelte';
+    import { page } from '$app/state';
+    import { Button, Form } from '$lib/elements/forms';
+    import { ActionList, Card, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import Wizard from '$lib/layout/wizard.svelte';
+    import { IconBookOpen, IconInfo, IconUserGroup } from '@appwrite.io/pink-icons-svelte';
+    import { newMemberModal } from '$lib/stores/organization';
+    import { getProviderText } from '../helper';
+    import { providers } from './store';
+    import CreateMember from '$routes/(console)/organization-[organization]/createMember.svelte';
 
     async function create() {
         try {
@@ -22,7 +28,7 @@
             switch ($provider) {
                 case Providers.Twilio:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.createTwilioProvider(
                             providerId,
                             $providerParams[$provider].name,
@@ -34,7 +40,7 @@
                     break;
                 case Providers.Msg91:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.createMsg91Provider(
                             providerId,
                             $providerParams[$provider].name,
@@ -46,7 +52,7 @@
                     break;
                 case Providers.Telesign:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.createTelesignProvider(
                             providerId,
                             $providerParams[$provider].name,
@@ -58,7 +64,7 @@
                     break;
                 case Providers.Textmagic:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.createTextmagicProvider(
                             providerId,
                             $providerParams[$provider].name,
@@ -70,7 +76,7 @@
                     break;
                 case Providers.Vonage:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.createVonageProvider(
                             providerId,
                             $providerParams[$provider].name,
@@ -82,7 +88,7 @@
                     break;
                 case Providers.Mailgun:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.createMailgunProvider(
                             providerId,
                             $providerParams[$provider].name,
@@ -98,7 +104,7 @@
                     break;
                 case Providers.Sendgrid:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.createSendgridProvider(
                             providerId,
                             $providerParams[$provider].name,
@@ -112,7 +118,7 @@
                     break;
                 case Providers.SMTP:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.createSmtpProvider(
                             providerId,
                             $providerParams[$provider].name,
@@ -132,7 +138,7 @@
                     break;
                 case Providers.FCM:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.createFcmProvider(
                             providerId,
                             $providerParams[$provider].name,
@@ -142,7 +148,7 @@
                     break;
                 case Providers.APNS:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.createApnsProvider(
                             providerId,
                             $providerParams[$provider].name,
@@ -174,16 +180,63 @@
             trackError(error, Submit.MessagingProviderCreate);
         }
     }
-
-    const stepsComponents: WizardStepsType = new Map();
-    stepsComponents.set(1, {
-        label: 'Provider',
-        component: Provider
-    });
-    stepsComponents.set(2, {
-        label: 'Settings',
-        component: Settings
-    });
 </script>
 
-<Wizard title="Create provider" steps={stepsComponents} on:finish={create} />
+<Wizard title="Create provider" columnSize="l">
+    <Form onSubmit={create} isModal={false}>
+        <Layout.Stack gap="xxl">
+            <Fieldset legend="Provider">
+                <Provider />
+            </Fieldset>
+            <Fieldset legend="Settings">
+                <Settings />
+            </Fieldset>
+            <Layout.Stack justifyContent="flex-end" direction="row">
+                <Button submit>Create</Button>
+            </Layout.Stack>
+        </Layout.Stack>
+    </Form>
+    <svelte:fragment slot="aside">
+        <Card.Base padding="s">
+            <Layout.Stack gap="s">
+                <Typography.Text variant="m-500">Need a hand?</Typography.Text>
+                <ActionList.Root>
+                    {#if providers[$providerType].providers[$provider].needAHand}
+                        {@const needAHand = providers[$providerType].providers[$provider].needAHand}
+                        <ActionList.Item.Accordion
+                            hasDivider
+                            title={`How to enable ${getProviderText($provider)} ${
+                                $providerType == MessagingProviderType.Push ||
+                                $providerType == MessagingProviderType.Sms
+                                    ? `${getProviderDisplayNameAndIcon($provider).displayName} notifications`
+                                    : getProviderText($provider)
+                            }?`}
+                            icon={IconInfo}>
+                            <Layout.Stack>
+                                {#each needAHand as p}
+                                    <p>
+                                        {@html p}
+                                    </p>
+                                {/each}
+                            </Layout.Stack>
+                        </ActionList.Item.Accordion>
+                    {/if}
+                    <ActionList.Item.Anchor
+                        hasDivider
+                        href={`https://appwrite.io/docs/products/messaging/${$provider}`}
+                        title="Read the guide in the docs"
+                        icon={IconBookOpen} />
+                    <ActionList.Item.Button
+                        on:click={() => {
+                            $newMemberModal = true;
+                        }}
+                        title="Invite a team member"
+                        icon={IconUserGroup} />
+                </ActionList.Root>
+            </Layout.Stack>
+        </Card.Base>
+    </svelte:fragment>
+    {#if $newMemberModal}
+        <CreateMember bind:showCreate={$newMemberModal} />
+    {/if}
+</Wizard>

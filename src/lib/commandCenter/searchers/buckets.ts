@@ -7,7 +7,14 @@ import type { Command, Searcher } from '../commands';
 import { addSubPanel } from '../subPanels';
 import { FilesPanel } from '../panels';
 import { base } from '$app/paths';
-import { page } from '$app/stores';
+import {
+    IconFolder,
+    IconKey,
+    IconLockClosed,
+    IconPuzzle,
+    IconSearch
+} from '@appwrite.io/pink-icons-svelte';
+import { page } from '$app/state';
 
 const getBucketCommand = (bucket: Models.Bucket, region: string, projectId: string) => {
     return {
@@ -16,16 +23,15 @@ const getBucketCommand = (bucket: Models.Bucket, region: string, projectId: stri
             goto(`${base}/project-${region}-${projectId}/storage/bucket-${bucket.$id}`);
         },
         group: 'buckets',
-        icon: 'folder'
+        icon: IconFolder
     } satisfies Command;
 };
 
 export const bucketSearcher = (async (query: string) => {
-    const $page = get(page);
     const $project = get(project);
-    const region = $page.params.region;
+    const region = page.params.region;
     const { buckets } = await sdk
-        .forProject($page.params.region, $page.params.project)
+        .forProject(page.params.region, page.params.project)
         .storage.listBuckets([Query.orderDesc('$createdAt')]);
 
     const filtered = buckets.filter((bucket) => bucket.name.includes(query));
@@ -44,7 +50,7 @@ export const bucketSearcher = (async (query: string) => {
                 },
                 group: 'buckets',
                 nested: true,
-                icon: 'search',
+                icon: IconSearch,
                 keepOpen: true
             },
             {
@@ -57,7 +63,7 @@ export const bucketSearcher = (async (query: string) => {
                 },
                 group: 'buckets',
                 nested: true,
-                icon: 'key'
+                icon: IconKey
             },
             {
                 label: 'Extensions',
@@ -68,7 +74,7 @@ export const bucketSearcher = (async (query: string) => {
                 },
                 group: 'buckets',
                 nested: true,
-                icon: 'puzzle'
+                icon: IconPuzzle
             },
             {
                 label: 'File Security',
@@ -80,7 +86,7 @@ export const bucketSearcher = (async (query: string) => {
                 },
                 group: 'buckets',
                 nested: true,
-                icon: 'lock-closed'
+                icon: IconLockClosed
             }
         ];
     }

@@ -1,17 +1,24 @@
-import { page } from '$app/stores';
-import type { Models } from '@appwrite.io/console';
-import { derived } from 'svelte/store';
-
-export const runtimesList = derived(
-    page,
-    async ($page) => (await $page.data.runtimesList) as Models.RuntimeList
-);
-
-export const baseRuntimesList = derived(runtimesList, async ($runtimesList) => {
-    const baseRuntimes = new Map<string, Models.Runtime>();
-    for (const runtime of (await $runtimesList).runtimes) {
-        const runtimeBase = runtime.name.split('-')[0];
-        baseRuntimes.set(runtimeBase, runtime);
+export function getIconFromRuntime(runtime: string) {
+    switch (true) {
+        case runtime.includes('node'):
+            return 'node';
+        case runtime.includes('php'):
+            return 'php';
+        case runtime.includes('ruby'):
+            return 'ruby';
+        case runtime.includes('python'):
+            return 'python';
+        case runtime.includes('dart'):
+            return 'dart';
+        case runtime.includes('bun'):
+            return 'bun';
+        case runtime.includes('go'):
+            return 'go';
+        case runtime.includes('deno'):
+            return 'deno';
+        case runtime.includes('flutter'):
+            return 'flutter';
+        default:
+            return undefined;
     }
-    return { runtimes: [...baseRuntimes.values()] };
-});
+}

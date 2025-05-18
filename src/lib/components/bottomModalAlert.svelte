@@ -14,15 +14,15 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
-    import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { page } from '$app/state';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
 
     function getPageScope(pathname: string) {
-        const isProjectPage = pathname.includes('project-[project]');
+        const isProjectPage = pathname.includes('project-[region]-[project]');
         const isOrganizationPage = pathname.includes('organization-[organization]');
 
         return { isProjectPage, isOrganizationPage };
@@ -49,7 +49,7 @@
             });
     }
 
-    $: filteredModalAlerts = filterModalAlerts($bottomModalAlertsConfig.alerts, $page.route.id);
+    $: filteredModalAlerts = filterModalAlerts($bottomModalAlertsConfig.alerts, page.route.id);
 
     $: currentModalAlert = filteredModalAlerts[currentIndex] as BottomModalAlertItem;
 
@@ -131,13 +131,16 @@
     });
 </script>
 
-{#if filteredModalAlerts.length > 0 && currentModalAlert && !$page.url.pathname.includes('console/onboarding')}
+{#if filteredModalAlerts.length > 0 && currentModalAlert && !page.url.pathname.includes('console/onboarding')}
     {@const shouldShowUpgrade = showUpgrade()}
     <div class="main-alert-wrapper is-not-mobile">
         <div class="alert-container">
             <article class="card">
                 {#key currentModalAlert.id}
-                    <button class="icon-inline-tag" on:click={() => handleClose()}>
+                    <button
+                        aria-label="Close modal"
+                        class="icon-inline-tag"
+                        on:click={() => handleClose()}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
@@ -173,17 +176,19 @@
 
                                 <div class="u-flex u-gap-10">
                                     <button
+                                        aria-label="Previous"
                                         class="icon-cheveron-left"
                                         on:click={showPrevious}
                                         disabled={currentIndex === 0}
-                                        class:active={currentIndex > 0} />
+                                        class:active={currentIndex > 0}></button>
 
                                     <button
+                                        aria-label="Next"
                                         class="icon-cheveron-right"
                                         on:click={showNext}
                                         disabled={currentIndex === filteredModalAlerts.length - 1}
                                         class:active={currentIndex !==
-                                            filteredModalAlerts.length - 1} />
+                                            filteredModalAlerts.length - 1}></button>
                                 </div>
                             </div>
                         {/if}
@@ -220,7 +225,7 @@
                                         handleClose();
                                     }
 
-                                    trackEvent('click_promo', {
+                                    trackEvent(Click.PromoClick, {
                                         promo: currentModalAlert.id,
                                         type: shouldShowUpgrade ? 'upgrade' : 'try_now'
                                     });
@@ -253,7 +258,10 @@
             <div class="alert-container">
                 <article class="card">
                     {#key currentModalAlert.id}
-                        <button class="icon-inline-tag" on:click={() => handleClose()}>
+                        <button
+                            aria-label="Close modal"
+                            class="icon-inline-tag"
+                            on:click={() => handleClose()}>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="20"
@@ -289,18 +297,20 @@
 
                                     <div class="u-flex u-gap-10">
                                         <button
+                                            aria-label="Previous"
                                             class="icon-cheveron-left"
                                             on:click={showPrevious}
                                             disabled={currentIndex === 0}
-                                            class:active={currentIndex > 0} />
+                                            class:active={currentIndex > 0}></button>
 
                                         <button
+                                            aria-label="Next"
                                             class="icon-cheveron-right"
                                             on:click={showNext}
                                             disabled={currentIndex ===
                                                 filteredModalAlerts.length - 1}
                                             class:active={currentIndex !==
-                                                filteredModalAlerts.length - 1} />
+                                                filteredModalAlerts.length - 1}></button>
                                     </div>
                                 </div>
                             {/if}
@@ -332,7 +342,7 @@
                                     fullWidthMobile
                                     on:click={() => {
                                         openModalOnMobile = false;
-                                        trackEvent('click_promo', {
+                                        trackEvent(Click.PromoClick, {
                                             promo: currentModalAlert.id,
                                             type: shouldShowUpgrade ? 'upgrade' : 'try_now'
                                         });
@@ -363,7 +373,11 @@
             </div>
         {:else}
             {@const mobileConfig = getMobileWindowConfig()}
-            <button
+            <!-- we don't need keydown because we show this only on mobile -->
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <div
+                tabindex="0"
+                role="button"
                 class:showing={!openModalOnMobile}
                 class="card notification-card u-width-full-line"
                 on:click={() => {
@@ -377,8 +391,8 @@
                 <div class="u-flex-vertical u-gap-4">
                     <div class="u-flex u-cross-center u-main-space-between">
                         <h3 class="body-text-2 u-bold">{mobileConfig.title}</h3>
-                        <button on:click={hideAllModalAlerts}>
-                            <span class="icon-x" />
+                        <button on:click={hideAllModalAlerts} aria-label="Close">
+                            <span class="icon-x"></span>
                         </button>
                     </div>
 
@@ -390,7 +404,7 @@
                         {/if}
                     </span>
                 </div>
-            </button>
+            </div>
         {/if}
     </div>
 {/if}

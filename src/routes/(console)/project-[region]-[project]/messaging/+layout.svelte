@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import {
         addSubPanel,
         registerCommands,
@@ -14,16 +14,17 @@
     import { topicsSearcher } from '$lib/commandCenter/searchers/topics';
     import { canWriteMessages } from '$lib/stores/roles';
     import { project } from '../store';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     // TODO: finalize the commands
     $: $registerCommands([
         {
             label: 'Create message',
-            keys: $page.url.pathname.endsWith('messaging') ? ['c'] : ['c', 'm'],
+            keys: page.url.pathname.endsWith('messaging') ? ['c'] : ['c', 'm'],
             callback() {
                 addSubPanel(CreateMessagePanel);
             },
-            icon: 'plus',
+            icon: IconPlus,
             group: 'messaging',
             disabled: !$canWriteMessages
         },
@@ -34,7 +35,7 @@
                 goto(`${base}/project-${$project.region}-${$project.$id}/messaging/topics`);
             },
             disabled:
-                $page.url.pathname.endsWith('topics') || $page.url.pathname.includes('message-'),
+                page.url.pathname.endsWith('topics') || page.url.pathname.includes('message-'),
             group: 'messaging',
             rank: 1
         },
@@ -45,7 +46,7 @@
                 goto(`${base}/project-${$project.region}-${$project.$id}/messaging/providers`);
             },
             disabled:
-                $page.url.pathname.endsWith('providers') || $page.url.pathname.includes('message-'),
+                page.url.pathname.endsWith('providers') || page.url.pathname.includes('message-'),
             group: 'messaging',
             rank: 2
         }

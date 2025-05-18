@@ -1,13 +1,6 @@
 <script lang="ts">
-    import { Alert, CardGrid, Heading } from '$lib/components';
-    import {
-        Button,
-        Form,
-        FormList,
-        InputText,
-        InputChoice,
-        InputEmail
-    } from '$lib/elements/forms';
+    import { CardGrid } from '$lib/components';
+    import { Button, Form, InputText, InputEmail } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { project } from '../../store';
     import InputPassword from '$lib/elements/forms/inputPassword.svelte';
@@ -15,7 +8,7 @@
     import { invalidate } from '$app/navigation';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import InputNumber from '$lib/elements/forms/inputNumber.svelte';
     import { base } from '$app/paths';
     import deepEqual from 'deep-equal';
@@ -24,6 +17,7 @@
     import { type SMTPSecure } from '@appwrite.io/console';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { upgradeURL } from '$lib/stores/billing';
+    import { Link, Selector, Alert } from '@appwrite.io/pink-svelte';
 
     let enabled = false;
     let senderName: string;
@@ -124,83 +118,81 @@
 <Container>
     <Form onSubmit={updateSmtp}>
         <CardGrid>
-            <Heading tag="h6" size="7">SMTP server</Heading>
-            <p class="text">
-                You can customize the email service by providing your own SMTP server. View your
-                email templates <a
-                    href={`${base}/project-${$project.region}-${$project.$id}/auth/templates`}
-                    class="link">here</a>
-            </p>
+            <svelte:fragment slot="title">SMTP server</svelte:fragment>
+            You can customize the email service by providing your own SMTP server. View your email templates
+            <Link.Anchor href={`${base}/project-${$project.region}-${$project.$id}/auth/templates`}
+                >here</Link.Anchor>
             <svelte:fragment slot="aside">
                 {#if $organization.billingPlan === BillingPlan.FREE}
-                    <Alert type="info">
-                        Custom SMTP is a Pro plan feature. Upgrade to enable custom SMTP sever.
-                        <svelte:fragment slot="action">
-                            <div class="alert-buttons u-flex">
-                                <Button text href={$upgradeURL}>Upgrade plan</Button>
-                            </div>
+                    <Alert.Inline
+                        status="info"
+                        title="Custom SMTP is a Pro plan feature. Upgrade to enable custom SMTP sever.">
+                        <svelte:fragment slot="actions">
+                            <Button
+                                compact
+                                href={$upgradeURL}
+                                on:click={() => {
+                                    trackEvent(Click.OrganizationClickUpgrade, {
+                                        source: 'project_settings'
+                                    });
+                                }}>Upgrade plan</Button>
                         </svelte:fragment>
-                    </Alert>
+                    </Alert.Inline>
                 {:else}
-                    <FormList>
-                        <InputChoice
-                            type="switchbox"
-                            id="enabled"
-                            bind:value={enabled}
-                            label="Custom SMTP server">
-                            Enabling this option allows customizing email templates and prevents
-                            emails from being labeled as spam.
-                        </InputChoice>
+                    <Selector.Switch
+                        id="enabled"
+                        bind:checked={enabled}
+                        label="Custom SMTP server"
+                        description="Enabling this option allows customizing email templates and prevents emails
+                from being labeled as spam." />
 
-                        {#if enabled}
-                            <InputText
-                                id="senderName"
-                                label="Sender name"
-                                bind:value={senderName}
-                                required
-                                placeholder="Enter sender name" />
-                            <InputEmail
-                                id="senderEmail"
-                                label="Sender email"
-                                bind:value={senderEmail}
-                                required
-                                placeholder="user@example.io" />
-                            <InputEmail
-                                id="replyTo"
-                                label="Reply to"
-                                bind:value={replyTo}
-                                placeholder="user@example.io" />
-                            <InputText
-                                id="serverHost"
-                                label="Server host"
-                                bind:value={host}
-                                required
-                                placeholder="smtp.server.com" />
-                            <InputNumber
-                                id="serverPort"
-                                label="Server port"
-                                bind:value={port}
-                                required
-                                placeholder="587" />
-                            <InputText
-                                id="username"
-                                label="Username"
-                                bind:value={username}
-                                placeholder="Enter username" />
-                            <InputPassword
-                                showPasswordButton
-                                id="passwort"
-                                label="Password"
-                                bind:value={password}
-                                placeholder="Enter password" />
-                            <InputSelect
-                                id="tls"
-                                label="Secure protocol"
-                                placeholder="Select protocol"
-                                bind:value={secure}
-                                {options} />
-                        {/if}
-                    </FormList>
+                    {#if enabled}
+                        <InputText
+                            id="senderName"
+                            label="Sender name"
+                            bind:value={senderName}
+                            required
+                            placeholder="Enter sender name" />
+                        <InputEmail
+                            id="senderEmail"
+                            label="Sender email"
+                            bind:value={senderEmail}
+                            required
+                            placeholder="user@example.io" />
+                        <InputEmail
+                            id="replyTo"
+                            label="Reply to"
+                            bind:value={replyTo}
+                            placeholder="user@example.io" />
+                        <InputText
+                            id="serverHost"
+                            label="Server host"
+                            bind:value={host}
+                            required
+                            placeholder="smtp.server.com" />
+                        <InputNumber
+                            id="serverPort"
+                            label="Server port"
+                            bind:value={port}
+                            required
+                            placeholder="587" />
+                        <InputText
+                            id="username"
+                            label="Username"
+                            bind:value={username}
+                            placeholder="Enter username" />
+                        <InputPassword
+                            id="passwort"
+                            label="Password"
+                            bind:value={password}
+                            placeholder="Enter password" />
+                        <InputSelect
+                            id="tls"
+                            label="Secure protocol"
+                            placeholder="Select protocol"
+                            bind:value={secure}
+                            {options} />
+                    {/if}
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">

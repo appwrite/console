@@ -3,16 +3,7 @@
 </script>
 
 <script lang="ts">
-    import { page } from '$app/stores';
-    import {
-        Table,
-        TableHeader,
-        TableBody,
-        TableRowLink,
-        TableCellHead,
-        TableCellText,
-        TableCell
-    } from '$lib/elements/table';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
@@ -23,78 +14,63 @@
     } from '$lib/components';
     import Create from '../createTeam.svelte';
     import { goto } from '$app/navigation';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
-    import { tooltip } from '$lib/actions/tooltip';
     import { writable } from 'svelte/store';
-    import { readOnly } from '$lib/stores/billing';
-    import { isCloud } from '$lib/system';
     import { canWriteTeams } from '$lib/stores/roles';
+    import { Icon, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
-    export let data: PageData;
+    export let data;
 
-    const project = $page.params.project;
-    const region = $page.params.region;
+    const region = page.params.region;
+    const project = page.params.project;
     const teamCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
         await goto(`${base}/project-${region}-${project}/auth/teams/team-${event.detail.$id}`);
     };
 </script>
 
 <Container>
-    <ContainerHeader
-        title="Teams"
-        isFlex={false}
-        total={data.teams.total}
-        buttonDisabled={isCloud && $readOnly}
-        let:isButtonDisabled>
-        <SearchQuery search={data.search} placeholder="Search by name">
-            {#if $canWriteTeams}
-                <div
-                    use:tooltip={{
-                        content: `Upgrade to add more teams`,
-                        disabled: !isButtonDisabled
-                    }}>
-                    <Button
-                        on:click={() => ($showCreateTeam = true)}
-                        event="create_team"
-                        disabled={isButtonDisabled}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create team</span>
-                    </Button>
-                </div>
-            {/if}
-        </SearchQuery>
-    </ContainerHeader>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery placeholder="Search by name" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Button on:mousedown={() => ($showCreateTeam = true)} event="create_user" size="s">
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create team
+            </Button>
+        </Layout.Stack>
+    </Layout.Stack>
 
     {#if data.teams.total}
-        <Table>
-            <TableHeader>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead onlyDesktop>Members</TableCellHead>
-                <TableCellHead onlyDesktop>Created</TableCellHead>
-            </TableHeader>
-            <TableBody service="teams" total={data.teams.total}>
-                {#each data.teams.teams as team}
-                    <TableRowLink
-                        href={`${base}/project-${region}-${project}/auth/teams/team-${team.$id}`}>
-                        <TableCell title="Name">
-                            <div class="u-flex u-gap-12 u-cross-center">
-                                <AvatarInitials size={32} name={team.name} />
-                                <span class="text u-trim">{team.name}</span>
-                            </div>
-                        </TableCell>
-                        <TableCellText onlyDesktop title="Members"
-                            >{team.total} members</TableCellText>
-                        <TableCellText onlyDesktop title="Created">
-                            {toLocaleDateTime(team.$createdAt)}
-                        </TableCellText>
-                    </TableRowLink>
-                {/each}
-            </TableBody>
-        </Table>
+        <Table.Root columns={3} let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell {root}>Name</Table.Header.Cell>
+                <Table.Header.Cell {root}>Members</Table.Header.Cell>
+                <Table.Header.Cell {root}>Created</Table.Header.Cell>
+            </svelte:fragment>
+            {#each data.teams.teams as team}
+                <Table.Row.Link
+                    {root}
+                    href={`${base}/project-${region}-${project}/auth/teams/team-${team.$id}`}>
+                    <Table.Cell {root}>
+                        <Layout.Stack direction="row" alignItems="center">
+                            <AvatarInitials size="xs" name={team.name} />
+                            <span class="u-trim">{team.name}</span>
+                        </Layout.Stack>
+                    </Table.Cell>
+                    <Table.Cell {root}>
+                        {team.total} members
+                    </Table.Cell>
+                    <Table.Cell {root}>
+                        <DualTimeView time={team.$createdAt} />
+                    </Table.Cell>
+                </Table.Row.Link>
+            {/each}
+        </Table.Root>
 
         <PaginationWithLimit
             name="Teams"
@@ -102,14 +78,8 @@
             offset={data.offset}
             total={data.teams.total} />
     {:else if data.search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find ‘{data.search}'</b>
-                <p>There are no teams that match your search.</p>
-            </div>
-            <Button
-                secondary
-                href={`${base}/project-${$page.params.region}-${$page.params.project}/auth/teams`}>
+        <EmptySearch target="teams" search={data.search} hidePagination={data.teams.total === 0}>
+            <Button secondary size="s" href={`${base}/project-${region}-${project}/auth/teams`}>
                 Clear Search
             </Button>
         </EmptySearch>

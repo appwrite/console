@@ -3,12 +3,13 @@
     import LocaleOptions from './localeOptions.svelte';
     import { loadEmailTemplate } from './+page.svelte';
     import { baseEmailTemplate, emailTemplate } from './store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Id } from '$lib/components';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Layout, Card } from '@appwrite.io/pink-svelte';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     let locale = 'en';
     let loading = false;
@@ -35,12 +36,13 @@
     }
 </script>
 
-<div class="boxes-wrapper u-margin-block-start-16">
-    <LocaleOptions on:select={onLocaleChange} bind:value={locale} />
-
-    <EmailTemplate bind:loading>
-        <Id value={'{{user}}'}>{'{{user}}'}</Id>
-        <Id value={'{{project}}'}>{'{{project}}'}</Id>
-        <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>
-    </EmailTemplate>
-</div>
+<Card.Base variant="secondary" padding="s">
+    <Layout.Stack gap="l">
+        <LocaleOptions on:change={onLocaleChange} bind:value={locale} />
+        <EmailTemplate bind:loading>
+            <Id value={'{{user}}'}>{'{{user}}'}</Id>
+            <Id value={'{{project}}'}>{'{{project}}'}</Id>
+            <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>
+        </EmailTemplate>
+    </Layout.Stack>
+</Card.Base>

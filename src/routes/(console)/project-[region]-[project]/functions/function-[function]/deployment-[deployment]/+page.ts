@@ -11,7 +11,8 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
         .functions.getDeployment(params.function, params.deployment);
 
     return {
+        func,
         deployment,
-        activeDeployment: func.deployment === params.deployment
+        activeDeployment: func.deploymentId === params.deployment
     };
 };

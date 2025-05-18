@@ -1,4 +1,4 @@
-import type { SvelteComponent } from 'svelte';
+import type { Component } from 'svelte';
 import Apple from '$routes/(console)/project-[region]-[project]/auth/(providers)/appleOAuth.svelte';
 import Auth0 from '$routes/(console)/project-[region]-[project]/auth/(providers)/auth0OAuth.svelte';
 import Authentik from '$routes/(console)/project-[region]-[project]/auth/(providers)/authentikOAuth.svelte';
@@ -13,7 +13,7 @@ export type Provider = {
     name: string;
     icon: string;
     docs?: string;
-    component: typeof SvelteComponent<unknown>;
+    component: Component;
 };
 
 export const oAuthProviders: Record<string, Provider> = {

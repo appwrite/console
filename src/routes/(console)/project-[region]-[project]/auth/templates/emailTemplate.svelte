@@ -1,12 +1,5 @@
 <script lang="ts">
-    import {
-        Button,
-        Form,
-        FormList,
-        InputEmail,
-        InputText,
-        InputTextarea
-    } from '$lib/elements/forms';
+    import { Button, Form, InputEmail, InputText, InputTextarea } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
@@ -14,8 +7,9 @@
     import { baseEmailTemplate, emailTemplate } from './store';
     import deepEqual from 'deep-equal';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Box } from '$lib/components';
     import type { EmailTemplateLocale, EmailTemplateType } from '@appwrite.io/console';
+    import { Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     export let loading = false;
     let openResetModal = false;
@@ -86,75 +80,75 @@
     }
 
     $: isButtonDisabled = deepEqual($emailTemplate, $baseEmailTemplate);
-
     $: isSmtpEnabled = $project?.smtpEnabled;
 </script>
 
-<Box class="u-position-relative">
-    {#if loading}
-        <div
-            class="u-position-absolute u-width-full-line u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32"
-            style="inset-inline-start: 0;">
-            <div class="loader" />
-            <p class="text">Loading template...</p>
-        </div>
-    {/if}
-    <div class:u-opacity-0={loading} style={loading ? 'pointer-events: none' : ''}>
-        <Form onSubmit={saveEmailTemplate}>
-            <FormList gap={8}>
-                <InputText
-                    id="senderName"
-                    label="Sender name"
-                    bind:value={$emailTemplate.senderName}
-                    tooltip="Set up an SMTP server to edit the sender name"
-                    placeholder="Enter sender name"
-                    readonly={!isSmtpEnabled} />
-                <InputEmail
-                    bind:value={$emailTemplate.senderEmail}
-                    id="senderEmail"
-                    label="Sender email"
-                    tooltip="Set up an SMTP server to edit the sender email"
-                    placeholder="Enter sender email"
-                    readonly={!isSmtpEnabled} />
-                <InputEmail
-                    bind:value={$emailTemplate.replyTo}
-                    id="replyTo"
-                    label="Reply to"
-                    placeholder="noreply@appwrite.io" />
-                {#if $$slots.default}
-                    <li style="margin-block: 1rem;">
-                        <p class="text">
-                            Click to copy variables for the fields below. Learn more <a
-                                class="link"
-                                href="https://appwrite.io/docs/advanced/platform/message-templates"
-                                >here</a
-                            >.
-                        </p>
-                        <div class="u-margin-block-start-16 u-flex u-flex-wrap u-gap-8">
-                            <slot />
-                        </div>
-                    </li>
-                {/if}
-                <InputText
-                    bind:value={$emailTemplate.subject}
-                    id="subject"
-                    label="Subject"
-                    placeholder="Enter subject" />
-                <InputTextarea
-                    bind:value={$emailTemplate.message}
-                    id="message"
-                    label="Message"
-                    placeholder="Enter your message"
-                    tooltip="Set up an SMTP server to edit the message body"
-                    readonly={!isSmtpEnabled} />
-            </FormList>
-            <div class="u-sep-block-start u-margin-block-start-24" />
-            <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
-                <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>
-                <Button submit disabled={isButtonDisabled}>Update</Button>
-            </div>
-        </Form>
+{#if loading}
+    <div
+        class="u-position-absolute u-width-full-line u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32"
+        style="inset-inline-start: 0;">
+        <div class="loader"></div>
+        <p class="text">Loading template...</p>
     </div>
-</Box>
+{/if}
+<div class:u-opacity-0={loading} style={loading ? 'pointer-events: none' : ''}>
+    <Form onSubmit={saveEmailTemplate}>
+        <Layout.Stack>
+            <InputText
+                id="senderName"
+                label="Sender name"
+                bind:value={$emailTemplate.senderName}
+                placeholder="Enter sender name"
+                disabled={!isSmtpEnabled} />
+            <InputEmail
+                bind:value={$emailTemplate.senderEmail}
+                id="senderEmail"
+                label="Sender email"
+                placeholder="Enter sender email"
+                disabled={!isSmtpEnabled} />
+            <InputEmail
+                bind:value={$emailTemplate.replyTo}
+                id="replyTo"
+                label="Reply to"
+                placeholder="noreply@appwrite.io" />
+            {#if $$slots.default}
+                <p class="text">
+                    Click to copy variables for the fields below. Learn more <a
+                        class="link"
+                        href="https://appwrite.io/docs/advanced/platform/message-templates">here</a
+                    >.
+                </p>
+                <Layout.Stack direction="row">
+                    <slot />
+                </Layout.Stack>
+            {/if}
+            <InputText
+                bind:value={$emailTemplate.subject}
+                id="subject"
+                label="Subject"
+                placeholder="Enter subject" />
+
+            <InputTextarea
+                bind:value={$emailTemplate.message}
+                id="message"
+                label="Message"
+                placeholder="Enter your message"
+                readonly={!isSmtpEnabled}
+                rows={8}>
+                <Tooltip slot="info" maxWidth="15rem">
+                    <Icon icon={IconInfo} size="s" />
+                    <Typography.Caption variant="400" slot="tooltip">
+                        Set up an SMTP server to edit the message body
+                    </Typography.Caption>
+                </Tooltip>
+            </InputTextarea>
+        </Layout.Stack>
+        <div class="u-sep-block-start u-margin-block-start-24"></div>
+        <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
+            <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>
+            <Button submit disabled={isButtonDisabled}>Update</Button>
+        </div>
+    </Form>
+</div>
 
 <ResetEmail bind:show={openResetModal} />

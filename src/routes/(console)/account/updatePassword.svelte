@@ -1,10 +1,11 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
-    import { Button, Form, FormList, InputPassword } from '$lib/elements/forms';
+    import { CardGrid } from '$lib/components';
+    import { Button, Form, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { Link } from '@appwrite.io/pink-svelte';
 
     let newPassword: string = null;
     let oldPassword: string = null;
@@ -30,26 +31,23 @@
 
 <Form onSubmit={updatePassword}>
     <CardGrid>
-        <Heading tag="h2" size="7">Password</Heading>
-        <p class="text">
-            Forgot your password? <a class="link" href={`${base}/recover`}>Recover your password</a>
-        </p>
+        <svelte:fragment slot="title">Password</svelte:fragment>
+        Forgot your password? <Link.Anchor href={`${base}/recover`}
+            >Recover your password</Link.Anchor>
 
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputPassword
-                    id="oldPassword"
-                    label="Old password"
-                    placeholder="Enter password"
-                    showPasswordButton={true}
-                    bind:value={oldPassword} />
-                <InputPassword
-                    id="newPassword"
-                    label="New password"
-                    placeholder="Enter password"
-                    showPasswordButton={true}
-                    bind:value={newPassword} />
-            </FormList>
+            <InputPassword
+                id="oldPassword"
+                label="Old password"
+                placeholder="Enter password"
+                required
+                bind:value={oldPassword} />
+            <InputPassword
+                id="newPassword"
+                label="New password"
+                placeholder="Enter password"
+                required
+                bind:value={newPassword} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
