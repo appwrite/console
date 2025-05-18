@@ -1,43 +1,44 @@
 <script lang="ts">
+    import { page } from '$app/state';
+    import { AvatarInitials, PaginationWithLimit } from '$lib/components';
+    import { Button as ConsoleButton } from '$lib/elements/forms';
+    import { Container } from '$lib/layout';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        AvatarInitials,
-        Drop,
-        DropList,
-        DropListItem,
-        PaginationWithLimit
-    } from '$lib/components';
     import Upgrade from '$lib/components/roles/upgrade.svelte';
-    import { Pill } from '$lib/elements';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow,
-        TableScroll
-    } from '$lib/elements/table';
-    import { Container, ContainerHeader } from '$lib/layout';
     import { getRoleLabel } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { currentPlan, newMemberModal, organization } from '$lib/stores/organization';
+    import { newMemberModal, organization } from '$lib/stores/organization';
     import { isOwner } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import Delete from '../deleteMember.svelte';
-    import type { PageData } from './$types';
     import Edit from './edit.svelte';
+    import {
+        IconDotsHorizontal,
+        IconInfo,
+        IconPencil,
+        IconPlus,
+        IconRefresh,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
+    import {
+        Layout,
+        Table,
+        Badge,
+        Button,
+        Icon,
+        Typography,
+        Popover,
+        ActionMenu
+    } from '@appwrite.io/pink-svelte';
 
-    export let data: PageData;
+    export let data;
 
     let selectedMember: Models.Membership;
     let showDelete = false;
     let showEdit = false;
     let showDropdown = [];
-    let showPopover = false;
 
     const resend = async (member: Models.Membership) => {
         try {
@@ -47,7 +48,7 @@
                 member.userEmail,
                 undefined,
                 undefined,
-                `${$page.url.origin}${base}/invite`,
+                `${page.url.origin}${base}/invite`,
                 member.userName || undefined
             );
             addNotification({
@@ -66,146 +67,114 @@
 </script>
 
 <Container>
-    {#if data.organizationMembers.total}
-        <ContainerHeader
-            title="Members"
-            level="organization"
-            total={data.organizationMembers.total}
-            buttonText={$isOwner ? 'Invite' : ''}
-            buttonMethod={() => newMemberModal.set(true)}
-            customPillText="Members limited"
-            buttonDisabled={!$currentPlan?.addons?.seats?.supported} />
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Typography.Title>Members</Typography.Title>
+        <ConsoleButton on:mousedown={() => newMemberModal.set(true)} event="create_user" size="s">
+            <Icon size="s" icon={IconPlus} slot="start" />
+            <span class="text">Invite</span>
+        </ConsoleButton>
+    </Layout.Stack>
 
-        <TableScroll>
-            <TableHeader>
-                <TableCellHead width={160}>Name</TableCellHead>
-                <TableCellHead width={120}>Email</TableCellHead>
-                <div style:--p-col-width={120} class="table-thead-col" role="columnheader">
-                    <span class="u-flex u-cross-baseline">
-                        <span class="eyebrow-heading-3"> Role </span>
-                        <Drop isPopover bind:show={showPopover} display="inline-block">
-                            &nbsp;<button
-                                type="button"
-                                on:click={() => (showPopover = !showPopover)}
-                                class="tooltip"
-                                aria-label="input tooltip">
-                                <span
-                                    class="icon-info"
-                                    aria-hidden="true"
-                                    style="font-size: var(--icon-size-small)" />
-                            </button>
-                            <svelte:fragment slot="list">
-                                <div
-                                    class="dropped card u-max-width-300 u-break-word"
-                                    style:--card-border-radius="var(--border-radius-small)"
-                                    style:--p-card-padding=".75rem"
-                                    style:box-shadow="var(--shadow-large)">
-                                    <svelte:component this={Upgrade} />
-                                </div>
-                            </svelte:fragment>
-                        </Drop>
-                    </span>
-                </div>
-
-                <TableCellHead width={90}>2FA</TableCellHead>
-                {#if $isOwner}
-                    <TableCellHead width={30} />
-                {/if}
-            </TableHeader>
-            <TableBody
-                service="members"
-                total={data.organizationMembers.total}
-                event="members_list">
-                {#each data.organizationMembers.memberships as member, index}
-                    <TableRow>
-                        <TableCell title="Name">
-                            <div class="u-flex u-gap-12 u-cross-center">
-                                <AvatarInitials
-                                    size={40}
-                                    name={member.userName || member.userEmail} />
-                                <span class="text u-trim">
-                                    {member.userName || 'n/a'}
-                                </span>
-                                {#if member.invited && !member.joined}
-                                    <Pill warning>Pending</Pill>
-                                {/if}
-                            </div>
-                        </TableCell>
-                        <TableCellText title="Email">{member.userEmail}</TableCellText>
-                        <TableCellText title="Role"
-                            >{member.roles
-                                .map((role) => getRoleLabel(role))
-                                .join(', ')}</TableCellText>
-                        <TableCellText title="2FA">
-                            <Pill success={member.mfa}>
-                                {#if member.mfa}
-                                    <span
-                                        class="icon-check-circle u-color-text-success"
-                                        aria-hidden="true" />
-                                    <p class="text">enabled</p>
-                                {:else}
-                                    <p class="text">disabled</p>
-                                {/if}
-                            </Pill>
-                        </TableCellText>
-                        {#if $isOwner}
-                            <TableCell showOverflow right>
-                                <DropList
-                                    bind:show={showDropdown[index]}
-                                    placement="bottom-start"
-                                    noArrow>
-                                    <button
-                                        class="button is-only-icon is-text"
-                                        aria-label="More options"
-                                        on:click|preventDefault={() => {
-                                            showDropdown[index] = !showDropdown[index];
-                                        }}>
-                                        <span class="icon-dots-horizontal" aria-hidden="true" />
-                                    </button>
-                                    <svelte:fragment slot="list">
-                                        <DropListItem
-                                            icon="pencil"
-                                            on:click={() => {
-                                                selectedMember = member;
-                                                showEdit = true;
-                                                showDropdown[index] = false;
-                                            }}>
-                                            Edit role
-                                        </DropListItem>
-                                        {#if member.invited && !member.joined}
-                                            <DropListItem
-                                                icon="refresh"
-                                                on:click={() => {
-                                                    resend(member);
-                                                    showDropdown[index] = false;
-                                                }}>
-                                                Resend
-                                            </DropListItem>
-                                        {/if}
-                                        <DropListItem
-                                            icon="trash"
-                                            on:click={() => {
-                                                selectedMember = member;
-                                                showDelete = true;
-                                                showDropdown[index] = false;
-                                            }}>
-                                            Remove
-                                        </DropListItem>
-                                    </svelte:fragment>
-                                </DropList>
-                            </TableCell>
+    <Table.Root
+        let:root
+        columns={[
+            { id: 'name', width: { min: 200 } },
+            { id: 'email', width: { min: 200 } },
+            { id: 'roles', width: { min: 200 } },
+            { id: 'mfa', width: { min: 80 } },
+            { id: 'actions', hide: !$isOwner, width: 40 }
+        ]}>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+            <Table.Header.Cell column="email" {root}>Email</Table.Header.Cell>
+            <Table.Header.Cell column="roles" {root}>
+                <Layout.Stack direction="row" gap="xxxs" alignItems="center">
+                    Roles
+                    <Popover let:toggle>
+                        <Button.Button icon variant="extra-compact" size="s" on:click={toggle}>
+                            <Icon size="s" icon={IconInfo} />
+                        </Button.Button>
+                        <svelte:component this={Upgrade} slot="tooltip" />
+                    </Popover>
+                </Layout.Stack>
+            </Table.Header.Cell>
+            <Table.Header.Cell column="mfa" {root}>2FA</Table.Header.Cell>
+            <Table.Header.Cell column="actions" {root} />
+        </svelte:fragment>
+        {#each data.organizationMembers.memberships as member, index}
+            <Table.Row.Base {root}>
+                <Table.Cell column="name" {root}>
+                    <Layout.Stack direction="row" alignItems="center" gap="s">
+                        <AvatarInitials size="xs" name={member.userName} />
+                        <Typography.Text truncate>
+                            {member.userName ? member.userName : 'n/a'}
+                        </Typography.Text>
+                        {#if member.invited && !member.joined}
+                            <Badge type="warning" variant="secondary" content="Pending" size="xs" />
                         {/if}
-                    </TableRow>
-                {/each}
-            </TableBody>
-        </TableScroll>
+                    </Layout.Stack>
+                </Table.Cell>
+                <Table.Cell column="email" {root}>
+                    <Typography.Text truncate>
+                        {member.userEmail}
+                    </Typography.Text>
+                </Table.Cell>
+                <Table.Cell column="roles" {root}>
+                    {member.roles.map((role) => getRoleLabel(role)).join(', ')}
+                </Table.Cell>
+                <Table.Cell column="mfa" {root}>
+                    <Badge
+                        size="xs"
+                        type={member.mfa ? 'success' : undefined}
+                        variant="secondary"
+                        content={member.mfa ? 'Enabled' : 'Disabled'} />
+                </Table.Cell>
+                <Table.Cell column="actions" {root}>
+                    <Popover let:toggle padding="none" placement="bottom-end">
+                        <Button.Button icon variant="ghost" size="s" on:click={toggle}>
+                            <Icon size="s" icon={IconDotsHorizontal} />
+                        </Button.Button>
+                        <div style:min-width="232px" slot="tooltip">
+                            <ActionMenu.Root>
+                                <ActionMenu.Item.Button
+                                    trailingIcon={IconPencil}
+                                    on:click={() => {
+                                        selectedMember = member;
+                                        showEdit = true;
+                                        showDropdown[index] = false;
+                                    }}>
+                                    Edit role
+                                </ActionMenu.Item.Button>
+                                {#if member.invited && !member.joined}
+                                    <ActionMenu.Item.Button
+                                        trailingIcon={IconRefresh}
+                                        on:click={() => {
+                                            resend(member);
+                                        }}>
+                                        Resend
+                                    </ActionMenu.Item.Button>
+                                {/if}
+                                <ActionMenu.Item.Button
+                                    trailingIcon={IconTrash}
+                                    on:click={() => {
+                                        selectedMember = member;
+                                        showDelete = true;
+                                    }}>
+                                    Remove
+                                </ActionMenu.Item.Button>
+                            </ActionMenu.Root>
+                        </div>
+                    </Popover>
+                </Table.Cell>
+            </Table.Row.Base>
+        {/each}
+    </Table.Root>
 
-        <PaginationWithLimit
-            name="Members"
-            limit={data.limit}
-            offset={data.offset}
-            total={data.members.total} />
-    {/if}
+    <PaginationWithLimit
+        name="Members"
+        limit={data.limit}
+        offset={data.offset}
+        total={data.members.total} />
 </Container>
 
 <Delete {selectedMember} bind:showDelete />

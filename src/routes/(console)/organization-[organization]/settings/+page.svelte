@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, BoxAvatar, AvatarGroup, Heading } from '$lib/components';
+    import { CardGrid, BoxAvatar, AvatarGroup } from '$lib/components';
     import { InputText, Form, Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -16,6 +16,7 @@
     import Baa from './BAA.svelte';
     import Soc2 from './Soc2.svelte';
 
+    export let data;
     let name: string;
     let showDelete = false;
 
@@ -50,17 +51,15 @@
     {#if $organization}
         <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Name</Heading>
-
+                <svelte:fragment slot="title">Name</svelte:fragment>
                 <svelte:fragment slot="aside">
-                    <ul>
-                        <InputText
-                            id="name"
-                            label="Name"
-                            placeholder="Enter name"
-                            autocomplete={false}
-                            bind:value={name} />
-                    </ul>
+                    <InputText
+                        required
+                        id="name"
+                        label="Name"
+                        placeholder="Enter name"
+                        autocomplete={false}
+                        bind:value={name} />
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
@@ -75,14 +74,10 @@
             <Soc2 />
         {/if}
 
-        <CardGrid danger>
-            <div>
-                <Heading tag="h6" size="7">Delete organization</Heading>
-            </div>
-            <p>
-                The organization will be permanently deleted, including all projects and data
-                associated with this organization. This action is irreversible.
-            </p>
+        <CardGrid>
+            <svelte:fragment slot="title">Delete organization</svelte:fragment>
+            The organization will be permanently deleted, including all projects and data associated
+            with this organization. This action is irreversible.
             <svelte:fragment slot="aside">
                 <BoxAvatar>
                     <svelte:fragment slot="image">
@@ -105,4 +100,4 @@
     {/if}
 </Container>
 
-<Delete bind:showDelete />
+<Delete bind:showDelete invoices={data.invoices} />

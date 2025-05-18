@@ -1,6 +1,6 @@
 <script lang="ts">
     import { ModalWrapper } from '$lib/components';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
     export let title = '';
@@ -28,11 +28,11 @@
                         aria-label="Close Modal"
                         title="Close Modal"
                         on:click={() =>
-                            trackEvent('click_close_modal', {
+                            trackEvent(Click.ModalCloseClick, {
                                 from: 'button'
                             })}
                         on:click={close}>
-                        <span class="icon-x" aria-hidden="true" />
+                        <span class="icon-x" aria-hidden="true"></span>
                     </button>
                 </div>
                 <p class="u-margin-block-start-4">
@@ -51,7 +51,7 @@
 </ModalWrapper>
 
 <style lang="scss">
-    @use '@appwrite.io/pink/src/abstract/mixins/scroll';
+    @use '@appwrite.io/pink-legacy/src/abstract/mixins/scroll';
 
     .mk-grid {
         overflow: hidden;

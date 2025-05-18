@@ -12,9 +12,9 @@ export const load: PageLoad = async ({ url, route }) => {
 
     const queries = [Query.offset(offset), Query.limit(limit), Query.orderDesc('')];
 
-    const organizations = isCloud
-        ? await sdk.forConsole.billing.listOrganization(queries)
-        : await sdk.forConsole.teams.list(queries);
+    const organizations = !isCloud
+        ? await sdk.forConsole.teams.list(queries)
+        : await sdk.forConsole.billing.listOrganization(queries);
 
     return {
         offset,

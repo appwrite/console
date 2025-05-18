@@ -1,6 +1,8 @@
 <script lang="ts">
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Coupon } from '$lib/sdk/billing';
+    import { IconX } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     export let label: string;
     export let value: number;
@@ -16,7 +18,7 @@
     <span class="u-flex u-main-space-between">
         <div class="u-flex u-cross-center u-gap-4">
             <p class="text">
-                <span class="icon-tag u-color-text-success" aria-hidden="true" />
+                <span class="icon-tag u-color-text-success" aria-hidden="true"></span>
                 <span>
                     {label}
                 </span>
@@ -34,7 +36,7 @@
                             status: null,
                             credits: null
                         })}>
-                    <span class="icon-x" aria-hidden="true" />
+                    <Icon icon={IconX} />
                 </button>
             {/if}
         </div>

@@ -1,0 +1,47 @@
+@font-face {
+    font-family: 'Aeonik Pro';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-Regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Aeonik Pro';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-Medium.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Aeonik Pro';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-Bold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Aenoik Fono';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('https://fonts.appwrite.io/aeonik-fono/AeonikFono-Regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Aenoik Fono';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('https://fonts.appwrite.io/aeonik-fono/AeonikFono-Medium.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Aenoik Fono';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('https://fonts.appwrite.io/aeonik-fono/AeonikFono-Bold.woff2') format('woff2');
+}

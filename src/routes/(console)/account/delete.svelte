@@ -1,9 +1,8 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
+    import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
 
@@ -27,17 +26,6 @@
     }
 </script>
 
-<Modal
-    title="Delete account"
-    bind:show={showDelete}
-    bind:error
-    onSubmit={deleteAccount}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
-    <p>Are you sure you want to delete your account?</p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
-    </svelte:fragment>
-</Modal>
+<Confirm title="Delete account" onSubmit={deleteAccount} bind:open={showDelete} bind:error>
+    Are you sure you want to delete your account?
+</Confirm>

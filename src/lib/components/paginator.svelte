@@ -1,21 +1,56 @@
-<script lang="ts">
+<script lang="ts" generics="T">
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import PaginationInline from './paginationInline.svelte';
+    import Limit from './limit.svelte';
+    import type { Snippet } from 'svelte';
 
-    export let items = [];
-    export let limit = 5;
-    export let hideFooter = false;
+    let {
+        items = [],
+        limit = $bindable(5),
+        hideFooter = false,
+        hidePages = true,
+        hasLimit = false,
+        name = 'items',
+        gap = 's',
+        offset = $bindable(0),
+        children
+    }: {
+        items: T[];
+        limit?: number;
+        hideFooter?: boolean;
+        hidePages?: boolean;
+        hasLimit?: boolean;
+        name?: string;
+        gap?:
+            | ('none' | 'xxxs' | 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | 'xxl' | 'xxxl')
+            | undefined;
+        offset?: number;
+        children: Snippet<[T[], number]>;
+    } = $props();
 
-    let offset = 0;
+    let total = $derived(items.length);
 
-    $: total = items?.length;
-    $: paginatedItems = items.slice(offset, offset + limit);
+    let paginatedItems = $derived(items.slice(offset, offset + limit));
 </script>
 
-<slot {paginatedItems} {limit} />
+<Layout.Stack {gap}>
+    {@render children(paginatedItems, limit)}
 
-{#if !hideFooter}
-    <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <p class="text">Total results: {total}</p>
-        <PaginationInline {limit} bind:offset sum={total} hidePages />
-    </div>
-{/if}
+    {#if !hideFooter}
+        <Layout.Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            wrap="wrap">
+            {#if hasLimit}
+                <Limit bind:limit sum={total} {name} />
+            {:else}
+                <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
+                    Total results: {total}
+                </Typography.Text>
+            {/if}
+
+            <PaginationInline {limit} bind:offset {total} {hidePages} />
+        </Layout.Stack>
+    {/if}
+</Layout.Stack>

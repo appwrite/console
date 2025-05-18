@@ -4,12 +4,15 @@ import type { Tier } from '$lib/stores/billing';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
+import { Query } from '@appwrite.io/console';
 
-export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
+export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
     await parent();
-
     depends(Dependencies.RUNTIMES);
     depends(Dependencies.CONSOLE_VARIABLES);
+    depends(Dependencies.ORGANIZATION);
+
+    const prefs = await sdk.forConsole.account.getPrefs();
 
     const { endpoint, project } = sdk.forConsole.client.config;
     const versionPromise = fetch(`${endpoint}/health/version`, {
@@ -31,11 +34,38 @@ export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
         }, new Map<Tier, Plan>());
     }
 
+    const organizations = !isCloud
+        ? await sdk.forConsole.teams.list()
+        : await sdk.forConsole.billing.listOrganization();
+
+    let projects = [];
+    let currentOrgId = params.organization ? params.organization : prefs.organization;
+
+    if (!currentOrgId && organizations.teams.length > 0) {
+        currentOrgId = organizations.teams[0].$id;
+    }
+    if (currentOrgId) {
+        const orgProjects = await sdk.forConsole.projects.list([
+            Query.equal('teamId', currentOrgId),
+            Query.limit(100),
+            Query.orderDesc('$updatedAt')
+        ]);
+        projects = orgProjects.projects.length > 0 ? orgProjects.projects : [];
+    }
+
+    // set `default` if no region!
+    for (const project of projects) {
+        project.region ??= 'default';
+    }
+
     return {
         consoleVariables: variables,
         version: data?.version ?? null,
         plansInfo,
         roles: [],
-        scopes: []
+        scopes: [],
+        projects: projects,
+        currentProjectId: params.project ?? '',
+        organizations: organizations
     };
 };

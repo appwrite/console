@@ -1,13 +1,9 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { FormItem, Helper, Label } from '.';
-    import NullCheckbox from './nullCheckbox.svelte';
-    import TextCounter from './textCounter.svelte';
+    import { Input } from '@appwrite.io/pink-svelte';
 
     export let label: string;
-    export let optionalText: string | undefined = undefined;
-    export let showLabel = true;
     export let id: string;
+    export let name = id;
     export let value = '';
     export let placeholder = '';
     export let required = false;
@@ -18,79 +14,43 @@
     export let autocomplete = false;
     export let maxlength: number = null;
 
-    let element: HTMLInputElement;
     let error: string;
 
-    onMount(() => {
-        if (element && autofocus) {
-            element.focus();
-        }
-    });
-
-    const handleInvalid = (event: Event) => {
+    const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
         event.preventDefault();
 
-        if (element.validity.patternMismatch) {
+        if (event.currentTarget.validity.patternMismatch) {
             error = 'Must be a valid URL';
             return;
         }
-        if (element.validity.valueMissing) {
+        if (event.currentTarget.validity.valueMissing) {
             error = 'This field is required';
             return;
         }
 
-        error = element.validationMessage;
+        error = event.currentTarget.validationMessage;
     };
 
     $: if (value) {
         error = null;
     }
-
-    let prevValue = '';
-    function handleNullChange(e: CustomEvent<boolean>) {
-        const isNull = e.detail;
-        if (isNull) {
-            prevValue = value;
-            value = null;
-        } else {
-            value = prevValue;
-        }
-    }
 </script>
 
-<FormItem>
-    <Label {required} {optionalText} hide={!showLabel} for={id}>
-        {label}
-    </Label>
-
-    <div class="input-text-wrapper">
-        <input
-            {id}
-            {placeholder}
-            {disabled}
-            {required}
-            {maxlength}
-            {readonly}
-            type="url"
-            autocomplete={autocomplete ? 'on' : 'off'}
-            bind:value
-            bind:this={element}
-            on:invalid={handleInvalid} />
-        <ul
-            class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
-            {#if maxlength}
-                <li class="buttons-list-item">
-                    <TextCounter max={maxlength} count={value?.length ?? 0} />
-                </li>
-            {/if}
-            {#if nullable && !required}
-                <li class="buttons-list-item">
-                    <NullCheckbox checked={value === null} on:change={handleNullChange} />
-                </li>
-            {/if}
-        </ul>
-    </div>
-    {#if error}
-        <Helper type="warning">{error}</Helper>
-    {/if}
-</FormItem>
+<Input.Text
+    {id}
+    {name}
+    {placeholder}
+    {disabled}
+    {readonly}
+    {required}
+    {maxlength}
+    {label}
+    {nullable}
+    type="url"
+    autofocus={autofocus || undefined}
+    autocomplete={autocomplete ? 'on' : 'off'}
+    helper={error}
+    state={error ? 'error' : 'default'}
+    on:invalid={handleInvalid}
+    on:input
+    bind:value />

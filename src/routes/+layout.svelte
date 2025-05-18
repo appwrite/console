@@ -2,10 +2,10 @@
     import { browser } from '$app/environment';
     import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { trackPageView } from '$lib/actions/analytics';
     import { Notifications, Progress } from '$lib/layout';
-    import { app } from '$lib/stores/app';
+    import { app, type AppStore } from '$lib/stores/app';
     import { isCloud } from '$lib/system';
     import { onMount } from 'svelte';
     import { requestedMigration } from './store';
@@ -13,11 +13,25 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { loading } from '$routes/store';
+    import { Root } from '@appwrite.io/pink-svelte';
+    import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
+    import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
+    import { feedback } from '$lib/stores/feedback';
+
+    function resolveTheme(theme: AppStore['themeInUse']) {
+        switch (theme) {
+            case 'dark':
+                return isCloud ? ThemeDarkCloud : ThemeDark;
+            case 'light':
+                return isCloud ? ThemeLightCloud : ThemeLight;
+        }
+    }
 
     onMount(async () => {
+        updateViewport();
         // handle sources
         if (isCloud) {
-            const urlParams = $page.url.searchParams;
+            const urlParams = page.url.searchParams;
             const ref = urlParams.get('ref');
             const utmSource = urlParams.get('utm_source');
             const utmMedium = urlParams.get('utm_medium');
@@ -47,32 +61,33 @@
             }
         }
 
-        if ($page.url.searchParams.has('migrate')) {
-            const migrateData = $page.url.searchParams.get('migrate');
+        if (page.url.searchParams.has('migrate')) {
+            const migrateData = page.url.searchParams.get('migrate');
             requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
         }
 
-        if ($page.url.searchParams.has('code')) {
-            const code = $page.url.searchParams.get('code');
+        if (page.url.searchParams.has('code')) {
+            const code = page.url.searchParams.get('code');
             const coupon = await sdk.forConsole.billing.getCoupon(code).catch<null>(() => null);
             if (coupon?.campaign) {
                 const campaign = await sdk.forConsole.billing
                     .getCampaign(coupon.campaign)
                     .catch<null>(() => null);
                 if (campaign && $user) {
-                    goto(`${base}/apply-credit?${$page.url.searchParams}`);
+                    goto(`${base}/apply-credit?${page.url.searchParams}`);
                     loading.set(false);
                     return;
                 }
             }
         }
-        if (user && $page.url.searchParams.has('campaign')) {
-            const campaignId = $page.url.searchParams.get('campaign');
+
+        if ($user && page.url.searchParams.has('campaign')) {
+            const campaignId = page.url.searchParams.get('campaign');
             const campaign = await sdk.forConsole.billing
                 .getCampaign(campaignId)
                 .catch<null>(() => null);
             if (campaign) {
-                goto(`${base}/apply-credit?${$page.url.searchParams}`);
+                goto(`${base}/apply-credit?${page.url.searchParams}`);
 
                 loading.set(false);
                 return;
@@ -80,6 +95,13 @@
         }
 
         loading.set(false);
+
+        isSmallViewport.subscribe(() => {
+            // reset the feedback form if the viewport changed else it requires dual click.
+            if ($feedback.show) {
+                feedback.toggleFeedback();
+            }
+        });
     });
 
     afterNavigate((navigation) => {
@@ -91,34 +113,87 @@
     $: {
         if (browser) {
             const isCloudClass = isCloud ? 'is-cloud' : '';
+
             if ($app.theme === 'auto') {
                 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
                 if (darkThemeMq.matches) {
-                    document.body.setAttribute('class', `theme-dark ${isCloudClass}`);
+                    document.body.setAttribute('class', `theme-dark ${isCloudClass} no-transition`);
                     $app.themeInUse = 'dark';
                 } else {
-                    document.body.setAttribute('class', `theme-light ${isCloudClass}`);
+                    document.body.setAttribute(
+                        'class',
+                        `theme-light ${isCloudClass} no-transition`
+                    );
                     $app.themeInUse = 'light';
                 }
             } else {
-                document.body.setAttribute('class', `theme-${$app.theme} ${isCloudClass}`);
+                document.body.setAttribute(
+                    'class',
+                    `theme-${$app.theme} ${isCloudClass} no-transition`
+                );
                 $app.themeInUse = $app.theme;
             }
+            requestAnimationFrame(() => {
+                document.body.classList.remove('no-transition');
+            });
         }
     }
+
+    const preloadFonts = [
+        base + '/fonts/inter/inter-v8-latin-600.woff2',
+        base + '/fonts/inter/inter-v8-latin-regular.woff2',
+        base + '/fonts/poppins/poppins-v19-latin-500.woff2',
+        base + '/fonts/poppins/poppins-v19-latin-600.woff2',
+        base + '/fonts/poppins/poppins-v19-latin-700.woff2',
+        base + '/fonts/source-code-pro/source-code-pro-v20-latin-regular.woff2'
+    ];
+    const preloadFontsCloud = [
+        'https://fonts.appwrite.io/aeonik-pro/AeonikPro-Regular.woff2',
+        'https://fonts.appwrite.io/aeonik-pro/AeonikPro-Medium.woff2',
+        'https://fonts.appwrite.io/aeonik-pro/AeonikPro-Bold.woff2',
+        'https://fonts.appwrite.io/aeonik-fono/AeonikFono-Regular.woff2',
+        'https://fonts.appwrite.io/aeonik-fono/AeonikFono-Medium.woff2',
+        'https://fonts.appwrite.io/aeonik-fono/AeonikFono-Bold.woff2'
+    ];
 </script>
 
-<Notifications />
-<!-- {#if isCloud}
-    <Consent />
-{/if} -->
+<svelte:window on:resize={updateViewport} on:load={updateViewport} />
 
-<slot />
+<svelte:head>
+    {#each preloadFonts as font}
+        <link rel="preload" href={font} as="font" type="font/woff2" crossorigin="anonymous" />
+    {/each}
+    <link rel="preload" as="style" type="text/css" href="/console/fonts/main.css" />
+    <link rel="stylesheet" href={`${base}/fonts/main.css`} />
 
-<Progress />
+    {#if isCloud}
+        {#each preloadFontsCloud as font}
+            <link rel="preload" href={font} as="font" type="font/woff2" crossorigin="anonymous" />
+        {/each}
+        <link rel="preload" as="style" type="text/css" href="/console/fonts/cloud.css" />
+        <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
+    {/if}
+</svelte:head>
+
+<Root theme={resolveTheme($app.themeInUse)}>
+    <Notifications />
+    <!-- {#if isCloud}
+        <Consent />
+    {/if} -->
+
+    <slot />
+
+    <Progress />
+</Root>
 
 <style lang="scss" global>
-    @use '@appwrite.io/pink/src/abstract/variables/devices';
+    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
+
+    .no-transition {
+        * {
+            transition: none !important;
+        }
+    }
 
     .tippy-box {
         --p-tooltip-text-color: var(--color-neutral-10);
@@ -198,7 +273,7 @@
     }
 
     .is-cloud {
-        --heading-font: 'Aeonik Pro', arial, sans-serif;
+        --heading-font: 'Aeonik Pro', 'Inter', sans-serif;
         .heading-level {
             @media #{devices.$break3open} {
                 &-1,
@@ -218,14 +293,14 @@
     input[type='radio'],
     input[type='checkbox']:not([class='switch']),
     input[type='switchbox'] {
-        .theme-dark &:not(:checked) {
+        .theme-dark &:not(:checked):not(:disabled) {
             background-color: transparent; /* take whatever color is behind */
             border: 1px solid var(--color-mid-neutral-70, #56565c);
         }
     }
 
     input[type='checkbox'][class='switch'] {
-        .theme-dark &:not(:checked) {
+        .theme-dark &:not(:checked):not(:disabled) {
             background-color: var(--color-mid-neutral-70, #56565c);
         }
     }

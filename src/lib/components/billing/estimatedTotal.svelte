@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormList, InputChoice, InputNumber } from '$lib/elements/forms';
+    import { InputChoice, InputNumber } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Coupon, Estimation } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
@@ -107,7 +107,7 @@
             {#each estimation.discounts ?? [] as item}
                 <DiscountsApplied {fixedCoupon} bind:couponData {...item} />
             {/each}
-            <div class="u-sep-block-start" />
+            <div class="u-sep-block-start"></div>
             <span class="u-flex u-main-space-between">
                 <p class="text">Total due</p>
                 <p class="text">
@@ -122,25 +122,23 @@
             </p>
         {/if}
 
-        <FormList class="u-margin-block-start-24">
-            <InputChoice
-                type="switchbox"
-                id="budget"
-                label="Enable budget cap"
-                tooltip="If enabled, you will be notified when your spending reaches 75% of the set cap. Update cap alerts in your organization settings."
-                fullWidth
-                bind:value={budgetEnabled}>
-                {#if budgetEnabled}
-                    <div class="u-margin-block-start-16">
-                        <InputNumber
-                            id="budget"
-                            label="Budget cap (USD)"
-                            placeholder="0"
-                            min={0}
-                            bind:value={billingBudget} />
-                    </div>
-                {/if}
-            </InputChoice>
-        </FormList>
+        <InputChoice
+            type="switchbox"
+            id="budget"
+            label="Enable budget cap"
+            tooltip="If enabled, you will be notified when your spending reaches 75% of the set cap. Update cap alerts in your organization settings."
+            fullWidth
+            bind:value={budgetEnabled}>
+            {#if budgetEnabled}
+                <div class="u-margin-block-start-16">
+                    <InputNumber
+                        id="budget"
+                        label="Budget cap (USD)"
+                        placeholder="0"
+                        min={0}
+                        bind:value={billingBudget} />
+                </div>
+            {/if}
+        </InputChoice>
     </Card>
 {/if}

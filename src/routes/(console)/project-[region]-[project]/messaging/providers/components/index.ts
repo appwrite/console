@@ -1,0 +1,9 @@
+export { default as IconApple } from './apple.svelte';
+export { default as IconFirebase } from './firebase.svelte';
+export { default as IconMailgun } from './mailgun.svelte';
+export { default as IconSendgrid } from './sendgrid.svelte';
+export { default as IconTwilio } from './twilio.svelte';
+export { default as IconMsg91 } from './msg91.svelte';
+export { default as IconTelesign } from './telesign.svelte';
+export { default as IconTextMagic } from './textmagic.svelte';
+export { default as IconVonage } from './vonage.svelte';

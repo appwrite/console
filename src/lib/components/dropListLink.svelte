@@ -30,7 +30,7 @@
         rel={external ? 'noopener noreferrer' : ''}>
         <span class="text"><slot /></span>
         {#if icon}
-            <span class={`icon-${icon}`} style={iconStyle} aria-hidden="true" />
+            <span class={`icon-${icon}`} style={iconStyle} aria-hidden="true"></span>
         {/if}
     </a>
 </li>

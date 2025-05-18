@@ -1,8 +1,8 @@
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
+import { Click, trackEvent } from '$lib/actions/analytics';
 import { page } from '$app/stores';
-import { trackEvent } from '$lib/actions/analytics';
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
@@ -140,6 +140,7 @@ export type PlanServices =
     | 'users'
     | 'usersAddon'
     | 'webhooks'
+    | 'sites'
     | 'authPhone'
     | 'imageTransformations';
 
@@ -324,7 +325,7 @@ export async function checkForUsageLimit(org: Organization) {
     const members = org.total;
     const plan = get(plansInfo)?.get(org.billingPlan);
     const membersOverflow =
-        members - 1 > plan.addons.seats.limit ? members - (plan.addons.seats.limit || members) : 0;
+        members > plan.addons.seats.limit ? members - (plan.addons.seats.limit || members) : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);
@@ -361,7 +362,7 @@ export async function checkForUsageLimit(org: Organization) {
                     name: 'Upgrade plan',
                     method: () => {
                         goto(`${base}/organization-${org.$id}/change-plan`);
-                        trackEvent('click_organization_upgrade', {
+                        trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
                             source: 'limit_reached_notification'
                         });

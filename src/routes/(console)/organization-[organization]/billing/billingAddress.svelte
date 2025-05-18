@@ -1,8 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, DropList, Heading } from '$lib/components';
-    import DropListItem from '$lib/components/dropListItem.svelte';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import type { Address } from '$lib/sdk/billing';
@@ -15,11 +14,17 @@
     import AddressModal from '$routes/(console)/account/payments/addressModal.svelte';
     import EditAddressModal from '$routes/(console)/account/payments/editAddressModal.svelte';
     import ReplaceAddress from './replaceAddress.svelte';
+    import { ActionMenu, Card, Divider, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
+    import {
+        IconDotsHorizontal,
+        IconPencil,
+        IconPlus,
+        IconSwitchHorizontal,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
 
     export let billingAddress: Address = null;
 
-    let showDropdown = false;
-    let showBillingAddressDropdown = false;
     let showCreate = false;
     let showEdit = false;
     let showReplace = false;
@@ -32,7 +37,6 @@
             await invalidate(Dependencies.ADDRESS);
             await invalidate(Dependencies.ORGANIZATION);
 
-            showDropdown = false;
             addNotification({
                 type: 'success',
                 message: `A new billing address has been added to ${$organization.name}`
@@ -49,17 +53,13 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Billing address</Heading>
-
-    <p class="text">
-        View or update your billing address. This address will be included in your invoices from
-        Appwrite.
-    </p>
+    <svelte:fragment slot="title">Billing address</svelte:fragment>
+    View or update your billing address. This address will be included in your invoices from Appwrite.
     <svelte:fragment slot="aside">
         {#if $organization?.billingAddressId && billingAddress}
-            <div class="box">
-                <div class="u-flex u-main-space-between u-cross-start">
-                    <div class="u-line-height-1-5 u-flex u-flex-vertical u-gap-2">
+            <Card.Base variant="secondary" padding="s">
+                <Layout.Stack direction="row" justifyContent="space-between">
+                    <div>
                         <p class="text">{billingAddress.streetAddress}</p>
                         {#if billingAddress?.addressLine2}
                             <p class="text">{billingAddress.addressLine2}</p>
@@ -69,100 +69,65 @@
                         <p class="text">{billingAddress.postalCode}</p>
                         <p class="text">{billingAddress.country}</p>
                     </div>
-
-                    <DropList
-                        bind:show={showBillingAddressDropdown}
-                        placement="bottom-start"
-                        noArrow>
-                        <Button
-                            round
-                            text
-                            ariaLabel="More options"
-                            on:click={() => {
-                                showBillingAddressDropdown = !showBillingAddressDropdown;
-                            }}>
-                            <span class="icon-dots-horizontal" aria-hidden="true" />
-                        </Button>
-                        <svelte:fragment slot="list">
-                            {#if billingAddress.userId === $user.$id}
-                                <DropListItem
-                                    icon="pencil"
-                                    on:click={() => {
-                                        showEdit = true;
-                                        showBillingAddressDropdown = false;
-                                    }}>
-                                    Edit
-                                </DropListItem>
-                            {/if}
-                            <DropListItem
-                                icon="switch-horizontal"
-                                on:click={() => {
-                                    showReplace = true;
-                                    showBillingAddressDropdown = false;
-                                }}>
-                                Replace
-                            </DropListItem>
-                            <DropListItem
-                                icon="trash"
-                                on:click={() => {
-                                    showRemove = true;
-                                    showBillingAddressDropdown = false;
-                                }}>
-                                Remove
-                            </DropListItem>
-                        </svelte:fragment>
-                    </DropList>
-                </div>
-            </div>
-        {:else}
-            <article class="card u-grid u-cross-center u-width-full-line dashed">
-                <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                    <div class="common-section">
-                        <DropList bind:show={showDropdown} placement="bottom-start">
-                            <Button
-                                secondary
-                                round
-                                on:click={() => {
-                                    if ($addressList.total) {
-                                        showDropdown = !showDropdown;
-                                    } else {
-                                        showCreate = true;
-                                    }
-                                }}>
-                                <i class="icon-plus" />
+                    <div>
+                        <Popover let:toggle placement="bottom-end" padding="none">
+                            <Button text icon ariaLabel="more options" on:click={toggle}>
+                                <Icon icon={IconDotsHorizontal} size="s" />
                             </Button>
-                            <svelte:fragment slot="list">
-                                {#if $addressList?.total}
-                                    {#each $addressList.billingAddresses as address}
-                                        <DropListItem on:click={() => addAddress(address?.$id)}>
-                                            <p class="text">
-                                                <span>{address.streetAddress}</span>,
-                                                {#if address?.addressLine2}
-                                                    <span>{address.addressLine2}</span>,
-                                                {/if}
-                                                <span>{address.city}</span>,
-                                                <span>{address.state}</span>,
-                                                <span>{address.postalCode}</span>,
-                                                <span>{address.country}</span>
-                                            </p>
-                                        </DropListItem>
-                                    {/each}
+                            <ActionMenu.Root slot="tooltip">
+                                {#if billingAddress.userId === $user.$id}
+                                    <ActionMenu.Item.Button
+                                        on:click={() => (showEdit = true)}
+                                        leadingIcon={IconPencil}>
+                                        Edit
+                                    </ActionMenu.Item.Button>
                                 {/if}
-                                <DropListItem
-                                    on:click={() => {
-                                        showCreate = true;
-                                        showDropdown = false;
-                                    }}>
-                                    Add new billing address
-                                </DropListItem>
-                            </svelte:fragment>
-                        </DropList>
+                                <ActionMenu.Item.Button
+                                    on:click={() => (showReplace = true)}
+                                    leadingIcon={IconSwitchHorizontal}>
+                                    Replace
+                                </ActionMenu.Item.Button>
+                                <ActionMenu.Item.Button
+                                    on:click={() => (showRemove = true)}
+                                    leadingIcon={IconTrash}>
+                                    Remove
+                                </ActionMenu.Item.Button>
+                            </ActionMenu.Root>
+                        </Popover>
                     </div>
-                    <div class="common-section">
-                        <span class="text">Add a billing address</span>
-                    </div>
-                </div>
-            </article>
+                </Layout.Stack>
+            </Card.Base>
+        {:else}
+            <Card.Base>
+                <Layout.Stack justifyContent="center" alignItems="center" gap="m">
+                    <Popover let:toggle padding="none" placement="bottom-start">
+                        <Button secondary icon on:click={toggle}>
+                            <Icon icon={IconPlus} size="s" />
+                        </Button>
+                        <ActionMenu.Root slot="tooltip">
+                            {#each $addressList.billingAddresses as address}
+                                <ActionMenu.Item.Button on:click={() => addAddress(address?.$id)}>
+                                    <span>{address.streetAddress}</span>,
+                                    {#if address?.addressLine2}
+                                        <span>{address.addressLine2}</span>,
+                                    {/if}
+                                    <span>{address.city}</span>,
+                                    <span>{address.state}</span>,
+                                    <span>{address.postalCode}</span>,
+                                    <span>{address.country}</span>
+                                </ActionMenu.Item.Button>
+                            {/each}
+                            <Divider />
+                            <ActionMenu.Item.Button
+                                leadingIcon={IconPlus}
+                                on:click={() => (showCreate = true)}>
+                                Add new billing address
+                            </ActionMenu.Item.Button>
+                        </ActionMenu.Root>
+                    </Popover>
+                    <span>Add a billing address</span>
+                </Layout.Stack>
+            </Card.Base>
         {/if}
     </svelte:fragment>
 </CardGrid>

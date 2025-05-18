@@ -3,28 +3,33 @@
     import { getContext, hasContext } from 'svelte';
     import { readable } from 'svelte/store';
     import type { FormContext } from './form.svelte';
-    import { multiAction, type MultiActionArray } from '$lib/actions/multi-actions';
+    import { Button } from '@appwrite.io/pink-svelte';
+    import type { ComponentProps } from 'svelte';
+
+    type Props = ComponentProps<Button.Button | Button.Anchor>;
 
     export let submit = false;
     export let secondary = false;
-    export let github = false;
     export let text = false;
+    export let icon = false;
     export let danger = false;
-    export let round = false;
-    export let link = false;
+    export let size: Props['size'] = 's';
     export let disabled = false;
     export let external = false;
     export let href: string = null;
     export let download: string = undefined;
+    export let badge: string = undefined;
     export let fullWidth = false;
     export let fullWidthMobile = false;
     export let ariaLabel: string = null;
-    export let noMargin = false;
     export let event: string = null;
+    export let eventData: Record<string, unknown> = {};
     let classes: string = '';
     export { classes as class };
-    export let actions: MultiActionArray = [];
     export let submissionLoader = false;
+    export let forceShowLoader = false;
+    export let compact = false;
+    export let extraCompact = false;
 
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
@@ -38,21 +43,38 @@
         }
 
         trackEvent(`click_${event}`, {
-            from: 'button'
+            from: 'button',
+            ...eventData
         });
     }
 
+    function getVariant():
+        | 'primary'
+        | 'secondary'
+        | 'text'
+        | 'compact'
+        | 'danger'
+        | 'extra-compact' {
+        switch (true) {
+            case secondary:
+                return 'secondary';
+            case text:
+                return 'text';
+            case compact:
+                return 'compact';
+            case extraCompact:
+                return 'extra-compact';
+            case danger:
+                return 'danger';
+            default:
+                return 'primary';
+        }
+    }
+
+    $: variant = getVariant();
     $: resolvedClasses = [
-        link ? 'link' : 'button',
-        disabled && 'is-disabled',
-        round && 'is-only-icon',
-        secondary && 'is-secondary',
-        github && 'is-github',
-        text && 'is-text',
-        danger && 'is-danger',
         fullWidth && 'is-full-width',
         fullWidthMobile && 'is-full-width-mobile',
-        noMargin && 'u-padding-inline-0',
         classes
     ]
         .filter(Boolean)
@@ -60,34 +82,45 @@
 </script>
 
 {#if href}
-    <a
+    <Button.Anchor
         on:click
+        on:mousedown
         on:click={track}
         {href}
         {download}
+        {size}
+        {icon}
+        disabled={internalDisabled}
+        {variant}
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class={resolvedClasses}
-        style="pointer-events: {internalDisabled ? 'none' : 'auto'};"
-        aria-label={ariaLabel}
-        use:multiAction={actions}>
+        aria-label={ariaLabel}>
+        <slot name="start" slot="start" />
         <slot />
-    </a>
+        <slot slot="end" name="end" />
+    </Button.Anchor>
 {:else}
-    <button
+    <Button.Button
         on:click
+        on:mousedown
         on:click={track}
+        {size}
+        {icon}
+        {badge}
         disabled={internalDisabled}
+        {variant}
         class={resolvedClasses}
         aria-label={ariaLabel}
-        type={submit ? 'submit' : 'button'}
-        use:multiAction={actions}>
-        {#if $isSubmitting && submissionLoader}
+        type={submit ? 'submit' : 'button'}>
+        <slot name="start" slot="start" />
+        {#if ($isSubmitting && submissionLoader) || (forceShowLoader && submissionLoader)}
             <span
                 class="loader is-small"
                 style:--p-loader-base-full-color="transparent"
-                aria-hidden="true" />
+                aria-hidden="true"></span>
         {/if}
         <slot isSubmitting={$isSubmitting} />
-    </button>
+        <slot slot="end" name="end" />
+    </Button.Button>
 {/if}

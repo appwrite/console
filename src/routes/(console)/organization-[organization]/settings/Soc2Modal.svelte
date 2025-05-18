@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import { FormList, InputEmail, InputSelect, InputText } from '$lib/elements/forms';
+    import { InputEmail, InputSelect, InputText } from '$lib/elements/forms';
     import Button from '$lib/elements/forms/button.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
@@ -40,8 +40,10 @@
     let error: string;
 
     onMount(async () => {
-        const countryList = await sdk.forProject.locale.listCountries();
-        const locale = await sdk.forProject.locale.get();
+        /* use console sdk as project is not always available here. */
+        const locale = await sdk.forConsole.locale.get();
+        const countryList = await sdk.forConsole.locale.listCountries();
+
         if (locale.countryCode) {
             country = locale.countryCode;
         }
@@ -95,37 +97,30 @@
     }
 </script>
 
-<Modal
-    bind:error
-    bind:show
-    onSubmit={handleSubmit}
-    size="big"
-    headerDivider={false}
-    title="Request SOC-2">
-    <FormList>
-        <InputEmail label="Email" placeholder="Enter email" id="email" bind:value={email} />
-        <InputSelect
-            label="Number of employees"
-            id="employees"
-            placeholder="Select number of employees"
-            required
-            options={employeesOptions}
-            bind:value={employees} />
-        <InputSelect
-            label="Country"
-            id="country"
-            options={countryOptions}
-            placeholder="Select country"
-            required
-            bind:value={country} />
-        <InputText
-            label="Your role"
-            placeholder="Enter your role"
-            id="role"
-            bind:value={role}
-            required />
-        <InputText label="Website" placeholder="Enter website" id="website" bind:value={website} />
-    </FormList>
+<Modal bind:error bind:show onSubmit={handleSubmit} title="Request SOC-2">
+    <InputEmail label="Email" placeholder="Enter email" id="email" bind:value={email} />
+    <InputSelect
+        label="Number of employees"
+        id="employees"
+        placeholder="Select number of employees"
+        required
+        options={employeesOptions}
+        bind:value={employees} />
+    <InputSelect
+        label="Country"
+        id="country"
+        options={countryOptions}
+        placeholder="Select country"
+        required
+        bind:value={country} />
+    <InputText
+        label="Your role"
+        placeholder="Enter your role"
+        id="role"
+        bind:value={role}
+        required />
+    <InputText label="Website" placeholder="Enter website" id="website" bind:value={website} />
+
     <svelte:fragment slot="footer">
         <Button submit>
             <span class="text">Send request</span>

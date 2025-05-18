@@ -5,7 +5,6 @@
         Empty,
         AvatarGroup,
         CardContainer,
-        Heading,
         PaginationWithLimit
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -18,10 +17,11 @@
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
     import { daysLeftInTrial, plansInfo, tierToPlan } from '$lib/stores/billing';
-    import { tooltip } from '$lib/actions/tooltip';
     import { toLocaleDate } from '$lib/helpers/date';
     import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
+    import { Icon, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
     let addOrganization = false;
@@ -46,11 +46,11 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Organizations</Heading>
+        <Typography.Title>Organizations</Typography.Title>
 
         <Button on:click={createOrg} event="create_organization">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create organization</span>
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Create organization
         </Button>
     </div>
 
@@ -64,7 +64,8 @@
                 {@const avatarList = getMemberships(organization.$id)}
                 <GridItem1 href={`${base}/organization-${organization.$id}`}>
                     <svelte:fragment slot="eyebrow">
-                        {organization?.total ? organization?.total : 'No'} members
+                        {organization?.total}
+                        {organization?.total > 1 ? 'members' : 'member'}
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         {organization.name}
@@ -72,33 +73,32 @@
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
                             {#if organization?.billingPlan === BillingPlan.FREE || organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
-                                <div
-                                    class="u-flex u-cross-center"
-                                    use:tooltip={{
-                                        content:
-                                            'You are limited to 1 free organization per account'
-                                    }}>
-                                    <Pill class="eyebrow-heading-3"
-                                        >{tierToPlan(organization?.billingPlan)?.name}</Pill>
-                                </div>
+                                <Tooltip>
+                                    <div class="u-flex u-cross-center">
+                                        <Pill class="eyebrow-heading-3"
+                                            >{tierToPlan(organization?.billingPlan)?.name}</Pill>
+                                    </div>
+                                    <span slot="tooltip"
+                                        >You are limited to 1 free organization per account</span>
+                                </Tooltip>
                             {/if}
                             {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
-                                <div
-                                    class="u-flex u-cross-center"
-                                    use:tooltip={{
-                                        content: `Your trial ends on ${toLocaleDate(
+                                <Tooltip>
+                                    <div class="u-flex u-cross-center">
+                                        <Pill class="eyebrow-heading-3">TRIAL</Pill>
+                                    </div>
+                                    <span slot="tooltip"
+                                        >{`Your trial ends on ${toLocaleDate(
                                             organization.billingStartDate
-                                        )}. ${$daysLeftInTrial} days remaining.`
-                                    }}>
-                                    <Pill class="eyebrow-heading-3">TRIAL</Pill>
-                                </div>
+                                        )}. ${$daysLeftInTrial} days remaining.`}</span>
+                                </Tooltip>
                             {/if}
                         {/if}
                     </svelte:fragment>
                     {#await avatarList}
-                        <span class="avatar is-color-empty" />
+                        <span class="avatar is-color-empty"></span>
                     {:then avatars}
-                        <AvatarGroup size={40} {avatars} />
+                        <AvatarGroup {avatars} />
                     {/await}
                 </GridItem1>
             {/each}
@@ -107,7 +107,7 @@
             </svelte:fragment>
         </CardContainer>
     {:else}
-        <Empty single on:click={createOrg}>
+        <Empty single on:click={createOrg} target="organization">
             <p>Create a new organization</p>
         </Empty>
     {/if}

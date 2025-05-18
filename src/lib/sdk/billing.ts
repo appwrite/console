@@ -99,6 +99,7 @@ export type Coupon = {
     status: string; // 'active' | 'disabled' | 'expired'
     validity: number;
     campaign?: string;
+    onlyNewOrgs?: boolean;
 };
 
 export type Credit = {
@@ -260,19 +261,6 @@ export type AllowedRegions =
     | 'syd'
     | 'default'; //TODO: remove after migration
 
-export type Region = {
-    $id: AllowedRegions;
-    name: string;
-    disabled: boolean;
-    default: boolean;
-    flag: string;
-};
-
-export type RegionList = {
-    regions: Region[];
-    total: number;
-};
-
 export type Address = {
     $id: string;
     streetAddress: string;
@@ -340,6 +328,7 @@ export type Plan = {
         seats: PlanAddon;
     };
     trialDays: number;
+    budgetCapEnabled: boolean;
     isAvailable: boolean;
     selfService: boolean;
     premiumSupport: boolean;
@@ -1275,9 +1264,11 @@ export class Billing {
         );
     }
 
-    async listRegions(): Promise<RegionList> {
+    async listRegions(teamId: string): Promise<Models.ConsoleRegionList> {
         const path = `/console/regions`;
-        const params = {};
+        const params = {
+            teamId
+        };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'GET',

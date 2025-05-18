@@ -52,11 +52,11 @@ export const load: PageLoad = async ({ params, parent }) => {
     const [invoices, usage, organizationMembers, plan] = await Promise.all([
         sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
         sdk.forConsole.billing.listUsage(params.organization, startDate, endDate),
-        sdk.forConsole.teams.listMemberships(params.organization),
+        sdk.forConsole.teams.listMemberships(params.organization, [Query.limit(100)]),
         sdk.forConsole.billing.getOrganizationPlan(org.$id)
     ]);
 
-    const projectNames: { [key: string]: Models.Project } = {};
+    const projects: { [key: string]: Models.Project } = {};
     if (usage?.projects?.length > 0) {
         // in batches of 100 (the max number of values in a query)
         const requests = [];
@@ -75,17 +75,17 @@ export const load: PageLoad = async ({ params, parent }) => {
         const responses = await Promise.all(requests);
         for (const response of responses) {
             for (const project of response.projects) {
-                projectNames[project.$id] = project;
+                projects[project.$id] = project;
             }
         }
     }
 
     return {
-        organizationUsage: usage,
-        projectNames,
+        plan,
         invoices,
+        projects,
         currentInvoice,
         organizationMembers,
-        plan
+        organizationUsage: usage
     };
 };

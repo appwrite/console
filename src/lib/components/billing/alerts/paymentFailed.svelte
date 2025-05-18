@@ -1,12 +1,12 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
     import { failedInvoice } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
 
-    $: isOnProjects = $page.route.id.includes('project-[project]');
+    $: isOnProjects = page.route.id.includes('project-[region]-[project]');
 </script>
 
 {#if $failedInvoice && $failedInvoice.teamId === $organization.$id && isOnProjects}

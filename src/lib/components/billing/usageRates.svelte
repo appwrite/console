@@ -1,19 +1,12 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import {
-        Table,
-        TableBody,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { organization, type Organization } from '$lib/stores/organization';
+    import { type Organization } from '$lib/stores/organization';
     import { plansInfo } from '$lib/stores/billing';
     import { abbreviateNumber, formatCurrency } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
+    import { Table, Typography } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let org: Organization;
@@ -22,7 +15,7 @@
 
     $: nextDate = org?.name
         ? new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toString()
-        : $organization?.billingNextInvoiceDate;
+        : org?.billingNextInvoiceDate;
 
     const planData = [
         {
@@ -52,71 +45,67 @@
     $: isFree = org.billingPlan === BillingPlan.FREE;
 
     // equal or above means unlimited!
-    $: getCorrectSeatsCountValue = (count: number): string | number => {
+    const getCorrectSeatsCountValue = (count: number): string | number => {
         // php int max is always larger than js
         const exceedsSafeLimit = count >= Number.MAX_SAFE_INTEGER;
         return exceedsSafeLimit ? 'Unlimited' : count || 0;
     };
 </script>
 
-<Modal bind:show size="big" headerDivider={false} title="Usage rates">
+<Modal bind:show title="Usage rates">
     {#if isFree}
-        Usage on the {$plansInfo?.get(BillingPlan.FREE).name} plan is limited for the following resources.
-        Next billing period: {toLocaleDate(nextDate)}.
+        <Typography.Text>
+            Usage on the {$plansInfo?.get(BillingPlan.FREE).name} plan is limited for the following resources.
+            Next billing period: {toLocaleDate(nextDate)}.
+        </Typography.Text>
     {:else if org.billingPlan === BillingPlan.PRO}
-        <p>
+        <Typography.Text>
             Usage on the Pro plan will be charged at the end of each billing period at the following
             rates. Next billing period: {toLocaleDate(nextDate)}.
-        </p>
+        </Typography.Text>
     {:else if org.billingPlan === BillingPlan.SCALE}
-        <p>
+        <Typography.Text>
             Usage on the Scale plan will be charged at the end of each billing period at the
             following rates. Next billing period: {toLocaleDate(nextDate)}.
-        </p>
+        </Typography.Text>
     {/if}
-    <Table noStyles noMargin>
-        <TableHeader>
-            <TableCellHead>Resource</TableCellHead>
-            <TableCellHead>Limit</TableCellHead>
-            {#if !isFree}
-                <TableCellHead>Rate</TableCellHead>
+    <Table.Root
+        columns={[{ id: 'resource' }, { id: 'limit' }, { id: 'rate', hide: isFree }]}
+        let:root>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell column="resource" {root}>Resource</Table.Header.Cell>
+            <Table.Header.Cell column="limit" {root}>Limit</Table.Header.Cell>
+            <Table.Header.Cell column="rate" {root}>Rate</Table.Header.Cell>
+        </svelte:fragment>
+        {#each planData as usage}
+            {#if usage['id'] === 'members'}
+                <Table.Row.Base {root}>
+                    <Table.Cell column="resource" {root}>{usage.resource}</Table.Cell>
+                    <Table.Cell column="limit" {root}>
+                        {getCorrectSeatsCountValue(plan.addons.seats.limit)}
+                    </Table.Cell>
+                    <Table.Cell column="rate" {root}>
+                        {formatCurrency(plan.addons?.seats?.price)}/{usage?.unit}
+                    </Table.Cell>
+                </Table.Row.Base>
+            {:else}
+                {@const addon = plan.addons[usage.id]}
+                <Table.Row.Base {root}>
+                    <Table.Cell column="resource" {root}>{usage.resource}</Table.Cell>
+                    <Table.Cell column="limit" {root}>
+                        {abbreviateNumber(plan[usage.id])}{usage?.unit}
+                    </Table.Cell>
+                    {#if !isFree}
+                        <Table.Cell column="rate" {root}>
+                            {formatCurrency(addon?.price)}/{['MB', 'GB', 'TB'].includes(addon?.unit)
+                                ? addon?.value
+                                : abbreviateNumber(addon?.value, 0)}{usage?.unit}
+                        </Table.Cell>
+                    {/if}
+                </Table.Row.Base>
             {/if}
-        </TableHeader>
-        <TableBody>
-            {#each planData as usage}
-                {#if usage['id'] === 'members'}
-                    <TableRow>
-                        <TableCellText title="resource">{usage.resource}</TableCellText>
-                        <TableCellText title="limit">
-                            {getCorrectSeatsCountValue(plan.addons.seats.limit)}
-                        </TableCellText>
-                        {#if !isFree}
-                            <TableCellText title="rate">
-                                {formatCurrency(plan.addons.seats.price)}/{usage?.unit}
-                            </TableCellText>
-                        {/if}
-                    </TableRow>
-                {:else}
-                    {@const addon = plan.usage[usage.id]}
-                    <TableRow>
-                        <TableCellText title="resource">{usage.resource}</TableCellText>
-                        <TableCellText title="limit">
-                            {abbreviateNumber(plan[usage.id])}{usage?.unit}
-                        </TableCellText>
-                        {#if !isFree}
-                            <TableCellText title="rate">
-                                {formatCurrency(addon?.price)}/{['MB', 'GB', 'TB'].includes(
-                                    addon?.unit
-                                )
-                                    ? addon?.value
-                                    : abbreviateNumber(addon?.value, 0)}{usage?.unit}
-                            </TableCellText>
-                        {/if}
-                    </TableRow>
-                {/if}
-            {/each}
-        </TableBody>
-    </Table>
+        {/each}
+    </Table.Root>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Close</Button>
     </svelte:fragment>

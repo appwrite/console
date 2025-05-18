@@ -1,13 +1,5 @@
 <script lang="ts">
-    import { Alert, CardGrid, Empty, Heading, PaginationInline } from '$lib/components';
-    import {
-        TableBody,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow,
-        TableScroll
-    } from '$lib/elements/table';
+    import { CardGrid, Empty, PaginationInline } from '$lib/components';
     import { toLocaleDate } from '$lib/helpers/date';
     import type { CreditList } from '$lib/sdk/billing';
     import { organization } from '$lib/stores/organization';
@@ -20,10 +12,11 @@
     import AddCreditModal from './addCreditModal.svelte';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { upgradeURL } from '$lib/stores/billing';
     import { Pill } from '$lib/elements';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { Alert, Badge, Icon, Link, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let offset = 0;
     let creditList: CreditList = {
@@ -90,83 +83,84 @@
 </script>
 
 <CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
-    <Heading tag="h2" size="6">
+    <svelte:fragment slot="title">
         {$organization?.billingPlan === BillingPlan.FREE ? 'Credits' : 'Available credit'}
-    </Heading>
-
-    <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
+    </svelte:fragment>
+    Appwrite credit will automatically be applied to your next invoice.
     <svelte:fragment slot="aside">
         {#if $organization?.billingPlan === BillingPlan.FREE}
-            <Alert type="info">
-                <svelte:fragment slot="title">Upgrade to Pro to add credits</svelte:fragment>
-                Upgrade to a Pro plan to add credits to your organization. For more information on what
-                you can do with a Pro plan,
-                <a
-                    class="link"
+            <Alert.Inline status="info" title="Upgrade to Pro to add credits">
+                Upgrade to a Pro plan to add credits to your organization. For more information on
+                what you can do with a Pro plan,
+                <Link.Anchor
                     href="https://appwrite.io/pricing"
                     target="_blank"
-                    rel="noopener noreferrer">view our pricing guide.</a>
-            </Alert>
+                    rel="noopener noreferrer">view our pricing guide.</Link.Anchor>
+            </Alert.Inline>
         {:else}
             <div class="u-flex u-cross-center u-main-space-between">
                 <div class="u-flex u-gap-8 u-cross-center">
-                    <h4 class="body-text-1 u-bold">Balance</h4>
-                    <span class="inline-tag">{formatCurrency(creditList.available)}</span>
+                    <Typography.Text variant="m-600">Balance</Typography.Text>
+                    <Badge
+                        variant="secondary"
+                        size="s"
+                        content={formatCurrency(creditList.available)} />
                 </div>
                 {#if creditList?.total}
                     <Button secondary on:click={handleCredits}>
-                        <span class="icon-plus" aria-hidden="true"></span>
-                        <span class="text">Add credits</span>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add credits
                     </Button>
                 {/if}
             </div>
             {#if creditList?.total}
-                <TableScroll noStyles noMargin class="u-margin-block-start-16">
-                    <TableHeader>
-                        <TableCellHead>Code</TableCellHead>
-                        <TableCellHead>Total</TableCellHead>
-                        <TableCellHead>Remaining</TableCellHead>
-                        <TableCellHead>Expires at</TableCellHead>
-                    </TableHeader>
-                    <TableBody>
-                        {#each creditList.credits as credit}
-                            <TableRow>
-                                <TableCellText title="code">
-                                    {credit?.couponId ?? '-'}
-                                </TableCellText>
-                                <TableCellText title="total">
-                                    {formatCurrency(credit.total)}
-                                </TableCellText>
-                                <TableCellText title="remaining">
-                                    {#if credit.status === 'expired'}
-                                        <span
-                                            style="text-decoration: line-through;"
-                                            class:u-hide={credit.credits === 0}>
-                                            {formatCurrency(credit.credits)}</span> $0.00
-                                    {:else}
-                                        {formatCurrency(credit.credits)}
-                                    {/if}
-                                </TableCellText>
-                                <TableCellText title="expiry date">
-                                    {#if credit.status === 'expired'}
-                                        <span
-                                            use:tooltip={{
-                                                content: toLocaleDate(credit.expiration)
-                                            }}>
+                <Table.Root columns={4} let:root>
+                    <svelte:fragment slot="header" let:root>
+                        <Table.Header.Cell {root}>Code</Table.Header.Cell>
+                        <Table.Header.Cell {root}>Total</Table.Header.Cell>
+                        <Table.Header.Cell {root}>Remaining</Table.Header.Cell>
+                        <Table.Header.Cell {root}>Expires at</Table.Header.Cell>
+                    </svelte:fragment>
+                    {#each creditList.credits as credit}
+                        <Table.Row.Base {root}>
+                            <Table.Cell {root}>
+                                {credit?.couponId ?? '-'}
+                            </Table.Cell>
+                            <Table.Cell {root}>
+                                {formatCurrency(credit.total)}
+                            </Table.Cell>
+                            <Table.Cell {root}>
+                                {#if credit.status === 'expired'}
+                                    <span
+                                        style="text-decoration: line-through;"
+                                        class:u-hide={credit.credits === 0}>
+                                        {formatCurrency(credit.credits)}</span> $0.00
+                                {:else}
+                                    {formatCurrency(credit.credits)}
+                                {/if}
+                            </Table.Cell>
+                            <Table.Cell {root}>
+                                {#if credit.status === 'expired'}
+                                    <Tooltip>
+                                        <span>
                                             <Pill>Expired</Pill>
                                         </span>
-                                    {:else}
-                                        {toLocaleDate(credit.expiration)}
-                                    {/if}
-                                </TableCellText>
-                            </TableRow>
-                        {/each}
-                    </TableBody>
-                </TableScroll>
-                <div class="u-flex u-main-space-between">
-                    <p class="text">Total credits: {creditList?.total}</p>
-                    <PaginationInline {limit} bind:offset sum={creditList?.total} hidePages />
-                </div>
+                                        <span slot="tooltip"
+                                            >{toLocaleDate(credit.expiration)}</span>
+                                    </Tooltip>
+                                {:else}
+                                    {toLocaleDate(credit.expiration)}
+                                {/if}
+                            </Table.Cell>
+                        </Table.Row.Base>
+                    {/each}
+                </Table.Root>
+                {#if creditList?.total > limit}
+                    <div class="u-flex u-main-space-between">
+                        <p class="text">Total credits: {creditList?.total}</p>
+                        <PaginationInline {limit} bind:offset total={creditList?.total} hidePages />
+                    </div>
+                {/if}
             {:else}
                 <Empty target="credits" on:click={handleCredits}>Add credits</Empty>
             {/if}
@@ -178,7 +172,7 @@
                 secondary
                 href={$upgradeURL}
                 on:click={() => {
-                    trackEvent('click_organization_upgrade', {
+                    trackEvent(Click.OrganizationClickUpgrade, {
                         from: 'button',
                         source: 'billing_add_credits'
                     });

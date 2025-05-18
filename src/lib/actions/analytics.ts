@@ -1,7 +1,7 @@
 import Analytics, { type AnalyticsPlugin } from 'analytics';
 import Plausible from 'plausible-tracker';
 import { get } from 'svelte/store';
-import { page } from '$app/stores';
+import { page } from '$app/state';
 import { user } from '$lib/stores/user';
 import { ENV, MODE, VARS, isCloud } from '$lib/system';
 import { AppwriteException } from '@appwrite.io/console';
@@ -56,13 +56,12 @@ export function trackEvent(name: string, data: object = null): void {
         return;
     }
 
-    const currentPage = get(page);
-    const path = currentPage.route.id;
+    const path = page.route.id;
 
-    if (currentPage.params?.project) {
+    if (page.params?.project) {
         data = {
             ...data,
-            project: currentPage.params.project
+            project: page.params.project
         };
     }
 
@@ -141,6 +140,64 @@ export function isTrackingAllowed() {
     }
 }
 
+export enum Click {
+    BackupCopyIdClick = 'click_backup_copy_id',
+    BackupDeleteClick = 'click_backup_delete',
+    BackupRestoreClick = 'click_backup_restore',
+    BreadcrumbClick = 'click_breadcrumb',
+    ConnectRepositoryClick = 'click_connect_repository',
+    CreditsRedeemClick = 'click_credits_redeem',
+    CloudSignupClick = 'click_cloud_signup',
+    DatabaseAttributeDelete = 'click_attribute_delete',
+    DatabaseIndexDelete = 'click_index_delete',
+    DatabaseCollectionDelete = 'click_collection_delete',
+    DatabaseDatabaseDelete = 'click_database_delete',
+    DatabaseImportCsv = 'click_database_import_csv',
+    DomainCreateClick = 'click_domain_create',
+    DomainDeleteClick = 'click_domain_delete',
+    DomainRetryDomainVerificationClick = 'click_domain_retry_domain_verification',
+    FeedbackSubmitClick = 'click_leave_feedback',
+    FilterApplyClick = 'click_apply_filter',
+    FunctionsRedeployClick = 'click_function_redeploy',
+    FunctionsDeploymentDeleteClick = 'click_deployment_delete',
+    FunctionsDeploymentCancelClick = 'click_deployment_cancel',
+    KeyCreateClick = 'click_key_create',
+    DevKeyCreateClick = 'click_dev_key_create',
+    MenuDropDownClick = 'click_menu_dropdown',
+    MenuOverviewClick = 'click_menu_overview',
+    ModalCloseClick = 'click_close_modal',
+    MessagingScheduleClick = 'click_messaging_schedule',
+    MessagingTopicCreateClick = 'click_messaging_topic_create',
+    MessagingTargetCreateClick = 'click_messaging_target_create',
+    MembershipDeleteClick = 'click_delete_membership',
+    PlatformCreateClick = 'click_platform_create',
+    OrganizationClickCreate = 'click_create_organization',
+    OrganizationClickUpgrade = 'click_organization_upgrade',
+    OnboardingSetupDatabaseClick = 'click_onboarding_setup_database',
+    OnboardingApiReferencesClick = 'click_onboarding_api_references',
+    OnboardingTutorialsClick = 'click_onboarding_tutorials',
+    OnboardingStorageQuickstartClick = 'click_onboarding_storage_quickstart',
+    OnboardingFunctionsQuickstartClick = 'click_onboarding_functions_quickstart',
+    OnboardingAuthEmailPasswordClick = 'click_onboarding_auth_email_password',
+    OnboardingAuthOauth2Click = 'click_onboarding_auth_oauth2',
+    OnboardingAuthAllMethodsClick = 'click_onboarding_auth_all_methods',
+    OnboardingDiscordClick = 'click_onboarding_discord',
+    StorageBucketDeleteClick = 'click_bucket_delete',
+    SettingsWebhookUpdateSignatureClick = 'click_webhook_update_signature',
+    SettingsWebhookDeleteClick = 'click_webhook_delete',
+    SettingsInstallProviderClick = 'click_install_provider',
+    SettingsStartMigrationClick = 'click_start_migration',
+    SubmitFormClick = 'click_submit_form',
+    ShowCustomIdClick = 'click_show_custom_id',
+    SupportOpenClick = 'click_open_support_menu',
+    PromoClick = 'click_promo',
+    PolicyDeleteClick = 'click_policy_delete',
+    VariablesCreateClick = 'click_variable_create',
+    VariablesUpdateClick = 'click_variable_update',
+    VariablesImportClick = 'click_variable_import',
+    WebsiteOpenClick = 'click_open_website'
+}
+
 export enum Submit {
     DownloadDPA = 'submit_download_dpa',
     Error = 'submit_error',
@@ -161,6 +218,9 @@ export enum Submit {
     AccountRecoveryCodesCreate = 'submit_account_recovery_codes_create',
     AccountRecoveryCodesUpdate = 'submit_account_recovery_codes_update',
     AccountDeleteIdentity = 'submit_account_delete_identity',
+    FeedbackSubmit = 'submit_leave_feedback',
+    FilterClear = 'submit_clear_filter',
+    FilterApply = 'submit_filter_apply',
     UserCreate = 'submit_user_create',
     UserDelete = 'submit_user_delete',
     UserUpdateEmail = 'submit_user_update_email',
@@ -168,6 +228,7 @@ export enum Submit {
     UserUpdateName = 'submit_user_update_name',
     UserUpdatePassword = 'submit_user_update_password',
     UserUpdatePhone = 'submit_user_update_phone',
+    UserUpdateMfa = 'submit_user_update_mfa',
     UserUpdatePreferences = 'submit_user_update_preferences',
     UserUpdateStatus = 'submit_user_update_status',
     UserUpdateVerificationEmail = 'submit_user_update_verification_email',
@@ -189,9 +250,12 @@ export enum Submit {
     MemberDelete = 'submit_member_delete',
     MembershipUpdate = 'submit_membership_update',
     MembershipUpdateStatus = 'submit_membership_update_status',
+    MessagingTargetUpdate = 'submit_messaging_target_update',
+    MessagingUpdateHtmlMode = 'submit_update_html_mode',
     ProviderUpdate = 'submit_provider_update',
     TeamCreate = 'submit_team_create',
     TeamDelete = 'submit_team_delete',
+    TeamUpdatePreferences = 'submit_team_update_preferences',
     TeamUpdateName = 'submit_team_update_name',
     AuthLimitUpdate = 'submit_auth_limit_update',
     AuthStatusUpdate = 'submit_auth_status_update',
@@ -208,6 +272,7 @@ export enum Submit {
     DatabaseCreate = 'submit_database_create',
     DatabaseDelete = 'submit_database_delete',
     DatabaseUpdateName = 'submit_database_update_name',
+    DatabaseImportCsv = 'submit_database_import_csv',
     AttributeCreate = 'submit_attribute_create',
     AttributeUpdate = 'submit_attribute_update',
     AttributeDelete = 'submit_attribute_delete',
@@ -234,6 +299,8 @@ export enum Submit {
     FunctionUpdateTimeout = 'submit_function_update_timeout',
     FunctionUpdateEvents = 'submit_function_update_events',
     FunctionUpdateScopes = 'submit_function_key_update_scopes',
+    FunctionUpdateRuntime = 'submit_function_update_runtime',
+    FunctionUpdateBuildCommand = 'submit_function_update_build_command',
     FunctionConnectRepo = 'submit_function_connect_repo',
     FunctionDisconnectRepo = 'submit_function_disconnect_repo',
     FunctionRedeploy = 'submit_function_redeploy',
@@ -247,17 +314,26 @@ export enum Submit {
     VariableDelete = 'submit_variable_delete',
     VariableUpdate = 'submit_variable_update',
     VariableEditor = 'submit_variable_editor',
+
     KeyCreate = 'submit_key_create',
     KeyDelete = 'submit_key_delete',
     KeyUpdateName = 'submit_key_update_name',
     KeyUpdateScopes = 'submit_key_update_scopes',
     KeyUpdateExpire = 'submit_key_update_expire',
+
+    DevKeyCreate = 'submit_dev_key_create',
+    DevKeyDelete = 'submit_dev_key_delete',
+    DevKeyUpdateName = 'submit_dev_key_update_name',
+    DevKeyUpdateExpire = 'submit_dev_key_update_expire',
+
     PlatformCreate = 'submit_platform_create',
     PlatformDelete = 'submit_platform_delete',
     PlatformUpdate = 'submit_platform_update',
+
     DomainCreate = 'submit_domain_create',
     DomainDelete = 'submit_domain_delete',
     DomainUpdateVerification = 'submit_domain_update_verification',
+    CertificateDelete = 'submit_certificate_delete',
     WebhookCreate = 'submit_webhook_create',
     WebhookDelete = 'submit_webhook_delete',
     WebhookUpdateSignature = 'submit_webhook_update_signature',
@@ -279,6 +355,9 @@ export enum Submit {
     FileCreate = 'submit_file_create',
     FileDelete = 'submit_file_delete',
     FileUpdatePermissions = 'submit_file_update_permissions',
+    FileTokenCreate = 'submit_file_token',
+    FileTokenDelete = 'submit_file_delete',
+    FileTokenUpdate = 'submit_file_update_expiry',
     BudgetCapUpdate = 'submit_budget_cap_update',
     BudgetAlertsUpdate = 'submit_budget_alert_conditions_update',
     CreditRedeem = 'submit_credit_redeem',
@@ -327,5 +406,26 @@ export enum Submit {
     MessagingTopicSubscriberDelete = 'submit_messaging_topic_subscriber_delete',
     ApplyQuickFilter = 'submit_apply_quick_filter',
     RequestBAA = 'submit_request_baa',
-    RequestSoc2 = 'submit_request_soc2'
+    RequestSoc2 = 'submit_request_soc2',
+    SiteCreate = 'submit_site_create',
+    SiteDelete = 'submit_site_delete',
+    SiteUpdateName = 'submit_site_update_name',
+    SiteUpdatePermissions = 'submit_site_update_permissions',
+    SiteUpdateSchedule = 'submit_site_update_schedule',
+    SiteUpdateConfiguration = 'submit_site_update_configuration',
+    SiteUpdateLogging = 'submit_site_update_logging',
+    SiteUpdateTimeout = 'submit_site_update_timeout',
+    SiteUpdateEvents = 'submit_site_update_events',
+    SiteUpdateScopes = 'submit_site_key_update_scopes',
+    SiteUpdateBuildSettings = 'submit_site_update_build_settings',
+    SiteUpdateSinglePageApplication = 'submit_site_update_single_page_application',
+    SiteConnectRepo = 'submit_site_connect_repo',
+    SiteRedeploy = 'submit_site_redeploy',
+    SiteDisconnectRepo = 'submit_site_disconnect_repo',
+    SiteActivateDeployment = 'submit_site_activate_deployment',
+    RecordCreate = 'submit_dns_record_create',
+    RecordUpdate = 'submit_dns_record_update',
+    RecordDelete = 'submit_dns_record_delete',
+    SearchClear = 'submit_clear_search',
+    FrameworkDetect = 'submit_framework_detect'
 }

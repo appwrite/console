@@ -3,12 +3,21 @@ export const CARD_LIMIT = 6; // default card limit
 export const INTERVAL = 5 * 60000; // default interval to check for feedback
 export const NEW_DEV_PRO_UPGRADE_COUPON = 'appw50';
 
+export const REGION_FRA = 'fra';
+export const REGION_SYD = 'syd';
+export const REGION_NYC = 'nyc';
+
+export const SUBDOMAIN_FRA = 'fra.';
+export const SUBDOMAIN_SYD = 'syd.';
+export const SUBDOMAIN_NYC = 'nyc.';
+
 export enum Dependencies {
     FACTORS = 'dependency:factors',
     IDENTITIES = 'dependency:identities',
     CREDIT = 'dependency:credit',
     INVOICES = 'dependency:invoices',
     ADDRESS = 'dependency:address',
+    UPGRADE_PLAN = 'dependency:upgrade_plan',
     PAYMENT_METHODS = 'dependency:paymentMethods',
     ORGANIZATION = 'dependency:organization',
     MEMBERS = 'dependency:members',
@@ -33,6 +42,7 @@ export enum Dependencies {
     DOCUMENTS = 'dependency:documents',
     BUCKET = 'dependency:bucket',
     FILE = 'dependency:file',
+    FILE_TOKENS = 'dependency:file_tokens',
     FILES = 'dependency:files',
     FUNCTION = 'dependency:function',
     FUNCTION_DOMAINS = 'dependency:function_domains',
@@ -46,7 +56,10 @@ export enum Dependencies {
     PLATFORMS = 'dependency:platforms',
     KEY = 'dependency:key',
     KEYS = 'dependency:keys',
+    DEV_KEY = 'dependency:dev_key',
+    DEV_KEYS = 'dependency:dev_keys',
     DOMAINS = 'dependency:domains',
+    DOMAIN = 'dependency:domains',
     WEBHOOK = 'dependency:webhook',
     WEBHOOKS = 'dependency:webhooks',
     MIGRATIONS = 'dependency:migrations',
@@ -60,7 +73,10 @@ export enum Dependencies {
     MESSAGING_MESSAGE = 'dependency:messaging_message',
     MESSAGING_TOPICS = 'dependency:messaging_topics',
     MESSAGING_TOPIC = 'dependency:messaging_topic',
-    MESSAGING_TOPIC_SUBSCRIBERS = 'dependency:messaging_topic_subscribers'
+    MESSAGING_TOPIC_SUBSCRIBERS = 'dependency:messaging_topic_subscribers',
+    SITE = 'dependency:site',
+    SITES = 'dependency:sites',
+    SITES_DOMAINS = 'dependency:sites_domains'
 }
 
 export const defaultScopes: string[] = [
@@ -117,7 +133,9 @@ export const defaultScopes: string[] = [
     'topics.read',
     'topics.write',
     'billing.read',
-    'billing.write'
+    'billing.write',
+    'sites.read',
+    'sites.write'
 ];
 
 export const defaultRoles: string[] = ['owner'];
@@ -358,6 +376,42 @@ export const scopes: {
         scope: 'migrations.write',
         description: 'Access to create migrations',
         category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'tokens.read',
+        description: "Access to read your project's file tokens",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'tokens.write',
+        description: 'Access to create file tokens',
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'sites.read',
+        description: "Access to read your project's sites and deployments",
+        category: 'Sites',
+        icon: 'globe'
+    },
+    {
+        scope: 'sites.write',
+        description: "Access to create, update, and delete your project's sites and deployments",
+        category: 'Sites',
+        icon: 'globe'
+    },
+    {
+        scope: 'log.read',
+        description: "Access to read your sites's logs",
+        category: 'Sites',
+        icon: 'globe'
+    },
+    {
+        scope: 'log.write',
+        description: "Access to delete your site's logs",
+        category: 'Sites',
         icon: 'globe'
     }
 ];

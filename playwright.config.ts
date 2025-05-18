@@ -5,6 +5,7 @@ const config: PlaywrightTestConfig = {
     reportSlowTests: null,
     reporter: [['html', { open: 'never' }]],
     retries: 3,
+    testDir: 'e2e',
     use: {
         baseURL: 'http://localhost:4173/console/',
         trace: 'on-first-retry'
@@ -12,8 +13,9 @@ const config: PlaywrightTestConfig = {
     webServer: {
         timeout: 120000,
         env: {
-            PUBLIC_APPWRITE_ENDPOINT: 'https://dlbillingic.appwrite.org/v1',
+            PUBLIC_APPWRITE_ENDPOINT: 'https://stage.cloud.appwrite.io/v1',
             PUBLIC_CONSOLE_MODE: 'cloud',
+            PUBLIC_APPWRITE_MULTI_REGION: 'true',
             PUBLIC_STRIPE_KEY:
                 'pk_test_51LT5nsGYD1ySxNCyd7b304wPD8Y1XKKWR6hqo6cu3GIRwgvcVNzoZv4vKt5DfYXL1gRGw4JOqE19afwkJYJq1g3K004eVfpdWn'
         },

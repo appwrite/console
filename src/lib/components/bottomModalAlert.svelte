@@ -4,7 +4,7 @@
     import { app } from '$lib/stores/app';
     import {
         type BottomModalAlertItem,
-        bottomModalAlerts,
+        bottomModalAlertsConfig,
         dismissBottomModalAlert,
         hideAllModalAlerts
     } from '$lib/stores/bottom-alerts';
@@ -13,15 +13,16 @@
     import { BillingPlan } from '$lib/constants';
     import { upgradeURL } from '$lib/stores/billing';
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
-    import { project } from '$routes/(console)/project-[project]/store';
-    import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import { page } from '$app/state';
+    import { Click, trackEvent } from '$lib/actions/analytics';
+    import { goto } from '$app/navigation';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
 
     function getPageScope(pathname: string) {
-        const isProjectPage = pathname.includes('project-[project]');
+        const isProjectPage = pathname.includes('project-[region]-[project]');
         const isOrganizationPage = pathname.includes('organization-[organization]');
 
         return { isProjectPage, isOrganizationPage };
@@ -33,22 +34,26 @@
         return alerts
             .sort((a, b) => b.importance - a.importance)
             .filter((alert) => {
-                return (
-                    alert.show &&
-                    shouldShowNotification(alert.id) &&
-                    // if no scope > show in projects & org pages.
-                    ((!alert.scope && (isProjectPage || isOrganizationPage)) ||
-                        // project scope, show only in project pages
-                        (isProjectPage && alert.scope === 'project') ||
-                        // organization scope, show only in organization pages
-                        (isOrganizationPage && alert.scope === 'organization'))
-                );
+                if (!alert.show || !shouldShowNotification(alert.id)) return false;
+
+                switch (alert.scope) {
+                    case 'everywhere':
+                        return true;
+                    case 'project':
+                        return isProjectPage;
+                    case 'organization':
+                        return isOrganizationPage;
+                    default:
+                        return false;
+                }
             });
     }
 
-    $: filteredModalAlerts = filterModalAlerts($bottomModalAlerts, $page.route.id);
+    $: filteredModalAlerts = filterModalAlerts($bottomModalAlertsConfig.alerts, page.route.id);
 
     $: currentModalAlert = filteredModalAlerts[currentIndex] as BottomModalAlertItem;
+
+    $: hasOnlyPrimaryCta = typeof currentModalAlert?.learnMore === 'undefined';
 
     function handleClose() {
         filteredModalAlerts.forEach((alert) => {
@@ -67,9 +72,48 @@
         currentIndex = (currentIndex - 1 + filteredModalAlerts.length) % filteredModalAlerts.length;
     }
 
+    function getMobileWindowConfig(): {
+        html: boolean;
+        cta: boolean;
+        title: string;
+        message: string;
+    } {
+        const config = $bottomModalAlertsConfig?.mobileSingleLayout;
+        const visibleAlerts = $bottomModalAlertsConfig.alerts.filter((a) => a.show);
+
+        const fallback = {
+            title: 'New features available',
+            message: 'Explore new features to enhance your projects and improve security.'
+        };
+
+        const shouldApplyConfig = config?.enabled === true && visibleAlerts.length === 1;
+
+        return {
+            cta: !!(shouldApplyConfig && config.cta),
+            html: !!(shouldApplyConfig && config.isHtml),
+            title: shouldApplyConfig && config.title ? config.title : fallback.title,
+            message: shouldApplyConfig && config.message ? config.message : fallback.message
+        };
+    }
+
+    function triggerMobileWindowLink() {
+        handleClose();
+
+        const url = $bottomModalAlertsConfig.mobileSingleLayout.cta.link({
+            organization: $organization,
+            project: $project
+        });
+
+        if ($bottomModalAlertsConfig.mobileSingleLayout.cta.external) {
+            window.open(url, '_blank');
+        } else {
+            goto(url);
+        }
+    }
+
     function showUpgrade() {
         const plan = currentModalAlert.plan;
-        const organizationPlan = $organization.billingPlan;
+        const organizationPlan = $organization?.billingPlan;
         switch (plan) {
             case 'free':
                 return false;
@@ -87,13 +131,16 @@
     });
 </script>
 
-{#if filteredModalAlerts.length > 0 && currentModalAlert}
+{#if filteredModalAlerts.length > 0 && currentModalAlert && !page.url.pathname.includes('console/onboarding')}
     {@const shouldShowUpgrade = showUpgrade()}
     <div class="main-alert-wrapper is-not-mobile">
         <div class="alert-container">
             <article class="card">
                 {#key currentModalAlert.id}
-                    <button class="icon-inline-tag" on:click={() => handleClose()}>
+                    <button
+                        aria-label="Close modal"
+                        class="icon-inline-tag"
+                        on:click={() => handleClose()}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
@@ -129,17 +176,19 @@
 
                                 <div class="u-flex u-gap-10">
                                     <button
+                                        aria-label="Previous"
                                         class="icon-cheveron-left"
                                         on:click={showPrevious}
                                         disabled={currentIndex === 0}
-                                        class:active={currentIndex > 0} />
+                                        class:active={currentIndex > 0}></button>
 
                                     <button
+                                        aria-label="Next"
                                         class="icon-cheveron-right"
                                         on:click={showNext}
                                         disabled={currentIndex === filteredModalAlerts.length - 1}
                                         class:active={currentIndex !==
-                                            filteredModalAlerts.length - 1} />
+                                            filteredModalAlerts.length - 1}></button>
                                 </div>
                             </div>
                         {/if}
@@ -159,8 +208,8 @@
                         <div
                             class="buttons u-flex u-flex-vertical-mobile u-gap-4 u-padding-inline-8 u-padding-block-8">
                             <Button
-                                secondary
-                                class="button"
+                                secondary={!hasOnlyPrimaryCta}
+                                class={`${hasOnlyPrimaryCta ? 'only-primary-cta' : ''}`}
                                 href={shouldShowUpgrade
                                     ? $upgradeURL
                                     : currentModalAlert.cta.link({
@@ -170,7 +219,13 @@
                                 external={!!currentModalAlert.cta.external}
                                 fullWidthMobile
                                 on:click={() => {
-                                    trackEvent('click_promo', {
+                                    if (currentModalAlert.cta?.hideOnClick === true) {
+                                        // be careful of this one.
+                                        // once clicked, its gone!
+                                        handleClose();
+                                    }
+
+                                    trackEvent(Click.PromoClick, {
                                         promo: currentModalAlert.id,
                                         type: shouldShowUpgrade ? 'upgrade' : 'try_now'
                                     });
@@ -203,7 +258,10 @@
             <div class="alert-container">
                 <article class="card">
                     {#key currentModalAlert.id}
-                        <button class="icon-inline-tag" on:click={() => handleClose()}>
+                        <button
+                            aria-label="Close modal"
+                            class="icon-inline-tag"
+                            on:click={() => handleClose()}>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="20"
@@ -239,18 +297,20 @@
 
                                     <div class="u-flex u-gap-10">
                                         <button
+                                            aria-label="Previous"
                                             class="icon-cheveron-left"
                                             on:click={showPrevious}
                                             disabled={currentIndex === 0}
-                                            class:active={currentIndex > 0} />
+                                            class:active={currentIndex > 0}></button>
 
                                         <button
+                                            aria-label="Next"
                                             class="icon-cheveron-right"
                                             on:click={showNext}
                                             disabled={currentIndex ===
                                                 filteredModalAlerts.length - 1}
                                             class:active={currentIndex !==
-                                                filteredModalAlerts.length - 1} />
+                                                filteredModalAlerts.length - 1}></button>
                                     </div>
                                 </div>
                             {/if}
@@ -270,7 +330,7 @@
                             <div
                                 class="buttons u-flex u-flex-vertical-mobile u-gap-4 u-padding-inline-8 u-padding-block-8">
                                 <Button
-                                    secondary
+                                    secondary={!hasOnlyPrimaryCta}
                                     class="button"
                                     href={shouldShowUpgrade
                                         ? $upgradeURL
@@ -282,7 +342,7 @@
                                     fullWidthMobile
                                     on:click={() => {
                                         openModalOnMobile = false;
-                                        trackEvent('click_promo', {
+                                        trackEvent(Click.PromoClick, {
                                             promo: currentModalAlert.id,
                                             type: shouldShowUpgrade ? 'upgrade' : 'try_now'
                                         });
@@ -312,23 +372,39 @@
                 </article>
             </div>
         {:else}
-            <button
+            {@const mobileConfig = getMobileWindowConfig()}
+            <!-- we don't need keydown because we show this only on mobile -->
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <div
+                tabindex="0"
+                role="button"
                 class:showing={!openModalOnMobile}
                 class="card notification-card u-width-full-line"
-                on:click={() => (openModalOnMobile = true)}>
+                on:click={() => {
+                    if (mobileConfig.cta) {
+                        // navigate manually!
+                        triggerMobileWindowLink();
+                    } else {
+                        openModalOnMobile = true;
+                    }
+                }}>
                 <div class="u-flex-vertical u-gap-4">
                     <div class="u-flex u-cross-center u-main-space-between">
-                        <h3 class="body-text-2 u-bold">New features available</h3>
-                        <button on:click={hideAllModalAlerts}>
-                            <span class="icon-x" />
+                        <h3 class="body-text-2 u-bold">{mobileConfig.title}</h3>
+                        <button on:click={hideAllModalAlerts} aria-label="Close">
+                            <span class="icon-x"></span>
                         </button>
                     </div>
 
                     <span class="u-width-fit-content">
-                        Explore new features to enhance your projects and improve security.
+                        {#if mobileConfig.html}
+                            {@html mobileConfig.message}
+                        {:else}
+                            {mobileConfig.message}
+                        {/if}
                     </span>
                 </div>
-            </button>
+            </div>
         {/if}
     </div>
 {/if}
@@ -368,6 +444,22 @@
     :global(.theme-dark) .icon-inline-tag {
         background: #1d1d21;
         border: hsl(var(--color-neutral-80)) solid 1px;
+    }
+
+    :global(.main-alert-wrapper .only-primary-cta) {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .showcase-image.u-only-light {
+        border-radius: 8px;
+        border: 0.795px solid var(--border-neutral-strong, #d8d8db);
+    }
+
+    .showcase-image.u-only-dark {
+        border-radius: 8px;
+        border: 0.795px solid var(--border-neutral-strong, #414146);
     }
 
     .u-gap-10 {

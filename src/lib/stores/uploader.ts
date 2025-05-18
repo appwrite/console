@@ -1,15 +1,15 @@
-import { Client, type Models, Storage } from '@appwrite.io/console';
+import { Client, type Models, Sites, Storage } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
-import { getProjectId } from '$lib/helpers/project';
 import { getApiEndpoint } from '$lib/stores/sdk';
+import { page } from '$app/state';
 
 type UploaderFile = {
     $id: string;
-    bucketId: string;
+    resourceId: string;
     name: string;
     progress: number;
-    completed: boolean;
-    failed: boolean;
+    size: number;
+    status: 'failed' | 'pending' | 'success';
     error?: string;
 };
 export type Uploader = {
@@ -18,13 +18,18 @@ export type Uploader = {
     files: UploaderFile[];
 };
 
-const temporaryStorage = () => {
-    const clientProject = new Client()
-        .setEndpoint(getApiEndpoint())
-        .setMode('admin')
-        .setProject(getProjectId());
-
+const temporaryStorage = (region: string, projectId: string) => {
+    const clientProject = new Client().setMode('admin');
+    const endpoint = getApiEndpoint(region);
+    clientProject.setEndpoint(endpoint).setProject(projectId);
     return new Storage(clientProject);
+};
+
+const temporarySites = (region: string, projectId: string) => {
+    const clientProject = new Client().setMode('admin');
+    const endpoint = getApiEndpoint(region);
+    clientProject.setEndpoint(endpoint).setProject(projectId);
+    return new Sites(clientProject);
 };
 
 const createUploader = () => {
@@ -66,14 +71,21 @@ const createUploader = () => {
                 isCollapsed: false,
                 files: []
             }),
-        uploadFile: async (bucketId: string, id: string, file: File, permissions: string[]) => {
+        uploadFile: async (
+            region: string,
+            projectId: string,
+            bucketId: string,
+            id: string,
+            file: File,
+            permissions: string[]
+        ) => {
             const newFile: UploaderFile = {
                 $id: id,
-                bucketId: bucketId,
+                resourceId: bucketId,
                 name: file.name,
+                size: file.size,
                 progress: 0,
-                completed: false,
-                failed: false
+                status: 'pending'
             };
             update((n) => {
                 n.isOpen = true;
@@ -81,7 +93,7 @@ const createUploader = () => {
                 n.files.unshift(newFile);
                 return n;
             });
-            const uploadedFile = await temporaryStorage().createFile(
+            const uploadedFile = await temporaryStorage(region, projectId).createFile(
                 bucketId,
                 id ?? 'unique()',
                 file,
@@ -89,14 +101,43 @@ const createUploader = () => {
                 (p) => {
                     newFile.$id = p.$id;
                     newFile.progress = p.progress;
-                    newFile.completed = p.progress === 100;
+                    newFile.status = p.progress === 100 ? 'success' : 'pending';
                     updateFile(p.$id, newFile);
                 }
             );
             newFile.$id = uploadedFile.$id;
             newFile.progress = 100;
-            newFile.completed = true;
+            newFile.status = 'success';
             updateFile(newFile.$id, newFile);
+        },
+        uploadSiteDeployment: async (siteId: string, code: File) => {
+            const newDeployment: UploaderFile = {
+                $id: '',
+                resourceId: siteId,
+                name: code.name,
+                size: code.size,
+                progress: 0,
+                status: 'pending'
+            };
+            update((n) => {
+                n.isOpen = true;
+                n.isCollapsed = false;
+                n.files.unshift(newDeployment);
+                return n;
+            });
+            const uploadedFile = await temporarySites(
+                page.params.region,
+                page.params.project
+            ).createDeployment(siteId, code, true, undefined, undefined, undefined, (p) => {
+                newDeployment.$id = p.$id;
+                newDeployment.progress = p.progress;
+                newDeployment.status = p.progress === 100 ? 'success' : 'pending';
+                updateFile(p.$id, newDeployment);
+            });
+            newDeployment.$id = uploadedFile.$id;
+            newDeployment.progress = 100;
+            newDeployment.status = 'success';
+            updateFile(newDeployment.$id, newDeployment);
         },
         removeFromQueue: (id: string) => {
             update((n) => {

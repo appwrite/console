@@ -1,21 +1,11 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { Collapsible, CollapsibleItem } from '$lib/components';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableHeader,
-        TableRow,
-        TableRowLink,
-        TableScroll
-    } from '$lib/elements/table';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import { canSeeProjects } from '$lib/stores/roles';
     import { onMount } from 'svelte';
-    import type { PageData } from './$types';
+    import { Accordion, Table } from '@appwrite.io/pink-svelte';
+    import { base } from '$app/paths';
 
     type Metric =
         | 'users'
@@ -31,7 +21,7 @@
 
     type DatabaseOperationMetric = Extract<Metric, 'databasesReads' | 'databasesWrites'>;
 
-    export let data: PageData;
+    export let data;
     export let projects: OrganizationUsage['projects'];
     export let metric: Metric | undefined = undefined;
     export let estimate: Estimate | undefined = undefined;
@@ -47,8 +37,13 @@
     }
 
     function getProjectUsageLink(projectId: string): string {
-        return `${base}/project-${projectId}/settings/usage`;
+        const region = data.projects[projectId]?.region ?? 'fra';
+        return `${base}/project-${region}-${projectId}/settings/usage`;
     }
+
+    // function getProjectName(projectId: string): string {
+    //     return data.projects[projectId]?.name ?? 'Unknown';
+    // }
 
     function groupByProject(
         metric: Metric | undefined,
@@ -63,12 +58,14 @@
     }> {
         const data = [];
         for (const project of projects) {
+            const projectId = project.projectId;
+
             if (metric) {
                 const usage = project[metric];
                 if (!usage) continue;
 
                 data.push({
-                    projectId: project.projectId,
+                    projectId,
                     usage: usage ?? 0,
                     estimate: estimate ? project[estimate] : undefined
                 });
@@ -78,7 +75,7 @@
 
                 if (reads || writes) {
                     data.push({
-                        projectId: project.projectId,
+                        projectId,
                         databasesReads: reads,
                         databasesWrites: writes
                     });
@@ -114,94 +111,67 @@
 </script>
 
 {#if projects.some((project) => project[metric]) || projects.some( (project) => databaseOperationMetric?.some((metric) => project[metric]) )}
-    <Collapsible>
-        <CollapsibleItem>
-            <svelte:fragment slot="title">Project breakdown</svelte:fragment>
-            <TableScroll dense noStyles noMargin style="table-layout: auto">
-                <TableHeader>
-                    <TableCellHead>Project</TableCellHead>
-                    {#if databaseOperationMetric}
-                        <TableCellHead>Reads</TableCellHead>
-                        <TableCellHead>Writes</TableCellHead>
-                    {:else}
-                        <TableCellHead>{getMetricTitle(metric)}</TableCellHead>
-                    {/if}
-
-                    {#if estimate}
-                        <TableCellHead>Estimated cost</TableCellHead>
-                    {/if}
-                    {#if $canSeeProjects}
-                        <TableCellHead />
-                    {/if}
-                </TableHeader>
-                <TableBody>
-                    {#each groupByProject(metric, estimate, databaseOperationMetric).sort( (a, b) => {
-                            const aValue = a.usage ?? a.databasesReads ?? 0;
-                            const bValue = b.usage ?? b.databasesReads ?? 0;
-                            return bValue - aValue;
-                        } ) as project}
-                        {#if !$canSeeProjects}
-                            <TableRow>
-                                <TableCell title="Project">
-                                    {data.projectNames[project.projectId]?.name ?? 'Unknown'}
-                                </TableCell>
-                                {#if databaseOperationMetric}
-                                    <TableCell title="Reads">
-                                        {format(project.databasesReads ?? 0)}
-                                    </TableCell>
-                                    <TableCell title="Writes">
-                                        {format(project.databasesWrites ?? 0)}
-                                    </TableCell>
-                                {:else}
-                                    <TableCell>
-                                        {format(project.usage)}
-                                    </TableCell>
-                                {/if}
-
-                                {#if project.estimate}
-                                    <TableCell title="Estimated cost">
-                                        {formatCurrency(project.estimate)}
-                                    </TableCell>
-                                {/if}
-                            </TableRow>
-                        {:else}
-                            <TableRowLink href={getProjectUsageLink(project.projectId)}>
-                                <TableCell title="Project">
-                                    {data.projectNames[project.projectId]?.name ?? 'Unknown'}
-                                </TableCell>
-                                {#if databaseOperationMetric}
-                                    <TableCell title="Reads">
-                                        {format(project.databasesReads ?? 0)}
-                                    </TableCell>
-                                    <TableCell title="Writes">
-                                        {format(project.databasesWrites ?? 0)}
-                                    </TableCell>
-                                {:else}
-                                    <TableCell>
-                                        {format(project.usage)}
-                                    </TableCell>
-                                {/if}
-
-                                {#if project.estimate}
-                                    <TableCell title="Estimated cost">
-                                        {formatCurrency(project.estimate)}
-                                    </TableCell>
-                                {/if}
-                                <TableCell right={true}>
-                                    <span
-                                        class="icon-cheveron-right u-cross-child-center ignore-icon-rotate" />
-                                </TableCell>
-                            </TableRowLink>
-                        {/if}
-                    {/each}
-                </TableBody>
-            </TableScroll>
-        </CollapsibleItem>
-    </Collapsible>
+    <Accordion title="Project breakdown" hideDivider>
+        <Table.Root
+            columns={[
+                { id: 'project' },
+                { id: 'reads', hide: !databaseOperationMetric },
+                { id: 'writes', hide: !databaseOperationMetric },
+                { id: 'metric', hide: !!databaseOperationMetric },
+                { id: 'costs' }
+            ]}
+            let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="project" {root}>Project</Table.Header.Cell>
+                <Table.Header.Cell column="reads" {root}>Reads</Table.Header.Cell>
+                <Table.Header.Cell column="writes" {root}>Writes</Table.Header.Cell>
+                <Table.Header.Cell column="metric" {root}
+                    >{getMetricTitle(metric)}</Table.Header.Cell>
+                <Table.Header.Cell column="costs" {root}>Estimated cost</Table.Header.Cell>
+            </svelte:fragment>
+            {#each groupByProject(metric, estimate, databaseOperationMetric).sort((a, b) => {
+                const aValue = a.usage ?? a.databasesReads ?? 0;
+                const bValue = b.usage ?? b.databasesReads ?? 0;
+                return bValue - aValue;
+            }) as project}
+                {#if !$canSeeProjects}
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="project" {root}>
+                            {data.projectNames[project.projectId]?.name ?? 'Unknown'}
+                        </Table.Cell>
+                        <Table.Cell column="reads" {root}>
+                            {format(project.databasesReads ?? 0)}
+                        </Table.Cell>
+                        <Table.Cell column="writes" {root}>
+                            {format(project.databasesWrites ?? 0)}
+                        </Table.Cell>
+                        <Table.Cell column="metric" {root}>
+                            {format(project.usage)}
+                        </Table.Cell>
+                        <Table.Cell column="costs" {root}>
+                            {formatCurrency(project.estimate ?? 0)}
+                        </Table.Cell>
+                    </Table.Row.Base>
+                {:else}
+                    <Table.Row.Link href={getProjectUsageLink(project.projectId)} {root}>
+                        <Table.Cell column="project" {root}>
+                            {data.projectNames[project.projectId]?.name ?? 'Unknown'}
+                        </Table.Cell>
+                        <Table.Cell column="reads" {root}>
+                            {format(project.databasesReads ?? 0)}
+                        </Table.Cell>
+                        <Table.Cell column="writes" {root}>
+                            {format(project.databasesWrites ?? 0)}
+                        </Table.Cell>
+                        <Table.Cell column="metric" {root}>
+                            {format(project.usage)}
+                        </Table.Cell>
+                        <Table.Cell column="costs" {root}>
+                            {formatCurrency(project.estimate ?? 0)}
+                        </Table.Cell>
+                    </Table.Row.Link>
+                {/if}
+            {/each}
+        </Table.Root>
+    </Accordion>
 {/if}
-
-<style>
-    .ignore-icon-rotate {
-        rotate: unset !important;
-    }
-</style>

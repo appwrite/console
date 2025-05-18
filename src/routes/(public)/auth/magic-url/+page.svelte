@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import { Heading } from '$lib/components';
+    import { page } from '$app/state';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import { Account, Client } from '@appwrite.io/console';
+    import { Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
 
     const client = new Client();
@@ -10,18 +10,18 @@
     const endpoint = getApiEndpoint();
 
     onMount(async () => {
-        const projectId = $page.url.searchParams.get('project');
+        const projectId = page.url.searchParams.get('project');
         client.setEndpoint(endpoint).setProject(projectId);
 
-        const userId = $page.url.searchParams.get('userId');
-        const secret = $page.url.searchParams.get('secret');
+        const userId = page.url.searchParams.get('userId');
+        const secret = page.url.searchParams.get('secret');
 
         await account.updateMagicURLSession(userId, secret);
-        window.location.href = `appwrite-callback-${projectId}://${$page.url.search}`;
+        window.location.href = `appwrite-callback-${projectId}://${page.url.search}`;
     });
 </script>
 
-<Heading tag="h1" size="1">Missing redirect URL</Heading>
+<Typography.Title size="xl">Missing redirect URL</Typography.Title>
 <p>
     Your Magic URL login flow is missing a proper redirect URL. Please check the
     <a href="https://appwrite.io/docs/references/cloud/client-web/account#createMagicURLSession"

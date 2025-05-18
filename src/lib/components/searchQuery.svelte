@@ -1,84 +1,67 @@
 <script lang="ts">
+    import { page } from '$app/state';
     import { goto } from '$app/navigation';
-    import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
-    import { onMount } from 'svelte';
     import { onDestroy } from 'svelte';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { Icon, Input } from '@appwrite.io/pink-svelte';
+    import { IconSearch, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { debounce as createDebounce } from '$lib/helpers/debounce.js';
 
-    export let search = '';
     export let placeholder = '';
     export let debounce = 250;
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
-    export let isWithEndButton = true;
-    export let fullWidth = false;
 
-    let element: HTMLInputElement;
-    let timer: ReturnType<typeof setTimeout>;
+    let inputValue = page.url.searchParams.get('search') ?? '';
 
-    onMount(() => {
-        if (element && autofocus) {
-            element.focus();
+    const runSearch = createDebounce((value: string) => {
+        const trimmed = value.trim();
+        const url = new URL(page.url);
+        const previous = url.searchParams.get('search') ?? '';
+
+        if (previous === trimmed) return;
+
+        if (page.data.page > 1) {
+            url.searchParams.delete('page');
         }
-    });
+
+        if (trimmed === '') {
+            url.searchParams.delete('search');
+        } else {
+            url.searchParams.set('search', trimmed);
+        }
+
+        trackEvent('search');
+        goto(url, { keepFocus: true });
+    }, debounce);
+
+    $: runSearch(inputValue);
+
+    function clearInput() {
+        inputValue = '';
+    }
 
     onDestroy(() => {
-        search = '';
-        if (timer) {
-            clearTimeout(timer);
-        }
+        runSearch.cancel?.();
     });
-
-    $: valueChange(search ?? '');
-
-    function valueChange(value: string) {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            const url = new URL($page.url);
-            const previous = url.searchParams.get('search') ?? '';
-
-            if (previous === value) {
-                return;
-            }
-
-            if ($page.data.page > 1) {
-                url.searchParams.delete('page');
-            }
-
-            if (value === '') {
-                url.searchParams.delete('search');
-            } else {
-                url.searchParams.set('search', value);
-            }
-
-            trackEvent('search');
-            goto(url, { keepFocus: true });
-        }, debounce);
-    }
 </script>
 
-<div class="u-flex u-gap-12 common-section u-main-space-between">
-    <div class={fullWidth ? 'u-width-full-line' : 'u-flex-basis-50-percent'}>
-        <div class="input-text-wrapper" class:is-with-end-button={isWithEndButton}>
-            <input
-                {placeholder}
-                {disabled}
-                {required}
-                type="search"
-                class="input-text"
-                bind:value={search} />
-            <span class="icon-search" aria-hidden="true" />
-            {#if isWithEndButton && search}
-                <button
-                    class="button is-text is-only-icon"
-                    style="--button-size:1.5rem;"
-                    aria-label="Clear search"
-                    on:click={() => (search = '')}>
-                    <span class="icon-x" aria-hidden="true" />
-                </button>
+<div style:max-width="360px" style:width="100%">
+    <Input.Text
+        {placeholder}
+        {disabled}
+        {required}
+        {autofocus}
+        bind:value={inputValue}
+        --bgcolor-neutral-default="var(--bgcolor-neutral-primary)">
+        <svelte:fragment slot="start">
+            <Icon icon={IconSearch} />
+        </svelte:fragment>
+        <svelte:fragment slot="end">
+            {#if inputValue}
+                <Input.Action icon={IconX} on:click={clearInput} />
             {/if}
-        </div>
-    </div>
-    <slot />
+        </svelte:fragment>
+    </Input.Text>
 </div>

@@ -1,14 +1,6 @@
 <script lang="ts">
-    import { CardGrid, DropList, DropListItem, Empty, Heading } from '$lib/components';
+    import { CardGrid, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import {
-        Table,
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
     import { addressList } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -19,133 +11,134 @@
     import type { Address } from '$lib/sdk/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { base } from '$app/paths';
-    import { Pill } from '$lib/elements';
+    import {
+        IconDotsHorizontal,
+        IconInfo,
+        IconPencil,
+        IconPlus,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
+    import {
+        ActionMenu,
+        Icon,
+        Layout,
+        Link,
+        Popover,
+        Table,
+        Tag,
+        Typography
+    } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     let show = false;
     let showEdit = false;
     let selectedAddress: Address;
     let selectedLinkedOrgs: Organization[] = [];
     let showDelete = false;
-    let showDropdown = [];
     let countryList: Models.CountryList;
-    let showLinked = [];
 
     onMount(async () => {
-        countryList = await sdk.forProject.locale.listCountries();
+        countryList = await sdk
+            .forProject(page.params.region, page.params.project)
+            .locale.listCountries();
     });
 
     $: orgList = $organizationList.teams as unknown as Organization[];
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Billing Address</Heading>
-
-    <p class="text">
-        View or update your billing address. This address will be included in your invoices from
-        Appwrite.
-    </p>
+    <svelte:fragment slot="title">Billing address</svelte:fragment>
+    View or update your billing address. This address will be included in your invoices from Appwrite.
     <svelte:fragment slot="aside">
         {#if $addressList.total && countryList?.total}
-            <Table noMargin noStyles transparent>
-                <TableHeader>
-                    <TableCellHead>Billing address</TableCellHead>
-                    <TableCellHead width={195} />
-                    <TableCellHead width={40} />
-                </TableHeader>
-                <TableBody>
-                    {#each $addressList.billingAddresses as address, i}
-                        {@const country = countryList?.countries?.find(
-                            (c) => c.code === address.country
-                        )}
-                        {@const linkedOrgs = orgList?.filter(
-                            (org) => address.$id === org.billingAddressId
-                        )}
+            <Table.Root
+                let:root
+                columns={[{ id: 'address' }, { id: 'links' }, { id: 'actions', width: 40 }]}>
+                {#each $addressList.billingAddresses as address}
+                    {@const country = countryList?.countries?.find(
+                        (c) => c.code === address.country
+                    )}
+                    {@const linkedOrgs = orgList?.filter(
+                        (org) => address.$id === org.billingAddressId
+                    )}
 
-                        <TableRow>
-                            <TableCell>
-                                <div class="u-line-height-1-5">
-                                    <p class="text">{address.streetAddress}</p>
-                                    {#if address?.addressLine2}
-                                        <p class="text">{address.addressLine2}</p>
-                                    {/if}
-                                    <p class="text">{address.city}</p>
-                                    <p class="text">{address.state}</p>
-                                    <p class="text">{address.postalCode}</p>
-                                    <p class="text">{country ? country.name : address.country}</p>
-                                </div>
-                            </TableCell>
-                            <TableCell style="vertical-align: top;">
-                                {#if linkedOrgs?.length > 0}
-                                    <DropList bind:show={showLinked[i]} width="20" scrollable>
-                                        <Pill
-                                            button
-                                            on:click={() => (showLinked[i] = !showLinked[i])}>
-                                            <span class="icon-info" /> linked to organization
-                                        </Pill>
-                                        <svelte:fragment slot="list">
-                                            <p class="u-break-word">
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="address" {root}>
+                            {address.streetAddress},
+                            {#if address?.addressLine2}
+                                {address.addressLine2},
+                            {/if}
+                            {address.city},
+                            {#if address?.state}
+                                {address.state},
+                            {/if}
+                            {#if address?.postalCode}
+                                {address.postalCode},
+                            {/if}
+                            {country ? country.name : address.country}
+                        </Table.Cell>
+                        <Table.Cell column="links" {root}>
+                            {#if linkedOrgs?.length > 0}
+                                <Popover let:toggle>
+                                    <Tag on:click={toggle} size="s">
+                                        <Icon icon={IconInfo} slot="start" />
+                                        linked to organization
+                                    </Tag>
+                                    <svelte:fragment slot="tooltip">
+                                        <Layout.Stack>
+                                            <Typography.Text>
                                                 This billing address is linked to the following
                                                 organizations:
-                                            </p>
-                                            <div class="u-flex u-flex-vertical u-gap-4">
+                                            </Typography.Text>
+                                            <Layout.Stack gap="xxs">
                                                 {#each linkedOrgs as org}
-                                                    <a
-                                                        class="u-underline u-trim"
+                                                    <Link.Anchor
                                                         href={`${base}/organization-${org.$id}/billing`}>
                                                         {org.name}
-                                                    </a>
+                                                    </Link.Anchor>
                                                 {/each}
-                                            </div>
-                                        </svelte:fragment>
-                                    </DropList>
-                                {/if}
-                            </TableCell>
-                            <TableCell style="vertical-align: top;">
-                                <DropList
-                                    bind:show={showDropdown[i]}
-                                    placement="bottom-start"
-                                    noArrow>
-                                    <Button
-                                        round
-                                        text
-                                        ariaLabel="More options"
-                                        on:click={() => {
-                                            showDropdown[i] = !showDropdown[i];
-                                        }}>
-                                        <span class="icon-dots-horizontal" aria-hidden="true" />
-                                    </Button>
-                                    <svelte:fragment slot="list">
-                                        <DropListItem
-                                            icon="pencil"
-                                            on:click={() => {
-                                                showEdit = true;
-                                                selectedAddress = address;
-                                                showDropdown[i] = false;
-                                            }}>
-                                            Edit
-                                        </DropListItem>
-                                        <DropListItem
-                                            icon="trash"
-                                            on:click={() => {
-                                                showDelete = true;
-                                                selectedAddress = address;
-                                                selectedLinkedOrgs = linkedOrgs;
-                                                showDropdown[i] = false;
-                                            }}>
-                                            Delete
-                                        </DropListItem>
+                                            </Layout.Stack>
+                                        </Layout.Stack>
                                     </svelte:fragment>
-                                </DropList>
-                            </TableCell>
-                        </TableRow>
-                    {/each}
-                </TableBody>
-            </Table>
+                                </Popover>
+                            {/if}
+                        </Table.Cell>
+                        <Table.Cell column="actions" {root}>
+                            <Popover let:toggle placement="bottom-end" padding="none">
+                                <Button icon text ariaLabel="More options" on:click={toggle}>
+                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                </Button>
+                                <ActionMenu.Root slot="tooltip">
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconPencil}
+                                        on:click={() => {
+                                            showEdit = true;
+                                            selectedAddress = address;
+                                        }}>
+                                        Edit
+                                    </ActionMenu.Item.Button>
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconTrash}
+                                        on:click={() => {
+                                            showDelete = true;
+                                            selectedAddress = address;
+                                            selectedLinkedOrgs = linkedOrgs;
+                                        }}>
+                                        Delete
+                                    </ActionMenu.Item.Button>
+                                </ActionMenu.Root>
+                            </Popover>
+                        </Table.Cell>
+                    </Table.Row.Base>
+                {/each}
+            </Table.Root>
 
-            <Button text noMargin on:click={() => (show = true)}>
-                <span class="icon-plus" />
-                <span class="text">Add a billing address</span>
-            </Button>
+            <div>
+                <Button secondary on:click={() => (show = true)}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add a billing address
+                </Button>
+            </div>
         {:else}
             <Empty on:click={() => (show = true)}>
                 <p class="text">Add a billing address</p>

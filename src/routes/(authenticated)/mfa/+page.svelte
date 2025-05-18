@@ -6,8 +6,10 @@
     import { Unauthenticated } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import MfaChallengeFormList, { verify } from '$lib/components/mfaChallengeFormList.svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications.js';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
 
@@ -26,13 +28,13 @@
         disabled = true;
         try {
             await verify(challenge, code);
-            if ($page.url.searchParams) {
-                const redirect = $page.url.searchParams.get('redirect');
-                $page.url.searchParams.delete('redirect');
+            if (page.url.searchParams) {
+                const redirect = page.url.searchParams.get('redirect');
+                page.url.searchParams.delete('redirect');
                 if (redirect) {
-                    await goto(`${redirect}${$page.url.search}`);
+                    await goto(`${redirect}${page.url.search}`);
                 } else {
-                    await goto(`${base}/${$page.url.search ?? ''}`);
+                    await goto(`${base}/${page.url.search ?? ''}`);
                 }
             } else {
                 await goto(base);
@@ -51,26 +53,27 @@
     <title>Verify - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated>
+<Unauthenticated align="center">
     <svelte:fragment slot="top">
         <div class="top u-flex u-position-absolute u-main-center">
             <div class="flex u-width-full-line">
-                <Button text noMargin class="u-border-width-0" on:click={back}>
-                    <span class="icon-cheveron-left u-font-size-20" aria-hidden="true" />
-                    Back</Button>
+                <Button compact on:click={back}>
+                    <Icon icon={IconChevronLeft} slot="start" size="s" />
+                    Back
+                </Button>
             </div>
         </div>
     </svelte:fragment>
     <svelte:fragment slot="title">Verify your identity</svelte:fragment>
-    <svelte:fragment>
-        <Form onSubmit={submit} class="body-text-1">
+    <Form onSubmit={submit}>
+        <Layout.Stack gap="l" justifyContent="center" alignContent="center" alignItems="center">
             <MfaChallengeFormList {factors} bind:challenge bind:code bind:disabled />
-        </Form>
-    </svelte:fragment>
+        </Layout.Stack>
+    </Form>
 </Unauthenticated>
 
 <style lang="scss">
-    @use '@appwrite.io/pink/src/abstract/variables/devices';
+    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
 
     .top {
         inset-block-start: 5.85rem;
@@ -84,7 +87,7 @@
 
     @media (max-width: 440px) {
         .top {
-            inset-block-start: 0rem;
+            inset-block-start: 1rem;
             padding-inline: 0.5rem;
         }
     }

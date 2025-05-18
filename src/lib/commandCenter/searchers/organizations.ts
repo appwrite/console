@@ -2,9 +2,13 @@ import { goto } from '$app/navigation';
 import { base } from '$app/paths';
 import { sdk } from '$lib/stores/sdk';
 import type { Searcher } from '../commands';
+import { isCloud } from '$lib/system';
 
 export const orgSearcher = (async (query: string) => {
-    const { teams } = await sdk.forConsole.billing.listOrganization();
+    const { teams } = !isCloud
+        ? await sdk.forConsole.teams.list()
+        : await sdk.forConsole.billing.listOrganization();
+
     return teams
         .filter((organization) => organization.name.toLowerCase().includes(query.toLowerCase()))
         .map((organization) => {

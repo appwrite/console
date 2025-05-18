@@ -1,16 +1,9 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
-    import { tooltip } from '$lib/actions/tooltip';
-    import { BarChart, Legend } from '$lib/charts';
-    import { Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
-    import { BillingPlan } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
-    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
-    import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
-    import { formatNum } from '$lib/helpers/string';
     import { Container } from '$lib/layout';
-    import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
-    import type { OrganizationUsage } from '$lib/sdk/billing';
+    import { Card, CardGrid, ProgressBarBig } from '$lib/components';
+    import { BarChart, Legend } from '$lib/charts';
+    import { Button } from '$lib/elements/forms';
+    import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
     import {
         getServiceLimit,
         showUsageRatesModal,
@@ -19,7 +12,15 @@
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
+    import { formatNum } from '$lib/helpers/string';
+    import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
+    import type { OrganizationUsage } from '$lib/sdk/billing';
+    import { BillingPlan } from '$lib/constants';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import TotalMembers from './totalMembers.svelte';
+    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { Icon, Layout, Link, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { IconChartSquareBar, IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
 
@@ -31,20 +32,32 @@
     $: projects = (data.organizationUsage as OrganizationUsage).projects;
 
     $: legendData = [
-        { name: 'Reads', value: data.organizationUsage.databasesReadsTotal },
-        { name: 'Writes', value: data.organizationUsage.databasesWritesTotal }
+        {
+            name: 'Reads',
+            value: data.organizationUsage.databasesReads.reduce(
+                (sum, singleDay) => sum + singleDay.value,
+                0
+            )
+        },
+        {
+            name: 'Writes',
+            value: data.organizationUsage.databasesWrites.reduce(
+                (sum, singleDay) => sum + singleDay.value,
+                0
+            )
+        }
     ];
 </script>
 
 <Container>
     <div class="u-flex u-cross-center u-main-space-between">
-        <Heading tag="h2" size="5">Usage</Heading>
+        <Typography.Title>Usage</Typography.Title>
 
         {#if $organization?.billingPlan === BillingPlan.FREE}
             <Button
                 href={$upgradeURL}
                 on:click={() => {
-                    trackEvent('click_organization_upgrade', {
+                    trackEvent(Click.OrganizationClickUpgrade, {
                         from: 'button',
                         source: 'organization_usage'
                     });
@@ -53,39 +66,30 @@
             </Button>
         {/if}
     </div>
-    <div class="u-flex u-main-space-between common-section u-cross-center">
-        {#if $organization.billingPlan === BillingPlan.SCALE}
-            <p class="text">
-                On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
-                per resource listed below. <button
-                    on:click={() => ($showUsageRatesModal = true)}
-                    class="link"
-                    type="button">Learn more about plan usage limits.</button>
-            </p>
-        {:else if $organization.billingPlan === BillingPlan.PRO}
-            <p class="text">
-                On the Pro plan, you'll be charged only for any usage that exceeds the thresholds
-                per resource listed below. <button
-                    on:click={() => ($showUsageRatesModal = true)}
-                    class="link"
-                    type="button">Learn more about plan usage limits.</button>
-            </p>
-        {:else if $organization.billingPlan === BillingPlan.FREE}
-            <p class="text">
-                If you exceed the limits of the Free plan, services for your organization's projects
-                may be disrupted.
-                <a href={$upgradeURL} class="link">Upgrade for greater capacity</a>.
-            </p>
-        {/if}
-    </div>
-
-    <CardGrid>
-        <Heading tag="h6" size="7">Bandwidth</Heading>
-
+    {#if $organization.billingPlan === BillingPlan.SCALE}
         <p class="text">
-            Calculated for all bandwidth used across all projects in your organization. Resets at
-            the start of each billing cycle.
+            On the Scale plan, you'll be charged only for any usage that exceeds the thresholds per
+            resource listed below. <Link.Button on:click={() => ($showUsageRatesModal = true)}
+                >Learn more</Link.Button>
         </p>
+    {:else if $organization.billingPlan === BillingPlan.PRO}
+        <p class="text">
+            On the Pro plan, you'll be charged only for any usage that exceeds the thresholds per
+            resource listed below. <Link.Button on:click={() => ($showUsageRatesModal = true)}
+                >Learn more</Link.Button>
+        </p>
+    {:else if $organization.billingPlan === BillingPlan.FREE}
+        <p class="text">
+            If you exceed the limits of the Free plan, services for your organization's projects may
+            be disrupted.
+            <Link.Anchor href={$upgradeURL}>Upgrade for greater capacity</Link.Anchor>.
+        </p>
+    {/if}
+
+    <CardGrid gap="none">
+        <svelte:fragment slot="title">Bandwidth</svelte:fragment>
+        Calculated for all bandwidth used across all projects in your organization. Resets at the start
+        of each billing cycle.
 
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.bandwidth}
@@ -95,74 +99,65 @@
                 <ProgressBarBig
                     currentUnit={currentHumanized.unit}
                     currentValue={currentHumanized.value}
-                    maxValue={`of ${max.toString()} GB used`}
+                    maxValue={`/ ${max.toString()} GB used`}
                     progressValue={bytesToSize(current, 'GB')}
                     progressMax={max}
                     showBar={false} />
-                <div style:margin-top="-1.5em">
-                    <BarChart
-                        options={{
-                            yAxis: {
-                                axisLabel: {
-                                    formatter: (value) =>
-                                        value
-                                            ? `${humanFileSize(+value).value} ${
-                                                  humanFileSize(+value).unit
-                                              }`
-                                            : '0'
-                                }
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: (value) =>
+                                    value
+                                        ? `${humanFileSize(+value).value} ${
+                                              humanFileSize(+value).unit
+                                          }`
+                                        : '0'
                             }
-                        }}
-                        series={[
-                            {
-                                name: 'Bandwidth',
-                                data: [
-                                    ...data.organizationUsage.bandwidth.map((e) => [
-                                        e.date,
-                                        e.value
-                                    ])
-                                ],
-                                tooltip: {
-                                    valueFormatter: (value) =>
-                                        `${humanFileSize(+value).value} ${humanFileSize(+value).unit}`
-                                }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Bandwidth',
+                            data: [
+                                ...data.organizationUsage.bandwidth.map((e) => [e.date, e.value])
+                            ],
+                            tooltip: {
+                                valueFormatter: (value) =>
+                                    `${humanFileSize(+value).value} ${humanFileSize(+value).unit}`
                             }
-                        ]} />
-                </div>
+                        }
+                    ]} />
                 {#if projects?.length > 0}
                     <ProjectBreakdown {projects} metric="bandwidth" {data} />
                 {/if}
             {:else}
                 <Card isDashed>
-                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                        <span
-                            class="icon-chart-square-bar text-large"
-                            aria-hidden="true"
-                            style:font-size="32px" />
-                        <p class="u-bold">No data to show</p>
-                    </div>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
                 </Card>
             {/if}
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
-        <Heading tag="h6" size="7">Users</Heading>
-
-        <p class="text">The total number of users across all projects in your organization.</p>
+    <CardGrid gap="none">
+        <svelte:fragment slot="title">Users</svelte:fragment>
+        The total number of users across all projects in your organization.
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.users}
                 {@const current = data.organizationUsage.usersTotal}
                 {@const max = getServiceLimit('users', tier, plan)}
-                <ProgressBarBig
-                    currentUnit="Users"
-                    currentValue={formatNum(current)}
-                    maxUnit="users"
-                    maxValue={`out of ${formatNum(max)}`}
-                    progressValue={current}
-                    progressMax={max}
-                    showBar={false} />
-                <div style:margin-top="-1.5em">
+                <Layout.Stack>
+                    <ProgressBarBig
+                        currentUnit="Users"
+                        currentValue={formatNum(current)}
+                        maxUnit="users"
+                        maxValue={`/ ${formatNum(max)}`}
+                        progressValue={current}
+                        progressMax={max}
+                        showBar={false} />
                     <BarChart
                         options={{
                             yAxis: {
@@ -181,33 +176,27 @@
                                 )
                             }
                         ]} />
-                </div>
-                {#if projects?.length > 0}
-                    <ProjectBreakdown {projects} metric="users" {data} />
-                {/if}
+                    {#if projects?.length > 0}
+                        <ProjectBreakdown {projects} metric="users" {data} />
+                    {/if}
+                </Layout.Stack>
             {:else}
                 <Card isDashed>
-                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                        <span
-                            class="icon-chart-square-bar text-large"
-                            aria-hidden="true"
-                            style="font-size: 32px;" />
-                        <p class="u-bold">No data to show</p>
-                    </div>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
                 </Card>
             {/if}
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
-        <Heading tag="h6" size="7">Database reads and writes</Heading>
-
-        <p class="text">
-            The total number of database reads and writes across all projects in your organization.
-        </p>
+    <CardGrid gap="none">
+        <svelte:fragment slot="title">Database reads and writes</svelte:fragment>
+        The total number of database reads and writes across all projects in your organization.
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.databasesReads || data.organizationUsage.databasesWrites}
-                <div style:margin-top="-1.5em" style:margin-bottom="-1em">
+                <Layout.Stack>
                     <BarChart
                         options={{
                             yAxis: {
@@ -236,33 +225,30 @@
                                 ]
                             }
                         ]} />
-                </div>
 
-                <Legend {legendData} numberFormat="abbreviate" decimalsForAbbreviate={2} />
+                    <Legend {legendData} numberFormat="abbreviate" decimalsForAbbreviate={2} />
 
-                {#if projects?.length > 0}
-                    <ProjectBreakdown
-                        {data}
-                        {projects}
-                        databaseOperationMetric={['databasesReads', 'databasesWrites']} />
-                {/if}
+                    {#if projects?.length > 0}
+                        <ProjectBreakdown
+                            {data}
+                            {projects}
+                            databaseOperationMetric={['databasesReads', 'databasesWrites']} />
+                    {/if}
+                </Layout.Stack>
             {:else}
                 <Card isDashed>
-                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                        <span
-                            class="icon-chart-square-bar text-large"
-                            aria-hidden="true"
-                            style="font-size: 32px;" />
-                        <p class="u-bold">No data to show</p>
-                    </div>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
                 </Card>
             {/if}
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
-        <Heading tag="h6" size="7">Image transformations</Heading>
-
+    <CardGrid gap="none">
+        <svelte:fragment slot="title">Image transformations</svelte:fragment>
+        Calculated for all functions that are executed in all projects in your organization.
         <p class="text">
             The total number of unique image transformations across all projects in your
             organization. <a
@@ -306,7 +292,7 @@
                         <span
                             class="icon-chart-square-bar text-large"
                             aria-hidden="true"
-                            style="font-size: 32px;" />
+                            style="font-size: 32px;"></span>
                         <p class="u-bold">No data to show</p>
                     </div>
                 </Card>
@@ -314,25 +300,21 @@
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
-        <Heading tag="h6" size="7">Executions</Heading>
-
-        <p class="text">
-            Calculated for all functions that are executed in all projects in your organization.
-        </p>
-
+    <CardGrid gap="none">
+        <svelte:fragment slot="title">Executions</svelte:fragment>
+        Calculated for all functions that are executed in all projects in your organization.
         <svelte:fragment slot="aside">
-            {#if data.organizationUsage.executionsTotal}
+            {#if data.organizationUsage.executions}
                 {@const current = data.organizationUsage.executionsTotal}
                 {@const max = getServiceLimit('executions', tier, plan)}
-                <ProgressBarBig
-                    currentUnit="Executions"
-                    currentValue={formatNum(current)}
-                    maxValue={`of ${formatNum(max)} executions used`}
-                    progressValue={current}
-                    progressMax={max}
-                    showBar={false} />
-                <div style:margin-top="-1.5em">
+                <Layout.Stack>
+                    <ProgressBarBig
+                        currentUnit="Executions"
+                        currentValue={formatNum(current)}
+                        maxValue={`/ ${formatNum(max)} executions used`}
+                        progressValue={current}
+                        progressMax={max}
+                        showBar={false} />
                     <BarChart
                         options={{
                             yAxis: {
@@ -352,31 +334,24 @@
                                 ]
                             }
                         ]} />
-                </div>
-                {#if projects?.length > 0}<ProjectBreakdown
-                        {projects}
-                        metric="executions"
-                        {data} />{/if}
+                    {#if projects?.length > 0}
+                        <ProjectBreakdown {projects} metric="executions" {data} />
+                    {/if}
+                </Layout.Stack>
             {:else}
                 <Card isDashed>
-                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                        <span
-                            class="icon-chart-square-bar text-large"
-                            aria-hidden="true"
-                            style="font-size: 32px;" />
-                        <p class="u-bold">No data to show</p>
-                    </div>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
                 </Card>
             {/if}
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
-        <Heading tag="h6" size="7">Storage</Heading>
-
-        <p class="text">
-            Calculated for all your files, deployments, builds, databases and backups.
-        </p>
+    <CardGrid gap="none">
+        <svelte:fragment slot="title">Storage</svelte:fragment>
+        Calculated for all your files, deployments, builds, databases and backups.
 
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.storageTotal}
@@ -417,38 +392,33 @@
                         }
                     }
                 ]}
-                <ProgressBarBig
-                    currentUnit={currentHumanized.unit}
-                    currentValue={currentHumanized.value}
-                    maxValue={`of ${max.toString()} GB used`}
-                    progressValue={bytesToSize(current, 'GB')}
-                    progressMax={max}
-                    progressBarData={progressBarStorageDate} />
-                {#if projects?.length > 0}<ProjectBreakdown
-                        {projects}
-                        metric="storage"
-                        {data} />{/if}
+                <Layout.Stack>
+                    <ProgressBarBig
+                        currentUnit={currentHumanized.unit}
+                        currentValue={currentHumanized.value}
+                        maxValue={`/ ${max.toString()} GB used`}
+                        progressValue={bytesToSize(current, 'GB')}
+                        progressMax={max}
+                        progressBarData={progressBarStorageDate} />
+                    {#if projects?.length > 0}
+                        <ProjectBreakdown {projects} metric="storage" {data} />
+                    {/if}
+                </Layout.Stack>
             {:else}
                 <Card isDashed>
-                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                        <span
-                            class="icon-chart-square-bar text-large"
-                            aria-hidden="true"
-                            style="font-size: 32px;" />
-                        <p class="u-bold">No data to show</p>
-                    </div>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
                 </Card>
             {/if}
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
-        <Heading tag="h6" size="7">GB hours</Heading>
-
-        <p class="text">
-            GB hours represent the memory usage (in gigabytes) of your function executions and
-            builds, multiplied by the total execution time (in hours).
-        </p>
+    <CardGrid gap="none">
+        <svelte:fragment slot="title">GB hours</svelte:fragment>
+        GB hours represent the memory usage (in gigabytes) of your function executions and builds, multiplied
+        by the total execution time (in hours).
 
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.storageTotal}
@@ -491,65 +461,66 @@
                     progressBarData={progressBarStorageDate} />
             {:else}
                 <Card isDashed>
-                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                        <span
-                            class="icon-chart-square-bar text-large"
-                            aria-hidden="true"
-                            style="font-size: 32px;" />
-                        <p class="u-bold">No data to show</p>
-                    </div>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
                 </Card>
             {/if}
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
-        <Heading tag="h6" size="7">Phone OTP</Heading>
-        <p class="text">
-            OTPs are billed per SMS message, with rates varying by recipient country. For a detailed
-            cost breakdown, see the <a
-                href="https://appwrite.io/docs/advanced/platform/phone-otp"
-                class="link">pricing page</a
-            >.
-        </p>
+    <CardGrid gap="none">
+        <svelte:fragment slot="title">Phone OTP</svelte:fragment>
+        OTPs are billed per SMS message, with rates varying by recipient country. For a detailed cost
+        breakdown, see the
+        <Link.Anchor href="https://appwrite.io/docs/advanced/platform/phone-otp"
+            >pricing page</Link.Anchor
+        >.
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.authPhoneTotal}
-                <div class="u-flex u-main-space-between">
-                    <p>
-                        <span class="heading-level-4"
-                            >{formatNumberWithCommas(data.organizationUsage.authPhoneTotal)}</span>
-                        <span class="body-text-1 u-bold">OTPs</span>
-                    </p>
-                    <p class="u-flex u-gap-8 u-cross-center">
-                        <span class="u-color-text-offline">Estimated cost</span>
-                        <span class="body-text-2">
-                            {formatCurrency(data.organizationUsage.authPhoneEstimate)}
-                            <span
-                                class="icon-info u-color-text-offline"
-                                use:tooltip={{
-                                    content:
-                                        'The first 10 messages each month are provided at no cost. Pricing may vary as it depends on telecom rates and vendor agreements.'
-                                }} />
-                        </span>
-                    </p>
-                </div>
+                <Layout.Stack>
+                    <Layout.Stack direction="row">
+                        <Layout.Stack gap="s" direction="row" alignItems="baseline">
+                            <Typography.Title>
+                                {formatNumberWithCommas(data.organizationUsage.authPhoneTotal)}
+                            </Typography.Title>
+                            <Typography.Text>OTPs</Typography.Text>
+                        </Layout.Stack>
+                        <Layout.Stack
+                            gap="xs"
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="flex-end">
+                            <Typography.Text>Estimated cost</Typography.Text>
+                            <Typography.Text color="--fgcolor-neutral-primary">
+                                {formatCurrency(data.organizationUsage.authPhoneEstimate)}
+                            </Typography.Text>
+                            <Tooltip maxWidth="200px">
+                                <Icon icon={IconInfo} />
+                                <svelte:fragment slot="tooltip">
+                                    The first 10 messages each month are provided at no cost.
+                                    Pricing may vary as it depends on telecom rates and vendor
+                                    agreements.
+                                </svelte:fragment>
+                            </Tooltip>
+                        </Layout.Stack>
+                    </Layout.Stack>
 
-                {#if projects?.length > 0}
-                    <ProjectBreakdown
-                        {projects}
-                        metric="authPhoneTotal"
-                        estimate="authPhoneEstimate"
-                        {data} />
-                {/if}
+                    {#if projects?.length > 0}
+                        <ProjectBreakdown
+                            {projects}
+                            metric="authPhoneTotal"
+                            estimate="authPhoneEstimate"
+                            {data} />
+                    {/if}
+                </Layout.Stack>
             {:else}
                 <Card isDashed>
-                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                        <span
-                            class="icon-chart-square-bar text-large"
-                            aria-hidden="true"
-                            style="font-size: 32px;" />
-                        <p class="u-bold">No data to show</p>
-                    </div>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
                 </Card>
             {/if}
         </svelte:fragment>

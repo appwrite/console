@@ -3,19 +3,32 @@
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '$routes/(console)/supportWizard.svelte';
     import { isSupportOnline, showSupportModal } from '$routes/(console)/wizard/support/store';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { localeShortTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { plansInfo } from '$lib/stores/billing';
     import { Card } from '$lib/components/index';
     import { app } from '$lib/stores/app';
-    import { currentPlan } from '$lib/stores/organization';
+    import { currentPlan, type Organization, organizationList } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
+    import { Typography } from '@appwrite.io/pink-svelte';
+    import { base } from '$app/paths';
 
     export let show = false;
 
     export let showHeader = true;
 
-    $: hasPremiumSupport = $currentPlan?.premiumSupport ?? false;
+    $: hasPremiumSupport = $currentPlan?.premiumSupport ?? allOrgsHavePremiumSupport ?? false;
+
+    $: allOrgsHavePremiumSupport = $organizationList.teams.every(
+        (team) => $plansInfo.get((team as Organization).billingPlan)?.premiumSupport
+    );
+
+    // there can only be one free organization
+    $: freeOrganization = $organizationList.teams.find(
+        (team) => !$plansInfo.get((team as Organization).billingPlan)?.premiumSupport
+    );
+
+    $: upgradeURL = `${base}/organization-${freeOrganization.$id}/change-plan`;
 
     $: supportTimings = `${utcHourToLocaleHour('16:00')} - ${utcHourToLocaleHour('00:00')} ${localeShortTimezoneName()}`;
 
@@ -54,37 +67,33 @@
         }
     ];
 
-    const showCloudSupport = (index) => {
+    const showCloudSupport = (index: number) => {
         return (index === 0 && isCloud) || index > 0;
     };
 </script>
 
 <section class="drop-section support-section">
     {#if showHeader}
-        <h4 class="heading-level-6">Support</h4>
+        <Typography.Title size="s">Support</Typography.Title>
     {/if}
 
     {#each supportOptions as option, index}
         {#if showCloudSupport(index)}
             <Card
-                isTile
-                class="support-option-card u-flex u-flex-vertical u-gap-16"
-                style="border-radius: var(--border-radius-small, 8px); padding: 0.65rem;">
+                class="support-option-card "
+                style="border-radius: var(--border-radius-small, 8px); --gap-xl: 16px">
                 <div class="u-flex u-flex-vertical u-gap-4">
-                    <h4 class="body-text-2 u-bold">{option.label}</h4>
-
-                    <p class="u-line-height-1-5">
-                        {option.description}
-                    </p>
+                    <Typography.Text variant="m-500">{option.label}</Typography.Text>
+                    <Typography.Text variant="m-400">{option.description}</Typography.Text>
                 </div>
 
                 {#if option.showSupport}
                     <div class="u-flex u-gap-12 u-cross-center">
                         {#if !hasPremiumSupport}
                             <Button
-                                href={$upgradeURL}
+                                href={upgradeURL}
                                 on:click={() => {
-                                    trackEvent('click_organization_upgrade', {
+                                    trackEvent(Click.OrganizationClickUpgrade, {
                                         from: 'button',
                                         source: 'support_menu'
                                     });
@@ -109,7 +118,7 @@
                                 aria-hidden="true"
                                 class="{isSupportOnline()
                                     ? 'icon-check-circle u-color-text-success'
-                                    : 'icon-x-circle'} u-padding-block-end-1" />
+                                    : 'icon-x-circle'} u-padding-block-end-1"></span>
 
                             {supportTimings}
                         </div>
@@ -121,12 +130,12 @@
                         secondary
                         class="secondary-button u-flex u-cross-center u-gap-6"
                         on:click={() => {
-                            trackEvent('click_organization_upgrade', {
+                            trackEvent(Click.OrganizationClickUpgrade, {
                                 from: 'button',
                                 source: 'support_menu'
                             });
                         }}>
-                        <span class={`icon-${option.icon}`} />
+                        <span class={`icon-${option.icon}`}></span>
                         <span>{option.cta}</span>
                     </Button>
                 {/if}
@@ -156,13 +165,14 @@
 <style lang="scss">
     .support-section {
         gap: 1rem;
+        width: 100%;
         padding: 1rem;
         display: flex;
         flex-direction: column;
 
         @media (max-width: 768px) {
+            padding: 0;
             gap: 1.25rem;
-            padding: 0.5rem;
         }
     }
 
@@ -175,19 +185,13 @@
     }
 
     :global(.theme-dark .support-option-card) {
-        background: var(--color-bgColor-neutral-default, #19191c);
-    }
-
-    :global(.theme-dark .support-option-card .secondary-button) {
-        background: var(--color-bgColor-neutral-primary, #131315);
+        /* override required due to the card's background color */
+        background: var(--bgcolor-neutral-default, #19191c) !important;
     }
 
     :global(.theme-light .support-option-card) {
-        border: 1px solid var(--color-border-neutral, #ededf0);
-        background: var(--color-bgColor-neutral-default, #fafafb);
-    }
-
-    :global(.theme-light .support-option-card .secondary-button) {
-        background: var(--color-bgColor-neutral-primary, #fff);
+        border: 1px solid var(--border-neutral, #ededf0);
+        /* override required due to the card's background color */
+        background: var(--bgcolor-neutral-default, #fafafb) !important;
     }
 </style>
