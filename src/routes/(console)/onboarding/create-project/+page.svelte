@@ -38,7 +38,7 @@
 
             setTimeout(async () => {
                 await invalidate(Dependencies.ACCOUNT);
-                goto(`${base}/project-${project.region}-${project.$id}`);
+                goto(`${base}/project-${project.region ?? 'default'}-${project.$id}`);
             }, 3000);
         } catch (e) {
             trackError(e, Submit.ProjectCreate);
