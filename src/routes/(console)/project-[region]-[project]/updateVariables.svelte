@@ -69,7 +69,6 @@
 
     async function handleVariableCreated(event: CustomEvent<Models.Variable[]>) {
         const variables = event.detail;
-        console.log(variables);
         try {
             const promises = variables.map((variable) =>
                 sdkCreateVariable(variable.key, variable.value, variable?.secret || false)
@@ -369,16 +368,16 @@
                                     </Button>
                                     <svelte:fragment slot="tooltip" let:toggle>
                                         <ActionMenu.Root>
+                                            <ActionMenu.Item.Button
+                                                trailingIcon={IconPencil}
+                                                on:click={(e) => {
+                                                    selectedVar = variable;
+                                                    showUpdate = true;
+                                                    toggle(e);
+                                                }}>
+                                                Update
+                                            </ActionMenu.Item.Button>
                                             {#if !variable.secret}
-                                                <ActionMenu.Item.Button
-                                                    trailingIcon={IconPencil}
-                                                    on:click={(e) => {
-                                                        selectedVar = variable;
-                                                        showUpdate = true;
-                                                        toggle(e);
-                                                    }}>
-                                                    Update
-                                                </ActionMenu.Item.Button>
                                                 <ActionMenu.Item.Button
                                                     trailingIcon={IconEyeOff}
                                                     on:click={(e) => {
