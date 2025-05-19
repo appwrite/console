@@ -3,7 +3,6 @@
     import { FakeModal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Dependencies } from '$lib/constants';
-    import type { Invoice } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { page } from '$app/state';
@@ -16,9 +15,10 @@
     import { getApiEndpoint, sdk } from '$lib/stores/sdk';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let invoice: Invoice;
+    export let invoice: Models.Invoice;
     let error: string = null;
     let isButtonDisabled = false;
     let name: string;
@@ -49,7 +49,7 @@
             if (paymentMethodId === null) {
                 try {
                     const method = await submitStripeCard(name, $organization.$id);
-                    const card = await sdk.forConsole.billing.getPaymentMethod(method.$id);
+                    const card = await sdk.forConsole.account.getPaymentMethod(method.$id);
                     if (card?.last4) {
                         paymentMethodId = card.$id;
                     } else {
@@ -66,11 +66,12 @@
             if (setAsDefault) {
                 await sdk.forConsole.billing.setDefaultPaymentMethod(paymentMethodId);
             }
-            const { clientSecret, status } = await sdk.forConsole.billing.retryPayment(
-                $organization.$id,
-                invoice.$id,
-                paymentMethodId
-            );
+            const { clientSecret, status } =
+                await sdk.forConsole.organizations.createInvoicePayment(
+                    $organization.$id,
+                    invoice.$id,
+                    paymentMethodId
+                );
 
             if (status !== 'succeeded' && status !== 'cancelled') {
                 // probably still pending, confirm via stripe!
@@ -81,7 +82,7 @@
                     `${base}/organization-${$organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
                 );
 
-                await sdk.forConsole.billing.updateInvoiceStatus($organization.$id, invoice.$id);
+                await sdk.forConsole.organizations.validateInvoice($organization.$id, invoice.$id);
             }
 
             invalidate(Dependencies.ORGANIZATION);

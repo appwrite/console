@@ -33,7 +33,7 @@
 
     onMount(async () => {
         loading = true;
-        addresses = await sdk.forConsole.billing.listAddresses();
+        addresses = await sdk.forConsole.account.listBillingAddresses();
 
         const firstNonCurrentAddress = addresses?.billingAddresses?.find(
             (address) => address.$id !== $organization?.billingAddressId
@@ -65,7 +65,7 @@
             if (selectedAddress === $organization.billingAddressId) {
                 show = false;
             } else if (selectedAddress === '$new') {
-                const address = await sdk.forConsole.billing.createAddress(
+                const address = await sdk.forConsole.account.createBillingAddress(
                     country,
                     streetAddress,
                     city,
@@ -73,7 +73,10 @@
                     postalCode ? postalCode : undefined,
                     addressLine2 ? postalCode : undefined
                 );
-                await sdk.forConsole.billing.setBillingAddress($organization.$id, address.$id);
+                await sdk.forConsole.organizations.setBillingAddress(
+                    $organization.$id,
+                    address.$id
+                );
 
                 invalidate(Dependencies.ORGANIZATION);
                 invalidate(Dependencies.ADDRESS);
@@ -88,7 +91,10 @@
                     message: `Your billing address has been updated`
                 });
             } else {
-                await sdk.forConsole.billing.setBillingAddress($organization.$id, selectedAddress);
+                await sdk.forConsole.organizations.setBillingAddress(
+                    $organization.$id,
+                    selectedAddress
+                );
 
                 invalidate(Dependencies.ORGANIZATION);
                 invalidate(Dependencies.ADDRESS);

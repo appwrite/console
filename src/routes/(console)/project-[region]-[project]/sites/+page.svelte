@@ -24,7 +24,7 @@
     import Table from './table.svelte';
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
     export let data;
     let show = false;
@@ -37,8 +37,11 @@
             },
             keys: ['c'],
             disabled:
-                isServiceLimited('sites', $organization?.billingPlan, data.siteList?.total) ||
-                !$canWriteSites,
+                isServiceLimited(
+                    'sites',
+                    $organization?.billingPlan as BillingPlan,
+                    data.siteList?.total
+                ) || !$canWriteSites,
             icon: IconPlus,
             group: 'sites'
         }

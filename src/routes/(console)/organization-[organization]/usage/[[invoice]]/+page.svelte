@@ -4,12 +4,7 @@
     import { BarChart, Legend } from '$lib/charts';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
-    import {
-        getServiceLimit,
-        showUsageRatesModal,
-        type Tier,
-        upgradeURL
-    } from '$lib/stores/billing';
+    import { getServiceLimit, showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { formatNum } from '$lib/helpers/string';
@@ -25,8 +20,9 @@
     export let data;
 
     const tier = data?.plan
-        ? (data.plan.$id as Tier)
-        : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
+        ? (data.plan.$id as BillingPlan)
+        : ((data?.currentInvoice?.plan as BillingPlan) ??
+          ($organization?.billingPlan as BillingPlan));
     const plan = data?.plan ?? undefined;
 
     $: projects = (data.organizationUsage as OrganizationUsage).projects;

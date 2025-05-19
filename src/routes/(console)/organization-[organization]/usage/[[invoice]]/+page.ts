@@ -1,4 +1,3 @@
-import type { Invoice } from '$lib/sdk/billing';
 import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { Query, type Models } from '@appwrite.io/console';
@@ -42,18 +41,18 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     let startDate: string = org.billingCurrentInvoiceDate;
     let endDate: string = org.billingNextInvoiceDate;
-    let currentInvoice: Invoice = undefined;
+    let currentInvoice: Models.Invoice = undefined;
 
     if (invoice) {
-        currentInvoice = await sdk.forConsole.billing.getInvoice(org.$id, invoice);
+        currentInvoice = await sdk.forConsole.organizations.getInvoice(org.$id, invoice);
         startDate = currentInvoice.from;
         endDate = currentInvoice.to;
     }
     const [invoices, usage, organizationMembers, plan] = await Promise.all([
-        sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
+        sdk.forConsole.organizations.listInvoices(org.$id, [Query.orderDesc('from')]),
         sdk.forConsole.billing.listUsage(params.organization, startDate, endDate),
         sdk.forConsole.teams.listMemberships(params.organization, [Query.limit(100)]),
-        sdk.forConsole.billing.getOrganizationPlan(org.$id)
+        sdk.forConsole.organizations.getPlan(org.$id)
     ]);
 
     const projects: { [key: string]: Models.Project } = {};

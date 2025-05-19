@@ -1,4 +1,4 @@
-import type { BillingPlan } from '$lib/constants';
+import type { BillingPlan } from '@appwrite.io/console';
 
 export type Campaign = {
     $id: string;

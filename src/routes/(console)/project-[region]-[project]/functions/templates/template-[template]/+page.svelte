@@ -24,9 +24,15 @@
     import { page } from '$app/state';
     import { capitalize } from '$lib/helpers/string';
     import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
+    import type { BillingPlan } from '$lib/constants';
 
     $: buttonDisabled =
-        isCloud && isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
+        isCloud &&
+        isServiceLimited(
+            'functions',
+            $organization?.billingPlan as BillingPlan,
+            $functionsList?.total
+        );
 </script>
 
 <Container>

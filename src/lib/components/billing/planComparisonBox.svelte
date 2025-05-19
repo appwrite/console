@@ -1,12 +1,12 @@
 <script lang="ts">
     import { BillingPlan } from '$lib/constants';
     import { formatNum } from '$lib/helpers/string';
-    import { plansInfo, tierFree, tierPro, tierScale, type Tier } from '$lib/stores/billing';
+    import { plansInfo, tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { Card, Layout, Tabs, Typography } from '@appwrite.io/pink-svelte';
 
     export let downgrade = false;
 
-    let selectedTab: Tier = BillingPlan.FREE;
+    let selectedTab: BillingPlan = BillingPlan.FREE;
 
     $: plan = $plansInfo.get(selectedTab);
 </script>

@@ -7,7 +7,7 @@ import { isCloud } from '$lib/system';
 export const orgSearcher = (async (query: string) => {
     const { teams } = !isCloud
         ? await sdk.forConsole.teams.list()
-        : await sdk.forConsole.billing.listOrganization();
+        : await sdk.forConsole.organizations.list();
 
     return teams
         .filter((organization) => organization.name.toLowerCase().includes(query.toLowerCase()))

@@ -521,6 +521,9 @@ export const eventServices: Array<EventService> = [
 ];
 
 export enum BillingPlan {
+    Tier0 = 'tier-0',
+    Tier1 = 'tier-1',
+    Tier2 = 'tier-2',
     FREE = 'tier-0',
     PRO = 'tier-1',
     SCALE = 'tier-2',

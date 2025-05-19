@@ -32,7 +32,7 @@
 
     async function addAddress(addressId: string) {
         try {
-            await sdk.forConsole.billing.setBillingAddress($organization.$id, addressId);
+            await sdk.forConsole.organizations.setBillingAddress($organization.$id, addressId);
 
             await invalidate(Dependencies.ADDRESS);
             await invalidate(Dependencies.ORGANIZATION);

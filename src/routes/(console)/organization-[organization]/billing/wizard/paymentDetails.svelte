@@ -14,7 +14,7 @@
     let name: string;
 
     onMount(async () => {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
+        methods = await sdk.forConsole.account.listPaymentMethods();
         $addCreditWizardStore.paymentMethodId =
             methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
     });

@@ -31,7 +31,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
      */
     let billingAggregation = null;
     try {
-        billingAggregation = await sdk.forConsole.billing.getAggregation(
+        billingAggregation = await sdk.forConsole.organizations.getAggregation(
             organization.$id,
             (organization as Organization)?.billingAggregationId
         );
@@ -41,7 +41,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
 
     let billingInvoice = null;
     try {
-        billingInvoice = await sdk.forConsole.billing.getInvoice(
+        billingInvoice = await sdk.forConsole.organizations.getInvoice(
             organization.$id,
             (organization as Organization)?.billingInvoiceId
         );
@@ -51,10 +51,10 @@ export const load: PageLoad = async ({ parent, depends }) => {
 
     const [paymentMethods, addressList, billingAddress, creditList, aggregationBillingPlan] =
         await Promise.all([
-            sdk.forConsole.billing.listPaymentMethods(),
-            sdk.forConsole.billing.listAddresses(),
+            sdk.forConsole.account.listPaymentMethods(),
+            sdk.forConsole.account.listBillingAddresses(),
             billingAddressPromise,
-            sdk.forConsole.billing.listCredits(organization.$id),
+            sdk.forConsole.organizations.listCredits(organization.$id),
             sdk.forConsole.billing.getPlan(billingAggregation?.plan ?? organization.billingPlan)
         ]);
 

@@ -49,7 +49,7 @@
 
     async function updateBudget() {
         try {
-            await sdk.forConsole.billing.updateBudget(
+            await sdk.forConsole.organizations.updateBudget(
                 $organization.$id,
                 $organization.billingBudget,
                 alerts

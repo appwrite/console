@@ -21,7 +21,7 @@ export async function initializeStripe(node: HTMLElement) {
     if (!get(stripe)) return;
     isStripeInitialized.set(true);
 
-    const methods = await sdk.forConsole.billing.listPaymentMethods();
+    const methods = await sdk.forConsole.account.listPaymentMethods();
 
     // Get the client secret from empty payment method if available
     clientSecret = methods.paymentMethods?.filter(
@@ -30,7 +30,7 @@ export async function initializeStripe(node: HTMLElement) {
 
     // If there is no payment method, create an empty one and get the client secret
     if (!clientSecret) {
-        paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
+        paymentMethod = await sdk.forConsole.account.createPaymentMethod();
         clientSecret = paymentMethod.clientSecret;
     }
 
@@ -57,7 +57,7 @@ export async function submitStripeCard(name: string, organizationId?: string) {
     try {
         // If a payment method was created during initialization, use it, otherwise create a new one
         if (!paymentMethod) {
-            paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
+            paymentMethod = await sdk.forConsole.account.createPaymentMethod();
             clientSecret = paymentMethod.clientSecret;
         }
 
@@ -94,9 +94,9 @@ export async function submitStripeCard(name: string, organizationId?: string) {
         }
 
         if (setupIntent && setupIntent.status === 'succeeded') {
-            const method = await sdk.forConsole.billing.setPaymentMethod(
+            const method = await sdk.forConsole.account.updatePaymentMethodProvider(
                 paymentMethod.$id,
-                setupIntent.payment_method,
+                setupIntent.payment_method.toString(),
                 name
             );
             paymentElement.destroy();
@@ -124,7 +124,7 @@ export async function confirmPayment(
         const url =
             window.location.origin + (route ? route : `${base}/organization-${orgId}/billing`);
 
-        const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentMethodId);
+        const paymentMethod = await sdk.forConsole.account.getPaymentMethod(paymentMethodId);
 
         const { error } = await get(stripe).confirmPayment({
             clientSecret: clientSecret,

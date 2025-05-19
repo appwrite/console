@@ -4,7 +4,10 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params }) => {
     // verify invoice exists
-    const invoice = await sdk.forConsole.billing.getInvoice(params.organization, params.invoiceId);
+    const invoice = await sdk.forConsole.organizations.getInvoice(
+        params.organization,
+        params.invoiceId
+    );
     const endpoint = getApiEndpoint();
 
     return redirect(

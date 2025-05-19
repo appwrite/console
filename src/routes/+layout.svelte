@@ -68,7 +68,7 @@
 
         if (page.url.searchParams.has('code')) {
             const code = page.url.searchParams.get('code');
-            const coupon = await sdk.forConsole.billing.getCoupon(code).catch<null>(() => null);
+            const coupon = await sdk.forConsole.console.getCoupon(code).catch<null>(() => null);
             if (coupon?.campaign) {
                 const campaign = await sdk.forConsole.billing
                     .getCampaign(coupon.campaign)

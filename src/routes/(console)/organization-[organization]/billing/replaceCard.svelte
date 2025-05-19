@@ -20,7 +20,7 @@
     let error: string;
 
     onMount(async () => {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
+        methods = await sdk.forConsole.account.listPaymentMethods();
 
         if (!$organization.paymentMethodId && !$organization.backupPaymentMethodId) {
             selectedPaymentMethodId = methods?.total ? methods.paymentMethods[0].$id : null;
@@ -68,7 +68,7 @@
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethod(
+            await sdk.forConsole.organizations.setDefaultPaymentMethod(
                 $organization.$id,
                 paymentMethodId
             );
@@ -79,7 +79,7 @@
 
     async function addBackupPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
+            await sdk.forConsole.organizations.setBackupPaymentMethod(
                 $organization.$id,
                 paymentMethodId
             );

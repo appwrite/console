@@ -2,9 +2,8 @@ import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-import { isOrganization, tierToPlan } from '$lib/stores/billing';
-import { ID, Query } from '@appwrite.io/console';
-import { BillingPlan } from '$lib/constants';
+import { isOrganization, isOrganizationError, tierToPlan } from '$lib/stores/billing';
+import { BillingPlan, ID, Query } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 
@@ -14,15 +13,13 @@ export const load: PageLoad = async ({ parent }) => {
         if (!organizations?.total) {
             try {
                 if (isCloud) {
-                    const org = await sdk.forConsole.billing.createOrganization(
+                    const org = await sdk.forConsole.organizations.create(
                         ID.unique(),
                         'Personal projects',
-                        BillingPlan.FREE,
-                        null,
-                        null
+                        BillingPlan.Tier0
                     );
                     trackEvent(Submit.OrganizationCreate, {
-                        plan: tierToPlan(BillingPlan.FREE)?.name,
+                        plan: tierToPlan(BillingPlan.Tier0)?.name,
                         budget_cap_enabled: false,
                         members_invited: 0
                     });
@@ -32,7 +29,7 @@ export const load: PageLoad = async ({ parent }) => {
                             organization: org,
                             regions: await sdk.forConsole.billing.listRegions(org.$id)
                         };
-                    } else {
+                    } else if (isOrganizationError(org)) {
                         const e = new Error(org.message, {
                             cause: org
                         });

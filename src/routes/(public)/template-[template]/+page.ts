@@ -1,6 +1,5 @@
-import { BillingPlan } from '$lib/constants.js';
 import { sdk } from '$lib/stores/sdk.js';
-import { ID, type Models } from '@appwrite.io/console';
+import { BillingPlan, ID, type Models } from '@appwrite.io/console';
 import { isCloud } from '$lib/system.js';
 import { error, redirect } from '@sveltejs/kit';
 import type { OrganizationList } from '$lib/stores/organization.js';
@@ -34,16 +33,16 @@ export const load = async ({ parent, url, params }) => {
 
     let organizations: Models.TeamList<Record<string, unknown>> | OrganizationList | undefined;
     if (isCloud) {
-        organizations = account?.$id ? await sdk.forConsole.billing.listOrganization() : undefined;
+        organizations = account?.$id ? await sdk.forConsole.organizations.list() : undefined;
     } else {
         organizations = account?.$id ? await sdk.forConsole.teams.list() : undefined;
     }
 
     if (!organizations?.total && account?.$id) {
-        await sdk.forConsole.billing.createOrganization(
+        await sdk.forConsole.organizations.create(
             ID.unique(),
             'Personal project',
-            BillingPlan.FREE,
+            BillingPlan.Tier0,
             null,
             null
         );
