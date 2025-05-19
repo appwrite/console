@@ -11,13 +11,13 @@
     import { members, newMemberModal, organization } from '$lib/stores/organization';
     import {
         canSeeBilling,
-        canSeeDomains,
         canSeeProjects,
         canSeeTeams,
         isBilling,
-        isOwner
+        isOwner,
+        scopes
     } from '$lib/stores/roles';
-    import { GRACE_PERIOD_OVERRIDE, isCloud, SHOW_INIT_FEATURES } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Tooltip, Typography, Layout, Badge } from '@appwrite.io/pink-svelte';
 
@@ -33,6 +33,7 @@
     $: avatars = $members.memberships?.map((m) => m.userName || m.userEmail) ?? [];
     $: organizationId = page.params.organization;
     $: path = `${base}/organization-${organizationId}`;
+    $: console.log($scopes);
     $: tabs = [
         {
             href: path,
@@ -45,7 +46,7 @@
             href: `${path}/domains`,
             event: 'domains',
             title: 'Domains',
-            disabled: !isCloud || !$canSeeDomains || !SHOW_INIT_FEATURES
+            disabled: !isCloud
         },
         {
             href: `${path}/members`,

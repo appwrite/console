@@ -41,8 +41,8 @@
     });
     let verified = $state(false);
 
-    let routeBase = `${base}/project-${page.params.region}-${page.params.project}/settings/domains`;
-    let isSubmitting = $state(writable(false));
+    const routeBase = `${base}/project-${page.params.region}-${page.params.project}/settings/domains`;
+    const isSubmitting = writable(false);
 
     async function verify() {
         const isNewDomain =
@@ -86,7 +86,7 @@
 </script>
 
 <Wizard title="Add domain" href={routeBase} column columnSize="s">
-    <Form onSubmit={verify} bind:isSubmitting>
+    <Form onSubmit={verify} {isSubmitting}>
         <Layout.Stack gap="xxl">
             <Card.Base radius="s" padding="s">
                 <Layout.Stack
