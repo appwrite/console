@@ -11,10 +11,20 @@ export const joinWaitlistSites = () => {
     };
 
     sdk.forConsole.account.updatePrefs(newPrefs);
+
+    if (sessionStorage) {
+        sessionStorage.setItem('joinWaitlistSites', 'true');
+    }
 };
 
 export const isOnWaitlistSites = (): boolean => {
     const prefs = userPreferences();
-    console.log('prefs', prefs);
-    return 'joinWaitlistSites' in prefs;
+    const joinedInPrefs = 'joinWaitlistSites' in prefs;
+
+    let joinedInSession = false;
+    if (sessionStorage) {
+        joinedInSession = sessionStorage.getItem('joinWaitlistSites') === 'true';
+    }
+
+    return joinedInSession || joinedInPrefs;
 };
