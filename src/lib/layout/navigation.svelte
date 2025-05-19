@@ -164,6 +164,24 @@
                                 <span class="text">Storage</span>
                             </a>
                         </li>
+                        <li class="drop-list-item">
+                            <a
+                                class="drop-button"
+                                class:is-selected={$page.url.pathname.startsWith(
+                                    `${projectPath}/sites`
+                                )}
+                                on:click={() => trackEvent('click_menu_storage')}
+                                href={`${projectPath}/sites`}
+                                use:tooltip={{
+                                    content: 'Sites',
+                                    placement: 'right',
+                                    disabled: !narrow
+                                }}>
+                                <span class="icon-globe-alt" aria-hidden="true" />
+                                <span class="text">Sites</span>
+                                <span class="badge">New</span>
+                            </a>
+                        </li>
                         <li class="drop-list-item is-not-desktop">
                             <a
                                 class="drop-button"
@@ -254,5 +272,17 @@
 <style>
     .side-nav {
         z-index: 9999;
+    }
+
+    .badge {
+        background-color: hsl(calc(343 - 3) 79% 48%);
+        color: white;
+        padding: 4px 6px;
+        border-radius: 0.25rem;
+        font-size: 12px;
+    }
+
+    .drop-button {
+        align-items: center;
     }
 </style>
