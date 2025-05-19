@@ -1,4 +1,3 @@
-import type { Tier } from '$lib/stores/billing';
 import type { Campaign } from '$lib/stores/campaigns';
 import type { Client, Models } from '@appwrite.io/console';
 import type { PaymentMethod } from '@stripe/stripe-js';
@@ -30,42 +29,6 @@ export type PaymentList = {
     total: number;
 };
 
-export type Invoice = {
-    $id: string;
-    $createdAt: Date;
-    $updatedAt: Date;
-    permissions: string[];
-    teamId: string;
-    aggregationId: string;
-    plan: Tier;
-    amount: number;
-    tax: number;
-    taxAmount: number;
-    vat: number;
-    vatAmount: number;
-    grossAmount: number;
-    creditsUsed: number;
-    currency: string;
-    from: string;
-    to: string;
-    status: string;
-    dueAt: string;
-    clientSecret: string;
-    usage: {
-        name: string;
-        value: number /* service over the limit*/;
-        amount: number /* price of service over the limit*/;
-        rate: number;
-        desc: string;
-    }[];
-    lastError?: string;
-};
-
-export type InvoiceList = {
-    invoices: Invoice[];
-    total: number;
-};
-
 export type Estimation = {
     amount: number;
     grossAmount: number;
@@ -89,7 +52,7 @@ export type EstimationDeleteOrganization = {
     credits: number;
     discount: number;
     items: EstimationItem[];
-    unpaidInvoices: Invoice[];
+    unpaidInvoices: Models.Invoice[];
 };
 
 export type Coupon = {
@@ -657,41 +620,6 @@ export class Billing {
         );
     }
 
-    async listInvoices(organizationId: string, queries: string[] = []): Promise<InvoiceList> {
-        const path = `/organizations/${organizationId}/invoices`;
-        const params = {
-            organizationId,
-            queries
-        };
-
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'get',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async getInvoice(organizationId: string, invoiceId: string): Promise<Invoice> {
-        const path = `/organizations/${organizationId}/invoices/${invoiceId}`;
-        const params = {
-            organizationId,
-            invoiceId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'get',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
     async getInvoiceView(
         organizationId: string,
         invoiceId: string
@@ -724,36 +652,6 @@ export class Billing {
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'get',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async updateInvoiceStatus(organizationId: string, invoiceId: string): Promise<Invoice> {
-        const path = `/organizations/${organizationId}/invoices/${invoiceId}/status`;
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('PATCH', uri, {
-            'content-type': 'application/json'
-        });
-    }
-
-    async retryPayment(
-        organizationId: string,
-        invoiceId: string,
-        paymentMethodId: string
-    ): Promise<Invoice> {
-        const path = `/organizations/${organizationId}/invoices/${invoiceId}/payments`;
-        const params = {
-            organizationId,
-            invoiceId,
-            paymentMethodId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'post',
             uri,
             {
                 'content-type': 'application/json'

@@ -5,7 +5,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { plansInfo, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { Aggregation, CreditList, Invoice, Plan } from '$lib/sdk/billing';
+    import type { Aggregation, CreditList, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
@@ -21,10 +21,11 @@
     } from '@appwrite.io/pink-svelte';
     import { IconInfo, IconTag } from '@appwrite.io/pink-icons-svelte';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let currentPlan: Plan;
     export let creditList: CreditList;
-    export let currentInvoice: Invoice | undefined = undefined;
+    export let currentInvoice: Models.Invoice | undefined = undefined;
     export let currentAggregation: Aggregation | undefined = undefined;
 
     let showCancel: boolean = false;
