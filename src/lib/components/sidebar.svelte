@@ -40,7 +40,6 @@
 
     import type { HTMLAttributes } from 'svelte/elements';
     import type { NavbarProject } from '$lib/components/navbar.svelte';
-    import { SHOW_INIT_FEATURES } from '$lib/system';
 
     type $$Props = HTMLAttributes<HTMLElement> & {
         state?: 'closed' | 'open' | 'icons';
@@ -191,49 +190,46 @@
                             <span slot="tooltip">{projectOption.name}</span>
                         </Tooltip>
                     {/each}
-                    {#if SHOW_INIT_FEATURES}
-                        <div class="only-mobile divider">
-                            <Divider />
-                        </div>
-                        <div class="products-label-container">
-                            <span class="products-label" class:hidden={state === 'icons'}
-                                >Deploy</span>
-                            <span class="products-label-indicator" class:hidden={state !== 'icons'}
-                            ></span>
-                        </div>
-                        {@const deployProjectOptions = projectOptions.filter(
-                            (projectOption) => projectOption.category === 'deploy'
-                        )}
-                        {#each deployProjectOptions as projectOption}
-                            <Tooltip placement="right" disabled={state !== 'icons'}>
-                                <a
-                                    href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
-                                    class="link"
-                                    class:active={page.url.pathname.includes(projectOption.slug)}
-                                    on:click={() => {
-                                        trackEvent(`click_menu_${projectOption.slug}`);
-                                        sideBarIsOpen = false;
-                                    }}>
-                                    <span class="link-icon">
-                                        <Icon icon={projectOption.icon} size="s" />
-                                    </span>
-                                    <span
-                                        class:no-text={state === 'icons'}
-                                        class:has-text={state === 'open'}
-                                        class="link-text">
-                                        {projectOption.name}
-                                        {#if projectOption?.badge}
-                                            <Badge
-                                                variant="secondary"
-                                                content={projectOption.badge}
-                                                size="xs" />
-                                        {/if}
-                                    </span>
-                                </a>
-                                <span slot="tooltip">{projectOption.name}</span>
-                            </Tooltip>
-                        {/each}
-                    {/if}
+                    <div class="only-mobile divider">
+                        <Divider />
+                    </div>
+                    <div class="products-label-container">
+                        <span class="products-label" class:hidden={state === 'icons'}>Deploy</span>
+                        <span class="products-label-indicator" class:hidden={state !== 'icons'}
+                        ></span>
+                    </div>
+                    {@const deployProjectOptions = projectOptions.filter(
+                        (projectOption) => projectOption.category === 'deploy'
+                    )}
+                    {#each deployProjectOptions as projectOption}
+                        <Tooltip placement="right" disabled={state !== 'icons'}>
+                            <a
+                                href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
+                                class="link"
+                                class:active={page.url.pathname.includes(projectOption.slug)}
+                                on:click={() => {
+                                    trackEvent(`click_menu_${projectOption.slug}`);
+                                    sideBarIsOpen = false;
+                                }}>
+                                <span class="link-icon">
+                                    <Icon icon={projectOption.icon} size="s" />
+                                </span>
+                                <span
+                                    class:no-text={state === 'icons'}
+                                    class:has-text={state === 'open'}
+                                    class="link-text">
+                                    {projectOption.name}
+                                    {#if projectOption?.badge}
+                                        <Badge
+                                            variant="secondary"
+                                            content={projectOption.badge}
+                                            size="xs" />
+                                    {/if}
+                                </span>
+                            </a>
+                            <span slot="tooltip">{projectOption.name}</span>
+                        </Tooltip>
+                    {/each}
                     <div class="only-mobile divider">
                         <Divider />
                     </div>

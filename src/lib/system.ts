@@ -27,7 +27,6 @@ export const isDev = ENV.DEV;
 export const isProd = ENV.PROD;
 export const hasStripePublicKey = !!VARS.PUBLIC_STRIPE_KEY;
 export const GRACE_PERIOD_OVERRIDE = false;
-export const SHOW_INIT_FEATURES = true;
 
 export function isMultiRegionSupported(url: URL): boolean {
     if (env.PUBLIC_APPWRITE_MULTI_REGION === 'true') return true;

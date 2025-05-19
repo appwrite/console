@@ -28,7 +28,6 @@
     import { writable, type Writable } from 'svelte/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { SHOW_INIT_FEATURES } from '$lib/system';
 
     let period: UsagePeriods = '30d';
     $: path = `${base}/project-${page.params.region}-${page.params.project}/overview`;
@@ -233,13 +232,11 @@
                         event="keys"
                         href={`${path}/keys`}
                         selected={isTabSelected('keys')}>API keys</Tab>
-                    {#if SHOW_INIT_FEATURES}
-                        <Tab
-                            noscroll
-                            event="keys"
-                            href={`${path}/dev-keys`}
-                            selected={isTabSelected('dev-keys')}>Dev keys</Tab>
-                    {/if}
+                    <Tab
+                        noscroll
+                        event="keys"
+                        href={`${path}/dev-keys`}
+                        selected={isTabSelected('dev-keys')}>Dev keys</Tab>
                 </Tabs>
                 {#if $action}
                     <svelte:component this={$action} />

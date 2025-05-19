@@ -46,7 +46,13 @@
                         <Link external href={`${$protocol}${domain.domain}`} variant="quiet" icon>
                             <Typography.Text truncate>
                                 {domain.domain}
-                                {#if domain.status !== 'verified'}
+                                {#if domain.status === 'verifying'}
+                                    <Badge
+                                        variant="secondary"
+                                        type="warning"
+                                        content="Verifying"
+                                        size="s" />
+                                {:else if domain.status !== 'verified'}
                                     <Badge
                                         variant="secondary"
                                         type="error"
