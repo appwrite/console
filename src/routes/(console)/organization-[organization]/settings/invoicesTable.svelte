@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { Invoice } from '$lib/sdk/billing';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import { selectedInvoice, showRetryModal } from '../billing/store';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -14,13 +13,14 @@
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
+    import type { Models } from '@appwrite.io/console';
 
     const endpoint = getApiEndpoint();
 
-    export let invoices: Invoice[];
+    export let invoices: Models.Invoice[];
     export let showActions = true;
 
-    function retryPayment(invoice: Invoice) {
+    function retryPayment(invoice: Models.Invoice) {
         $selectedInvoice = invoice;
         $showRetryModal = true;
     }

@@ -9,11 +9,10 @@
     import { organization } from '$lib/stores/organization';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { updateBucket } from './+page.svelte';
-    import type { Plan } from '$lib/sdk/billing';
     import type { Models } from '@appwrite.io/console';
 
     export let bucket: Models.Bucket;
-    export let currentPlan: Plan | null;
+    export let currentPlan: Models.BillingPlan | null;
 
     const service = currentPlan ? currentPlan['fileSize'] : null;
     const { value, unit, baseValue, units } = createByteUnitPair(bucket.maximumFileSize, 1000);

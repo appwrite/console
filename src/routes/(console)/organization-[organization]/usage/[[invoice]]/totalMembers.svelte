@@ -14,7 +14,7 @@
     export let members: Models.MembershipList;
 
     $: total = members?.total ?? 0;
-    $: plan = $plansInfo?.get($organization?.billingPlan);
+    $: plan = $plansInfo?.get($organization?.billingPlan as BillingPlan);
 </script>
 
 <CardGrid>

@@ -7,7 +7,7 @@ export const load = async ({ parent, depends }) => {
 
     const organizations = !isCloud
         ? await sdk.forConsole.teams.list()
-        : await sdk.forConsole.billing.listOrganization();
+        : await sdk.forConsole.organizations.list();
 
     const { domain } = await parent();
     return {

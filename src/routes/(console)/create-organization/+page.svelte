@@ -5,16 +5,16 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, InputTags, InputText } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import type { Coupon } from '$lib/sdk/billing';
-    import { isOrganization, tierToPlan } from '$lib/stores/billing';
+    import { isOrganization, isOrganizationError, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { type OrganizationError, type Organization } from '$lib/stores/organization';
+    import { type OrganizationError } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe';
-    import { ID } from '@appwrite.io/console';
+    import { BillingPlan, ID, type Models } from '@appwrite.io/console';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Divider, Fieldset, Icon, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
@@ -23,7 +23,7 @@
 
     export let data;
 
-    let selectedPlan: BillingPlan = data.plan as BillingPlan;
+    let selectedPlan: BillingPlan = data.plan;
     let selectedCoupon: Partial<Coupon> | null = data.coupon;
     let previousPage: string = base;
     let showExitModal = false;
@@ -32,7 +32,7 @@
     let isSubmitting = writable(false);
 
     let name: string;
-    let billingPlan: BillingPlan = BillingPlan.FREE;
+    let billingPlan: BillingPlan = BillingPlan.Tier0;
     let paymentMethodId: string;
     let collaborators: string[] = [];
     let couponData: Partial<Coupon> = {
@@ -53,7 +53,7 @@
         if (page.url.searchParams.has('coupon')) {
             const coupon = page.url.searchParams.get('coupon');
             try {
-                const response = await sdk.forConsole.billing.getCouponAccount(coupon);
+                const response = await sdk.forConsole.account.getCoupon(coupon);
                 couponData = response;
             } catch (e) {
                 couponData = {
@@ -76,7 +76,7 @@
             data?.hasFreeOrganizations ||
             (page.url.searchParams.has('type') && page.url.searchParams.get('type') === 'createPro')
         ) {
-            billingPlan = BillingPlan.PRO;
+            billingPlan = BillingPlan.Tier1;
         }
         if (page.url.searchParams.has('type')) {
             const type = page.url.searchParams.get('type');
@@ -110,32 +110,26 @@
 
     async function create() {
         try {
-            let org: Organization | OrganizationError;
+            let org: Models.Organization<Record<string, unknown>> | OrganizationError;
 
-            if (selectedPlan === BillingPlan.FREE) {
-                org = await sdk.forConsole.billing.createOrganization(
-                    ID.unique(),
-                    name,
-                    BillingPlan.FREE,
-                    null,
-                    null
-                );
+            if (selectedPlan === BillingPlan.Tier0) {
+                org = await sdk.forConsole.organizations.create(ID.unique(), name, selectedPlan);
             } else {
-                org = await sdk.forConsole.billing.createOrganization(
+                org = await sdk.forConsole.organizations.create(
                     ID.unique(),
                     name,
                     selectedPlan,
                     paymentMethodId,
                     null,
-                    couponData.code ? couponData.code : null,
                     collaborators,
-                    billingBudget,
-                    taxId
+                    couponData.code ? couponData.code : null,
+                    taxId,
+                    billingBudget
                 );
 
-                if (!isOrganization(org) && org.status === 402) {
-                    let clientSecret = org.clientSecret;
-                    let params = new URLSearchParams();
+                if (isOrganizationError(org) && org.status === 402) {
+                    const clientSecret = org.clientSecret;
+                    const params = new URLSearchParams();
                     params.append('type', 'payment_confirmed');
                     params.append('id', org.teamId);
                     for (const [key, value] of page.url.searchParams.entries()) {
@@ -208,7 +202,7 @@
                     anyOrgFree={data.hasFreeOrganizations}
                     isNewOrg />
             </Fieldset>
-            {#if selectedPlan !== BillingPlan.FREE}
+            {#if selectedPlan !== BillingPlan.Tier0}
                 <Fieldset legend="Payment">
                     <SelectPaymentMethod
                         methods={data.paymentMethods}
@@ -236,7 +230,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        {#if selectedPlan !== BillingPlan.FREE}
+        {#if selectedPlan !== BillingPlan.Tier0}
             <EstimatedTotalBox
                 billingPlan={selectedPlan}
                 {collaborators}

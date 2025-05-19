@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ depends, params }) => {
 
     const [projects, invoices] = await Promise.all([
         sdk.forConsole.projects.list([Query.equal('teamId', params.organization)]),
-        isCloud ? sdk.forConsole.billing.listInvoices(params.organization) : undefined
+        isCloud ? sdk.forConsole.organizations.listInvoices(params.organization) : undefined
     ]);
 
     return {

@@ -2,15 +2,16 @@
     import { InputChoice, InputNumber } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Coupon, PlansMap } from '$lib/sdk/billing';
+    import type { Coupon } from '$lib/sdk/billing';
     import { type Tier } from '$lib/stores/billing';
     import { Card, Divider, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { CreditsApplied } from '.';
+    import type { Models } from '@appwrite.io/console';
 
     export let billingPlan: Tier;
     export let collaborators: string[];
     export let couponData: Partial<Coupon>;
-    export let plans: PlansMap;
+    export let plans: Map<Tier, Models.BillingPlan>;
     export let billingBudget: number;
     export let fixedCoupon = false; // If true, the coupon cannot be removed
     export let isDowngrade = false;
@@ -29,9 +30,7 @@
                 ? grossCost - couponData.credits
                 : 0
             : grossCost;
-    $: trialEndDate = new Date(
-        billingPayDate.getTime() + currentPlan.trialDays * 24 * 60 * 60 * 1000
-    );
+    $: trialEndDate = new Date(billingPayDate.getTime() + currentPlan.trial * 24 * 60 * 60 * 1000);
 </script>
 
 <Card.Base padding="s">
@@ -54,7 +53,7 @@
         <Layout.Stack direction="row" justifyContent="space-between">
             <Typography.Text>
                 Upcoming charge<br />
-                Due on {!currentPlan.trialDays
+                Due on {!currentPlan.trial
                     ? toLocaleDate(billingPayDate.toString())
                     : toLocaleDate(trialEndDate.toString())}</Typography.Text>
             <Typography.Text>{formatCurrency(estimatedTotal)}</Typography.Text>
@@ -64,7 +63,7 @@
             You'll pay <b>{formatCurrency(estimatedTotal)}</b> now, with your first billing cycle
             starting on
             <b
-                >{!currentPlan.trialDays
+                >{!currentPlan.trial
                     ? toLocaleDate(billingPayDate.toString())
                     : toLocaleDate(trialEndDate.toString())}</b
             >. {#if couponData?.status === 'active'}Once your credits run out, you'll be charged

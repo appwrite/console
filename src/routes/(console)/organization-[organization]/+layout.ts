@@ -12,8 +12,8 @@ import { get } from 'svelte/store';
 import { preferences } from '$lib/stores/preferences';
 import type { Organization } from '$lib/stores/organization';
 import { defaultRoles, defaultScopes } from '$lib/constants';
-import type { Plan } from '$lib/sdk/billing';
 import { loadAvailableRegions } from '$routes/(console)/regions';
+import type { Models } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
@@ -21,14 +21,14 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PAYMENT_METHODS);
     let roles = isCloud ? [] : defaultRoles;
     let scopes = isCloud ? [] : defaultScopes;
-    let currentPlan: Plan = null;
+    let currentPlan: Models.BillingPlan = null;
 
     try {
         if (isCloud) {
-            const res = await sdk.forConsole.billing.getRoles(params.organization);
+            const res = await sdk.forConsole.organizations.getScopes(params.organization);
             roles = res.roles;
             scopes = res.scopes;
-            currentPlan = await sdk.forConsole.billing.getOrganizationPlan(params.organization);
+            currentPlan = await sdk.forConsole.organizations.getPlan(params.organization);
             if (scopes.includes('billing.read')) {
                 await failedInvoice.load(params.organization);
                 if (get(failedInvoice)) {

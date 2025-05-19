@@ -310,7 +310,7 @@
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);
 
-                if ($plansInfo.get(org.billingPlan)?.trialDays) {
+                if ($plansInfo.get(org.billingPlan)?.trial) {
                     calculateTrialDay(org);
                 }
             }

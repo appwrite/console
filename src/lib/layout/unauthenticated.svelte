@@ -5,22 +5,20 @@
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.png';
     import LoginLight from '$lib/images/login/login-light-mode.png';
-    import type { Coupon } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
-    import type { Campaign } from '$lib/stores/campaigns';
     import { Typography, Layout, Avatar } from '@appwrite.io/pink-svelte';
     import { getCampaignImageUrl } from '$routes/(public)/card/helpers';
-
+    import type { Models } from '@appwrite.io/console';
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
 
-    export let campaign: Campaign = null;
-    export let coupon: Coupon = null;
+    export let campaign: Models.Campaign = null;
+    export let coupon: Models.Coupon = null;
     export let align: 'start' | 'center' | 'end' = 'start';
 
     $: variation = ((coupon?.campaign ?? campaign) ? campaign?.template : 'default') as
         | 'default'
-        | Campaign['template'];
+        | Models.Campaign['template'];
 
     let currentReviewNumber = 0;
     $: currentReview = campaign?.reviews?.[currentReviewNumber];

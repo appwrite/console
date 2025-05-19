@@ -11,7 +11,12 @@
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
     import { type Coupon } from '$lib/sdk/billing';
-    import { isOrganization, plansInfo, tierToPlan } from '$lib/stores/billing';
+    import {
+        isOrganization,
+        isOrganizationError,
+        plansInfo,
+        tierToPlan
+    } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -31,10 +36,11 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
+    import { isValueOfStringEnum } from '$lib/helpers/types.js';
 
     export let data;
 
-    let selectedPlan: BillingPlan = data.plan as BillingPlan;
+    let selectedPlan: BillingPlan = data.plan;
     let selectedCoupon: Partial<Coupon> | null = data.coupon;
     let previousPage: string = base;
     let showExitModal = false;
@@ -63,7 +69,7 @@
         if (page.url.searchParams.has('code')) {
             const coupon = page.url.searchParams.get('code');
             try {
-                couponData = await sdk.forConsole.billing.getCouponAccount(coupon);
+                couponData = await sdk.forConsole.account.getCoupon(coupon);
             } catch (e) {
                 couponData = {
                     code: null,
@@ -74,7 +80,7 @@
         }
         if (page.url.searchParams.has('plan')) {
             const plan = page.url.searchParams.get('plan');
-            if (plan && plan in BillingPlan) {
+            if (plan && isValueOfStringEnum(BillingPlan, plan)) {
                 selectedPlan = plan as BillingPlan;
             }
         }
@@ -87,10 +93,10 @@
                 await validate(organizationId, invites);
             }
         }
-        if ($currentPlan?.$id === BillingPlan.SCALE) {
-            selectedPlan = BillingPlan.SCALE;
+        if ($currentPlan?.$id === BillingPlan.Tier2) {
+            selectedPlan = BillingPlan.Tier2;
         } else {
-            selectedPlan = BillingPlan.PRO;
+            selectedPlan = BillingPlan.Tier1;
         }
     });
 
@@ -104,7 +110,7 @@
 
     async function downgrade() {
         try {
-            await sdk.forConsole.billing.updatePlan(
+            await sdk.forConsole.organizations.updatePlan(
                 data.organization.$id,
                 selectedPlan,
                 paymentMethodId,
@@ -186,18 +192,18 @@
                         !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
                 );
             }
-            const org = await sdk.forConsole.billing.updatePlan(
+            const org = await sdk.forConsole.organizations.updatePlan(
                 data.organization.$id,
                 selectedPlan,
                 paymentMethodId,
                 null,
-                couponData?.code,
                 newCollaborators,
-                billingBudget,
-                taxId ? taxId : null
+                couponData?.code,
+                taxId ? taxId : null,
+                billingBudget
             );
 
-            if (!isOrganization(org) && org.status == 402) {
+            if (isOrganizationError(org) && org.status == 402) {
                 let clientSecret = org.clientSecret;
                 let params = new URLSearchParams();
                 for (const [key, value] of page.url.searchParams.entries()) {

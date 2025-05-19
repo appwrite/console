@@ -6,8 +6,8 @@
     import { Dependencies } from '$lib/constants';
     import { Button, InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import type { Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
     export let show = false;
@@ -45,7 +45,7 @@
 
     async function handleSubmit() {
         try {
-            const response = await sdk.forConsole.billing.createAddress(
+            const response = await sdk.forConsole.account.createBillingAddress(
                 country,
                 address,
                 city,
@@ -54,9 +54,12 @@
                 address2 ? address2 : undefined
             );
             trackEvent(Submit.BillingAddressCreate);
-            let org: Organization = null;
+            let org: Models.Organization<Record<string, unknown>> = null;
             if (organization) {
-                org = await sdk.forConsole.billing.setBillingAddress(organization, response.$id);
+                org = await sdk.forConsole.organizations.setBillingAddress(
+                    organization,
+                    response.$id
+                );
                 trackEvent(Submit.OrganizationBillingAddressUpdate);
                 await invalidate(Dependencies.ORGANIZATION);
             }

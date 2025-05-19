@@ -35,7 +35,7 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forConsole.billing.updateAddress(
+            await sdk.forConsole.account.updateBillingAddress(
                 selectedAddress.$id,
                 selectedAddress.country,
                 selectedAddress.streetAddress,

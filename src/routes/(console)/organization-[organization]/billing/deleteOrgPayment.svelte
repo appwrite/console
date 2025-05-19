@@ -19,7 +19,7 @@
         if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
 
         try {
-            await sdk.forConsole.billing.removeOrganizationPaymentMethod($organization.$id);
+            await sdk.forConsole.organizations.deleteDefaultPaymentMethod($organization.$id);
             addNotification({
                 type: 'success',
                 message: `The payment method has been removed from ${$organization.name}`
@@ -39,7 +39,7 @@
         showDelete = false;
 
         try {
-            await sdk.forConsole.billing.removeOrganizationPaymentMethodBackup($organization.$id);
+            await sdk.forConsole.organizations.deleteBackupPaymentMethod($organization.$id);
             addNotification({
                 type: 'success',
                 message: `The payment method has been removed from ${$organization.name}`

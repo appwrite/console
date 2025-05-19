@@ -31,7 +31,7 @@
 <Modal title="Cancel plan change" onSubmit={cancelDowngrade} bind:show={showCancel} bind:error>
     <p>
         Your organization is set to change to <strong>
-            {tierToPlan($organization?.billingPlanDowngrade).name}</strong>
+            {tierToPlan($organization?.billingPlanDowngrade as unknown as string).name}</strong>
         plan on <strong> {toLocaleDate($organization.billingNextInvoiceDate)}</strong>. Are you sure
         you want to cancel this change and keep your current plan?
     </p>

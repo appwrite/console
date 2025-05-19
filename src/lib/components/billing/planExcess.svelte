@@ -1,18 +1,18 @@
 <script lang="ts">
-    import { calculateExcess, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { calculateExcess, plansInfo, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { toLocaleDate } from '$lib/helpers/date';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { formatNum } from '$lib/helpers/string';
     import { onMount } from 'svelte';
-    import type { Aggregation } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { BillingPlan } from '$lib/constants';
     import { Alert, Icon, Table, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import type { Models } from '@appwrite.io/console';
 
-    export let tier: Tier;
+    export let tier: BillingPlan;
 
     const plan = $plansInfo?.get(tier);
     let excess: {
@@ -22,11 +22,11 @@
         executions?: number;
         members?: number;
     } = null;
-    let aggregation: Aggregation = null;
+    let aggregation: Models.AggregationTeam = null;
     let showExcess = false;
 
     onMount(async () => {
-        aggregation = await sdk.forConsole.billing.getAggregation(
+        aggregation = await sdk.forConsole.organizations.getAggregation(
             $organization.$id,
             $organization.billingAggregationId
         );

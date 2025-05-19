@@ -16,10 +16,11 @@
     import { Table, Tabs, Alert } from '@appwrite.io/pink-svelte';
     import DeleteOrganizationEstimation from './deleteOrganizationEstimation.svelte';
     import { onMount } from 'svelte';
-    import type { EstimationDeleteOrganization, InvoiceList } from '$lib/sdk/billing';
+    import type { EstimationDeleteOrganization } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
-    export let invoices: InvoiceList;
+    export let invoices: Models.InvoiceList;
     let error: string = null;
 
     let selectedTab = 'projects';
@@ -29,7 +30,7 @@
     async function deleteOrg() {
         try {
             if (isCloud) {
-                await sdk.forConsole.billing.deleteOrganization($organization.$id);
+                await sdk.forConsole.organizations.delete($organization.$id);
             } else {
                 await sdk.forConsole.teams.delete($organization.$id);
             }

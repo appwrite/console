@@ -3,6 +3,7 @@ import type { Campaign } from '$lib/stores/campaigns';
 import type { Client, Models } from '@appwrite.io/console';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
+import type { BillingPlan } from '$lib/constants';
 
 export type PaymentMethodData = {
     $id: string;
@@ -345,7 +346,7 @@ export type PlanList = {
     total: number;
 };
 
-export type PlansMap = Map<Tier, Plan>;
+export type PlansMap = Map<BillingPlan, Models.BillingPlan>;
 
 export type Roles = {
     scopes: string[];
@@ -375,7 +376,10 @@ export class Billing {
         );
     }
 
-    async validateOrganization(organizationId: string, invites: string[]): Promise<Organization> {
+    async validateOrganization(
+        organizationId: string,
+        invites: string[]
+    ): Promise<Models.Organization<Record<string, unknown>>> {
         const path = `/organizations/${organizationId}/validate`;
         const params = {
             organizationId,

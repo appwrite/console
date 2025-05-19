@@ -82,7 +82,7 @@
                                         >You are limited to 1 free organization per account</span>
                                 </Tooltip>
                             {/if}
-                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
+                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trial}
                                 <Tooltip>
                                     <div class="u-flex u-cross-center">
                                         <Pill class="eyebrow-heading-3">TRIAL</Pill>

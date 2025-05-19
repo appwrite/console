@@ -42,7 +42,7 @@
 
     async function request() {
         if (!$organization?.$id) return;
-        creditList = await sdk.forConsole.billing.listCredits($organization.$id, [
+        creditList = await sdk.forConsole.organizations.listCredits($organization.$id, [
             Query.limit(limit),
             Query.offset(offset)
         ]);
