@@ -67,8 +67,6 @@
         buildCommand = adapterData?.buildCommand;
         outputDirectory = adapterData?.outputDirectory;
     }
-
-    $: console.log(frameworkData);
 </script>
 
 <Fieldset legend="Settings">
