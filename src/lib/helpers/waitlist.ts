@@ -2,10 +2,8 @@ import { get } from 'svelte/store';
 import { user } from '$lib/stores/user';
 import { sdk } from '$lib/stores/sdk';
 
-const userPreferences = () => get(user)?.prefs;
-
 export const joinWaitlistSites = () => {
-    const currentPrefs = userPreferences();
+    const currentPrefs = () => get(user)?.prefs;
 
     const newPrefs = {
         ...currentPrefs,
@@ -16,7 +14,8 @@ export const joinWaitlistSites = () => {
 };
 
 export const isOnWaitlistSites = (): boolean => {
-    const currentPrefs = userPreferences();
+    const currentPrefs = () => get(user)?.prefs;
 
+    console.log('load from prefs', 'joinWaitlistSites' in currentPrefs);
     return 'joinWaitlistSites' in currentPrefs;
 };

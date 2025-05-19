@@ -179,7 +179,9 @@
                                 }}>
                                 <span class="icon-globe-alt" aria-hidden="true" />
                                 <span class="text">Sites</span>
-                                <span class="badge">New</span>
+                                <div class="tag eyebrow-heading-3">
+                                    <span class="text u-x-small">New</span>
+                                </div>
                             </a>
                         </li>
                         <li class="drop-list-item is-not-desktop">
@@ -274,12 +276,11 @@
         z-index: 9999;
     }
 
-    .badge {
-        background-color: hsl(calc(343 - 3) 79% 48%);
-        color: white;
-        padding: 4px 6px;
-        border-radius: 0.25rem;
-        font-size: 12px;
+    .tag {
+        padding-inline: 8px;
+        height: 20px;
+        display: flex;
+        align-items: center;
     }
 
     .drop-button {
