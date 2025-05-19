@@ -2,13 +2,13 @@
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { app } from '$lib/stores/app';
-    import { Heading, Empty } from '$lib/components';
-    import EmptyLight from '$lib/images/empty-light.svg';
-    import EmptyDark from '$lib/images/empty-dark.svg';
+    import { Heading } from '$lib/components';
+    import EmptyLight from './empty-sites-light.svg';
+    import EmptyDark from './empty-sites-dark.svg';
     import { isOnWaitlistSites, joinWaitlistSites } from '$lib/helpers/waitlist';
-    import { page } from '$app/stores';
+    import { addNotification } from '$lib/stores/notifications';
 
-    $: isOnWaitlist = isOnWaitlistSites($page.url.pathname);
+    $: isOnWaitlist = isOnWaitlistSites();
 </script>
 
 <Container>
@@ -22,54 +22,47 @@
             {/if}
 
             <slot>
-                <div class="u-text-center">
-                    <Heading size="7" tag="h2" trimmed={false}
-                        >Appwrite Sites is in high demand.</Heading>
-                    <p class="body-text-2 u-bold u-margin-block-start-4">
-                        We have a waiting list to ensure a great experience for all of you. Please
-                        join the waiting list to get access.
-                    </p>
-                </div>
-                <div class="u-flex u-flex-wrap u-gap-16 u-main-center">
-                    {#if isOnWaitlist}
-                        We can't wait for you to try out Sites on Cloud.
-                    {:else}
+                {#if isOnWaitlist}
+                    <div class="u-text-center">
+                        <Heading size="7" tag="h2" trimmed={false}
+                            >You've successfully joined the Sites waitlist
+                        </Heading>
+                        <p class="body-text-2 u-margin-block-start-4" style="max-width: 600px;">
+                            We can't wait for you to try out Sites on Cloud. You will get access
+                            soon.
+                        </p>
+                    </div>
+                {:else}
+                    <div class="u-text-center">
+                        <Heading size="7" tag="h2" trimmed={false}
+                            >Appwrite Sites is in high demand</Heading>
+                        <p class="body-text-2 u-margin-block-start-4" style="max-width: 600px;">
+                            To ensure a smooth experience for everyone, we’re rolling out access
+                            gradually. Join the waitlist and be one of the first to deploy with
+                            Sites.
+                        </p>
+                    </div>
+                    <div class="u-flex u-flex-wrap u-gap-16 u-main-center">
                         <Button
                             on:click={() => {
                                 joinWaitlistSites();
+                                addNotification({
+                                    title: 'Waitlist joined',
+                                    message:
+                                        'We’ll let you know as soon as Appwrite Sites is ready for you.',
+                                    type: 'success'
+                                });
                                 isOnWaitlist = true;
                             }}>Join waitlist</Button>
-                    {/if}
-                </div>
+                    </div>
+                {/if}
             </slot>
         </div>
     </article>
-    <!--    <div class="waitlist-container">-->
-    <!--        {#if isOnWaitlistSites()}-->
-    <!--            <Heading tag={'h1'} size={'7'}>Thanks for joining our waitlist</Heading>-->
-    <!--            We can't wait for you to try out Sites on Cloud.<br />-->
-    <!--            You will get access soon.-->
-    <!--        {:else}-->
-    <!--            <Heading tag={'h1'} size={'7'}>Appwrite Sites is in high demand.</Heading>-->
-    <!--            <p>-->
-    <!--                We have a waiting list to ensure a great experience for all of you.<br />Please join-->
-    <!--                the waiting list to get access.-->
-    <!--            </p>-->
-    <!--            <Button-->
-    <!--                on:click={() => {-->
-    <!--                    joinWaitlistSites();-->
-    <!--                    isOnWaitlist = true;-->
-    <!--                }}>Join waitlist</Button>-->
-    <!--        {/if}-->
-    <!--    </div>-->
 </Container>
 
 <style>
-    .waitlist-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 16px;
-        text-align: center;
+    article {
+        margin-top: -100px;
     }
 </style>
