@@ -180,7 +180,7 @@
                                 <span class="icon-globe-alt" aria-hidden="true" />
                                 <span class="text">Sites</span>
                                 <div class="tag eyebrow-heading-3">
-                                    <span class="text u-x-small">New</span>
+                                    <span>New</span>
                                 </div>
                             </a>
                         </li>
@@ -271,7 +271,7 @@
     {/if}
 </div>
 
-<style>
+<style lang="scss">
     .side-nav {
         z-index: 9999;
     }
@@ -281,6 +281,10 @@
         height: 20px;
         display: flex;
         align-items: center;
+
+        span {
+            font-size: 12px;
+        }
     }
 
     .drop-button {
