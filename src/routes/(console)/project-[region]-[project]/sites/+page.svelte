@@ -4,7 +4,9 @@
     import { app } from '$lib/stores/app';
     import { Heading } from '$lib/components';
     import EmptyLight from './empty-sites-light.svg';
+    import EmptyLightMobile from './empty-sites-light-mobile.svg';
     import EmptyDark from './empty-sites-dark.svg';
+    import EmptyDarkMobile from './empty-sites-dark-mobile.svg';
     import { isOnWaitlistSites, joinWaitlistSites } from '$lib/helpers/waitlist';
     import { addNotification } from '$lib/stores/notifications';
 
@@ -16,9 +18,26 @@
         <div
             class="u-flex u-flex-vertical u-cross-center u-gap-24 u-width-full-line u-overflow-hidden u-padding-block-8">
             {#if $app.themeInUse === 'dark'}
-                <img src={EmptyDark} alt="create" aria-hidden="true" height="242" />
+                <img src={EmptyDark} alt="create" aria-hidden="true" height="242" class="desktop" />
+                <img
+                    src={EmptyDarkMobile}
+                    alt="create"
+                    aria-hidden="true"
+                    height="242"
+                    class="mobile" />
             {:else}
-                <img src={EmptyLight} alt="create" aria-hidden="true" height="242" />
+                <img
+                    src={EmptyLight}
+                    alt="create"
+                    aria-hidden="true"
+                    height="242"
+                    class="desktop" />
+                <img
+                    src={EmptyLightMobile}
+                    alt="create"
+                    aria-hidden="true"
+                    height="242"
+                    class="mobile" />
             {/if}
 
             <slot>
@@ -64,5 +83,21 @@
 <style>
     article {
         margin-top: -100px;
+    }
+
+    .mobile {
+        display: block;
+
+        @media (min-width: 768px) {
+            display: none;
+        }
+    }
+
+    .desktop {
+        display: none;
+
+        @media (min-width: 768px) {
+            display: block;
+        }
     }
 </style>
