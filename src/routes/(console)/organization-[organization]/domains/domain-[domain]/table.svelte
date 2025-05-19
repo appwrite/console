@@ -8,16 +8,23 @@
         Layout,
         Popover,
         Table,
-        Typography
+        Typography,
+        Tooltip
     } from '@appwrite.io/pink-svelte';
-    import { IconDotsHorizontal, IconPencil, IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDotsHorizontal,
+        IconLockClosed,
+        IconPencil,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
     import { columns } from './store';
     import DeleteRecordModal from './deleteRecordModal.svelte';
     import EditRecordModal from './updateRecordModal.svelte';
     import type { DnsRecord } from '$lib/sdk/domains';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import type { PageData } from './$types';
 
-    export let data;
+    export let data: PageData;
 
     let showEdit = false;
     let showDelete = false;
@@ -68,44 +75,51 @@
                 {/each}
                 <Table.Cell column="actions" {root}>
                     <Layout.Stack direction="row" justifyContent="flex-end">
-                        <Popover let:toggle placement="bottom-start" padding="none">
-                            <Button.Button
-                                variant="text"
-                                icon
-                                size="s"
-                                on:click={(e) => {
-                                    e.preventDefault();
-                                    toggle(e);
-                                }}>
-                                <Icon icon={IconDotsHorizontal} size="s" />
-                            </Button.Button>
+                        {#if record.lock}
+                            <Tooltip>
+                                <Icon icon={IconLockClosed} size="s" />
+                                <span slot="tooltip">DNS record is locked</span>
+                            </Tooltip>
+                        {:else}
+                            <Popover let:toggle placement="bottom-start" padding="none">
+                                <Button.Button
+                                    variant="text"
+                                    icon
+                                    size="s"
+                                    on:click={(e) => {
+                                        e.preventDefault();
+                                        toggle(e);
+                                    }}>
+                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                </Button.Button>
 
-                            <svelte:fragment slot="tooltip" let:toggle>
-                                <ActionMenu.Root>
-                                    <ActionMenu.Item.Button
-                                        leadingIcon={IconPencil}
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            selectedRecord = record;
-                                            showEdit = true;
-                                            toggle(e);
-                                        }}>
-                                        Update
-                                    </ActionMenu.Item.Button>
-                                    <ActionMenu.Item.Button
-                                        status="danger"
-                                        leadingIcon={IconTrash}
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            selectedRecord = record;
-                                            showDelete = true;
-                                            toggle(e);
-                                        }}>
-                                        Delete
-                                    </ActionMenu.Item.Button>
-                                </ActionMenu.Root>
-                            </svelte:fragment>
-                        </Popover>
+                                <svelte:fragment slot="tooltip" let:toggle>
+                                    <ActionMenu.Root>
+                                        <ActionMenu.Item.Button
+                                            leadingIcon={IconPencil}
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                selectedRecord = record;
+                                                showEdit = true;
+                                                toggle(e);
+                                            }}>
+                                            Update
+                                        </ActionMenu.Item.Button>
+                                        <ActionMenu.Item.Button
+                                            status="danger"
+                                            leadingIcon={IconTrash}
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                selectedRecord = record;
+                                                showDelete = true;
+                                                toggle(e);
+                                            }}>
+                                            Delete
+                                        </ActionMenu.Item.Button>
+                                    </ActionMenu.Root>
+                                </svelte:fragment>
+                            </Popover>
+                        {/if}
                     </Layout.Stack>
                 </Table.Cell>
             </Table.Row.Base>
