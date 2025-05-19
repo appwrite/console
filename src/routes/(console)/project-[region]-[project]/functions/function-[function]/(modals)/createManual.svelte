@@ -40,6 +40,8 @@
         ? Array.from(files).map((f) => {
               return {
                   ...f,
+                  name: f.name,
+                  size: f.size,
                   extension: f.type,
                   removable: true
               };

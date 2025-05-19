@@ -112,10 +112,10 @@
                             files={Array.from(files).map((f) => {
                                 return {
                                     ...f,
-                                    size: f.size,
                                     name: f.name,
-                                    removable: true,
-                                    extension: f.type
+                                    size: f.size,
+                                    extension: f.type,
+                                    removable: true
                                 };
                             })}
                             on:remove={(e) => (files = removeFile(e.detail, files))} />
