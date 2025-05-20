@@ -64,6 +64,16 @@
             <Alert.Inline status="warning" dismissible on:dismiss={() => (showAlert = false)}>
                 Some configuration options are not live yet. Redeploy your function to apply latest
                 changes.
+                <svelte:fragment slot="actions">
+                    <Button
+                        compact
+                        on:click={() => {
+                            selectedDeployment = data.activeDeployment;
+                            showRedeploy = true;
+                        }}>
+                        Redeploy
+                    </Button>
+                </svelte:fragment>
             </Alert.Inline>
         {/if}
         <Layout.Stack gap="xxxl">

@@ -16,10 +16,6 @@
     import { onMount } from 'svelte';
     import LoggingAlert from './loggingAlert.svelte';
 
-    // export let selectedLog: Models.Execution;
-    // export let product: 'site' | 'function';
-    // export let logging: boolean;
-
     let {
         selectedLog,
         product,
@@ -58,14 +54,12 @@
                 on:click={() => (responseTab = 'logs')}>
                 Logs
             </Tabs.Item.Button>
-            {#if product !== 'site'}
-                <Tabs.Item.Button
-                    {root}
-                    active={responseTab === 'errors'}
-                    on:click={() => (responseTab = 'errors')}>
-                    Errors
-                </Tabs.Item.Button>
-            {/if}
+            <Tabs.Item.Button
+                {root}
+                active={responseTab === 'errors'}
+                on:click={() => (responseTab = 'errors')}>
+                Errors
+            </Tabs.Item.Button>
             <Tabs.Item.Button
                 {root}
                 active={responseTab === 'headers'}
