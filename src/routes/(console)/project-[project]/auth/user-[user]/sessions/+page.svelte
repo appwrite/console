@@ -8,6 +8,7 @@
     import DeleteSessions from '../deleteSession.svelte';
     import type { PageData } from './$types';
     import { Badge, Card, Empty, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { consoleProfile, isStudio } from '$lib/system';
 
     export let data: PageData;
 
@@ -105,15 +106,19 @@
         <Card.Base padding="none">
             <Empty
                 title="No sessions available"
-                description="Need a hand? Learn more in our documentation."
+                description={!consoleProfile.hasAppwriteDocumentation
+                    ? ''
+                    : 'Need a hand? Learn more in our documentation.'}
                 type="secondary">
                 <svelte:fragment slot="actions">
-                    <Button
-                        external
-                        secondary
-                        href="https://appwrite.io/docs/products/auth/email-password">
-                        Documentation
-                    </Button>
+                    {#if consoleProfile.hasAppwriteDocumentation}
+                        <Button
+                            external
+                            secondary
+                            href="https://appwrite.io/docs/products/auth/email-password">
+                            Documentation
+                        </Button>
+                    {/if}
                 </svelte:fragment>
             </Empty>
         </Card.Base>

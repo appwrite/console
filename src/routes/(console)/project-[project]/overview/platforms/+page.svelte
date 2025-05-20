@@ -84,6 +84,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentType } from 'svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import { consoleProfile, isStudio } from '$lib/system';
 
     export let data: PageData;
 
@@ -154,9 +155,14 @@
     <Card.Base padding="none">
         <Empty
             title="Add a platform to get started."
-            description="Need a hand? Learn more in our documentation.">
+            description={!consoleProfile.hasAppwriteDocumentation
+                ? ''
+                : 'Need a hand? Learn more in our documentation.'}>
             <svelte:fragment slot="actions">
-                <Button external href="https://appwrite.io/docs/sdks" text>Documentation</Button>
+                {#if consoleProfile.hasAppwriteDocumentation}
+                    <Button external href="https://appwrite.io/docs/sdks" text
+                        >Documentation</Button>
+                {/if}
                 <Popover let:toggle padding="none" placement="bottom-end">
                     {#if $canWritePlatforms}
                         <Button secondary on:click={toggle}>

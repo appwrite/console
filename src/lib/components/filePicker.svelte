@@ -30,6 +30,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
     import { showCreateBucket } from '$routes/(console)/project-[project]/storage/+page.svelte';
+    import { consoleProfile, isStudio } from '$lib/system';
 
     export let show: boolean;
     export let mimeTypeQuery: string = 'image/';
@@ -488,7 +489,9 @@
                                             <Card.Base padding="none">
                                                 <Empty
                                                     title="No files found within this bucket."
-                                                    description="Need a hand? Learn more in our documentation.">
+                                                    description={isStudio
+                                                        ? ''
+                                                        : 'Need a hand? Learn more in our documentation.'}>
                                                     <slot name="actions" slot="actions">
                                                         <Button
                                                             text
@@ -515,16 +518,19 @@
                             <Card.Base padding="none">
                                 <Empty
                                     title="No buckets found"
-                                    description="Need a hand? Learn more in our documentation.">
+                                    description={!consoleProfile.hasAppwriteDocumentation
+                                        ? ''
+                                        : 'Need a hand? Learn more in our documentation.'}>
                                     <slot name="actions" slot="actions">
-                                        <Button
-                                            text
-                                            external
-                                            size="s"
-                                            event="empty_documentation"
-                                            href="https://appwrite.io/docs/products/storage/buckets"
-                                            ariaLabel="create document">Documentation</Button>
-
+                                        {#if consoleProfile.hasAppwriteDocumentation}
+                                            <Button
+                                                text
+                                                external
+                                                size="s"
+                                                event="empty_documentation"
+                                                href="https://appwrite.io/docs/products/storage/buckets"
+                                                ariaLabel="create document">Documentation</Button>
+                                        {/if}
                                         <Button
                                             secondary
                                             on:click={async () => {

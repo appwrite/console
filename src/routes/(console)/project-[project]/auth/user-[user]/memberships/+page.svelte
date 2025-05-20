@@ -10,6 +10,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Table, Layout, Empty, Card } from '@appwrite.io/pink-svelte';
+    import { consoleProfile, isStudio } from '$lib/system';
 
     export let data: PageData;
 
@@ -70,15 +71,19 @@
         <Card.Base padding="none">
             <Empty
                 title="No memberships available"
-                description="Need a hand? Learn more in our documentation."
+                description={!consoleProfile.hasAppwriteDocumentation
+                    ? ''
+                    : 'Need a hand? Learn more in our documentation.'}
                 type="secondary">
                 <svelte:fragment slot="actions">
-                    <Button
-                        external
-                        secondary
-                        href="https://appwrite.io/docs/products/auth/teams#create-membership">
-                        Documentation
-                    </Button>
+                    {#if consoleProfile.hasAppwriteDocumentation}
+                        <Button
+                            external
+                            secondary
+                            href="https://appwrite.io/docs/products/auth/teams#create-membership">
+                            Documentation
+                        </Button>
+                    {/if}
                 </svelte:fragment>
             </Empty>
         </Card.Base>
