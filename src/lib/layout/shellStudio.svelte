@@ -276,7 +276,7 @@
                                 <div
                                     style:padding-left="200px"
                                     style:width="100%"
-                                    style:min-height="calc(100vh - 98px)">
+                                    style:min-height="calc(100dvh - 98px)">
                                     <Layout.Stack>
                                         {#if page.data?.header}
                                             <Header />
@@ -380,7 +380,7 @@
 
 <style lang="scss">
     main {
-        min-height: 100vh;
+        min-height: 100dvh;
         background-color: var(--bgcolor-neutral-default);
     }
 
@@ -408,14 +408,14 @@
     }
 
     .studio-content {
-        min-height: calc(100vh - 50px);
+        min-height: calc(100dvh - 50px);
         margin-top: 50px;
-        width: 100vw;
+        width: 100dvw;
         position: relative;
 
         @media (min-width: 1024px) {
-            min-height: calc(100vh - 48px);
-            width: calc(100vw - 200px);
+            min-height: calc(100dvh - 48px);
+            width: calc(100dvw - 200px);
             margin-left: 200px;
             margin-top: 48px;
             padding-left: 0;
@@ -424,7 +424,7 @@
 
         &.project-sidebar {
             @media (min-width: 1024px) {
-                width: calc(100vw - 48px);
+                width: calc(100dvw - 48px);
                 margin-left: 48px;
             }
         }
@@ -447,8 +447,8 @@
 
     .overlay {
         background-color: rgba(0, 0, 0, 0.4);
-        width: 100vw;
-        height: 100vh;
+        width: 100dvw;
+        height: 100dvh;
         position: fixed;
         top: 0;
         left: 0;
@@ -495,8 +495,8 @@
         position: absolute;
         left: 0;
         top: 0;
-        width: 100vw;
-        height: 100vh;
+        width: 100dvw;
+        height: 100dvh;
         background-color: transparent;
     }
 

@@ -125,7 +125,7 @@
 <section
     class="chat"
     style:visibility={$showChat ? 'visible' : 'hidden'}
-    style:width={$isSmallViewport ? 'calc(100vw - 16px)' : $showChat ? `${width}px` : 0}
+    style:width={$isSmallViewport ? 'calc(100dvw - 16px)' : $showChat ? `${width}px` : 0}
     class:minimize-chat={minimizeChat}
     class:is-visible={$showChat}
     class:sub-navigation={hasSubNavigation}>
@@ -198,18 +198,18 @@
         width: 0;
         position: absolute;
         top: 0;
-        height: calc(100vh - 56px);
+        height: calc(100dvh - 56px);
         z-index: 2;
 
         @media (min-width: 768px) {
             top: 0;
-            height: calc(100vh - 70px);
+            height: calc(100dvh - 70px);
         }
 
         &.sub-navigation {
             @media (max-width: 1024px) {
                 top: 40px;
-                height: calc(100vh - 96px);
+                height: calc(100dvh - 96px);
             }
         }
     }

@@ -165,7 +165,7 @@
 <div bind:this={layoutElement} class="layout">
     <Layout.Stack
         direction="column"
-        height={$isSmallViewport ? 'calc(100vh - 119px)' : 'calc(100vh - 79px)'}
+        height={$isSmallViewport ? 'calc(100dvh - 119px)' : 'calc(100dvh - 79px)'}
         gap="none">
         <Layout.Stack direction="column" gap="none">
             {#if $isSmallViewport}
