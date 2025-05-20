@@ -339,7 +339,7 @@
         bottom: 67px;
 
         @media (min-width: 768px) {
-            width: calc(100% + 2 * var(--space-7));
+            width: calc(100% + 2 * var(--space-7) - 1px);
             margin-inline-start: -15px;
             border-bottom-right-radius: var(--border-radius-m);
         }
