@@ -226,8 +226,15 @@
             selectedOrg?.billingPlan && $plansInfo.get(selectedOrg.billingPlan)
                 ? $plansInfo.get(selectedOrg.billingPlan)
                 : null;
-        if (!campaignPlan || !orgPlan) {
+
+        if (!campaignPlan && !orgPlan) {
             return;
+        }
+        if (!campaignPlan) {
+            return selectedOrg?.billingPlan;
+        }
+        if (!orgPlan) {
+            return campaign.plan;
         }
         return campaignPlan.order > orgPlan.order ? campaign.plan : selectedOrg?.billingPlan;
     }
@@ -336,7 +343,7 @@
                         <p class="text">Add a coupon code to apply credits to your organization.</p>
                     {/if}
                 </section>
-            {:else if selectedOrgId}
+            {:else if selectedOrg}
                 <div class:u-margin-block-start-24={campaign?.template === 'card'}>
                     <EstimatedTotal
                         {billingBudget}
