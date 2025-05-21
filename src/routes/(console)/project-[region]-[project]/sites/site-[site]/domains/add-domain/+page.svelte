@@ -72,21 +72,21 @@
             if (behaviour === 'BRANCH') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createSiteRule(domain.domain, page.params.site, branch);
+                    .proxy.createSiteRule(domainName, page.params.site, branch);
             } else if (behaviour === 'REDIRECT') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(domain.domain, $protocol + redirect, statusCode);
+                    .proxy.createRedirectRule(domainName, $protocol + redirect, statusCode);
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createSiteRule(domain.domain, page.params.site);
+                    .proxy.createSiteRule(domainName, page.params.site);
             }
             if (rule?.status === 'verified') {
                 await goto(routeBase);
                 await invalidate(Dependencies.SITES_DOMAINS);
             } else {
-                await goto(`${routeBase}/add-domain/verify-${domain.domain}?rule=${rule.$id}`);
+                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
                 await invalidate(Dependencies.SITES_DOMAINS);
             }
         } catch (error) {
