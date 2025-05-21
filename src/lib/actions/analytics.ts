@@ -314,6 +314,7 @@ export enum Submit {
     VariableDelete = 'submit_variable_delete',
     VariableUpdate = 'submit_variable_update',
     VariableEditor = 'submit_variable_editor',
+    LogDelete = 'submit_log_delete',
 
     KeyCreate = 'submit_key_create',
     KeyDelete = 'submit_key_delete',
