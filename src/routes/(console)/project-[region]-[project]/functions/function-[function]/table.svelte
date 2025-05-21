@@ -238,7 +238,7 @@
     onSubmit={deleteDeployments}>
     <p>
         Are you sure you want to delete <b>{selectedRows.length}</b>
-        {selectedRows.length > 1 ? 'deployments' : 'deployment'} from your function
+        {selectedRows.length > 1 ? 'deployments' : 'deployment'} from your function -
         <b>{$func.name}</b>?
     </p>
 
