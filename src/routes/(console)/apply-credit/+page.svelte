@@ -232,10 +232,15 @@
                 ? $plansInfo.get(selectedOrg.billingPlan)
                 : null;
 
-        if (!campaignPlan || !orgPlan) {
+        if (!campaignPlan && !orgPlan) {
             return;
         }
-
+        if (!campaignPlan) {
+            return selectedOrg?.billingPlan;
+        }
+        if (!orgPlan) {
+            return campaign.plan;
+        }
         return campaignPlan.order > orgPlan.order ? campaign.plan : selectedOrg?.billingPlan;
     }
 
