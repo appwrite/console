@@ -52,10 +52,7 @@
     });
 
     async function addDomain() {
-        let domain: Domain;
-        if (data.domains) {
-            domain = data.domains.domains.find((d) => d.domain === domainName);
-        }
+        let domain = data.domains?.domains.find((d) => d.domain === domainName);
 
         if (!domain) {
             try {
