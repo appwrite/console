@@ -7,19 +7,21 @@ export const load = async ({ parent, depends, params }) => {
     const { site } = await parent();
     depends(Dependencies.DOMAINS, Dependencies.SITES_DOMAINS);
 
-    const [rules, installations] = await Promise.all([
+    const [rules, installations, domains] = await Promise.all([
         sdk
             .forProject(params.region, params.project)
             .proxy.listRules([
                 Query.equal('type', RuleType.DEPLOYMENT),
                 Query.equal('trigger', RuleTrigger.MANUAL)
             ]),
-        sdk.forProject(params.region, params.project).vcs.listInstallations()
+        sdk.forProject(params.region, params.project).vcs.listInstallations(),
+        sdk.forConsole.domains.list()
     ]);
 
     return {
         site,
         rules,
+        domains,
         installations,
         branches:
             site?.installationId && site?.providerRepositoryId

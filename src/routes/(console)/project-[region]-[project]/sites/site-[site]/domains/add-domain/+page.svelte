@@ -23,6 +23,8 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { ConnectRepoModal } from '$lib/components/git/index.js';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import type { Domain } from '$lib/sdk/domains';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
 
@@ -50,27 +52,45 @@
     });
 
     async function addDomain() {
+        let domain: Domain;
+        if (data.domains) {
+            domain = data.domains.domains.find((d) => d.domain === domainName);
+        }
+
+        if (!domain) {
+            try {
+                domain = await sdk.forConsole.domains.create($project.teamId, domainName);
+            } catch (error) {
+                addNotification({
+                    type: 'error',
+                    message: error.message
+                });
+
+                return;
+            }
+        }
+
         try {
             let rule: Models.ProxyRule;
             if (behaviour === 'BRANCH') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createSiteRule(domainName, page.params.site, branch);
+                    .proxy.createSiteRule(domain.domain, page.params.site, branch);
             } else if (behaviour === 'REDIRECT') {
                 const sc = Object.values(StatusCode).find((code) => parseInt(code) === statusCode);
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(domainName, $protocol + redirect, sc);
+                    .proxy.createRedirectRule(domain.domain, $protocol + redirect, statusCode);
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createSiteRule(domainName, page.params.site);
+                    .proxy.createSiteRule(domain.domain, page.params.site);
             }
             if (rule?.status === 'verified') {
                 await goto(routeBase);
                 await invalidate(Dependencies.SITES_DOMAINS);
             } else {
-                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
+                await goto(`${routeBase}/add-domain/verify-${domain.domain}`);
                 await invalidate(Dependencies.SITES_DOMAINS);
             }
         } catch (error) {
