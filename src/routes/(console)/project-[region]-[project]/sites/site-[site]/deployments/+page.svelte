@@ -95,8 +95,8 @@
                 </Alert.Inline>
             {:else}
                 <Alert.Inline status="info" dismissible on:dismiss={() => (showAlert = false)}>
-                    Some configuration changes are not live yet. Your site is currently redeploying,
-                    and changes will be applied once the build is complete.
+                    Some configuration changes are not live yet. Your site is currently redeploying
+                    — changes will be applied once the build is complete.
                 </Alert.Inline>
             {/if}
         {/if}
