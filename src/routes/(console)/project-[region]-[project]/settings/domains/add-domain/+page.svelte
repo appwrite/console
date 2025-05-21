@@ -9,10 +9,12 @@
     import { Dependencies } from '$lib/constants';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
+    import { isCloud } from '$lib/system';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/settings/domains`;
 
-    // let { data } = $props();
+    let { data } = $props();
 
     let formComponent: Form;
     let isSubmitting = $state(writable(false));
@@ -25,6 +27,21 @@
     });
 
     async function addDomain() {
+        let domain = data.domains?.domains.find((d) => d.domain === domainName);
+
+        if (!domain && isCloud) {
+            try {
+                domain = await sdk.forConsole.domains.create($project.teamId, domainName);
+            } catch (error) {
+                addNotification({
+                    type: 'error',
+                    message: error.message
+                });
+
+                return;
+            }
+        }
+
         try {
             const rule = await sdk
                 .forProject(page.params.region, page.params.project)

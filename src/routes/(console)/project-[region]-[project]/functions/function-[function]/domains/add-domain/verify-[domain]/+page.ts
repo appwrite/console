@@ -9,10 +9,11 @@ export const load = async ({ depends, params }) => {
     let domain: Domain;
     let domainsList: DomainsList;
     if (isCloud) {
-        [domain, domainsList] = await Promise.all([
-            sdk.forConsole.domains.get(params.domain),
-            sdk.forConsole.domains.list()
-        ]);
+        domainsList = await sdk.forConsole.domains.list();
+        const domainId = domainsList.domains.find(
+            (domain: Domain) => domain.domain === params.domain
+        ).$id;
+        domain = await sdk.forConsole.domains.get(domainId);
     }
 
     return {

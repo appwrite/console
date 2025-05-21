@@ -16,13 +16,15 @@
         Adapter,
         BuildRuntime,
         Framework,
-        StatusCode,
-        type Models
+        type Models,
+        StatusCode
     } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { ConnectRepoModal } from '$lib/components/git/index.js';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import { isCloud } from '$lib/system';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
 
@@ -34,8 +36,8 @@
     let behaviour: 'REDIRECT' | 'BRANCH' | 'ACTIVE' = $state('ACTIVE');
     let domainName = $state('');
     let redirect: string = $state(null);
-    let statusCode = $state(307);
     let branch: string = $state(null);
+    let statusCode = $state(StatusCode.TemporaryRedirect307);
 
     onMount(() => {
         if (
@@ -50,6 +52,21 @@
     });
 
     async function addDomain() {
+        let domain = data.domains?.domains.find((d) => d.domain === domainName);
+
+        if (!domain && isCloud) {
+            try {
+                domain = await sdk.forConsole.domains.create($project.teamId, domainName);
+            } catch (error) {
+                addNotification({
+                    type: 'error',
+                    message: error.message
+                });
+
+                return;
+            }
+        }
+
         try {
             let rule: Models.ProxyRule;
             if (behaviour === 'BRANCH') {
@@ -57,10 +74,9 @@
                     .forProject(page.params.region, page.params.project)
                     .proxy.createSiteRule(domainName, page.params.site, branch);
             } else if (behaviour === 'REDIRECT') {
-                const sc = Object.values(StatusCode).find((code) => parseInt(code) === statusCode);
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(domainName, $protocol + redirect, sc);
+                    .proxy.createRedirectRule(domainName, $protocol + redirect, statusCode);
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
