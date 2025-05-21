@@ -86,9 +86,7 @@
                 await goto(routeBase);
                 await invalidate(Dependencies.SITES_DOMAINS);
             } else {
-                if (isCloud) {
-                    await goto(`${routeBase}/add-domain/verify-${domain.domain}`);
-                }
+                await goto(`${routeBase}/add-domain/verify-${domain.domain}`);
                 await invalidate(Dependencies.SITES_DOMAINS);
             }
         } catch (error) {
