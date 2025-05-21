@@ -343,7 +343,7 @@
                         <p class="text">Add a coupon code to apply credits to your organization.</p>
                     {/if}
                 </section>
-            {:else if selectedOrg}
+            {:else if selectedOrgId}
                 <div class:u-margin-block-start-24={campaign?.template === 'card'}>
                     <EstimatedTotal
                         {billingBudget}
