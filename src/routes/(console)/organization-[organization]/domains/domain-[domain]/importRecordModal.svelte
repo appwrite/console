@@ -39,9 +39,9 @@
     function handleInvalid(e: CustomEvent) {
         const reason = e.detail.reason;
         if (reason === InvalidFileType.EXTENSION) {
-            error = 'Only .tar.gz files allowed';
+            error = 'Only .txt files allowed';
         } else if (reason === InvalidFileType.SIZE) {
-            error = 'File size exceeds 10MB';
+            error = 'File size exceeds 5MB';
         } else {
             error = 'Invalid file';
         }
@@ -72,11 +72,10 @@
             <Typography.Text color="--fgcolor-neutral-primary">
                 Upload a .txt file with your DNS records
             </Typography.Text>
-            maxSize={10000000}
             <Upload.Dropzone
                 bind:files
                 extensions={['txt']}
-                maxSize={10000000}
+                maxSize={5000000}
                 required
                 on:invalid={handleInvalid}>
                 <Layout.Stack alignItems="center" gap="s">
@@ -97,7 +96,7 @@
                                     >Only .txt files allowed</svelte:fragment>
                             </Tooltip>
                         </Layout.Stack>
-                        <Typography.Caption variant="400">Max file size 10MB</Typography.Caption>
+                        <Typography.Caption variant="400">Max file size 5MB</Typography.Caption>
                     </Layout.Stack>
                 </Layout.Stack>
             </Upload.Dropzone>
