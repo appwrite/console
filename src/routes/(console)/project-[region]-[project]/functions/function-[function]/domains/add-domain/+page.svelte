@@ -18,6 +18,8 @@
     import { onMount } from 'svelte';
     import { ConnectRepoModal } from '$lib/components/git/index.js';
     import { isValueOfStringEnum } from '$lib/helpers/types.js';
+    import { isCloud } from '$lib/system';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/domains`;
 
@@ -45,6 +47,21 @@
     });
 
     async function addDomain() {
+        let domain = data.domains?.domains.find((d) => d.domain === domainName);
+
+        if (!domain && isCloud) {
+            try {
+                domain = await sdk.forConsole.domains.create($project.teamId, domainName);
+            } catch (error) {
+                addNotification({
+                    type: 'error',
+                    message: error.message
+                });
+
+                return;
+            }
+        }
+
         try {
             let rule: Models.ProxyRule;
             if (behaviour === 'BRANCH') {
