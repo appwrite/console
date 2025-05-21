@@ -11,7 +11,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { formatTimeDetailed } from '$lib/helpers/timeConversion';
+    import { calculateTime } from '$lib/helpers/timeConversion';
     import { Button } from '$lib/elements/forms';
 
     export let columns: Column[];
@@ -79,7 +79,7 @@
                             {log.requestMethod}
                         </Typography.Code>
                     {:else if column.id === 'duration'}
-                        {formatTimeDetailed(log.duration)}
+                        {calculateTime(log.duration)}
                     {:else if column.id === 'responseStatusCode'}
                         <div>
                             <Badge

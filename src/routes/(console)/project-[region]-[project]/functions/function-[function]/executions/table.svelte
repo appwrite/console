@@ -13,7 +13,7 @@
     } from '@appwrite.io/pink-svelte';
     import Sheet from './sheet.svelte';
     import { capitalize } from '$lib/helpers/string';
-    import { formatTimeDetailed } from '$lib/helpers/timeConversion';
+    import { calculateTime } from '$lib/helpers/timeConversion';
     import { logStatusConverter } from './store';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { func } from '../store';
@@ -121,7 +121,7 @@
                             </span>
                         </Tooltip>
                     {:else if column.id === 'duration'}
-                        {formatTimeDetailed(log.duration)}
+                        {calculateTime(log.duration)}
                     {/if}
                 </Table.Cell>
             {/each}
