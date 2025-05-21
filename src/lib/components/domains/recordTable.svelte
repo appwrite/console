@@ -13,13 +13,16 @@
     export let domain: string;
     export let verified = false;
     export let variant: 'cname' | 'a' | 'aaaa';
+    export let service: 'sites' | 'general' = 'general';
 
     let subdomain = domain?.split('.')?.slice(0, -2)?.join('.');
 
     function setTarget() {
         switch (variant) {
             case 'cname':
-                return $consoleVariables._APP_DOMAIN_TARGET_CNAME;
+                return service === 'general'
+                    ? $consoleVariables._APP_DOMAIN_TARGET_CNAME
+                    : $consoleVariables._APP_DOMAIN_SITES;
             case 'a':
                 return $consoleVariables._APP_DOMAIN_TARGET_A;
             case 'aaaa':
