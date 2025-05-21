@@ -61,20 +61,27 @@
         {@const activeDeployment = data.activeDeployment}
 
         {#if data?.activeDeployment && !$func.live && showAlert}
-            <Alert.Inline status="warning" dismissible on:dismiss={() => (showAlert = false)}>
-                Some configuration options are not live yet. Redeploy your function to apply latest
-                changes.
-                <svelte:fragment slot="actions">
-                    <Button
-                        compact
-                        on:click={() => {
-                            selectedDeployment = data.activeDeployment;
-                            showRedeploy = true;
-                        }}>
-                        Redeploy
-                    </Button>
-                </svelte:fragment>
-            </Alert.Inline>
+            {#if data.deploymentList.deployments[0]?.status !== 'failed' && data.deploymentList.deployments[0]?.status !== 'ready'}
+                <Alert.Inline status="info" dismissible on:dismiss={() => (showAlert = false)}>
+                    Some configuration changes are not live yet. Your function is currently
+                    redeploying, and changes will be applied once the build is complete.
+                </Alert.Inline>
+            {:else}
+                <Alert.Inline status="warning" dismissible on:dismiss={() => (showAlert = false)}>
+                    Some configuration options are not live yet. Redeploy your function to apply
+                    latest changes.
+                    <svelte:fragment slot="actions">
+                        <Button
+                            compact
+                            on:click={() => {
+                                selectedDeployment = data.activeDeployment;
+                                showRedeploy = true;
+                            }}>
+                            Redeploy
+                        </Button>
+                    </svelte:fragment>
+                </Alert.Inline>
+            {/if}
         {/if}
         <Layout.Stack gap="xxxl">
             {#if activeDeployment}
