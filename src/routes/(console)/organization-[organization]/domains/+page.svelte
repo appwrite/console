@@ -15,6 +15,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
+        Badge,
         Card,
         Empty,
         Icon,
@@ -76,13 +77,30 @@
                         <Table.Cell column={column.id} {root}>
                             <Typography.Text truncate>
                                 {#if column.id === 'domain'}
-                                    <Link
-                                        external
-                                        icon
-                                        href={`${$protocol}${domain.domain}`}
-                                        variant="quiet">
-                                        {domain.domain}
-                                    </Link>
+                                    <Layout.Stack direction="row" gap="none">
+                                        <Link
+                                            external
+                                            href={`${$protocol}${domain.domain}`}
+                                            variant="quiet"
+                                            icon>
+                                            <Typography.Text truncate>
+                                                {domain.domain}
+                                            </Typography.Text>
+                                        </Link>
+                                        {#if domain.status === 'verifying'}
+                                            <Badge
+                                                variant="secondary"
+                                                type="warning"
+                                                content="Verifying"
+                                                size="s" />
+                                        {:else if domain.status !== 'verified'}
+                                            <Badge
+                                                variant="secondary"
+                                                type="error"
+                                                content="Verification failed"
+                                                size="s" />
+                                        {/if}
+                                    </Layout.Stack>
                                 {:else if column.id === 'registrar'}
                                     {domain.registrar || '-'}
                                 {:else if column.id === 'nameservers'}
