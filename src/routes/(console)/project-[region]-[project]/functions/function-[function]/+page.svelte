@@ -64,7 +64,7 @@
             {@const latestDeployment = data.deploymentList.deployments[0]}
             {#if latestDeployment?.status === 'failed' || latestDeployment?.status === 'ready'}
                 <Alert.Inline status="warning" dismissible on:dismiss={() => (showAlert = false)}>
-                    Some configuration options are not live yet. Redeploy your function to apply
+                    Some configuration changes are not live yet. Redeploy your function to apply
                     latest changes.
                     <svelte:fragment slot="actions">
                         <Button
