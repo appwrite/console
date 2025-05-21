@@ -28,7 +28,7 @@
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
     $effect(() => {
-        if ($consoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
+        if ($consoleVariables._APP_DOMAIN_SITES && isSubDomain) {
             selectedTab = 'cname';
         } else if ($consoleVariables._APP_DOMAIN_TARGET_A) {
             selectedTab = 'a';
@@ -69,7 +69,7 @@
 <Modal title="Retry verification" bind:show onSubmit={retryDomain} bind:error>
     <div>
         <Tabs.Root variant="secondary" let:root>
-            {#if isSubDomain && !!$consoleVariables._APP_DOMAIN_TARGET_CNAME && $consoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
+            {#if isSubDomain && !!$consoleVariables._APP_DOMAIN_SITES && $consoleVariables._APP_DOMAIN_SITES !== 'localhost'}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'cname')}
@@ -107,7 +107,11 @@
     {#if selectedTab === 'nameserver'}
         <NameserverTable domain={selectedDomain.domain} {verified} />
     {:else}
-        <RecordTable domain={selectedDomain.domain} {verified} variant={selectedTab} />
+        <RecordTable
+            {verified}
+            service="sites"
+            variant={selectedTab}
+            domain={selectedDomain.domain} />
     {/if}
 
     <svelte:fragment slot="footer">
