@@ -29,8 +29,8 @@
     let behaviour: 'REDIRECT' | 'BRANCH' | 'ACTIVE' = $state('ACTIVE');
     let domainName = $state('');
     let redirect: string = $state(null);
-    let statusCode = $state(307);
     let branch: string = $state(null);
+    let statusCode = $state(StatusCode.TemporaryRedirect307);
 
     onMount(() => {
         if (
@@ -52,10 +52,9 @@
                     .forProject(page.params.region, page.params.project)
                     .proxy.createFunctionRule(domainName, page.params.function, branch);
             } else if (behaviour === 'REDIRECT') {
-                const sc = Object.values(StatusCode).find((code) => parseInt(code) === statusCode);
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(domainName, $protocol + redirect, sc);
+                    .proxy.createRedirectRule(domainName, $protocol + redirect, statusCode);
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)

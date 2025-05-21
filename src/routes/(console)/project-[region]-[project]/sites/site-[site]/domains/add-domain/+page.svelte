@@ -12,19 +12,13 @@
     import { protocol } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
-    import {
-        Adapter,
-        BuildRuntime,
-        Framework,
-        StatusCode,
-        type Models
-    } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, type Models, StatusCode } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { ConnectRepoModal } from '$lib/components/git/index.js';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
-    import type { Domain } from '$lib/sdk/domains';
+    import { isCloud } from '$lib/system';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
 
@@ -36,8 +30,8 @@
     let behaviour: 'REDIRECT' | 'BRANCH' | 'ACTIVE' = $state('ACTIVE');
     let domainName = $state('');
     let redirect: string = $state(null);
-    let statusCode = $state(307);
     let branch: string = $state(null);
+    let statusCode = $state(StatusCode.TemporaryRedirect307);
 
     onMount(() => {
         if (
@@ -54,7 +48,7 @@
     async function addDomain() {
         let domain = data.domains?.domains.find((d) => d.domain === domainName);
 
-        if (!domain) {
+        if (!domain && isCloud) {
             try {
                 domain = await sdk.forConsole.domains.create($project.teamId, domainName);
             } catch (error) {
@@ -86,7 +80,9 @@
                 await goto(routeBase);
                 await invalidate(Dependencies.SITES_DOMAINS);
             } else {
-                await goto(`${routeBase}/add-domain/verify-${domain.domain}`);
+                if (isCloud) {
+                    await goto(`${routeBase}/add-domain/verify-${domain.domain}`);
+                }
                 await invalidate(Dependencies.SITES_DOMAINS);
             }
         } catch (error) {

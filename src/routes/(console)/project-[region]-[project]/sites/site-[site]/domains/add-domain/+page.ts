@@ -2,6 +2,7 @@ import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { RuleTrigger, RuleType } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants.js';
+import { isCloud } from '$lib/system';
 
 export const load = async ({ parent, depends, params }) => {
     const { site } = await parent();
@@ -15,7 +16,7 @@ export const load = async ({ parent, depends, params }) => {
                 Query.equal('trigger', RuleTrigger.MANUAL)
             ]),
         sdk.forProject(params.region, params.project).vcs.listInstallations(),
-        sdk.forConsole.domains.list()
+        isCloud ? sdk.forConsole.domains.list() : Promise.resolve(null)
     ]);
 
     return {
