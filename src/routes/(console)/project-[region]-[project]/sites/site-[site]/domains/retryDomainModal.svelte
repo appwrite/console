@@ -111,8 +111,7 @@
             {verified}
             service="sites"
             variant={selectedTab}
-            domain={selectedDomain.domain}
-        />
+            domain={selectedDomain.domain} />
     {/if}
 
     <svelte:fragment slot="footer">
