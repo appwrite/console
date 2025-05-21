@@ -58,15 +58,11 @@
             </Empty>
         </Card.Base>
     {:else}
-        {@const activeDeployment = data.activeDeployment}
+        {@const activeDeployment = data?.activeDeployment}
 
-        {#if data?.activeDeployment && !$func.live && showAlert}
-            {#if data.deploymentList.deployments[0]?.status !== 'failed' && data.deploymentList.deployments[0]?.status !== 'ready'}
-                <Alert.Inline status="info" dismissible on:dismiss={() => (showAlert = false)}>
-                    Some configuration changes are not live yet. Your function is currently
-                    redeploying, and changes will be applied once the build is complete.
-                </Alert.Inline>
-            {:else}
+        {#if activeDeployment && !$func.live && showAlert}
+            {@const latestDeployment = data.deploymentList.deployments[0]}
+            {#if latestDeployment?.status === 'failed' || latestDeployment?.status === 'ready'}
                 <Alert.Inline status="warning" dismissible on:dismiss={() => (showAlert = false)}>
                     Some configuration options are not live yet. Redeploy your function to apply
                     latest changes.
@@ -74,12 +70,17 @@
                         <Button
                             compact
                             on:click={() => {
-                                selectedDeployment = data.activeDeployment;
+                                selectedDeployment = activeDeployment;
                                 showRedeploy = true;
                             }}>
                             Redeploy
                         </Button>
                     </svelte:fragment>
+                </Alert.Inline>
+            {:else}
+                <Alert.Inline status="info" dismissible on:dismiss={() => (showAlert = false)}>
+                    Some configuration changes are not live yet. Your function is currently
+                    redeploying, and changes will be applied once the build is complete.
                 </Alert.Inline>
             {/if}
         {/if}
