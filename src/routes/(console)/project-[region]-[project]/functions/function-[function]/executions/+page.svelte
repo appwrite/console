@@ -43,7 +43,7 @@
     </ResponsiveContainerHeader>
 
     {#if data?.executions?.total}
-        <Table columns={$columns} logs={data.executions} />
+        <Table columns={$columns} executions={data.executions} />
 
         <PaginationWithLimit
             name="Executions"

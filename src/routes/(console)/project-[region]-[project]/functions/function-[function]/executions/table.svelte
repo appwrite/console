@@ -26,7 +26,7 @@
     import { Button } from '$lib/elements/forms';
 
     export let columns: Column[];
-    export let logs: Models.ExecutionList;
+    export let executions: Models.ExecutionList;
 
     let open = false;
     let selectedLogId: string = null;
@@ -69,7 +69,7 @@
             <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
-    {#each logs.executions as log (log.$id)}
+    {#each executions.executions as log (log.$id)}
         <Table.Row.Button
             {root}
             id={log.$id}
@@ -129,7 +129,7 @@
     {/each}
 </Table.Root>
 
-<Sheet bind:open bind:selectedLogId logs={logs.executions} logging={$func.logging} />
+<Sheet bind:open bind:selectedLogId logs={executions.executions} logging={$func.logging} />
 
 {#if selectedRows.length > 0}
     <FloatingActionBar>
