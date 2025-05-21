@@ -237,9 +237,9 @@
     confirmDeletion
     onSubmit={deleteDeployments}>
     <p>
-        Are you sure you want to delete <b>{selectedRows.length}</b>
+        Are you sure you want to delete <strong>{selectedRows.length}</strong>
         {selectedRows.length > 1 ? 'deployments' : 'deployment'} from your function -
-        <b>{$func.name}</b>?
+        <strong>{$func.name}</strong>?
     </p>
 
     <p class="u-bold">This action is irreversible.</p>

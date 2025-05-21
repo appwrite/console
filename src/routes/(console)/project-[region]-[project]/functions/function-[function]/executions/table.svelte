@@ -153,7 +153,7 @@
     onSubmit={deleteExecutions}
     bind:open={showBatchDeletion}>
     <p>
-        Are you sure you want to delete <b>{selectedRows.length}</b>
+        Are you sure you want to delete <strong>{selectedRows.length}</strong>
         {selectedRows.length > 1 ? 'executions' : 'execution'}?
     </p>
 

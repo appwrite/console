@@ -173,9 +173,9 @@
     onSubmit={deleteDeployments}
     bind:open={showBatchDeletion}>
     <p>
-        Are you sure you want to delete <b>{selectedRows.length}</b>
+        Are you sure you want to delete <strong>{selectedRows.length}</strong>
         {selectedRows.length > 1 ? 'deployments' : 'deployment'} from your site -
-        <b>{$site.name}</b>?
+        <strong>{$site.name}</strong>?
     </p>
 
     <p class="u-bold">This action is irreversible.</p>
