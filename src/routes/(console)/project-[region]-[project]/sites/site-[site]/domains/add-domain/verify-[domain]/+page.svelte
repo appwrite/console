@@ -149,7 +149,11 @@
                     {#if selectedTab === 'nameserver'}
                         <NameserverTable domain={page.params.domain} {verified} />
                     {:else}
-                        <RecordTable domain={page.params.domain} {verified} variant={selectedTab} />
+                        <RecordTable
+                            domain={page.params.domain}
+                            {verified}
+                            variant={selectedTab}
+                            service="sites" />
                     {/if}
                     <Divider />
                     <Layout.Stack direction="row" justifyContent="flex-end">
