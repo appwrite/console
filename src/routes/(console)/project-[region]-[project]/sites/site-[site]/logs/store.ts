@@ -65,6 +65,7 @@ export const columns = writable<Column[]>([
     {
         id: 'duration',
         title: 'Duration',
+        width: { min: 80, max: 200 },
         type: 'integer',
         format: 'integer',
         elements: [
@@ -80,9 +81,7 @@ export const columns = writable<Column[]>([
                 value: 30,
                 label: 'more than 30 seconds'
             }
-        ],
-        filter: false,
-        exclude: true
+        ]
     },
     {
         id: '$createdAt',

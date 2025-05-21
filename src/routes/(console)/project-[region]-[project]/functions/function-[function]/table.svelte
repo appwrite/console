@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Id } from '$lib/components';
+    import { Confirm, Id } from '$lib/components';
     import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
@@ -14,8 +14,15 @@
     import { Dependencies } from '$lib/constants';
     import Cancel from './(modals)/cancelDeploymentModal.svelte';
     import { base } from '$app/paths';
-    import { ActionMenu, Icon, Status, Table } from '@appwrite.io/pink-svelte';
-    import { Click, trackEvent } from '$lib/actions/analytics';
+    import {
+        ActionMenu,
+        Badge,
+        FloatingActionBar,
+        Icon,
+        Status,
+        Table
+    } from '@appwrite.io/pink-svelte';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
         IconDotsHorizontal,
         IconLightningBolt,
@@ -30,6 +37,8 @@
     import { deploymentStatusConverter } from '$lib/stores/git';
     import DownloadActionMenuItem from './(components)/downloadActionMenuItem.svelte';
     import { Menu } from '$lib/components/menu';
+    import { sdk } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let columns: Column[];
     export let data: PageData;
@@ -44,9 +53,44 @@
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
     }
+
+    let selectedRows = [];
+    let showBatchDeletion = false;
+
+    async function deleteDeployments() {
+        showBatchDeletion = false;
+
+        const promises = selectedRows.map((deploymentId) =>
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .functions.deleteDeployment(page.params.function, deploymentId)
+        );
+        try {
+            await Promise.all(promises);
+            trackEvent(Submit.DeploymentDelete);
+            addNotification({
+                type: 'success',
+                message: `${selectedRows.length} deployment${selectedRows.length > 1 ? 's' : ''} deleted`
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.DeploymentDelete);
+        } finally {
+            selectedRows = [];
+            showBatchDeletion = false;
+            invalidate(Dependencies.DEPLOYMENTS);
+        }
+    }
 </script>
 
-<Table.Root columns={[...columns, { id: 'actions', width: 40 }]} let:root>
+<Table.Root
+    let:root
+    allowSelection
+    bind:selectedRows
+    columns={[...columns, { id: 'actions', width: 40 }]}>
     <svelte:fragment slot="header" let:root>
         {#each columns as { id, title }}
             <Table.Header.Cell column={id} {root}>
@@ -58,6 +102,7 @@
     {#each data.deploymentList.deployments as deployment (deployment.$id)}
         <Table.Row.Link
             {root}
+            id={deployment.$id}
             href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/deployment-${deployment.$id}`}>
             {#each columns as column}
                 <Table.Cell column={column.id} {root}>
@@ -169,3 +214,33 @@
     <Cancel {selectedDeployment} bind:showCancel />
     <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
 {/if}
+
+{#if selectedRows.length > 0}
+    <FloatingActionBar>
+        <svelte:fragment slot="start">
+            <Badge content={selectedRows.length.toString()} />
+            <span>
+                {selectedRows.length > 1 ? 'deployments' : 'deployment'}
+                selected
+            </span>
+        </svelte:fragment>
+        <svelte:fragment slot="end">
+            <Button text on:click={() => (selectedRows = [])}>Cancel</Button>
+            <Button secondary on:click={() => (showBatchDeletion = true)}>Delete</Button>
+        </svelte:fragment>
+    </FloatingActionBar>
+{/if}
+
+<Confirm
+    title="Delete deployments"
+    bind:open={showBatchDeletion}
+    confirmDeletion
+    onSubmit={deleteDeployments}>
+    <p>
+        Are you sure you want to delete <strong>{selectedRows.length}</strong>
+        {selectedRows.length > 1 ? 'deployments' : 'deployment'} from your function -
+        <strong>{$func.name}</strong>?
+    </p>
+
+    <p class="u-bold">This action is irreversible.</p>
+</Confirm>
