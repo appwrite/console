@@ -7,7 +7,7 @@
     import { Notifications, Progress } from '$lib/layout';
     import { app, type AppStore } from '$lib/stores/app';
     import { isCloud } from '$lib/system';
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import { requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
     import { sdk } from '$lib/stores/sdk';
@@ -34,6 +34,8 @@
                 return isStudio ? ThemeLightStudio : isCloud ? ThemeLightCloud : ThemeLight;
         }
     }
+
+    let browserTheme = 'light';
 
     onMount(async () => {
         updateViewport();
@@ -110,6 +112,21 @@
                 feedback.toggleFeedback();
             }
         });
+
+        //check for the browser theme, which is separate from the console theme
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        browserTheme = mediaQuery.matches ? 'dark' : 'light';
+
+        // Listen for changes in the preferred color scheme
+        const handler = (e) => {
+            browserTheme = e.matches ? 'dark' : 'light';
+        };
+
+        mediaQuery.addEventListener('change', handler);
+
+        onDestroy(() => {
+            mediaQuery.removeEventListener('change', handler);
+        });
     });
 
     afterNavigate((navigation) => {
@@ -117,7 +134,6 @@
             trackPageView(navigation.to.route.id);
         }
     });
-
     $: {
         if (browser) {
             const isCloudClass = isCloud ? 'is-cloud' : '';
@@ -163,6 +179,14 @@
         'https://fonts.appwrite.io/aeonik-fono/AeonikFono-Medium.woff2',
         'https://fonts.appwrite.io/aeonik-fono/AeonikFono-Bold.woff2'
     ];
+
+    $: favicon = isStudio
+        ? browserTheme === 'dark'
+            ? 'imagine-dark.svg'
+            : 'imagine-icon.svg'
+        : 'appwrite-icon.svg';
+
+    const maskIcon = isStudio ? 'imagine-icon.png' : 'appwrite-icon.png';
 </script>
 
 <svelte:window on:resize={updateViewport} on:load={updateViewport} />
@@ -173,6 +197,9 @@
     {/each}
     <link rel="preload" as="style" type="text/css" href={`${base}/fonts/main.css`} />
     <link rel="stylesheet" href={`${base}/fonts/main.css`} />
+
+    <link rel="icon" type="image/svg+xml" href={`/console/logos/${favicon}`} />
+    <link rel="mask-icon" type="image/png" href={`/console/logos/${maskIcon}`} />
 
     {#if isCloud}
         {#each preloadFontsCloud as font}

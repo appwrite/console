@@ -11,22 +11,6 @@ Sentry.init({
     replaysOnErrorSampleRate: 0
 });
 
-function setFavicon() {
-    const favicon = isStudio ? 'imagine-icon.svg' : 'appwrite-icon.svg';
-    const maskIcon = isStudio ? 'imagine-icon.png' : 'appwrite-icon.png';
-    const link = document.createElement('link');
-    link.rel = 'icon';
-    link.href = '/console/logos/' + favicon;
-    link.type = 'image/svg+xml';
-    document.head.appendChild(link);
-
-    const maskLink = document.createElement('link');
-    maskLink.rel = 'mask-icon';
-    link.href = '/console/logos/' + maskIcon;
-    link.type = 'image/png';
-    document.head.appendChild(maskLink);
-}
-
 function setLoader() {
     if (document.getElementsByTagName('body').length > 0) {
         const color = isStudio
@@ -45,7 +29,6 @@ function setLoader() {
 }
 
 setLoader();
-setFavicon();
 
 export const handleError: HandleClientError = Sentry.handleErrorWithSentry(
     async ({ error, message, status }) => {
