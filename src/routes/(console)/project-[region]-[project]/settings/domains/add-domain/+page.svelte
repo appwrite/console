@@ -33,7 +33,7 @@
                 await goto(routeBase);
                 await invalidate(Dependencies.DOMAINS);
             } else {
-                await goto(`${routeBase}/add-domain/verify-${domainName}`);
+                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
                 await invalidate(Dependencies.DOMAINS);
             }
         } catch (error) {
