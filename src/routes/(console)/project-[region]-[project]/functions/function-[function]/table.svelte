@@ -55,9 +55,10 @@
     }
 
     let selectedRows = [];
+    let showBatchDeletion = false;
 
     async function deleteDeployments() {
-        showDelete = false;
+        showBatchDeletion = false;
 
         const promises = selectedRows.map((deploymentId) =>
             sdk
@@ -79,7 +80,7 @@
             trackError(error, Submit.DeploymentDelete);
         } finally {
             selectedRows = [];
-            showDelete = false;
+            showBatchDeletion = false;
             invalidate(Dependencies.DEPLOYMENTS);
         }
     }
@@ -225,14 +226,14 @@
         </svelte:fragment>
         <svelte:fragment slot="end">
             <Button text on:click={() => (selectedRows = [])}>Cancel</Button>
-            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            <Button secondary on:click={() => (showBatchDeletion = true)}>Delete</Button>
         </svelte:fragment>
     </FloatingActionBar>
 {/if}
 
 <Confirm
     title="Delete deployments"
-    bind:open={showDelete}
+    bind:open={showBatchDeletion}
     confirmDeletion
     onSubmit={deleteDeployments}>
     <p>
