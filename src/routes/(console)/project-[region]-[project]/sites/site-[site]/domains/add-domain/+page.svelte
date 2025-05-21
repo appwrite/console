@@ -74,7 +74,6 @@
                     .forProject(page.params.region, page.params.project)
                     .proxy.createSiteRule(domain.domain, page.params.site, branch);
             } else if (behaviour === 'REDIRECT') {
-                const sc = Object.values(StatusCode).find((code) => parseInt(code) === statusCode);
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
                     .proxy.createRedirectRule(domain.domain, $protocol + redirect, statusCode);
