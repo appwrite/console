@@ -92,6 +92,11 @@ export function removeFile(file: File, files: FileList) {
     return dataTransfer.files;
 }
 
+export enum InvalidFileType {
+    SIZE = 'invalid_size',
+    EXTENSION = 'invalid_extension'
+}
+
 export const defaultIgnore = `
 ### Node ###
 # Logs

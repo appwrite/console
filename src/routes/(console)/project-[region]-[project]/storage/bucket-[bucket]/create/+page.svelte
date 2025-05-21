@@ -27,7 +27,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { removeFile } from '$lib/helpers/files';
+    import { InvalidFileType, removeFile } from '$lib/helpers/files';
 
     export let data: PageData;
 
@@ -74,6 +74,21 @@
             trackError(e, Submit.FileCreate);
         }
     }
+
+    function handleInvalid(e: CustomEvent) {
+        const reason = e.detail.reason;
+        if (reason === InvalidFileType.EXTENSION) {
+            addNotification({
+                type: 'error',
+                message: `Only ${data.bucket.allowedFileExtensions.join(', ')} files allowed`
+            });
+        } else {
+            addNotification({
+                type: 'error',
+                message: 'Invalid file'
+            });
+        }
+    }
 </script>
 
 <Wizard
@@ -103,7 +118,8 @@
                     <Upload.Dropzone
                         bind:files
                         required
-                        extensions={data.bucket.allowedFileExtensions}>
+                        extensions={data.bucket.allowedFileExtensions}
+                        on:invalid={handleInvalid}>
                         <Typography.Text variant="l-500"
                             >Drag and drop files here or click to upload</Typography.Text>
                     </Upload.Dropzone>

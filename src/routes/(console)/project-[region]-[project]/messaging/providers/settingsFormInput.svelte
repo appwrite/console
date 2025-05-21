@@ -26,7 +26,8 @@
     import TooltipPopover from './tooltipPopover.svelte';
     import { Icon, Tooltip, Upload, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { removeFile } from '$lib/helpers/files';
+    import { InvalidFileType, removeFile } from '$lib/helpers/files';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let files: Record<string, FileList>;
 
@@ -54,6 +55,22 @@
             lines: input.popover,
             image: input.popoverImage
         };
+    }
+
+    function handleInvalid(e: CustomEvent) {
+        const reason = e.detail.reason;
+
+        if (reason === InvalidFileType.EXTENSION) {
+            addNotification({
+                type: 'error',
+                message: 'Only .json files allowed'
+            });
+        } else {
+            addNotification({
+                type: 'error',
+                message: 'Invalid file'
+            });
+        }
     }
 </script>
 
@@ -104,6 +121,7 @@
     </InputPhone>
 {:else if input.type === 'file'}
     <Upload.Dropzone
+        on:invalid={handleInvalid}
         extensions={['json']}
         bind:files={files[input.name]}
         required={!input.optional}>
