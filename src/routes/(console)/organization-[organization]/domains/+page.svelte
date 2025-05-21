@@ -15,7 +15,6 @@
     } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
-        Badge,
         Card,
         Empty,
         Icon,
@@ -87,19 +86,6 @@
                                                 {domain.domain}
                                             </Typography.Text>
                                         </Link>
-                                        {#if domain.status === 'verifying'}
-                                            <Badge
-                                                variant="secondary"
-                                                type="warning"
-                                                content="Verifying"
-                                                size="s" />
-                                        {:else if domain.status !== 'verified'}
-                                            <Badge
-                                                variant="secondary"
-                                                type="error"
-                                                content="Verification failed"
-                                                size="s" />
-                                        {/if}
                                     </Layout.Stack>
                                 {:else if column.id === 'registrar'}
                                     {domain.registrar || '-'}
