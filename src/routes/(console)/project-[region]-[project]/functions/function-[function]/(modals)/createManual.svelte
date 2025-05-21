@@ -4,7 +4,7 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { removeFile } from '$lib/helpers/files';
+    import { InvalidFileType, removeFile } from '$lib/helpers/files';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -36,6 +36,17 @@
         }
     }
 
+    function handleInvalid(e: CustomEvent) {
+        const reason = e.detail.reason;
+        if (reason === InvalidFileType.EXTENSION) {
+            error = 'Only .tar.gz files allowed';
+        } else if (reason === InvalidFileType.SIZE) {
+            error = 'File size exceeds 10MB';
+        } else {
+            error = 'Invalid file';
+        }
+    }
+
     $: filesList = files?.length
         ? Array.from(files).map((f) => {
               return {
@@ -55,7 +66,12 @@
         <Typography.Text color="--fgcolor-neutral-primary">
             Upload a tar.gz file containing your function source code
         </Typography.Text>
-        <Upload.Dropzone extensions={['gz', 'tar']} bind:files maxSize={10000000} required>
+        <Upload.Dropzone
+            extensions={['gz', 'tar']}
+            bind:files
+            maxSize={10000000}
+            required
+            on:invalid={handleInvalid}>
             <Layout.Stack alignItems="center" gap="s">
                 <Layout.Stack alignItems="center" gap="s">
                     <Layout.Stack

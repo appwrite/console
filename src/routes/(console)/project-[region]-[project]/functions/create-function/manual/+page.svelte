@@ -19,7 +19,7 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import Configuration from './configuration.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
-    import { removeFile } from '$lib/helpers/files';
+    import { InvalidFileType, removeFile } from '$lib/helpers/files';
 
     export let data;
 
@@ -122,6 +122,26 @@
         }
     }
 
+    function handleInvalid(e: CustomEvent) {
+        const reason = e.detail.reason;
+        if (reason === InvalidFileType.EXTENSION) {
+            addNotification({
+                type: 'error',
+                message: 'Only .tar.gz files allowed'
+            });
+        } else if (reason === InvalidFileType.SIZE) {
+            addNotification({
+                type: 'error',
+                message: 'File size exceeds 10MB'
+            });
+        } else {
+            addNotification({
+                type: 'error',
+                message: 'Invalid file'
+            });
+        }
+    }
+
     $: filesList = files?.length
         ? Array.from(files).map((f) => {
               return {
@@ -157,7 +177,8 @@
                     title="Upload function"
                     extensions={['gz', 'tar']}
                     maxSize={10000000}
-                    required>
+                    required
+                    on:invalid={handleInvalid}>
                     <Layout.Stack alignItems="center" gap="s">
                         <Layout.Stack alignItems="center" gap="s">
                             <Layout.Stack

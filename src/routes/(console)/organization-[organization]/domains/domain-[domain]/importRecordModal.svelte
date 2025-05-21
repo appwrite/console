@@ -5,7 +5,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { removeFile } from '$lib/helpers/files';
+    import { InvalidFileType, removeFile } from '$lib/helpers/files';
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -36,6 +36,17 @@
         }
     }
 
+    function handleInvalid(e: CustomEvent) {
+        const reason = e.detail.reason;
+        if (reason === InvalidFileType.EXTENSION) {
+            error = 'Only .tar.gz files allowed';
+        } else if (reason === InvalidFileType.SIZE) {
+            error = 'File size exceeds 10MB';
+        } else {
+            error = 'Invalid file';
+        }
+    }
+
     $: filesList = files?.length
         ? Array.from(files).map((f) => {
               return {
@@ -61,7 +72,13 @@
             <Typography.Text color="--fgcolor-neutral-primary">
                 Upload a .txt file with your DNS records
             </Typography.Text>
-            <Upload.Dropzone bind:files extensions={['txt']}>
+            maxSize={10000000}
+            <Upload.Dropzone
+                bind:files
+                extensions={['txt']}
+                maxSize={10000000}
+                required
+                on:invalid={handleInvalid}>
                 <Layout.Stack alignItems="center" gap="s">
                     <Layout.Stack alignItems="center" gap="s">
                         <Layout.Stack

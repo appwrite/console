@@ -19,7 +19,7 @@
     import { organization } from '$lib/stores/organization';
     import { consoleVariables } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { removeFile } from '$lib/helpers/files';
+    import { InvalidFileType, removeFile } from '$lib/helpers/files';
 
     export let data;
     let showExitModal = false;
@@ -116,6 +116,26 @@
         }
     }
 
+    function handleInvalid(e: CustomEvent) {
+        const reason = e.detail.reason;
+        if (reason === InvalidFileType.EXTENSION) {
+            addNotification({
+                type: 'error',
+                message: 'Only .tar.gz files allowed'
+            });
+        } else if (reason === InvalidFileType.SIZE) {
+            addNotification({
+                type: 'error',
+                message: 'File size exceeds 10MB'
+            });
+        } else {
+            addNotification({
+                type: 'error',
+                message: 'Invalid file'
+            });
+        }
+    }
+
     $: filesList = files?.length
         ? Array.from(files).map((f) => {
               return {
@@ -144,7 +164,12 @@
                 <Typography.Text color="--fgcolor-neutral-primary">
                     Upload a tar.gz containing your site source code
                 </Typography.Text>
-                <Upload.Dropzone extensions={['gz', 'tar']} bind:files maxSize={10000000} required>
+                <Upload.Dropzone
+                    extensions={['gz', 'tar']}
+                    bind:files
+                    maxSize={10000000}
+                    required
+                    on:invalid={handleInvalid}>
                     <Layout.Stack alignItems="center" gap="s">
                         <Layout.Stack alignItems="center" gap="s">
                             <Layout.Stack
