@@ -22,13 +22,13 @@ importers:
         version: 0.25.0
       '@appwrite.io/pink-icons-svelte':
         specifier: ^2.0.0-RC.1
-        version: 2.0.0-RC.1(svelte@5.25.3)
+        version: https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-icons-svelte@12707b9(svelte@5.25.3)
       '@appwrite.io/pink-legacy':
         specifier: ^1.0.3
         version: 1.0.3
       '@appwrite.io/pink-svelte':
-        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@67c988c
-        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@67c988c(svelte@5.25.3)
+        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@12707b9
+        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@12707b9(svelte@5.25.3)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -258,13 +258,14 @@ packages:
     resolution: {tarball: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@1959}
     version: 1.5.2
 
-  '@appwrite.io/pink-icons-svelte@2.0.0-RC.1':
-    resolution: {integrity: sha512-iLFlV55hj8mGuAbmxJGenxN5RaZMmVT4GJb9dv/MP1xBAtYibFq7JvBcxm18qV2KU8c31Rntf+Ub4GL7HwqTYg==}
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@12707b95033c5822745ec6a2250a9cd0de10a498':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@12707b95033c5822745ec6a2250a9cd0de10a498}
+    version: 2.0.0-RC.1
     peerDependencies:
       svelte: ^4.0.0
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@67c988c04de3464a9c39630fd798e2316d157fea':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@67c988c04de3464a9c39630fd798e2316d157fea}
+  '@appwrite.io/pink-icons-svelte@https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-icons-svelte@12707b9':
+    resolution: {tarball: https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-icons-svelte@12707b9}
     version: 2.0.0-RC.1
     peerDependencies:
       svelte: ^4.0.0
@@ -278,8 +279,8 @@ packages:
   '@appwrite.io/pink-legacy@1.0.3':
     resolution: {integrity: sha512-GGde5fmPhs+s6/3aFeMPc/kKADG/gTFkYQSy6oBN8pK0y0XNCLrZZgBv+EBbdhwdtqVEWXa0X85Mv9w7jcIlwQ==}
 
-  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@67c988c':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@67c988c}
+  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@12707b9':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@12707b9}
     version: 2.0.0-RC.2
     peerDependencies:
       svelte: ^4.0.0
@@ -1340,8 +1341,8 @@ packages:
   '@types/prop-types@15.7.14':
     resolution: {integrity: sha512-gNMvNH49DJ7OJYv+KAKn0Xp45p8PLl6zo2YnvDIbTd4J6MER2BmWN49TG7n9LvkyihINxeKW8+3bfS2yDC9dzQ==}
 
-  '@types/react@18.3.20':
-    resolution: {integrity: sha512-IPaCZN7PShZK/3t6Q87pfTkRm6oLTd4vztyoj+cbHUF1g3FfVb2tFIL79uCRKEfv16AhqDMBywP2VW3KIZUvcg==}
+  '@types/react@18.3.22':
+    resolution: {integrity: sha512-vUhG0YmQZ7kL/tmKLrD3g5zXbXXreZXB3pmROW8bg3CnLnpjkRVwUlLne7Ufa2r9yJ8+/6B73RzhAek5TBKh2Q==}
 
   '@types/remarkable@2.0.8':
     resolution: {integrity: sha512-eKXqPZfpQl1kOADjdKchHrp2gwn9qMnGXhH/AtZe0UrklzhGJkawJo/Y/D0AlWcdWoWamFNIum8+/nkAISQVGg==}
@@ -2852,8 +2853,8 @@ packages:
     resolution: {integrity: sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==}
     engines: {node: '>=0.4.0'}
 
-  property-information@7.0.0:
-    resolution: {integrity: sha512-7D/qOz/+Y4X/rzSB6jKxKUsQnphO046ei8qxG59mtM3RG3DHgTK81HrxrmoDVINJb8NKT5ZsRbwHvQ6B68Iyhg==}
+  property-information@7.1.0:
+    resolution: {integrity: sha512-TwEZ+X+yCJmYfL7TPUOcvBZ4QfoT5YenQiJuX//0th53DE6w0xxLEtfK3iyryQFddXuvkIk51EEgrJQ0WJkOmQ==}
 
   proxy-from-env@1.1.0:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
@@ -3617,11 +3618,11 @@ snapshots:
 
   '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@1959': {}
 
-  '@appwrite.io/pink-icons-svelte@2.0.0-RC.1(svelte@5.25.3)':
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@12707b95033c5822745ec6a2250a9cd0de10a498(svelte@5.25.3)':
     dependencies:
       svelte: 5.25.3
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@67c988c04de3464a9c39630fd798e2316d157fea(svelte@5.25.3)':
+  '@appwrite.io/pink-icons-svelte@https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-icons-svelte@12707b9(svelte@5.25.3)':
     dependencies:
       svelte: 5.25.3
 
@@ -3634,9 +3635,9 @@ snapshots:
       '@appwrite.io/pink-icons': 1.0.0
       the-new-css-reset: 1.11.3
 
-  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@67c988c(svelte@5.25.3)':
+  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@12707b9(svelte@5.25.3)':
     dependencies:
-      '@appwrite.io/pink-icons-svelte': https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@67c988c04de3464a9c39630fd798e2316d157fea(svelte@5.25.3)
+      '@appwrite.io/pink-icons-svelte': https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@12707b95033c5822745ec6a2250a9cd0de10a498(svelte@5.25.3)
       '@floating-ui/dom': 1.6.13
       '@melt-ui/pp': 0.3.2(@melt-ui/svelte@0.86.6(svelte@5.25.3))(svelte@5.25.3)
       '@melt-ui/svelte': 0.86.6(svelte@5.25.3)
@@ -4777,7 +4778,7 @@ snapshots:
 
   '@types/prop-types@15.7.14': {}
 
-  '@types/react@18.3.20':
+  '@types/react@18.3.22':
     dependencies:
       '@types/prop-types': 15.7.14
       csstype: 3.1.3
@@ -5879,7 +5880,7 @@ snapshots:
       hast-util-whitespace: 3.0.0
       html-void-elements: 3.0.0
       mdast-util-to-hast: 13.2.0
-      property-information: 7.0.0
+      property-information: 7.1.0
       space-separated-tokens: 2.0.2
       stringify-entities: 4.0.4
       zwitch: 2.0.4
@@ -6412,7 +6413,7 @@ snapshots:
 
   progress@2.0.3: {}
 
-  property-information@7.0.0: {}
+  property-information@7.1.0: {}
 
   proxy-from-env@1.1.0: {}
 
@@ -6725,7 +6726,7 @@ snapshots:
 
   svelte-motion@0.12.2(svelte@5.25.3):
     dependencies:
-      '@types/react': 18.3.20
+      '@types/react': 18.3.22
       framesync: 6.1.2
       popmotion: 11.0.5
       style-value-types: 5.1.2

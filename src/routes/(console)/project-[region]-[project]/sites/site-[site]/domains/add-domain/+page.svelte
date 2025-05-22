@@ -175,13 +175,17 @@
                                 value: branch.name
                             }))}
                             <Layout.Stack gap="s">
-                                <InputSelect
-                                    {options}
-                                    label="Production branch"
-                                    id="branch"
+                                <Input.ComboBox
                                     required
+                                    id="branch"
+                                    label="Production branch"
+                                    placeholder="Select branch"
+                                    isSearchable
                                     bind:value={branch}
-                                    placeholder="Select branch" />
+                                    on:select={(event) => {
+                                        branch = event.detail.value;
+                                    }}
+                                    {options} />
                                 {#if !data.branches?.total}
                                     <Input.Helper state="default">
                                         No branches found in the selected repository. Create a
