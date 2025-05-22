@@ -11,6 +11,7 @@
     import { onMount } from 'svelte';
     import { isCloud } from '$lib/system';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import { getApexDomain } from '$lib/helpers/tlds';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/settings/domains`;
 
@@ -27,14 +28,12 @@
     });
 
     async function addDomain() {
-        let domain = data.domains?.domains.find((d) => d.domain === domainName);
+        const apexDomain = getApexDomain(domain);
+        let domain = data.domains?.domains.find((d) => d.domain === apexDomain);
 
         if (!domain && isCloud) {
             try {
-                domain = await sdk.forConsole.domains.create(
-                    $project.teamId,
-                    domainName.toLocaleLowerCase()
-                );
+                domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
             } catch (error) {
                 addNotification({
                     type: 'error',
