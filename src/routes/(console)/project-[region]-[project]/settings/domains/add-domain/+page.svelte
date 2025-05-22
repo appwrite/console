@@ -31,7 +31,10 @@
 
         if (!domain && isCloud) {
             try {
-                domain = await sdk.forConsole.domains.create($project.teamId, domainName);
+                domain = await sdk.forConsole.domains.create(
+                    $project.teamId,
+                    domainName.toLocaleLowerCase()
+                );
             } catch (error) {
                 addNotification({
                     type: 'error',

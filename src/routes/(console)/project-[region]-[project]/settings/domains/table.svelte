@@ -43,18 +43,26 @@
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === 'domain'}
-                        <Link external href={`${$protocol}${domain.domain}`} variant="quiet" icon>
-                            <Typography.Text truncate>
-                                {domain.domain}
-                                {#if domain.status !== 'verified'}
-                                    <Badge
-                                        variant="secondary"
-                                        type="error"
-                                        content="Verification failed"
-                                        size="s" />
-                                {/if}
-                            </Typography.Text>
-                        </Link>
+                        <Layout.Stack direction="row" gap="xs">
+                            <Link external href={`${$protocol}${domain.domain}`} variant="quiet">
+                                <Typography.Text truncate>
+                                    {domain.domain}
+                                </Typography.Text>
+                            </Link>
+                            {#if domain.status === 'verifying'}
+                                <Badge
+                                    variant="secondary"
+                                    type="warning"
+                                    content="Verifying"
+                                    size="s" />
+                            {:else if domain.status !== 'verified'}
+                                <Badge
+                                    variant="secondary"
+                                    type="error"
+                                    content="Verification failed"
+                                    size="s" />
+                            {/if}
+                        </Layout.Stack>
                     {/if}
                 </Table.Cell>
             {/each}
