@@ -89,11 +89,11 @@
     let way = 'one';
 
     // Lifecycle hooks
-    async function getCollections(search: string = null) {
-        const queries = search ? [Query.orderDesc('')] : [Query.limit(100)];
+    async function getCollections() {
+        const queries = [Query.limit(100)];
         return sdk
             .forProject(page.params.region, page.params.project)
-            .databases.listCollections(databaseId, queries, search);
+            .databases.listCollections(databaseId, queries);
     }
 
     function updateKeyName() {
@@ -110,7 +110,7 @@
     });
 
     // Reactive statements
-    $: getCollections(search).then((res) => (collectionList = res));
+    $: getCollections().then((res) => (collectionList = res));
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
 
     $: if (editing) {
