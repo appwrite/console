@@ -33,7 +33,7 @@
 
     $: menuOpen.set($open);
 
-    setContext('menuBuilder', builders);
+    setContext('menuBuilder', { builders, separator });
 </script>
 
 <div use:melt={$menubar}>
