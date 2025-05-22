@@ -1,10 +1,13 @@
 <script lang="ts">
-    import { Layout, Status } from '@appwrite.io/pink-svelte';
-    import { Trim, UsageCard } from '$lib/components';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import { UsageCard } from '$lib/components';
     import type { Domain } from '$lib/sdk/domains';
+    import { toLocaleDate } from '$lib/helpers/date';
+    import { Layout, Status } from '@appwrite.io/pink-svelte';
 
     export let domain: Domain;
+
+    $: isDomainVerified = domain.nameservers.toLocaleLowerCase() === 'appwrite';
+
     let metrics = [
         {
             value: isDomainVerified ? 'Verified' : 'Not verified',
@@ -31,8 +34,6 @@
             description: 'Renewal price'
         }
     ];
-
-    $: isDomainVerified = domain.nameservers.toLocaleLowerCase() === 'appwrite';
 </script>
 
 <Layout.Grid gap="m" columnsL={2} columns={1}>
@@ -41,9 +42,8 @@
             {#if metric.description === 'Status'}
                 <UsageCard description={metric.description}>
                     <Status
-                        label={metric.value}
-                        status={isDomainVerified ? 'complete' : 'pending'}
-                    />
+                        label={metric.value.toString()}
+                        status={isDomainVerified ? 'complete' : 'pending'} />
                 </UsageCard>
             {:else}
                 <UsageCard description={metric.description} bind:value={metric.value} />
