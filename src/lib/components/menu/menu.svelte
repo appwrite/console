@@ -1,23 +1,39 @@
 <script lang="ts">
+    import { setContext, onMount } from 'svelte';
     import { Card } from '@appwrite.io/pink-svelte';
     import { createMenubar, melt } from '@melt-ui/svelte';
-    import { menuOpen } from '$lib/components/menu/store';
+    import { activeMenuId, menuOpen } from '$lib/components/menu/store';
 
+    const menuId = Math.random().toString(36).slice(2);
     const {
         elements: { menubar },
         builders: { createMenu }
     } = createMenubar();
 
     const {
-        elements: { trigger: trigger, menu: menu, separator: separator },
-        states: { open }
+        elements: { trigger, menu, separator },
+        states: { open },
+        builders // for submenu for same toggle state
     } = createMenu();
 
     function toggle() {
         open.update((state) => !state);
     }
 
+    open.subscribe((state) => {
+        if (state) activeMenuId.set(menuId);
+        else activeMenuId.update((current) => (current === menuId ? null : current));
+    });
+
+    onMount(() => {
+        return activeMenuId.subscribe((id) => {
+            if (id !== menuId) open.set(false);
+        });
+    });
+
     $: menuOpen.set($open);
+
+    setContext('menuBuilder', builders);
 </script>
 
 <div use:melt={$menubar}>
