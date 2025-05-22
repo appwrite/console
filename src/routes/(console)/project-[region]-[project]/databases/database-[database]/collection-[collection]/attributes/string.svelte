@@ -44,8 +44,10 @@
 <script lang="ts">
     import { ActionMenu, Selector } from '@appwrite.io/pink-svelte';
     import { createConservative } from '$lib/helpers/stores';
-    import { InputNumber, InputText, InputTextarea, Button } from '$lib/elements/forms';
+    import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
     import { Popover, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import { $organization } from '$lib/stores/organization';
+    import { BillingPlan } from '$lib/constants';
 
     export let data: Partial<Models.AttributeString> = {
         required: false,
@@ -57,6 +59,20 @@
     export let editing = false;
 
     let savedDefault = data.default;
+
+    function handleCheckboxClick(toggle: () => void) {
+        if ($organization?.billingPlan === BillingPlan.FREE) {
+            toggle();
+        }
+    }
+
+    function handleButtonClick(toggle: () => void) {
+        if ($organization?.billingPlan === BillingPlan.FREE) {
+            toggle();
+        } else {
+            data.encrypted = !data.encrypted;
+        }
+    }
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
@@ -122,32 +138,40 @@
     array." />
 <Layout.Stack gap="xs" direction="column">
     <Layout.Stack inline gap="s" alignItems="flex-start" direction="row">
-        <Popover let:toggle placement="bottom-start">
-            <Selector.Checkbox
-                size="s"
-                id="encrypted"
-                bind:checked={data.encrypted}
-                disabled={data.required || editing}
-                description="" />
+        <Selector.Checkbox
+            size="s"
+            id="encrypted"
+            bind:checked={data.encrypted}
+            on:click={(e) => handleCheckboxClick(() => toggle(e))}
+            disabled={editing || $organization.billingPlan === BillingPlan.FREE}
+            description="" />
 
-            <Layout.Stack inline gap="xxs">
-                <button type="button" on:click={toggle}>
+        <!-- Stack button and description in a column -->
+        <Layout.Stack gap="xxs" direction="column">
+            <Popover let:toggle placement="bottom-start">
+                <button
+                    type="button"
+                    class="u-cursor-pointer"
+                    on:click={(e) => handleButtonClick(() => toggle(e))}>
                     <Layout.Stack inline direction="row" alignItems="center">
                         <Typography.Text variant="m-500">Encrypted</Typography.Text>
-                        <Tag variant="default" size="s" on:click={toggle}>Pro</Tag>
+                        {#if $organization?.billingPlan === BillingPlan.FREE}
+                            <Tag variant="default" size="xs" on:click={toggle}>Pro</Tag>
+                        {/if}
                     </Layout.Stack>
                 </button>
-                <Typography.Text>
-                    Indicate whether this attribute is encrypted. Encrypted attributes cannot be
-                    queried.
-                </Typography.Text>
-            </Layout.Stack>
-            <Layout.Stack gap="xs" slot="tooltip">
-                <ActionMenu.Root width="180px">
-                    <Typography.Text variant="m-500"
-                        >Available on Pro plan. Upgrade to enable encrypted attributes.</Typography.Text>
+                <ActionMenu.Root width="180px" slot="tooltip">
+                    <Typography.Text variant="m-500">
+                        Available on Pro plan. Upgrade to enable encrypted attributes.
+                    </Typography.Text>
                 </ActionMenu.Root>
-            </Layout.Stack>
-        </Popover>
+            </Popover>
+
+            <!-- Description text stacked below the button -->
+            <Typography.Text>
+                Indicate whether this attribute is encrypted. Encrypted attributes cannot be
+                queried.
+            </Typography.Text>
+        </Layout.Stack>
     </Layout.Stack>
 </Layout.Stack>
