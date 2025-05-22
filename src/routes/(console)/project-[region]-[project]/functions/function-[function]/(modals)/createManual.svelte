@@ -11,11 +11,21 @@
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
     import { page } from '$app/state';
+    import { consoleVariables } from '$routes/(console)/store';
+    import { currentPlan } from '$lib/stores/organization';
+    import { isCloud } from '$lib/system';
 
     export let show = false;
 
     let files: FileList;
     let error: string = '';
+
+    $: maxSize =
+        isCloud && $currentPlan
+            ? $currentPlan?.deploymentSize === 0
+                ? false
+                : $currentPlan?.deploymentSize * 1000000
+            : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
 
     async function create() {
         try {
@@ -69,7 +79,7 @@
         <Upload.Dropzone
             extensions={['gz', 'tar']}
             bind:files
-            maxSize={10000000}
+            {maxSize}
             required
             on:invalid={handleInvalid}>
             <Layout.Stack alignItems="center" gap="s">
