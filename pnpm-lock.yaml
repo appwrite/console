@@ -177,6 +177,9 @@ importers:
       svelte-sequential-preprocessor:
         specifier: ^2.0.2
         version: 2.0.2
+      tldts:
+        specifier: ^7.0.7
+        version: 7.0.7
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -3240,8 +3243,15 @@ packages:
   tldts-core@6.1.85:
     resolution: {integrity: sha512-DTjUVvxckL1fIoPSb3KE7ISNtkWSawZdpfxGxwiIrZoO6EbHVDXXUIlIuWympPaeS+BLGyggozX/HTMsRAdsoA==}
 
+  tldts-core@7.0.7:
+    resolution: {integrity: sha512-ECqb8imSroX1UmUuhRBNPkkmtZ8mHEenieim80UVxG0M5wXVjY2Fp2tYXCPvk+nLy1geOhFpeD5YQhM/gF63Jg==}
+
   tldts@6.1.85:
     resolution: {integrity: sha512-gBdZ1RjCSevRPFix/hpaUWeak2/RNUZB4/8frF1r5uYMHjFptkiT0JXIebWvgI/0ZHXvxaUDDJshiA0j6GdL3w==}
+    hasBin: true
+
+  tldts@7.0.7:
+    resolution: {integrity: sha512-ETNXj36ql5BXDa4VVJk3wgqansg8TI1Yqo217twSAPjyDnh/b2T+XzrI0ftn6EnzVPbXpMTZHOWj5s3a8/uGPA==}
     hasBin: true
 
   to-regex-range@5.0.1:
@@ -6835,9 +6845,15 @@ snapshots:
 
   tldts-core@6.1.85: {}
 
+  tldts-core@7.0.7: {}
+
   tldts@6.1.85:
     dependencies:
       tldts-core: 6.1.85
+
+  tldts@7.0.7:
+    dependencies:
+      tldts-core: 7.0.7
 
   to-regex-range@5.0.1:
     dependencies:
