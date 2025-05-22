@@ -148,14 +148,14 @@
                         </Tabs.Root>
                         <Divider />
                     </div>
-                    {#if isCloud && selectedTab === 'nameserver'}
+                    {#if selectedTab === 'nameserver'}
                         <NameserverTable domain={page.params.domain} {verified} />
                     {:else}
                         <RecordTable
-                            domain={page.params.domain}
                             {verified}
+                            service="sites"
                             variant={selectedTab}
-                            service="sites" />
+                            domain={page.params.domain} />
                     {/if}
                     <Divider />
                     <Layout.Stack direction="row" justifyContent="flex-end">
