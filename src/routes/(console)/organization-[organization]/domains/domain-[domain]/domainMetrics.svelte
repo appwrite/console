@@ -1,16 +1,14 @@
 <script lang="ts">
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Layout, Status } from '@appwrite.io/pink-svelte';
     import { Trim, UsageCard } from '$lib/components';
     import { toLocaleDate } from '$lib/helpers/date';
     import type { Domain } from '$lib/sdk/domains';
-    import { Link } from '$lib/elements';
-    import { protocol } from '$routes/(console)/store';
 
     export let domain: Domain;
     let metrics = [
         {
-            value: domain.domain,
-            description: 'Domain'
+            value: isDomainVerified ? 'Verified' : 'Not verified',
+            description: 'Status'
         },
         {
             value: domain?.registrar || '-',
@@ -22,7 +20,7 @@
         },
         {
             value: domain?.expiry ? toLocaleDate(domain?.expiry) : '-',
-            description: 'Exipiry date'
+            description: 'Expiry date'
         },
         {
             value: domain?.autoRenewal ? 'On' : 'Off',
@@ -33,18 +31,19 @@
             description: 'Renewal price'
         }
     ];
+
+    $: isDomainVerified = domain.nameservers.toLocaleLowerCase() === 'appwrite';
 </script>
 
 <Layout.Grid gap="m" columnsL={2} columns={1}>
     <Layout.Stack direction="row" gap="m">
         {#each metrics.slice(0, 3) as metric}
-            {#if metric.description === 'Domain'}
+            {#if metric.description === 'Status'}
                 <UsageCard description={metric.description}>
-                    <Link external href={`${$protocol}/${metric.value}`} variant="quiet">
-                        <Trim alternativeTrim>
-                            {metric.value}
-                        </Trim>
-                    </Link>
+                    <Status
+                        label={metric.value}
+                        status={isDomainVerified ? 'complete' : 'pending'}
+                    />
                 </UsageCard>
             {:else}
                 <UsageCard description={metric.description} bind:value={metric.value} />
