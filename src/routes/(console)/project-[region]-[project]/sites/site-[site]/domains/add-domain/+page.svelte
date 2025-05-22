@@ -25,6 +25,7 @@
     import { ConnectRepoModal } from '$lib/components/git/index.js';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { isCloud } from '$lib/system';
+    import { getApexDomain } from '$lib/helpers/tlds';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
 
@@ -52,14 +53,12 @@
     });
 
     async function addDomain() {
-        let domain = data.domains?.domains.find((d) => d.domain === domainName);
+        const apexDomain = getApexDomain(domainName);
+        let domain = data.domains?.domains.find((d) => d.domain === apexDomain);
 
-        if (!domain && isCloud) {
+        if (apexDomain && !domain && isCloud) {
             try {
-                domain = await sdk.forConsole.domains.create(
-                    $project.teamId,
-                    domainName.toLocaleLowerCase()
-                );
+                domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
             } catch (error) {
                 addNotification({
                     type: 'error',
