@@ -38,9 +38,9 @@
                 {domain}
             </Typography.Text>
             {#if verified}
-                <Badge variant="secondary" type="success" content="Verified" />
+                <Badge variant="secondary" type="success" size="xs" content="Verified" />
             {:else if verified === false}
-                <Badge variant="secondary" type="error" content="Verification failed" />
+                <Badge variant="secondary" type="error" size="xs" content="Verification failed" />
             {:else}
                 <Badge
                     variant="secondary"
