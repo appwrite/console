@@ -14,7 +14,7 @@
         canSeeProjects,
         canSeeTeams,
         isBilling,
-        isOwner,
+        isOwner
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
