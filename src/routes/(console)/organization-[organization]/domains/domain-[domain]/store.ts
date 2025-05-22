@@ -6,8 +6,8 @@ import { derived, writable } from 'svelte/store';
 export const domain = derived(page, ($page) => $page.data.domain as Domain);
 export const columns = writable<Column[]>([
     { id: 'name', title: 'Name', type: 'string' },
-    { id: 'type', title: 'Type', type: 'string' },
-    { id: 'value', title: 'Value', type: 'string' },
+    { id: 'type', title: 'Type', type: 'string', width: 125 },
+    { id: 'value', title: 'Value', type: 'string', width: 250 },
     { id: 'ttl', title: 'TTL', type: 'integer' },
     { id: 'priority', title: 'Priority', type: 'integer', hide: true },
     { id: 'comment', title: 'Comment', type: 'string', hide: true },

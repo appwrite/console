@@ -15,6 +15,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
+        Badge,
         Card,
         Empty,
         Icon,
@@ -38,6 +39,10 @@
     let showDelete = false;
     let showRetry = false;
     let selectedDomain: Domain = null;
+
+    const isDomainVerified = (domain: Domain) => {
+        return domain.nameservers.toLocaleLowerCase() === 'appwrite';
+    };
 </script>
 
 <Container>
@@ -76,16 +81,22 @@
                         <Table.Cell column={column.id} {root}>
                             <Typography.Text truncate>
                                 {#if column.id === 'domain'}
-                                    <Layout.Stack direction="row" gap="none">
+                                    <Layout.Stack direction="row" gap="xs">
                                         <Link
                                             external
                                             href={`${$protocol}${domain.domain}`}
-                                            variant="quiet"
-                                            icon>
+                                            variant="quiet">
                                             <Typography.Text truncate>
                                                 {domain.domain}
                                             </Typography.Text>
                                         </Link>
+                                        {#if !isDomainVerified(domain)}
+                                            <Badge
+                                                variant="secondary"
+                                                type="warning"
+                                                content="Not verified"
+                                                size="s" />
+                                        {/if}
                                     </Layout.Stack>
                                 {:else if column.id === 'registrar'}
                                     {domain.registrar || '-'}
@@ -117,7 +128,7 @@
 
                                 <svelte:fragment slot="tooltip" let:toggle>
                                     <ActionMenu.Root>
-                                        {#if domain.nameservers !== 'Appwrite'}
+                                        {#if isDomainVerified(domain)}
                                             <ActionMenu.Item.Button
                                                 leadingIcon={IconRefresh}
                                                 on:click={(e) => {

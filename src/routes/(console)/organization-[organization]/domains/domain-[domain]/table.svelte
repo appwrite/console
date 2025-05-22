@@ -57,7 +57,10 @@
                         {:else if column.id === 'value'}
                             {@const isARecord = record.value === 'a.a.a.a'}
                             {#if isARecord}
-                                <Typography.Text>Served by Appwrite</Typography.Text>
+                                <!-- to align with InteractiveText -->
+                                <div style:padding-inline-start="4px">
+                                    <Typography.Text>Served by Appwrite</Typography.Text>
+                                </div>
                             {:else}
                                 <InteractiveText variant="copy" text={record.value} isVisible />
                             {/if}
