@@ -13,8 +13,6 @@
     import { canWriteProjects } from '$lib/stores/roles';
     import { getProjectEndpoint } from '$lib/helpers/project';
 
-    const endpoint = sdk.forConsole.client.config.endpoint;
-
     let name: string = null;
 
     onMount(() => {
