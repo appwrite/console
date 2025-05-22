@@ -31,7 +31,7 @@
         });
     });
 
-    $: menuOpen.set($open);
+    $: menuOpen.set($open as boolean);
 
     setContext('menuBuilder', { builders, separator });
 </script>
