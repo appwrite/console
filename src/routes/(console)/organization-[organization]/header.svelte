@@ -14,8 +14,7 @@
         canSeeProjects,
         canSeeTeams,
         isBilling,
-        isOwner,
-        scopes
+        isOwner
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -33,7 +32,6 @@
     $: avatars = $members.memberships?.map((m) => m.userName || m.userEmail) ?? [];
     $: organizationId = page.params.organization;
     $: path = `${base}/organization-${organizationId}`;
-    $: console.log($scopes);
     $: tabs = [
         {
             href: path,
