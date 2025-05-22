@@ -43,12 +43,8 @@
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === 'domain'}
-                        <Layout.Stack direction="row" gap="none">
-                            <Link
-                                external
-                                href={`${$protocol}${domain.domain}`}
-                                variant="quiet"
-                                icon>
+                        <Layout.Stack direction="row" gap="xs">
+                            <Link external href={`${$protocol}${domain.domain}`} variant="quiet">
                                 <Typography.Text truncate>
                                     {domain.domain}
                                 </Typography.Text>
