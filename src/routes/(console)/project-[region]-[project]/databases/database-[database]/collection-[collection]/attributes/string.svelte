@@ -42,15 +42,17 @@
 </script>
 
 <script lang="ts">
-    import { Selector } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Selector } from '@appwrite.io/pink-svelte';
     import { createConservative } from '$lib/helpers/stores';
-    import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
+    import { InputNumber, InputText, InputTextarea, Button } from '$lib/elements/forms';
+    import { Popover, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
 
     export let data: Partial<Models.AttributeString> = {
         required: false,
         size: 0,
         default: null,
-        array: false
+        array: false,
+        encrypted: false
     };
     export let editing = false;
 
@@ -118,3 +120,34 @@
     disabled={data.required || editing}
     description="Indicate whether this attribute should act as an array, with the default value set as an empty
     array." />
+<Layout.Stack gap="xs" direction="column">
+    <Layout.Stack inline gap="s" alignItems="flex-start" direction="row">
+        <Popover let:toggle placement="bottom-start">
+            <Selector.Checkbox
+                size="s"
+                id="encrypted"
+                bind:checked={data.encrypted}
+                disabled={data.required || editing}
+                description="" />
+
+            <Layout.Stack inline gap="xxs">
+                <button type="button" on:click={toggle}>
+                    <Layout.Stack inline direction="row" alignItems="center">
+                        <Typography.Text variant="m-500">Encrypted</Typography.Text>
+                        <Tag variant="default" size="s" on:click={toggle}>Pro</Tag>
+                    </Layout.Stack>
+                </button>
+                <Typography.Text>
+                    Indicate whether this attribute is encrypted. Encrypted attributes cannot be
+                    queried.
+                </Typography.Text>
+            </Layout.Stack>
+            <Layout.Stack gap="xs" slot="tooltip">
+                <ActionMenu.Root width="180px">
+                    <Typography.Text variant="m-500"
+                        >Available on Pro plan. Upgrade to enable encrypted attributes.</Typography.Text>
+                </ActionMenu.Root>
+            </Layout.Stack>
+        </Popover>
+    </Layout.Stack>
+</Layout.Stack>
