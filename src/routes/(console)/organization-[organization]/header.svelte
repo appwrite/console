@@ -33,7 +33,6 @@
     $: avatars = $members.memberships?.map((m) => m.userName || m.userEmail) ?? [];
     $: organizationId = page.params.organization;
     $: path = `${base}/organization-${organizationId}`;
-    $: console.log($scopes);
     $: tabs = [
         {
             href: path,
