@@ -31,7 +31,7 @@
         const apexDomain = getApexDomain(domainName);
         let domain = data.domains?.domains.find((d) => d.domain === apexDomain);
 
-        if (!domain && isCloud) {
+        if (apexDomain && !domain && isCloud) {
             try {
                 domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
             } catch (error) {

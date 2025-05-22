@@ -28,7 +28,7 @@
     let { data } = $props();
 
     const ruleId = page.url.searchParams.get('rule');
-    let isSubDomain = $derived.by(() => isASubdomain(page.params.domain));
+    const isSubDomain = $derived.by(() => isASubdomain(page.params.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
     $effect(() => {

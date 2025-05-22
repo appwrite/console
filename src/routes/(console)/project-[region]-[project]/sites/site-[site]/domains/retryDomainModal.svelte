@@ -23,7 +23,7 @@
         selectedDomain: Models.ProxyRule;
     } = $props();
 
-    let isSubDomain = $derived.by(() => isASubdomain(selectedDomain?.domain));
+    const isSubDomain = $derived.by(() => isASubdomain(selectedDomain?.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
     $effect(() => {
