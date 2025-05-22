@@ -23,7 +23,7 @@
     $: maxSize =
         isCloud && $currentPlan
             ? $currentPlan?.deploymentSize === 0
-                ? false
+                ? 0
                 : $currentPlan?.deploymentSize * 1000000
             : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
 

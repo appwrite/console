@@ -12,7 +12,6 @@
     import {
         Alert,
         Avatar,
-        Badge,
         Card,
         Divider,
         Icon,
