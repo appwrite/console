@@ -309,12 +309,18 @@
                             style:display={studio.activeTerminal === studio.mainTerminalId
                                 ? 'contents'
                                 : 'none'}>
-                            <Terminal height={terminalHeight} synapse={studio.synapse}></Terminal>
+                            <Terminal
+                                height={terminalHeight}
+                                synapse={studio.synapse}
+                                focus={studio.activeTerminal === studio.mainTerminalId}></Terminal>
                         </div>
                     {/key}
                     {#each studio.terminals as [symbol, synapse] (symbol)}
                         <div style:display={studio.activeTerminal === symbol ? 'contents' : 'none'}>
-                            <Terminal height={terminalHeight} {synapse}></Terminal>
+                            <Terminal
+                                height={terminalHeight}
+                                {synapse}
+                                focus={studio.activeTerminal === symbol}></Terminal>
                         </div>
                     {/each}
                 </details>

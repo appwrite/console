@@ -8,9 +8,14 @@
         height: number;
         synapse: Synapse;
         readonly?: boolean;
+        focus?: boolean;
     };
-    let { height, synapse, readonly = false }: Props = $props();
+    let { height, synapse, readonly = false, focus = false }: Props = $props();
 
+    let terminalFocus;
+    function setTerminalFocus(terminal) {
+        terminalFocus = terminal;
+    }
     const terminal: Action = (node) => {
         const init = async () => {
             const [{ Terminal }, { FitAddon }] = await Promise.all([
@@ -60,6 +65,8 @@
                     }
                 );
             });
+            setTerminalFocus(term);
+            term.focus();
             synapse.addEventListener('terminal', ({ message }) => {
                 const { data } = message;
                 if (typeof data === 'string') term.write(data);
@@ -89,6 +96,14 @@
         };
         init();
     };
+
+    $effect(() => {
+        console.log('focus', focus);
+        if (focus && terminalFocus) {
+            console.log('setting focus');
+            terminalFocus.focus();
+        }
+    });
 </script>
 
 <div class="terminal-container" style:height={`${height}px`} use:terminal></div>
