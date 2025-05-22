@@ -84,7 +84,6 @@
     ];
 
     // Variables
-    let search: string = null;
     let collectionList: Models.CollectionList;
     let way = 'one';
 
