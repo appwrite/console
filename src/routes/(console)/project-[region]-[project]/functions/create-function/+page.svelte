@@ -151,12 +151,12 @@
                                     <Typography.Text color="--fgcolor-neutral-primary">
                                         <Layout.Stack direction="row" gap="xs" alignItems="center">
                                             {runtimeDetail?.name}
-                                            {#if runtimeDetail?.name?.toLowerCase() === 'deno'}
-                                                <Badge
-                                                    variant="secondary"
-                                                    size="xs"
-                                                    content="New" />
-                                            {/if}
+                                            <!--{#if runtimeDetail?.name?.toLowerCase() === 'deno'}-->
+                                            <!--    <Badge-->
+                                            <!--        variant="secondary"-->
+                                            <!--        size="xs"-->
+                                            <!--        content="New" />-->
+                                            <!--{/if}-->
                                         </Layout.Stack>
                                     </Typography.Text>
                                 </Layout.Stack>
