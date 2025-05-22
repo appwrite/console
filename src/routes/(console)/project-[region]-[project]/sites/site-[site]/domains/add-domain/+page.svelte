@@ -53,7 +53,7 @@
     });
 
     async function addDomain() {
-        const apexDomain = getApexDomain(domain);
+        const apexDomain = getApexDomain(domainName);
         let domain = data.domains?.domains.find((d) => d.domain === apexDomain);
 
         if (!domain && isCloud) {

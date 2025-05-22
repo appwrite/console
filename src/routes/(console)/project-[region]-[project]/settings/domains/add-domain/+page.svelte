@@ -28,7 +28,7 @@
     });
 
     async function addDomain() {
-        const apexDomain = getApexDomain(domain);
+        const apexDomain = getApexDomain(domainName);
         let domain = data.domains?.domains.find((d) => d.domain === apexDomain);
 
         if (!domain && isCloud) {
@@ -47,7 +47,7 @@
         try {
             const rule = await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.createAPIRule(domainName);
+                .proxy.createAPIRule(domainName.toLocaleLowerCase());
             if (rule?.status === 'verified') {
                 await goto(routeBase);
                 await invalidate(Dependencies.DOMAINS);
