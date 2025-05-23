@@ -13,6 +13,7 @@
         Link,
         Popover,
         Table,
+        Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
     import Create from '../createAttribute.svelte';
@@ -115,9 +116,10 @@
                             {/if}
                             <span class="text u-trim-1" data-private>{attribute.key}</span>
                             {#if isString(attribute) && attribute.encrypt}
-                            <Icon
-                                size="s"
-                                icon={IconLockClosed} />
+                                <Tooltip>
+                                    <Icon size="s" icon={IconLockClosed} />
+                                    <div slot="tooltip">Encrypted</div>
+                                </Tooltip>
                             {/if}
                             {#if attribute.status !== 'available'}
                                 <Badge

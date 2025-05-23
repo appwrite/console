@@ -16,7 +16,7 @@ export function isRelationship(attribute: Attributes): attribute is Models.Attri
     return attribute?.type === 'relationship';
 }
 
-export function isString(attribute: Attributes): attribute is Models.AttributeString{
+export function isString(attribute: Attributes): attribute is Models.AttributeString {
     if (!attribute) return false;
     return attribute?.type === 'string';
 }
