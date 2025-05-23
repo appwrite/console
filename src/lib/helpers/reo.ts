@@ -1,7 +1,8 @@
 import { get } from 'svelte/store';
 import { isCloud } from '$lib/system';
 import { browser, dev } from '$app/environment';
-import { type Models } from '@appwrite.io/console';
+
+import { user } from '$lib/stores/user';
 import { reoInstance } from '$routes/(console)/store';
 import { loadReoScript, type Reo, type ReoUserIdentifyConfig } from 'reodotdev';
 
@@ -19,17 +20,20 @@ export function initReo() {
 }
 
 /* Identifies the currently logged-in user with the Reo instance. */
-export function identifyUserWithReo(user: Models.User<Models.Preferences>) {
+export function identifyUserWithReo() {
+    const userInstance = get(user);
     const localReoInstance = get(reoInstance);
-    if (Object.keys(user).length && localReoInstance) {
-        const name = user.name || user.email;
+
+    if (userInstance && Object.keys(userInstance).length && localReoInstance) {
+        const name = userInstance.name || userInstance.email;
         const nameParts = name.trim().split(' ');
         const lastname = nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined;
 
         const reoIdentity: ReoUserIdentifyConfig = {
-            username: user.email,
+            username: userInstance.email,
             firstname: nameParts[0],
-            type: user.password ? 'email' : 'github',
+            // there is no `password` returned from backend atm!
+            type: 'email', // userInstance.password ? 'email' : 'github',
             ...(lastname && { lastname })
         };
 

@@ -26,7 +26,7 @@
 
             if ($user) {
                 // identify on login.
-                identifyUserWithReo($user);
+                identifyUserWithReo();
 
                 trackEvent(Submit.AccountLogin, { mfa_used: 'none' });
                 addNotification({

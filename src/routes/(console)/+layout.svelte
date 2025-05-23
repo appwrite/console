@@ -42,9 +42,6 @@
     import { base } from '$app/paths';
     import { canSeeProjects } from '$lib/stores/roles';
     import { BottomModalAlert } from '$lib/components';
-    import { browser, dev } from '$app/environment';
-    import { user } from '$lib/stores/user';
-    import { loadReoScript, type Reo, type ReoUserIdentifyConfig } from 'reodotdev';
     import {
         IconAnnotation,
         IconBookOpen,
@@ -265,8 +262,6 @@
     ]);
 
     onMount(async () => {
-        identifyUserWithReo($user);
-
         loading.set(false);
         if (!localStorage.getItem('feedbackElapsed')) {
             localStorage.setItem('feedbackElapsed', '0');
@@ -281,6 +276,8 @@
             $stripe = await loadStripe(VARS.PUBLIC_STRIPE_KEY);
             await checkForMissingPaymentMethod();
         }
+
+        identifyUserWithReo();
     });
 
     function checkForFeedback(interval: number) {

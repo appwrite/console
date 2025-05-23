@@ -30,16 +30,11 @@
     async function register() {
         try {
             disabled = true;
-            const newUser = await sdk.forConsole.account.create(
-                ID.unique(),
-                mail,
-                pass,
-                name ?? ''
-            );
+            await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
             await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
 
             // identify on register.
-            identifyUserWithReo(newUser);
+            identifyUserWithReo();
 
             if ($redirectTo) {
                 window.location.href = $redirectTo;
