@@ -18,7 +18,8 @@
                 data.size,
                 data.required,
                 data.default,
-                data.array
+                data.array,
+                data.encrypt
             );
     }
     export async function updateString(
