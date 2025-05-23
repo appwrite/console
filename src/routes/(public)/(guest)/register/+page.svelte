@@ -18,19 +18,28 @@
     import { isCloud } from '$lib/system';
     import { page } from '$app/state';
     import { redirectTo } from '$routes/store';
-    import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
+    import { identifyUserWithReo } from '$lib/helpers/reo';
     import { Layout, Link, Typography } from '@appwrite.io/pink-svelte';
+    import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
     export let data;
 
-    let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
+    let name: string, mail: string, pass: string, disabled: boolean;
 
     async function register() {
         try {
             disabled = true;
-            await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
+            const newUser = await sdk.forConsole.account.create(
+                ID.unique(),
+                mail,
+                pass,
+                name ?? ''
+            );
             await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
+
+            // identify on register.
+            identifyUserWithReo(newUser);
 
             if ($redirectTo) {
                 window.location.href = $redirectTo;

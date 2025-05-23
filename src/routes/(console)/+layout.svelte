@@ -55,6 +55,7 @@
         IconSparkles,
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
+    import { identifyUserWithReo } from '$lib/helpers/reo';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -263,34 +264,8 @@
         }
     ]);
 
-    function initReo() {
-        if (dev || !browser || !isCloud) return;
-
-        const clientID = '144fa7eaa4904e8';
-        const reoPromise = loadReoScript({ clientID });
-
-        reoPromise.then(async (reo: Reo) => {
-            reo.init({ clientID });
-
-            if (Object.keys($user).length) {
-                const name = $user.name || $user.email;
-                const nameParts = name.trim().split(' ');
-                const lastname = nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined;
-
-                const reoIdentity: ReoUserIdentifyConfig = {
-                    username: $user.email,
-                    firstname: nameParts[0],
-                    type: $user.password ? 'email' : 'github',
-                    ...(lastname && { lastname })
-                };
-
-                reo.identify(reoIdentity);
-            }
-        });
-    }
-
     onMount(async () => {
-        initReo();
+        identifyUserWithReo($user);
 
         loading.set(false);
         if (!localStorage.getItem('feedbackElapsed')) {

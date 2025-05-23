@@ -13,6 +13,7 @@
     import { redirectTo } from '$routes/store';
     import { user } from '$lib/stores/user';
     import { Layout } from '@appwrite.io/pink-svelte';
+    import { identifyUserWithReo } from '$lib/helpers/reo';
 
     let mail: string, pass: string, disabled: boolean;
 
@@ -24,6 +25,9 @@
             await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
 
             if ($user) {
+                // identify on login.
+                identifyUserWithReo($user);
+
                 trackEvent(Submit.AccountLogin, { mfa_used: 'none' });
                 addNotification({
                     type: 'success',
