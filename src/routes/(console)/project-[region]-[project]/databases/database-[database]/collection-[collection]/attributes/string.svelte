@@ -46,9 +46,10 @@
     import { ActionMenu, Selector } from '@appwrite.io/pink-svelte';
     import { createConservative } from '$lib/helpers/stores';
     import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
-    import { Popover, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import { Popover, Layout, Tag, Typography, Link } from '@appwrite.io/pink-svelte';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
+    import { base } from '$app/paths';
 
     export let data: Partial<Models.AttributeString> = {
         required: false,
@@ -155,7 +156,9 @@
                 </button>
                 <ActionMenu.Root width="180px" slot="tooltip">
                     <Typography.Text variant="m-500">
-                        Available on Pro plan. Upgrade to enable encrypted attributes.
+                        Available on Pro plan.<Link.Anchor
+                            href={`${base}/organization-${$organization.$id}/change-plan`}
+                            >Upgrade</Link.Anchor> to enable encrypted attributes.
                     </Typography.Text>
                 </ActionMenu.Root>
             </Popover>
