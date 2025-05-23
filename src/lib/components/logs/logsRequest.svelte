@@ -25,6 +25,11 @@
 
     let parameters = $state([]);
 
+    const href =
+        product === 'site'
+            ? 'https://appwrite.io/docs/products/sites/logs#log-details'
+            : 'https://appwrite.io/docs/products/functions/develop#logging';
+
     onMount(() => {
         try {
             // Add dummy base URL to parse relative paths
@@ -47,12 +52,6 @@
             requestTab = 'headers';
         }
     });
-
-    let href = $derived(
-        product === 'site'
-            ? 'https://appwrite.io/docs/products/sites/logs#log-details'
-            : 'https://appwrite.io/docs/products/functions/develop#logging'
-    );
 </script>
 
 <Layout.Stack>
