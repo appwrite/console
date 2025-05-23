@@ -11,10 +11,10 @@
 
     let {
         show = $bindable(),
-        selectedDomain
+        selectedProxyRule
     }: {
         show: boolean;
-        selectedDomain: Models.ProxyRule;
+        selectedProxyRule: Models.ProxyRule;
     } = $props();
 
     let error: string = $state(null);
@@ -23,7 +23,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.deleteRule(selectedDomain.$id);
+                .proxy.deleteRule(selectedProxyRule.$id);
             await invalidate(Dependencies.SITES_DOMAINS);
             show = false;
             addNotification({
@@ -39,13 +39,13 @@
 </script>
 
 <Confirm title="Delete domain" bind:open={show} onSubmit={deleteDomain} bind:error confirmDeletion>
-    {#if selectedDomain}
+    {#if selectedProxyRule}
         <Typography.Text variant="m-400">
             Are you sure you want to delete this domain? You will no longer be able to view your
             site by visiting:
         </Typography.Text>
         <Typography.Text variant="m-500">
-            {selectedDomain.domain}
+            {selectedProxyRule.domain}
         </Typography.Text>
     {/if}
 </Confirm>
