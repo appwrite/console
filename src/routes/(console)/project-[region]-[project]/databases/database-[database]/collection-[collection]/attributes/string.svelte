@@ -47,9 +47,9 @@
     import { createConservative } from '$lib/helpers/stores';
     import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
     import { Popover, Layout, Tag, Typography, Link } from '@appwrite.io/pink-svelte';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { currentPlan, organization } from '$lib/stores/organization';
     import { base } from '$app/paths';
+    import { isCloud } from '$lib/system';
 
     export let data: Partial<Models.AttributeString> = {
         required: false,
@@ -63,7 +63,7 @@
     let savedDefault = data.default;
 
     function handleEncryptedLabelClick(toggle: () => void) {
-        if ($organization?.billingPlan === BillingPlan.FREE) {
+        if (!hasDatabaseEncryptionPlan) {
             toggle();
         } else {
             data.encrypt = !data.encrypt;
@@ -90,6 +90,8 @@
     $: listen(data);
 
     $: handleDefaultState($required || $array);
+
+    $: hasDatabaseEncryptionPlan = isCloud && $currentPlan?.databasesAllowEncrypt;
 </script>
 
 <InputNumber
@@ -138,7 +140,7 @@
             size="s"
             id="encrypted"
             bind:checked={data.encrypt}
-            disabled={$organization.billingPlan === BillingPlan.FREE || editing}
+            disabled={!hasDatabaseEncryptionPlan || editing}
             description="" />
 
         <Layout.Stack gap="xxs" direction="column">
@@ -149,7 +151,7 @@
                     on:click={(e) => handleEncryptedLabelClick(() => toggle(e))}>
                     <Layout.Stack inline direction="row" alignItems="center">
                         <Typography.Text variant="m-500">Encrypted</Typography.Text>
-                        {#if $organization?.billingPlan === BillingPlan.FREE}
+                        {#if !hasDatabaseEncryptionPlan}
                             <Tag variant="default" size="xs" on:click={toggle}>Pro</Tag>
                         {/if}
                     </Layout.Stack>
