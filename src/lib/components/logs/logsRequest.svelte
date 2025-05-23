@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { page } from '$app/state';
     import { Card } from '$lib/components';
     import { Link } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
@@ -14,11 +13,17 @@
     } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
 
-    export let selectedLog: Models.Execution;
+    let {
+        selectedLog,
+        product
+    }: {
+        selectedLog: Models.Execution;
+        product: 'site' | 'function';
+    } = $props();
 
-    let requestTab: 'parameters' | 'headers' = 'parameters';
+    let requestTab: 'parameters' | 'headers' = $state('parameters');
 
-    let parameters = [];
+    let parameters = $state([]);
 
     onMount(() => {
         try {
@@ -42,6 +47,12 @@
             requestTab = 'headers';
         }
     });
+
+    let href = $derived(
+        product === 'site'
+            ? 'https://appwrite.io/docs/products/sites/logs#log-details'
+            : 'https://appwrite.io/docs/products/functions/develop#logging'
+    );
 </script>
 
 <Layout.Stack>
@@ -122,12 +133,8 @@
 
             <Input.Helper state="default">
                 <span>
-                    Missing headers? Check the <Link
-                        variant="muted"
-                        href={page.url.pathname.includes('/sites/')
-                            ? 'https://appwrite.io/docs/products/sites/logs#log-details'
-                            : 'https://appwrite.io/docs/products/functions/develop#logging'}
-                        external>docs</Link> to see the supported data and how to log it.
+                    Missing headers? Check the <Link variant="muted" {href} external>docs</Link> to see
+                    the supported data and how to log it.
                 </span>
             </Input.Helper>
         {:else}
