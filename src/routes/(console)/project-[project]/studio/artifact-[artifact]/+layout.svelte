@@ -256,7 +256,7 @@
             {:else}
                 <div class="absolute-border"></div>
             {/if}
-            <aside style:top={`${editorHeight + 4}px`}>
+            <aside style:top={`${terminalOpen ? editorHeight + 4 : editorHeight}px`}>
                 <details bind:open={terminalOpen}>
                     <summary
                         onclick={(event) => {
