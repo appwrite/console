@@ -86,7 +86,7 @@
             if (page.url.searchParams.has('runtime')) {
                 runtime = page.url.searchParams.get('runtime') as Runtime;
             } else {
-                runtime = matchingRuntimes[0];
+                runtime = matchingRuntimes[0] as Runtime;
             }
         }
     });

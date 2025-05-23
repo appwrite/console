@@ -9,12 +9,22 @@
     import type { Models } from '@appwrite.io/console';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
+    import { isCloud } from '$lib/system';
+    import { currentPlan } from '$lib/stores/organization';
+    import { consoleVariables } from '$routes/(console)/store';
 
     export let show = false;
     export let site: Models.Site;
 
     let files: FileList;
     let error: string = '';
+
+    $: maxSize =
+        isCloud && $currentPlan
+            ? $currentPlan?.deploymentSize === 0
+                ? 0
+                : $currentPlan?.deploymentSize * 1000000
+            : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
 
     async function createDeployment() {
         try {
@@ -63,7 +73,7 @@
         <Upload.Dropzone
             extensions={['gz', 'tar']}
             bind:files
-            maxSize={10000000}
+            {maxSize}
             required
             on:invalid={handleInvalid}>
             <Layout.Stack alignItems="center" gap="s">

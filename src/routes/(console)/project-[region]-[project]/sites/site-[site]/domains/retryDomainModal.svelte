@@ -11,6 +11,7 @@
     import { consoleVariables } from '$routes/(console)/store';
     import { isCloud } from '$lib/system';
     import { page } from '$app/state';
+    import { isASubdomain } from '$lib/helpers/tlds';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
 
@@ -22,9 +23,7 @@
         selectedDomain: Models.ProxyRule;
     } = $props();
 
-    let isSubDomain = $derived.by(() =>
-        selectedDomain?.domain?.length ? selectedDomain?.domain?.split('.')?.length >= 3 : false
-    );
+    const isSubDomain = $derived.by(() => isASubdomain(selectedDomain?.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
     $effect(() => {
