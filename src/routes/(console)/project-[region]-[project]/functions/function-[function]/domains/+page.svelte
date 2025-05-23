@@ -18,7 +18,7 @@
 
     let showDelete = $state(false);
     let showRetry = $state(false);
-    let selectedDomain: Models.ProxyRule = null;
+    let selectedProxyRule: Models.ProxyRule = null;
 </script>
 
 <Container>
@@ -83,9 +83,9 @@
 </Container>
 
 {#if showDelete}
-    <DeleteDomainModal bind:show={showDelete} {selectedDomain} />
+    <DeleteDomainModal bind:show={showDelete} {selectedProxyRule} />
 {/if}
 
 {#if showRetry}
-    <RetryDomainModal bind:show={showRetry} {selectedDomain} />
+    <RetryDomainModal bind:show={showRetry} {selectedProxyRule} />
 {/if}
