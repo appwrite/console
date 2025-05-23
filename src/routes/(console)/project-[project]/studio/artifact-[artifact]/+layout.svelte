@@ -225,8 +225,12 @@
                         label={studio.status}
                         status={studio.status === 'connected' ? 'complete' : 'pending'} />
                     {#if dev}
-                        <Button.Button on:click={() => (debug = true)} size="s" variant="primary"
-                            >DEBUG</Button.Button>
+                        <div class="hide-mobile">
+                            <Button.Button
+                                on:click={() => (debug = true)}
+                                size="s"
+                                variant="primary">DEBUG</Button.Button>
+                        </div>
                     {/if}
                     <Button.Button size="s" variant="primary">Release</Button.Button>
                 </Layout.Stack>
@@ -435,6 +439,13 @@
         @media (min-width: 768px) {
             margin-inline-start: calc(-1 * var(--space-7));
             width: calc(100% + 2 * var(--space-7));
+        }
+    }
+
+    .hide-mobile {
+        display: none;
+        @media (min-width: 768px) {
+            display: block;
         }
     }
 </style>

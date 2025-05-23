@@ -46,7 +46,7 @@
 
     $effect(() => {
         void page.url.pathname;
-        if (chatTextareaRef) {
+        if (chatTextareaRef && !$isSmallViewport) {
             chatTextareaRef.focus();
         }
     });
