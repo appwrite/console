@@ -46,7 +46,7 @@
     import { createConservative } from '$lib/helpers/stores';
     import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
     import { Popover, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
-    import { $organization } from '$lib/stores/organization';
+    import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
 
     export let data: Partial<Models.AttributeString> = {
@@ -54,23 +54,17 @@
         size: 0,
         default: null,
         array: false,
-        encrypted: false
+        encrypt: false
     };
     export let editing = false;
 
     let savedDefault = data.default;
 
-    function handleCheckboxClick(toggle: () => void) {
-        if ($organization?.billingPlan === BillingPlan.FREE) {
-            toggle();
-        }
-    }
-
-    function handleButtonClick(toggle: () => void) {
+    function handleEncryptedLabelClick(toggle: () => void) {
         if ($organization?.billingPlan === BillingPlan.FREE) {
             toggle();
         } else {
-            data.encrypted = !data.encrypted;
+            data.encrypt = !data.encrypt;
         }
     }
 
@@ -141,18 +135,16 @@
         <Selector.Checkbox
             size="s"
             id="encrypted"
-            bind:checked={data.encrypted}
-            on:click={(e) => handleCheckboxClick(() => toggle(e))}
-            disabled={editing || $organization.billingPlan === BillingPlan.FREE}
+            bind:checked={data.encrypt}
+            disabled={$organization.billingPlan === BillingPlan.FREE || editing}
             description="" />
 
-        <!-- Stack button and description in a column -->
         <Layout.Stack gap="xxs" direction="column">
             <Popover let:toggle placement="bottom-start">
                 <button
                     type="button"
                     class="u-cursor-pointer"
-                    on:click={(e) => handleButtonClick(() => toggle(e))}>
+                    on:click={(e) => handleEncryptedLabelClick(() => toggle(e))}>
                     <Layout.Stack inline direction="row" alignItems="center">
                         <Typography.Text variant="m-500">Encrypted</Typography.Text>
                         {#if $organization?.billingPlan === BillingPlan.FREE}
@@ -167,7 +159,6 @@
                 </ActionMenu.Root>
             </Popover>
 
-            <!-- Description text stacked below the button -->
             <Typography.Text>
                 Indicate whether this attribute is encrypted. Encrypted attributes cannot be
                 queried.
