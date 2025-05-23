@@ -167,7 +167,7 @@
                     </Layout.Stack>
                 </Accordion>
                 <Accordion title="Request" open>
-                    <LogsRequest {selectedLog} />
+                    <LogsRequest {selectedLog} product="function" />
                 </Accordion>
                 <Accordion title="Response" open hideDivider>
                     <LogsResponse {selectedLog} product="function" {logging} />
