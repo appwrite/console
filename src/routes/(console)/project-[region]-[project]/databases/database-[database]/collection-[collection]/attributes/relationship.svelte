@@ -109,7 +109,6 @@
     });
 
     // Reactive statements
-    $: getCollections().then((res) => (collectionList = res));
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
 
     $: if (editing) {
