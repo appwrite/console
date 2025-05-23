@@ -43,7 +43,7 @@ export function getApiEndpoint(region?: string): string {
         VARS.APPWRITE_ENDPOINT ? VARS.APPWRITE_ENDPOINT : globalThis?.location?.toString()
     );
     const protocol = url.protocol;
-    const hostname = url.hostname;
+    const hostname = url.host; // "hostname:port" (or just "hostname" if no port)
 
     // If instance supports multi-region, add the region subdomain.
     const subdomain = isMultiRegionSupported(url) ? getSubdomain(region) : '';
