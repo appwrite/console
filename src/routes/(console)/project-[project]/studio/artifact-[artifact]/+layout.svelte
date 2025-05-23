@@ -29,12 +29,27 @@
     import { untrack } from 'svelte';
     import Debug from './debug.svelte';
     import { dev } from '$app/environment';
+    import { goto } from '$app/navigation';
 
     const { children, data } = $props();
 
-    let view: 'preview' | 'editor' = $state('preview');
+    let view: 'preview' | 'editor' = $state(
+        page.url.searchParams.has('code') ? 'editor' : 'preview'
+    );
 
     let debug = $state(false);
+
+    function changeView(newView: 'preview' | 'editor') {
+        const newUrl = new URL(page.url.href);
+        if (newView === 'editor') {
+            newUrl.searchParams.set('code', '');
+            goto(newUrl.pathname + newUrl.search, { replaceState: true });
+        } else {
+            newUrl.searchParams.delete('code');
+            goto(newUrl.pathname + newUrl.search, { replaceState: true });
+        }
+        view = newView;
+    }
 
     $effect(() => {
         const { artifact } = page.params;
@@ -51,7 +66,7 @@
 
     let editorHeight = $derived(resizerTopPosition + 1);
     let terminalHeight = $derived(
-        layoutElement.offsetHeight - resizerTopPosition - terminalTabsHeight
+        layoutElement ? layoutElement.offsetHeight - resizerTopPosition - terminalTabsHeight : 0
     );
 
     $effect(() => {
@@ -192,12 +207,12 @@
                         <Tab
                             selected={view === 'preview'}
                             on:click={() => {
-                                view = 'preview';
+                                changeView('preview');
                             }}>Preview</Tab>
                         <Tab
                             selected={view === 'editor'}
                             on:click={() => {
-                                view = 'editor';
+                                changeView('editor');
                             }}>Code</Tab>
                     </Tabs>
                 </Layout.Stack>
