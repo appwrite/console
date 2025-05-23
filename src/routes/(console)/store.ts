@@ -1,4 +1,5 @@
 import { page } from '$app/stores';
+import type { Reo } from 'reodotdev';
 import type { HeaderAlert } from '$lib/stores/headerAlert';
 import type { Organization } from '$lib/stores/organization';
 import type { Models } from '@appwrite.io/console';
@@ -17,3 +18,5 @@ export const protocol = derived(page, ($page) =>
 
 export const activeHeaderAlert = writable<HeaderAlert>(null);
 export const orgMissingPaymentMethod = writable<Organization>(null);
+
+export const reoInstance = writable<Reo | null>(null);

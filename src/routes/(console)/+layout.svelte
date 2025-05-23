@@ -52,6 +52,7 @@
         IconSparkles,
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
+    import { identifyUserWithReo } from '$lib/helpers/reo';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -259,6 +260,7 @@
             rank: -1
         }
     ]);
+
     onMount(async () => {
         loading.set(false);
         if (!localStorage.getItem('feedbackElapsed')) {
@@ -274,6 +276,8 @@
             $stripe = await loadStripe(VARS.PUBLIC_STRIPE_KEY);
             await checkForMissingPaymentMethod();
         }
+
+        identifyUserWithReo();
     });
 
     function checkForFeedback(interval: number) {

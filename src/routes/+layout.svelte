@@ -17,6 +17,7 @@
     import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
     import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
     import { feedback } from '$lib/stores/feedback';
+    import { initReo } from '$lib/helpers/reo';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
@@ -28,6 +29,8 @@
     }
 
     onMount(async () => {
+        initReo();
+
         updateViewport();
         // handle sources
         if (isCloud) {

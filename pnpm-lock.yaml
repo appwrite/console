@@ -77,6 +77,9 @@ importers:
       remarkable:
         specifier: ^2.0.1
         version: 2.0.1
+      reodotdev:
+        specifier: ^1.0.0
+        version: 1.0.0
       svelte-confetti:
         specifier: ^1.4.0
         version: 1.4.0(svelte@5.25.3)
@@ -2912,6 +2915,9 @@ packages:
     resolution: {integrity: sha512-YJyMcOH5lrR+kZdmB0aJJ4+93bEojRZ1HGDn9Eagu6ibg7aVZhc3OWbbShRid+Q5eAfsEqWxpe+g5W5nYNfNiA==}
     engines: {node: '>= 6.0.0'}
     hasBin: true
+
+  reodotdev@1.0.0:
+    resolution: {integrity: sha512-wXe1vJucZjrhQL0SxOL9EvmJrtbMCIEGMdZX5lj/57n2T3UhBHZsAcM5TQASJ0T6ZBbrETRnMhH33bsbJeRO6Q==}
 
   require-in-the-middle@7.5.2:
     resolution: {integrity: sha512-gAZ+kLqBdHarXB64XpAe2VCjB7rIRv+mU8tfRWziHRJ5umKsIHN2tLLv6EtMw7WCdP19S0ERVMldNvxYCHnhSQ==}
@@ -6482,6 +6488,8 @@ snapshots:
     dependencies:
       argparse: 1.0.10
       autolinker: 3.16.2
+
+  reodotdev@1.0.0: {}
 
   require-in-the-middle@7.5.2:
     dependencies:
