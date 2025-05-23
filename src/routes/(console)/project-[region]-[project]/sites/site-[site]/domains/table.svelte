@@ -19,14 +19,22 @@
     import { columns } from './store';
 
     let {
-        domains
+        proxyRules
     }: {
-        domains: Models.ProxyRuleList;
+        proxyRules: Models.ProxyRuleList;
     } = $props();
 
     let showDelete = $state(false);
     let showRetry = $state(false);
-    let selectedDomain: Models.ProxyRule = $state(null);
+    let selectedProxyRule: Models.ProxyRule = $state(null);
+
+    const proxyTarget = (proxy: Models.ProxyRule) => {
+        return proxy?.redirectUrl
+            ? 'Redirect to ' + proxy.redirectUrl
+            : proxy?.deploymentVcsProviderBranch
+              ? 'Deployed from' + proxy.deploymentVcsProviderBranch
+              : 'Active deployment';
+    };
 </script>
 
 <Table.Root columns={[...$columns, { id: 'actions', width: 40 }]} let:root>
@@ -38,25 +46,25 @@
         {/each}
         <Table.Header.Cell column="actions" {root} />
     </svelte:fragment>
-    {#each domains.rules as domain}
+    {#each proxyRules.rules as rule}
         <Table.Row.Base {root}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === 'domain'}
                         <Layout.Stack direction="row" gap="xs">
-                            <Link external href={`${$protocol}${domain.domain}`} variant="quiet">
+                            <Link external href={`${$protocol}${rule.domain}`} variant="quiet">
                                 <Typography.Text truncate>
-                                    {domain.domain}
+                                    {rule.domain}
                                 </Typography.Text>
                             </Link>
 
-                            {#if domain.status === 'verifying'}
+                            {#if rule.status === 'verifying'}
                                 <Badge
                                     variant="secondary"
                                     type="warning"
                                     content="Verifying"
                                     size="s" />
-                            {:else if domain.status !== 'verified'}
+                            {:else if rule.status !== 'verified'}
                                 <Badge
                                     variant="secondary"
                                     type="error"
@@ -65,11 +73,7 @@
                             {/if}
                         </Layout.Stack>
                     {:else if column.id === 'target'}
-                        {domain?.redirectUrl
-                            ? 'Redirect to ' + domain.redirectUrl
-                            : domain?.deploymentVcsProviderBranch
-                              ? 'Deployed from' + domain.deploymentVcsProviderBranch
-                              : '-'}
+                        {proxyTarget(rule)}
                     {/if}
                 </Table.Cell>
             {/each}
@@ -88,11 +92,11 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
-                                {#if domain.status !== 'verified'}
+                                {#if rule.status !== 'verified'}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconRefresh}
                                         on:click={(e) => {
-                                            selectedDomain = domain;
+                                            selectedProxyRule = rule;
                                             showRetry = true;
                                             toggle(e);
                                         }}>
@@ -103,7 +107,7 @@
                                     status="danger"
                                     leadingIcon={IconTrash}
                                     on:click={(e) => {
-                                        selectedDomain = domain;
+                                        selectedProxyRule = rule;
                                         showDelete = true;
                                         toggle(e);
                                         trackEvent(Click.DomainDeleteClick, {
@@ -122,9 +126,9 @@
 </Table.Root>
 
 {#if showDelete}
-    <DeleteDomainModal bind:show={showDelete} {selectedDomain} />
+    <DeleteDomainModal bind:show={showDelete} {selectedProxyRule} />
 {/if}
 
 {#if showRetry}
-    <RetryDomainModal bind:show={showRetry} {selectedDomain} />
+    <RetryDomainModal bind:show={showRetry} {selectedProxyRule} />
 {/if}
