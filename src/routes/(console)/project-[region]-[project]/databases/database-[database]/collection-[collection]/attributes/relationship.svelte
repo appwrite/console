@@ -61,7 +61,7 @@
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Card, Layout } from '@appwrite.io/pink-svelte';
+    import { Card, Layout, Input } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight, IconSwitchHorizontal } from '@appwrite.io/pink-icons-svelte';
 
     // Props
@@ -84,16 +84,15 @@
     ];
 
     // Variables
-    let search: string = null;
     let collectionList: Models.CollectionList;
     let way = 'one';
 
     // Lifecycle hooks
-    async function getCollections(search: string = null) {
-        const queries = search ? [Query.orderDesc('')] : [Query.limit(100)];
+    async function getCollections() {
+        const queries = [Query.limit(100)];
         return sdk
             .forProject(page.params.region, page.params.project)
-            .databases.listCollections(databaseId, queries, search);
+            .databases.listCollections(databaseId, queries);
     }
 
     function updateKeyName() {
@@ -110,7 +109,6 @@
     });
 
     // Reactive statements
-    $: getCollections(search).then((res) => (collectionList = res));
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
 
     $: if (editing) {
@@ -148,15 +146,15 @@
     </Card.Selector>
 </Layout.Stack>
 
-<InputSelect
+<Input.ComboBox
     required
     id="related"
     label="Related collection"
     placeholder="Select a collection"
+    isSearchable
     bind:value={data.relatedCollection}
     on:change={updateKeyName}
     options={collections?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
-
 {#if data?.relatedCollection}
     <InputText
         id="key"
