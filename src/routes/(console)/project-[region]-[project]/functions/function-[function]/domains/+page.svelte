@@ -35,14 +35,14 @@
             Add domain
         </Button>
     </Layout.Stack>
-    {#if data.domains.total}
-        <Table domains={data.domains} />
+    {#if data.proxyRules.total}
+        <Table proxyRules={data.proxyRules} />
 
         <PaginationWithLimit
             name="Domains"
             limit={data.limit}
             offset={data.offset}
-            total={data.domains.total} />
+            total={data.proxyRules.total} />
     {:else if data?.search}
         <EmptySearch hidePages bind:search={data.search} target="domains" hidePagination>
             <svelte:fragment slot="actions">
