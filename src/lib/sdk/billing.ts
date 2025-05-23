@@ -339,6 +339,8 @@ export type Plan = {
     emailBranding: boolean;
     supportsCredits: boolean;
     databasesAllowEncrypt: boolean;
+    buildSize: number; // in MB
+    deploymentSize: number; // in MB
 };
 
 export type PlanList = {

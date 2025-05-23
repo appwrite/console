@@ -26,7 +26,7 @@ export const load: PageLoad = async ({ depends, params, url, route }) => {
         limit,
         query,
         search,
-        domains: await sdk
+        proxyRules: await sdk
             .forProject(params.region, params.project)
             .proxy.listRules(
                 [

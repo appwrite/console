@@ -11,15 +11,16 @@
     import { page } from '$app/state';
 
     export let show = false;
-    export let selectedDomain: Models.ProxyRule;
-    let confirm = false;
+    export let selectedProxyRule: Models.ProxyRule;
+
     let error = '';
+    let confirm = false;
 
     async function deleteDomain() {
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.deleteRule(selectedDomain.$id);
+                .proxy.deleteRule(selectedProxyRule.$id);
             await invalidate(Dependencies.FUNCTION_DOMAINS);
             show = false;
             addNotification({
@@ -35,13 +36,13 @@
 </script>
 
 <Confirm title="Delete domain" bind:open={show} onSubmit={deleteDomain} bind:error>
-    {#if selectedDomain}
+    {#if selectedProxyRule}
         <Typography.Text variant="m-400">
             Are you sure you want to delete this domain? You will no longer be able to execute your
             function by visiting:
         </Typography.Text>
         <Typography.Text variant="m-500">
-            {selectedDomain.domain}
+            {selectedProxyRule.domain}
         </Typography.Text>
     {/if}
     <InputCheckbox

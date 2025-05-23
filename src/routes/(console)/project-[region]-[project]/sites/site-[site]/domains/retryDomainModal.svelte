@@ -11,20 +11,19 @@
     import { consoleVariables } from '$routes/(console)/store';
     import { isCloud } from '$lib/system';
     import { page } from '$app/state';
+    import { isASubdomain } from '$lib/helpers/tlds';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
 
     let {
         show = $bindable(false),
-        selectedDomain
+        selectedProxyRule
     }: {
         show: boolean;
-        selectedDomain: Models.ProxyRule;
+        selectedProxyRule: Models.ProxyRule;
     } = $props();
 
-    let isSubDomain = $derived.by(() =>
-        selectedDomain?.domain?.length ? selectedDomain?.domain?.split('.')?.length >= 3 : false
-    );
+    const isSubDomain = $derived.by(() => isASubdomain(selectedProxyRule?.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
     $effect(() => {
@@ -44,13 +43,13 @@
         try {
             const domain = await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.updateRuleVerification(selectedDomain.$id);
+                .proxy.updateRuleVerification(selectedProxyRule.$id);
             await invalidate(Dependencies.SITES_DOMAINS);
             verified = domain.status === 'verified';
             show = false;
             addNotification({
                 type: 'success',
-                message: `${selectedDomain.domain} has been verified`
+                message: `${selectedProxyRule.domain} has been verified`
             });
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
@@ -105,13 +104,13 @@
         <Divider />
     </div>
     {#if selectedTab === 'nameserver'}
-        <NameserverTable domain={selectedDomain.domain} {verified} />
+        <NameserverTable domain={selectedProxyRule.domain} {verified} />
     {:else}
         <RecordTable
             {verified}
             service="sites"
             variant={selectedTab}
-            domain={selectedDomain.domain} />
+            domain={selectedProxyRule.domain} />
     {/if}
 
     <svelte:fragment slot="footer">

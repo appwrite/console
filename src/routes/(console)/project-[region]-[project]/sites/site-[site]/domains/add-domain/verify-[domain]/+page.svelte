@@ -20,6 +20,7 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import { base } from '$app/paths';
     import { writable } from 'svelte/store';
+    import { isASubdomain } from '$lib/helpers/tlds';
     import { consoleVariables } from '$routes/(console)/store';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
@@ -27,9 +28,10 @@
     let { data } = $props();
 
     const ruleId = page.url.searchParams.get('rule');
-    let isSubDomain = $derived(page.params.domain?.split('.')?.length >= 3);
+    const isSubDomain = $derived.by(() => isASubdomain(page.params.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
+
     $effect(() => {
         if ($consoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
             selectedTab = 'cname';
@@ -127,7 +129,7 @@
                                     Nameservers
                                 </Tabs.Item.Button>
                             {/if}
-                            {#if !!$consoleVariables._APP_DOMAIN_TARGET_A && $consoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'}
+                            {#if !isCloud && !!$consoleVariables._APP_DOMAIN_TARGET_A && $consoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'a')}
@@ -135,7 +137,7 @@
                                     A
                                 </Tabs.Item.Button>
                             {/if}
-                            {#if !!$consoleVariables._APP_DOMAIN_TARGET_AAAA && $consoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'}
+                            {#if !isCloud && !!$consoleVariables._APP_DOMAIN_TARGET_AAAA && $consoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'aaaa')}
@@ -150,10 +152,10 @@
                         <NameserverTable domain={page.params.domain} {verified} />
                     {:else}
                         <RecordTable
-                            domain={page.params.domain}
                             {verified}
+                            service="sites"
                             variant={selectedTab}
-                            service="sites" />
+                            domain={page.params.domain} />
                     {/if}
                     <Divider />
                     <Layout.Stack direction="row" justifyContent="flex-end">
