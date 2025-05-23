@@ -27,6 +27,14 @@
     let showDelete = $state(false);
     let showRetry = $state(false);
     let selectedDomain: Models.ProxyRule = $state(null);
+
+    const domainTarget = (proxy: Models.ProxyRule) => {
+        return proxy?.redirectUrl
+            ? 'Redirect to ' + proxy.redirectUrl
+            : proxy?.deploymentVcsProviderBranch
+              ? 'Deployed from' + proxy.deploymentVcsProviderBranch
+              : 'Active deployment';
+    };
 </script>
 
 <Table.Root columns={[...$columns, { id: 'actions', width: 40 }]} let:root>
@@ -65,11 +73,7 @@
                             {/if}
                         </Layout.Stack>
                     {:else if column.id === 'target'}
-                        {domain?.redirectUrl
-                            ? 'Redirect to ' + domain.redirectUrl
-                            : domain?.deploymentVcsProviderBranch
-                              ? 'Deployed from' + domain.deploymentVcsProviderBranch
-                              : '-'}
+                        {domainTarget(domain)}
                     {/if}
                 </Table.Cell>
             {/each}
