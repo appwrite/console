@@ -98,9 +98,7 @@
     };
 
     $effect(() => {
-        console.log('focus', focus);
         if (focus && terminalFocus) {
-            console.log('setting focus');
             terminalFocus.focus();
         }
     });
