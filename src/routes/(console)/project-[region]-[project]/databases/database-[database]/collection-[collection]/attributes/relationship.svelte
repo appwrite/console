@@ -61,7 +61,7 @@
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Card, Layout } from '@appwrite.io/pink-svelte';
+    import { Card, Layout, Input } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight, IconSwitchHorizontal } from '@appwrite.io/pink-icons-svelte';
 
     // Props
@@ -147,15 +147,15 @@
     </Card.Selector>
 </Layout.Stack>
 
-<InputSelect
+<Input.ComboBox
     required
     id="related"
     label="Related collection"
     placeholder="Select a collection"
+    isSearchable
     bind:value={data.relatedCollection}
     on:change={updateKeyName}
     options={collections?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
-
 {#if data?.relatedCollection}
     <InputText
         id="key"
