@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/state';
     import { Card } from '$lib/components';
     import { Link } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
@@ -121,8 +122,12 @@
 
             <Input.Helper state="default">
                 <span>
-                    Missing headers? Check the <Link variant="muted" href="#" external>docs</Link> to
-                    see the supported data and how to log it.
+                    Missing headers? Check the <Link
+                        variant="muted"
+                        href={page.url.pathname.includes('/sites/')
+                            ? 'https://appwrite.io/docs/products/sites/logs#log-details'
+                            : 'https://appwrite.io/docs/products/functions/develop#logging'}
+                        external>docs</Link> to see the supported data and how to log it.
                 </span>
             </Input.Helper>
         {:else}
