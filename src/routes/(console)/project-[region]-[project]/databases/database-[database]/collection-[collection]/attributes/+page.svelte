@@ -16,7 +16,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import Create from '../createAttribute.svelte';
-    import { isRelationship } from '../document-[document]/attributes/store';
+    import { isRelationship, isString } from '../document-[document]/attributes/store';
     import FailedModal from '../failedModal.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
     import { attributes, type Attributes, isCsvImportInProgress } from '../store';
@@ -33,7 +33,8 @@
         IconPlus,
         IconSwitchHorizontal,
         IconTrash,
-        IconViewList
+        IconViewList,
+        IconLockClosed
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentProps } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -113,6 +114,11 @@
                                 <Icon icon={option.icon} size="s" />
                             {/if}
                             <span class="text u-trim-1" data-private>{attribute.key}</span>
+                            {#if isString(attribute) && attribute.encrypt}
+                            <Icon
+                                size="s"
+                                icon={IconLockClosed} />
+                            {/if}
                             {#if attribute.status !== 'available'}
                                 <Badge
                                     size="s"

@@ -15,3 +15,8 @@ export function isRelationship(attribute: Attributes): attribute is Models.Attri
     if (!attribute) return false;
     return attribute?.type === 'relationship';
 }
+
+export function isString(attribute: Attributes): attribute is Models.AttributeString{
+    if (!attribute) return false;
+    return attribute?.type === 'string';
+}
