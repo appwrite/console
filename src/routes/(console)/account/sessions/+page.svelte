@@ -71,7 +71,7 @@
             const sessionId = url.searchParams.get('sessionId');
             if (sessionId) {
                 logoutSessionId(sessionId);
-                
+
                 // Clear the sessionId param from the URL
                 url.searchParams.delete('sessionId');
                 goto(url.pathname + url.search, { replaceState: true });
@@ -89,7 +89,7 @@
     <Table.Root
         let:root
         columns={[
-            { id: 'client'},
+            { id: 'client' },
             { id: 'location', width: 120 },
             { id: 'ip', width: 120 },
             { id: 'actions', width: 70 }
