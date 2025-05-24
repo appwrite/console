@@ -20,6 +20,9 @@
     import { consoleVariables } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { InvalidFileType, removeFile } from '$lib/helpers/files';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { isCloud } from '$lib/system';
+    import { currentPlan } from '$lib/stores/organization';
 
     export let data;
     let showExitModal = false;
@@ -29,7 +32,7 @@
 
     let name = 'My website';
     let id = ID.unique();
-    let domain = id;
+    let domain = `${id}.${$consoleVariables._APP_DOMAIN_SITES}`;
     let framework: Models.Framework =
         data.frameworks.frameworks?.find((f) => f.key === 'other') ??
         data.frameworks.frameworks?.[0];
@@ -39,10 +42,17 @@
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let files: FileList;
+    
+    $: maxSize =
+        isCloud && $currentPlan
+            ? $currentPlan.deploymentSize * 1000000
+            : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+
+    $: readableMaxSize = humanFileSize(maxSize);
 
     async function create() {
         try {
-            domain = await buildVerboseDomain(name, $organization.name, $project.name, id);
+            domain = await buildVerboseDomain($consoleVariables._APP_DOMAIN_SITES, name, $organization.name, $project.name, id);
 
             const fr = Object.values(Framework).find((f) => f === framework.key);
             const buildRuntime = Object.values(BuildRuntime).find(
@@ -73,7 +83,7 @@
             // Add domain
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.createSiteRule(`${domain}.${$consoleVariables._APP_DOMAIN_SITES}`, site.$id);
+                .proxy.createSiteRule(domain, site.$id);
 
             //Add variables
             const promises = variables.map((variable) =>
@@ -167,7 +177,7 @@
                 <Upload.Dropzone
                     extensions={['gz', 'tar']}
                     bind:files
-                    maxSize={10000000}
+                    {maxSize}
                     required
                     on:invalid={handleInvalid}>
                     <Layout.Stack alignItems="center" gap="s">
@@ -192,7 +202,8 @@
                                 </Tooltip>
                             </Layout.Stack>
                             <Typography.Caption variant="400"
-                                >Max file size 10MB</Typography.Caption>
+                                >Max file size: {readableMaxSize.value +
+                                    readableMaxSize.unit}</Typography.Caption>
                         </Layout.Stack>
                     </Layout.Stack>
                 </Upload.Dropzone>
