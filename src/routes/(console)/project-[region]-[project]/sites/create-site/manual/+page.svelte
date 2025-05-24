@@ -42,7 +42,7 @@
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let files: FileList;
-    
+
     $: maxSize =
         isCloud && $currentPlan
             ? $currentPlan.deploymentSize * 1000000
@@ -52,7 +52,13 @@
 
     async function create() {
         try {
-            domain = await buildVerboseDomain($consoleVariables._APP_DOMAIN_SITES, name, $organization.name, $project.name, id);
+            domain = await buildVerboseDomain(
+                $consoleVariables._APP_DOMAIN_SITES,
+                name,
+                $organization.name,
+                $project.name,
+                id
+            );
 
             const fr = Object.values(Framework).find((f) => f === framework.key);
             const buildRuntime = Object.values(BuildRuntime).find(
