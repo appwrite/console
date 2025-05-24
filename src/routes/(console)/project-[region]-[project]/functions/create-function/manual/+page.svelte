@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
-    import { writable } from 'svelte/store';
+    import { get, writable } from 'svelte/store';
     import { ID, Runtime } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { consoleVariables } from '$routes/(console)/store';
@@ -20,15 +20,22 @@
     import Configuration from './configuration.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { InvalidFileType, removeFile } from '$lib/helpers/files';
+    import { isCloud } from '$lib/system';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { currentPlan } from '$lib/stores/organization';
 
     export let data;
 
+    const iconFor = get(iconPath);
+
     const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
-        return {
-            value: runtime.$id,
-            label: `${runtime.name} - ${runtime.version}`,
-            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
-        };
+        const { $id: value, name, version, key } = runtime;
+        const label = `${name} - ${version}`;
+        const iconName = getIconFromRuntime(key);
+        const iconSrc = iconFor(iconName, 'color');
+        const leadingHtml = `<img src='${iconSrc}' alt='${iconName}' style='inline-size: var(--icon-size-m)' />`;
+
+        return { value, label, leadingHtml };
     });
 
     const specificationOptions = data.specificationsList.specifications.map((size) => ({
@@ -153,6 +160,15 @@
               };
           })
         : [];
+
+    $: maxSize =
+        isCloud && $currentPlan
+            ? $currentPlan?.deploymentSize === 0
+                ? 0
+                : $currentPlan?.deploymentSize * 1000000
+            : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+
+    $: readableMaxSize = humanFileSize(maxSize);
 </script>
 
 <svelte:head>
@@ -176,7 +192,7 @@
                     bind:files
                     title="Upload function"
                     extensions={['gz', 'tar']}
-                    maxSize={10000000}
+                    {maxSize}
                     required
                     on:invalid={handleInvalid}>
                     <Layout.Stack alignItems="center" gap="s">
@@ -201,12 +217,12 @@
                                 </Tooltip>
                             </Layout.Stack>
                             <Typography.Caption variant="400"
-                                >Max file size 10MB</Typography.Caption>
+                                >Max file size: {readableMaxSize.value +
+                                    readableMaxSize.unit}</Typography.Caption>
                         </Layout.Stack>
                     </Layout.Stack>
                 </Upload.Dropzone>
                 {#if files?.length}
-                    <!-- TODO: torsten, the types issue with FileList-->
                     <Upload.List
                         bind:files={filesList}
                         on:remove={(e) => (files = removeFile(e.detail, files))} />

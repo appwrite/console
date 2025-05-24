@@ -12,6 +12,7 @@
     import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
     import { consoleVariables } from '$routes/(console)/store';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
 
     export let show = false;
     export let site: Models.Site;
@@ -25,6 +26,8 @@
                 ? 0
                 : $currentPlan?.deploymentSize * 1000000
             : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+
+    $: readableMaxSize = humanFileSize(maxSize);
 
     async function createDeployment() {
         try {
@@ -94,7 +97,9 @@
                                 >Only .tar.gz files allowed</svelte:fragment>
                         </Tooltip>
                     </Layout.Stack>
-                    <Typography.Caption variant="400">Max file size 10MB</Typography.Caption>
+                    <Typography.Caption variant="400"
+                        >Max file size: {readableMaxSize.value +
+                            readableMaxSize.unit}</Typography.Caption>
                 </Layout.Stack>
             </Layout.Stack>
         </Upload.Dropzone>
