@@ -91,7 +91,11 @@
 
     $: handleDefaultState($required || $array);
 
-    $: hasDatabaseEncryptionPlan = isCloud && $currentPlan?.databasesAllowEncrypt;
+    $: hasDatabaseEncryptionPlan = isCloud ? $currentPlan?.databasesAllowEncrypt : true;
+
+    $: if (data.encrypt && data.size < 150) {
+        data.size = 150;
+    }
 </script>
 
 <InputNumber
