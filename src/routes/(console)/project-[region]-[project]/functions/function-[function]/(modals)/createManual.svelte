@@ -23,9 +23,7 @@
 
     $: maxSize =
         isCloud && $currentPlan
-            ? $currentPlan?.deploymentSize === 0
-                ? 0
-                : $currentPlan?.deploymentSize * 1000000
+            ? $currentPlan.deploymentSize * 1000000
             : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
 
     $: readableMaxSize = humanFileSize(maxSize);
