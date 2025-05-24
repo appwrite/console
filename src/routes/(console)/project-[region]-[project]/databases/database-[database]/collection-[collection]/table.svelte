@@ -12,7 +12,11 @@
     import type { Models } from '@appwrite.io/console';
     import { afterUpdate, onMount } from 'svelte';
     import type { PageData } from './$types';
-    import { isRelationship, isRelationshipToMany } from './document-[document]/attributes/store';
+    import {
+        isRelationship,
+        isRelationshipToMany,
+        isString
+    } from './document-[document]/attributes/store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
     import type { ColumnType } from '$lib/helpers/types';
@@ -22,10 +26,10 @@
         Button,
         Link,
         Badge,
-        FloatingActionBar
+        FloatingActionBar,
+        InteractiveText
     } from '@appwrite.io/pink-svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-
     export let data: PageData;
 
     const databaseId = page.params.database;
@@ -237,14 +241,23 @@
                         {/if}
                     {:else}
                         {@const formatted = formatColumn(document[id])}
-                        <Tooltip disabled={!formatted.truncated} placement="bottom">
-                            <span>
-                                {formatted.value}
-                            </span>
-                            <span style:white-space="pre-wrap" slot="tooltip">
-                                {formatted.whole}
-                            </span>
-                        </Tooltip>
+                        {#if isString(attr) && attr.encrypt}
+                            <button on:click={(e) => e.preventDefault()}>
+                                <InteractiveText
+                                    variant="secret"
+                                    isVisible={false}
+                                    text={formatted.value} />
+                            </button>
+                        {:else}
+                            <Tooltip disabled={!formatted.truncated} placement="bottom">
+                                <span>
+                                    {formatted.value}
+                                </span>
+                                <span style:white-space="pre-wrap" slot="tooltip">
+                                    {formatted.whole}
+                                </span>
+                            </Tooltip>
+                        {/if}
                     {/if}
                 </Table.Cell>
             {/each}

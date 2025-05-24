@@ -18,7 +18,8 @@
                 data.size,
                 data.required,
                 data.default,
-                data.array
+                data.array,
+                data.encrypt
             );
     }
     export async function updateString(
@@ -42,19 +43,32 @@
 </script>
 
 <script lang="ts">
-    import { Selector } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Selector } from '@appwrite.io/pink-svelte';
     import { createConservative } from '$lib/helpers/stores';
     import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
+    import { Popover, Layout, Tag, Typography, Link } from '@appwrite.io/pink-svelte';
+    import { currentPlan, organization } from '$lib/stores/organization';
+    import { base } from '$app/paths';
+    import { isCloud } from '$lib/system';
 
     export let data: Partial<Models.AttributeString> = {
         required: false,
         size: 0,
         default: null,
-        array: false
+        array: false,
+        encrypt: false
     };
     export let editing = false;
 
     let savedDefault = data.default;
+
+    function handleEncryptedLabelClick(toggle: () => void) {
+        if (!hasDatabaseEncryptionPlan) {
+            toggle();
+        } else {
+            data.encrypt = !data.encrypt;
+        }
+    }
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
@@ -76,6 +90,12 @@
     $: listen(data);
 
     $: handleDefaultState($required || $array);
+
+    $: hasDatabaseEncryptionPlan = isCloud ? $currentPlan?.databasesAllowEncrypt : true;
+
+    $: if (data.encrypt && data.size < 150) {
+        data.size = 150;
+    }
 </script>
 
 <InputNumber
@@ -118,3 +138,41 @@
     disabled={data.required || editing}
     description="Indicate whether this attribute should act as an array, with the default value set as an empty
     array." />
+<Layout.Stack gap="xs" direction="column">
+    <Layout.Stack inline gap="s" alignItems="flex-start" direction="row">
+        <Selector.Checkbox
+            size="s"
+            id="encrypted"
+            bind:checked={data.encrypt}
+            disabled={!hasDatabaseEncryptionPlan || editing}
+            description="" />
+
+        <Layout.Stack gap="xxs" direction="column">
+            <Popover let:toggle placement="bottom-start">
+                <button
+                    type="button"
+                    class="u-cursor-pointer"
+                    on:click={(e) => handleEncryptedLabelClick(() => toggle(e))}>
+                    <Layout.Stack inline direction="row" alignItems="center">
+                        <Typography.Text variant="m-500">Encrypted</Typography.Text>
+                        {#if !hasDatabaseEncryptionPlan}
+                            <Tag variant="default" size="xs" on:click={toggle}>Pro</Tag>
+                        {/if}
+                    </Layout.Stack>
+                </button>
+                <ActionMenu.Root width="180px" slot="tooltip">
+                    <Typography.Text variant="m-500">
+                        Available on Pro plan.<Link.Anchor
+                            href={`${base}/organization-${$organization.$id}/change-plan`}
+                            >Upgrade</Link.Anchor> to enable encrypted attributes.
+                    </Typography.Text>
+                </ActionMenu.Root>
+            </Popover>
+
+            <Typography.Text>
+                Indicate whether this attribute is encrypted. Encrypted attributes cannot be
+                queried.
+            </Typography.Text>
+        </Layout.Stack>
+    </Layout.Stack>
+</Layout.Stack>

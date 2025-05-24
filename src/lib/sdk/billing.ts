@@ -338,6 +338,7 @@ export type Plan = {
     backupPolicies: number;
     emailBranding: boolean;
     supportsCredits: boolean;
+    databasesAllowEncrypt: boolean;
     buildSize: number; // in MB
     deploymentSize: number; // in MB
 };

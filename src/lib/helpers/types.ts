@@ -44,6 +44,7 @@ export type Column = PinkColumn & {
     format?: string;
     exclude?: boolean;
     elements?: string[] | { value: string | number; label: string }[];
+    encrypt?: boolean;
 };
 
 export function isValueOfStringEnum<T extends Record<string, string>>(
