@@ -45,4 +45,6 @@ export async function buildVerboseDomain(
     if (await checkDomain(domain, apex)) {
         return domain;
     }
+
+    return ID.unique();
 }
