@@ -47,23 +47,6 @@
     let showCreateProjectCloud = false;
     let addOrganization = false;
 
-    async function allServiceDisabled(project: Models.Project) {
-        let disabled = true;
-        try {
-            if (!project.$id) return false;
-            if (!project.platforms.length) return false;
-            services.load(project);
-            $services.list.forEach((service) => {
-                if (service.value) {
-                    disabled = false;
-                }
-            });
-            return disabled;
-        } catch (e) {
-            return true;
-        }
-    }
-
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
             (value, index, self) => index === self.findIndex((t) => t.name === value.name)
@@ -186,15 +169,6 @@
                     <svelte:fragment slot="title">
                         {project.name}
                     </svelte:fragment>
-                    {#await allServiceDisabled(project) then isDisabled}
-                        {#if isDisabled}
-                            <p>
-                                <span class="icon-pause" aria-hidden="true"></span> All services are
-                                disabled.
-                            </p>
-                        {/if}
-                    {/await}
-
                     {#each platforms as platform, i}
                         {#if i < 3}
                             {@const icon = getIconForPlatform(platform.icon)}
