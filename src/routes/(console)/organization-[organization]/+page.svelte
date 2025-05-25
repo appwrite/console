@@ -17,7 +17,6 @@
     } from '$lib/components';
     import { goto } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { services } from '$lib/stores/project-services';
     import { sdk } from '$lib/stores/sdk';
     import { loading } from '$routes/store';
     import type { Models } from '@appwrite.io/console';
@@ -46,23 +45,6 @@
     let showCreate = false;
     let showCreateProjectCloud = false;
     let addOrganization = false;
-
-    async function allServiceDisabled(project: Models.Project) {
-        let disabled = true;
-        try {
-            if (!project.$id) return false;
-            if (!project.platforms.length) return false;
-            services.load(project);
-            $services.list.forEach((service) => {
-                if (service.value) {
-                    disabled = false;
-                }
-            });
-            return disabled;
-        } catch (e) {
-            return true;
-        }
-    }
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -186,15 +168,6 @@
                     <svelte:fragment slot="title">
                         {project.name}
                     </svelte:fragment>
-                    {#await allServiceDisabled(project) then isDisabled}
-                        {#if isDisabled}
-                            <p>
-                                <span class="icon-pause" aria-hidden="true"></span> All services are
-                                disabled.
-                            </p>
-                        {/if}
-                    {/await}
-
                     {#each platforms as platform, i}
                         {#if i < 3}
                             {@const icon = getIconForPlatform(platform.icon)}
