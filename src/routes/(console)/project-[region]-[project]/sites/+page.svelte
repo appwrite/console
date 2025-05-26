@@ -32,8 +32,11 @@
     import { addNotification } from '$lib/stores/notifications';
     import { isOnWaitlistSites, joinWaitlistSites } from '$lib/helpers/waitlist';
     import { isSmallViewport } from '$lib/stores/viewport';
+
     export let data;
+
     let show = false;
+    let isOnWaitlist = isOnWaitlistSites();
 
     $: $registerCommands([
         {
@@ -69,20 +72,17 @@
      */
     $: showSites = !isCloud || $organization.$id === APPWRITE_OFFICIALS_ORG;
 
-    $: isOnWaitlist = isOnWaitlistSites();
+    $: isDark = $app.themeInUse === 'dark';
 
-    const isDark = $app.themeInUse === 'dark';
-    const isMobile = $isSmallViewport;
-
-    const imgSrc = isDark
-        ? isMobile
+    $: imgSrc = isDark
+        ? $isSmallViewport
             ? EmptyDarkMobile
             : EmptyDark
-        : isMobile
+        : $isSmallViewport
           ? EmptyLightMobile
           : EmptyLight;
 
-    const imgClass = isMobile ? 'mobile' : 'desktop';
+    $: imgClass = $isSmallViewport ? 'mobile' : 'desktop';
 
     function addToWaitlist() {
         joinWaitlistSites();

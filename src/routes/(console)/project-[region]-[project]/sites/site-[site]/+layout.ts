@@ -4,13 +4,12 @@ import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { error, redirect } from '@sveltejs/kit';
 import { APPWRITE_OFFICIALS_ORG, isCloud } from '$lib/system';
-import { organization } from '$lib/stores/organization';
-import { get } from 'svelte/store';
 import { base } from '$app/paths';
 
-export const load = async ({ depends, params }) => {
+export const load = async ({ depends, params, parent }) => {
     // don't load anything on cloud unless org is appwrite atm!
-    if (isCloud && get(organization)?.$id !== APPWRITE_OFFICIALS_ORG) {
+    const { organization } = await parent();
+    if (isCloud && organization?.$id !== APPWRITE_OFFICIALS_ORG) {
         redirect(307, `${base}/project-${params.region}-${params.project}/sites`);
     }
 
