@@ -27,7 +27,7 @@
         (team) => !$plansInfo.get((team as Organization).billingPlan)?.premiumSupport
     );
 
-    $: upgradeURL = `${base}/organization-${freeOrganization.$id}/change-plan`;
+    $: upgradeURL = `${base}/organization-${freeOrganization?.$id}/change-plan`;
 
     $: supportTimings = `${utcHourToLocaleHour('16:00')} - ${utcHourToLocaleHour('00:00')} ${localeShortTimezoneName()}`;
 
