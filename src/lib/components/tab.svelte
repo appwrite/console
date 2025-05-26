@@ -5,13 +5,12 @@
     import { getElementDir } from '$lib/helpers/style';
     import { waitUntil } from '$lib/helpers/waitUntil';
     import { Tabs } from '@appwrite.io/pink-svelte';
-    import type { Variant } from '@appwrite.io/pink-svelte/dist/tabs/types';
 
     export let selected = false;
     export let href: string = null;
     export let event: string = null;
     export let noscroll = false;
-    export let root: { variant: Variant; stretch: boolean } = {
+    export let root: { variant: 'primary' | 'secondary'; stretch: boolean } = {
         variant: 'primary',
         stretch: false
     };

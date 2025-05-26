@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CreditsApplied, EstimatedTotal, SelectPaymentMethod } from '$lib/components/billing';
+    import { CreditsApplied, SelectPaymentMethod } from '$lib/components/billing';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -232,10 +232,15 @@
                 ? $plansInfo.get(selectedOrg.billingPlan)
                 : null;
 
-        if (!campaignPlan || !orgPlan) {
+        if (!campaignPlan && !orgPlan) {
             return;
         }
-
+        if (!campaignPlan) {
+            return selectedOrg?.billingPlan;
+        }
+        if (!orgPlan) {
+            return campaign.plan;
+        }
         return campaignPlan.order > orgPlan.order ? campaign.plan : selectedOrg?.billingPlan;
     }
 

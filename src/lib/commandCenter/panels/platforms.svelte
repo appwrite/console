@@ -2,7 +2,7 @@
     import {
         Platform,
         addPlatform
-    } from '$routes/(console)/project-[project]/overview/platforms/+page.svelte';
+    } from '$routes/(console)/project-[region]-[project]/overview/platforms/+page.svelte';
     import Template from './template.svelte';
     import { IconAndroid, IconApple, IconCode, IconFlutter } from '@appwrite.io/pink-icons-svelte';
 

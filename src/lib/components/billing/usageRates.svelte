@@ -45,7 +45,7 @@
     $: isFree = org.billingPlan === BillingPlan.FREE;
 
     // equal or above means unlimited!
-    $: getCorrectSeatsCountValue = (count: number): string | number => {
+    const getCorrectSeatsCountValue = (count: number): string | number => {
         // php int max is always larger than js
         const exceedsSafeLimit = count >= Number.MAX_SAFE_INTEGER;
         return exceedsSafeLimit ? 'Unlimited' : count || 0;

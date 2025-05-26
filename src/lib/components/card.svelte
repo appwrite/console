@@ -1,7 +1,16 @@
+<script context="module" lang="ts">
+    export type BaseCardProps = Partial<{
+        variant: 'primary' | 'secondary';
+        radius: 's' | 'm' | 'l';
+        padding: 'none' | 'xxxs' | 'xxs' | 'xs' | 's' | 'm' | 'l';
+        border: 'solid' | 'dashed';
+        shadow?: boolean;
+        disabled?: boolean;
+    }>;
+</script>
+
 <script lang="ts">
     import { Card, Layout } from '@appwrite.io/pink-svelte';
-    import type Base from '@appwrite.io/pink-svelte/dist/card/Base.svelte';
-    import type { ComponentProps } from 'svelte';
 
     type BaseProps = {
         isDashed?: boolean;
@@ -20,7 +29,7 @@
         isButton?: never;
     };
 
-    type $$Props = BaseProps & (ButtonProps | AnchorProps | BaseProps) & ComponentProps<Base>;
+    type $$Props = BaseProps & (ButtonProps | AnchorProps | BaseProps) & BaseCardProps;
 
     export let isDashed = false;
     export let isButton = false;

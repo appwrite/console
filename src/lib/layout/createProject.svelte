@@ -2,17 +2,17 @@
     import { Layout, Typography, Input, Tag, Icon, Alert } from '@appwrite.io/pink-svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { CustomId } from '$lib/components/index.js';
-    import type { Region } from '$lib/sdk/billing';
     import { getFlagUrl } from '$lib/helpers/flag';
     import { isCloud } from '$lib/system.js';
     import { currentPlan } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
     import { page } from '$app/state';
+    import type { Models } from '@appwrite.io/console';
 
     export let projectName: string;
     export let id: string;
-    export let regions: Array<Region> = [];
+    export let regions: Array<Models.ConsoleRegion> = [];
     export let region: string;
     export let showTitle = true;
     export let projects: number = undefined;

@@ -31,7 +31,6 @@
         try {
             domain = await sdk.forConsole.domains.updateNameservers(domain.$id);
             verified = domain.nameservers === 'Appwrite';
-            console.log(domain);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -39,8 +38,6 @@
             });
         }
     }
-
-    $: console.log($consoleVariables._APP_DOMAINS_NAMESERVERS);
 </script>
 
 <Fieldset legend="Verification">

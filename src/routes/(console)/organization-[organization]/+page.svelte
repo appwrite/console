@@ -17,12 +17,11 @@
     } from '$lib/components';
     import { goto } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { services } from '$lib/stores/project-services';
     import { sdk } from '$lib/stores/sdk';
     import { loading } from '$routes/store';
     import type { Models } from '@appwrite.io/console';
     import { ID, Region } from '@appwrite.io/console';
-    import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
+    import { openImportWizard } from '../project-[region]-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
@@ -39,30 +38,13 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
-    import { regions as regionsStore } from '$routes/(console)/organization-[organization]/store';
+    import { organization, regions as regionsStore } from '$lib/stores/organization';
 
     export let data;
 
     let showCreate = false;
     let showCreateProjectCloud = false;
     let addOrganization = false;
-
-    async function allServiceDisabled(project: Models.Project) {
-        let disabled = true;
-        try {
-            if (!project.$id) return false;
-            if (!project.platforms.length) return false;
-            services.load(project);
-            $services.list.forEach((service) => {
-                if (service.value) {
-                    disabled = false;
-                }
-            });
-            return disabled;
-        } catch (e) {
-            return true;
-        }
-    }
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -117,22 +99,21 @@
                 ID.unique(),
                 `Imported project ${new Date().toISOString()}`,
                 page.params.organization,
-                Region.Default
+                Region.Fra // default
             );
             trackEvent(Submit.ProjectCreate, {
                 teamId: page.params.organization
             });
-            await goto(`${base}/project-${project.$id}/settings/migrations`);
+            await goto(`${base}/project-${project.region}-${project.$id}/settings/migrations`);
             openImportWizard();
             loading.set(false);
         } catch (e) {
             trackError(e, Submit.ProjectCreate);
         }
     };
-
     onMount(async () => {
-        if (isCloud) {
-            const regions = await sdk.forConsole.billing.listRegions();
+        if (isCloud && $organization.$id) {
+            const regions = await sdk.forConsole.billing.listRegions($organization.$id);
             regionsStore.set(regions);
             checkPricingRefAndRedirect(page.url.searchParams);
         }
@@ -180,22 +161,13 @@
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
-                <GridItem1 href={`${base}/project-${project.$id}`}>
+                <GridItem1 href={`${base}/project-${project.region}-${project.$id}`}>
                     <svelte:fragment slot="eyebrow">
                         {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         {project.name}
                     </svelte:fragment>
-                    {#await allServiceDisabled(project) then isDisabled}
-                        {#if isDisabled}
-                            <p>
-                                <span class="icon-pause" aria-hidden="true"></span> All services are
-                                disabled.
-                            </p>
-                        {/if}
-                    {/await}
-
                     {#each platforms as platform, i}
                         {#if i < 3}
                             {@const icon = getIconForPlatform(platform.icon)}

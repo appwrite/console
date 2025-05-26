@@ -261,19 +261,6 @@ export type AllowedRegions =
     | 'syd'
     | 'default'; //TODO: remove after migration
 
-export type Region = {
-    $id: AllowedRegions;
-    name: string;
-    disabled: boolean;
-    default: boolean;
-    flag: string;
-};
-
-export type RegionList = {
-    regions: Region[];
-    total: number;
-};
-
 export type Address = {
     $id: string;
     streetAddress: string;
@@ -352,6 +339,8 @@ export type Plan = {
     backupPolicies: number;
     emailBranding: boolean;
     supportsCredits: boolean;
+    buildSize: number; // in MB
+    deploymentSize: number; // in MB
 };
 
 export type PlanList = {
@@ -1278,9 +1267,11 @@ export class Billing {
         );
     }
 
-    async listRegions(): Promise<RegionList> {
+    async listRegions(teamId: string): Promise<Models.ConsoleRegionList> {
         const path = `/console/regions`;
-        const params = {};
+        const params = {
+            teamId
+        };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'GET',

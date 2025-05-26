@@ -12,7 +12,9 @@
     <ActionMenu.Item.Button
         on:click={() => {
             show = true;
-        }}>Custom filters</ActionMenu.Item.Button>
+        }}>
+        Custom filters
+    </ActionMenu.Item.Button>
 </ActionMenu.Root>
 
 {#if show}

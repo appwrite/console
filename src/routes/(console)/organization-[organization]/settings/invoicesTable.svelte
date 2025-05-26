@@ -42,7 +42,7 @@
             <Table.Header.Cell {root} />
         {/if}
     </svelte:fragment>
-    {#each invoices as invoice, i}
+    {#each invoices as invoice (invoice.$id)}
         {@const status = invoice.status}
         <Table.Row.Base {root}>
             <Table.Cell column="date" {root}>

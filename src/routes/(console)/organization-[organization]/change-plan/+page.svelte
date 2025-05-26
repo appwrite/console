@@ -10,8 +10,8 @@
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
-    import { type Coupon, type PaymentList } from '$lib/sdk/billing';
-    import { isOrganization, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { type Coupon } from '$lib/sdk/billing';
+    import { isOrganization, plansInfo, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -63,8 +63,7 @@
         if (page.url.searchParams.has('code')) {
             const coupon = page.url.searchParams.get('code');
             try {
-                const response = await sdk.forConsole.billing.getCouponAccount(coupon);
-                couponData = response;
+                couponData = await sdk.forConsole.billing.getCouponAccount(coupon);
             } catch (e) {
                 couponData = {
                     code: null,
@@ -179,7 +178,7 @@
 
     async function upgrade() {
         try {
-            //Add collaborators
+            // Add collaborators
             let newCollaborators = [];
             if (collaborators?.length) {
                 newCollaborators = collaborators.filter(
@@ -242,9 +241,9 @@
         }
     }
 
-    $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan.order;
-    $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan.order;
-    $: isButtonDisabled = $organization.billingPlan === selectedPlan;
+    $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan?.order;
+    $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan?.order;
+    $: isButtonDisabled = $organization?.billingPlan === selectedPlan;
 </script>
 
 <svelte:head>

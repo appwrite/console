@@ -1,10 +1,9 @@
 import { goto } from '$app/navigation';
-import { project } from '$routes/(console)/project-[project]/store';
-import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
-import { getProviderDisplayNameAndIcon } from '$routes/(console)/project-[project]/messaging/provider.svelte';
+import { getProviderDisplayNameAndIcon } from '$routes/(console)/project-[region]-[project]/messaging/provider.svelte';
 import { base } from '$app/paths';
+import { page } from '$app/state';
 
 const getIcon = (provider: string) => {
     const { icon } = getProviderDisplayNameAndIcon(provider);
@@ -12,9 +11,9 @@ const getIcon = (provider: string) => {
 };
 
 export const providersSearcher = (async (query: string) => {
-    const { providers } = await sdk.forProject.messaging.listProviders([], query || undefined);
-
-    const projectId = get(project).$id;
+    const { providers } = await sdk
+        .forProject(page.params.region, page.params.project)
+        .messaging.listProviders([], query || undefined);
 
     return providers
         .filter((provider) => provider.name.toLowerCase().includes(query.toLowerCase()))
@@ -25,7 +24,7 @@ export const providersSearcher = (async (query: string) => {
                     label: provider.name,
                     callback: () => {
                         goto(
-                            `${base}/project-${projectId}/messaging/providers/provider-${provider.$id}`
+                            `${base}/project-${page.params.region}-${page.params.project}/messaging/providers/provider-${provider.$id}`
                         );
                     },
                     image: getIcon(provider.provider)

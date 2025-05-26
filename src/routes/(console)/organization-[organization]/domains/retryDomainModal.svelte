@@ -25,7 +25,7 @@
             show = false;
             if (domain.nameservers === 'Appwrite') {
                 addNotification({
-                    type: 'error',
+                    type: 'success',
                     message: `${selectedDomain.domain} has been verified`
                 });
             } else {

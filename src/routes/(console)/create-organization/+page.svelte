@@ -3,18 +3,12 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        PlanComparisonBox,
-        PlanSelection,
-        SelectPaymentMethod,
-        SelectPlan
-    } from '$lib/components/billing';
+    import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, InputTags, InputText } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
-
-    import type { Coupon, PaymentList } from '$lib/sdk/billing';
+    import type { Coupon } from '$lib/sdk/billing';
     import { isOrganization, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { type OrganizationError, type Organization } from '$lib/stores/organization';
@@ -37,7 +31,6 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let methods: PaymentList;
     let name: string;
     let billingPlan: BillingPlan = BillingPlan.FREE;
     let paymentMethodId: string;
@@ -94,11 +87,6 @@
             }
         }
     });
-
-    async function loadPaymentMethods() {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
-        paymentMethodId = methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
-    }
 
     async function validate(organizationId: string, invites: string[]) {
         try {

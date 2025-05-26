@@ -325,7 +325,7 @@ export async function checkForUsageLimit(org: Organization) {
     const members = org.total;
     const plan = get(plansInfo)?.get(org.billingPlan);
     const membersOverflow =
-        members - 1 > plan.addons.seats.limit ? members - (plan.addons.seats.limit || members) : 0;
+        members > plan.addons.seats.limit ? members - (plan.addons.seats.limit || members) : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);

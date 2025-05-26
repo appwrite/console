@@ -19,6 +19,7 @@
         name: string;
         $id: string;
         isSelected: boolean;
+        region: string;
     };
     type Organization = {
         name: string;
@@ -139,7 +140,7 @@
                                     if (index < 4) {
                                         return {
                                             name: project.name,
-                                            href: `/console/project-${project.$id}/overview`
+                                            href: `/console/project-${project.region}-${project.$id}/overview`
                                         };
                                     } else if (index === 4) {
                                         return {
@@ -315,7 +316,8 @@
                         {#if index < 4}
                             <div use:melt={$itemProjects}>
                                 <ActionMenu.Root>
-                                    <ActionMenu.Item.Anchor href={`/console/project-${project.$id}`}
+                                    <ActionMenu.Item.Anchor
+                                        href={`/console/project-${project.region}-${project.$id}`}
                                         >{project.name}</ActionMenu.Item.Anchor
                                     ></ActionMenu.Root>
                             </div>

@@ -1,5 +1,4 @@
-import { getProjectId } from '$lib/helpers/project';
-import { VARS } from '$lib/system';
+import { isMultiRegionSupported, VARS } from '$lib/system';
 import {
     Account,
     Assistant,
@@ -20,27 +19,62 @@ import {
     Teams,
     Users,
     Vcs,
-    Sites
+    Sites,
+    Tokens
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
 import { Domains } from '$lib/sdk/domains';
 import { Sources } from '$lib/sdk/sources';
+import {
+    REGION_FRA,
+    REGION_NYC,
+    REGION_SYD,
+    SUBDOMAIN_FRA,
+    SUBDOMAIN_NYC,
+    SUBDOMAIN_SYD
+} from '$lib/constants';
 import { building } from '$app/environment';
+import { getProjectId } from '$lib/helpers/project';
 
-export function getApiEndpoint(): string {
-    if (VARS.APPWRITE_ENDPOINT) return VARS.APPWRITE_ENDPOINT;
-    return globalThis?.location?.origin + '/v1';
+export function getApiEndpoint(region?: string): string {
+    if (building) return '';
+    const url = new URL(
+        VARS.APPWRITE_ENDPOINT ? VARS.APPWRITE_ENDPOINT : globalThis?.location?.toString()
+    );
+    const protocol = url.protocol;
+    const hostname = url.host; // "hostname:port" (or just "hostname" if no port)
+
+    // If instance supports multi-region, add the region subdomain.
+    const subdomain = isMultiRegionSupported(url) ? getSubdomain(region) : '';
+
+    return `${protocol}//${subdomain}${hostname}/v1`;
 }
+
+const getSubdomain = (region?: string) => {
+    switch (region) {
+        case REGION_FRA:
+            return SUBDOMAIN_FRA;
+        case REGION_SYD:
+            return SUBDOMAIN_SYD;
+        case REGION_NYC:
+            return SUBDOMAIN_NYC;
+        default:
+            return '';
+    }
+};
 
 const endpoint = getApiEndpoint();
 
 const clientConsole = new Client();
 const clientProject = new Client();
+const clientRealtime = new Client();
 
 if (!building) {
     clientConsole.setEndpoint(endpoint).setProject('console');
+    clientRealtime.setEndpoint(endpoint).setProject('console');
     clientProject.setEndpoint(endpoint).setMode('admin');
+    clientRealtime.setEndpoint(endpoint).setProject('console');
 }
 
 const sdkForProject = {
@@ -56,6 +90,7 @@ const sdkForProject = {
     project: new Project(clientProject),
     projectApi: new ProjectApi(clientProject),
     storage: new Storage(clientProject),
+    tokens: new Tokens(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject),
     vcs: new Vcs(clientProject),
@@ -64,12 +99,14 @@ const sdkForProject = {
     sites: new Sites(clientProject)
 };
 
-export const getSdkForProject = (projectId: string) => {
-    if (projectId && projectId !== clientProject.config.project) {
-        clientProject.setProject(projectId);
+export const realtime = {
+    forProject(region: string, _projectId: string) {
+        const endpoint = getApiEndpoint(region);
+        if (endpoint !== clientRealtime.config.endpoint) {
+            clientRealtime.setEndpoint(endpoint);
+        }
+        return clientRealtime;
     }
-
-    return sdkForProject;
 };
 
 export const sdk = {
@@ -91,9 +128,16 @@ export const sdk = {
         sites: new Sites(clientConsole),
         domains: new Domains(clientConsole)
     },
-    get forProject() {
-        const projectId = getProjectId();
-        return getSdkForProject(projectId);
+    forProject(region: string, projectId: string) {
+        const endpoint = getApiEndpoint(region);
+        if (endpoint !== clientProject.config.endpoint) {
+            clientProject.setEndpoint(endpoint);
+        }
+        if (projectId !== clientProject.config.project) {
+            clientProject.setProject(projectId);
+        }
+
+        return sdkForProject;
     }
 };
 

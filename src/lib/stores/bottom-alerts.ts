@@ -3,10 +3,28 @@ import type { NotificationCoolOffOptions } from '$lib/helpers/notifications';
 import type { Organization } from '$lib/stores/organization';
 import type { Models } from '@appwrite.io/console';
 
-type BottomModalAlertAction = {
+export type BottomModalAlertAction = {
     text: string;
+    hideOnClick?: boolean;
     link: (ctx: { organization: Organization; project: Models.Project }) => string;
     external?: boolean;
+};
+
+/**
+ * Special layout settings for mobile when exactly one alert is shown.
+ *
+ * Applied only if `enabled` is `true` and the number of visible alerts is exactly 1.
+ *
+ * Useful when you want to display the alert directly in the floating window,
+ * without opening a separate modal.
+ */
+export type MobileSingleAlertLayoutConfig = {
+    title: string;
+    message: string;
+    enabled: boolean;
+    isHtml?: boolean;
+    // because message is the text!
+    cta: Omit<BottomModalAlertAction, 'text'>;
 };
 
 export type BottomModalAlertItem = {
@@ -23,18 +41,36 @@ export type BottomModalAlertItem = {
     importance?: number;
 
     closed?: () => void;
-    scope?: 'organization' | 'project';
+    scope: 'organization' | 'project' | 'everywhere';
     notificationHideOptions?: NotificationCoolOffOptions;
 };
 
-export const bottomModalAlerts = writable<BottomModalAlertItem[]>([]);
+type BottomModalAlertState = {
+    alerts: BottomModalAlertItem[];
+    mobileSingleLayout?: MobileSingleAlertLayoutConfig;
+};
+
+export const bottomModalAlertsConfig = writable<BottomModalAlertState>({ alerts: [] });
 
 export const hideAllModalAlerts = () => {
-    bottomModalAlerts.update((all) => all.map((t) => ({ ...t, show: false })));
+    bottomModalAlertsConfig.update((state) => ({
+        ...state,
+        alerts: state.alerts.map((t) => ({ ...t, show: false }))
+    }));
+};
+
+export const setMobileSingleAlertLayout = (config: MobileSingleAlertLayoutConfig) => {
+    bottomModalAlertsConfig.update((state) => ({
+        ...state,
+        mobileSingleLayout: config
+    }));
 };
 
 export const dismissBottomModalAlert = (id: string) => {
-    bottomModalAlerts.update((all) => all.filter((t) => t.id !== id));
+    bottomModalAlertsConfig.update((state) => ({
+        ...state,
+        alerts: state.alerts.filter((t) => t.id !== id)
+    }));
 };
 
 export const showBottomModalAlert = (notification: BottomModalAlertItem) => {
@@ -45,8 +81,11 @@ export const showBottomModalAlert = (notification: BottomModalAlertItem) => {
         ...notification
     };
 
-    bottomModalAlerts.update((all) => {
-        if (all.some((t) => t.id === notification.id)) return all;
-        return [...all, defaults as BottomModalAlertItem];
+    bottomModalAlertsConfig.update((state) => {
+        if (state.alerts.some((t) => t.id === notification.id)) return state;
+        return {
+            ...state,
+            alerts: [...state.alerts, defaults as BottomModalAlertItem]
+        };
     });
 };

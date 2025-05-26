@@ -24,8 +24,7 @@
                     tooltipShow={plan.$id === BillingPlan.FREE && anyOrgFree}
                     tooltipText={plan.$id === BillingPlan.FREE
                         ? 'You are limited to 1 Free organization per account.'
-                        : ''}
-                    padding={1.5}>
+                        : ''}>
                     <svelte:fragment slot="custom" let:disabled>
                         <div
                             class="u-flex u-flex-vertical u-gap-4 u-width-full-line"

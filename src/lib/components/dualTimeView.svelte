@@ -110,7 +110,7 @@
                     <InteractiveText
                         isVisible
                         variant="copy"
-                        text={toLocaleDateTime(time, 'UTC')}
+                        text={toLocaleDateTime(time, false, 'UTC')}
                         value={toISOString(time)} />
 
                     <Badge variant="secondary" content="UTC" size="xs" />
