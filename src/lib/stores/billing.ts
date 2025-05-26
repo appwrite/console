@@ -34,6 +34,7 @@ import { sdk } from './sdk';
 import { user } from './user';
 import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budgetLimitAlert.svelte';
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
+import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
@@ -280,6 +281,23 @@ export function calculateTrialDay(org: Organization) {
 
     daysLeftInTrial.set(days);
     return days;
+}
+
+export async function checkForProjectsLimit(org: Organization, projects: number) {
+    if (!org || !projects) return;
+    const plan = get(plansInfo)?.get(org.billingPlan);
+    if (!plan) return;
+    if (plan.$id !== BillingPlan.FREE) return;
+
+    if (projects >= plan.projects) {
+        console.log('checkForProjectsLimit', projects);
+        headerAlert.add({
+            id: 'projectsLimitReached',
+            component: ProjectsLimit,
+            show: true,
+            importance: 12
+        });
+    }
 }
 
 export async function checkForUsageLimit(org: Organization) {
