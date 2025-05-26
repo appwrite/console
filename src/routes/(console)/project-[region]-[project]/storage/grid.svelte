@@ -8,8 +8,6 @@
 
     export let data: PageData;
     export let showCreate = false;
-
-    const project = page.params.project;
 </script>
 
 <CardContainer
@@ -20,7 +18,8 @@
     service="buckets"
     on:click={() => (showCreate = true)}>
     {#each data.buckets.buckets as bucket}
-        <GridItem1 href={`${base}/project-${project}/storage/bucket-${bucket.$id}`}>
+        <GridItem1
+            href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${bucket.$id}`}>
             <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
             <svelte:fragment slot="status">
                 {#if !bucket.enabled}

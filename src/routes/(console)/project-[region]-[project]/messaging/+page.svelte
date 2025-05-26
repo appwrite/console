@@ -63,8 +63,6 @@
         { id: 'deliveredAt', title: 'Delivered at', type: 'datetime', width: { min: 120 } }
     ]);
 
-    const project = page.params.project;
-
     async function handleDelete() {
         showDelete = false;
 
@@ -134,7 +132,7 @@
                 <Table.Row.Link
                     {root}
                     id={message.$id}
-                    href={`${base}/project-${project}/messaging/message-${message.$id}`}>
+                    href={`${base}/project-${page.params.region}-${page.params.project}/messaging/message-${message.$id}`}>
                     {#each $columns as column (column.id)}
                         <Table.Cell column={column.id} {root}>
                             {#if column.id === '$id'}
