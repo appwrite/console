@@ -6,7 +6,7 @@
 
     let { domain }: { domain: Domain } = $props();
 
-    const isDomainVerified = domain.nameservers.toLowerCase() === 'appwrite';
+    const isDomainVerified = domain.nameservers.toLocaleLowerCase() === 'appwrite';
 
     const metrics = [
         {
