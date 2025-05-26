@@ -34,6 +34,7 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     billingInvoiceId: string;
     status: string;
     remarks: string;
+    projects: string[];
 };
 
 export type OrganizationList = {

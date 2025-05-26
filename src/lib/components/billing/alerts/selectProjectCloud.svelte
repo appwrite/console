@@ -4,9 +4,12 @@
     import { Modal } from '$lib/components';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let showSelectProject: boolean;
     export let projects: Array<Models.Project> = [];
+
+    let error: string | null = null;
 
     onMount(() => {
         sdk.forConsole.projects
@@ -25,10 +28,20 @@
 
     $: projectsToArchive = projects.filter((project) => !selectedProjects.includes(project.$id));
 
-    function updateSelected() {
-        showSelectProject = false;
-        // Here you can handle the selected project, e.g., save it to a store or navigate
-        console.log(selectedProjects);
+    async function updateSelected() {
+        try {
+            await sdk.forConsole.billing.updateSelectedProjects(
+                projects[0].teamId,
+                selectedProjects
+            );
+            showSelectProject = false;
+            addNotification({
+                type: 'success',
+                message: `Updated selected projects to keep`
+            });
+        } catch (e) {
+            error = e.message;
+        }
     }
 </script>
 
@@ -36,6 +49,9 @@
     <svelte:fragment slot="description">
         Choose which two projects over will be blocked after this date.
     </svelte:fragment>
+    {#if error}
+        <Alert.Inline status="error" title="Error">{error}</Alert.Inline>
+    {/if}
     <Table.Root
         let:root
         allowSelection

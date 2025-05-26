@@ -586,6 +586,22 @@ export class Billing {
         );
     }
 
+    async updateSelectedProjects(organizationId: string, projects: string[]): Promise<Organization> {
+        const path = `/organizations/${organizationId}/projects`;
+        const params = {
+            projects
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async setOrganizationPaymentMethod(
         organizationId: string,
         paymentMethodId: string
