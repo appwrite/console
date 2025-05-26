@@ -28,7 +28,7 @@
                     label: region.name,
                     value: region.$id,
                     leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
-                    disabled: region.disabled
+                    disabled: region.disabled || !region.available
                 };
             });
     }

@@ -10,6 +10,8 @@
     import { base } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
     import CreateProject from '$lib/layout/createProject.svelte';
+    import { loadAvailableRegions } from '$routes/(console)/regions';
+    import { regions as regionsStore } from '$lib/stores/organization';
 
     let isLoading = false;
     let id: string;
@@ -49,6 +51,9 @@
             });
         }
     }
+
+    // safe side!
+    loadAvailableRegions(data.organization.$id);
 </script>
 
 <svelte:head>
@@ -74,7 +79,7 @@
             alt="Appwrite Logo" />
         <Card.Base variant="primary" padding="l">
             <CreateProject
-                regions={isCloud ? data.regions.regions : []}
+                regions={$regionsStore.regions}
                 bind:projectName
                 bind:id
                 bind:region
