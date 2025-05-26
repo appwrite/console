@@ -39,6 +39,7 @@
         <link rel="preload" as="image" href={getFlagUrl(region.flag)} />
     {/each}
 </svelte:head>
+
 <form on:submit|preventDefault>
     <Layout.Stack direction="column" gap="xxl">
         {#if showTitle}
