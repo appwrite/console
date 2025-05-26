@@ -13,7 +13,7 @@
 
     export let show = false;
     export let selectedDomain: Domain;
-    let nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',') ?? [
+    const nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',') ?? [
         'ns1.appwrite.io',
         'ns2.appwrite.io'
     ];
