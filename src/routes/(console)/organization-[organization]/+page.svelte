@@ -120,9 +120,7 @@
     });
 
     function findRegion(project: Models.Project) {
-        return $regionsStore?.regions?.find(
-            (region) => region.$id === (project as Models.Project & { region: string }).region
-        );
+        return $regionsStore?.regions?.find((region) => region.$id === project.region);
     }
 </script>
 
