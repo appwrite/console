@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Alert, Box, EyebrowHeading } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
     import { deepMap } from '$lib/helpers/object';
+    import type { WritableValue } from '$lib/helpers/types';
+    import { Alert, Divider, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import {
         createMigrationFormStore,
@@ -10,18 +10,20 @@
         providerResources,
         resourcesToMigrationForm
     } from '$lib/stores/migration';
+    import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
     import type { Models } from '@appwrite.io/console';
     import type { sdk } from '$lib/stores/sdk';
-    import type { WritableValue } from '$lib/helpers/types';
+    import ImportReport from '$routes/(console)/project-[region]-[project]/settings/migrations/(import)/importReport.svelte';
 
+    export let errorInResources: boolean | undefined = undefined;
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
     export let projectSdk: ReturnType<typeof sdk.forProject>;
 
     type ValueOf<T> = T[keyof T];
     type FormData = WritableValue<typeof formData>;
-    // TL;DR of this type: It gets a object with two levels (in this case FormData)
+    // TL;DR of this type: It gets an object with two levels (in this case FormData)
     // And returns a join of the keys with a dot between them.
     // e.g. If FormData was { users: { root: boolean, teams: boolean } }
     // The type would be 'users.root' | 'users.teams'
@@ -83,6 +85,7 @@
     let error = false;
     onMount(async () => {
         isOpen = true;
+        deselectAll();
         try {
             switch ($provider.provider) {
                 case 'appwrite':
@@ -130,279 +133,146 @@
         isOpen = false;
     });
 
-    $: resources = providerResources[$provider.provider];
+    $: errorInResources = error;
     $: wizard.setNextDisabled(!report);
+    $: resources = providerResources[$provider.provider];
 </script>
 
-<Box radius="s">
-    <div class="u-flex u-flex-vertical u-gap-16">
-        <EyebrowHeading class="eyebrow" tag="h3" size={3}>Good to know</EyebrowHeading>
-        <div class="u-flex u-gap-16">
-            <div class="circled">
-                <i class="icon-cog"></i>
-            </div>
-            <div>
-                <p class="u-bold">Project settings are not imported</p>
-                <p>You will need to set service and project settings manually</p>
-            </div>
-        </div>
-        <div class="u-flex u-gap-16">
-            <div class="circled">
-                <i class="icon-trending-up"></i>
-            </div>
-            <div>
-                <p class="u-bold">Keep your organization plan's limits in mind</p>
-                <p>
-                    Make sure to have enough storage in your organization plan when importing files.
-                </p>
-            </div>
-        </div>
-        {#if $provider.provider === 'firebase'}
-            <div class="u-flex u-gap-16">
-                <div class="circled">
-                    <i class="icon-exclamation u-color-text-warning"></i>
-                </div>
-                <div>
-                    <p class="u-bold">Possible charges by Firebase</p>
-                    <p>
-                        Appwrite does not impose charges for importing data, but please note that
-                        Firebase may have its own pricing for this service
-                    </p>
-                </div>
-            </div>
-        {:else}
-            <div class="u-flex u-gap-16">
-                <div class="circled">
-                    <i class="icon-currency-dollar"></i>
-                </div>
-                <div>
-                    <p class="u-bold">Transfer is free of charge</p>
-                    <p>You won't be charged for Appwrite bandwidth usage for importing data</p>
-                </div>
-            </div>
-        {/if}
-    </div>
-</Box>
-
-{#if report && !isVersionAtLeast(version, '1.4.0') && $provider.provider === 'appwrite'}
-    <div class="u-margin-block-start-24">
-        <Alert
-            type="warning"
-            isStandalone
-            buttons={[
-                {
-                    slot: 'Learn more',
-                    onClick() {
-                        wizard.updateStep((p) => p - 1);
-                    }
-                }
-            ]}>
+<Layout.Stack gap="l">
+    {#if report && !isVersionAtLeast(version, '1.4.0') && $provider.provider === 'appwrite'}
+        <Alert.Inline status="warning">
             <svelte:fragment slot="title">Functions not available for import</svelte:fragment>
             To migrate your functions, update the version of the Appwrite instance you're importing from
             to a version newer than 1.4
-        </Alert>
-    </div>
-{/if}
+        </Alert.Inline>
+    {/if}
 
-{#if error}
-    <div class="u-margin-block-start-24">
-        <Alert
-            type="error"
-            isStandalone
-            buttons={[
-                {
-                    slot: 'Edit credentials',
-                    onClick() {
-                        wizard.updateStep((p) => p - 1);
-                    }
-                }
-            ]}>
-            <svelte:fragment slot="title">Request failed</svelte:fragment>
+    {#if error}
+        <Alert.Inline status="error" title="Request failed">
             Please check if your credentials are filled in correctly in the previous step
-        </Alert>
-    </div>
-{/if}
+        </Alert.Inline>
+    {/if}
 
-<ul class="buttons-list u-margin-block-start-32 u-main-end">
-    <li class="buttons-list-item">
-        <Button text on:click={deselectAll}>Deselect all</Button>
-    </li>
+    <Layout.Stack gap="l">
+        <Layout.Stack direction="row">
+            <Button
+                compact
+                on:click={(event) => {
+                    event.preventDefault();
+                    deselectAll();
+                }}>Deselect all</Button>
+            <Button
+                compact
+                on:click={(event) => {
+                    event.preventDefault();
+                    selectAll();
+                }}>Select all</Button>
+        </Layout.Stack>
+        <Divider />
+    </Layout.Stack>
 
-    <li class="buttons-list-item">
-        <Button text on:click={selectAll}>Select all</Button>
-    </li>
-</ul>
-
-<ul class="u-flex u-flex-vertical u-margin-block-start-16">
     {#if resources?.includes('user')}
-        <li class="checkbox-field">
-            <input
-                type="checkbox"
-                bind:checked={$formData.users.root}
-                on:change={handleInputChange('users.root')} />
-            <div class="u-flex u-gap-4 u-cross-center">
-                <span class="u-bold">Users</span>
+        <Layout.Stack>
+            <ImportReport
+                label="Users"
+                checked={$formData.users.root}
+                handleChange={handleInputChange('users.root')}
+                description="Import all users"
+                reportValue={report?.user}
+                isLoading={!error} />
 
-                {#if $provider.provider !== 'firebase'}
-                    {#if report?.user !== undefined}
-                        <span class="inline-tag">{report.user}</span>
-                    {:else if !error}
-                        <span class="loader is-small u-margin-inline-start-4"></span>
-                    {/if}
-                {/if}
+            <!-- TODO: no padding, change a component instead -->
+            <div style:padding-left="2rem">
+                <ImportReport
+                    label="Include teams"
+                    checked={$formData.users.teams}
+                    handleChange={handleInputChange('users.teams')}
+                    description="Import all teams and the team memberships of your users" />
             </div>
-            <div></div>
-            <span>Import all users</span>
-
-            {#if resources?.includes('team')}
-                <ul>
-                    <li class="checkbox-field">
-                        <input
-                            type="checkbox"
-                            bind:checked={$formData.users.teams}
-                            on:change={handleInputChange('users.teams')} />
-                        <div class="u-flex u-gap-4 u-cross-center">
-                            <span class="u-bold">Include teams</span>
-                            {#if $provider.provider === 'firebase'}
-                                {#if report?.team !== undefined}
-                                    <span class="inline-tag">{report.team}</span>
-                                {:else if !error}
-                                    <span class="loader is-small u-margin-inline-start-4"></span>
-                                {/if}
-                            {/if}
-                        </div>
-                        <div></div>
-                        <span>Import all teams and the team memberships of your users</span>
-                    </li>
-                </ul>
-            {/if}
-        </li>
+        </Layout.Stack>
     {/if}
 
     {#if resources?.includes('database')}
-        <li class="checkbox-field">
-            <input
-                type="checkbox"
-                bind:checked={$formData.databases.root}
-                on:change={handleInputChange('databases.root')} />
-            <div class="u-flex u-gap-4 u-cross-center">
-                <span class="u-bold">Databases</span>
-                {#if $provider.provider !== 'firebase'}
-                    {#if report?.database !== undefined}
-                        <span class="inline-tag">{report.database}</span>
-                    {:else if !error}
-                        <span class="loader is-small u-margin-inline-start-4"></span>
-                    {/if}
-                {/if}
-            </div>
-            <div></div>
-            <span>Import all databases, including collections, indexes and attributes</span>
+        <Layout.Stack>
+            <ImportReport
+                label="Databases"
+                checked={$formData.databases.root}
+                handleChange={handleInputChange('databases.root')}
+                description="Import all databases, including collections, indexes and attributes"
+                reportValue={report?.database}
+                isLoading={!error} />
 
-            {#if resources?.includes('document')}
-                <ul>
-                    <li class="checkbox-field">
-                        <input
-                            type="checkbox"
-                            bind:checked={$formData.databases.documents}
-                            on:change={handleInputChange('databases.documents')} />
-                        <div class="u-flex u-gap-4 u-cross-center">
-                            <span class="u-bold">Include documents</span>
-                            {#if $provider.provider !== 'firebase'}
-                                {#if report?.document !== undefined}
-                                    <span class="inline-tag">{report.document}</span>
-                                {:else if !error}
-                                    <span class="loader is-small u-margin-inline-start-4"></span>
-                                {/if}
-                            {/if}
-                        </div>
-                        <div></div>
-                        <span>Import all of your documents</span>
-                    </li>
-                </ul>
-            {/if}
-        </li>
+            <div style:padding-left="2rem">
+                <ImportReport
+                    label="Include documents"
+                    checked={$formData.databases.documents}
+                    handleChange={handleInputChange('databases.documents')}
+                    description="Import all functions and their active deployment"
+                    reportValue={report?.document}
+                    isLoading={!error} />
+            </div>
+        </Layout.Stack>
     {/if}
 
     {#if resources?.includes('function') && isVersionAtLeast(version, '1.4.0')}
-        <li class="checkbox-field">
-            <input
-                type="checkbox"
-                bind:checked={$formData.functions.root}
-                on:change={handleInputChange('functions.root')} />
-            <div class="u-flex u-gap-4 u-cross-center">
-                <span class="u-bold">Functions</span>
-                {#if $provider.provider !== 'firebase'}
-                    {#if report?.function !== undefined}
-                        <span class="inline-tag">{report.function}</span>
-                    {:else if !error}
-                        <span class="loader is-small u-margin-inline-start-4"></span>
-                    {/if}
-                {/if}
-            </div>
-            <div></div>
-            <span>Import all functions and their active deployment</span>
-            <ul>
-                {#if resources?.includes('environment-variable')}
-                    <li class="checkbox-field">
-                        <input
-                            type="checkbox"
-                            bind:checked={$formData.functions.env}
-                            on:change={handleInputChange('functions.env')} />
-                        <div class="u-flex u-gap-4">
-                            <span class="u-bold">Include environment variables</span>
-                        </div>
-                        <div></div>
-                        <span>Import all environment variables</span>
-                    </li>
-                {/if}
-                {#if resources?.includes('deployment')}
-                    <li class="checkbox-field">
-                        <input
-                            type="checkbox"
-                            bind:checked={$formData.functions.inactive}
-                            on:change={handleInputChange('functions.inactive')} />
-                        <div class="u-flex u-gap-4">
-                            <span class="u-bold">Include inactive deployments</span>
-                        </div>
-                        <div></div>
-                        <span>Import all deployments that are not currently active</span>
-                    </li>
-                {/if}
-            </ul>
-        </li>
+        <Layout.Stack>
+            <ImportReport
+                label="Functions"
+                checked={$formData.functions.root}
+                handleChange={handleInputChange('functions.root')}
+                description="Import all functions and their active deployment"
+                reportValue={report?.function}
+                isLoading={!error} />
+
+            {#if resources?.includes('environment-variable') || resources?.includes('deployment')}
+                <div style:padding-left="2rem">
+                    <Layout.Stack gap="s">
+                        {#if resources?.includes('environment-variable')}
+                            <ImportReport
+                                label="Include environment variables"
+                                checked={$formData.functions.env}
+                                description="Import all environment variables"
+                                handleChange={handleInputChange('functions.env')} />
+                        {/if}
+
+                        {#if resources?.includes('deployment')}
+                            <ImportReport
+                                label="Include inactive deployments"
+                                checked={$formData.functions.inactive}
+                                handleChange={handleInputChange('functions.inactive')}
+                                description="Import all deployments that are not currently active" />
+                        {/if}
+                    </Layout.Stack>
+                </div>
+            {/if}
+        </Layout.Stack>
     {/if}
 
     {#if resources?.includes('bucket') && resources?.includes('file')}
-        <li class="checkbox-field">
-            <input
-                type="checkbox"
-                bind:checked={$formData.storage.root}
-                on:change={handleInputChange('storage.root')} />
-            <div class="u-flex u-gap-4 u-cross-center">
-                <span class="u-bold">Storage</span>
-                {#if $provider.provider !== 'firebase'}
-                    {#if report?.size !== undefined}
-                        <span class="inline-tag">{`${report.size.toFixed(2)}MB`}</span>
-                    {:else if !error}
-                        <span class="loader is-small u-margin-inline-start-4"></span>
-                    {/if}
-                {/if}
-            </div>
-            <div></div>
+        {@const storageSize = report?.size >= 0 ? `${report?.size.toFixed(2)}MB` : undefined}
+        <Layout.Stack gap="none">
+            <ImportReport
+                label="Storage"
+                checked={$formData.storage.root}
+                handleChange={handleInputChange('storage.root')}
+                reportValue={storageSize}
+                isLoading={!error} />
 
-            <p>
-                Import all buckets
-                {#if $provider.provider !== 'firebase' && report?.bucket}
-                    <span class="inline-tag">{report.bucket}</span>
-                {/if}
-                and files
-                {#if $provider.provider !== 'firebase' && report?.file}
-                    <span class="inline-tag">{report.file}</span>
-                {/if}
-            </p>
-        </li>
+            <div style:padding-left="2rem">
+                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                    Import all buckets
+                    {#if $provider.provider !== 'firebase' && report?.bucket}
+                        <Tag size="xs" selected>{report.bucket}</Tag>
+                    {/if}
+                    and files
+                    {#if $provider.provider !== 'firebase' && report?.file}
+                        <Tag size="xs" selected>{report.file}</Tag>
+                    {/if}
+                </Typography.Text>
+            </div>
+        </Layout.Stack>
     {/if}
-</ul>
+</Layout.Stack>
 
 <!-- svelte-ignore css-unused-selector -->
 <style lang="scss">
