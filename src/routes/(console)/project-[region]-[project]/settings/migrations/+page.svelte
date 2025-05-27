@@ -122,8 +122,8 @@
     };
 
     function showDetails(m: Models.Migration) {
-        showMigration = true;
         migration = m;
+        showMigration = true;
     }
 
     function getTypedStatus(entry: Models.Migration) {

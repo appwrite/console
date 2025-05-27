@@ -1,13 +1,24 @@
 <script lang="ts">
-    import { Alert, Modal, Tab } from '$lib/components';
-    import Tabs from '$lib/components/tabs.svelte';
     import { total } from '$lib/helpers/array';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { parseIfString } from '$lib/helpers/object';
+    import { Modal, Tab } from '$lib/components';
+    import Tabs from '$lib/components/tabs.svelte';
     import { formatNum } from '$lib/helpers/string';
     import type { Models } from '@appwrite.io/console';
+    import { parseIfString } from '$lib/helpers/object';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { ResourcesFriendly } from '$lib/stores/migration';
-    import { Card, Layout, Typography, Code, Spinner, Tag } from '@appwrite.io/pink-svelte';
+    import { IconCheck, IconClock, IconExclamation } from '@appwrite.io/pink-icons-svelte';
+    import {
+        Alert,
+        Card,
+        Layout,
+        Typography,
+        Code,
+        Spinner,
+        Tag,
+        Icon
+    } from '@appwrite.io/pink-svelte';
+    import { Button } from '$lib/elements/forms';
 
     export let migration: Models.Migration = null;
     export let show = false;
@@ -77,65 +88,52 @@
         </Card.Base>
 
         {#if Object.values(statusCounters).some(hasError)}
-            <Alert
-                type="error"
-                buttons={[
-                    {
-                        slot: 'View logs',
-                        onClick() {
-                            tab = 'logs';
-                        }
-                    }
-                ]}>
+            <Alert.Inline status="error">
                 There was an error migrating some of the project's entities.
-            </Alert>
+                <Button slot="actions" extraCompact on:click={() => (tab = 'logs')}
+                    >View logs</Button>
+            </Alert.Inline>
         {/if}
 
         {#if Object.keys(statusCounters).length}
-            <div class="box">
-                {#each Object.keys(statusCounters) as entity}
-                    {@const entityCounter = statusCounters[entity]}
-                    <Layout.Stack direction="row" gap="l" alignItems="center" alignContent="center">
-                        <div class="icon-wrapper">
-                            {#if hasError(entityCounter)}
-                                <i class="icon-exclamation"></i>
-                            {:else if isLoading(entityCounter)}
-                                <Spinner size="s" />
-                            {:else if hasSucceeded(entityCounter)}
-                                <i class="icon-check"></i>
-                            {:else}
-                                <i class="icon-clock"></i>
-                            {/if}
-                        </div>
+            <Card.Base padding="s" variant="secondary">
+                <Layout.Stack gap="l">
+                    {#each Object.keys(statusCounters) as entity}
+                        {@const entityCounter = statusCounters[entity]}
+                        <Layout.Stack
+                            direction="row"
+                            gap="l"
+                            alignItems="center"
+                            alignContent="center">
+                            <div class="icon-wrapper">
+                                {#if hasError(entityCounter)}
+                                    <Icon icon={IconExclamation} color="--bgcolor-warning" />
+                                {:else if isLoading(entityCounter)}
+                                    <Spinner size="s" />
+                                {:else if hasSucceeded(entityCounter)}
+                                    <Icon icon={IconCheck} />
+                                {:else}
+                                    <Icon icon={IconClock} />
+                                {/if}
+                            </div>
 
-                        <div>
-                            <span class="u-capitalize"
-                                >{total(Object.values(entityCounter)) > 1
-                                    ? ResourcesFriendly[entity].plural
-                                    : ResourcesFriendly[entity].singular}</span>
+                            <div>
+                                <span class="u-capitalize"
+                                    >{total(Object.values(entityCounter)) > 1
+                                        ? ResourcesFriendly[entity].plural
+                                        : ResourcesFriendly[entity].singular}</span>
 
-                            <Tag size="xs" selected>{totalItems(entityCounter)}</Tag>
-                        </div>
-                    </Layout.Stack>
-                {/each}
-            </div>
+                                <Tag size="xs" selected>{totalItems(entityCounter)}</Tag>
+                            </div>
+                        </Layout.Stack>
+                    {/each}
+                </Layout.Stack>
+            </Card.Base>
         {/if}
     {/if}
 </Modal>
 
 <style lang="scss">
-    .box {
-        padding: 0;
-
-        > :global(div) {
-            padding: 1.25rem;
-
-            &:not(:last-child) {
-                border-bottom: 1px solid hsl(var(--border));
-            }
-        }
-    }
-
     .icon-wrapper {
         position: relative;
 
@@ -149,9 +147,5 @@
 
             transform: translate(-50%, -50%);
         }
-    }
-
-    .icon-exclamation {
-        color: hsl(var(--color-danger-100));
     }
 </style>
