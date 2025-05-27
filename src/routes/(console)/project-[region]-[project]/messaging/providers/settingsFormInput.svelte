@@ -124,6 +124,7 @@
         on:invalid={handleInvalid}
         extensions={['json']}
         bind:files={files[input.name]}
+        maxSize={10000000}
         required={!input.optional}>
         <Layout.Stack alignItems="center" gap="s">
             <Layout.Stack alignItems="center" gap="s">

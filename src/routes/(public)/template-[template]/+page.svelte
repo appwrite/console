@@ -80,11 +80,11 @@
         selectedProject = projects?.total ? projects.projects[0].$id : null;
     }
 
-    function generateUrl() {
+    function generateUrl(project: Models.Project) {
         if (isSiteTemplate(data.template, data.product)) {
-            return `${base}/project-${selectedProject}/sites/create-site/templates/template-${data.template.key}`;
+            return `${base}/project-${project.region}-${project.$id}/sites/create-site/templates/template-${data.template.key}`;
         } else {
-            return `${base}/project-${selectedProject}/functions/create-function/templates/template-${data.template.name}`;
+            return `${base}/project-${project.region}-${project.$id}/functions/create-function/templates/template-${data.template.name}`;
         }
     }
 
@@ -105,7 +105,7 @@
 
                 selectedProject = p.$id;
 
-                window.location.href = generateUrl();
+                window.location.href = generateUrl(p);
             } catch (e) {
                 trackError(e, Submit.ProjectCreate);
                 addNotification({
@@ -114,7 +114,8 @@
                 });
             }
         } else {
-            window.location.href = generateUrl();
+            const project = projects.projects.find((p) => p.$id === selectedProject);
+            window.location.href = generateUrl(project);
         }
     }
 

@@ -55,7 +55,7 @@
     </Button>
     <svelte:fragment slot="menu" let:toggle>
         <ActionMenu.Root>
-            {#if !inCard}
+            {#if !inCard && selectedDeployment?.sourceSize !== 0}
                 <ActionMenu.Item.Button
                     leadingIcon={IconRefresh}
                     on:click={(e) => {

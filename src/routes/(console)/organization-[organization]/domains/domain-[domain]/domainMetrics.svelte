@@ -4,11 +4,11 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { Layout, Status } from '@appwrite.io/pink-svelte';
 
-    export let domain: Domain;
+    let { domain }: { domain: Domain } = $props();
 
-    $: isDomainVerified = domain.nameservers.toLocaleLowerCase() === 'appwrite';
+    const isDomainVerified = domain.nameservers.toLocaleLowerCase() === 'appwrite';
 
-    let metrics = [
+    const metrics = [
         {
             value: isDomainVerified ? 'Verified' : 'Not verified',
             description: 'Status'
@@ -18,11 +18,11 @@
             description: 'Registrar'
         },
         {
-            value: domain?.nameservers ? domain?.nameservers : '-',
+            value: domain?.nameservers || '-',
             description: 'Nameservers'
         },
         {
-            value: domain?.expiry ? toLocaleDate(domain?.expiry) : '-',
+            value: domain?.expiry ? toLocaleDate(domain.expiry) : '-',
             description: 'Expiry date'
         },
         {

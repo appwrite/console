@@ -12,8 +12,8 @@ importers:
         specifier: ^1.1.24
         version: 1.1.24(svelte@5.25.3)(zod@3.24.3)
       '@appwrite.io/console':
-        specifier: ^1.8.0
-        version: 1.8.0
+        specifier: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19
+        version: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19
       '@appwrite.io/pink':
         specifier: 0.25.0
         version: 0.25.0
@@ -27,8 +27,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3
       '@appwrite.io/pink-svelte':
-        specifier: https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@510c1a7
-        version: https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@510c1a7(svelte@5.25.3)
+        specifier: https://try-module.cloud/module/@appwrite/@appwrite.io/pink-svelte@0cc439f
+        version: https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@0cc439f(svelte@5.25.3)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -257,8 +257,9 @@ packages:
   '@analytics/type-utils@0.6.2':
     resolution: {integrity: sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg==}
 
-  '@appwrite.io/console@1.8.0':
-    resolution: {integrity: sha512-9M2zfg95P5c5CTYseMaE7ULoYJgzLGy624pV2g4DLdWmrX6ltMwP4khulIOsTd3tJpDDwuiInt7odVeoP9iXZg==}
+  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19':
+    resolution: {tarball: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19}
+    version: 1.8.0
 
   '@appwrite.io/pink-icons-svelte@2.0.0-RC.1':
     resolution: {integrity: sha512-iLFlV55hj8mGuAbmxJGenxN5RaZMmVT4GJb9dv/MP1xBAtYibFq7JvBcxm18qV2KU8c31Rntf+Ub4GL7HwqTYg==}
@@ -280,8 +281,8 @@ packages:
   '@appwrite.io/pink-legacy@1.0.3':
     resolution: {integrity: sha512-GGde5fmPhs+s6/3aFeMPc/kKADG/gTFkYQSy6oBN8pK0y0XNCLrZZgBv+EBbdhwdtqVEWXa0X85Mv9w7jcIlwQ==}
 
-  '@appwrite.io/pink-svelte@https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@510c1a7':
-    resolution: {tarball: https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@510c1a7}
+  '@appwrite.io/pink-svelte@https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@0cc439f':
+    resolution: {tarball: https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@0cc439f}
     version: 2.0.0-RC.2
     peerDependencies:
       svelte: ^4.0.0
@@ -3624,7 +3625,7 @@ snapshots:
 
   '@analytics/type-utils@0.6.2': {}
 
-  '@appwrite.io/console@1.8.0': {}
+  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19': {}
 
   '@appwrite.io/pink-icons-svelte@2.0.0-RC.1(svelte@5.25.3)':
     dependencies:
@@ -3643,7 +3644,7 @@ snapshots:
       '@appwrite.io/pink-icons': 1.0.0
       the-new-css-reset: 1.11.3
 
-  '@appwrite.io/pink-svelte@https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@510c1a7(svelte@5.25.3)':
+  '@appwrite.io/pink-svelte@https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@0cc439f(svelte@5.25.3)':
     dependencies:
       '@appwrite.io/pink-icons-svelte': 2.0.0-RC.1(svelte@5.25.3)
       '@floating-ui/dom': 1.6.13

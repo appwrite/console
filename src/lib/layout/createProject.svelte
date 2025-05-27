@@ -28,7 +28,7 @@
                     label: region.name,
                     value: region.$id,
                     leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
-                    disabled: region.disabled
+                    disabled: region.disabled || !region.available
                 };
             });
     }
@@ -39,6 +39,7 @@
         <link rel="preload" as="image" href={getFlagUrl(region.flag)} />
     {/each}
 </svelte:head>
+
 <form on:submit|preventDefault>
     <Layout.Stack direction="column" gap="xxl">
         {#if showTitle}

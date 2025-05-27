@@ -8,8 +8,10 @@ import { BillingPlan } from '$lib/constants';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 
+// TODO: this needs to be cleaned up!
 export const load: PageLoad = async ({ parent }) => {
     const { organizations } = await parent();
+
     try {
         if (!organizations?.total) {
             try {
@@ -29,8 +31,7 @@ export const load: PageLoad = async ({ parent }) => {
 
                     if (isOrganization(org)) {
                         return {
-                            organization: org,
-                            regions: await sdk.forConsole.billing.listRegions(org.$id)
+                            organization: org
                         };
                     } else {
                         const e = new Error(org.message, {
@@ -43,8 +44,7 @@ export const load: PageLoad = async ({ parent }) => {
                         organization: await sdk.forConsole.teams.create(
                             ID.unique(),
                             'Personal projects'
-                        ),
-                        regions: null
+                        )
                     };
                 }
             } catch (e) {
@@ -57,10 +57,8 @@ export const load: PageLoad = async ({ parent }) => {
                 Query.limit(1)
             ]);
             if (!projects.total) {
-                const regions = isCloud ? await sdk.forConsole.billing.listRegions(org.$id) : null;
                 return {
-                    organization: org,
-                    regions
+                    organization: org
                 };
             } else {
                 redirect(303, `${base}/console/organization-${org.$id}`);
