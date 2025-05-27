@@ -7,7 +7,6 @@
     import { organization } from '$lib/stores/organization';
     import type { Aggregation, CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
-    import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
@@ -35,21 +34,6 @@
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
         $plansInfo.get($organization.billingPlan)?.trialDays;
     const extraUsage = currentInvoice ? currentInvoice.amount - currentPlan?.price : 0;
-
-    function usageNameToLabel(name: string): string {
-        switch (name) {
-            case 'executions':
-                return 'Executions';
-            case 'storage':
-                return 'Storage';
-            case 'users':
-                return 'Users';
-            case 'bandwidth':
-                return 'Bandwidth';
-            default:
-                return '';
-        }
-    }
 </script>
 
 {#if $organization}
@@ -112,69 +96,29 @@
                                         {#if i > 0 || currentAggregation.additionalMembers}
                                             <Divider />
                                         {/if}
-                                        {#if ['storage', 'bandwidth'].includes(excess.name)}
-                                            {@const excessValue = humanFileSize(excess.value)}
-                                            <Layout.Stack gap="xxxs">
-                                                <Layout.Stack
-                                                    direction="row"
-                                                    justifyContent="space-between">
-                                                    <Typography.Text
-                                                        color="--fgcolor-neutral-primary"
-                                                        >{usageNameToLabel(
-                                                            excess.name
-                                                        )}</Typography.Text>
-                                                    <Typography.Text
-                                                        >{formatCurrency(
-                                                            excess.amount
-                                                        )}</Typography.Text>
-                                                </Layout.Stack>
-                                                <Layout.Stack direction="row">
-                                                    <Layout.Stack direction="row">
-                                                        <Tooltip
-                                                            placement="bottom"
-                                                            disabled={excess.value <=
-                                                                1_000_000_000}>
-                                                            <svelte:fragment slot="tooltip">
-                                                                {formatNumberWithCommas(
-                                                                    excess.value ?? 0
-                                                                )} bytes
-                                                            </svelte:fragment>
-                                                            <span
-                                                                >{excessValue.value ??
-                                                                    0}{excessValue.unit}</span>
-                                                        </Tooltip>
-                                                    </Layout.Stack>
-                                                </Layout.Stack>
+
+                                        <Layout.Stack gap="xxxs">
+                                            <Layout.Stack
+                                                direction="row"
+                                                justifyContent="space-between">
+                                                <Typography.Text color="--fgcolor-neutral-primary">
+                                                    {excess.name}
+                                                </Typography.Text>
+                                                <Typography.Text>
+                                                    {formatCurrency(excess.amount)}
+                                                </Typography.Text>
                                             </Layout.Stack>
-                                        {/if}
-                                        {#if ['users', 'executions'].includes(excess.name)}
-                                            <Layout.Stack gap="xxxs">
-                                                <Layout.Stack
-                                                    direction="row"
-                                                    justifyContent="space-between">
-                                                    <Typography.Text
-                                                        color="--fgcolor-neutral-primary"
-                                                        >{usageNameToLabel(
-                                                            excess.name
-                                                        )}</Typography.Text>
-                                                    <Typography.Text
-                                                        >{formatCurrency(
-                                                            excess.amount
-                                                        )}</Typography.Text>
-                                                </Layout.Stack>
-                                                <Layout.Stack direction="row">
-                                                    <Tooltip
-                                                        placement="bottom"
-                                                        disabled={excess.value <= 1000}>
-                                                        <svelte:fragment slot="tooltip">
-                                                            {formatNumberWithCommas(excess.value)}
-                                                        </svelte:fragment>
-                                                        <span
-                                                            >{abbreviateNumber(excess.value)}</span>
-                                                    </Tooltip>
-                                                </Layout.Stack>
+                                            <Layout.Stack direction="row">
+                                                <Tooltip
+                                                    placement="bottom"
+                                                    disabled={excess.value <= 1000}>
+                                                    <svelte:fragment slot="tooltip">
+                                                        {formatNumberWithCommas(excess.value)}
+                                                    </svelte:fragment>
+                                                    <span>{abbreviateNumber(excess.value)}</span>
+                                                </Tooltip>
                                             </Layout.Stack>
-                                        {/if}
+                                        </Layout.Stack>
                                     {/each}
                                 {/if}
                             </Layout.Stack>
