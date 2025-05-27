@@ -41,7 +41,6 @@
 <Layout.Stack gap="xl">
     {#if $provider.provider === 'appwrite'}
         <Layout.Stack gap="l">
-            <Layout.Stack></Layout.Stack>
             <InputText
                 id="endpoint"
                 label="Endpoint"
