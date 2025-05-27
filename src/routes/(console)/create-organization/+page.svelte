@@ -209,7 +209,7 @@
                         bind:billingPlan={selectedPlan}
                         anyOrgFree={data.hasFreeOrganizations}
                         isNewOrg />
-                    </Layout.Stack>
+                </Layout.Stack>
             </Fieldset>
             {#if selectedPlan !== BillingPlan.FREE}
                 <Fieldset legend="Payment">
