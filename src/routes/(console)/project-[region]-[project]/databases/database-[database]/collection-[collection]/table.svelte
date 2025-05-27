@@ -241,9 +241,10 @@
                         {/if}
                     {:else}
                         {@const formatted = formatColumn(document[id])}
-                        {#if isString(attr) && attr.encrypt}
+                        {#if isString(attr) && !attr.encrypt}
                             <button on:click={(e) => e.preventDefault()}>
                                 <InteractiveText
+                                    copy={false}
                                     variant="secret"
                                     isVisible={false}
                                     text={formatted.value} />

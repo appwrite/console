@@ -115,7 +115,7 @@
     label="Required"
     bind:checked={data.required}
     disabled={data.array}
-    description="Indicate whether this attribute is required" />
+    description="Indicate whether this attribute is required." />
 
 <Selector.Checkbox
     size="s"
@@ -123,8 +123,7 @@
     label="Array"
     bind:checked={data.array}
     disabled={data.required || editing}
-    description="Indicate whether this attribute should act as an array, with the default value set as an empty
-    array." />
+    description="Indicate whether this attribute is an array. Defaults to an empty array." />
 
 <Layout.Stack gap="xs" direction="column">
     <div class="popover-holder" class:disabled-checkbox={!supportsStringEncryption || editing}>
@@ -174,7 +173,7 @@
 <style lang="scss">
     .popover-holder {
         & :global([role='tooltip']) {
-            margin-top: 2px;
+            margin-top: 4px;
             left: 8rem !important;
         }
 
