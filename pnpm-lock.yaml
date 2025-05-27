@@ -24,8 +24,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3
       '@appwrite.io/pink-svelte':
-        specifier: https://try-module.cloud/-/@appwrite/@appwrite.io/pink-svelte@6ea6004
-        version: https://try-module.cloud/-/@appwrite/%40appwrite.io%2Fpink-svelte@6ea6004(svelte@5.25.3)
+        specifier: https://try-module.cloud/-/@appwrite/@appwrite.io/pink-svelte@7b28443
+        version: https://try-module.cloud/-/@appwrite/%40appwrite.io%2Fpink-svelte@7b28443(svelte@5.25.3)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -278,8 +278,8 @@ packages:
   '@appwrite.io/pink-legacy@1.0.3':
     resolution: {integrity: sha512-GGde5fmPhs+s6/3aFeMPc/kKADG/gTFkYQSy6oBN8pK0y0XNCLrZZgBv+EBbdhwdtqVEWXa0X85Mv9w7jcIlwQ==}
 
-  '@appwrite.io/pink-svelte@https://try-module.cloud/-/@appwrite/%40appwrite.io%2Fpink-svelte@6ea6004':
-    resolution: {tarball: https://try-module.cloud/-/@appwrite/%40appwrite.io%2Fpink-svelte@6ea6004}
+  '@appwrite.io/pink-svelte@https://try-module.cloud/-/@appwrite/%40appwrite.io%2Fpink-svelte@7b28443':
+    resolution: {tarball: https://try-module.cloud/-/@appwrite/%40appwrite.io%2Fpink-svelte@7b28443}
     version: 2.0.0-RC.2
     peerDependencies:
       svelte: ^4.0.0
@@ -3635,7 +3635,7 @@ snapshots:
       '@appwrite.io/pink-icons': 1.0.0
       the-new-css-reset: 1.11.3
 
-  '@appwrite.io/pink-svelte@https://try-module.cloud/-/@appwrite/%40appwrite.io%2Fpink-svelte@6ea6004(svelte@5.25.3)':
+  '@appwrite.io/pink-svelte@https://try-module.cloud/-/@appwrite/%40appwrite.io%2Fpink-svelte@7b28443(svelte@5.25.3)':
     dependencies:
       '@appwrite.io/pink-icons-svelte': 2.0.0-RC.1(svelte@5.25.3)
       '@floating-ui/dom': 1.6.13
