@@ -141,7 +141,7 @@
                             </Link>
                         </Typography.Text>
 
-                        <div class="providers">
+                        <Layout.Grid rowGap="l" columns={3} columnsS={2} columnsXS={1}>
                             {#each Object.entries(providers) as [key, platform]}
                                 <Card.Selector
                                     bind:group={$provider.provider}
@@ -152,7 +152,7 @@
                                     imageRadius="s"
                                     disabled={showResources} />
                             {/each}
-                        </div>
+                        </Layout.Grid>
 
                         <Divider />
 
@@ -199,7 +199,7 @@
 
                 <!-- tip 1 -->
                 <Layout.Stack gap="l" direction="row" wrap="normal">
-                    <span class="icon-wrapper">
+                    <span style:padding-block="2px">
                         <Icon icon={IconCog} size="s" />
                     </span>
                     <Layout.Stack gap="none">
@@ -211,7 +211,7 @@
 
                 <!-- tip 2 -->
                 <Layout.Stack gap="l" direction="row" wrap="normal">
-                    <span class="icon-wrapper">
+                    <span style:padding-block="2px">
                         <Icon icon={IconTrendingUp} size="s" />
                     </span>
                     <Layout.Stack gap="none">
@@ -224,7 +224,7 @@
                 <!-- tip 3 -->
                 <Layout.Stack gap="l" direction="row" wrap="normal">
                     {@const isFirebase = $provider.provider === 'firebase'}
-                    <span class="icon-wrapper" style:padding-block="3px">
+                    <span style:padding-block="3px">
                         <Icon
                             icon={isFirebase ? IconExclamation : IconCurrencyDollar}
                             size="s"
@@ -260,20 +260,3 @@
             >Create</Button.Button>
     </svelte:fragment>
 </Wizard>
-
-<style>
-    .providers {
-        display: grid;
-        gap: var(--gap-l, 16px);
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-
-        @media (max-width: 768px) {
-            display: flex;
-            flex-direction: column;
-        }
-    }
-
-    .icon-wrapper {
-        padding-block: 2px;
-    }
-</style>
