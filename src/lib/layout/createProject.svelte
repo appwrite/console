@@ -2,13 +2,13 @@
     import { Layout, Typography, Input, Tag, Icon } from '@appwrite.io/pink-svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { CustomId } from '$lib/components/index.js';
-    import type { Region } from '$lib/sdk/billing';
     import { getFlagUrl } from '$lib/helpers/flag';
     import { isCloud } from '$lib/system.js';
+    import type { Models } from '@appwrite.io/console';
 
     export let projectName: string;
     export let id: string;
-    export let regions: Array<Region> = [];
+    export let regions: Array<Models.ConsoleRegion> = [];
     export let region: string;
     export let showTitle = true;
 
@@ -28,7 +28,7 @@
                     label: region.name,
                     value: region.$id,
                     leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
-                    disabled: region.disabled
+                    disabled: region.disabled || !region.available
                 };
             });
     }
@@ -39,6 +39,7 @@
         <link rel="preload" as="image" href={getFlagUrl(region.flag)} />
     {/each}
 </svelte:head>
+
 <form on:submit|preventDefault>
     <Layout.Stack direction="column" gap="xxl">
         {#if showTitle}

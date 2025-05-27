@@ -6,6 +6,7 @@ import { user } from '$lib/stores/user';
 import { ENV, MODE, VARS, isCloud } from '$lib/system';
 import { AppwriteException } from '@appwrite.io/console';
 import { browser } from '$app/environment';
+import { getReferrerAndUtmSource } from '$lib/helpers/utm';
 
 function plausible(domain: string): AnalyticsPlugin {
     if (!browser) return { name: 'analytics-plugin-plausible' };
@@ -63,6 +64,8 @@ export function trackEvent(name: string, data: object = null): void {
             project: page.params.project
         };
     }
+
+    data = { ...data, ...getReferrerAndUtmSource() };
 
     if (ENV.DEV || ENV.PREVIEW) {
         console.debug(`[Analytics] Event ${name} ${path}`, data);
@@ -149,6 +152,7 @@ export enum Click {
     DatabaseIndexDelete = 'click_index_delete',
     DatabaseCollectionDelete = 'click_collection_delete',
     DatabaseDatabaseDelete = 'click_database_delete',
+    DatabaseImportCsv = 'click_database_import_csv',
     DomainCreateClick = 'click_domain_create',
     DomainDeleteClick = 'click_domain_delete',
     DomainRetryDomainVerificationClick = 'click_domain_retry_domain_verification',
@@ -158,6 +162,7 @@ export enum Click {
     FunctionsDeploymentDeleteClick = 'click_deployment_delete',
     FunctionsDeploymentCancelClick = 'click_deployment_cancel',
     KeyCreateClick = 'click_key_create',
+    DevKeyCreateClick = 'click_dev_key_create',
     MenuDropDownClick = 'click_menu_dropdown',
     MenuOverviewClick = 'click_menu_overview',
     ModalCloseClick = 'click_close_modal',
@@ -267,6 +272,7 @@ export enum Submit {
     DatabaseCreate = 'submit_database_create',
     DatabaseDelete = 'submit_database_delete',
     DatabaseUpdateName = 'submit_database_update_name',
+    DatabaseImportCsv = 'submit_database_import_csv',
     AttributeCreate = 'submit_attribute_create',
     AttributeUpdate = 'submit_attribute_update',
     AttributeDelete = 'submit_attribute_delete',
@@ -308,11 +314,18 @@ export enum Submit {
     VariableDelete = 'submit_variable_delete',
     VariableUpdate = 'submit_variable_update',
     VariableEditor = 'submit_variable_editor',
+    LogDelete = 'submit_log_delete',
+
     KeyCreate = 'submit_key_create',
     KeyDelete = 'submit_key_delete',
     KeyUpdateName = 'submit_key_update_name',
     KeyUpdateScopes = 'submit_key_update_scopes',
     KeyUpdateExpire = 'submit_key_update_expire',
+
+    DevKeyCreate = 'submit_dev_key_create',
+    DevKeyDelete = 'submit_dev_key_delete',
+    DevKeyUpdateName = 'submit_dev_key_update_name',
+    DevKeyUpdateExpire = 'submit_dev_key_update_expire',
 
     PlatformCreate = 'submit_platform_create',
     PlatformDelete = 'submit_platform_delete',
@@ -343,6 +356,9 @@ export enum Submit {
     FileCreate = 'submit_file_create',
     FileDelete = 'submit_file_delete',
     FileUpdatePermissions = 'submit_file_update_permissions',
+    FileTokenCreate = 'submit_file_token',
+    FileTokenDelete = 'submit_file_delete',
+    FileTokenUpdate = 'submit_file_update_expiry',
     BudgetCapUpdate = 'submit_budget_cap_update',
     BudgetAlertsUpdate = 'submit_budget_alert_conditions_update',
     CreditRedeem = 'submit_credit_redeem',

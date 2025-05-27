@@ -15,12 +15,14 @@
     } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
+        Badge,
         Card,
         Empty,
         Icon,
         Layout,
         Popover,
-        Table
+        Table,
+        Typography
     } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
@@ -37,6 +39,10 @@
     let showDelete = false;
     let showRetry = false;
     let selectedDomain: Domain = null;
+
+    const isDomainVerified = (domain: Domain) => {
+        return domain.nameservers.toLocaleLowerCase() === 'appwrite';
+    };
 </script>
 
 <Container>
@@ -73,25 +79,37 @@
                     href={`${base}/organization-${page.params.organization}/domains/domain-${domain.$id}`}>
                     {#each $columns as column}
                         <Table.Cell column={column.id} {root}>
-                            {#if column.id === 'domain'}
-                                <Link
-                                    external
-                                    icon
-                                    href={`${$protocol}${domain.domain}`}
-                                    variant="quiet">
-                                    {domain.domain}
-                                </Link>
-                            {:else if column.id === 'registrar'}
-                                {domain.registrar || '-'}
-                            {:else if column.id === 'nameservers'}
-                                {domain.nameservers || '-'}
-                            {:else if column.id === 'expiry_date'}
-                                {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}
-                            {:else if column.id === 'renewal'}
-                                {domain?.renewal ? toLocaleDateTime(domain.renewal) : '-'}
-                            {:else if column.id === 'auto_renewal'}
-                                {domain?.autoRenewal ? 'On' : 'Off'}
-                            {/if}
+                            <Typography.Text truncate>
+                                {#if column.id === 'domain'}
+                                    <Layout.Stack direction="row" gap="xs">
+                                        <Link
+                                            external
+                                            href={`${$protocol}${domain.domain}`}
+                                            variant="quiet">
+                                            <Typography.Text truncate>
+                                                {domain.domain}
+                                            </Typography.Text>
+                                        </Link>
+                                        {#if !isDomainVerified(domain)}
+                                            <Badge
+                                                variant="secondary"
+                                                type="warning"
+                                                content="Not verified"
+                                                size="s" />
+                                        {/if}
+                                    </Layout.Stack>
+                                {:else if column.id === 'registrar'}
+                                    {domain.registrar || '-'}
+                                {:else if column.id === 'nameservers'}
+                                    {domain.nameservers || '-'}
+                                {:else if column.id === 'expiry_date'}
+                                    {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}
+                                {:else if column.id === 'renewal'}
+                                    {domain?.renewal ? toLocaleDateTime(domain.renewal) : '-'}
+                                {:else if column.id === 'auto_renewal'}
+                                    {domain?.autoRenewal ? 'On' : 'Off'}
+                                {/if}
+                            </Typography.Text>
                         </Table.Cell>
                     {/each}
 
@@ -110,7 +128,7 @@
 
                                 <svelte:fragment slot="tooltip" let:toggle>
                                     <ActionMenu.Root>
-                                        {#if domain.nameservers !== 'Appwrite'}
+                                        {#if isDomainVerified(domain)}
                                             <ActionMenu.Item.Button
                                                 leadingIcon={IconRefresh}
                                                 on:click={(e) => {
@@ -206,5 +224,5 @@
 {/if}
 
 {#if showRetry}
-    <RetryDomainModal show={showRetry} {selectedDomain} />
+    <RetryDomainModal bind:show={showRetry} {selectedDomain} />
 {/if}

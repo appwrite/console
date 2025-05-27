@@ -6,7 +6,7 @@
     import { InputText, Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { ID, Region } from '@appwrite.io/console';
+    import { ID } from '@appwrite.io/console';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
@@ -25,12 +25,7 @@
     async function create() {
         try {
             disabled = true;
-            const project = await sdk.forConsole.projects.create(
-                id ?? ID.unique(),
-                name,
-                teamId,
-                Region.Default
-            );
+            const project = await sdk.forConsole.projects.create(id ?? ID.unique(), name, teamId);
             show = false;
             dispatch('created', project);
             trackEvent(Submit.ProjectCreate, {
@@ -41,7 +36,7 @@
                 type: 'success',
                 message: `${name} has been created`
             });
-            await goto(`${base}/project-${project.$id}`);
+            await goto(`${base}/project-${project.region ?? 'default'}-${project.$id}`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.ProjectCreate);

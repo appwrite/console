@@ -5,6 +5,7 @@
     export let id: string;
     export let label: string | undefined = undefined;
     export let value: string | number | boolean | null;
+    export let helper: string | undefined = undefined;
     export let optionalText: string | number | boolean | null | undefined = undefined;
     export let placeholder = '';
     export let required = false;
@@ -54,8 +55,8 @@
     {placeholder}
     {disabled}
     {isSearchable}
+    helper={error ?? helper}
     {required}
-    helper={error}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}
     on:input

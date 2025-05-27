@@ -1,13 +1,10 @@
 <script lang="ts">
-    import { page } from '$app/state';
     import { Confirm, ViewToggle } from '$lib/components';
     import ColumnSelector from '$lib/components/columnSelector.svelte';
     import type { View } from '$lib/helpers/load';
     import type { Column } from '$lib/helpers/types';
-    import { preferences } from '$lib/stores/preferences';
     import { IconViewBoards } from '@appwrite.io/pink-icons-svelte';
     import { Button, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
     import type { Writable } from 'svelte/store';
 
     let {

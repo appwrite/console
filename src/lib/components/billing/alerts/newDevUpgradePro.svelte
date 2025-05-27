@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
     import { activeHeaderAlert } from '$routes/(console)/store';
@@ -29,7 +29,7 @@
                 secondary
                 fullWidthMobile
                 class="u-line-height-1"
-                href={`${base}/apply-credit?code=appw50&org=${$organization.$id}`}
+                href={`${base}/apply-credit?code=${NEW_DEV_PRO_UPGRADE_COUPON}&org=${$organization.$id}`}
                 on:click={() => {
                     trackEvent(Click.CreditsRedeemClick, {
                         from: 'button',

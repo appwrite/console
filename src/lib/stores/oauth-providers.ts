@@ -1,13 +1,13 @@
 import type { Component } from 'svelte';
-import Apple from '$routes/(console)/project-[project]/auth/(providers)/appleOAuth.svelte';
-import Auth0 from '$routes/(console)/project-[project]/auth/(providers)/auth0OAuth.svelte';
-import Authentik from '$routes/(console)/project-[project]/auth/(providers)/authentikOAuth.svelte';
-import GitLab from '$routes/(console)/project-[project]/auth/(providers)/gitlabOAuth.svelte';
-import Google from '$routes/(console)/project-[project]/auth/(providers)/googleOAuth.svelte';
-import Main from '$routes/(console)/project-[project]/auth/(providers)/mainOAuth.svelte';
-import Microsoft from '$routes/(console)/project-[project]/auth/(providers)/microsoftOAuth.svelte';
-import Oidc from '$routes/(console)/project-[project]/auth/(providers)/oidcOAuth.svelte';
-import Okta from '$routes/(console)/project-[project]/auth/(providers)/oktaOAuth.svelte';
+import Apple from '$routes/(console)/project-[region]-[project]/auth/(providers)/appleOAuth.svelte';
+import Auth0 from '$routes/(console)/project-[region]-[project]/auth/(providers)/auth0OAuth.svelte';
+import Authentik from '$routes/(console)/project-[region]-[project]/auth/(providers)/authentikOAuth.svelte';
+import GitLab from '$routes/(console)/project-[region]-[project]/auth/(providers)/gitlabOAuth.svelte';
+import Google from '$routes/(console)/project-[region]-[project]/auth/(providers)/googleOAuth.svelte';
+import Main from '$routes/(console)/project-[region]-[project]/auth/(providers)/mainOAuth.svelte';
+import Microsoft from '$routes/(console)/project-[region]-[project]/auth/(providers)/microsoftOAuth.svelte';
+import Oidc from '$routes/(console)/project-[region]-[project]/auth/(providers)/oidcOAuth.svelte';
+import Okta from '$routes/(console)/project-[region]-[project]/auth/(providers)/oktaOAuth.svelte';
 
 export type Provider = {
     name: string;
@@ -99,6 +99,12 @@ export const oAuthProviders: Record<string, Provider> = {
         name: 'Facebook',
         icon: 'facebook',
         docs: 'https://developers.facebook.com/',
+        component: Main
+    },
+    figma: {
+        name: 'Figma',
+        icon: 'figma',
+        docs: 'https://www.figma.com/developers/api#access-tokens',
         component: Main
     },
     github: {

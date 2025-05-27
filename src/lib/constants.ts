@@ -1,6 +1,15 @@
 export const PAGE_LIMIT = 12; // default page limit
 export const CARD_LIMIT = 6; // default card limit
 export const INTERVAL = 5 * 60000; // default interval to check for feedback
+export const NEW_DEV_PRO_UPGRADE_COUPON = 'appw50';
+
+export const REGION_FRA = 'fra';
+export const REGION_SYD = 'syd';
+export const REGION_NYC = 'nyc';
+
+export const SUBDOMAIN_FRA = 'fra.';
+export const SUBDOMAIN_SYD = 'syd.';
+export const SUBDOMAIN_NYC = 'nyc.';
 
 export enum Dependencies {
     FACTORS = 'dependency:factors',
@@ -33,6 +42,7 @@ export enum Dependencies {
     DOCUMENTS = 'dependency:documents',
     BUCKET = 'dependency:bucket',
     FILE = 'dependency:file',
+    FILE_TOKENS = 'dependency:file_tokens',
     FILES = 'dependency:files',
     FUNCTION = 'dependency:function',
     FUNCTION_DOMAINS = 'dependency:function_domains',
@@ -46,6 +56,8 @@ export enum Dependencies {
     PLATFORMS = 'dependency:platforms',
     KEY = 'dependency:key',
     KEYS = 'dependency:keys',
+    DEV_KEY = 'dependency:dev_key',
+    DEV_KEYS = 'dependency:dev_keys',
     DOMAINS = 'dependency:domains',
     DOMAIN = 'dependency:domains',
     WEBHOOK = 'dependency:webhook',
@@ -367,6 +379,18 @@ export const scopes: {
         icon: 'globe'
     },
     {
+        scope: 'tokens.read',
+        description: "Access to read your project's file tokens",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'tokens.write',
+        description: 'Access to create file tokens',
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
         scope: 'sites.read',
         description: "Access to read your project's sites and deployments",
         category: 'Sites',
@@ -501,7 +525,8 @@ export enum BillingPlan {
     PRO = 'tier-1',
     SCALE = 'tier-2',
     GITHUB_EDUCATION = 'auto-1',
-    CUSTOM = 'cont-1'
+    CUSTOM = 'cont-1',
+    ENTERPRISE = 'ent-1'
 }
 
 export const feedbackDowngradeOptions = [

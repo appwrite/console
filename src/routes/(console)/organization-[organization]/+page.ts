@@ -15,14 +15,21 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         return redirect(301, `/console/organization-${params.organization}/billing`);
     }
 
+    const projects = await sdk.forConsole.projects.list([
+        Query.offset(offset),
+        Query.equal('teamId', params.organization),
+        Query.limit(limit),
+        Query.orderDesc('')
+    ]);
+
+    // set `default` if no region!
+    for (const project of projects.projects) {
+        project.region ??= 'default';
+    }
+
     return {
         offset,
         limit,
-        projects: await sdk.forConsole.projects.list([
-            Query.offset(offset),
-            Query.equal('teamId', params.organization),
-            Query.limit(limit),
-            Query.orderDesc('')
-        ])
+        projects
     };
 };

@@ -45,7 +45,6 @@
             event: 'domains',
             title: 'Domains',
             disabled: !isCloud
-            // disabled: !(isCloud && $canSeeDomains) //TODO: enable this before release
         },
         {
             href: `${path}/members`,

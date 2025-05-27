@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+    import { ProjectUsageRange, type Models } from '@appwrite.io/console';
     export type UsagePeriods = '24h' | '30d' | '90d';
 
     export function periodToDates(period: UsagePeriods): {
@@ -41,10 +42,20 @@
 
     export function accumulateFromEndingTotal(
         metrics: Models.Metric[],
-        endingTotal: number
+        endingTotal: number,
+        startingDayToFillZero: Date = null
     ): Array<[string, number]> {
         return (metrics ?? []).reduceRight(
             (acc, curr) => {
+                if (startingDayToFillZero !== null && startingDayToFillZero instanceof Date) {
+                    const date = new Date(curr.date);
+                    if (date > startingDayToFillZero) {
+                        acc.data.unshift([date.toISOString(), 0]);
+                        acc.total -= 0;
+
+                        return acc;
+                    }
+                }
                 acc.data.unshift([curr.date, acc.total]);
                 acc.total -= curr.value;
                 return acc;
@@ -58,14 +69,14 @@
 </script>
 
 <script lang="ts">
-    import { BarChart } from '$lib/charts';
-    import { formatNumberWithCommas } from '$lib/helpers/numbers';
-    import { Card } from '$lib/components';
-    import { ProjectUsageRange, type Models } from '@appwrite.io/console';
     import { page } from '$app/state';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { goto } from '$app/navigation';
+
+    import { BarChart } from '$lib/charts';
+    import { Card } from '$lib/components';
     import { InputSelect } from '$lib/elements/forms';
+    import { formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     type MetricMetadata = {
         title: string;
@@ -77,6 +88,7 @@
     export let countMetadata: MetricMetadata;
     export let path: string = null;
     export let hidePeriodSelect = false;
+    export let isCumulative: boolean = false;
 </script>
 
 <Layout.Stack gap="s">
@@ -116,7 +128,9 @@
                     series={[
                         {
                             name: countMetadata.legend,
-                            data: accumulateFromEndingTotal(count, total)
+                            data: isCumulative
+                                ? count.map((m) => [m.date, m.value])
+                                : accumulateFromEndingTotal(count, total)
                         }
                     ]} />
             </div>

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
-    import { onMount, onDestroy } from 'svelte';
+    import { onDestroy } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { Icon, Input } from '@appwrite.io/pink-svelte';
     import { IconSearch, IconX } from '@appwrite.io/pink-icons-svelte';

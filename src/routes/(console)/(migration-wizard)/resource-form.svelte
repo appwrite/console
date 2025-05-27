@@ -15,11 +15,12 @@
     import { wizard } from '$lib/stores/wizard';
     import type { Models } from '@appwrite.io/console';
     import ImportReport from '$routes/(console)/project-[project]/settings/migrations/(import)/importReport.svelte';
+    import type { sdk } from '$lib/stores/sdk';
 
     export let errorInResources: boolean;
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
-    export let projectSdk: ReturnType<typeof getSdkForProject>;
+    export let projectSdk: ReturnType<typeof sdk.forProject>;
 
     type ValueOf<T> = T[keyof T];
     type FormData = WritableValue<typeof formData>;
@@ -153,7 +154,6 @@
         </Alert.Inline>
     {/if}
 
-    <!--TODO: FIX UI -->
     <Layout.Stack gap="l">
         <Layout.Stack direction="row">
             <Button

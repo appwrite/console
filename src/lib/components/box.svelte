@@ -1,10 +1,9 @@
 <script lang="ts">
     import { Card } from '@appwrite.io/pink-svelte';
-    import type Base from '@appwrite.io/pink-svelte/dist/card/Base.svelte';
-    import type { ComponentProps } from 'svelte';
+    import type { BaseCardProps } from './card.svelte';
 
-    export let radius: ComponentProps<Base>['radius'] = 'm';
-    export let padding: ComponentProps<Base>['padding'] = 's';
+    export let radius: BaseCardProps['radius'] = 'm';
+    export let padding: BaseCardProps['padding'] = 's';
 </script>
 
 <Card.Base variant="secondary" {radius} {padding}>

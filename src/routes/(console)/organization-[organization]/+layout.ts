@@ -13,6 +13,7 @@ import { preferences } from '$lib/stores/preferences';
 import type { Organization } from '$lib/stores/organization';
 import { defaultRoles, defaultScopes } from '$lib/constants';
 import type { Plan } from '$lib/sdk/billing';
+import { loadAvailableRegions } from '$routes/(console)/regions';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
@@ -27,7 +28,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             const res = await sdk.forConsole.billing.getRoles(params.organization);
             roles = res.roles;
             scopes = res.scopes;
-            currentPlan = await sdk.forConsole.billing.getPlan(params.organization);
+            currentPlan = await sdk.forConsole.billing.getOrganizationPlan(params.organization);
             if (scopes.includes('billing.read')) {
                 await failedInvoice.load(params.organization);
                 if (get(failedInvoice)) {
@@ -51,6 +52,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             sdk.forConsole.teams.listMemberships(params.organization),
             preferences.loadTeamPrefs(params.organization)
         ]);
+
+        await loadAvailableRegions(params.organization);
 
         return {
             header: Header,

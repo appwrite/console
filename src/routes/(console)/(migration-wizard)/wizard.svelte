@@ -3,7 +3,6 @@
     import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import Wizard from '$lib/layout/wizardWithSteps.svelte';
     import { migrationFormToResources } from '$lib/stores/migration';
-    import { getSdkForProject } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { onDestroy } from 'svelte';
     import { formData, provider, selectedProject } from '.';
@@ -11,6 +10,7 @@
     import Step2 from './step2.svelte';
     import { requestedMigration } from '$routes/store';
     import { base } from '$app/paths';
+    import { sdk } from '$lib/stores/sdk';
 
     const onExit = () => {
         formData.reset();
@@ -21,12 +21,14 @@
         if ($provider.provider !== 'appwrite') return;
         const resources = migrationFormToResources($formData, $provider.provider);
 
-        await getSdkForProject($selectedProject).migrations.createAppwriteMigration(
-            resources,
-            $provider.endpoint,
-            $provider.projectID,
-            $provider.apiKey
-        );
+        await sdk
+            .forProject('fra1', $selectedProject)
+            .migrations.createAppwriteMigration(
+                resources,
+                $provider.endpoint,
+                $provider.projectID,
+                $provider.apiKey
+            );
 
         await invalidateAll();
         wizard.hide();

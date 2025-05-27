@@ -5,13 +5,13 @@
     import type { Models } from '@appwrite.io/console';
     import { Layout, Table, Card, Empty } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
-    import type { Column } from '@appwrite.io/pink-svelte/dist/table';
+    import type { PinkColumn } from '$lib/helpers/types';
 
     export let logs: Models.LogList;
     export let offset = 0;
     export let limit = 0;
 
-    const columns: Column[] = [
+    const columns: PinkColumn[] = [
         { id: 'user' },
         { id: 'event' },
         { id: 'location' },

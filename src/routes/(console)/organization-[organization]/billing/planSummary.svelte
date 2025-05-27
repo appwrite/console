@@ -3,14 +3,13 @@
     import { CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { plansInfo, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { plansInfo, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { CreditList, Invoice, Plan } from '$lib/sdk/billing';
+    import type { Aggregation, CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { type Models } from '@appwrite.io/console';
     import {
         Accordion,
         Card,
@@ -21,21 +20,21 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { IconInfo, IconTag } from '@appwrite.io/pink-icons-svelte';
+    import CancelDowngradeModel from './cancelDowngradeModal.svelte';
 
-    export let invoices: Array<Invoice>;
-    export let members: Models.MembershipList;
     export let currentPlan: Plan;
     export let creditList: CreditList;
+    export let currentInvoice: Invoice | undefined = undefined;
+    export let currentAggregation: Aggregation | undefined = undefined;
 
-    const currentInvoice: Invoice | undefined = invoices.length > 0 ? invoices[0] : undefined;
-    const extraMembers = members.total > 1 ? members.total - 1 : 0;
+    let showCancel: boolean = false;
+
     const availableCredit = creditList.available;
     const today = new Date();
     const isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
         $plansInfo.get($organization.billingPlan)?.trialDays;
     const extraUsage = currentInvoice ? currentInvoice.amount - currentPlan?.price : 0;
-    const extraAddons = currentInvoice ? currentInvoice.usage?.length : 0;
 
     function usageNameToLabel(name: string): string {
         switch (name) {
@@ -60,15 +59,13 @@
         exclude accumulated credits and applicable taxes.
         <svelte:fragment slot="aside">
             <p class="text u-bold">
-                Billing period: {toLocaleDate($organization?.billingCurrentInvoiceDate)} - {toLocaleDate(
-                    $organization?.billingNextInvoiceDate
-                )}
+                Due at: {toLocaleDate($organization?.billingNextInvoiceDate)}
             </p>
             <Card.Base variant="secondary" padding="s">
                 <Layout.Stack>
                     <Layout.Stack direction="row" justifyContent="space-between">
                         <Typography.Text color="--fgcolor-neutral-primary">
-                            {tierToPlan($organization?.billingPlan)?.name} plan
+                            {currentPlan.name} plan
                         </Typography.Text>
                         <Typography.Text>
                             {isTrial || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
@@ -79,36 +76,40 @@
                         </Typography.Text>
                     </Layout.Stack>
 
-                    {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION && extraUsage > 0}
+                    {#if currentPlan.budgeting && extraUsage > 0}
                         <Accordion
                             hideDivider
                             title="Add-ons"
-                            badge={(extraMembers ? extraAddons + 1 : extraAddons).toString()}>
+                            badge={(currentAggregation.additionalMembers > 0
+                                ? currentInvoice.usage.length + 1
+                                : currentInvoice.usage.length
+                            ).toString()}>
                             <svelte:fragment slot="end">
                                 {formatCurrency(extraUsage >= 0 ? extraUsage : 0)}
                             </svelte:fragment>
                             <Layout.Stack gap="xs">
-                                {#if extraMembers}
+                                {#if currentAggregation.additionalMembers}
                                     <Layout.Stack gap="xxxs">
                                         <Layout.Stack
                                             direction="row"
                                             justifyContent="space-between">
                                             <Typography.Text color="--fgcolor-neutral-primary"
                                                 >Additional members</Typography.Text>
-                                            <Typography.Text
-                                                >{formatCurrency(
-                                                    extraMembers *
-                                                        (currentPlan?.addons?.member?.price ?? 0)
-                                                )}</Typography.Text>
+                                            <Typography.Text>
+                                                {formatCurrency(
+                                                    currentAggregation.additionalMemberAmount
+                                                )}
+                                            </Typography.Text>
                                         </Layout.Stack>
                                         <Layout.Stack direction="row">
-                                            <Typography.Text>{extraMembers}</Typography.Text>
+                                            <Typography.Text
+                                                >{currentAggregation.additionalMembers}</Typography.Text>
                                         </Layout.Stack>
                                     </Layout.Stack>
                                 {/if}
                                 {#if currentInvoice?.usage}
                                     {#each currentInvoice.usage as excess, i}
-                                        {#if i > 0 || extraMembers}
+                                        {#if i > 0 || currentAggregation.additionalMembers}
                                             <Divider />
                                         {/if}
                                         {#if ['storage', 'bandwidth'].includes(excess.name)}
@@ -180,7 +181,7 @@
                         </Accordion>
                     {/if}
 
-                    {#if $organization?.billingPlan !== BillingPlan.FREE && availableCredit > 0}
+                    {#if currentPlan.supportsCredits && availableCredit > 0}
                         <Layout.Stack direction="row" justifyContent="space-between">
                             <Layout.Stack direction="row" alignItems="center" gap="xxs">
                                 <Icon size="s" icon={IconTag} color="--fgcolor-success" />
@@ -188,7 +189,7 @@
                                     >Credits to be applied</Typography.Text>
                             </Layout.Stack>
                             <Typography.Text color="--fgcolor-success">
-                                {formatCurrency(
+                                -{formatCurrency(
                                     Math.min(availableCredit, currentInvoice?.amount ?? 0)
                                 )}
                             </Typography.Text>
@@ -245,17 +246,21 @@
             {:else}
                 <div
                     class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
-                    <Button
-                        text
-                        disabled={$organization?.markedForDeletion}
-                        href={$upgradeURL}
-                        on:click={() =>
-                            trackEvent('click_organization_plan_update', {
-                                from: 'button',
-                                source: 'billing_tab'
-                            })}>
-                        Change plan
-                    </Button>
+                    {#if $organization?.billingPlanDowngrade !== null}
+                        <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
+                    {:else}
+                        <Button
+                            text
+                            disabled={$organization?.markedForDeletion}
+                            href={$upgradeURL}
+                            on:click={() =>
+                                trackEvent('click_organization_plan_update', {
+                                    from: 'button',
+                                    source: 'billing_tab'
+                                })}>
+                            Change plan
+                        </Button>
+                    {/if}
                     <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
                         View estimated usage
                     </Button>
@@ -264,6 +269,8 @@
         </svelte:fragment>
     </CardGrid>
 {/if}
+
+<CancelDowngradeModel bind:showCancel />
 
 <style>
     :root {

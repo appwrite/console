@@ -53,6 +53,6 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button on:click={moveDomain} disabled={!selectedOrg}>Move</Button>
+        <Button on:click={moveDomain} disabled={!selectedOrg || options?.length === 0}>Move</Button>
     </svelte:fragment>
 </CardGrid>

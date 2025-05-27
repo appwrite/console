@@ -46,9 +46,7 @@
     let showFilters = $state(false);
 
     let filterCols = $derived(
-        $columns
-            .map((col) => (col.filter !== false ? buildFilterCol(col) : null))
-            .filter((f) => f?.options)
+        $columns.map((col) => (col.filter !== false ? buildFilterCol(col) : null)).filter(Boolean)
     );
 
     afterNavigate((p) => {
@@ -56,7 +54,6 @@
         const paramQueries = p.to.url.searchParams.get('query');
         const localQueries = queryParamToMap(paramQueries || '[]');
         const localTags = Array.from(localQueries.keys());
-        // console.log(paramQueries, localQueries, localTags);
         setFilters(localTags, filterCols, $columns);
         filterCols = filterCols;
     });
@@ -67,9 +64,11 @@
         {#if $isSmallViewport}
             <Layout.Stack gap="xl">
                 <Layout.Stack direction="row">
-                    <div style={`--button-width: 100%; width: 100%`}>
-                        {@render children()}
-                    </div>
+                    {#if children}
+                        <div style={`--button-width: 100%; width: 100%`}>
+                            {@render children()}
+                        </div>
+                    {/if}
                     {#if numberOfOptions === 1}
                         {#if hasSearch}
                             {@render searchButton(true)}
@@ -108,20 +107,41 @@
                         <SearchQuery placeholder={searchPlaceholder} />
                     {/if}
                     {#if hasFilters && $columns?.length}
-                        <QuickFilters {columns} {analyticsSource} />
+                        <QuickFilters {columns} {analyticsSource} {filterCols} />
                     {/if}
                 </Layout.Stack>
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     {#if hasDisplaySettings}
                         <ViewSelector {view} {columns} {hideView} {hideColumns} />
                     {/if}
-                    {@render children()}
+                    {#if children}
+                        {@render children()}
+                    {/if}
                 </Layout.Stack>
             </Layout.Stack>
         {/if}
         <ParsedTagList />
     </Layout.Stack>
 </header>
+
+{#if showDisplaySettingsModal}
+    <DisplaySettingsModal
+        bind:show={showDisplaySettingsModal}
+        {columns}
+        {hideColumns}
+        {hideView}
+        bind:view />
+{/if}
+
+{#if $isSmallViewport && showFilters}
+    <FiltersBottomSheet
+        bind:openBottomSheet={showFilters}
+        {columns}
+        {analyticsSource}
+        filterCols={filterCols.filter((f) => f?.options)} />
+{/if}
+
+<!-- SNIPPETS -->
 
 {#snippet searchButton(icon = false)}
     <Button ariaLabel="Search" on:click={() => (showSearch = !showSearch)} secondary {icon}>
@@ -144,20 +164,3 @@
         <Icon icon={IconFilterLine} />
     </Button>
 {/snippet}
-
-{#if showDisplaySettingsModal}
-    <DisplaySettingsModal
-        bind:show={showDisplaySettingsModal}
-        {columns}
-        {hideColumns}
-        {hideView}
-        bind:view />
-{/if}
-
-{#if $isSmallViewport && showFilters}
-    <FiltersBottomSheet
-        bind:openBottomSheet={showFilters}
-        {columns}
-        {analyticsSource}
-        bind:filterCols />
-{/if}

@@ -20,7 +20,8 @@
     function getBrowser(clientCode: string) {
         const code = clientCode.toLowerCase();
         if (!isValueOfStringEnum(Browser, code)) return '';
-        return sdk.forProject.avatars.getBrowser(code, 40, 40);
+
+        return sdk.forConsole.avatars.getBrowser(code, 40, 40);
     }
 
     function logoutSessionId(sessionId: string) {
@@ -70,11 +71,11 @@
             const sessionId = url.searchParams.get('sessionId');
             if (sessionId) {
                 logoutSessionId(sessionId);
-            }
 
-            // Clear the sessionId param from the URL
-            url.searchParams.delete('sessionId');
-            goto(url.pathname + url.search, { replaceState: true });
+                // Clear the sessionId param from the URL
+                url.searchParams.delete('sessionId');
+                goto(url.pathname + url.search, { replaceState: true });
+            }
         });
     });
 </script>
@@ -89,9 +90,9 @@
         let:root
         columns={[
             { id: 'client' },
-            { id: 'location' },
-            { id: 'ip' },
-            { id: 'actions', width: 40 }
+            { id: 'location', width: 120 },
+            { id: 'ip', width: 120 },
+            { id: 'actions', width: 70 }
         ]}>
         <svelte:fragment slot="header" let:root>
             <Table.Header.Cell column="client" {root}>Client</Table.Header.Cell>

@@ -1,6 +1,6 @@
 import { afterNavigate, goto } from '$app/navigation';
 import { page } from '$app/state';
-import { get, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 export function createPersistentPagination(limit: number) {
     const url = page.url;

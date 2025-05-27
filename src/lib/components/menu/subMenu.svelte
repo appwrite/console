@@ -1,15 +1,12 @@
 <script lang="ts">
+    import { getContext } from 'svelte';
+    import { melt } from '@melt-ui/svelte';
+    import type { MenuContext } from './store';
     import { Card } from '@appwrite.io/pink-svelte';
-    import { createMenubar, melt } from '@melt-ui/svelte';
 
-    const {
-        builders: { createMenu }
-    } = createMenubar();
-
-    const {
-        elements: { separator: separator },
-        builders: { createSubmenu: createSubmenu }
-    } = createMenu();
+    // get parent builder for toggle state!
+    const { builders, separator } = getContext<MenuContext>('menuBuilder');
+    const { createSubmenu } = builders;
 
     const {
         elements: { subMenu: subMenu, subTrigger: subTrigger }
@@ -37,7 +34,6 @@
 <style>
     .subMenu {
         min-width: 244px;
-        margin-inline: -4px;
         margin-block: -4px;
     }
 </style>

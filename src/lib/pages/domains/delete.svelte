@@ -6,6 +6,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import type { Dependencies } from '$lib/constants';
     import Confirm from '$lib/components/confirm.svelte';
+    import { page } from '$app/state';
 
     export let showDelete = false;
     export let selectedDomain: Models.ProxyRule;
@@ -27,7 +28,9 @@
 
     async function deleteDomain() {
         try {
-            await sdk.forProject.proxy.deleteRule(selectedDomain.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.deleteRule(selectedDomain.$id);
             await invalidate(dependency);
             showDelete = false;
             addNotification({

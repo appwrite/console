@@ -16,13 +16,18 @@
         Input,
         InteractiveText
     } from '@appwrite.io/pink-svelte';
+    import { base } from '$app/paths';
+    import { page } from '$app/state';
+    import { goto } from '$app/navigation';
 
     export let domain: Domain;
 
     let verified = undefined;
 
+    const routeBase = `${base}/organization-${page.params.organization}/domains/domain-${domain.$id}`;
+
     // TODO: split _APP_DOMAINS_NAMESERVERS?
-    let nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',') ?? [
+    const nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',') ?? [
         'ns1.appwrite.io',
         'ns2.appwrite.io'
     ];
@@ -31,7 +36,19 @@
         try {
             domain = await sdk.forConsole.domains.updateNameservers(domain.$id);
             verified = domain.nameservers === 'Appwrite';
-            console.log(domain);
+            if (verified) {
+                addNotification({
+                    type: 'success',
+                    message: 'Domain verified'
+                });
+
+                await goto(routeBase);
+            } else {
+                addNotification({
+                    type: 'error',
+                    message: 'Domain not verified'
+                });
+            }
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -39,8 +56,6 @@
             });
         }
     }
-
-    $: console.log($consoleVariables._APP_DOMAINS_NAMESERVERS);
 </script>
 
 <Fieldset legend="Verification">

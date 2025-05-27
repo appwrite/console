@@ -1,40 +1,41 @@
-import { page } from '$app/stores';
-import { derived, get, writable } from 'svelte/store';
-import { sdk } from './sdk';
-import { organization, type Organization } from './organization';
-import type {
-    InvoiceList,
-    AddressesList,
-    Invoice,
-    PaymentList,
-    PlansMap,
-    PaymentMethodData,
-    OrganizationUsage,
-    Plan
-} from '$lib/sdk/billing';
-import { isCloud } from '$lib/system';
-import { cachedStore } from '$lib/helpers/cache';
-import { Query } from '@appwrite.io/console';
-import { headerAlert } from './headerAlert';
-import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
-import { addNotification, notifications } from './notifications';
+import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
-import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
-import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
-import { BillingPlan } from '$lib/constants';
-import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
-import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
-import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
 import { Click, trackEvent } from '$lib/actions/analytics';
+import { page } from '$app/stores';
+import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
+import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
+import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import newDevUpgradePro from '$lib/components/billing/alerts/newDevUpgradePro.svelte';
-import { last } from '$lib/helpers/array';
+import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
+import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
+import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
+import { cachedStore } from '$lib/helpers/cache';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
-import { user } from './user';
-import { browser } from '$app/environment';
+import type {
+    AddressesList,
+    Aggregation,
+    Invoice,
+    InvoiceList,
+    PaymentList,
+    PaymentMethodData,
+    Plan,
+    PlansMap
+} from '$lib/sdk/billing';
+import { isCloud } from '$lib/system';
+import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
+import { Query } from '@appwrite.io/console';
+import { derived, get, writable } from 'svelte/store';
+import { headerAlert } from './headerAlert';
+import { addNotification, notifications } from './notifications';
+import { organization, type Organization, type OrganizationError } from './organization';
 import { canSeeBilling } from './roles';
+import { sdk } from './sdk';
+import { user } from './user';
+import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budgetLimitAlert.svelte';
+import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
 
-export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1';
+export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
 export const roles = [
     {
@@ -59,11 +60,19 @@ export const roles = [
     }
 ];
 
+export const teamStatusReadonly = 'readonly';
+export const billingLimitOutstandingInvoice = 'outstanding_invoice';
+
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
 export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansMap);
 export const daysLeftInTrial = writable<number>(0);
 export const readOnly = writable<boolean>(false);
+
+export const showBudgetAlert = derived(
+    page,
+    ($page) => ($page.data.organization?.billingLimits.budgetLimit ?? 0) >= 100
+);
 
 export function getRoleLabel(role: string) {
     return roles.find((r) => r.value === role)?.label ?? role;
@@ -81,6 +90,8 @@ export function tierToPlan(tier: Tier) {
             return tierGitHubEducation;
         case BillingPlan.CUSTOM:
             return tierCustom;
+        case BillingPlan.ENTERPRISE:
+            return tierEnterprise;
         default:
             return tierFree;
     }
@@ -130,7 +141,8 @@ export type PlanServices =
     | 'usersAddon'
     | 'webhooks'
     | 'sites'
-    | 'authPhone';
+    | 'authPhone'
+    | 'imageTransformations';
 
 export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
     if (!isCloud) return 0;
@@ -138,6 +150,14 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
     const info = get(plansInfo);
     if (!info) return 0;
     plan ??= info.get(tier ?? get(organization)?.billingPlan);
+    // members are no longer a variable on plan itself!
+    // the correct info for members/seats, resides in `addons`.
+    // plan > addons > seats/others
+    if (serviceId === 'members') {
+        // some don't include `limit`, so we fallback!
+        return plan?.['addons']['seats']['limit'] ?? 1;
+    }
+
     return plan?.[serviceId] ?? 0;
 }
 
@@ -151,11 +171,12 @@ export const failedInvoice = cachedStore<
         load: async (orgId) => {
             if (!isCloud) set(null);
             if (!get(canSeeBilling)) set(null);
-            const invoices = await sdk.forConsole.billing.listInvoices(orgId);
-            const failedInvoices = invoices.invoices.filter((i) => i.status === 'failed');
+            const failedInvoices = await sdk.forConsole.billing.listInvoices(orgId, [
+                Query.equal('status', 'failed')
+            ]);
             // const failedInvoices = invoices.invoices;
-            if (failedInvoices?.length > 0) {
-                const firstFailed = failedInvoices[0];
+            if (failedInvoices?.invoices?.length > 0) {
+                const firstFailed = failedInvoices.invoices[0];
                 const today = new Date();
                 const thirtyDaysAgo = new Date(today.setDate(today.getDate() - 30));
                 const failedDate = new Date(firstFailed.$createdAt);
@@ -198,6 +219,11 @@ export const tierScale: TierData = {
 export const tierCustom: TierData = {
     name: 'Custom',
     description: 'Team on a custom contract'
+};
+
+export const tierEnterprise: TierData = {
+    name: 'Enterprise',
+    description: 'For enterprises that need more power and premium support.'
 };
 
 export const showUsageRatesModal = writable<boolean>(false);
@@ -257,13 +283,35 @@ export function calculateTrialDay(org: Organization) {
 }
 
 export async function checkForUsageLimit(org: Organization) {
-    if (org?.billingPlan !== BillingPlan.FREE) {
+    if (org?.status === teamStatusReadonly && org?.remarks === billingLimitOutstandingInvoice) {
+        headerAlert.add({
+            id: 'teamReadOnlyFailedInvoices',
+            component: TeamReadonlyAlert,
+            show: true,
+            importance: 11
+        });
+        readOnly.set(true);
+        return;
+    }
+    if (!org?.billingLimits && org?.status !== teamStatusReadonly) {
         readOnly.set(false);
         return;
     }
-    if (!org?.billingLimits) {
-        readOnly.set(false);
-        return;
+    if (org?.billingPlan !== BillingPlan.FREE) {
+        const { budgetLimit } = org?.billingLimits ?? {};
+
+        if (budgetLimit && budgetLimit >= 100) {
+            readOnly.set(false);
+            headerAlert.add({
+                id: 'budgetLimit',
+                component: BudgetLimitAlert,
+                show: true,
+                importance: 10
+            });
+
+            readOnly.set(true);
+            return;
+        }
     }
     const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
     const resources = [
@@ -276,7 +324,8 @@ export async function checkForUsageLimit(org: Organization) {
 
     const members = org.total;
     const plan = get(plansInfo)?.get(org.billingPlan);
-    const membersOverflow = members > plan.members ? members - (plan.members || members) : 0;
+    const membersOverflow =
+        members > plan.addons.seats.limit ? members - (plan.addons.seats.limit || members) : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);
@@ -456,30 +505,36 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
     const isDismissed = !!localStorage.getItem('newDevUpgradePro');
     if (isDismissed) return;
-    if (now - accountCreated < 1000 * 60 * 60 * 24 * 37) {
-        headerAlert.add({
-            id: 'newDevUpgradePro',
-            component: newDevUpgradePro,
-            show: true,
-            importance: 1
-        });
+    // check if coupon already applied
+    try {
+        await sdk.forConsole.billing.getCouponAccount(NEW_DEV_PRO_UPGRADE_COUPON);
+    } catch (e) {
+        return;
     }
+    headerAlert.add({
+        id: 'newDevUpgradePro',
+        component: newDevUpgradePro,
+        show: true,
+        importance: 1
+    });
 }
 export const upgradeURL = derived(
     page,
     ($page) => `${base}/organization-${$page.data?.organization?.$id}/change-plan`
 );
+export const billingURL = derived(
+    page,
+    ($page) => `${base}/organization-${$page.data?.organization?.$id}/billing`
+);
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
 
-export function calculateExcess(usage: OrganizationUsage, plan: Plan, members: number) {
-    const totBandwidth = usage?.bandwidth?.length > 0 ? last(usage.bandwidth).value : 0;
+export function calculateExcess(addon: Aggregation, plan: Plan) {
     return {
-        bandwidth: calculateResourceSurplus(totBandwidth, plan.bandwidth),
-        storage: calculateResourceSurplus(usage?.storageTotal, plan.storage, 'GB'),
-        users: calculateResourceSurplus(usage?.usersTotal, plan.users),
-        executions: calculateResourceSurplus(usage?.executionsTotal, plan.executions, 'GB'),
-        members: calculateResourceSurplus(members, plan.members)
+        bandwidth: calculateResourceSurplus(addon.usageBandwidth, plan.bandwidth),
+        storage: calculateResourceSurplus(addon.usageStorage, plan.storage, 'GB'),
+        executions: calculateResourceSurplus(addon.usageExecutions, plan.executions, 'GB'),
+        members: addon.additionalMembers
     };
 }
 
@@ -487,4 +542,8 @@ export function calculateResourceSurplus(total: number, limit: number, limitUnit
     if (total === undefined || limit === undefined) return 0;
     const realLimit = (limitUnit ? sizeToBytes(limit, limitUnit) : limit) || Infinity;
     return total > realLimit ? total - realLimit : 0;
+}
+
+export function isOrganization(org: Organization | OrganizationError): org is Organization {
+    return (org as Organization).$id !== undefined;
 }

@@ -36,7 +36,6 @@ export async function processFileList(files: FileList): Promise<FileData[]> {
                 buffer: buffer
             };
         } catch (e) {
-            // console.log(file);
             return null;
         }
     });
@@ -46,7 +45,6 @@ export async function processFileList(files: FileList): Promise<FileData[]> {
 
 export async function gzipUpload(files: FileList) {
     let uploadFile: File;
-    const tick = performance.now();
     if (!files?.length) return;
 
     // If the file is a tar.gz file, then return it as is
@@ -79,9 +77,6 @@ export async function gzipUpload(files: FileList) {
             });
         }
     }
-    console.log(uploadFile);
-    const tock = performance.now();
-    console.log('Time taken to process files:', tock - tick);
 
     return uploadFile;
 }
@@ -95,6 +90,11 @@ export function removeFile(file: File, files: FileList) {
     });
 
     return dataTransfer.files;
+}
+
+export enum InvalidFileType {
+    SIZE = 'invalid_size',
+    EXTENSION = 'invalid_extension'
 }
 
 export const defaultIgnore = `

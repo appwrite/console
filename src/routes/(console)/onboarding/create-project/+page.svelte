@@ -1,88 +1,59 @@
 <script lang="ts">
     import { Card, Layout, Button } from '@appwrite.io/pink-svelte';
-    import type { RegionList } from '$lib/sdk/billing';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { ID, Region } from '@appwrite.io/console';
     import Loading from './loading.svelte';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
-    import { tierToPlan } from '$lib/stores/billing';
     import CreateProject from '$lib/layout/createProject.svelte';
+    import { loadAvailableRegions } from '$routes/(console)/regions';
+    import { regions as regionsStore } from '$lib/stores/organization';
 
     let isLoading = false;
     let id: string;
     let startAnimation = false;
     let projectName = 'Appwrite project';
-    let region = Region.Default;
-    export let data: { regions: RegionList | null };
+    let region = Region.Fra;
+    export let data;
 
     async function createProject() {
         isLoading = true;
 
-        let org;
         try {
-            org = isCloud
-                ? await sdk.forConsole.billing.createOrganization(
-                      ID.unique(),
-                      'Personal projects',
-                      BillingPlan.FREE,
-                      null,
-                      null
-                  )
-                : await sdk.forConsole.teams.create(ID.unique(), 'Personal projects');
+            const teamId = data.organization.$id;
+            const project = await sdk.forConsole.projects.create(
+                id ?? ID.unique(),
+                projectName,
+                teamId,
+                isCloud ? region : undefined
+            );
+            trackEvent(Submit.ProjectCreate, {
+                customId: !!id,
+                teamId
+            });
+
+            startAnimation = true;
+
+            setTimeout(async () => {
+                await invalidate(Dependencies.ACCOUNT);
+                goto(`${base}/project-${project.region ?? 'default'}-${project.$id}`);
+            }, 3000);
         } catch (e) {
+            trackError(e, Submit.ProjectCreate);
             isLoading = false;
-            trackError(e, Submit.OrganizationCreate);
             addNotification({
                 type: 'error',
                 message: e.message
             });
         }
-
-        trackEvent(Submit.OrganizationCreate, {
-            plan: tierToPlan(BillingPlan.FREE)?.name,
-            budget_cap_enabled: false,
-            members_invited: 0
-        });
-
-        if (org) {
-            const teamId = org.$id;
-            try {
-                const project = await sdk.forConsole.projects.create(
-                    id ?? ID.unique(),
-                    projectName,
-                    teamId,
-                    region
-                );
-                trackEvent(Submit.ProjectCreate, {
-                    customId: !!id,
-                    teamId
-                });
-
-                startAnimation = true;
-
-                trackEvent(Submit.ProjectCreate, {
-                    teamId: teamId
-                });
-
-                setTimeout(async () => {
-                    await invalidate(Dependencies.ACCOUNT);
-                    goto(`${base}/project-${project.$id}`);
-                }, 3000);
-            } catch (e) {
-                trackError(e, Submit.ProjectCreate);
-                isLoading = false;
-                addNotification({
-                    type: 'error',
-                    message: e.message
-                });
-            }
-        }
     }
+
+    // safe side!
+    loadAvailableRegions(data.organization.$id);
 </script>
 
 <svelte:head>
@@ -108,7 +79,7 @@
             alt="Appwrite Logo" />
         <Card.Base variant="primary" padding="l">
             <CreateProject
-                regions={isCloud ? data.regions.regions : []}
+                regions={$regionsStore.regions}
                 bind:projectName
                 bind:id
                 bind:region

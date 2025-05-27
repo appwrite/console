@@ -1,12 +1,10 @@
 <script lang="ts">
-    import { Input } from '@appwrite.io/pink-svelte';
+    import { onMount } from 'svelte';
+    import { Input, Layout, Selector } from '@appwrite.io/pink-svelte';
 
-    export let label: string = undefined;
     export let id: string;
-    export let name: string = id;
-    export let helper: string = undefined;
-    export let value = '';
-    export let placeholder = '';
+    export let label: string = '';
+    export let value: string;
     export let required = false;
     export let nullable = false;
     export let disabled = false;
@@ -16,18 +14,23 @@
     export let step: number | 'any' = 0.001;
 
     let error: string;
+    let element: HTMLInputElement;
 
-    function handleInvalid(event: Event) {
-        event.preventDefault();
-
-        const inputNode = event.currentTarget as HTMLInputElement;
-
-        if (inputNode.validity.valueMissing) {
-            error = 'This field is required';
-            return;
+    onMount(() => {
+        if (element && autofocus) {
+            element.focus();
         }
+    });
 
-        error = inputNode.validationMessage;
+    let prevValue = '';
+    function handleNullChange(e: CustomEvent<boolean>) {
+        const isNull = e.detail;
+        if (isNull) {
+            prevValue = value;
+            value = null;
+        } else {
+            value = prevValue;
+        }
     }
 
     $: if (value) {
@@ -35,24 +38,25 @@
     }
 </script>
 
-<Input.DateTime
-    {id}
-    {name}
-    {placeholder}
-    {disabled}
-    {required}
-    {label}
-    {step}
-    {nullable}
-    {readonly}
-    autofocus={autofocus || undefined}
-    autocomplete={autocomplete ? 'on' : 'off'}
-    helper={error || helper}
-    state={error ? 'error' : 'default'}
-    on:invalid={handleInvalid}
-    on:input
-    bind:value>
-    <slot name="start" slot="start" />
-    <slot name="info" slot="info" />
-    <slot name="end" slot="end" />
-</Input.DateTime>
+<Layout.Stack gap="s" direction="row">
+    <Input.DateTime
+        {id}
+        {label}
+        {disabled}
+        {readonly}
+        {required}
+        {value}
+        {step}
+        helper={error}
+        on:change={(event) => (value = (event.target as HTMLInputElement).value)}
+        autocomplete={autocomplete ? 'on' : 'off'}>
+        {#if nullable}
+            <Selector.Checkbox
+                size="s"
+                slot="end"
+                label="NULL"
+                checked={value === null}
+                on:change={handleNullChange} />
+        {/if}
+    </Input.DateTime>
+</Layout.Stack>

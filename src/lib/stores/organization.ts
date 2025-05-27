@@ -4,6 +4,15 @@ import type { Models } from '@appwrite.io/console';
 import type { Tier } from './billing';
 import type { Plan } from '$lib/sdk/billing';
 
+export type OrganizationError = {
+    status: number;
+    message: string;
+    teamId: string;
+    invoiceId: string;
+    clientSecret: string;
+    type: string;
+};
+
 export type Organization = Models.Team<Record<string, unknown>> & {
     billingBudget: number;
     billingPlan: Tier;
@@ -21,6 +30,10 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     amount: number;
     billingTaxId?: string;
     billingPlanDowngrade?: Tier;
+    billingAggregationId: string;
+    billingInvoiceId: string;
+    status: string;
+    remarks: string;
 };
 
 export type OrganizationList = {
@@ -34,6 +47,7 @@ export type BillingLimits = {
     executions: number;
     storage: number;
     users: number;
+    budgetLimit: number;
 };
 
 export const newOrgModal = writable<boolean>(false);
@@ -46,3 +60,5 @@ export const organizationList = derived(
 export const organization = derived(page, ($page) => $page.data?.organization as Organization);
 export const currentPlan = derived(page, ($page) => $page.data?.currentPlan as Plan);
 export const members = derived(page, ($page) => $page.data.members as Models.MembershipList);
+
+export const regions = writable<Models.ConsoleRegionList | undefined>(undefined);

@@ -13,7 +13,7 @@
 
     export let show = false;
     export let selectedDomain: Domain;
-    let nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',') ?? [
+    const nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',') ?? [
         'ns1.appwrite.io',
         'ns2.appwrite.io'
     ];
@@ -25,7 +25,7 @@
             show = false;
             if (domain.nameservers === 'Appwrite') {
                 addNotification({
-                    type: 'error',
+                    type: 'success',
                     message: `${selectedDomain.domain} has been verified`
                 });
             } else {
