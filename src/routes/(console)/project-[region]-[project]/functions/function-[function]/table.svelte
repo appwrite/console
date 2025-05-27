@@ -149,16 +149,18 @@
 
                     <svelte:fragment slot="menu" let:toggle>
                         <ActionMenu.Root>
-                            <ActionMenu.Item.Button
-                                trailingIcon={IconRefresh}
-                                on:click={() => {
-                                    selectedDeployment = deployment;
-                                    showRedeploy = true;
-                                    toggle();
-                                    trackEvent(Click.FunctionsRedeployClick);
-                                }}>
-                                Redeploy
-                            </ActionMenu.Item.Button>
+                            {#if deployment.sourceSize !== 0}
+                                <ActionMenu.Item.Button
+                                    trailingIcon={IconRefresh}
+                                    on:click={() => {
+                                        selectedDeployment = deployment;
+                                        showRedeploy = true;
+                                        toggle();
+                                        trackEvent(Click.FunctionsRedeployClick);
+                                    }}>
+                                    Redeploy
+                                </ActionMenu.Item.Button>
+                            {/if}
                             {#if deployment.status === 'ready' && deployment.$id !== $func.deploymentId}
                                 <ActionMenu.Item.Button
                                     trailingIcon={IconLightningBolt}

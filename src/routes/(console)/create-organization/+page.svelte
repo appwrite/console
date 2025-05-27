@@ -195,18 +195,21 @@
                     required />
             </Fieldset>
             <Fieldset legend="Select plan">
-                <Typography.Text>
-                    For more details on our plans, visit our
-                    <Link.Anchor
-                        href="https://appwrite.io/pricing"
-                        target="_blank"
-                        rel="noopener noreferrer">pricing page</Link.Anchor
-                    >.
-                </Typography.Text>
-                <PlanSelection
-                    bind:billingPlan={selectedPlan}
-                    anyOrgFree={data.hasFreeOrganizations}
-                    isNewOrg />
+                <Layout.Stack>
+                    <Typography.Text>
+                        For more details on our plans, visit our
+                        <Link.Anchor
+                            href="https://appwrite.io/pricing"
+                            target="_blank"
+                            rel="noopener noreferrer">pricing page</Link.Anchor
+                        >.
+                    </Typography.Text>
+
+                    <PlanSelection
+                        bind:billingPlan={selectedPlan}
+                        anyOrgFree={data.hasFreeOrganizations}
+                        isNewOrg />
+                    </Layout.Stack>
             </Fieldset>
             {#if selectedPlan !== BillingPlan.FREE}
                 <Fieldset legend="Payment">
