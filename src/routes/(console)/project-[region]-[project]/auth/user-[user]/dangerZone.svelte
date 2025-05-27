@@ -5,7 +5,8 @@
 
     export const promptDeleteUser = (id: string) => {
         showDelete.set(true);
-        goto(`${base}/project-${get(project).$id}/auth/user-${id}`);
+        const p = get(project);
+        goto(`${base}/project-${p.region}-${p.$id}/auth/user-${id}`);
     };
 </script>
 

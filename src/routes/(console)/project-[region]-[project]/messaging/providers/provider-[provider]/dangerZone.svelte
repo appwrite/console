@@ -3,9 +3,10 @@
 
     let showDelete = writable(false);
 
-    export const promptDeleteUser = (id: string) => {
+    export const promptDeleteProvider = (id: string) => {
         showDelete.set(true);
-        goto(`${base}/project-${get(project).$id}/auth/user-${id}`);
+        const p = get(project);
+        goto(`${base}/project-${p.region}-${p.$id}/messaging/providers/provider-${id}`);
     };
 </script>
 
