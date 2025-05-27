@@ -170,7 +170,7 @@
                     </svelte:fragment>
                     {#each data.migrations as entry}
                         <Table.Row.Base {root}>
-                            {@const status = getTypedStatus(entry.status)}
+                            {@const status = getTypedStatus(entry)}
                             <Table.Cell {root}>
                                 {#if isSameDay(new Date(), new Date(entry.$createdAt))}
                                     Today

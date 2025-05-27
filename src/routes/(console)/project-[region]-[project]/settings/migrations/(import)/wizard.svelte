@@ -185,7 +185,7 @@
                             {formData}
                             {provider}
                             bind:errorInResources
-                            projectSdk={sdk.forProject} />
+                            projectSdk={sdk.forProject(page.params.region, page.params.project)} />
                     </Layout.Stack>
                 </Fieldset>
             {/if}

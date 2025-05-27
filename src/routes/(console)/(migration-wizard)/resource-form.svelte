@@ -1,7 +1,6 @@
 <script lang="ts">
     import { deepMap } from '$lib/helpers/object';
     import type { WritableValue } from '$lib/helpers/types';
-    import { type getSdkForProject } from '$lib/stores/sdk';
     import { Alert, Divider, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import {
@@ -14,10 +13,10 @@
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
     import type { Models } from '@appwrite.io/console';
-    import ImportReport from '$routes/(console)/project-[project]/settings/migrations/(import)/importReport.svelte';
     import type { sdk } from '$lib/stores/sdk';
+    import ImportReport from '$routes/(console)/project-[region]-[project]/settings/migrations/(import)/importReport.svelte';
 
-    export let errorInResources: boolean;
+    export let errorInResources: boolean | undefined = undefined;
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
     export let projectSdk: ReturnType<typeof sdk.forProject>;
