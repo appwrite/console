@@ -11,21 +11,20 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { tierToPlan } from '$lib/stores/billing';
-    import { type Models } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen } from '$lib/stores/sidebar';
     import { BillingPlan } from '$lib/constants';
     import { page } from '$app/stores';
+    import type { Models } from '@appwrite.io/console';
 
     export let showSideNavigation = false;
     export let showHeader = true;
     export let showFooter = true;
     export let loadedProjects: Array<NavbarProject> = [];
-    export let projects: Array<Models.Project> = [];
+    export let selectedProject: Models.Project | null = null;
 
-    $: selectedProject = loadedProjects.find((project) => project.isSelected);
     let yOnMenuOpen: number;
     let showContentTransition = false;
     let timeoutId: ReturnType<typeof setTimeout>;
@@ -120,11 +119,9 @@
 
     const progressCard = function getProgressCard() {
         if (selectedProject && !hasOnboardingDismissed(selectedProject.$id)) {
-            const currentProject = projects.find((project) => project.$id === selectedProject.$id);
-
             return {
                 title: 'Get started',
-                percentage: currentProject && currentProject.platforms.length ? 100 : 33
+                percentage: selectedProject && selectedProject.platforms.length ? 100 : 33
             };
         }
 

@@ -15,6 +15,7 @@
     let selectedMembership: Models.Membership;
     let showDelete = false;
 
+    const region = page.params.region;
     const project = page.params.project;
 </script>
 
@@ -37,7 +38,7 @@
             {#each data.memberships.memberships as membership}
                 <Table.Row.Link
                     {root}
-                    href={`${base}/project-${project}/auth/teams/team-${membership.teamId}`}>
+                    href={`${base}/project-${region}-${project}/auth/teams/team-${membership.teamId}`}>
                     <Table.Cell column="name" {root}>
                         <Layout.Stack direction="row" alignItems="center">
                             <AvatarInitials size="xs" name={membership.teamName} />

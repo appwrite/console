@@ -1,11 +1,13 @@
 <script lang="ts" context="module">
-    import { get } from 'svelte/store';
+    import { page } from '$app/state';
+    import { base } from '$app/paths';
+    import { goto } from '$app/navigation';
 
     let showDelete = writable(false);
 
     export const promptDeleteUser = (id: string) => {
         showDelete.set(true);
-        goto(`${base}/project-${get(project).$id}/auth/user-${id}`);
+        goto(`${base}/project-${page.params.region}-${page.params.project}/auth/user-${id}`);
     };
 </script>
 
@@ -15,10 +17,7 @@
     import { writable } from 'svelte/store';
     import DeleteUser from './deleteUser.svelte';
     import { user } from './store';
-    import { goto } from '$app/navigation';
-    import { project } from '../../store';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { base } from '$app/paths';
     $: accessedAt = ($user as unknown as { accessedAt: string }).accessedAt;
 </script>
 

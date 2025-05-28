@@ -2,9 +2,17 @@ import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
 import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
+import { APPWRITE_OFFICIALS_ORG, isCloud } from '$lib/system';
+import { base } from '$app/paths';
 
-export const load = async ({ depends, params }) => {
+export const load = async ({ depends, params, parent }) => {
+    // don't load anything on cloud unless org is appwrite atm!
+    const { organization } = await parent();
+    if (isCloud && organization?.$id !== APPWRITE_OFFICIALS_ORG) {
+        redirect(307, `${base}/project-${params.region}-${params.project}/sites`);
+    }
+
     depends(Dependencies.SITE);
     try {
         const [site] = await Promise.all([

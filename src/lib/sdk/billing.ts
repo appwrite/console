@@ -278,6 +278,7 @@ export type AddressesList = {
 };
 
 export type AdditionalResource = {
+    name: string;
     currency: string;
     invoiceDesc: string;
     price: number;

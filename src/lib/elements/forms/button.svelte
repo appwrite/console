@@ -124,3 +124,18 @@
         <slot slot="end" name="end" />
     </Button.Button>
 {/if}
+
+<!-- built-in classes don't seem to work -->
+<style lang="scss">
+    :global {
+        .is-full-width {
+            width: 100% !important;
+        }
+
+        @media (max-width: 768px) {
+            .is-full-width-mobile {
+                width: 100% !important;
+            }
+        }
+    }
+</style>

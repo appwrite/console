@@ -19,7 +19,7 @@ export async function enterCreditCard(page: Page) {
     await stripe.locator('id=Field-expiryInput').fill('1250');
     await stripe.locator('id=Field-cvcInput').fill('123');
     await stripe.locator('id=Field-countryInput').selectOption('DE');
-    await page.getByRole('button', { name: 'Add', exact: true }).click();
+    await dialog.getByRole('button', { name: 'Add', exact: true }).click();
     await dialog.waitFor({
         state: 'hidden'
     });
@@ -29,8 +29,9 @@ export async function createProProject(page: Page): Promise<Metadata> {
     const organizationId = await test.step('create organization', async () => {
         await page.goto('./create-organization');
         await page.locator('id=name').fill('test org');
-        await page.getByLabel('pro').check();
-        await page.getByRole('button', { name: 'get started' }).click();
+        await page.getByRole('radio', { name: /^Pro\b/ }).check();
+        // `create organization` because there's already free created on start!
+        await page.getByRole('button', { name: 'create organization' }).click();
         await page.getByRole('button', { name: 'add' }).first().click();
         await enterCreditCard(page);
         // skip members

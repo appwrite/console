@@ -14,6 +14,7 @@
     import { consoleVariables } from '$routes/(console)/store';
     import { currentPlan } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
 
     export let show = false;
 
@@ -21,11 +22,11 @@
     let error: string = '';
 
     $: maxSize =
-        isCloud && $currentPlan
-            ? $currentPlan?.deploymentSize === 0
-                ? 0
-                : $currentPlan?.deploymentSize * 1000000
+        isCloud && $currentPlan?.deploymentSize
+            ? $currentPlan.deploymentSize * 1000000
             : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+
+    $: readableMaxSize = humanFileSize(maxSize);
 
     async function create() {
         try {
@@ -100,7 +101,9 @@
                                 >Only .tar.gz files allowed</svelte:fragment>
                         </Tooltip>
                     </Layout.Stack>
-                    <Typography.Caption variant="400">Max file size 10MB</Typography.Caption>
+                    <Typography.Caption variant="400"
+                        >Max file size: {readableMaxSize.value +
+                            readableMaxSize.unit}</Typography.Caption>
                 </Layout.Stack>
             </Layout.Stack>
         </Upload.Dropzone>

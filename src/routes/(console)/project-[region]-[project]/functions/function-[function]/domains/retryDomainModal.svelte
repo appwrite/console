@@ -7,24 +7,23 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import RecordsCard from './recordsCard.svelte';
-    import type { Domain } from '$lib/sdk/domains';
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/state';
 
     export let show = false;
-    export let selectedDomain: Domain | Models.ProxyRule;
+    export let selectedProxyRule: Models.ProxyRule;
 
     let error = null;
-    async function retryDomain() {
+    async function retryProxyRule() {
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.updateRuleVerification(selectedDomain.$id);
+                .proxy.updateRuleVerification(selectedProxyRule.$id);
             await invalidate(Dependencies.SITES_DOMAINS);
             show = false;
             addNotification({
                 type: 'success',
-                message: `${selectedDomain.domain} has been verified`
+                message: `${selectedProxyRule.domain} has been verified`
             });
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
@@ -38,9 +37,9 @@
     }
 </script>
 
-<Modal title="Retry verification" bind:show onSubmit={retryDomain} bind:error>
-    {#if selectedDomain}
-        <RecordsCard domain={selectedDomain} />
+<Modal title="Retry verification" bind:show onSubmit={retryProxyRule} bind:error>
+    {#if selectedProxyRule}
+        <RecordsCard proxyRule={selectedProxyRule} />
     {/if}
 
     <svelte:fragment slot="footer">

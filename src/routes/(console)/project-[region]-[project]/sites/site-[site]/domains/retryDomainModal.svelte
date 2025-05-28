@@ -17,13 +17,13 @@
 
     let {
         show = $bindable(false),
-        selectedDomain
+        selectedProxyRule
     }: {
         show: boolean;
-        selectedDomain: Models.ProxyRule;
+        selectedProxyRule: Models.ProxyRule;
     } = $props();
 
-    const isSubDomain = $derived.by(() => isASubdomain(selectedDomain?.domain));
+    const isSubDomain = $derived.by(() => isASubdomain(selectedProxyRule?.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
     $effect(() => {
@@ -43,13 +43,13 @@
         try {
             const domain = await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.updateRuleVerification(selectedDomain.$id);
+                .proxy.updateRuleVerification(selectedProxyRule.$id);
             await invalidate(Dependencies.SITES_DOMAINS);
             verified = domain.status === 'verified';
             show = false;
             addNotification({
                 type: 'success',
-                message: `${selectedDomain.domain} has been verified`
+                message: `${selectedProxyRule.domain} has been verified`
             });
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
@@ -104,13 +104,13 @@
         <Divider />
     </div>
     {#if selectedTab === 'nameserver'}
-        <NameserverTable domain={selectedDomain.domain} {verified} />
+        <NameserverTable domain={selectedProxyRule.domain} {verified} />
     {:else}
         <RecordTable
             {verified}
             service="sites"
             variant={selectedTab}
-            domain={selectedDomain.domain} />
+            domain={selectedProxyRule.domain} />
     {/if}
 
     <svelte:fragment slot="footer">
