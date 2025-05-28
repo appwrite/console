@@ -3,7 +3,7 @@ import { getSearch } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, depends, parent, params }) => {
+export const load: PageLoad = async ({ url, depends, params }) => {
     depends(Dependencies.FUNCTIONS);
 
     const search = getSearch(url);
