@@ -3,8 +3,9 @@
     import type { Domain } from '$lib/sdk/domains';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Layout, Status } from '@appwrite.io/pink-svelte';
+    import { Link } from '$lib/elements';
 
-    let { domain }: { domain: Domain } = $props();
+    let { domain, retryVerification }: { domain: Domain; retryVerification: () => void } = $props();
 
     const isDomainVerified = domain.nameservers.toLocaleLowerCase() === 'appwrite';
 
@@ -41,9 +42,15 @@
         {#each metrics.slice(0, 3) as metric}
             {#if metric.description === 'Status'}
                 <UsageCard description={metric.description}>
-                    <Status
-                        label={metric.value.toString()}
-                        status={isDomainVerified ? 'complete' : 'pending'} />
+                    <Layout.Stack direction="row" gap="xs" alignItems="center">
+                        <Status
+                            label={metric.value.toString()}
+                            status={isDomainVerified ? 'complete' : 'pending'} />
+
+                        {#if !isDomainVerified}
+                            <Link on:click={retryVerification}>Retry</Link>
+                        {/if}
+                    </Layout.Stack>
                 </UsageCard>
             {:else}
                 <UsageCard description={metric.description} bind:value={metric.value} />
