@@ -30,7 +30,6 @@
             alignItems="center"
             alignContent="center"
             direction={$isSmallViewport ? 'column' : 'row'}>
-
             <Typography.Text>Get $50 Cloud credits for Appwrite Pro.</Typography.Text>
 
             <Button
