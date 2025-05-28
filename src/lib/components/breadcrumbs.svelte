@@ -14,6 +14,7 @@
     import { base } from '$app/paths';
     import { newOrgModal } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { page } from '$app/stores';
 
     type Project = {
         name: string;
@@ -64,7 +65,7 @@
     export let organizations: Organization[] = [];
 
     $: selectedOrg = organizations.find((organization) => organization.isSelected);
-    $: selectedProject = selectedOrg?.projects.find((project) => project.isSelected);
+    $: selectedProject = $page.data.project;
 
     let organisationBottomSheetOpen = false;
     let projectsBottomSheetOpen = false;
@@ -97,7 +98,7 @@
 
     $: organizationsBottomSheet = !selectedOrg
         ? switchOrganization
-        : {
+        : ({
               top: {
                   items: [
                       {
@@ -126,8 +127,8 @@
                                 }
                             ]
                         }
-          };
-    let projectsBottomSheet: SheetMenu;
+          } satisfies SheetMenu);
+
     $: projectsBottomSheet = {
         top:
             selectedOrg?.projects.length > 1
@@ -173,7 +174,7 @@
                       ]
                   }
                 : undefined
-    };
+    } satisfies SheetMenu;
 
     function onResize() {
         if ((organisationBottomSheetOpen || projectsBottomSheetOpen) && !$isSmallViewport) {
@@ -317,17 +318,19 @@
                             <div use:melt={$itemProjects}>
                                 <ActionMenu.Root>
                                     <ActionMenu.Item.Anchor
-                                        href={`/console/project-${project.region}-${project.$id}`}
-                                        >{project.name}</ActionMenu.Item.Anchor
-                                    ></ActionMenu.Root>
+                                        href={`/console/project-${project.region}-${project.$id}`}>
+                                        {project.name}
+                                    </ActionMenu.Item.Anchor>
+                                </ActionMenu.Root>
                             </div>
                         {:else if index === 4}
                             <div use:melt={$itemProjects}>
                                 <ActionMenu.Root>
                                     <ActionMenu.Item.Anchor
-                                        href={`/console/organization-${selectedOrg.$id}`}
-                                        >All projects</ActionMenu.Item.Anchor
-                                    ></ActionMenu.Root>
+                                        href={`/console/organization-${selectedOrg.$id}`}>
+                                        All projects
+                                    </ActionMenu.Item.Anchor>
+                                </ActionMenu.Root>
                             </div>
                         {/if}
                     {/each}
@@ -337,18 +340,16 @@
                     <ActionMenu.Root>
                         <ActionMenu.Item.Anchor
                             leadingIcon={IconPlusSm}
-                            href={`/console/organization-${selectedOrg?.$id}?create-project`}
-                            >Create project</ActionMenu.Item.Anchor
-                        ></ActionMenu.Root>
+                            href={`/console/organization-${selectedOrg?.$id}?create-project`}>
+                            Create project
+                        </ActionMenu.Item.Anchor></ActionMenu.Root>
                 </div>
             </Card.Base>
         </div>
     {/if}
 </div>
-<BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet}
-></BottomSheet.Menu>
-<BottomSheet.Menu bind:isOpen={projectsBottomSheetOpen} menu={projectsBottomSheet}
-></BottomSheet.Menu>
+<BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet} />
+<BottomSheet.Menu bind:isOpen={projectsBottomSheetOpen} menu={projectsBottomSheet} />
 
 <style lang="scss">
     .menu {

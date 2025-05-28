@@ -70,7 +70,6 @@
             name: project?.name,
             $id: project.$id,
             region: project.region,
-            isSelected: data.currentProjectId === project.$id,
             platformCount: project.platforms.length,
             pingCount: project.pingCount
         };
