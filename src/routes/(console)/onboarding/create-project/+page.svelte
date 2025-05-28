@@ -53,7 +53,7 @@
     }
 
     // safe side!
-    loadAvailableRegions(data.organization.$id);
+    loadAvailableRegions(data.organization?.$id);
 </script>
 
 <svelte:head>
