@@ -53,6 +53,7 @@
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
+    import type { NavbarProject } from '$lib/components/navbar.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -69,11 +70,12 @@
         return {
             name: project?.name,
             $id: project.$id,
+            isSelected: project.$id === page.params.project,
             region: project.region,
             platformCount: project.platforms.length,
             pingCount: project.pingCount
         };
-    });
+    }) satisfies NavbarProject[];
 
     $: isOnSettingsLayout = $project?.$id
         ? page.url.pathname.includes(`project-${$project.region}-${$project.$id}/settings`)
