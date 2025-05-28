@@ -34,13 +34,11 @@
 
     let selectedRepository: string;
 
-    const featuredTemplatesList = data.templatesList.templates
+    const featuredTemplates = data.templates
         .filter((template) => template.id !== 'starter')
         .slice(0, 4);
 
-    const starterTemplate = data.templatesList.templates.find(
-        (template) => template.id === 'starter'
-    );
+    const starterTemplate = data.templates.find((template) => template.id === 'starter');
 
     const baseRuntimesList = [
         ...new Map(
@@ -166,7 +164,7 @@
                     <Divider />
 
                     <Layout.Grid columnsS={1} columns={2}>
-                        {#each featuredTemplatesList as template}
+                        {#each featuredTemplates as template}
                             <Card.Link
                                 radius="s"
                                 padding="xs"
