@@ -13,10 +13,11 @@
         Link,
         Popover,
         Table,
+        Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
     import Create from '../createAttribute.svelte';
-    import { isRelationship } from '../document-[document]/attributes/store';
+    import { isRelationship, isString } from '../document-[document]/attributes/store';
     import FailedModal from '../failedModal.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
     import { attributes, type Attributes, isCsvImportInProgress } from '../store';
@@ -33,7 +34,8 @@
         IconPlus,
         IconSwitchHorizontal,
         IconTrash,
-        IconViewList
+        IconViewList,
+        IconLockClosed
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentProps } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -112,25 +114,38 @@
                             {:else}
                                 <Icon icon={option.icon} size="s" />
                             {/if}
-                            <span class="text u-trim-1" data-private>{attribute.key}</span>
-                            {#if attribute.status !== 'available'}
-                                <Badge
-                                    size="s"
-                                    variant="secondary"
-                                    content={attribute.status}
-                                    type={getAttributeStatusBadge(attribute.status)} />
-                                {#if attribute.error}
-                                    <Link.Button
-                                        variant="muted"
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            error = attribute.error;
-                                            showFailed = true;
-                                        }}>Details</Link.Button>
+                            <Layout.Stack direction="row" alignItems="center" gap="s">
+                                <Layout.Stack inline direction="row" alignItems="center" gap="xxs">
+                                    <span class="text u-trim-1" data-private>{attribute.key}</span>
+                                    {#if isString(attribute) && !attribute.encrypt}
+                                        <Tooltip>
+                                            <Icon
+                                                size="s"
+                                                icon={IconLockClosed}
+                                                color="--fgcolor-neutral-tertiary" />
+                                            <div slot="tooltip">Encrypted</div>
+                                        </Tooltip>
+                                    {/if}
+                                </Layout.Stack>
+                                {#if attribute.status !== 'available'}
+                                    <Badge
+                                        size="s"
+                                        variant="secondary"
+                                        content={attribute.status}
+                                        type={getAttributeStatusBadge(attribute.status)} />
+                                    {#if attribute.error}
+                                        <Link.Button
+                                            variant="muted"
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                error = attribute.error;
+                                                showFailed = true;
+                                            }}>Details</Link.Button>
+                                    {/if}
+                                {:else if attribute.required}
+                                    <Badge size="xs" variant="secondary" content="required" />
                                 {/if}
-                            {:else if attribute.required}
-                                <Badge size="s" variant="secondary" content="required" />
-                            {/if}
+                            </Layout.Stack>
                         </Layout.Stack>
                     </Table.Cell>
                     <Table.Cell column="type" {root}>

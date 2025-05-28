@@ -14,9 +14,6 @@ importers:
       '@appwrite.io/console':
         specifier: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19
         version: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19
-      '@appwrite.io/pink':
-        specifier: 0.25.0
-        version: 0.25.0
       '@appwrite.io/pink-icons':
         specifier: 0.25.0
         version: 0.25.0
@@ -27,8 +24,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3
       '@appwrite.io/pink-svelte':
-        specifier: https://try-module.cloud/module/@appwrite/@appwrite.io/pink-svelte@0cc439f
-        version: https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@0cc439f(svelte@5.25.3)
+        specifier: https://try-module.cloud/-/@appwrite/@appwrite.io/pink-svelte@063404f
+        version: https://try-module.cloud/-/@appwrite/%40appwrite.io%2Fpink-svelte@063404f(svelte@5.25.3)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -281,14 +278,11 @@ packages:
   '@appwrite.io/pink-legacy@1.0.3':
     resolution: {integrity: sha512-GGde5fmPhs+s6/3aFeMPc/kKADG/gTFkYQSy6oBN8pK0y0XNCLrZZgBv+EBbdhwdtqVEWXa0X85Mv9w7jcIlwQ==}
 
-  '@appwrite.io/pink-svelte@https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@0cc439f':
-    resolution: {tarball: https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@0cc439f}
+  '@appwrite.io/pink-svelte@https://try-module.cloud/-/@appwrite/%40appwrite.io%2Fpink-svelte@063404f':
+    resolution: {tarball: https://try-module.cloud/-/@appwrite/%40appwrite.io%2Fpink-svelte@063404f}
     version: 2.0.0-RC.2
     peerDependencies:
       svelte: ^4.0.0
-
-  '@appwrite.io/pink@0.25.0':
-    resolution: {integrity: sha512-9z4G/iAhjvVpM7tkNqzGqrokst4hvNt3Fkf2jD4W6n8j//EJbQ3mJ0I+5dye5Sry0a33wUanq5DSztqFNYq5zw==}
 
   '@asamuzakjp/css-color@3.1.1':
     resolution: {integrity: sha512-hpRD68SV2OMcZCsrbdkccTw5FXjNDLo5OuqSHyHZfwweGsDWZwDJ2+gONyNAbazZclobMirACLw0lk8WVxIqxA==}
@@ -1343,8 +1337,8 @@ packages:
   '@types/prop-types@15.7.14':
     resolution: {integrity: sha512-gNMvNH49DJ7OJYv+KAKn0Xp45p8PLl6zo2YnvDIbTd4J6MER2BmWN49TG7n9LvkyihINxeKW8+3bfS2yDC9dzQ==}
 
-  '@types/react@18.3.22':
-    resolution: {integrity: sha512-vUhG0YmQZ7kL/tmKLrD3g5zXbXXreZXB3pmROW8bg3CnLnpjkRVwUlLne7Ufa2r9yJ8+/6B73RzhAek5TBKh2Q==}
+  '@types/react@18.3.23':
+    resolution: {integrity: sha512-/LDXMQh55EzZQ0uVAZmKKhfENivEvWz6E+EYzh+/MCjMhNsotd+ZHhBGIjFDTi6+fz0OhQQQLbTgdQIxxCsC0w==}
 
   '@types/remarkable@2.0.8':
     resolution: {integrity: sha512-eKXqPZfpQl1kOADjdKchHrp2gwn9qMnGXhH/AtZe0UrklzhGJkawJo/Y/D0AlWcdWoWamFNIum8+/nkAISQVGg==}
@@ -2664,9 +2658,6 @@ packages:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
 
-  normalize.css@8.0.1:
-    resolution: {integrity: sha512-qizSNPO93t1YUuUhP22btGOo3chcvDFqFaj2TRybP0DMxkHOCTYwp3n34fel4a31ORXy4m1Xq0Gyqpb5m33qIg==}
-
   nwsapi@2.2.20:
     resolution: {integrity: sha512-/ieB+mDe4MrrKMT8z+mQL8klXydZWGR5Dowt4RAGKbJ3kIGEx3X4ljUo+6V73IXtUPWgfOlU5B9MlGxFO5T+cA==}
 
@@ -3644,7 +3635,7 @@ snapshots:
       '@appwrite.io/pink-icons': 1.0.0
       the-new-css-reset: 1.11.3
 
-  '@appwrite.io/pink-svelte@https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@0cc439f(svelte@5.25.3)':
+  '@appwrite.io/pink-svelte@https://try-module.cloud/-/@appwrite/%40appwrite.io%2Fpink-svelte@063404f(svelte@5.25.3)':
     dependencies:
       '@appwrite.io/pink-icons-svelte': 2.0.0-RC.1(svelte@5.25.3)
       '@floating-ui/dom': 1.6.13
@@ -3658,12 +3649,6 @@ snapshots:
       svelte: 5.25.3
       svelte-motion: 0.12.2(svelte@5.25.3)
       svelte-sonner: 0.3.28(svelte@5.25.3)
-
-  '@appwrite.io/pink@0.25.0':
-    dependencies:
-      '@appwrite.io/pink-icons': 0.25.0
-      normalize.css: 8.0.1
-      the-new-css-reset: 1.11.3
 
   '@asamuzakjp/css-color@3.1.1':
     dependencies:
@@ -4787,7 +4772,7 @@ snapshots:
 
   '@types/prop-types@15.7.14': {}
 
-  '@types/react@18.3.22':
+  '@types/react@18.3.23':
     dependencies:
       '@types/prop-types': 15.7.14
       csstype: 3.1.3
@@ -6254,8 +6239,6 @@ snapshots:
 
   normalize-path@3.0.0: {}
 
-  normalize.css@8.0.1: {}
-
   nwsapi@2.2.20: {}
 
   object-inspect@1.13.4: {}
@@ -6735,7 +6718,7 @@ snapshots:
 
   svelte-motion@0.12.2(svelte@5.25.3):
     dependencies:
-      '@types/react': 18.3.22
+      '@types/react': 18.3.23
       framesync: 6.1.2
       popmotion: 11.0.5
       style-value-types: 5.1.2
