@@ -5,7 +5,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Invoice, InvoiceList } from '$lib/sdk/billing';
-    import { sdk } from '$lib/stores/sdk';
+    import { getApiEndpoint, sdk } from '$lib/stores/sdk';
     import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
@@ -27,7 +27,6 @@
         IconExternalLink,
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
-    import { base } from '$app/paths';
 
     let offset = 0;
     let invoiceList: InvoiceList = {
@@ -36,6 +35,7 @@
     };
 
     const limit = 5;
+    const endpoint = getApiEndpoint();
 
     onMount(request);
 
@@ -134,12 +134,12 @@
                                     <ActionMenu.Item.Anchor
                                         leadingIcon={IconExternalLink}
                                         external
-                                        href={`${base}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
+                                        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
                                         View invoice
                                     </ActionMenu.Item.Anchor>
                                     <ActionMenu.Item.Anchor
                                         leadingIcon={IconDownload}
-                                        href={`${base}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
+                                        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
                                         Download PDF
                                     </ActionMenu.Item.Anchor>
                                     {#if status === 'overdue' || status === 'failed'}
