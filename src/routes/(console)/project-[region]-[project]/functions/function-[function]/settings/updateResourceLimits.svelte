@@ -66,8 +66,6 @@
         value: spec.slug,
         disabled: !spec.enabled
     }));
-
-    $: console.log(specification);
 </script>
 
 <Form onSubmit={updateLogging}>
