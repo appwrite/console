@@ -34,7 +34,9 @@
         }
         target.searchParams.delete('page');
         offset = 0;
-        goto(target.toString());
+        goto(target.toString(), {
+            noScroll: true
+        });
     }
 
     let searchText = page.url.searchParams.get('search') ?? '';
@@ -52,7 +54,7 @@
         url.searchParams.delete('page');
         offset = 0;
 
-        goto(url.toString(), { keepFocus: true });
+        goto(url.toString(), { keepFocus: true, noScroll: true });
     }, 250);
 
     function applySearch(event: CustomEvent<string>) {
@@ -64,7 +66,9 @@
         searchText = '';
         const target = new URL(page.url);
         target.search = '';
-        goto(target.toString());
+        goto(target.toString(), {
+            noScroll: true
+        });
     }
 
     const isChecked = (useCase: string) => {
