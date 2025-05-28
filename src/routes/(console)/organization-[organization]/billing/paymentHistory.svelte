@@ -134,12 +134,12 @@
                                     <ActionMenu.Item.Anchor
                                         leadingIcon={IconExternalLink}
                                         external
-                                        href={`${base}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
+                                        href={`${base}/organization-${page.params.organization}/invoices/${invoice.$id}/view`}>
                                         View invoice
                                     </ActionMenu.Item.Anchor>
                                     <ActionMenu.Item.Anchor
                                         leadingIcon={IconDownload}
-                                        href={`${base}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
+                                        href={`${base}/organization-${page.params.organization}/invoices/${invoice.$id}/download`}>
                                         Download PDF
                                     </ActionMenu.Item.Anchor>
                                     {#if status === 'overdue' || status === 'failed'}
