@@ -201,7 +201,7 @@
                     {#if isRelationship(attr)}
                         {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
                         {#if !isRelationshipToMany(attr)}
-                            {#if document[+id]}
+                            {#if document[id]}
                                 {@const related = document[id]}
                                 <Link.Button
                                     variant="muted"
