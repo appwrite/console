@@ -192,7 +192,6 @@
                 id="branch"
                 label="Production branch"
                 placeholder="Select branch"
-                isSearchable
                 bind:value={branch}
                 on:select={(event) => {
                     branch = event.detail.value;
