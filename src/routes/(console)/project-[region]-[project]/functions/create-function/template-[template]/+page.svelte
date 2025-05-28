@@ -127,7 +127,9 @@
                         id || ID.unique(),
                         name,
                         runtime as Runtime,
-                        data.template.permissions?.length ? data.template.permissions : undefined,
+                        execute && data.template.permissions?.length
+                            ? data.template.permissions
+                            : undefined,
                         data.template.events?.length ? data.template.events : undefined,
                         data.template.cron || undefined,
                         data.template.timeout ? data.template.timeout : undefined,
