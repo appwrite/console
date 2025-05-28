@@ -79,7 +79,7 @@
             alt="Appwrite Logo" />
         <Card.Base variant="primary" padding="l">
             <CreateProject
-                regions={$regionsStore?.regions ?? []}
+                regions={$regionsStore?.regions}
                 bind:projectName
                 bind:id
                 bind:region

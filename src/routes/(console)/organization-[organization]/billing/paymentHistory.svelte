@@ -27,7 +27,6 @@
         IconExternalLink,
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
-    import { base } from '$app/paths';
 
     let offset = 0;
     let invoiceList: InvoiceList = {
@@ -36,6 +35,7 @@
     };
 
     const limit = 5;
+    const endpoint = getApiEndpoint();
 
     onMount(request);
 
@@ -134,12 +134,12 @@
                                     <ActionMenu.Item.Anchor
                                         leadingIcon={IconExternalLink}
                                         external
-                                        href={`${getApiEndpoint()}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
+                                        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
                                         View invoice
                                     </ActionMenu.Item.Anchor>
                                     <ActionMenu.Item.Anchor
                                         leadingIcon={IconDownload}
-                                        href={`${getApiEndpoint()}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
+                                        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
                                         Download PDF
                                     </ActionMenu.Item.Anchor>
                                     {#if status === 'overdue' || status === 'failed'}
