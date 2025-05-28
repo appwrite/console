@@ -48,13 +48,17 @@
         }
         target.searchParams.delete('page');
         offset = 0;
-        goto(target.toString());
+        goto(target.toString(), {
+            noScroll: true
+        });
     }
 
     function clearSearch() {
         const target = new URL(page.url);
         target.search = '';
-        goto(target.toString());
+        goto(target.toString(), {
+            noScroll: true
+        });
     }
 
     function getBaseRuntimes(runtimes: Models.TemplateRuntime[]): Models.TemplateRuntime[] {
@@ -141,7 +145,13 @@
             </Card>
         </Layout.Stack>
         <Layout.Stack gap="l">
-            {#if data.templates?.length > 0}
+            {#if data?.search && data.templates.length === 0}
+                <EmptySearch hidePagination search={data.search}>
+                    <Button secondary on:click={clearSearch}>Clear search</Button>
+                </EmptySearch>
+            {:else if data?.filter && data.templates.length === 0}
+                <EmptyFilter resource="templates"></EmptyFilter>
+            {:else}
                 <Paginator items={data.templates} limit={12} hidePages={false} hasLimit bind:offset>
                     {#snippet children(paginatedItems: typeof data.templates)}
                         <Layout.Grid columns={2} columnsXL={3} columnsXS={1}>
@@ -225,12 +235,6 @@
                         </Layout.Grid>
                     {/snippet}
                 </Paginator>
-            {:else if data?.search}
-                <EmptySearch hidePagination search={data.search}>
-                    <Button secondary on:click={clearSearch}>Clear search</Button>
-                </EmptySearch>
-            {:else if data?.filter}
-                <EmptyFilter resource="templates"></EmptyFilter>
             {/if}
         </Layout.Stack>
     </Layout.GridFraction>
