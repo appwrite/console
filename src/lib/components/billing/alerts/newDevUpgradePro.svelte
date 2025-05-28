@@ -7,6 +7,8 @@
     import { organization } from '$lib/stores/organization';
     import { activeHeaderAlert } from '$routes/(console)/store';
     import GradientBanner from '../gradientBanner.svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     let show = true;
 
@@ -23,8 +25,14 @@
 
 {#if show && $organization?.$id && $organization?.billingPlan === BillingPlan.FREE && !page.url.pathname.includes('/console/account')}
     <GradientBanner on:close={handleClose}>
-        <div class="u-flex u-gap-24 u-main-center u-cross-center u-flex-vertical-mobile">
-            <span class="body-text-1">Get $50 Cloud credits for Appwrite Pro.</span>
+        <Layout.Stack
+            gap="m"
+            alignItems="center"
+            alignContent="center"
+            direction={$isSmallViewport ? 'column' : 'row'}>
+
+            <Typography.Text>Get $50 Cloud credits for Appwrite Pro.</Typography.Text>
+
             <Button
                 secondary
                 fullWidthMobile
@@ -39,6 +47,6 @@
                 }}>
                 Claim credits
             </Button>
-        </div>
+        </Layout.Stack>
     </GradientBanner>
 {/if}
