@@ -16,7 +16,7 @@ export async function loadAvailableRegions(orgId: string): Promise<void> {
     try {
         const storedRegions = get(regions);
 
-        if (storedRegions?.regions && lastLoadedOrganization === orgId) {
+        if (storedRegions.regions && lastLoadedOrganization === orgId) {
             // already loaded for this organization, fast path return.
             return;
         }
