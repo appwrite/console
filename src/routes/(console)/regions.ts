@@ -11,7 +11,7 @@ let lastLoadedOrganization = null;
  * Prevents unnecessary API calls if the regions are already loaded for the same organization.
  */
 export async function loadAvailableRegions(orgId: string): Promise<void> {
-    if (!isCloud) return;
+    if (!isCloud || !orgId) return;
 
     try {
         const storedRegions = get(regions);
