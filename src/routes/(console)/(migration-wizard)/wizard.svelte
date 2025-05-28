@@ -21,9 +21,8 @@
     } from '@appwrite.io/pink-svelte';
     import { isCloud } from '$lib/system';
     import { regions } from '$lib/stores/organization';
-    import { getFlagUrl } from '$lib/helpers/flag';
     import { addNotification } from '$lib/stores/notifications';
-    import { goto, invalidate, invalidateAll } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { migrationFormToResources } from '$lib/stores/migration';
     import { EyebrowHeading } from '$lib/components';
@@ -32,10 +31,10 @@
         IconCog,
         IconCurrencyDollar,
         IconExclamation,
-        IconGithub,
         IconTrendingUp
     } from '@appwrite.io/pink-icons-svelte';
     import { Dependencies } from '$lib/constants';
+    import { filterRegions } from '$lib/helpers/regions';
 
     const onExit = () => {
         formData.reset();
@@ -79,11 +78,7 @@
     }
 
     function getProjectName(): string {
-        return isExisting ? getSelectedProject().name : newProjName || 'Appwrite project';
-    }
-
-    function getSelectedProject() {
-        return projects.find((project) => project.$id === $selectedProject);
+        return isExisting ? currentSelectedProject.name : newProjName || 'Appwrite project';
     }
 
     async function createNewProject() {
@@ -108,25 +103,6 @@
         }
     }
 
-    function getRegions() {
-        return $regions.regions
-            .filter((region) => region.$id !== 'default')
-            .sort((regionA, regionB) => {
-                if (regionA.disabled && !regionB.disabled) {
-                    return 1;
-                }
-                return regionA.name > regionB.name ? 1 : -1;
-            })
-            .map((region) => {
-                return {
-                    label: region.name,
-                    value: region.$id,
-                    leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
-                    disabled: region.disabled || !region.available
-                };
-            });
-    }
-
     const onFinish = async () => {
         if ($provider.provider !== 'appwrite') return;
 
@@ -141,16 +117,15 @@
                 $provider.apiKey
             );
 
-            const project = getSelectedProject();
-
             addNotification({
                 type: 'success',
                 message: 'Migration started'
             });
-
             onExit();
             await invalidate(Dependencies.PROJECTS);
-            await goto(`${base}/project-${project.region}-${project.$id}/settings/migrations`);
+            await goto(
+                `${base}/project-${currentSelectedProject.region}-${currentSelectedProject.$id}/settings/migrations`
+            );
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -163,11 +138,15 @@
 
     $: getProjects(selectedOrg);
 
+    $: currentSelectedProject = projects.find((project) => project.$id === $selectedProject);
+
     $: isExisting = projectType === 'existing';
 
     $: if (isExisting && $selectedProject) {
-        const project = getSelectedProject();
-        projectSdkInstance = sdk.forProject(project.region, project.$id);
+        projectSdkInstance = sdk.forProject(
+            currentSelectedProject.region,
+            currentSelectedProject.$id
+        );
     }
 
     $: disableNextButton = isExisting
@@ -258,7 +237,7 @@
                                         <Input.Select
                                             required
                                             label="Region"
-                                            options={getRegions()}
+                                            options={filterRegions($regions.regions)}
                                             bind:value={$selectedRegion}
                                             placeholder="Select a region" />
                                         <Typography.Text
