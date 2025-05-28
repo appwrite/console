@@ -14,7 +14,7 @@
     import { base } from '$app/paths';
     import { newOrgModal } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { page } from '$app/state';
+    import { page } from '$app/stores';
 
     type Project = {
         name: string;
@@ -65,7 +65,7 @@
     export let organizations: Organization[] = [];
 
     $: selectedOrg = organizations.find((organization) => organization.isSelected);
-    $: selectedProject = page.data.project;
+    $: selectedProject = $page.data.project;
 
     let organisationBottomSheetOpen = false;
     let projectsBottomSheetOpen = false;
