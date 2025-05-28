@@ -6,10 +6,7 @@
     import { IconRefresh } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Status, Tooltip } from '@appwrite.io/pink-svelte';
 
-    let {
-        domain,
-        retryVerification
-    }: { domain: Domain; retryVerification: () => void } = $props();
+    let { domain, retryVerification }: { domain: Domain; retryVerification: () => void } = $props();
 
     const isDomainVerified = domain.nameservers.toLocaleLowerCase() === 'appwrite';
 
@@ -46,7 +43,7 @@
         {#each metrics.slice(0, 3) as metric}
             {#if metric.description === 'Status'}
                 <UsageCard description={metric.description}>
-                    <Layout.Stack direction="row" gap="xs">
+                    <Layout.Stack direction="row" gap="xxs" alignItems="center">
                         <Status
                             label={metric.value.toString()}
                             status={isDomainVerified ? 'complete' : 'pending'} />
@@ -55,8 +52,8 @@
                             <Tooltip>
                                 <Button text icon on:click={retryVerification}>
                                     <Icon
-                                        icon={IconRefresh}
                                         size="s"
+                                        icon={IconRefresh}
                                         color="--fgcolor-neutral-secondary" />
                                 </Button>
                                 <span slot="tooltip">Verify domain</span>
