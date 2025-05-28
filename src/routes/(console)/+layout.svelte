@@ -340,8 +340,8 @@
         !page.url.pathname.includes('/console/account') &&
         !page.url.pathname.includes('/console/card') &&
         !page.url.pathname.includes('/console/onboarding')}
-    showHeader={!page.url.pathname.includes('/console/onboarding')}
-    showFooter={!page.url.pathname.includes('/console/onboarding')}
+    showHeader={!page.url.pathname.includes('/console/onboarding/create-project')}
+    showFooter={!page.url.pathname.includes('/console/onboarding/create-project')}
     {loadedProjects}
     selectedProject={page.data?.project}>
     <!--    <Header slot="header" />-->
