@@ -199,7 +199,7 @@
                 {@const attr = $attributes.find((n) => n.key === id)}
                 <Table.Cell column={id} {root}>
                     {#if isRelationship(attr)}
-                        {@const args = displayNames?.[attr.relatedCollection] ?? ['name']}
+                        {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
                         {#if !isRelationshipToMany(attr)}
                             {#if document[id]}
                                 {@const related = document[id]}
