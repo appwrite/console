@@ -1,10 +1,15 @@
 <script lang="ts">
     import { UsageCard } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import type { Domain } from '$lib/sdk/domains';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { Layout, Status } from '@appwrite.io/pink-svelte';
+    import { IconRefresh } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, Status, Tooltip } from '@appwrite.io/pink-svelte';
 
-    let { domain }: { domain: Domain } = $props();
+    let {
+        domain,
+        retryVerification
+    }: { domain: Domain; retryVerification: () => void } = $props();
 
     const isDomainVerified = domain.nameservers.toLocaleLowerCase() === 'appwrite';
 
@@ -41,9 +46,23 @@
         {#each metrics.slice(0, 3) as metric}
             {#if metric.description === 'Status'}
                 <UsageCard description={metric.description}>
-                    <Status
-                        label={metric.value.toString()}
-                        status={isDomainVerified ? 'complete' : 'pending'} />
+                    <Layout.Stack direction="row" gap="xs">
+                        <Status
+                            label={metric.value.toString()}
+                            status={isDomainVerified ? 'complete' : 'pending'} />
+
+                        {#if !isDomainVerified}
+                            <Tooltip>
+                                <Button text icon on:click={retryVerification}>
+                                    <Icon
+                                        icon={IconRefresh}
+                                        size="s"
+                                        color="--fgcolor-neutral-secondary" />
+                                </Button>
+                                <span slot="tooltip">Verify domain</span>
+                            </Tooltip>
+                        {/if}
+                    </Layout.Stack>
                 </UsageCard>
             {:else}
                 <UsageCard description={metric.description} bind:value={metric.value} />

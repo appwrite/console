@@ -128,7 +128,7 @@
 
                                 <svelte:fragment slot="tooltip" let:toggle>
                                     <ActionMenu.Root>
-                                        {#if isDomainVerified(domain)}
+                                        {#if !isDomainVerified(domain)}
                                             <ActionMenu.Item.Button
                                                 leadingIcon={IconRefresh}
                                                 on:click={(e) => {
