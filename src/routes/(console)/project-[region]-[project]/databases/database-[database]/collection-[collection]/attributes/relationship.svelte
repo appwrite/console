@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
     import { ID, type Models, Query, RelationMutate, RelationshipType } from '@appwrite.io/console';
 
     export async function submitRelationship(
@@ -60,13 +61,13 @@
     import arrowOne from './arrow-one.svg';
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Card, Layout, Input } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight, IconSwitchHorizontal } from '@appwrite.io/pink-icons-svelte';
+    import { debounce } from '$lib/helpers/debounce';
 
     // Props
-    export let data: Models.AttributeRelationship;
     export let editing = false;
+    export let data: Models.AttributeRelationship;
 
     // Constants
     const databaseId = page.params.database;
@@ -84,16 +85,24 @@
     ];
 
     // Variables
-    let collectionList: Models.CollectionList;
     let way = 'one';
+    let search = undefined;
+    let collectionList: Models.CollectionList;
+    let originalCollectionList: Models.CollectionList;
 
     // Lifecycle hooks
     async function getCollections() {
         const queries = [Query.limit(100)];
         return sdk
             .forProject(page.params.region, page.params.project)
-            .databases.listCollections(databaseId, queries);
+            .databases.listCollections(databaseId, queries, search);
     }
+
+    const debouncedFetchCollections = debounce(async () => {
+        collectionList = await getCollections();
+        // reset search
+        search = undefined;
+    }, 500);
 
     function updateKeyName() {
         if (!editing) {
@@ -106,6 +115,7 @@
 
     onMount(async () => {
         collectionList = await getCollections();
+        originalCollectionList = collectionList;
     });
 
     // Reactive statements
@@ -122,6 +132,21 @@
         } else {
             data.twoWay = false;
         }
+    }
+
+    $: search = data.relatedCollection || undefined;
+
+    $: if (search) {
+        const exists = collectionList.collections?.some((c) =>
+            c.$id.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+        );
+
+        if (!exists) {
+            debouncedFetchCollections();
+        }
+    } else if (!collectionList?.total) {
+        // reset to original list!
+        collectionList = originalCollectionList;
     }
 </script>
 
@@ -151,7 +176,6 @@
     id="related"
     label="Related collection"
     placeholder="Select a collection"
-    isSearchable
     bind:value={data.relatedCollection}
     on:change={updateKeyName}
     options={collections?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
@@ -161,7 +185,6 @@
         label="Attribute key"
         placeholder="Enter key"
         bind:value={data.key}
-        autofocus
         helper="Allowed characters: a-z, A-Z, 0-9, -, ."
         required />
     {#if way === 'two'}
