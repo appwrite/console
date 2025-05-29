@@ -27,7 +27,12 @@
             description: 'Expiry date'
         },
         {
-            value: domain?.autoRenewal ? 'On' : 'Off',
+            value:
+                domain?.registrar?.toLocaleLowerCase() === 'appwrite'
+                    ? domain?.autoRenewal
+                        ? 'On'
+                        : 'Off'
+                    : '-',
             description: 'Auto renewal'
         },
         {

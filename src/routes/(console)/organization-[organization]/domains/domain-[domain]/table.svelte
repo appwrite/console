@@ -73,7 +73,7 @@
                                 {record?.priority ?? '-'}
                             </Typography.Text>
                         {:else if column.id === 'comment'}
-                            <Typography.Text>
+                            <Typography.Text truncate>
                                 {record?.comment ?? '-'}
                             </Typography.Text>
                         {:else if column.id === '$createdAt'}
