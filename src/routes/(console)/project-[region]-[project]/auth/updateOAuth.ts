@@ -18,7 +18,10 @@ type Return = {
     status: 'success' | 'error';
     message?: string;
 };
-
+const ExtendedOAuthProvider = {
+  ...OAuthProvider,
+  Kakao: 'kakao'
+};
 export async function updateOAuth({
     projectId,
     provider,
@@ -27,12 +30,13 @@ export async function updateOAuth({
     enabled
 }: Args): Promise<Return> {
     try {
-        if (!isValueOfStringEnum(OAuthProvider, provider.key)) {
+      if (!isValueOfStringEnum(ExtendedOAuthProvider, provider.key)) {
+          console.log(OAuthProvider);
             throw new Error(`Invalid OAuth2 provider: ${provider.key}`);
         }
         await sdk.forConsole.projects.updateOAuth2(
             projectId,
-            provider.key,
+            provider.key as OAuthProvider,
             appId || undefined,
             secret || undefined,
             enabled
