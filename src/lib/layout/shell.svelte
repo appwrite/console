@@ -169,14 +169,14 @@
         </section>
     </div>
 
-    <button
-        type="button"
-        class="overlay-button"
-        aria-label="Close sidebar"
-        class:overlay={$isSidebarOpen}
-        on:click={() => {
-            $isSidebarOpen = false;
-        }}></button>
+    {#if $isSidebarOpen}
+        <button
+            type="button"
+            class="overlay-button"
+            aria-label="Close sidebar"
+            class:overlay={$isSidebarOpen}
+            on:click={() => ($isSidebarOpen = false)}></button>
+    {/if}
 </main>
 
 <style lang="scss">
