@@ -20,11 +20,11 @@ import {
     Users,
     Vcs,
     Sites,
-    Tokens
+    Tokens,
+    Domains
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
-import { Domains } from '$lib/sdk/domains';
 import { Sources } from '$lib/sdk/sources';
 import {
     REGION_FRA,

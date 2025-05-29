@@ -13,15 +13,15 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { symmetricDifference } from '$lib/helpers/array';
     import { deepClone } from '$lib/helpers/object';
-    import type { DnsRecord } from '$lib/sdk/domains';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
     import { recordTypes } from './store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let selectedRecord: DnsRecord;
+    export let selectedRecord: Models.DnsRecord;
 
     let record = deepClone(selectedRecord);
     let error = '';

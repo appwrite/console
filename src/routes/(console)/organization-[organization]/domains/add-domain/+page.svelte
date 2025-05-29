@@ -10,12 +10,12 @@
     import RecordsCard from '../recordsCard.svelte';
     import { afterNavigate, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import type { Domain } from '$lib/sdk/domains';
+    import type { Models } from '@appwrite.io/console';
 
     let backPage = `${base}/organization-${page.params.organization}/domains`;
 
     let domainName = '';
-    let domain: Domain;
+    let domain: Models.Domain;
 
     async function addDomain() {
         try {

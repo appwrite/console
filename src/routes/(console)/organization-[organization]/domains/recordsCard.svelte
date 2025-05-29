@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import type { Domain } from '$lib/sdk/domains';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { consoleVariables } from '$routes/(console)/store';
@@ -19,8 +18,9 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
+    import type { Models } from '@appwrite.io/console';
 
-    export let domain: Domain;
+    export let domain: Models.Domain;
 
     let verified = undefined;
 
