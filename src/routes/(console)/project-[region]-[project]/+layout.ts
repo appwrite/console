@@ -22,7 +22,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         const [organization, prefs, regionalConsoleVariables, _] = await Promise.all([
             sdk.forConsole.teams.get(project.teamId) as Promise<Organization>,
             sdk.forConsole.account.getPrefs(),
-            sdk.forScopedConsole(project.region).console.variables(),
+            sdk.forConsoleIn(project.region).console.variables(),
             loadAvailableRegions(project.teamId)
         ]);
         if (prefs?.organization !== project.teamId) {

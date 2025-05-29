@@ -137,7 +137,7 @@ export const realtime = {
 export const sdk = {
     forConsole: createConsoleSdk(clientConsole),
 
-    forScopedConsole(region: string) {
+    forConsoleIn(region: string) {
         const regionAwareEndpoint = getApiEndpoint(region);
         if (regionAwareEndpoint !== scopedConsoleClient.config.endpoint) {
             scopedConsoleClient.setEndpoint(regionAwareEndpoint);
