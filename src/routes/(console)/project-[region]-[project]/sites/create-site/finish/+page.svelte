@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { Layout, Typography, Icon, Lights, Step, Card } from '@appwrite.io/pink-svelte';
@@ -17,6 +16,7 @@
     import type { Adapter, BuildRuntime, Framework } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { ConnectRepoModal } from '$lib/components/git';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -66,9 +66,7 @@
     }
 </script>
 
-<Wizard
-    column
-    href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${data.site.$id}`}>
+<Wizard column href={getProjectRoute(`/sites/site-${data.site.$id}`)}>
     <!-- Creating a new stack -->
     <Layout.Stack gap="xxxl">
         <div style:position="relative" style="z-index: 6;">
@@ -132,7 +130,7 @@
                                     source: 'sites_create_finish'
                                 });
                             }}
-                            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${data.site.$id}/domains`}>
+                            href={getProjectRoute(`/sites/site-${data.site.$id}/domains`)}>
                             <Layout.Stack gap="s" style="height: 100%">
                                 <Layout.Stack
                                     direction="row"
@@ -200,7 +198,7 @@
             size="s"
             fullWidthMobile
             secondary
-            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${data.site.$id}`}>
+            href={getProjectRoute(`/sites/site-${data.site.$id}`)}>
             Go to dashboard
         </Button>
     </svelte:fragment>
@@ -208,9 +206,9 @@
 
 {#if showConnectRepositry}
     <ConnectRepoModal
-        bind:show={showConnectRepositry}
         {connect}
         product="sites"
+        bind:show={showConnectRepositry}
         callbackState={{ connectRepo: 'true' }} />
 {/if}
 

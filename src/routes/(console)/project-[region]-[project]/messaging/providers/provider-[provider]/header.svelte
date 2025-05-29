@@ -1,16 +1,13 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
+    import { provider } from './store';
     import { Id } from '$lib/components';
     import { Cover, CoverTitle } from '$lib/layout';
-    import { provider } from './store';
-
-    const projectId = page.params.project;
+    import { getProjectRoute } from '$lib/helpers/project';
 </script>
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/messaging/providers`}>
+        <CoverTitle href={getProjectRoute('/messaging/providers')}>
             {$provider?.name ? $provider?.name : '-'}
         </CoverTitle>
         <Id value={$provider?.$id} event="provider">{$provider?.$id}</Id>

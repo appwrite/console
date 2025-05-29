@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Modal, Paginator } from '$lib/components';
     import Id from '$lib/components/id.svelte';
     import { preferences } from '$lib/stores/preferences';
     import type { Models } from '@appwrite.io/console';
     import { Table } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let show = false;
     export let data: Partial<Models.Document>[];
@@ -42,7 +42,9 @@
                     {#each paginatedItems as doc}
                         <Table.Row.Link
                             {root}
-                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}/document-${doc.$id}`}
+                            href={getProjectRoute(
+                                `/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}/document-${doc.$id}`
+                            )}
                             on:click={() => (show = false)}>
                             <Table.Cell column="$id" {root}>
                                 <Id value={doc.$id}>{doc.$id}</Id>

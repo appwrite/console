@@ -9,7 +9,7 @@
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
-    import { base } from '$app/paths';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let show = false;
     export let selectedDeployment: Models.Deployment = null;
@@ -37,7 +37,9 @@
             });
             if (redirect) {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/deployments/deployment-${deployment.$id}`
+                    getProjectRoute(
+                        `/functions/function-${$func.$id}/deployments/deployment-${deployment.$id}`
+                    )
                 );
             }
         } catch (e) {

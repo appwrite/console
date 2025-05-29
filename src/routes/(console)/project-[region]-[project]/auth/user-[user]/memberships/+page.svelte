@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { page } from '$app/state';
-    import { base } from '$app/paths';
     import { AvatarInitials } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -9,14 +7,12 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Table, Layout, Empty, Card } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
     let selectedMembership: Models.Membership;
     let showDelete = false;
-
-    const region = page.params.region;
-    const project = page.params.project;
 </script>
 
 <Container>
@@ -38,7 +34,7 @@
             {#each data.memberships.memberships as membership}
                 <Table.Row.Link
                     {root}
-                    href={`${base}/project-${region}-${project}/auth/teams/team-${membership.teamId}`}>
+                    href={getProjectRoute(`/auth/teams/team-${membership.teamId}`)}>
                     <Table.Cell column="name" {root}>
                         <Layout.Stack direction="row" alignItems="center">
                             <AvatarInitials size="xs" name={membership.teamName} />

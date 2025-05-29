@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
@@ -9,6 +8,7 @@
     import { Typography } from '@appwrite.io/pink-svelte';
     import { project } from '../../../store';
     import { webhook } from './store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let showDelete = false;
     let error: string;
@@ -22,7 +22,7 @@
                 message: `${$webhook.name} has been deleted`
             });
             trackEvent(Submit.WebhookDelete);
-            await goto(`${base}/project-${$project.region}-${$project.$id}/settings/webhooks`);
+            await goto(getProjectRoute('/settings/webhooks'));
         } catch (e) {
             error = e.message;
             trackError(e, Submit.WebhookDelete);

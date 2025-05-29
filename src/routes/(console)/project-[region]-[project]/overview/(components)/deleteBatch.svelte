@@ -1,12 +1,12 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { base } from '$app/paths';
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { goto, invalidate } from '$app/navigation';
     import Confirm from '$lib/components/confirm.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let showDelete = false;
     export let keyIds: string[] = [];
@@ -41,9 +41,7 @@
             });
 
             trackEvent(event);
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/overview/${slug}`
-            );
+            await goto(getProjectRoute(`/overview/${slug}`));
         } catch (e) {
             error = e.message;
             trackError(e, event);

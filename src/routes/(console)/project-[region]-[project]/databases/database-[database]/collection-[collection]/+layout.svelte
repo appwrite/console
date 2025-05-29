@@ -26,12 +26,11 @@
     import type { Option } from './attributes/store';
     import { CreateAttributePanel } from '$lib/commandCenter/panels';
     import { database } from '../store';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { page } from '$app/state';
     import CreateIndex from './indexes/createIndex.svelte';
-    import { base } from '$app/paths';
     import { canWriteCollections } from '$lib/stores/roles';
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     onMount(() => {
         return realtime
@@ -52,7 +51,9 @@
             keys: page.url.pathname.endsWith($collection.$id) ? ['c'] : ['c', 'd'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/create`
+                    getProjectRoute(
+                        `/databases/database-${$database?.$id}/collection-${$collection?.$id}/create`
+                    )
                 );
             },
             icon: IconPlus,
@@ -73,7 +74,9 @@
             keys: ['g', 'd'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}`
+                    getProjectRoute(
+                        `/databases/database-${$database?.$id}/collection-${$collection?.$id}`
+                    )
                 );
             },
             disabled: page.url.pathname.endsWith($collection.$id),
@@ -84,7 +87,9 @@
             keys: ['g', 'a'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/attributes`
+                    getProjectRoute(
+                        `/databases/database-${$database?.$id}/collection-${$collection?.$id}/attributes`
+                    )
                 );
             },
             disabled: page.url.pathname.endsWith('attributes'),
@@ -95,7 +100,9 @@
             keys: ['g', 'i'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/indexes`
+                    getProjectRoute(
+                        `/databases/database-${$database?.$id}/collection-${$collection?.$id}/indexes`
+                    )
                 );
             },
             disabled: page.url.pathname.endsWith('indexes'),
@@ -106,7 +113,9 @@
             keys: ['g', 'c'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/activity`
+                    getProjectRoute(
+                        `/databases/database-${$database?.$id}/collection-${$collection?.$id}/activity`
+                    )
                 );
             },
             disabled: page.url.pathname.endsWith('activity'),
@@ -117,7 +126,9 @@
             keys: ['g', 'u'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/usage`
+                    getProjectRoute(
+                        `/databases/database-${$database?.$id}/collection-${$collection?.$id}/usage`
+                    )
                 );
             },
             disabled: page.url.pathname.endsWith('usage'),
@@ -128,7 +139,9 @@
             keys: ['g', 's'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/settings`
+                    getProjectRoute(
+                        `/databases/database-${$database?.$id}/collection-${$collection?.$id}/settings`
+                    )
                 );
             },
             disabled: page.url.pathname.endsWith('settings') || !$canWriteCollections,
@@ -138,7 +151,9 @@
             label: 'Display Name',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#display-name`
+                    getProjectRoute(
+                        `/databases/database-${$database.$id}/collection-${$collection.$id}/settings#display-name`
+                    )
                 );
             },
             group: 'collections',
@@ -152,7 +167,9 @@
             label: 'Permissions',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#permissions`
+                    getProjectRoute(
+                        `/databases/database-${$database.$id}/collection-${$collection.$id}/settings#permissions`
+                    )
                 );
             },
             group: 'collections',
@@ -166,7 +183,9 @@
             label: 'Document security',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#document-security`
+                    getProjectRoute(
+                        `/databases/database-${$database.$id}/collection-${$collection.$id}/settings#document-security`
+                    )
                 );
             },
             group: 'collections',

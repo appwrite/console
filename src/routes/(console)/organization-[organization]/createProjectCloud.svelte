@@ -8,9 +8,9 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID, Region as ConsoleRegion, type Models, Region } from '@appwrite.io/console';
     import { Button } from '@appwrite.io/pink-svelte';
-    import { base } from '$app/paths';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { Modal } from '$lib/components';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     const teamId = page.params.organization;
     export let regions: Array<Models.ConsoleRegion> = [];
@@ -18,7 +18,7 @@
 
     let id: string = null;
     let name: string = 'Appwrite project';
-    let region: string = Region.Fra;
+    let region: ConsoleRegion = Region.Fra;
 
     async function onFinish() {
         await invalidate(Dependencies.FUNCTIONS);
@@ -27,12 +27,7 @@
     async function create() {
         try {
             // TODO: fix typing once SDK is updated
-            const project = await sdk.forConsole.projects.create(
-                id ?? ID.unique(),
-                name,
-                teamId,
-                region as ConsoleRegion
-            );
+            await sdk.forConsole.projects.create(id ?? ID.unique(), name, teamId, region);
             trackEvent(Submit.ProjectCreate, {
                 customId: !!id,
                 teamId,
@@ -43,7 +38,7 @@
                 message: `${name} has been created`
             });
             await onFinish();
-            await goto(`${base}/project-${project.region}-${project.$id}`);
+            await goto(getProjectRoute());
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -56,7 +51,7 @@
     onDestroy(() => {
         id = null;
         name = null;
-        region = 'fra';
+        region = ConsoleRegion.Fra;
     });
 </script>
 

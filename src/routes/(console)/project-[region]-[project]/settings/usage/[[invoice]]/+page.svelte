@@ -9,16 +9,15 @@
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/layout/usage.svelte';
     import { BillingPlan } from '$lib/constants.js';
-    import { base } from '$app/paths';
     import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { getCountryName } from '$lib/helpers/diallingCodes.js';
     import { Accordion, Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconChartSquareBar } from '@appwrite.io/pink-icons-svelte';
-    import { page } from '$app/state';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
-    $: baseRoute = `${base}/project-${page.params.region}-${page.params.project}`;
+    $: baseRoute = getProjectRoute();
     $: network = data.usage.network;
     $: users = data.usage.users;
     $: usersTotal = data.usage.usersTotal;

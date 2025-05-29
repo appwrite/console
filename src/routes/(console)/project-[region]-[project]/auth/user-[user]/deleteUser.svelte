@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -9,6 +8,7 @@
     import Confirm from '$lib/components/confirm.svelte';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { user } from './store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let showDelete = false;
     let error: string;
@@ -21,7 +21,7 @@
                 message: `${$user.name ? $user.name : 'User'} has been deleted`
             });
             trackEvent(Submit.UserDelete);
-            await goto(`${base}/project-${page.params.region}-${page.params.project}/auth`);
+            await goto(getProjectRoute('/auth'));
         } catch (e) {
             error = e.message;
             trackError(e, Submit.UserDelete);

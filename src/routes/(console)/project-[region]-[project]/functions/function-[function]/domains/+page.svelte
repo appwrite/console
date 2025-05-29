@@ -13,6 +13,7 @@
     import { app } from '$lib/stores/app';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import Table from './table.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let { data } = $props();
 
@@ -25,7 +26,7 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery placeholder="Search domain" />
         <Button
-            href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/domains/add-domain`}
+            href={getProjectRoute(`/functions/function-${page.params.function}/domains/add-domain`)}
             on:click={() => {
                 trackEvent(Click.DomainCreateClick, {
                     source: 'functions_domain_overview'
@@ -72,7 +73,9 @@
 
                     <Button
                         secondary
-                        href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/domains/add-domain`}
+                        href={getProjectRoute(
+                            `/functions/function-${page.params.function}/domains/add-domain`
+                        )}
                         size="s">
                         Add domain
                     </Button>

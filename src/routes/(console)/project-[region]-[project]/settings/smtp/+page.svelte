@@ -10,7 +10,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import InputNumber from '$lib/elements/forms/inputNumber.svelte';
-    import { base } from '$app/paths';
     import deepEqual from 'deep-equal';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
@@ -18,6 +17,7 @@
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { upgradeURL } from '$lib/stores/billing';
     import { Link, Selector, Alert } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let enabled = false;
     let senderName: string;
@@ -120,8 +120,7 @@
         <CardGrid>
             <svelte:fragment slot="title">SMTP server</svelte:fragment>
             You can customize the email service by providing your own SMTP server. View your email templates
-            <Link.Anchor href={`${base}/project-${$project.region}-${$project.$id}/auth/templates`}
-                >here</Link.Anchor>
+            <Link.Anchor href={getProjectRoute('/auth/templates')}>here</Link.Anchor>
             <svelte:fragment slot="aside">
                 {#if $organization.billingPlan === BillingPlan.FREE}
                     <Alert.Inline

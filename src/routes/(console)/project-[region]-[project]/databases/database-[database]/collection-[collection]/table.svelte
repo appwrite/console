@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, Confirm, Id } from '$lib/components';
@@ -26,6 +25,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: PageData;
 
@@ -186,7 +186,9 @@
         <Table.Row.Link
             {root}
             id={document.$id}
-            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
+            href={getProjectRoute(
+                `/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`
+            )}>
             <Table.Cell column="$id" {root}>
                 {#key document.$id}
                     <Id value={document.$id}>
@@ -209,7 +211,9 @@
                                         e.preventDefault();
                                         e.stopPropagation();
                                         goto(
-                                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
+                                            getProjectRoute(
+                                                `/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
+                                            )
                                         );
                                     }}>
                                     {#each args as arg, i}

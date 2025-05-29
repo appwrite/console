@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Container, Usage } from '$lib/layout';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
     $: filesTotal = data.filesTotal;
@@ -12,7 +12,7 @@
 
 <Container>
     <Usage
-        path={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/usage`}
+        path={getProjectRoute(`/storage/bucket-${page.params.bucket}/usage`)}
         total={filesTotal}
         count={files}
         countMetadata={{
@@ -21,7 +21,7 @@
         }} />
 
     <Usage
-        path={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/usage`}
+        path={getProjectRoute(`/storage/bucket-${page.params.bucket}/usage`)}
         total={transformationsTotal}
         count={transformations}
         countMetadata={{

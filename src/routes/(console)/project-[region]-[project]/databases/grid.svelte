@@ -1,12 +1,10 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { CardContainer, GridItem1, Id } from '$lib/components';
     import { canWriteDatabases } from '$lib/stores/roles';
     import type { PageData } from './$types';
+    import { getProjectRoute } from '$lib/helpers/project';
     export let data: PageData;
     export let showCreate = false;
-    const project = page.params.project;
 </script>
 
 <CardContainer
@@ -16,8 +14,7 @@
     event="database"
     service="databases">
     {#each data.databases.databases as database}
-        <GridItem1
-            href={`${base}/project-${page.params.region}-${project}/databases/database-${database.$id}`}>
+        <GridItem1 href={getProjectRoute(`/databases/database-${database.$id}`)}>
             <svelte:fragment slot="title">{database.name}</svelte:fragment>
             <svelte:fragment slot="subtitle">
                 {#if data.lastBackups && data.lastBackups[database.$id]}

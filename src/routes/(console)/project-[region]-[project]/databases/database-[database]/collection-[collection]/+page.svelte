@@ -21,11 +21,11 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { base } from '$app/paths';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
     import { APPWRITE_OFFICIALS_ORG, isCloud } from '$lib/system';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: PageData;
 
@@ -121,7 +121,9 @@
                     {#if !$isSmallViewport}
                         <Button
                             disabled={!(hasAttributes && hasValidAttributes)}
-                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                            href={getProjectRoute(
+                                `/databases/database-${page.params.database}/collection-${page.params.collection}/create`
+                            )}
                             event="create_document">
                             <Icon icon={IconPlus} slot="start" size="s" />
                             Create document
@@ -132,7 +134,9 @@
             {#if $isSmallViewport}
                 <Button
                     disabled={!(hasAttributes && hasValidAttributes)}
-                    href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                    href={getProjectRoute(
+                        `/databases/database-${page.params.database}/collection-${page.params.collection}/create`
+                    )}
                     event="create_document">
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create document
@@ -186,7 +190,9 @@
                             size="s"
                             ariaLabel="create document">Documentation</Button>
                         <Button
-                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                            href={getProjectRoute(
+                                `/databases/database-${page.params.database}/collection-${page.params.collection}/create`
+                            )}
                             secondary
                             disabled={!$canWriteDocuments}
                             size="s">

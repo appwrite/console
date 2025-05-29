@@ -18,12 +18,12 @@
     import { isCloud } from '$lib/system';
     import { page } from '$app/state';
     import Wizard from '$lib/layout/wizard.svelte';
-    import { base } from '$app/paths';
     import { writable } from 'svelte/store';
     import { isASubdomain } from '$lib/helpers/tlds';
     import { consoleVariables } from '$routes/(console)/store';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let { data } = $props();
 
@@ -42,7 +42,7 @@
     });
     let verified = $state(false);
 
-    const routeBase = `${base}/project-${page.params.region}-${page.params.project}/settings/domains`;
+    const routeBase = getProjectRoute('/settings/domains');
     const isSubmitting = writable(false);
 
     async function verify() {

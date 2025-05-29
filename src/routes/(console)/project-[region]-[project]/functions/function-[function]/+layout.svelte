@@ -6,9 +6,7 @@
     import { invalidate, goto } from '$app/navigation';
     import { registerCommands } from '$lib/commandCenter';
     import { func, showCreateDeployment } from './store';
-    import { project } from '../../store';
     import type { Models } from '@appwrite.io/console';
-    import { base } from '$app/paths';
     import { canWriteFunctions } from '$lib/stores/roles';
     import {
         IconCalendar,
@@ -18,6 +16,7 @@
         IconSearch,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     onMount(() => {
         let previousStatus = null;
@@ -49,9 +48,7 @@
             label: 'Create deployment',
             async callback() {
                 if (!page.url.pathname.endsWith($func.$id)) {
-                    await goto(
-                        `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}`
-                    );
+                    await goto(getProjectRoute(`/functions/function-${$func.$id}`));
                 }
                 showCreateDeployment.set(true);
             },
@@ -64,7 +61,7 @@
             label: 'Permissions',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#permissions`
+                    getProjectRoute(`/functions/function-${$func.$id}/settings#permissions`)
                 );
                 scrollBy({ top: -100 });
             },
@@ -75,9 +72,7 @@
         {
             label: 'Events',
             async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#events`
-                );
+                await goto(getProjectRoute(`/functions/function-${$func.$id}/settings#events`));
                 scrollBy({ top: -100 });
             },
             icon: IconCalendar,
@@ -87,9 +82,7 @@
         {
             label: 'Variables',
             async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#variables`
-                );
+                await goto(getProjectRoute(`/functions/function-${$func.$id}/settings#variables`));
             },
             icon: IconList,
             group: 'functions',
@@ -98,9 +91,7 @@
         {
             label: 'Timeout',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#timeout`
-                );
+                goto(getProjectRoute(`/functions/function-${$func.$id}/settings#timeout`));
             },
             icon: IconXCircle,
             group: 'functions',
@@ -109,9 +100,7 @@
         {
             label: 'Schedule',
             async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#schedule`
-                );
+                await goto(getProjectRoute(`/functions/function-${$func.$id}/settings#schedule`));
                 scrollBy({ top: -100 });
             },
             icon: IconClock,
@@ -121,9 +110,7 @@
         {
             label: 'Go to deployments',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}`
-                );
+                goto(getProjectRoute(`/functions/function-${$func.$id}`));
             },
             keys: ['g', 'd'],
             group: 'navigation',
@@ -133,9 +120,7 @@
         {
             label: 'Go to usage',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/usage`
-                );
+                goto(getProjectRoute(`/functions/function-${$func.$id}/usage`));
             },
             keys: ['g', 'u'],
             group: 'navigation',
@@ -145,9 +130,7 @@
         {
             label: 'Go to executions',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/executions`
-                );
+                goto(getProjectRoute(`/functions/function-${$func.$id}/executions`));
             },
             keys: ['g', 'e'],
             group: 'navigation',
@@ -157,9 +140,7 @@
         {
             label: 'Go to settings',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings`
-                );
+                goto(getProjectRoute(`/functions/function-${$func.$id}/settings`));
             },
             keys: ['g', 's'],
             group: 'navigation',

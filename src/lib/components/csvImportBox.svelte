@@ -1,11 +1,10 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { goto, invalidate } from '$app/navigation';
-    import { getProjectId } from '$lib/helpers/project';
+    import { getProjectId, getProjectRoute } from '$lib/helpers/project';
     import { writable, type Writable } from 'svelte/store';
     import { addNotification } from '$lib/stores/notifications';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -32,7 +31,7 @@
         importData: Payload
     ) {
         await invalidate(Dependencies.DOCUMENTS);
-        const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}`;
+        const url = getProjectRoute(`/databases/database-${databaseId}/collection-${collectionId}`);
 
         // extract clean message from nested backend error.
         const match = importData.errors.join('').match(/message: '(.*)' Message:/i);

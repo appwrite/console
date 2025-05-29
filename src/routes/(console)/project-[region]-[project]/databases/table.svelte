@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { Id } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { columns } from './store';
     import { Tooltip, Table } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -25,9 +24,7 @@
         {/each}
     </svelte:fragment>
     {#each data.databases.databases as database (database.$id)}
-        <Table.Row.Link
-            {root}
-            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${database.$id}`}>
+        <Table.Row.Link {root} href={getProjectRoute(`/databases/database-${database.$id}`)}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

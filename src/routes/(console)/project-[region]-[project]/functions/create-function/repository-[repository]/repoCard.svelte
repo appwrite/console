@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Card, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let repository: Models.ProviderRepository;
 </script>
@@ -17,10 +16,6 @@
                 {repository?.organization}/{repository?.name}
             </Typography.Text>
         </Layout.Stack>
-        <Button
-            secondary
-            href={`${base}/project-${page.params.region}-${page.params.project}/functions/create-function`}>
-            Change
-        </Button>
+        <Button secondary href={getProjectRoute('/functions/create-function')}>Change</Button>
     </Layout.Stack>
 </Card.Base>

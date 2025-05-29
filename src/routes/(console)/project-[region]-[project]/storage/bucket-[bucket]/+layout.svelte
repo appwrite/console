@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import {
         registerCommands,
@@ -9,18 +8,16 @@
     } from '$lib/commandCenter';
     import { fileSearcher } from '$lib/commandCenter/searchers';
     import { canWriteBuckets } from '$lib/stores/roles';
-    import { project } from '../../store';
     import { bucket } from './store';
     import { IconKey, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     $: $registerCommands([
         {
             label: 'Create file',
             async callback() {
                 if (!page.url.pathname.endsWith($bucket.$id)) {
-                    goto(
-                        `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/create`
-                    );
+                    goto(getProjectRoute(`/storage/bucket-${$bucket.$id}/create`));
                 }
             },
             keys: page.url.pathname.endsWith($bucket.$id) ? ['c'] : ['c', 'f'],
@@ -30,9 +27,7 @@
         {
             label: 'Permissions',
             async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/settings#permissions`
-                );
+                await goto(getProjectRoute(`/storage/bucket-${$bucket.$id}/settings#permissions`));
                 scrollBy({ top: -100 });
             },
             group: 'buckets',
@@ -42,9 +37,7 @@
         {
             label: 'Extensions',
             async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/settings#extensions`
-                );
+                await goto(getProjectRoute(`/storage/bucket-${$bucket.$id}/settings#extensions`));
             },
             group: 'buckets',
             icon: IconPuzzle,
@@ -54,7 +47,7 @@
             label: 'File security',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/settings#file-security`
+                    getProjectRoute(`/storage/bucket-${$bucket.$id}/settings#file-security`)
                 );
                 scrollBy({ top: -100 });
             },
@@ -65,9 +58,7 @@
         {
             label: 'Go to files',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}`
-                );
+                goto(getProjectRoute(`/storage/bucket-${$bucket.$id}`));
             },
             disabled: page.url.pathname.endsWith($bucket.$id),
             keys: ['g', 'f'],
@@ -77,9 +68,7 @@
         {
             label: 'Go to usage',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/usage`
-                );
+                goto(getProjectRoute(`/storage/bucket-${$bucket.$id}/usage`));
             },
             disabled: page.url.pathname.endsWith('usage'),
             keys: ['g', 'u'],
@@ -89,9 +78,7 @@
         {
             label: 'Go to settings',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/settings`
-                );
+                goto(getProjectRoute(`/storage/bucket-${$bucket.$id}/settings`));
             },
             disabled: page.url.pathname.endsWith('settings') || !$canWriteBuckets,
             keys: ['g', 's'],

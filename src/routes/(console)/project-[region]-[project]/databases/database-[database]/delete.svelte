@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
@@ -11,6 +10,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { type Models, Query } from '@appwrite.io/console';
     import { Spinner, Table } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     const databaseId = page.params.database;
 
@@ -75,7 +75,7 @@
                 type: 'success',
                 message: `${$database.name} has been deleted`
             });
-            await goto(`${base}/project-${page.params.region}-${page.params.project}/databases`);
+            await goto(getProjectRoute('/databases'));
             trackEvent(Submit.DatabaseDelete);
         } catch (error) {
             addNotification({

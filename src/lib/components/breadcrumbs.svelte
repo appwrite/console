@@ -15,6 +15,7 @@
     import { newOrgModal } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { page } from '$app/stores';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     type Project = {
         name: string;
@@ -141,7 +142,7 @@
                                     if (index < 4) {
                                         return {
                                             name: project.name,
-                                            href: `${base}/project-${project.region}-${project.$id}/overview`
+                                            href: getProjectRoute(project, '/overview')
                                         };
                                     } else if (index === 4) {
                                         return {
@@ -317,8 +318,7 @@
                         {#if index < 4}
                             <div use:melt={$itemProjects}>
                                 <ActionMenu.Root>
-                                    <ActionMenu.Item.Anchor
-                                        href={`${base}/project-${project.region}-${project.$id}`}>
+                                    <ActionMenu.Item.Anchor href={getProjectRoute(project)}>
                                         {project.name}
                                     </ActionMenu.Item.Anchor>
                                 </ActionMenu.Root>

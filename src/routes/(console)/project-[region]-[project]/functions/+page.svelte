@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import {
@@ -27,12 +26,11 @@
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
     import Avatar from '$lib/components/avatar.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
     let offset = 0;
-
-    const project = page.params.project;
 
     onMount(async () => {
         const from = page.url.searchParams.get('from');
@@ -43,14 +41,14 @@
                     const template = page.url.searchParams.get('template');
                     const templateConfig = page.url.searchParams.get('templateConfig');
                     goto(
-                        `${base}/project-${page.params.region}-${project}/functions/create-function/template-${template}?templateConfig=${templateConfig}`
+                        getProjectRoute(
+                            `/functions/create-function/template-${template}?templateConfig=${templateConfig}`
+                        )
                     );
                     break;
                 }
                 case 'cover':
-                    goto(
-                        `${base}/project-${page.params.region}-${project}/functions/create-function`
-                    );
+                    goto(getProjectRoute('/functions/create-function'));
                     break;
             }
         }
@@ -63,8 +61,7 @@
     $: $registerCommands([
         {
             label: 'Create function',
-            callback: () =>
-                goto(`${base}/project-${page.params.region}-${project}/functions/create-function`),
+            callback: () => goto(getProjectRoute('/functions/create-function')),
             keys: ['c'],
             disabled:
                 $wizard.show ||
@@ -82,7 +79,7 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery placeholder="Search by name or ID" />
 
-        <Button href={`${base}/project-${page.params.region}-${project}/functions/create-function`}>
+        <Button href={getProjectRoute('/functions/create-function')}>
             <Icon icon={IconPlus} slot="start" />
             Create function
         </Button>
@@ -95,11 +92,9 @@
             event="functions"
             total={data.functions.total}
             service="functions"
-            on:click={() =>
-                goto(`${base}/project-${page.params.region}-${project}/functions/create-function`)}>
+            on:click={() => goto(getProjectRoute('/functions/create-function'))}>
             {#each data.functions.functions as func (func.$id)}
-                <GridItem1
-                    href={`${base}/project-${page.params.region}-${project}/functions/function-${func.$id}`}>
+                <GridItem1 href={getProjectRoute(`/functions/function-${func.$id}`)}>
                     <svelte:fragment slot="title">
                         <Layout.Stack gap="l" alignItems="center" direction="row" inline>
                             <Avatar alt={func.name} size="m">
@@ -133,11 +128,7 @@
             total={data.functions.total} />
     {:else if data?.search}
         <EmptySearch hidePages bind:search={data.search} target="functions">
-            <Button
-                secondary
-                href={`${base}/project-${page.params.region}-${page.params.project}/functions`}>
-                Clear search
-            </Button>
+            <Button secondary href={getProjectRoute('/functions')}>Clear search</Button>
         </EmptySearch>
     {:else}
         <Empty
@@ -145,9 +136,6 @@
             allowCreate={$canWriteFunctions}
             href="https://appwrite.io/docs/products/functions"
             target="function"
-            on:click={() =>
-                goto(
-                    `${base}/project-${page.params.region}-${project}/functions/create-function`
-                )} />
+            on:click={() => goto(getProjectRoute('/functions/create-function'))} />
     {/if}
 </Container>

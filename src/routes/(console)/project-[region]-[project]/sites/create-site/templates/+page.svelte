@@ -10,6 +10,7 @@
     import { capitalize } from '$lib/helpers/string';
     import { app } from '$lib/stores/app.js';
     import { getFrameworkIcon } from '$lib/stores/sites.js';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -82,12 +83,7 @@
     <title>Create site - Appwrite</title>
 </svelte:head>
 
-<Wizard
-    href={`${base}/project-${page.params.region}-${page.params.project}/sites/`}
-    title="Create site"
-    invertColumns
-    stickySide
-    hideFooter>
+<Wizard href={getProjectRoute('/sites/')} title="Create site" invertColumns stickySide hideFooter>
     <svelte:fragment slot="aside">
         <Layout.Stack gap="xl">
             <InputSearch
@@ -148,7 +144,9 @@
 
                             <Card.Link
                                 variant="secondary"
-                                href={`${base}/project-${page.params.region}-${page.params.project}/sites/create-site/templates/template-${template.key}`}
+                                href={getProjectRoute(
+                                    `/sites/create-site/templates/template-${template.key}`
+                                )}
                                 padding="xxs">
                                 <Card.Media
                                     title={template.name}
@@ -180,9 +178,7 @@
                 hidePagination
                 target="templates"
                 search={page.url.searchParams.get('search')}>
-                <Button
-                    secondary
-                    href={`${base}/project-${page.params.region}-${page.params.project}/sites/create-site/templates`}
+                <Button secondary href={getProjectRoute('/sites/create-site/templates')}
                     >Clear search</Button>
             </EmptySearch>
         {/if}

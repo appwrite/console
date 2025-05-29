@@ -30,20 +30,19 @@
     import PlatformAndroidImgSourceDark from './assets/platform-android-dark.svg';
     import PlatformFlutterImgSource from './assets/platform-flutter.svg';
     import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.svg';
-    import { base } from '$app/paths';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { AvatarGroup } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
-    import { page } from '$app/state';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     function createKey() {
         trackEvent(Click.KeyCreateClick, {
             source: 'onboarding'
         });
-        goto(`${base}/project-${page.params.region}-${page.params.project}/overview/keys/create`, {
+        goto(getProjectRoute('/overview/keys/create'), {
             replaceState: true
         });
     }
@@ -393,9 +392,7 @@
                                     <Card.Button
                                         on:click={() => {
                                             trackEvent(Click.OnboardingSetupDatabaseClick);
-                                            goto(
-                                                `${base}/project-${page.params.region}-${page.params.project}/databases`
-                                            );
+                                            goto(getProjectRoute('/databases'));
                                         }}
                                         padding="s"
                                         ><Layout.Stack gap="xl"
@@ -488,7 +485,9 @@
                                                             justifyContent="flex-end">
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
-                                                                href={`${base}/project-${page.params.region}-${page.params.project}/auth/settings`}
+                                                                href={getProjectRoute(
+                                                                    '/auth/settings'
+                                                                )}
                                                                 on:click={() => {
                                                                     trackEvent(
                                                                         Click.OnboardingAuthEmailPasswordClick
@@ -498,7 +497,9 @@
                                                             </Link.Anchor>
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
-                                                                href={`${base}/project-${page.params.region}-${page.params.project}/auth/settings`}
+                                                                href={getProjectRoute(
+                                                                    '/auth/settings'
+                                                                )}
                                                                 on:click={() => {
                                                                     trackEvent(
                                                                         Click.OnboardingAuthOauth2Click
@@ -506,7 +507,9 @@
                                                                 }}>OAuth 2</Link.Anchor>
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
-                                                                href={`${base}/project-${page.params.region}-${page.params.project}/auth/settings`}
+                                                                href={getProjectRoute(
+                                                                    '/auth/settings'
+                                                                )}
                                                                 on:click={() => {
                                                                     trackEvent(
                                                                         Click.OnboardingAuthAllMethodsClick

@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -38,6 +37,7 @@
     import type { ComponentProps } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import CsvDisabled from '../csvDisabled.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     const databaseId = page.params.database;
 
@@ -141,8 +141,9 @@
                             {#if isRelationship(attribute)}
                                 <span>
                                     with <a
-                                        href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`}
-                                        ><b data-private>{attribute?.key}</b></a>
+                                        href={getProjectRoute(
+                                            `/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`
+                                        )}><b data-private>{attribute?.key}</b></a>
                                 </span>
                             {/if}
                         {/if}

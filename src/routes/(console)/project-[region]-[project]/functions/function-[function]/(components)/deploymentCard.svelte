@@ -18,9 +18,8 @@
     import { isCloud } from '$lib/system';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import Link from '$lib/elements/link.svelte';
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import type { Snippet } from 'svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let {
         deployment,
@@ -114,7 +113,9 @@
                         {:else}
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                                 Only the <Link
-                                    href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/deployment-${$func.deploymentId}`}
+                                    href={getProjectRoute(
+                                        `/functions/function-${$func.$id}/deployment-${$func.deploymentId}`
+                                    )}
                                     variant="default">active deployment</Link> has a domain.
                             </Typography.Text>
                         {/if}

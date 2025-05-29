@@ -8,10 +8,10 @@
     import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { base } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/state';
     import { showDevKeysCreateModal } from '$routes/(console)/project-[region]-[project]/overview/store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let isSubmitting = false;
     let name = '',
@@ -30,9 +30,7 @@
 
             $showDevKeysCreateModal = false;
             trackEvent(Submit.DevKeyCreate);
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/overview/dev-keys/${$id}`
-            );
+            await goto(getProjectRoute(`/overview/dev-keys/${$id}`));
             addNotification({
                 message: `Dev key has been created`,
                 type: 'success'

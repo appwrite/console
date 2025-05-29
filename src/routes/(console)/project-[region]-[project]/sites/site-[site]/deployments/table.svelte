@@ -10,7 +10,6 @@
     import Delete from './deleteDeploymentModal.svelte';
     import RedeployModal from '../../redeployModal.svelte';
     import Cancel from './cancelDeploymentModal.svelte';
-    import { base } from '$app/paths';
     import { Badge, FloatingActionBar, Layout, Status, Table } from '@appwrite.io/pink-svelte';
     import { columns } from './store';
     import ActivateDeploymentModal from '../../activateDeploymentModal.svelte';
@@ -24,6 +23,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { site } from '$routes/(console)/project-[region]-[project]/sites/site-[site]/store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: PageData;
 
@@ -81,7 +81,9 @@
         <Table.Row.Link
             {root}
             id={deployment.$id}
-            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`}>
+            href={getProjectRoute(
+                `/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`
+            )}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

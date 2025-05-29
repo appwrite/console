@@ -1,7 +1,6 @@
 <script lang="ts">
     import { EmptySearch, Id } from '.';
     import { onMount } from 'svelte';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
@@ -30,6 +29,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
     import { showCreateBucket } from '$routes/(console)/project-[region]-[project]/storage/+page.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let show: boolean;
     export let mimeTypeQuery: string = 'image/';
@@ -531,9 +531,7 @@
                                         <Button
                                             secondary
                                             on:click={async () => {
-                                                await goto(
-                                                    `${base}/project-${page.params.region}-${page.params.project}/storage`
-                                                );
+                                                await goto(getProjectRoute('/storage'));
                                                 $showCreateBucket = true;
                                             }}>
                                             Create bucket

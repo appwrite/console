@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { Layout } from '@appwrite.io/pink-svelte';
     import Form from '$lib/elements/forms/form.svelte';
@@ -12,6 +10,7 @@
     import Step2 from './step2.svelte';
     import Step3 from './step3.svelte';
     import Button from '$lib/elements/forms/button.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let showExitModal = false;
 
@@ -42,9 +41,7 @@
             trackEvent(Submit.WebhookCreate, {
                 events: events
             });
-            goto(
-                `${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/${webhook.$id}`
-            );
+            goto(getProjectRoute(`/settings/webhooks/${webhook.$id}`));
         } catch (error) {
             trackError(error.message, Submit.DomainCreate);
             throw new Error(error.message);
@@ -55,7 +52,7 @@
 <Form onSubmit={create}>
     <Wizard
         title="Create webhook"
-        href={`${base}/project-${page.params.region}-${page.params.project}/settings/webhooks`}
+        href={getProjectRoute('/settings/webhooks')}
         bind:showExitModal
         column
         confirmExit>

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { EmptySearch, PaginationWithLimit } from '$lib/components/index.js';
     import { Button } from '$lib/elements/forms';
     import Container from '$lib/layout/container.svelte';
@@ -10,6 +9,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import Table from './table.svelte';
     import { ResponsiveContainerHeader } from '$lib/layout';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let { data } = $props();
 </script>
@@ -21,7 +21,7 @@
         searchPlaceholder="Search by domain"
         analyticsSource="settings_domain_overview">
         <Button
-            href={`${base}/project-${page.params.region}-${page.params.project}/settings/domains/add-domain`}
+            href={getProjectRoute('/settings/domains/add-domain')}
             on:click={() => {
                 trackEvent(Click.DomainCreateClick, {
                     source: 'settings_domain_overview'
@@ -66,7 +66,7 @@
 
                     <Button
                         secondary
-                        href={`${base}/project-${page.params.region}-${page.params.project}/settings/domains/add-domain`}
+                        href={getProjectRoute('/settings/domains/add-domain')}
                         size="s">
                         Add domain
                     </Button>

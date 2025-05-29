@@ -30,10 +30,10 @@
     import { canWriteFunctions } from '$lib/stores/roles';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import DownloadActionMenuItem from '../(components)/downloadActionMenuItem.svelte';
-    import { base } from '$app/paths';
     import { isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
     import RedeployModal from '../(modals)/redeployModal.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -116,7 +116,9 @@
                 </Menu>
                 {#if data.func.deploymentId === data.deployment.$id && data.deployment.status === 'ready'}
                     <Button
-                        href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/executions/execute-function`}
+                        href={getProjectRoute(
+                            `/functions/function-${page.params.function}/executions/execute-function`
+                        )}
                         disabled={isCloud && $readOnly}>
                         Execute
                     </Button>

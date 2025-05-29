@@ -13,7 +13,6 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Cancel from './(modals)/cancelDeploymentModal.svelte';
-    import { base } from '$app/paths';
     import {
         ActionMenu,
         Badge,
@@ -39,6 +38,7 @@
     import { Menu } from '$lib/components/menu';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let columns: Column[];
     export let data: PageData;
@@ -103,7 +103,9 @@
         <Table.Row.Link
             {root}
             id={deployment.$id}
-            href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/deployment-${deployment.$id}`}>
+            href={getProjectRoute(
+                `/functions/function-${page.params.function}/deployment-${deployment.$id}`
+            )}>
             {#each columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

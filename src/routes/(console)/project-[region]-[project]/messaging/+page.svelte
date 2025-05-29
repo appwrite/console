@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import {
         Empty,
@@ -39,6 +38,7 @@
     import { Confirm } from '$lib/components';
     import { onDestroy, onMount } from 'svelte';
     import { stopPolling, pollMessagesStatus } from './helper';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
     let selected: string[] = [];
@@ -133,7 +133,7 @@
                 <Table.Row.Link
                     {root}
                     id={message.$id}
-                    href={`${base}/project-${region}-${project}/messaging/message-${message.$id}`}>
+                    href={getProjectRoute(`/messaging/message-${message.$id}`)}>
                     {#each $columns as column (column.id)}
                         <Table.Cell column={column.id} {root}>
                             {#if column.id === '$id'}
@@ -212,9 +212,7 @@
                 <Button external href="https://appwrite.io/docs/products/messaging/messages" text>
                     Documentation
                 </Button>
-                <Button secondary href={`${base}/project-${region}-${project}/messaging`}>
-                    Clear search
-                </Button>
+                <Button secondary href={getProjectRoute('/messaging')}>Clear search</Button>
             </div>
         </EmptySearch>
     {:else}

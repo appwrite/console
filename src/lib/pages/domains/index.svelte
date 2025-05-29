@@ -28,8 +28,7 @@
         IconRefresh,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { page } from '$app/state';
-    import { base } from '$app/paths';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let rules: Models.ProxyRuleList;
     export let dependency: Dependencies;
@@ -60,10 +59,7 @@
             <SearchQuery placeholder="Search by name" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Button
-                href={`${base}/project-${page.params.region}-${page.params.project}/settings/domains/create`}
-                event="create_user"
-                size="s">
+            <Button href={getProjectRoute('/settings/domains/create')} event="create_user" size="s">
                 <Icon size="s" icon={IconPlus} slot="start" />
                 <span class="text">Create domain</span>
             </Button>

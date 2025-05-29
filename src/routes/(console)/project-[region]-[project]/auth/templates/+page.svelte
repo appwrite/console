@@ -32,7 +32,6 @@
 </script>
 
 <script lang="ts">
-    import { base } from '$app/paths';
     import { CardGrid } from '$lib/components';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
@@ -59,7 +58,7 @@
         EmailTemplateLocale
     } from '@appwrite.io/console';
     import { Accordion, Alert, Badge, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
-    import { page } from '$app/state';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -76,7 +75,7 @@
 
     async function openEmail(type: string) {
         type === emailOpen ? (emailOpen = null) : (emailOpen = type);
-        $emailTemplate = await loadEmailTemplate(page.params.project, type, 'en');
+        // $emailTemplate = await loadEmailTemplate(page.params.project, type, 'en');
         $baseEmailTemplate = { ...$emailTemplate };
     }
 </script>
@@ -89,10 +88,7 @@
             title="Custom SMTP server is required for customizing emails">
             Configure a custom SMTP server to enable custom email templates and prevent emails from
             being labeled as spam.
-            <Button
-                compact
-                slot="actions"
-                href={`${base}/project-${page.params.region}-${page.params.project}/settings/smtp`}>
+            <Button compact slot="actions" href={getProjectRoute('/settings/smtp')}>
                 SMTP settings
             </Button>
         </Alert.Inline>
@@ -187,6 +183,7 @@
                         <Email2FaTemplate /></Layout.Stack>
                 </Accordion>
                 <Accordion
+                    hideDivider
                     title="Session alert"
                     bind:open={emailSessionAlertOpen}
                     on:click={(e) => {
@@ -201,11 +198,7 @@
             </Layout.Stack>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <Button
-                href={`${base}/project-${page.params.region}-${page.params.project}/settings/smtp`}
-                secondary>
-                SMTP settings
-            </Button>
+            <Button href={getProjectRoute('/settings/smtp')} secondary>SMTP settings</Button>
         </svelte:fragment>
     </CardGrid>
     {#if isCloud && $currentPlan.emailBranding}

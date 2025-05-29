@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { Empty, Id } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
@@ -16,6 +14,7 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { View } from '$lib/helpers/load';
     import { goto } from '$app/navigation';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: PageData;
 
@@ -33,9 +32,7 @@
     <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
         <ViewSelector {columns} view={View.Table} hideView />
         {#if $canWriteWebhooks}
-            <Button
-                href={`${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/create`}
-                event="create_webhook">
+            <Button href={getProjectRoute('/settings/webhooks/create')} event="create_webhook">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create webhook
             </Button>
@@ -50,9 +47,7 @@
                 {/each}
             </svelte:fragment>
             {#each data.webhooks.webhooks as webhook}
-                <Table.Row.Link
-                    {root}
-                    href={`${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/${webhook.$id}`}>
+                <Table.Row.Link {root} href={getProjectRoute(`/settings/webhooks/${webhook.$id}`)}>
                     {#each $columns as column (column.id)}
                         <Table.Cell column={column.id} {root}>
                             {#if column.id === '$id'}
@@ -92,10 +87,7 @@
             single
             href="https://appwrite.io/docs/advanced/platform/webhooks"
             target="webhook"
-            on:click={() =>
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/create`
-                )} />
+            on:click={() => goto(getProjectRoute('/settings/webhooks/create'))} />
     {/if}
 </Container>
 

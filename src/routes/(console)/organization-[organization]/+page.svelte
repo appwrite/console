@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import CreateProject from './createProject.svelte';
@@ -39,6 +38,7 @@
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
     import { regions as regionsStore } from '$lib/stores/organization';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -104,7 +104,7 @@
             trackEvent(Submit.ProjectCreate, {
                 teamId: page.params.organization
             });
-            await goto(`${base}/project-${project.region}-${project.$id}/settings/migrations`);
+            await goto(getProjectRoute(project, '/settings/migrations'));
             openImportWizard();
             loading.set(false);
         } catch (e) {
@@ -155,7 +155,7 @@
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
-                <GridItem1 href={`${base}/project-${project.region}-${project.$id}`}>
+                <GridItem1 href={getProjectRoute(project)}>
                     <svelte:fragment slot="eyebrow">
                         {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
                     </svelte:fragment>

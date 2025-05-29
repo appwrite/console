@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
@@ -27,6 +26,7 @@
     import Configuration from '../../configuration.svelte';
     import { consoleVariables } from '$routes/(console)/store';
     import Domain from '../../domain.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
     let showExitModal = false;
@@ -144,7 +144,9 @@
             });
 
             await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                getProjectRoute(
+                    `/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                )
             );
         } catch (e) {
             addNotification({
@@ -160,11 +162,7 @@
     <title>Create site - Appwrite</title>
 </svelte:head>
 
-<Wizard
-    title="Create site"
-    bind:showExitModal
-    href={`${base}/project-${page.params.region}-${page.params.project}/sites/`}
-    confirmExit>
+<Wizard title="Create site" bind:showExitModal href={getProjectRoute('/sites/')} confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
             <Card radius="s" padding="s">
@@ -179,9 +177,7 @@
                             {data.repository?.organization}/{data.repository?.name}
                         </Typography.Text>
                     </Layout.Stack>
-                    <Button
-                        secondary
-                        href={`${base}/project-${page.params.region}-${page.params.project}/sites/create-site/repositories`}>
+                    <Button secondary href={getProjectRoute('/sites/create-site/repositories')}>
                         Change
                     </Button>
                 </Layout.Stack>

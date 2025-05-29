@@ -5,7 +5,6 @@
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { PageData } from './$types';
     import CreateMember from '../createMembership.svelte';
@@ -14,15 +13,13 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { Table, Layout, Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: PageData;
 
     let showCreate = false;
     let showDelete = false;
     let selectedMembership: Models.Membership;
-
-    const region = page.params.region;
-    const project = page.params.project;
 
     async function memberCreated() {
         invalidate(Dependencies.MEMBERSHIPS);
@@ -54,9 +51,7 @@
             </svelte:fragment>
             {#each data.memberships.memberships as membership}
                 {@const username = membership.userName ? membership.userName : '-'}
-                <Table.Row.Link
-                    {root}
-                    href={`${base}/project-${region}-${project}/auth/user-${membership.userId}`}>
+                <Table.Row.Link {root} href={getProjectRoute(`/auth/user-${membership.userId}`)}>
                     <Table.Cell column="name" {root}>
                         <Layout.Stack direction="row" alignItems="center">
                             <AvatarInitials size="xs" name={username} />

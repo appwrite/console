@@ -1,16 +1,12 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { CardContainer, GridItem1, Id } from '$lib/components';
     import { canWriteBuckets } from '$lib/stores/roles';
     import { Badge, Tooltip } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: PageData;
     export let showCreate = false;
-
-    const region = page.params.region;
-    const project = page.params.project;
 </script>
 
 <CardContainer
@@ -21,7 +17,7 @@
     service="buckets"
     on:click={() => (showCreate = true)}>
     {#each data.buckets.buckets as bucket}
-        <GridItem1 href={`${base}/project-${region}-${project}/storage/bucket-${bucket.$id}`}>
+        <GridItem1 href={getProjectRoute(`/storage/bucket-${bucket.$id}`)}>
             <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
             <svelte:fragment slot="status">
                 {#if !bucket.enabled}

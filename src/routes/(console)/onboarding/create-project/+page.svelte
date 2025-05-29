@@ -7,11 +7,11 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let isLoading = false;
     let id: string;
@@ -40,7 +40,7 @@
 
             setTimeout(async () => {
                 await invalidate(Dependencies.ACCOUNT);
-                goto(`${base}/project-${project.region ?? 'default'}-${project.$id}`);
+                goto(getProjectRoute(project));
             }, 3000);
         } catch (e) {
             trackError(e, Submit.ProjectCreate);

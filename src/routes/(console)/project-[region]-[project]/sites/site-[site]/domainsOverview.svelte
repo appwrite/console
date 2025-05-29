@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Badge, Divider, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import OpenOnMobileModal from '../(components)/openOnMobileModal.svelte';
@@ -12,6 +11,7 @@
     import { Card, Trim } from '$lib/components';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { RuleTrigger } from '$lib/stores/sdk';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let proxyRuleList: Models.ProxyRuleList;
 
@@ -29,9 +29,7 @@
             </Typography.Text>
             <Badge variant="secondary" content={(rules?.length ?? 0).toString()} size="s" />
         </Layout.Stack>
-        <Button
-            secondary
-            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`}>
+        <Button secondary href={getProjectRoute(`/sites/site-${page.params.site}/domains`)}>
             View all
         </Button>
     </Layout.Stack>
@@ -57,7 +55,9 @@
                                     source: 'sites_domain_overview'
                                 });
                             }}
-                            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}>
+                            href={getProjectRoute(
+                                `/sites/site-${page.params.site}/domains/add-domain`
+                            )}>
                             Add domain
                         </Button>
                     </div>

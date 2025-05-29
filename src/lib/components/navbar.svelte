@@ -55,6 +55,7 @@
     import { user } from '$lib/stores/user';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { HTMLAttributes } from 'svelte/elements';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let showSupport = false;
 
@@ -135,9 +136,9 @@
         {#if selectedProject && selectedProject.pingCount === 0}
             <div class="only-desktop" style:margin-inline-start="-16px">
                 <Button.Anchor
-                    href={`${base}/project-${selectedProject.region}-${selectedProject.$id}/get-started`}
+                    size="xs"
                     variant="secondary"
-                    size="xs">Connect</Button.Anchor>
+                    href={getProjectRoute(selectedProject, '/get-started')}>Connect</Button.Anchor>
             </div>
         {/if}
     </div>

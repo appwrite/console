@@ -24,9 +24,9 @@
     import { View } from '$lib/helpers/load';
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
-    import { base } from '$app/paths';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
     let showAdd = false;
@@ -119,7 +119,7 @@
             </div>
             <Button
                 secondary
-                href={`${base}/project-${page.params.region}-${page.params.project}/messaging/topics/topic-${page.params.topic}/subscribers`}>
+                href={getProjectRoute(`/messaging/topics/topic-${page.params.topic}/subscribers`)}>
             </Button>
         </EmptySearch>
     {:else}

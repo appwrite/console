@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
@@ -31,6 +30,7 @@
     import RepoCard from './repoCard.svelte';
     import { Dependencies } from '$lib/constants';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -184,9 +184,7 @@
                     framework: data.template.name
                 });
 
-                await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${func.$id}`
-                );
+                await goto(getProjectRoute(`/functions/function-${func.$id}`));
                 invalidate(Dependencies.FUNCTION);
             } catch (e) {
                 addNotification({
@@ -216,11 +214,7 @@
     <title>Create function - Appwrite</title>
 </svelte:head>
 
-<Wizard
-    title="Create function"
-    bind:showExitModal
-    href={`${base}/project-${page.params.region}-${page.params.project}/functions`}
-    confirmExit>
+<Wizard title="Create function" bind:showExitModal href={getProjectRoute('/functions')} confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
             {#if selectedRepository && showConfig}
