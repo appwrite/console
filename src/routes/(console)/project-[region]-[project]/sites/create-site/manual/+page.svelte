@@ -34,7 +34,7 @@
 
     let name = 'My website';
     let id = ID.unique();
-    let domain = `${id}.${$consoleVariables._APP_DOMAIN_SITES}`;
+    let domain = `${id}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`;
     let framework: Models.Framework =
         data.frameworks.frameworks?.find((f) => f.key === 'other') ??
         data.frameworks.frameworks?.[0];
@@ -48,14 +48,14 @@
     $: maxSize =
         isCloud && $currentPlan
             ? $currentPlan.deploymentSize * 1000000
-            : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+            : $regionalConsoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
 
     $: readableMaxSize = humanFileSize(maxSize);
 
     async function create() {
         try {
             domain = await buildVerboseDomain(
-                $consoleVariables._APP_DOMAIN_SITES,
+                $regionalConsoleVariables._APP_DOMAIN_SITES,
                 name,
                 $organization.name,
                 $project.name,

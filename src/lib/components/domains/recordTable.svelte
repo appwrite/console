@@ -20,7 +20,9 @@
     function setTarget() {
         switch (variant) {
             case 'cname':
-                return $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME;
+                return service === 'general'
+                    ? $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME
+                    : $regionalConsoleVariables._APP_DOMAIN_SITES;
             case 'a':
                 return $regionalConsoleVariables._APP_DOMAIN_TARGET_A;
             case 'aaaa':
