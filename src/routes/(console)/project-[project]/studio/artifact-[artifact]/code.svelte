@@ -15,7 +15,6 @@
     const filesToBeGenerated = $derived(
         Object.values(queue.lists).reduce((prev, curr) => {
             for (const task of curr) {
-                if (task.status === 'done') continue;
                 if (task.data.src && task.data.type === 'file') {
                     prev.add(task.data.src);
                 }

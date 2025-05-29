@@ -41,7 +41,6 @@
 
         try {
             const action = item.data;
-            console.log(action);
             switch (action.type) {
                 case 'file':
                     await studio.synapse.dispatch('fs', {
