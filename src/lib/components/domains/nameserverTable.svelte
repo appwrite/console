@@ -17,7 +17,7 @@
             {domain}
         </Typography.Text>
         {#if verified}
-            <Badge variant="secondary" type="success" content="Verified" />
+            <Badge variant="secondary" type="success" size="xs" content="Verified" />
         {:else if verified === false}
             <Badge variant="secondary" type="warning" size="xs" content="Pending verification" />
         {/if}

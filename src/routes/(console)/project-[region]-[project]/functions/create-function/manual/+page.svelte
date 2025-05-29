@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
-    import { writable } from 'svelte/store';
+    import { get, writable } from 'svelte/store';
     import { ID, Runtime } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import Details from '../(components)/details.svelte';
@@ -18,17 +18,24 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import Configuration from './configuration.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
-    import { removeFile } from '$lib/helpers/files';
     import { regionalConsoleVariables } from '../../../store';
+    import { InvalidFileType, removeFile } from '$lib/helpers/files';
+    import { isCloud } from '$lib/system';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { currentPlan } from '$lib/stores/organization';
 
     export let data;
 
+    const iconFor = get(iconPath);
+
     const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
-        return {
-            value: runtime.$id,
-            label: `${runtime.name} - ${runtime.version}`,
-            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
-        };
+        const { $id: value, name, version, key } = runtime;
+        const label = `${name} - ${version}`;
+        const iconName = getIconFromRuntime(key);
+        const iconSrc = iconFor(iconName, 'color');
+        const leadingHtml = `<img src='${iconSrc}' alt='${iconName}' style='inline-size: var(--icon-size-m)' />`;
+
+        return { value, label, leadingHtml };
     });
 
     const specificationOptions = data.specificationsList.specifications.map((size) => ({
@@ -122,15 +129,44 @@
         }
     }
 
+    function handleInvalid(e: CustomEvent) {
+        const reason = e.detail.reason;
+        if (reason === InvalidFileType.EXTENSION) {
+            addNotification({
+                type: 'error',
+                message: 'Only .tar.gz files allowed'
+            });
+        } else if (reason === InvalidFileType.SIZE) {
+            addNotification({
+                type: 'error',
+                message: 'File size exceeds 10MB'
+            });
+        } else {
+            addNotification({
+                type: 'error',
+                message: 'Invalid file'
+            });
+        }
+    }
+
     $: filesList = files?.length
         ? Array.from(files).map((f) => {
               return {
                   ...f,
+                  name: f.name,
+                  size: f.size,
                   extension: f.type,
                   removable: true
               };
           })
         : [];
+
+    $: maxSize =
+        isCloud && $currentPlan
+            ? $currentPlan.deploymentSize * 1000000
+            : $regionalConsoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+
+    $: readableMaxSize = humanFileSize(maxSize);
 </script>
 
 <svelte:head>
@@ -154,8 +190,9 @@
                     bind:files
                     title="Upload function"
                     extensions={['gz', 'tar']}
-                    maxSize={10000000}
-                    required>
+                    {maxSize}
+                    required
+                    on:invalid={handleInvalid}>
                     <Layout.Stack alignItems="center" gap="s">
                         <Layout.Stack alignItems="center" gap="s">
                             <Layout.Stack
@@ -178,12 +215,12 @@
                                 </Tooltip>
                             </Layout.Stack>
                             <Typography.Caption variant="400"
-                                >Max file size 10MB</Typography.Caption>
+                                >Max file size: {readableMaxSize.value +
+                                    readableMaxSize.unit}</Typography.Caption>
                         </Layout.Stack>
                     </Layout.Stack>
                 </Upload.Dropzone>
                 {#if files?.length}
-                    <!-- TODO: torsten, the types issue with FileList-->
                     <Upload.List
                         bind:files={filesList}
                         on:remove={(e) => (files = removeFile(e.detail, files))} />

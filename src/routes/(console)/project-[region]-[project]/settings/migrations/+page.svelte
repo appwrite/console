@@ -33,21 +33,9 @@
     import { page } from '$app/state';
 
     export let data;
-    let migration: Models.Migration = null;
     let showExport = false;
     let showMigration = false;
-
-    const getStatus = (status: string) => {
-        if (status === 'failed') {
-            return 'failed';
-        } else if (status === 'completed') {
-            return 'complete';
-        } else if (status === 'processing') {
-            return 'processing';
-        }
-
-        return 'pending';
-    };
+    let migration: Models.Migration = null;
 
     onMount(() => {
         return realtime
@@ -134,8 +122,25 @@
     };
 
     function showDetails(m: Models.Migration) {
-        showMigration = true;
         migration = m;
+        showMigration = true;
+    }
+
+    function getTypedStatus(entry: Models.Migration) {
+        // migration > pending, processing, failed, completed
+        // status component = waiting, ready, processing, pending, failed, complete
+        switch (entry.status) {
+            case 'completed':
+                return 'complete';
+            case 'processing':
+                return 'processing';
+            case 'failed':
+                return 'failed';
+            case 'pending':
+                return 'pending';
+            default:
+                return 'waiting';
+        }
     }
 </script>
 
@@ -165,7 +170,7 @@
                     </svelte:fragment>
                     {#each data.migrations as entry}
                         <Table.Row.Base {root}>
-                            {@const status = getStatus(entry.status)}
+                            {@const status = getTypedStatus(entry)}
                             <Table.Cell {root}>
                                 {#if isSameDay(new Date(), new Date(entry.$createdAt))}
                                     Today

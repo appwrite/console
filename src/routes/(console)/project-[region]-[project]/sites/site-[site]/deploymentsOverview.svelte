@@ -43,12 +43,16 @@
         </Button>
     </Layout.Stack>
     {#if deploymentList?.total}
+        {@const hasAuthor = deploymentList.deployments.some((d) => d?.providerCommitAuthor)}
         <Table.Root
             columns={[
                 { id: '$id', width: 200 },
-                { id: 'status', width: { min: 120 } },
-                { id: 'source', width: { min: 120 } },
-                { id: '$updatedAt', width: { min: 120 } },
+                { id: 'status', width: { min: 80, max: 100 } },
+                { id: 'source', width: { min: 80, max: 100 } },
+                {
+                    id: '$updatedAt',
+                    width: { min: hasAuthor ? 280 : 100 }
+                },
                 { id: 'actions', width: 50 }
             ]}
             let:root>

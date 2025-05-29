@@ -11,6 +11,7 @@
     import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Keyboard, Layout } from '@appwrite.io/pink-svelte';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import type { Action } from 'svelte/action';
 
     /* eslint no-undef: "off" */
     type Option = $$Generic<Omit<Command, 'group'> & { group?: string }>;
@@ -247,6 +248,10 @@
 
         return isGroup(nextItem) || !nextItem?.nested;
     };
+
+    const autofocus: Action<HTMLInputElement> = (node) => {
+        if (node) node.focus();
+    };
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
@@ -271,8 +276,11 @@
 
         <slot name="search">
             <div class="u-flex default-search u-width-full-line">
-                <!--  svelte-ignore a11y-autofocus -->
-                <input type="text" placeholder={searchPlaceholder} autofocus bind:value={search} />
+                <input
+                    type="text"
+                    placeholder={searchPlaceholder}
+                    use:autofocus
+                    bind:value={search} />
             </div>
         </slot>
     </div>
@@ -305,7 +313,7 @@
                                 on:mouseleave={getOptionBlurHandler()}
                                 on:focus={getOptionFocusHandler(item)}>
                                 <slot name="option" option={castOption(item)}>
-                                    <Layout.Stack direction="column" gap="s">
+                                    <Layout.Stack direction="row" gap="s" alignItems="center">
                                         {#if item.icon}
                                             <Icon
                                                 icon={item.icon}
@@ -448,8 +456,9 @@
 
         .default-search {
             input {
-                margin: -1rem;
-                padding: 1rem;
+                width: 100%;
+                margin: 0rem;
+                padding: 0rem;
                 border: none;
                 background-color: transparent;
             }

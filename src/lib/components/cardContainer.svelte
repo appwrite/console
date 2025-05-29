@@ -2,10 +2,11 @@
     import { page } from '$app/state';
     import { Empty } from '$lib/components';
     import { CARD_LIMIT } from '$lib/constants';
-    import { getServiceLimit, type PlanServices } from '$lib/stores/billing';
-    import { preferences } from '$lib/stores/preferences';
     import { isCloud } from '$lib/system';
     import CardPlanLimit from './cardPlanLimit.svelte';
+    import { preferences } from '$lib/stores/preferences';
+    import { isSmallViewport } from '$lib/stores/viewport';
+    import { getServiceLimit, type PlanServices } from '$lib/stores/billing';
 
     export let disableEmpty = true;
     export let offset = 0;
@@ -17,9 +18,13 @@
     $: planLimit = getServiceLimit(serviceId) || Infinity;
 
     $: limit = preferences.get(page.route)?.limit ?? CARD_LIMIT;
+
+    $: gridItemStyle = $isSmallViewport
+        ? undefined
+        : `--grid-item-size: ${total > 3 ? '22rem' : '25rem'}`;
 </script>
 
-<ul class="grid-box" style={`--grid-item-size:${total > 3 ? '22rem' : '25rem'};`} data-private>
+<ul data-private class="grid-box" style={gridItemStyle}>
     <slot />
 
     {#if total > 3 ? total < limit + offset : total % 2 !== 0}

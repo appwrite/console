@@ -20,6 +20,7 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import { base } from '$app/paths';
     import { writable } from 'svelte/store';
+    import { isASubdomain } from '$lib/helpers/tlds';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
@@ -27,9 +28,10 @@
     let { data } = $props();
 
     const ruleId = page.url.searchParams.get('rule');
-    let isSubDomain = $derived(page.params.domain?.split('.')?.length >= 3);
+    const isSubDomain = $derived.by(() => isASubdomain(page.params.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
+
     $effect(() => {
         if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
             selectedTab = 'cname';
@@ -149,7 +151,11 @@
                     {#if selectedTab === 'nameserver'}
                         <NameserverTable domain={page.params.domain} {verified} />
                     {:else}
-                        <RecordTable domain={page.params.domain} {verified} variant={selectedTab} />
+                        <RecordTable
+                            {verified}
+                            service="sites"
+                            variant={selectedTab}
+                            domain={page.params.domain} />
                     {/if}
                     <Divider />
                     <Layout.Stack direction="row" justifyContent="flex-end">

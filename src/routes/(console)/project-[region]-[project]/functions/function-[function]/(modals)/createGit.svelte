@@ -4,14 +4,14 @@
     import { Repositories } from '$lib/components/git';
     import { Dependencies } from '$lib/constants';
     import { Link } from '$lib/elements';
-    import { Button, InputCheckbox, InputSelect } from '$lib/elements/forms';
+    import { Button, InputCheckbox } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
     import { Runtime, VCSDeploymentType, type Models } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Input, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
     import { page } from '$app/state';
 
@@ -120,6 +120,14 @@
             error = e.message;
         }
     }
+
+    $: if (!show) {
+        error = '';
+        branch = null;
+        commit = null;
+        activate = true;
+        hasRepository = !!$func?.providerRepositoryId;
+    }
 </script>
 
 <Modal title="Create Git deployment" bind:show onSubmit={createDeployment} bind:error>
@@ -179,13 +187,12 @@
                     </Typography.Caption>
                 </Layout.Stack>
             </Card>
-            <InputSelect
-                required={true}
+            <Input.ComboBox
+                required
                 id="branch"
                 label="Production branch"
                 placeholder="Select branch"
                 bind:value={branch}
-                isSearchable
                 on:select={(event) => {
                     branch = event.detail.value;
                 }}

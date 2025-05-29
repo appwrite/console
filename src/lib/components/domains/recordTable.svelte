@@ -13,6 +13,7 @@
     export let domain: string;
     export let verified = false;
     export let variant: 'cname' | 'a' | 'aaaa';
+    export let service: 'sites' | 'general' = 'general';
 
     let subdomain = domain?.split('.')?.slice(0, -2)?.join('.');
 
@@ -35,9 +36,9 @@
                 {domain}
             </Typography.Text>
             {#if verified}
-                <Badge variant="secondary" type="success" content="Verified" />
+                <Badge variant="secondary" type="success" size="xs" content="Verified" />
             {:else if verified === false}
-                <Badge variant="secondary" type="error" content="Verification failed" />
+                <Badge variant="secondary" type="error" size="xs" content="Verification failed" />
             {:else}
                 <Badge
                     variant="secondary"

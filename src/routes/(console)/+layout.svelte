@@ -52,6 +52,8 @@
         IconSparkles,
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
+    import type { LayoutData } from './$types';
+    import type { NavbarProject } from '$lib/components/navbar.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -62,17 +64,18 @@
 
     const isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
 
-    export let data;
+    export let data: LayoutData;
+
     $: loadedProjects = data.projects.map((project) => {
         return {
             name: project?.name,
             $id: project.$id,
+            isSelected: project.$id === page.params.project,
             region: project.region,
-            isSelected: data.currentProjectId === project.$id,
             platformCount: project.platforms.length,
             pingCount: project.pingCount
         };
-    });
+    }) satisfies NavbarProject[];
 
     $: isOnSettingsLayout = $project?.$id
         ? page.url.pathname.includes(`project-${$project.region}-${$project.$id}/settings`)
@@ -338,10 +341,10 @@
         !page.url.pathname.includes('/console/account') &&
         !page.url.pathname.includes('/console/card') &&
         !page.url.pathname.includes('/console/onboarding')}
-    showHeader={!page.url.pathname.includes('/console/onboarding')}
-    showFooter={!page.url.pathname.includes('/console/onboarding')}
-    bind:loadedProjects
-    bind:projects={data.projects}>
+    showHeader={!page.url.pathname.includes('/console/onboarding/create-project')}
+    showFooter={!page.url.pathname.includes('/console/onboarding/create-project')}
+    {loadedProjects}
+    selectedProject={page.data?.project}>
     <!--    <Header slot="header" />-->
     <slot />
     <Footer slot="footer" />

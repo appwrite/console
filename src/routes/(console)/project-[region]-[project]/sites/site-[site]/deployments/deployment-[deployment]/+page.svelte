@@ -29,8 +29,8 @@
     let showDelete = $state(false);
     let showCancel = $state(false);
 
-    onMount(async () => {
-        sdk.forConsole.client.subscribe(
+    onMount(() => {
+        return sdk.forConsole.client.subscribe(
             'console',
             async (response: RealtimeResponseEvent<Models.Deployment>) => {
                 if (
@@ -38,7 +38,7 @@
                         `sites.${page.params.site}.deployments.${page.params.deployment}.update`
                     )
                 ) {
-                    invalidate(Dependencies.DEPLOYMENTS);
+                    await invalidate(Dependencies.DEPLOYMENT);
                 }
             }
         );

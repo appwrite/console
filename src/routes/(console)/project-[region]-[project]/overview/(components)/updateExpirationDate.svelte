@@ -10,12 +10,12 @@
     import { Alert } from '@appwrite.io/pink-svelte';
     import { ExpirationInput } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     export let keyType: 'api' | 'dev' = 'api';
     export let key: Models.DevKey | Models.Key;
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     const isApiKey = keyType === 'api';
     const label = isApiKey ? 'API' : 'Dev';
@@ -68,6 +68,9 @@
         typeof key?.expire === 'undefined' && expiration === null
             ? true
             : isSameDay(new Date(expiration), new Date(key?.expire));
+
+    // don't show an expiry related alert if key was created less than 5 mins ago!
+    $: showAlert = Date.now() - new Date(key.$createdAt).getTime() > 5 * 60 * 1000;
 </script>
 
 <Form onSubmit={updateExpire}>
@@ -75,7 +78,7 @@
         <svelte:fragment slot="title">Expiration date</svelte:fragment>
         Set a date after which your {label} key will expire.
         <svelte:fragment slot="aside">
-            {#if isExpired || isExpiring}
+            {#if (isExpired || isExpiring) && showAlert}
                 <Alert.Inline
                     status={isExpired && isApiKey ? 'error' : 'warning'}
                     on:dismiss={() => (alertsDismissed = true)}

@@ -55,7 +55,15 @@
                                 {record.type}
                             </Typography.Text>
                         {:else if column.id === 'value'}
-                            <InteractiveText variant="copy" text={record.value} isVisible />
+                            {@const isARecord = record.value === 'a.a.a.a'}
+                            {#if isARecord}
+                                <!-- to align with InteractiveText -->
+                                <div style:padding-inline-start="4px">
+                                    <Typography.Text>Served by Appwrite</Typography.Text>
+                                </div>
+                            {:else}
+                                <InteractiveText variant="copy" text={record.value} isVisible />
+                            {/if}
                         {:else if column.id === 'ttl'}
                             <Typography.Text>
                                 {record.ttl}

@@ -36,7 +36,7 @@
             invalidate(Dependencies.DEPLOYMENTS);
             if (redirect) {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/deployments/deployment-${deployment.$id}`
+                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/deployment-${deployment.$id}`
                 );
             }
             show = false;

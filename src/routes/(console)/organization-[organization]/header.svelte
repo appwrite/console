@@ -14,8 +14,7 @@
         canSeeProjects,
         canSeeTeams,
         isBilling,
-        isOwner,
-        scopes
+        isOwner
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -31,9 +30,8 @@
     });
 
     $: avatars = $members.memberships?.map((m) => m.userName || m.userEmail) ?? [];
-    $: organizationId = page.params.organization;
+    $: organizationId = $organization?.$id ?? page.params.organization;
     $: path = `${base}/organization-${organizationId}`;
-    $: console.log($scopes);
     $: tabs = [
         {
             href: path,
@@ -77,7 +75,7 @@
     ].filter((tab) => !tab.disabled);
 </script>
 
-{#if $organization?.$id}
+{#if $organization.$id}
     <Cover>
         <svelte:fragment slot="header">
             <span class="u-flex u-cross-center u-gap-8 u-min-width-0">

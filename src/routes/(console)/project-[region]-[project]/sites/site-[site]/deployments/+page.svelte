@@ -77,10 +77,28 @@
 <Container>
     <Layout.Stack gap="xxxl">
         {#if data?.activeDeployment && !data.site.live && showAlert}
-            <Alert.Inline status="warning" dismissible on:dismiss={() => (showAlert = false)}>
-                Some configuration options are not live yet. Redeploy your function to apply latest
-                changes.
-            </Alert.Inline>
+            {@const latestDeployment = data.deploymentList.deployments[0]}
+            {#if latestDeployment?.status === 'failed' || latestDeployment?.status === 'ready'}
+                <Alert.Inline status="warning" dismissible on:dismiss={() => (showAlert = false)}>
+                    Some configuration changes are not live yet. Redeploy your site to apply latest
+                    changes.
+                    <svelte:fragment slot="actions">
+                        <Button
+                            compact
+                            on:click={() => {
+                                selectedDeployment = data.activeDeployment;
+                                showRedeploy = true;
+                            }}>
+                            Redeploy
+                        </Button>
+                    </svelte:fragment>
+                </Alert.Inline>
+            {:else}
+                <Alert.Inline status="info" dismissible on:dismiss={() => (showAlert = false)}>
+                    Some configuration changes are not live yet. Your site is redeploying — changes
+                    will be applied once the build is complete.
+                </Alert.Inline>
+            {/if}
         {/if}
 
         <DeploymentMetrics />

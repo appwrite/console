@@ -24,6 +24,7 @@
     import { ConnectRepoModal } from '$lib/components/git/index.js';
     import { project, regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
     import { isCloud } from '$lib/system';
+    import { getApexDomain } from '$lib/helpers/tlds';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
 
@@ -51,17 +52,17 @@
     });
 
     async function addDomain() {
-        let domain = data.domains?.domains.find((d) => d.domain === domainName);
+        const apexDomain = getApexDomain(domainName);
+        let domain = data.domains?.domains.find((d) => d.domain === apexDomain);
 
-        if (!domain && isCloud) {
+        if (apexDomain && !domain && isCloud) {
             try {
-                domain = await sdk.forConsole.domains.create($project.teamId, domainName);
+                domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
             } catch (error) {
                 addNotification({
                     type: 'error',
                     message: error.message
                 });
-
                 return;
             }
         }
@@ -172,13 +173,16 @@
                                 value: branch.name
                             }))}
                             <Layout.Stack gap="s">
-                                <InputSelect
-                                    {options}
-                                    label="Production branch"
-                                    id="branch"
+                                <Input.ComboBox
                                     required
+                                    id="branch"
+                                    label="Production branch"
+                                    placeholder="Select branch"
                                     bind:value={branch}
-                                    placeholder="Select branch" />
+                                    on:select={(event) => {
+                                        branch = event.detail.value;
+                                    }}
+                                    {options} />
                                 {#if !data.branches?.total}
                                     <Input.Helper state="default">
                                         No branches found in the selected repository. Create a

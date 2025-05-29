@@ -12,8 +12,6 @@
 
     export let data;
 
-    // const logs = getServiceLimit('logs');
-
     onMount(() => {
         return sdk.forConsole.client.subscribe('console', (response) => {
             if (response.events.includes('sites.*.executions.*')) {

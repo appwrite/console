@@ -11,8 +11,7 @@
     import { onMount } from 'svelte';
     import { project } from '../store';
     import { canWriteProjects } from '$lib/stores/roles';
-
-    const endpoint = sdk.forConsole.client.config.endpoint;
+    import { getProjectEndpoint } from '$lib/helpers/project';
 
     let name: string = null;
 
@@ -45,7 +44,7 @@
     Access Appwrite services using this project's API Endpoint and Project ID.
     <svelte:fragment slot="aside">
         <CopyInput label="Project ID" value={$project.$id} />
-        <CopyInput label="API Endpoint" value={endpoint} />
+        <CopyInput label="API Endpoint" value={getProjectEndpoint()} />
     </svelte:fragment>
     <svelte:fragment slot="actions">
         <Button

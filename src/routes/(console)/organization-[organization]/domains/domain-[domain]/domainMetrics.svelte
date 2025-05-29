@@ -1,28 +1,30 @@
 <script lang="ts">
-    import { Layout } from '@appwrite.io/pink-svelte';
-    import { Trim, UsageCard } from '$lib/components';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import { UsageCard } from '$lib/components';
     import type { Domain } from '$lib/sdk/domains';
+    import { toLocaleDate } from '$lib/helpers/date';
+    import { Layout, Status } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
-    import { protocol } from '$routes/(console)/store';
 
-    export let domain: Domain;
-    let metrics = [
+    let { domain, retryVerification }: { domain: Domain; retryVerification: () => void } = $props();
+
+    const isDomainVerified = domain.nameservers.toLocaleLowerCase() === 'appwrite';
+
+    const metrics = [
         {
-            value: domain.domain,
-            description: 'Domain'
+            value: isDomainVerified ? 'Verified' : 'Not verified',
+            description: 'Status'
         },
         {
             value: domain?.registrar || '-',
             description: 'Registrar'
         },
         {
-            value: domain?.nameservers ? domain?.nameservers : '-',
+            value: domain?.nameservers || '-',
             description: 'Nameservers'
         },
         {
-            value: domain?.expiry ? toLocaleDate(domain?.expiry) : '-',
-            description: 'Exipiry date'
+            value: domain?.expiry ? toLocaleDate(domain.expiry) : '-',
+            description: 'Expiry date'
         },
         {
             value: domain?.autoRenewal ? 'On' : 'Off',
@@ -38,13 +40,17 @@
 <Layout.Grid gap="m" columnsL={2} columns={1}>
     <Layout.Stack direction="row" gap="m">
         {#each metrics.slice(0, 3) as metric}
-            {#if metric.description === 'Domain'}
+            {#if metric.description === 'Status'}
                 <UsageCard description={metric.description}>
-                    <Link external href={`${$protocol}/${metric.value}`} variant="quiet">
-                        <Trim alternativeTrim>
-                            {metric.value}
-                        </Trim>
-                    </Link>
+                    <Layout.Stack direction="row" gap="xs" alignItems="center">
+                        <Status
+                            label={metric.value.toString()}
+                            status={isDomainVerified ? 'complete' : 'pending'} />
+
+                        {#if !isDomainVerified}
+                            <Link on:click={retryVerification}>Retry</Link>
+                        {/if}
+                    </Layout.Stack>
                 </UsageCard>
             {:else}
                 <UsageCard description={metric.description} bind:value={metric.value} />

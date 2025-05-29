@@ -278,6 +278,7 @@ export type AddressesList = {
 };
 
 export type AdditionalResource = {
+    name: string;
     currency: string;
     invoiceDesc: string;
     price: number;
@@ -338,6 +339,8 @@ export type Plan = {
     backupPolicies: number;
     emailBranding: boolean;
     supportsCredits: boolean;
+    buildSize: number; // in MB
+    deploymentSize: number; // in MB
 };
 
 export type PlanList = {
