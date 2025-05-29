@@ -20,9 +20,9 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import { base } from '$app/paths';
     import { writable } from 'svelte/store';
-    import { consoleVariables } from '$routes/(console)/store';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     let { data } = $props();
 
@@ -31,11 +31,11 @@
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
     $effect(() => {
-        if ($consoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
+        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
             selectedTab = 'cname';
-        } else if ($consoleVariables._APP_DOMAIN_TARGET_A) {
+        } else if ($regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
             selectedTab = 'a';
-        } else if ($consoleVariables._APP_DOMAIN_TARGET_AAAA) {
+        } else if ($regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
             selectedTab = 'aaaa';
         }
     });
@@ -109,7 +109,7 @@
                 <Layout.Stack gap="xl">
                     <div>
                         <Tabs.Root variant="secondary" let:root>
-                            {#if isSubDomain && !!$consoleVariables._APP_DOMAIN_TARGET_CNAME && $consoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
+                            {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'cname')}
@@ -125,7 +125,7 @@
                                     Nameservers
                                 </Tabs.Item.Button>
                             {/if}
-                            {#if !!$consoleVariables._APP_DOMAIN_TARGET_A && $consoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'}
+                            {#if !!$regionalConsoleVariables._APP_DOMAIN_TARGET_A && $regionalConsoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'a')}
@@ -133,7 +133,7 @@
                                     A
                                 </Tabs.Item.Button>
                             {/if}
-                            {#if !!$consoleVariables._APP_DOMAIN_TARGET_AAAA && $consoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'}
+                            {#if !!$regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'aaaa')}

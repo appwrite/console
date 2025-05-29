@@ -26,7 +26,9 @@ export const onboarding = derived(
 );
 
 /**
- * Same as the `consoleVariables` but from project's respective region!
+ * Region-aware version of `consoleVariables`, scoped to the project's assigned region.
+ *
+ * Falls back to the default `consoleVariables` if regional data is unavailable, just `edge-case` things.
  */
 export const regionalConsoleVariables = derived(
     page,
