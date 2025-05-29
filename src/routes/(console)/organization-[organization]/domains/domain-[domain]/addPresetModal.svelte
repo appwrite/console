@@ -7,15 +7,15 @@
     import { capitalize } from '$lib/helpers/string';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import type { DnsRecordsList } from '$lib/sdk/domains';
     import { presets } from './store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { createRecord } from '$lib/helpers/domains';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
     export let selectedPreset: (typeof presets)[number];
-    let records: DnsRecordsList;
+    let records: Models.DnsRecordsList;
     let error = '';
     async function fetchPreset() {
         switch (selectedPreset.toLowerCase()) {

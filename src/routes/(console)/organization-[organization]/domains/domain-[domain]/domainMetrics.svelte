@@ -1,11 +1,12 @@
 <script lang="ts">
     import { UsageCard } from '$lib/components';
-    import type { Domain } from '$lib/sdk/domains';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Layout, Status } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
+    import type { Models } from '@appwrite.io/console';
 
-    let { domain, retryVerification }: { domain: Domain; retryVerification: () => void } = $props();
+    let { domain, retryVerification }: { domain: Models.Domain; retryVerification: () => void } =
+        $props();
 
     const isDomainVerified = domain.nameservers.toLocaleLowerCase() === 'appwrite';
 
@@ -23,7 +24,7 @@
             description: 'Nameservers'
         },
         {
-            value: domain?.expiry ? toLocaleDate(domain.expiry) : '-',
+            value: domain?.expire ? toLocaleDate(domain.expire) : '-',
             description: 'Expiry date'
         },
         {

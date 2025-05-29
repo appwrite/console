@@ -1,9 +1,9 @@
 import { page } from '$app/stores';
 import type { Column } from '$lib/helpers/types';
-import type { Domain } from '$lib/sdk/domains';
+import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 
-export const domain = derived(page, ($page) => $page.data.domain as Domain);
+export const domain = derived(page, ($page) => $page.data.domain as Models.Domain);
 export const columns = writable<Column[]>([
     { id: 'name', title: 'Name', type: 'string', width: { min: 150 } },
     { id: 'type', title: 'Type', type: 'string', width: 125 },

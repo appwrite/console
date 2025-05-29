@@ -1,7 +1,7 @@
-import type { DnsRecord } from '$lib/sdk/domains';
 import { sdk } from '$lib/stores/sdk';
+import type { Models } from '@appwrite.io/console';
 
-export async function createRecord(record: Partial<DnsRecord>, domainId: string) {
+export async function createRecord(record: Partial<Models.DnsRecord>, domainId: string) {
     switch (record.type) {
         case 'A':
             return await sdk.forConsole.domains.createRecordA(
@@ -40,8 +40,8 @@ export async function createRecord(record: Partial<DnsRecord>, domainId: string)
             return await sdk.forConsole.domains.createRecordTXT(
                 domainId,
                 record.name,
-                record.value,
                 record.ttl,
+                record.value,
                 record?.comment || undefined
             );
         case 'NS':
@@ -91,16 +91,16 @@ export async function createRecord(record: Partial<DnsRecord>, domainId: string)
 }
 
 export type ParsedRecords = {
-    A: Partial<DnsRecord>[];
-    AAAA: Partial<DnsRecord>[];
-    CNAME: Partial<DnsRecord>[];
-    MX: Partial<DnsRecord>[];
-    TXT: Partial<DnsRecord>[];
-    NS: Partial<DnsRecord>[];
-    SRV: Partial<DnsRecord>[];
-    CAA: Partial<DnsRecord>[];
-    PTR: Partial<DnsRecord>[];
-    HTTPS: Partial<DnsRecord>[];
-    ALIAS: Partial<DnsRecord>[];
-    [key: string]: Partial<DnsRecord>[];
+    A: Partial<Models.DnsRecord>[];
+    AAAA: Partial<Models.DnsRecord>[];
+    CNAME: Partial<Models.DnsRecord>[];
+    MX: Partial<Models.DnsRecord>[];
+    TXT: Partial<Models.DnsRecord>[];
+    NS: Partial<Models.DnsRecord>[];
+    SRV: Partial<Models.DnsRecord>[];
+    CAA: Partial<Models.DnsRecord>[];
+    PTR: Partial<Models.DnsRecord>[];
+    HTTPS: Partial<Models.DnsRecord>[];
+    ALIAS: Partial<Models.DnsRecord>[];
+    [key: string]: Partial<Models.DnsRecord>[];
 };
