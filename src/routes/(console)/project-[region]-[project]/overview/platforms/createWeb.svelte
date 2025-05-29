@@ -43,7 +43,7 @@
         VueFrameworkIcon,
         NoFrameworkIcon,
         AngularFrameworkIcon,
-        JavascriptFrameworkIcon,
+        JavascriptFrameworkIcon
     } from './components/index';
     import { hostnameRegex } from '$lib/helpers/string';
 
