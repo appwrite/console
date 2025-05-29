@@ -30,7 +30,7 @@ export const onboarding = derived(
  */
 export const regionalConsoleVariables = derived(
     page,
-    ($page) => $page.data.scopedConsoleVariables as Models.ConsoleVariables
+    ($page) => $page.data.regionalConsoleVariables as Models.ConsoleVariables
 );
 
 function createStats() {
