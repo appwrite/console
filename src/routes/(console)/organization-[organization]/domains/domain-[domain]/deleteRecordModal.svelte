@@ -6,10 +6,10 @@
     import { Dependencies } from '$lib/constants';
     import { Confirm } from '$lib/components';
     import { page } from '$app/state';
-    import type { DnsRecord } from '$lib/sdk/domains';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let selectedRecord: DnsRecord;
+    export let selectedRecord: Models.DnsRecord;
 
     let error = '';
 

@@ -20,15 +20,15 @@
     import { columns } from './store';
     import DeleteRecordModal from './deleteRecordModal.svelte';
     import EditRecordModal from './updateRecordModal.svelte';
-    import type { DnsRecord } from '$lib/sdk/domains';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import type { PageData } from './$types';
+    import type { Models } from '@appwrite.io/console';
 
     export let data: PageData;
 
     let showEdit = false;
     let showDelete = false;
-    let selectedRecord: DnsRecord = null;
+    let selectedRecord: Models.DnsRecord = null;
 </script>
 
 <Layout.Stack>
@@ -73,7 +73,7 @@
                                 {record?.priority ?? '-'}
                             </Typography.Text>
                         {:else if column.id === 'comment'}
-                            <Typography.Text>
+                            <Typography.Text truncate>
                                 {record?.comment ?? '-'}
                             </Typography.Text>
                         {:else if column.id === '$createdAt'}

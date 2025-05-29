@@ -1,17 +1,17 @@
 import { page } from '$app/stores';
 import type { Column } from '$lib/helpers/types';
-import type { Domain } from '$lib/sdk/domains';
+import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 
-export const domain = derived(page, ($page) => $page.data.domain as Domain);
+export const domain = derived(page, ($page) => $page.data.domain as Models.Domain);
 export const columns = writable<Column[]>([
-    { id: 'name', title: 'Name', type: 'string', width: 150 },
+    { id: 'name', title: 'Name', type: 'string', width: { min: 150 } },
     { id: 'type', title: 'Type', type: 'string', width: 125 },
     { id: 'value', title: 'Value', type: 'string', width: 250 },
     { id: 'ttl', title: 'TTL', type: 'integer', width: 100 },
     { id: 'priority', title: 'Priority', type: 'integer', width: 80, hide: true },
-    { id: 'comment', title: 'Comment', type: 'string', width: 200, hide: true },
-    { id: '$createdAt', title: 'Created', type: 'datetime' }
+    { id: 'comment', title: 'Comment', type: 'string', width: { min: 180 } },
+    { id: '$createdAt', title: 'Created', type: 'datetime', width: { min: 120 } }
 ]);
 
 export const recordTypes = [
