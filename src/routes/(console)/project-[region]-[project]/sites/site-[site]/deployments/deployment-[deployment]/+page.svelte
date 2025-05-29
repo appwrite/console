@@ -50,8 +50,8 @@
         <svelte:fragment slot="footer">
             {#if deployment?.status === 'ready' && data.proxyRuleList?.total}
                 <Button
-                    href={`${$regionalProtocol}${data.proxyRuleList.rules[0]?.domain}`}
-                    external>
+                    external
+                    href={`${$regionalProtocol}${data.proxyRuleList.rules[0]?.domain}`}>
                     Visit
                 </Button>
             {/if}
