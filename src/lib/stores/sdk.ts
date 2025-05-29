@@ -64,14 +64,39 @@ const getSubdomain = (region?: string) => {
     }
 };
 
+function createConsoleSdk(client: Client) {
+    return {
+        client,
+        account: new Account(client),
+        avatars: new Avatars(client),
+        functions: new Functions(client),
+        health: new Health(client),
+        locale: new Locale(client),
+        projects: new Projects(client),
+        teams: new Teams(client),
+        users: new Users(client),
+        migrations: new Migrations(client),
+        console: new Console(client),
+        assistant: new Assistant(client),
+        billing: new Billing(client),
+        sources: new Sources(client),
+        sites: new Sites(client),
+        domains: new Domains(client)
+    };
+}
+
 const endpoint = getApiEndpoint();
 
 const clientConsole = new Client();
+const scopedConsoleClient = new Client();
+
 const clientProject = new Client();
 const clientRealtime = new Client();
 
 if (!building) {
     clientConsole.setEndpoint(endpoint).setProject('console');
+    scopedConsoleClient.setMode(endpoint).setProject('console');
+
     clientRealtime.setEndpoint(endpoint).setProject('console');
     clientProject.setEndpoint(endpoint).setMode('admin');
     clientRealtime.setEndpoint(endpoint).setProject('console');
@@ -110,24 +135,17 @@ export const realtime = {
 };
 
 export const sdk = {
-    forConsole: {
-        client: clientConsole,
-        account: new Account(clientConsole),
-        avatars: new Avatars(clientConsole),
-        functions: new Functions(clientConsole),
-        health: new Health(clientConsole),
-        locale: new Locale(clientConsole),
-        projects: new Projects(clientConsole),
-        teams: new Teams(clientConsole),
-        users: new Users(clientConsole),
-        migrations: new Migrations(clientConsole),
-        console: new Console(clientConsole),
-        assistant: new Assistant(clientConsole),
-        billing: new Billing(clientConsole),
-        sources: new Sources(clientConsole),
-        sites: new Sites(clientConsole),
-        domains: new Domains(clientConsole)
+    forConsole: createConsoleSdk(clientConsole),
+
+    forConsoleIn(region: string) {
+        const regionAwareEndpoint = getApiEndpoint(region);
+        if (regionAwareEndpoint !== scopedConsoleClient.config.endpoint) {
+            scopedConsoleClient.setEndpoint(regionAwareEndpoint);
+        }
+
+        return createConsoleSdk(scopedConsoleClient);
     },
+
     forProject(region: string, projectId: string) {
         const endpoint = getApiEndpoint(region);
         if (endpoint !== clientProject.config.endpoint) {

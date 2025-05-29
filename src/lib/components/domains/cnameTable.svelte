@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Link } from '$lib/elements';
-    import { consoleVariables } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import {
         Badge,
@@ -10,6 +9,7 @@
         Icon,
         InteractiveText
     } from '@appwrite.io/pink-svelte';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let domain: string;
     export let verified = false;
@@ -54,7 +54,7 @@
                 <InteractiveText
                     variant="copy"
                     isVisible
-                    text={$consoleVariables._APP_DOMAIN_TARGET_CNAME} />
+                    text={$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME} />
             </Table.Cell>
         </Table.Row.Base>
     </Table.Root>

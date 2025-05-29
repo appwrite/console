@@ -11,7 +11,6 @@
     import { get, writable } from 'svelte/store';
     import { ID, Runtime } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
-    import { consoleVariables } from '$routes/(console)/store';
     import Details from '../(components)/details.svelte';
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
@@ -19,6 +18,7 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import Configuration from './configuration.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
+    import { regionalConsoleVariables } from '../../../store';
     import { InvalidFileType, removeFile } from '$lib/helpers/files';
     import { isCloud } from '$lib/system';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -89,7 +89,7 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.createFunctionRule(
-                    `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
+                    `${ID.unique()}.${$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS}`,
                     func.$id
                 );
 
@@ -164,7 +164,7 @@
     $: maxSize =
         isCloud && $currentPlan
             ? $currentPlan.deploymentSize * 1000000
-            : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+            : $regionalConsoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
 
     $: readableMaxSize = humanFileSize(maxSize);
 </script>

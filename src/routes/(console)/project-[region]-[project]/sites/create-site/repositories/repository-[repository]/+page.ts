@@ -3,7 +3,8 @@ import { ID } from '@appwrite.io/console';
 import { buildVerboseDomain } from '../../store';
 
 export const load = async ({ parent, params, url }) => {
-    const { installations, frameworks, project, organization, consoleVariables } = await parent();
+    const { installations, frameworks, project, organization, regionalConsoleVariables } =
+        await parent();
     const [repository] = await Promise.all([
         sdk
             .forProject(params.region, params.project)
@@ -11,7 +12,7 @@ export const load = async ({ parent, params, url }) => {
     ]);
 
     const domain = await buildVerboseDomain(
-        consoleVariables._APP_DOMAIN_SITES,
+        regionalConsoleVariables._APP_DOMAIN_SITES,
         repository.name,
         organization.name,
         project.name,

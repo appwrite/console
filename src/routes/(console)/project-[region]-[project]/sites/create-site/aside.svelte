@@ -2,9 +2,9 @@
     import { Card, SvgIcon, Trim } from '$lib/components';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
-    import { consoleVariables } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
     import { getFrameworkIcon } from '$lib/stores/sites';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let framework: Partial<Models.Framework>;
     export let repositoryName: string;
@@ -71,7 +71,7 @@
                     <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                         {#key domain}
                             <Trim alternativeTrim>
-                                {$consoleVariables._APP_OPTIONS_FORCE_HTTPS
+                                {$regionalConsoleVariables._APP_OPTIONS_FORCE_HTTPS
                                     ? 'https://'
                                     : 'http://'}{domain}
                             </Trim>

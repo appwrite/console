@@ -22,7 +22,6 @@
         Repositories,
         RepositoryBehaviour
     } from '$lib/components/git';
-    import { consoleVariables } from '$routes/(console)/store';
     import Details from '../(components)/details.svelte';
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
@@ -31,6 +30,7 @@
     import RepoCard from './repoCard.svelte';
     import { Dependencies } from '$lib/constants';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let data;
 
@@ -150,7 +150,7 @@
                 await sdk
                     .forProject(page.params.region, page.params.project)
                     .proxy.createFunctionRule(
-                        `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
+                        `${ID.unique()}.${$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS}`,
                         func.$id
                     );
 
