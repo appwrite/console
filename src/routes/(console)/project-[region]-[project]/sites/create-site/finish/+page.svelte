@@ -10,13 +10,13 @@
     import SiteCard from '../../(components)/siteCard.svelte';
     import { onMount } from 'svelte';
     import AddCollaboratorModal from '../../(components)/addCollaboratorModal.svelte';
-    import { protocol } from '$routes/(console)/store';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
     import { sdk } from '$lib/stores/sdk';
     import type { Adapter, BuildRuntime, Framework } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { ConnectRepoModal } from '$lib/components/git';
+    import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
     export let data;
 
@@ -89,7 +89,7 @@
                     proxyRuleList={data.proxyRuleList}
                     hideQRCode>
                     <svelte:fragment slot="footer">
-                        <Button href={`${$protocol}${siteURL}`} external>Visit site</Button>
+                        <Button href={`${$regionalProtocol}${siteURL}`} external>Visit site</Button>
                     </svelte:fragment>
                 </SiteCard>
             </Layout.Stack>

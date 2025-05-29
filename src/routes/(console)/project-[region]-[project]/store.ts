@@ -37,6 +37,13 @@ export const regionalConsoleVariables = derived(
             $page.data.consoleVariables) as Models.ConsoleVariables
 );
 
+/**
+ * Protocol based on regional console variables.
+ */
+export const regionalProtocol = derived(regionalConsoleVariables, ($vars) =>
+    $vars?._APP_OPTIONS_FORCE_HTTPS === 'enabled' ? 'https://' : 'http://'
+);
+
 function createStats() {
     const { subscribe, set, update } = writable<Map<string, BarSeriesOption['data']>>(new Map());
 

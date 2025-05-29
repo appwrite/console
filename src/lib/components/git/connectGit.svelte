@@ -8,7 +8,7 @@
 
     export let callbackState: Record<string, string> = null;
 
-    let isVcsEnabled = regionalConsoleVariables?._APP_VCS_ENABLED === true;
+    let isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
 </script>
 
 <Layout.Stack>

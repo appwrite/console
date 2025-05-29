@@ -2,7 +2,6 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { protocol } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
     import { IconDotsHorizontal, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import {
@@ -17,6 +16,7 @@
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
     import { columns } from './store';
+    import { regionalProtocol } from '../../store';
 
     let {
         domains
@@ -43,7 +43,11 @@
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === 'domain'}
-                        <Link external href={`${$protocol}${domain.domain}`} variant="quiet" icon>
+                        <Link
+                            external
+                            href={`${$regionalProtocol}${domain.domain}`}
+                            variant="quiet"
+                            icon>
                             <Typography.Text truncate>
                                 {domain.domain}
                                 {#if domain.status !== 'verified'}

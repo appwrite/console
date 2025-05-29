@@ -9,7 +9,6 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
-    import { protocol } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
     import {
@@ -23,7 +22,7 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { ConnectRepoModal } from '$lib/components/git/index.js';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import { project, regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
     import { isCloud } from '$lib/system';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
@@ -76,7 +75,7 @@
             } else if (behaviour === 'REDIRECT') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(domainName, $protocol + redirect, statusCode);
+                    .proxy.createRedirectRule(domainName, $regionalProtocol + redirect, statusCode);
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)

@@ -12,13 +12,13 @@
     import CancelDeploymentModal from '../cancelDeploymentModal.svelte';
     import RedeployModal from '../../../redeployModal.svelte';
     import ActivateDeploymentModal from '../../../activateDeploymentModal.svelte';
-    import { protocol } from '$routes/(console)/store';
     import { Accordion } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
     import LogsTimer from '../../../(components)/logsTimer.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/state';
+    import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
     let { data } = $props();
 
@@ -49,7 +49,9 @@
     <SiteCard {deployment} proxyRuleList={data.proxyRuleList}>
         <svelte:fragment slot="footer">
             {#if deployment?.status === 'ready' && data.proxyRuleList?.total}
-                <Button href={`${$protocol}${data.proxyRuleList.rules[0]?.domain}`} external>
+                <Button
+                    href={`${$regionalProtocol}${data.proxyRuleList.rules[0]?.domain}`}
+                    external>
                     Visit
                 </Button>
             {/if}
