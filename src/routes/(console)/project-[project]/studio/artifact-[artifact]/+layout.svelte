@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Layout, Typography, Divider, Icon, Button, Status } from '@appwrite.io/pink-svelte';
+    import { Layout, Divider, Icon, Button, Status } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
     import { ActionDropdown, Tab, Tabs, Terminal } from '$lib/components';
     import { base } from '$app/paths';
@@ -28,8 +28,6 @@
     import { studio } from '$lib/components/studio/studio.svelte';
     import { untrack } from 'svelte';
     import Debug from './debug.svelte';
-    import { dev } from '$app/environment';
-    import { goto } from '$app/navigation';
 
     const { children, data } = $props();
 
@@ -40,14 +38,6 @@
     let debug = $state(false);
 
     function changeView(newView: 'preview' | 'editor') {
-        const newUrl = new URL(page.url.href);
-        if (newView === 'editor') {
-            newUrl.searchParams.set('code', '');
-            goto(newUrl.pathname + newUrl.search, { replaceState: true });
-        } else {
-            newUrl.searchParams.delete('code');
-            goto(newUrl.pathname + newUrl.search, { replaceState: true });
-        }
         view = newView;
     }
 
@@ -224,14 +214,6 @@
                     <Status
                         label={studio.status}
                         status={studio.status === 'connected' ? 'complete' : 'pending'} />
-                    {#if dev}
-                        <div class="hide-mobile">
-                            <Button.Button
-                                on:click={() => (debug = true)}
-                                size="s"
-                                variant="primary">DEBUG</Button.Button>
-                        </div>
-                    {/if}
                     <Button.Button size="s" variant="primary">Release</Button.Button>
                 </Layout.Stack>
             </Layout.Stack>
@@ -248,7 +230,7 @@
             </div>
         </div>
         <Debug bind:show={debug} />
-        {#if view === 'editor'}
+        <div style:display={view === 'editor' ? 'contents' : 'none'}>
             {#if terminalOpen}
                 <div
                     class="resizer"
@@ -344,7 +326,7 @@
                     {/each}
                 </details>
             </aside>
-        {/if}
+        </div>
     </Layout.Stack>
 </div>
 

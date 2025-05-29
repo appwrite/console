@@ -6,16 +6,30 @@
     import { Layout } from '@appwrite.io/pink-svelte';
     import { disableBodySelect, enabledBodySelect } from '$lib/helpers/studioLayout';
     import { onDestroy, onMount } from 'svelte';
+    import { queue } from '$lib/components/studio/chat/queue.svelte';
 
     let instance: Editor;
     let resizerLeftPosition = $state(250);
     let mainRef: HTMLElement;
+
+    const filesToBeGenerated = $derived(
+        Object.values(queue.lists).reduce((prev, curr) => {
+            for (const task of curr) {
+                if (task.status === 'done') continue;
+                if (task.data.src && task.data.type === 'file') {
+                    prev.add(task.data.src);
+                }
+            }
+            return prev;
+        }, new Set<string>())
+    );
 
     studio.synapse.addEventListener('syncWorkDir', ({ message }) => {
         if (studio.streaming === false) return;
         const { path, content, event } = message.data as SyncWorkDirData;
         if (event !== 'add' && event !== 'change') return;
         const normalizedPath = path.startsWith('/') ? path.substring(1) : path;
+        if (!filesToBeGenerated.has(normalizedPath)) return;
         studio.currentFile = normalizedPath;
         instance?.openFile(content, normalizedPath);
     });
@@ -27,7 +41,7 @@
                 filepath: path
             }
         });
-        instance?.openFile(message.data as string, path);
+        instance?.openFile((message.data as { content: string }).content, path);
         studio.currentFile = path;
     }
 
