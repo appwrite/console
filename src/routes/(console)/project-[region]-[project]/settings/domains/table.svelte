@@ -44,7 +44,10 @@
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === 'domain'}
                         <Layout.Stack direction="row" gap="xs">
-                            <Link external href={`${$regionalProtocol}${domain.domain}`} variant="quiet">
+                            <Link
+                                external
+                                variant="quiet"
+                                href={`${$regionalProtocol}${domain.domain}`}>
                                 <Typography.Text truncate>
                                     {domain.domain}
                                 </Typography.Text>
