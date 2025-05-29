@@ -3,10 +3,10 @@
     import Button from '$lib/elements/forms/button.svelte';
     import { debounce } from '$lib/helpers/debounce';
     import { sdk } from '$lib/stores/sdk';
-    import { consoleVariables } from '$routes/(console)/store';
     import { ConsoleResourceType } from '@appwrite.io/console';
     import { Fieldset, Layout, Status, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let domain: string;
     export let domainIsValid = true;
@@ -35,7 +35,7 @@
         }
         try {
             await sdk.forConsole.console.getResource(
-                `${value}.${$consoleVariables._APP_DOMAIN_SITES}`,
+                `${value}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
                 ConsoleResourceType.Rules
             );
             domainStatus = 'complete';
@@ -60,7 +60,7 @@
             <InputText id="domain" placeholder="my-domain" bind:value={newDomain}>
                 <svelte:fragment slot="end">
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                        .{$consoleVariables._APP_DOMAIN_SITES}
+                        .{$regionalConsoleVariables._APP_DOMAIN_SITES}
                     </Typography.Text>
                 </svelte:fragment>
             </InputText>

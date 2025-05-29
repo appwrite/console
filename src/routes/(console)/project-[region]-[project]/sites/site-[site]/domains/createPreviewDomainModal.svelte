@@ -6,11 +6,11 @@
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
-    import { consoleVariables } from '$routes/(console)/store';
     import { page } from '$app/state';
     import { Layout, Status, Typography } from '@appwrite.io/pink-svelte';
     import { ConsoleResourceType, ID } from '@appwrite.io/console';
     import { debounce } from '$lib/helpers/debounce';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let show = false;
 
@@ -24,7 +24,7 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.createSiteRule(
-                    `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
+                    `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
                     page.params.site
                 );
 
@@ -59,7 +59,7 @@
         }
         try {
             await sdk.forConsole.console.getResource(
-                `${value}.${$consoleVariables._APP_DOMAIN_SITES}`,
+                `${value}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
                 ConsoleResourceType.Rules
             );
             domainStatus = 'complete';
@@ -91,7 +91,7 @@
             <InputText id="domain" placeholder="my-domain" bind:value={domain}>
                 <svelte:fragment slot="end">
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                        .{$consoleVariables._APP_DOMAIN_SITES}
+                        .{$regionalConsoleVariables._APP_DOMAIN_SITES}
                     </Typography.Text>
                 </svelte:fragment>
             </InputText>
