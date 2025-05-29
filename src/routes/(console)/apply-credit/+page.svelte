@@ -5,10 +5,10 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CreditsApplied, SelectPaymentMethod } from '$lib/components/billing';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Button, Form, InputSelect, InputTags, InputText } from '$lib/elements/forms';
+    import { Button, type Form, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Wizard } from '$lib/layout';
-    import { type PaymentList, type Plan } from '$lib/sdk/billing';
+    import type { PaymentList, Plan } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import {
         organizationList,
@@ -72,7 +72,7 @@
     let tempOrgId = null;
     let currentPlan: Plan;
 
-    $: onlyNewOrgs = (campaign && campaign.onlyNewOrgs) || (couponData && couponData.onlyNewOrgs);
+    $: onlyNewOrgs = campaign?.onlyNewOrgs || couponData?.onlyNewOrgs;
 
     $: selectedOrgId = tempOrgId;
 
@@ -174,7 +174,7 @@
                     '',
                     clientSecret,
                     paymentMethodId,
-                    '/console/apply-credit?' + params.toString()
+                    `/console/apply-credit?${params}`
                 );
                 org = await sdk.forConsole.billing.validateOrganization(org.teamId, collaborators);
             }
@@ -205,7 +205,7 @@
 
     async function addCoupon() {
         try {
-            const response = await sdk.forConsole.billing.getCoupon(coupon);
+            const response = await sdk.forConsole.billing.getCouponAccount(coupon);
             couponData = response;
             coupon = null;
             addNotification({
