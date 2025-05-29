@@ -175,9 +175,7 @@
             class="overlay-button"
             aria-label="Close sidebar"
             class:overlay={$isSidebarOpen}
-            on:click={() => {
-                $isSidebarOpen = false;
-            }}></button>
+            on:click={() => ($isSidebarOpen = false)}></button>
     {/if}
 </main>
 
