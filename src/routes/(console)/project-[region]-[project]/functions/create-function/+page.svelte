@@ -5,7 +5,6 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import { isSelfHosted } from '$lib/system';
-    import { consoleVariables } from '$routes/(console)/store';
     import { afterNavigate, goto } from '$app/navigation';
     import { installation, repository } from '$lib/stores/vcs';
     import { Repositories } from '$lib/components/git';
@@ -23,10 +22,11 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
+    import { regionalConsoleVariables } from '../../store';
 
     export let data;
 
-    const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
+    const isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
     const wizardBase = `${base}/project-${page.params.region}-${page.params.project}/functions`;
     let previousPage: string = wizardBase;
     afterNavigate(({ from }) => {

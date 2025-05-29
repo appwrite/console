@@ -11,7 +11,6 @@
     import { writable } from 'svelte/store';
     import { ID, Runtime } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
-    import { consoleVariables } from '$routes/(console)/store';
     import Details from '../(components)/details.svelte';
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
@@ -20,6 +19,7 @@
     import Configuration from './configuration.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { removeFile } from '$lib/helpers/files';
+    import { regionalConsoleVariables } from '../../../store';
 
     export let data;
 
@@ -82,7 +82,7 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.createFunctionRule(
-                    `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
+                    `${ID.unique()}.${$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS}`,
                     func.$id
                 );
 

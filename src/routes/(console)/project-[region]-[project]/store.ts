@@ -25,6 +25,14 @@ export const onboarding = derived(
     ($project) => $project?.platforms?.length === 0 && $project?.keys?.length === 0
 );
 
+/**
+ * Same as the `consoleVariables` but from project's respective region!
+ */
+export const regionalConsoleVariables = derived(
+    page,
+    ($page) => $page.data.scopedConsoleVariables as Models.ConsoleVariables
+);
+
 function createStats() {
     const { subscribe, set, update } = writable<Map<string, BarSeriesOption['data']>>(new Map());
 
