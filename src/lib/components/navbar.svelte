@@ -55,6 +55,7 @@
     import { user } from '$lib/stores/user';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { HTMLAttributes } from 'svelte/elements';
+    import { beforeNavigate } from '$app/navigation';
 
     let showSupport = false;
 
@@ -115,6 +116,9 @@
 
     $: currentOrg = organizations.find((org) => org.isSelected);
     $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
+    beforeNavigate(() => {
+        showAccountMenu = false;
+    });
 </script>
 
 <Navbar.Base {...$$props}>

@@ -99,6 +99,12 @@
     $: if (!showReplace) {
         isSelectedBackup = false;
     }
+
+    $: hasPaymentError =
+        defaultPaymentMethod?.lastError ||
+        defaultPaymentMethod.expired ||
+        backupPaymentMethod?.lastError ||
+        backupPaymentMethod.expired;
 </script>
 
 <CardGrid>
@@ -109,10 +115,10 @@
             <Table.Root
                 let:root
                 columns={[
-                    { id: 'cc' },
-                    { id: 'name' },
-                    { id: 'expiry' },
-                    { id: 'status' },
+                    { id: 'cc', width: 140 },
+                    { id: 'name', width: { min: 140 } },
+                    { id: 'expiry', width: 100 },
+                    { id: 'status', width: 110, hide: !hasPaymentError },
                     { id: 'actions', width: 40 }
                 ]}>
                 <svelte:fragment slot="header" let:root>

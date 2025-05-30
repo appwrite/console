@@ -40,6 +40,13 @@
     $: filteredMethods = $paymentMethods?.paymentMethods.filter(
         (method: PaymentMethodData) => !!method?.last4
     );
+
+    $: hasLinkedOrgs = filteredMethods.some((method) =>
+        orgList.some(
+            (org) => method.$id === org.paymentMethodId || method.$id === org.backupPaymentMethodId
+        )
+    );
+    $: hasPaymentError = filteredMethods.some((method) => method?.lastError || method?.expired);
 </script>
 
 <CardGrid>
@@ -50,18 +57,21 @@
             <Table.Root
                 let:root
                 columns={[
-                    { id: 'cc' },
-                    { id: 'name' },
-                    { id: 'expiry' },
-                    { id: 'status' },
-                    { id: 'links' },
+                    { id: 'cc', width: 140 },
+                    { id: 'name', width: { min: 140 } },
+                    { id: 'expiry', width: 100 },
+                    { id: 'status', width: 110, hide: !hasPaymentError },
+                    { id: 'links', width: 190, hide: !hasLinkedOrgs },
                     { id: 'actions', width: 40 }
                 ]}>
                 <svelte:fragment slot="header" let:root>
                     <Table.Header.Cell column="cc" {root}>Credit card</Table.Header.Cell>
                     <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
-                    <Table.Header.Cell column="expiration" {root}
-                        >Expiration date</Table.Header.Cell>
+                    <Table.Header.Cell column="expiration" {root}>
+                        Expiration date
+                    </Table.Header.Cell>
+                    <Table.Header.Cell column="status" {root} />
+                    <Table.Header.Cell column="links" {root} />
                     <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
                 {#each filteredMethods as paymentMethod, i}
