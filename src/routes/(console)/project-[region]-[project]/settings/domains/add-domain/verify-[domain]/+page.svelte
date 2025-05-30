@@ -31,13 +31,16 @@
     const isSubDomain = $derived.by(() => isASubdomain(page.params.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
+
     $effect(() => {
         if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
             selectedTab = 'cname';
-        } else if ($regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
             selectedTab = 'a';
-        } else if ($regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
             selectedTab = 'aaaa';
+        } else {
+            selectedTab = 'nameserver';
         }
     });
     let verified = $state(false);

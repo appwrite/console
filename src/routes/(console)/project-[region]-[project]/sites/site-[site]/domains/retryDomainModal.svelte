@@ -26,13 +26,16 @@
     const isSubDomain = $derived.by(() => isASubdomain(selectedProxyRule?.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
+
     $effect(() => {
         if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
             selectedTab = 'cname';
-        } else if ($regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
             selectedTab = 'a';
-        } else if ($regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
             selectedTab = 'aaaa';
+        } else {
+            selectedTab = 'nameserver';
         }
     });
 
@@ -84,7 +87,7 @@
                     Nameservers
                 </Tabs.Item.Button>
             {/if}
-            {#if !!$regionalConsoleVariables._APP_DOMAIN_TARGET_A && $regionalConsoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'}
+            {#if !isCloud && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_A && $regionalConsoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'a')}
@@ -92,7 +95,7 @@
                     A
                 </Tabs.Item.Button>
             {/if}
-            {#if !!$regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'}
+            {#if !isCloud && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'aaaa')}
