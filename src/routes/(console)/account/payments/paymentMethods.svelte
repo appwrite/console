@@ -41,15 +41,13 @@
         (method: PaymentMethodData) => !!method?.last4
     );
 
-
-    const isMethodLinkedToOrg = (methodId: string, org: Organization) => 
+    const isMethodLinkedToOrg = (methodId: string, org: Organization) =>
         methodId === org.paymentMethodId || methodId === org.backupPaymentMethodId;
 
-
     $: linkedMethodIds = new Set(
-        orgList.flatMap(org => [org.paymentMethodId, org.backupPaymentMethodId].filter(Boolean))
+        orgList.flatMap((org) => [org.paymentMethodId, org.backupPaymentMethodId].filter(Boolean))
     );
-    $: hasLinkedOrgs = filteredMethods.some(method => linkedMethodIds.has(method.$id));
+    $: hasLinkedOrgs = filteredMethods.some((method) => linkedMethodIds.has(method.$id));
     $: hasPaymentError = filteredMethods.some((method) => method?.lastError || method?.expired);
 </script>
 
@@ -79,7 +77,7 @@
                     <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
                 {#each filteredMethods as paymentMethod, i}
-                    {@const linkedOrgs = orgList?.filter(org => 
+                    {@const linkedOrgs = orgList?.filter((org) =>
                         isMethodLinkedToOrg(paymentMethod.$id, org)
                     )}
 
