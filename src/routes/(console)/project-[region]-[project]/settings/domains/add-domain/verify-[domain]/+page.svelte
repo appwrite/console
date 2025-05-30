@@ -28,6 +28,7 @@
     let { data } = $props();
 
     const ruleId = page.url.searchParams.get('rule');
+    const domainId = page.url.searchParams.get('domain');
     const isSubDomain = $derived.by(() => isASubdomain(page.params.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
@@ -50,7 +51,8 @@
 
     async function verify() {
         const isNewDomain =
-            data.domainsList.domains.findIndex((rule) => rule.domain === page.params.domain) === -1;
+            data.domainsList.domains.find((rule) => rule.domain === page.params.domain) ===
+            undefined;
         try {
             if (selectedTab !== 'nameserver') {
                 const ruleData = await sdk
@@ -62,7 +64,14 @@
                     $organization.$id,
                     page.params.domain
                 );
-                verified = domainData.nameservers.toLocaleLowerCase() === 'appwrite';
+                verified = domainData.nameservers.toLowerCase() === 'appwrite';
+            } else if (!isNewDomain && isCloud) {
+                const domain = await sdk.forConsole.domains.updateNameservers(domainId);
+                verified = domain.nameservers.toLowerCase() === 'appwrite';
+                if (!verified)
+                    throw new Error(
+                        'Domain verification failed. Please check your domain settings or try again later'
+                    );
             }
 
             addNotification({

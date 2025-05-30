@@ -4,7 +4,7 @@
     import { Badge, Layout, Typography, Table, InteractiveText } from '@appwrite.io/pink-svelte';
 
     export let domain: string;
-    export let verified = false;
+    export let verified = undefined;
 
     const nameserverList = $regionalConsoleVariables?._APP_DOMAINS_NAMESERVERS
         ? $regionalConsoleVariables?._APP_DOMAINS_NAMESERVERS?.split(',')
@@ -16,10 +16,10 @@
         <Typography.Text variant="l-500" color="--fgcolor-neutral-primary">
             {domain}
         </Typography.Text>
-        {#if verified}
+        {#if verified === true}
             <Badge variant="secondary" type="success" size="xs" content="Verified" />
         {:else if verified === false}
-            <Badge variant="secondary" type="warning" size="xs" content="Pending verification" />
+            <Badge variant="secondary" type="warning" size="xs" content="Verification failed" />
         {/if}
     </Layout.Stack>
     <Typography.Text variant="m-400">

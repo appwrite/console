@@ -56,7 +56,7 @@
             });
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
-            error = e;
+            error = e.message;
             trackError(e, Submit.DomainUpdateVerification);
         }
     }

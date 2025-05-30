@@ -94,7 +94,7 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
-                                {#if proxyRule.status !== 'verified'}
+                                {#if proxyRule.status !== 'verified' && proxyRule.status !== 'verifying'}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconRefresh}
                                         on:click={(e) => {

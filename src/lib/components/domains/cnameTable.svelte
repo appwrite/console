@@ -12,7 +12,7 @@
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let domain: string;
-    export let verified = false;
+    export let verified = undefined;
 
     let subdomain = domain.split('.').slice(0, -2).join('.');
 </script>
@@ -23,16 +23,10 @@
             <Typography.Text variant="l-500" color="--fgcolor-neutral-primary">
                 {domain}
             </Typography.Text>
-            {#if verified}
-                <Badge variant="secondary" type="success" content="Verified" />
+            {#if verified === true}
+                <Badge variant="secondary" type="success" size="xs" content="Verified" />
             {:else if verified === false}
-                <Badge variant="secondary" type="error" content="Verification failed" />
-            {:else}
-                <Badge
-                    variant="secondary"
-                    type="warning"
-                    size="xs"
-                    content="Pending verification" />
+                <Badge variant="secondary" type="error" size="xs" content="Verification failed" />
             {/if}
         </Layout.Stack>
         <Typography.Text variant="m-400">
