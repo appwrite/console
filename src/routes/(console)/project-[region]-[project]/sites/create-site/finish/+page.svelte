@@ -20,8 +20,8 @@
 
     export let data;
 
-    let showConnectRepositry = false;
     let showOpenOnMobile = false;
+    let showConnectRepository = false;
     let showInviteCollaborator = false;
 
     const siteURL = data.proxyRuleList.rules[0].domain;
@@ -31,7 +31,7 @@
             page.url.searchParams.has('connectRepo') &&
             page.url.searchParams.get('connectRepo') === 'true'
         ) {
-            showConnectRepositry = true;
+            showConnectRepository = true;
         }
     });
 
@@ -106,7 +106,7 @@
                             <Card.Button
                                 radius="s"
                                 padding="s"
-                                on:click={() => (showConnectRepositry = true)}>
+                                on:click={() => (showConnectRepository = true)}>
                                 <Layout.Stack gap="s" style="height: 100%">
                                     <Layout.Stack
                                         direction="row"
@@ -206,11 +206,11 @@
     </svelte:fragment>
 </Wizard>
 
-{#if showConnectRepositry}
+{#if showConnectRepository}
     <ConnectRepoModal
-        bind:show={showConnectRepositry}
         {connect}
         product="sites"
+        bind:show={showConnectRepository}
         callbackState={{ connectRepo: 'true' }} />
 {/if}
 
