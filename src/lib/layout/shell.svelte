@@ -2,7 +2,7 @@
     import { beforeNavigate } from '$app/navigation';
     import { Navbar, Sidebar } from '$lib/components';
     import type { NavbarProject } from '$lib/components/navbar.svelte';
-    import { wizard } from '$lib/stores/wizard';
+    import { isNewWizardStatusOpen, wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
     import { setContext } from 'svelte';
     import { writable } from 'svelte/store';
@@ -131,7 +131,7 @@
 
 <svelte:window on:resize={handleResize} />
 <svelte:body use:style={$bodyStyle} />
-{#if $activeHeaderAlert?.show}
+{#if $activeHeaderAlert?.show && !$isNewWizardStatusOpen}
     <svelte:component this={$activeHeaderAlert.component} />
 {/if}
 <main
