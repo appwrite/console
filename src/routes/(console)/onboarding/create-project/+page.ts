@@ -10,7 +10,17 @@ import { base } from '$app/paths';
 
 // TODO: this needs to be cleaned up!
 export const load: PageLoad = async ({ parent }) => {
-    const { organizations } = await parent();
+    const { account, organizations } = await parent();
+
+    const accountPrefs = account.prefs;
+    const hasCompletedOnboarding = accountPrefs['newOnboardingCompleted'] ?? false;
+
+    // user has already seen it, lets redirect now!
+    if (hasCompletedOnboarding && !organizations?.total) {
+        redirect(303, `${base}/onboarding/create-organization`);
+    } else if (hasCompletedOnboarding && organizations?.total) {
+        redirect(303, `${base}/organization-${organizations.teams[0].$id}`);
+    }
 
     if (!organizations?.total) {
         try {
@@ -30,6 +40,7 @@ export const load: PageLoad = async ({ parent }) => {
 
                 if (isOrganization(org)) {
                     return {
+                        accountPrefs,
                         organization: org
                     };
                 } else {
@@ -40,6 +51,7 @@ export const load: PageLoad = async ({ parent }) => {
                 }
             } else {
                 return {
+                    accountPrefs,
                     organization: await sdk.forConsole.teams.create(
                         ID.unique(),
                         'Personal projects'
@@ -62,6 +74,7 @@ export const load: PageLoad = async ({ parent }) => {
         }
         if (!projects?.total) {
             return {
+                accountPrefs,
                 organization: org
             };
         } else {

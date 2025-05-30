@@ -12,13 +12,26 @@
     import CreateProject from '$lib/layout/createProject.svelte';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
+    import { user } from '$lib/stores/user';
 
     let isLoading = false;
     let id: string;
     let startAnimation = false;
     let projectName = 'Appwrite project';
     let region = Region.Fra;
+
     export let data;
+
+    async function markOnboardingComplete() {
+        const currentPrefs = data.accountPrefs ?? $user.prefs;
+
+        const newPrefs = {
+            ...currentPrefs,
+            newOnboardingCompleted: true
+        };
+
+        await sdk.forConsole.account.updatePrefs(newPrefs);
+    }
 
     async function createProject() {
         isLoading = true;
@@ -31,6 +44,9 @@
                 teamId,
                 isCloud ? region : undefined
             );
+
+            await markOnboardingComplete();
+
             trackEvent(Submit.ProjectCreate, {
                 customId: !!id,
                 teamId
