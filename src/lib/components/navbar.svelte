@@ -116,9 +116,7 @@
 
     $: currentOrg = organizations.find((org) => org.isSelected);
     $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
-    beforeNavigate(() => {
-        showAccountMenu = false;
-    });
+    beforeNavigate(() => (showAccountMenu = false));
 </script>
 
 <Navbar.Base {...$$props}>
