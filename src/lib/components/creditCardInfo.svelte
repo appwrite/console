@@ -19,8 +19,9 @@
     </Layout.Stack>
 </Table.Cell>
 <Table.Cell column="name" {root}>{paymentMethod?.name}</Table.Cell>
-<Table.Cell column="expiry" {root}
-    >{paymentMethod?.expiryMonth}/{paymentMethod?.expiryYear}</Table.Cell>
+<Table.Cell column="expiry" {root}>
+    {paymentMethod?.expiryMonth}/{paymentMethod?.expiryYear}
+</Table.Cell>
 <Table.Cell column="status" {root}>
     {#if paymentMethod?.lastError || paymentMethod?.expired}
         <Popover let:toggle>

@@ -95,7 +95,7 @@
 {#if enabledFactors.length > 1}
     <span class="with-separators eyebrow-heading-3">or</span>
     <div class="u-flex-vertical u-gap-8">
-        {#if factors.totp && challengeType != null && challengeType != AuthenticationFactor.Totp}
+        {#if factors.totp && challengeType !== null && challengeType !== AuthenticationFactor.Totp}
             <Button
                 secondary
                 fullWidth
