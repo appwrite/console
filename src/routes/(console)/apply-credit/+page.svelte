@@ -361,9 +361,9 @@
                     fixedCoupon={!!data?.couponData?.code}
                     {billingPlan}
                     {collaborators}
-                    plans={$plansInfo}
                     bind:couponData
-                    bind:billingBudget>
+                    bind:billingBudget
+                    organizationId={selectedOrgId}>
                     {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}
                         <div class="u-margin-block-end-24">
                             <p class="body-text-1 u-bold">{campaign?.cta}</p>

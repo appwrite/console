@@ -247,7 +247,6 @@
             <EstimatedTotalBox
                 billingPlan={selectedPlan}
                 {collaborators}
-                plans={data.plansInfo}
                 bind:couponData={selectedCoupon}
                 bind:billingBudget />
         {:else}

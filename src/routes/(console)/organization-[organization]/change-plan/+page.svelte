@@ -354,10 +354,10 @@
             <EstimatedTotalBox
                 {collaborators}
                 {isDowngrade}
-                plans={data.plansInfo}
                 billingPlan={selectedPlan}
                 bind:couponData={selectedCoupon}
-                bind:billingBudget />
+                bind:billingBudget
+                organizationId={data.organization.$id} />
         {:else if data.organization.billingPlan !== BillingPlan.CUSTOM}
             <PlanComparisonBox downgrade={isDowngrade} />
         {/if}
