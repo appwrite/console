@@ -199,7 +199,9 @@ const appearanceLight: Appearance = {
         colorText: toRGB(ThemeLightCloud['neutral-700']),
         colorBackground: toRGB(ThemeLightCloud['neutral-25']),
         colorDanger: toRGB(ThemeLightCloud['web-red-700']),
-        fontFamily: ThemeLightCloud['font-family-sansserif'],
+        fontFamily:
+            ThemeLightCloud['font-family-sansserif'] +
+            ', system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
         borderRadius: ThemeLightCloud['base-8']
     },
     rules: {
@@ -241,7 +243,9 @@ const appearanceDark = {
         colorTextSecondary: toRGB(ThemeDarkCloud['neutral-250']),
         colorBackground: toRGB(ThemeDarkCloud['neutral-900']),
         colorDanger: toRGB(ThemeDarkCloud['web-red-500']),
-        fontFamily: ThemeDarkCloud['font-family-sansserif'],
+        fontFamily:
+            ThemeLightCloud['font-family-sansserif'] +
+            ', system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
         borderRadius: ThemeDarkCloud['base-8']
     },
     rules: {
