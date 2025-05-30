@@ -95,7 +95,7 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
-                                {#if rule.status !== 'verified'}
+                                {#if rule.status !== 'verified' && rule.status !== 'verifying'}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconRefresh}
                                         on:click={(e) => {

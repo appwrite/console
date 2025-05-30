@@ -43,29 +43,26 @@
     ];
 </script>
 
-<Layout.Grid gap="m" columnsL={2} columns={1}>
-    <Layout.Stack direction="row" gap="m">
-        {#each metrics.slice(0, 3) as metric}
-            {#if metric.description === 'Status'}
-                <UsageCard description={metric.description}>
-                    <Layout.Stack direction="row" gap="xs" alignItems="center">
-                        <Status
-                            label={metric.value.toString()}
-                            status={isDomainVerified ? 'complete' : 'pending'} />
+<Layout.Grid gap="m" columnsL={6} columns={3} columnsS={2} columnsXXS={1}>
+    {#each metrics.slice(0, 3) as metric}
+        {#if metric.description === 'Status'}
+            <UsageCard description={metric.description}>
+                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                    <Status
+                        --font-size-s="var(--font-size-xs)"
+                        label={metric.value.toString()}
+                        status={isDomainVerified ? 'complete' : 'pending'} />
 
-                        {#if !isDomainVerified}
-                            <Link on:click={retryVerification}>Retry</Link>
-                        {/if}
-                    </Layout.Stack>
-                </UsageCard>
-            {:else}
-                <UsageCard description={metric.description} bind:value={metric.value} />
-            {/if}
-        {/each}
-    </Layout.Stack>
-    <Layout.Stack direction="row" gap="m">
-        {#each metrics.slice(3) as metric}
+                    {#if !isDomainVerified}
+                        <Link size="s" on:click={retryVerification}>Retry</Link>
+                    {/if}
+                </Layout.Stack>
+            </UsageCard>
+        {:else}
             <UsageCard description={metric.description} bind:value={metric.value} />
-        {/each}
-    </Layout.Stack>
+        {/if}
+    {/each}
+    {#each metrics.slice(3) as metric}
+        <UsageCard description={metric.description} bind:value={metric.value} />
+    {/each}
 </Layout.Grid>

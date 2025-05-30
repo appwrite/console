@@ -31,13 +31,14 @@
             } else {
                 addNotification({
                     type: 'error',
-                    message: `Domain verification failed. Please check your domain settings or try again later`
+                    message:
+                        'Domain verification failed. Please check your domain settings or try again later'
                 });
             }
             await invalidate(Dependencies.DOMAINS);
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
-            error = e;
+            error = e.message;
             trackError(e, Submit.DomainUpdateVerification);
         }
     }

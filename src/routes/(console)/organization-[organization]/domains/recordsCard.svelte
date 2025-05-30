@@ -46,7 +46,8 @@
             } else {
                 addNotification({
                     type: 'error',
-                    message: 'Domain not verified'
+                    message:
+                        'Domain verification failed. Please check your domain settings or try again later'
                 });
             }
         } catch (error) {
@@ -68,8 +69,9 @@
         </div>
         <Layout.Stack gap="s">
             <Layout.Stack gap="s" direction="row" alignItems="center">
-                <Typography.Text variant="l-500" color="--fgcolor-neutral-primary"
-                    >{domain.domain}</Typography.Text>
+                <Typography.Text variant="l-500" color="--fgcolor-neutral-primary">
+                    {domain.domain}
+                </Typography.Text>
 
                 {#if verified === false}
                     <Badge
@@ -77,12 +79,8 @@
                         type="error"
                         size="xs"
                         content="Verification failed" />
-                {:else}
-                    <Badge
-                        variant="secondary"
-                        type="warning"
-                        size="xs"
-                        content="Pending verification" />
+                {:else if verified === true}
+                    <Badge variant="secondary" type="success" size="xs" content="Verified" />
                 {/if}
             </Layout.Stack>
             <Typography.Text variant="m-400">

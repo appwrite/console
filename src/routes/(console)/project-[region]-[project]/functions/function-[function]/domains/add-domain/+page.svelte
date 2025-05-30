@@ -82,7 +82,9 @@
                 await goto(routeBase);
                 await invalidate(Dependencies.FUNCTION_DOMAINS);
             } else {
-                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
+                await goto(
+                    `${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}&domain=${domain.$id}`
+                );
                 await invalidate(Dependencies.FUNCTION_DOMAINS);
             }
         } catch (error) {

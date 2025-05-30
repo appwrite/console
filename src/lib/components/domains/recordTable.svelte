@@ -11,7 +11,7 @@
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let domain: string;
-    export let verified = false;
+    export let verified = undefined;
     export let variant: 'cname' | 'a' | 'aaaa';
     export let service: 'sites' | 'general' = 'general';
 
@@ -37,16 +37,10 @@
             <Typography.Text variant="l-500" color="--fgcolor-neutral-primary">
                 {domain}
             </Typography.Text>
-            {#if verified}
+            {#if verified === true}
                 <Badge variant="secondary" type="success" size="xs" content="Verified" />
             {:else if verified === false}
                 <Badge variant="secondary" type="error" size="xs" content="Verification failed" />
-            {:else}
-                <Badge
-                    variant="secondary"
-                    type="warning"
-                    size="xs"
-                    content="Pending verification" />
             {/if}
         </Layout.Stack>
         <Typography.Text variant="m-400">
