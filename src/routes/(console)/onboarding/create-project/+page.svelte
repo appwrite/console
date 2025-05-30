@@ -22,7 +22,7 @@
 
     export let data;
 
-    async function markOnboardingComplete() {
+    function markOnboardingComplete() {
         const currentPrefs = data.accountPrefs ?? $user.prefs;
 
         const newPrefs = {
@@ -30,7 +30,7 @@
             newOnboardingCompleted: true
         };
 
-        await sdk.forConsole.account.updatePrefs(newPrefs);
+        sdk.forConsole.account.updatePrefs(newPrefs);
     }
 
     async function createProject() {
@@ -45,7 +45,7 @@
                 isCloud ? region : undefined
             );
 
-            await markOnboardingComplete();
+            markOnboardingComplete();
 
             trackEvent(Submit.ProjectCreate, {
                 customId: !!id,
