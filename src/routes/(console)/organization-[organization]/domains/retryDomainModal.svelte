@@ -23,7 +23,7 @@
         try {
             const domain = await sdk.forConsole.domains.updateNameservers(selectedDomain.$id);
             show = false;
-            if (domain.nameservers === 'Appwrite') {
+            if (domain.nameservers.toLowerCase() === 'appwrite') {
                 addNotification({
                     type: 'success',
                     message: `${selectedDomain.domain} has been verified`

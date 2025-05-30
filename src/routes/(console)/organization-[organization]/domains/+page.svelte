@@ -41,7 +41,7 @@
     let selectedDomain: Models.Domain = null;
 
     const isDomainVerified = (domain: Models.Domain) => {
-        return domain.nameservers.toLocaleLowerCase() === 'appwrite';
+        return domain.nameservers.toLowerCase() === 'appwrite';
     };
 </script>
 

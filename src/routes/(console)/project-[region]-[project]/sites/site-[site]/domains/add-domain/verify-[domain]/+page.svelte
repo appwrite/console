@@ -66,7 +66,7 @@
                     $organization.$id,
                     page.params.domain
                 );
-                verified = domainData.nameservers.toLocaleLowerCase() === 'appwrite';
+                verified = domainData.nameservers.toLowerCase() === 'appwrite';
                 throw new Error(
                     'Domain verification failed. Please check your domain settings or try again later'
                 );

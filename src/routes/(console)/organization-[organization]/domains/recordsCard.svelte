@@ -35,7 +35,7 @@
     async function verifyStatus() {
         try {
             domain = await sdk.forConsole.domains.updateNameservers(domain.$id);
-            verified = domain.nameservers === 'Appwrite';
+            verified = domain.nameservers.toLowerCase() === 'appwrite';
             if (verified) {
                 addNotification({
                     type: 'success',

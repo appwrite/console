@@ -64,10 +64,10 @@
                     $organization.$id,
                     page.params.domain
                 );
-                verified = domainData.nameservers.toLocaleLowerCase() === 'appwrite';
+                verified = domainData.nameservers.toLowerCase() === 'appwrite';
             } else if (!isNewDomain && isCloud) {
                 const domain = await sdk.forConsole.domains.updateNameservers(domainId);
-                verified = domain.nameservers === 'Appwrite';
+                verified = domain.nameservers.toLowerCase() === 'appwrite';
                 if (!verified)
                     throw new Error(
                         'Domain verification failed. Please check your domain settings or try again later'

@@ -8,7 +8,7 @@
     let { domain, retryVerification }: { domain: Models.Domain; retryVerification: () => void } =
         $props();
 
-    const isDomainVerified = domain.nameservers.toLocaleLowerCase() === 'appwrite';
+    const isDomainVerified = domain.nameservers.toLowerCase() === 'appwrite';
 
     const metrics = [
         {
@@ -29,7 +29,7 @@
         },
         {
             value:
-                domain?.registrar?.toLocaleLowerCase() === 'appwrite'
+                domain?.registrar?.toLowerCase() === 'appwrite'
                     ? domain?.autoRenewal
                         ? 'On'
                         : 'Off'
