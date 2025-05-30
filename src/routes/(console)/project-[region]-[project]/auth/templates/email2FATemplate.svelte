@@ -9,13 +9,15 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Layout, Card } from '@appwrite.io/pink-svelte';
 
-    const projectId = page.params.project;
+    export let loading = false;
+
     let locale = 'en';
-    let loading = false;
+    let isUpdating = false;
+    const projectId = page.params.project;
 
     async function onLocaleChange() {
         const timeout = setTimeout(() => {
-            loading = true;
+            isUpdating = true;
         }, 1000);
         try {
             const template = await loadEmailTemplate(projectId, 'mfaChallenge', locale);
@@ -30,7 +32,7 @@
             });
         } finally {
             clearTimeout(timeout);
-            loading = false;
+            isUpdating = false;
         }
     }
 </script>
@@ -38,7 +40,7 @@
 <Card.Base variant="secondary" padding="s">
     <Layout.Stack>
         <LocaleOptions on:change={onLocaleChange} bind:value={locale} />
-        <EmailTemplate bind:loading>
+        <EmailTemplate {loading} {isUpdating}>
             <Id value={'{{user}}'}>{'{{user}}'}</Id>
             <Id value={'{{project}}'}>{'{{project}}'}</Id>
             <Id value={'{{otp}}'}>{'{{otp}}'}</Id>
