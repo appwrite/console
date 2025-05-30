@@ -5,7 +5,7 @@ import { Dependencies } from '$lib/constants';
 import { isCloud } from '$lib/system';
 
 export const load = async ({ parent, depends, params }) => {
-    const { function: func } = await parent();
+    const { function: func, organization } = await parent();
     depends(Dependencies.DOMAINS, Dependencies.FUNCTION_DOMAINS);
 
     const [rules, installations, domains] = await Promise.all([
@@ -16,7 +16,9 @@ export const load = async ({ parent, depends, params }) => {
                 Query.equal('trigger', RuleTrigger.MANUAL)
             ]),
         sdk.forProject(params.region, params.project).vcs.listInstallations(),
-        isCloud ? sdk.forConsole.domains.list() : Promise.resolve(null)
+        isCloud
+            ? sdk.forConsole.domains.list([Query.equal('teamId', organization.$id)])
+            : Promise.resolve(null)
     ]);
 
     return {

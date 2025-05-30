@@ -5,6 +5,7 @@ import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { queries, queryParamToMap } from '$lib/components/filters';
 
 export const load = async ({ depends, url, route, parent }) => {
+    const { organization } = await parent();
     depends(Dependencies.DOMAINS);
 
     const page = getPage(url);
@@ -12,8 +13,6 @@ export const load = async ({ depends, url, route, parent }) => {
     const offset = pageToOffset(page, limit);
     const query = getQuery(url);
     const search = getSearch(url);
-
-    const { organization } = await parent();
 
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
@@ -27,7 +26,7 @@ export const load = async ({ depends, url, route, parent }) => {
             Query.limit(limit),
             Query.offset(offset),
             Query.orderDesc(''),
-            Query.equal('teamId', [organization.$id]),
+            Query.equal('teamId', organization.$id),
             ...parsedQueries.values()
         ])
     };
