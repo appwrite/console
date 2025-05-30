@@ -13,7 +13,6 @@
     import MfaRecoveryCodes from './mfaRecoveryCodes.svelte';
     import type { Models } from '@appwrite.io/console';
     import MfaRegenerateCodes from './mfaRegenerateCodes.svelte';
-    import { Pill } from '$lib/elements';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
     import { Badge, Divider, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
