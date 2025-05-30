@@ -44,7 +44,6 @@ export const load: PageLoad = async ({ parent, url }) => {
             redirect(303, `${base}/organization-${teamId}${url.search}`);
         }
     } else if (!isApplyingCredit) {
-        console.log(url);
         redirect(303, `${base}/onboarding/create-project${url.search}`);
     }
 };
