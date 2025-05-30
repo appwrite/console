@@ -6,7 +6,7 @@
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Button, type Form, InputTags, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputTags, InputText } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import type { Coupon } from '$lib/sdk/billing';
     import { isOrganization, tierToPlan } from '$lib/stores/billing';
