@@ -58,16 +58,18 @@
                     .forProject(page.params.region, page.params.project)
                     .proxy.updateRuleVerification(ruleId);
                 verified = ruleData.status === 'verified';
-                console.log(ruleData);
-                throw new Error('Verification failed');
+                throw new Error(
+                    'Domain verification failed. Please check your domain settings or try again later'
+                );
             } else if (isNewDomain && isCloud) {
                 const domainData = await sdk.forConsole.domains.create(
                     $organization.$id,
                     page.params.domain
                 );
                 verified = domainData.nameservers.toLocaleLowerCase() === 'appwrite';
-                console.log(domainData);
-                throw new Error('Verification failed');
+                throw new Error(
+                    'Domain verification failed. Please check your domain settings or try again later'
+                );
             }
 
             addNotification({
