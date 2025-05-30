@@ -1,4 +1,14 @@
 <script context="module" lang="ts">
+    import type {
+        SmsTemplateLocale,
+        SmsTemplateType,
+        EmailTemplateType,
+        EmailTemplateLocale
+    } from '@appwrite.io/console';
+
+    import { sdk } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
+
     export async function loadEmailTemplate(projectId: string, type: string, locale: string) {
         try {
             // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
@@ -35,49 +45,43 @@
     import { base } from '$app/paths';
     import { CardGrid } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
-    import { addNotification } from '$lib/stores/notifications';
-    import EmailVerificationTemplate from './emailVerificationTemplate.svelte';
-    import EmailMagicUrlTemplate from './emailMagicUrlTemplate.svelte';
-    import EmailRecoveryTemplate from './emailRecoveryTemplate.svelte';
-    import EmailInviteTemplate from './emailInviteTemplate.svelte';
-    import Email2FaTemplate from './email2FATemplate.svelte';
-    import EmailSessionAlertTemplate from './emailSessionAlertTemplate.svelte';
-
-    // import SmsVerificationTemplate from './smsVerificationTemplate.svelte';
-    // import SmsLoginTemplate from './smsLoginTemplate.svelte';
-    // import { baseEmailTemplate, baseSmsTemplate, emailTemplate, smsTemplate } from './store';
-    import { baseEmailTemplate, emailTemplate } from './store';
+    import { baseEmailTemplate, emailTemplate, templates } from './store';
     import { Button } from '$lib/elements/forms';
     import { currentPlan } from '$lib/stores/organization';
     import EmailSignature from './emailSignature.svelte';
     import { isCloud } from '$lib/system';
-    import type {
-        SmsTemplateLocale,
-        SmsTemplateType,
-        EmailTemplateType,
-        EmailTemplateLocale
-    } from '@appwrite.io/console';
     import { Accordion, Alert, Badge, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
 
     export let data;
 
-    let emailOpen = 'verification';
-    $: emailVerificationOpen = emailOpen === 'verification';
-    $: emailMagicSessionOpen = emailOpen === 'magicSession';
-    $: emailOtpSessionOpen = emailOpen === 'otpSession';
-    $: emailResetPassword = emailOpen === 'recovery';
-    $: emailInviteUser = emailOpen === 'invitation';
-    $: email2FAVerificationOpen = emailOpen === 'mfaChallenge';
-    $: emailSessionAlertOpen = emailOpen === 'sessionAlert';
+    let templateType = null;
+    let isTemplateLoading = false;
+    let openStates = Object.fromEntries(templates.map(({ key }) => [key, false]));
 
-    openEmail('verification');
+    loadTemplateFor('verification');
 
-    async function openEmail(type: string) {
-        type === emailOpen ? (emailOpen = null) : (emailOpen = type);
+    async function loadTemplateFor(type: string) {
+        // return, already loaded!
+        if (templateType === type) return;
+
+        templateType = type;
+        isTemplateLoading = true;
+
         $emailTemplate = await loadEmailTemplate(page.params.project, type, 'en');
         $baseEmailTemplate = { ...$emailTemplate };
+
+        isTemplateLoading = false;
+    }
+
+    function toggleAccordion(type: string) {
+        for (const key in openStates) {
+            openStates[key] = false;
+        }
+
+        openStates[type] = true;
+
+        loadTemplateFor(type);
     }
 </script>
 
@@ -109,95 +113,21 @@
             Learn more
         </Link.Anchor>
         <svelte:fragment slot="aside">
-            <Layout.Stack gap="none">
-                <Accordion
-                    title="Verification"
-                    bind:open={emailVerificationOpen}
-                    on:click={() => openEmail('verification')}>
-                    <Layout.Stack>
-                        <Typography.Text>
-                            Send a verification email to users that sign in with their email and
-                            password.
-                        </Typography.Text>
-                        <EmailVerificationTemplate />
-                    </Layout.Stack>
-                </Accordion>
-                <Accordion
-                    title="Magic URL"
-                    bind:open={emailMagicSessionOpen}
-                    on:click={(e) => {
-                        e.preventDefault();
-                        openEmail('magicSession');
-                    }}>
-                    <Layout.Stack>
-                        <Typography.Text>
-                            Send an email to users that sign in with a magic URL.
-                        </Typography.Text>
-                        <EmailMagicUrlTemplate />
-                    </Layout.Stack>
-                </Accordion>
-                <Accordion
-                    title="OTP session"
-                    bind:open={emailOtpSessionOpen}
-                    on:click={(e) => {
-                        e.preventDefault();
-                        openEmail('otpSession');
-                    }}>
-                    <Layout.Stack>
-                        <Typography.Text>
-                            Send an email to users that sign in with a email OTP.</Typography.Text>
-                        <EmailMagicUrlTemplate />
-                    </Layout.Stack>
-                </Accordion>
-                <Accordion
-                    title="Reset password"
-                    bind:open={emailResetPassword}
-                    on:click={(e) => {
-                        e.preventDefault();
-                        openEmail('recovery');
-                    }}>
-                    <Layout.Stack>
-                        <Typography.Text>
-                            Send a recovery email to users that forget their password.</Typography.Text>
-                        <EmailRecoveryTemplate /></Layout.Stack>
-                </Accordion>
-                <Accordion
-                    title="Invite user"
-                    bind:open={emailInviteUser}
-                    on:click={(e) => {
-                        e.preventDefault();
-                        openEmail('invitation');
-                    }}>
-                    <Layout.Stack>
-                        <Typography.Text>
-                            Send an invitation email to become a member of your project.</Typography.Text>
-                        <EmailInviteTemplate />
-                    </Layout.Stack>
-                </Accordion>
-                <Accordion
-                    title="2FA verification"
-                    bind:open={email2FAVerificationOpen}
-                    on:click={(e) => {
-                        e.preventDefault();
-                        openEmail('mfaChallenge');
-                    }}>
-                    <Layout.Stack>
-                        <Typography.Text>
-                            Send a two-factor authentication email to a user.</Typography.Text>
-                        <Email2FaTemplate /></Layout.Stack>
-                </Accordion>
-                <Accordion
-                    title="Session alert"
-                    bind:open={emailSessionAlertOpen}
-                    on:click={(e) => {
-                        e.preventDefault();
-                        openEmail('sessionAlert');
-                    }}>
-                    <Layout.Stack>
-                        <Typography.Text>
-                            Send an email to users when a new session is created.</Typography.Text>
-                        <EmailSessionAlertTemplate /></Layout.Stack>
-                </Accordion>
+            <Layout.Stack gap="s">
+                {#each templates as section (section.key)}
+                    <Accordion
+                        title={section.title}
+                        hideDivider={section.hideDivider}
+                        bind:open={openStates[section.key]}
+                        on:toggle={(event) => event.detail && toggleAccordion(section.key)}>
+                        <Layout.Stack>
+                            <Typography.Text>{section.description}</Typography.Text>
+                            <svelte:component
+                                this={section.component}
+                                loading={isTemplateLoading} />
+                        </Layout.Stack>
+                    </Accordion>
+                {/each}
             </Layout.Stack>
         </svelte:fragment>
         <svelte:fragment slot="actions">
