@@ -249,7 +249,7 @@
     }
 
     $: {
-        if (selectedOrgId) {
+        if (selectedOrgId && selectedOrgId !== newOrgId) {
             (async () => {
                 currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
             })();
@@ -363,7 +363,9 @@
                     {collaborators}
                     bind:couponData
                     bind:billingBudget
-                    organizationId={selectedOrgId}>
+                    organizationId={selectedOrgId && selectedOrgId !== newOrgId
+                        ? selectedOrgId
+                        : null}>
                     {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}
                         <div class="u-margin-block-end-24">
                             <p class="body-text-1 u-bold">{campaign?.cta}</p>
