@@ -11,7 +11,7 @@
     import type { Coupon } from '$lib/sdk/billing';
     import { isOrganization, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { type OrganizationError, type Organization } from '$lib/stores/organization';
+    import type { OrganizationError, Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe';
     import { ID } from '@appwrite.io/console';
@@ -35,11 +35,6 @@
     let billingPlan: BillingPlan = BillingPlan.FREE;
     let paymentMethodId: string;
     let collaborators: string[] = [];
-    let couponData: Partial<Coupon> = {
-        code: null,
-        status: null,
-        credits: null
-    };
     let taxId: string;
 
     let billingBudget: number;
@@ -54,9 +49,9 @@
             const coupon = page.url.searchParams.get('coupon');
             try {
                 const response = await sdk.forConsole.billing.getCouponAccount(coupon);
-                couponData = response;
+                selectedCoupon = response;
             } catch (e) {
-                couponData = {
+                selectedCoupon = {
                     code: null,
                     status: null,
                     credits: null
@@ -127,7 +122,7 @@
                     selectedPlan,
                     paymentMethodId,
                     null,
-                    couponData.code ? couponData.code : null,
+                    selectedCoupon.code ? selectedCoupon.code : null,
                     collaborators,
                     billingBudget,
                     taxId
@@ -148,7 +143,7 @@
                         '',
                         clientSecret,
                         paymentMethodId,
-                        '/console/create-organization?' + params.toString()
+                        `/console/create-organization?${params}`
                     );
                     await validate(org.teamId, collaborators);
                 }
