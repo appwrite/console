@@ -160,11 +160,11 @@
                                 <span class="icon-device-mobile" aria-hidden="true"></span>
                             </div>
                             <Layout.Stack gap="xxxs">
-                                <Layout.Stack gap="s">
+                                <Layout.Stack gap="s" direction="row">
                                     <Typography.Text variant="m-600"
                                         >Authenticator app</Typography.Text>
                                     {#if $factors.totp}
-                                        <Pill>connected</Pill>
+                                        <Badge variant="secondary" content="connected" size="s" />
                                     {/if}
                                 </Layout.Stack>
                                 <Typography.Text variant="m-400">

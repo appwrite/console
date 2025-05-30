@@ -102,9 +102,9 @@
 
     $: hasPaymentError =
         defaultPaymentMethod?.lastError ||
-        defaultPaymentMethod.expired ||
+        defaultPaymentMethod?.expired ||
         backupPaymentMethod?.lastError ||
-        backupPaymentMethod.expired;
+        backupPaymentMethod?.expired;
 </script>
 
 <CardGrid>
