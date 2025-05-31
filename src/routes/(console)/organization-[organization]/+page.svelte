@@ -163,15 +163,15 @@
                         {project.name}
                     </svelte:fragment>
                     {#each platforms as platform, i}
-                        {#if i < 3}
+                        {#if i < 2}
                             {@const icon = getIconForPlatform(platform.icon)}
                             <Badge variant="secondary" content={platform.name}>
                                 <Icon {icon} size="s" slot="start" />
                             </Badge>
                         {/if}
                     {/each}
-                    {#if platforms?.length > 3}
-                        <Badge variant="secondary" content={`+${project.platforms.length - 3}`} />
+                    {#if platforms?.length > 2}
+                        <Badge variant="secondary" content={`+${project.platforms.length - 2}`} />
                     {/if}
                     <svelte:fragment slot="icons">
                         {#if isCloud && $regionsStore?.regions}

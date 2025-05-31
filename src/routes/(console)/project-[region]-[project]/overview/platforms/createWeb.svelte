@@ -11,10 +11,9 @@
         Fieldset,
         InlineCode,
         Card,
-        Button,
         Tooltip
     } from '@appwrite.io/pink-svelte';
-    import { Form, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import {
         IconVue,
         IconAppwrite,
@@ -166,10 +165,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                 type: platform
             });
 
-            await Promise.all([
-                invalidate(Dependencies.PROJECT),
-                invalidate(Dependencies.PLATFORMS)
-            ]);
+            invalidate(Dependencies.PROJECT);
+            invalidate(Dependencies.PLATFORMS);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -223,10 +220,10 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                         </div>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             {#if isChangingFramework}
-                                <Button.Button
+                                <Button
                                     disabled={!selectedFramework}
                                     on:click={() => (isChangingFramework = false)}>
-                                    Save</Button.Button>
+                                    Save</Button>
                             {/if}
                         </Layout.Stack>
                     </Layout.Stack>
@@ -249,8 +246,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                             </Tooltip>
                         </InputText></Fieldset>
                     <Layout.Stack direction="row" justifyContent="flex-end"
-                        ><Button.Button type="submit" disabled={!selectedFramework}
-                            >Create platform</Button.Button
+                        ><Button submit disabled={!selectedFramework}>Create platform</Button
                         ></Layout.Stack>
                 {/if}
             {:else}
@@ -264,12 +260,12 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                             <Typography.Text variant="m-500"
                                 >{selectedFramework.label}</Typography.Text>
                         </Layout.Stack>
-                        <Button.Button
-                            variant="secondary"
+                        <Button
                             size="s"
+                            secondary
                             on:click={() => {
                                 isChangingFramework = true;
-                            }}>Change</Button.Button>
+                            }}>Change</Button>
                     </Layout.Stack></Card.Base>
             {/if}
 
@@ -338,15 +334,15 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                                 color="--fgcolor-neutral-primary">
                                 Demo app runs on http://localhost:{selectedFramework.portNumber}</Typography.Text
                             ></Layout.Stack>
-                        <Button.Anchor
-                            variant="secondary"
+                        <Button
+                            external
+                            secondary
                             href={`http://localhost:${selectedFramework.portNumber}`}
-                            target="_blank"
                             ><Layout.Stack direction="row" gap="xs"
                                 >Open <Icon
                                     icon={IconExternalLink}
                                     color="--fgcolor-neutral-tertiary" /></Layout.Stack
-                            ></Button.Anchor
+                            ></Button
                         ></Layout.Stack
                     ></Card.Base>
             {/if}
@@ -394,10 +390,12 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 
     <svelte:fragment slot="footer">
         {#if isPlatformCreated}
-            <Button.Anchor
+            <Button
+                size="s"
+                secondary
+                fullWidthMobile
                 href={location.pathname}
-                variant="secondary"
-                disabled={isCreatingPlatform}>Go to dashboard</Button.Anchor>
+                disabled={isCreatingPlatform}>Go to dashboard</Button>
         {/if}
     </svelte:fragment>
 </Wizard>

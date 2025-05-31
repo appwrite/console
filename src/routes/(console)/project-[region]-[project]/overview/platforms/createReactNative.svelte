@@ -4,6 +4,7 @@
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
     import {
+        Card as Pink2Card,
         Code,
         Layout,
         Icon,
@@ -25,10 +26,9 @@
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
-    import { LabelCard } from '$lib/components';
 
     let showExitModal = false;
-    export let isPlatformCreated = false;
+    let isPlatformCreated = false;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
     const projectId = page.params.project;
@@ -94,10 +94,9 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.para
             trackEvent(Submit.PlatformCreate, {
                 type: platform
             });
-            await Promise.all([
-                invalidate(Dependencies.PROJECT),
-                invalidate(Dependencies.PLATFORMS)
-            ]);
+
+            invalidate(Dependencies.PROJECT);
+            invalidate(Dependencies.PLATFORMS);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -136,16 +135,14 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.para
             <!-- Step One -->
             <Layout.Stack gap="l" direction="row">
                 {#each Object.entries(platforms) as [key, value]}
-                    <div class="u-width-full-line">
-                        <!-- TODO: https://github.com/appwrite/pink/pull/248 for correct spacing -->
-                        <LabelCard
-                            name={key}
-                            bind:group={platform}
-                            variant="primary"
-                            {value}
-                            title={key}
-                            disabled={isPlatformCreated} />
-                    </div>
+                    <Pink2Card.Selector
+                        {value}
+                        id={key}
+                        title={key}
+                        imageRadius="s"
+                        name="framework"
+                        bind:group={platform}
+                        disabled={isCreatingPlatform || isPlatformCreated} />
                 {/each}
             </Layout.Stack>
 
