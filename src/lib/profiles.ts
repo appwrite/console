@@ -16,6 +16,7 @@ type Profile = {
     githubLoginProvider?: string;
     hasGoogleLogin: boolean;
     hasAccountLogin: boolean;
+    hasAppwriteDocumentation: boolean;
     description: string;
 };
 
@@ -35,6 +36,7 @@ export const ConsoleCloudProfile: Profile = {
     githubLoginProvider: OAuthProvider.Github,
     hasGoogleLogin: false,
     hasAccountLogin: true,
+    hasAppwriteDocumentation: true,
     description: "Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools."
 };
 
@@ -53,6 +55,7 @@ export const ConsoleSelfhostedProfile: Profile = {
     hasGithubLogin: false,
     hasGoogleLogin: false,
     hasAccountLogin: true,
+    hasAppwriteDocumentation: true,
     description: "Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools."
 };
 
@@ -72,5 +75,6 @@ export const StudioProfile: Profile = {
     githubLoginProvider: 'github2',
     hasGoogleLogin: true,
     hasAccountLogin: true,
+    hasAppwriteDocumentation: false,
     description: "Imagine the fastest way to go from your imagination to scale. Batteries included."
 };
