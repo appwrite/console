@@ -169,10 +169,11 @@
                                 <Button text icon ariaLabel="more options" on:click={toggle}>
                                     <Icon icon={IconDotsHorizontal} size="s" />
                                 </Button>
-                                <ActionMenu.Root slot="tooltip">
+                                <ActionMenu.Root slot="tooltip" let:toggle>
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconPencil}
-                                        on:click={() => {
+                                        on:click={(event) => {
+                                            toggle(event);
                                             showEdit = true;
                                             selectedAttribute = attribute;
                                             showDropdown[index] = false;
@@ -182,7 +183,8 @@
                                     {#if !isRelationship(attribute)}
                                         <ActionMenu.Item.Button
                                             leadingIcon={IconPlus}
-                                            on:click={() => {
+                                            on:click={(event) => {
+                                                toggle(event);
                                                 selectedAttribute = attribute;
                                                 showCreateIndex = true;
                                                 showDropdown[index] = false;
@@ -193,10 +195,11 @@
                                     {#if attribute.status !== 'processing'}
                                         <ActionMenu.Item.Button
                                             leadingIcon={IconTrash}
-                                            on:click={() => {
-                                                selectedAttribute = attribute;
+                                            on:click={(event) => {
+                                                toggle(event);
                                                 showDelete = true;
                                                 showDropdown[index] = false;
+                                                selectedAttribute = attribute;
                                                 trackEvent(Click.DatabaseAttributeDelete);
                                             }}>
                                             Delete
