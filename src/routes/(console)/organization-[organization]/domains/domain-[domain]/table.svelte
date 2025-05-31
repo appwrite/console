@@ -82,7 +82,7 @@
                     </Table.Cell>
                 {/each}
                 <Table.Cell column="actions" {root}>
-                    <Layout.Stack direction="row" justifyContent="flex-end">
+                    <Layout.Stack direction="row" justifyContent="center">
                         {#if record.lock}
                             <Tooltip>
                                 <Icon icon={IconLockClosed} size="s" />
