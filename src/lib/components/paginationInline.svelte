@@ -35,6 +35,8 @@
         }
     }
 
+    const none = undefined as never;
+
     // function pagination(page: number, total: number) {
     //     const pagesShown = 5;
     //     const start = Math.max(
@@ -56,11 +58,11 @@
 {#if !hidePages}
     <Pagination
         {limit}
-        page={currentPage}
         {total}
         type="button"
-        on:page={handleOptionClick}
-        createLink={undefined as never} />
+        createLink={none}
+        page={currentPage}
+        on:page={handleOptionClick} />
 {:else}
     <Layout.Stack direction="row" inline>
         <Button.Button
