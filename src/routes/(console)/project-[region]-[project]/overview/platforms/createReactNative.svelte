@@ -4,6 +4,7 @@
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
     import {
+        Card as Pink2Card,
         Code,
         Layout,
         Icon,
@@ -25,7 +26,6 @@
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
-    import { LabelCard } from '$lib/components';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -133,18 +133,15 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.para
     <Form onSubmit={createReactNativePlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->
-            <Layout.Stack gap="l" direction="row">
+            <Layout.Stack gap="l">
                 {#each Object.entries(platforms) as [key, value]}
-                    <div class="u-width-full-line">
-                        <!-- TODO: https://github.com/appwrite/pink/pull/248 for correct spacing -->
-                        <LabelCard
-                            name={key}
-                            bind:group={platform}
-                            variant="primary"
-                            {value}
-                            title={key}
-                            disabled={isPlatformCreated} />
-                    </div>
+                    <Pink2Card.Selector
+                        {value}
+                        id={key}
+                        title={key}
+                        imageRadius="s"
+                        name="framework"
+                        bind:group={platform} />
                 {/each}
             </Layout.Stack>
 

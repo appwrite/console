@@ -4,6 +4,7 @@
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
     import {
+        Card as Pink2Card,
         Code,
         Layout,
         Icon,
@@ -26,7 +27,6 @@
     import { PlatformType } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import { app } from '$lib/stores/app';
-    import { LabelCard } from '$lib/components';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -106,20 +106,17 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
     <Form onSubmit={createApplePlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->
-            <Layout.Stack gap="l" direction="row">
+            <Layout.Grid gap="l" rowGap="l" columns={4} columnsXS={2}>
                 {#each Object.entries(platforms) as [key, value]}
-                    <div class="u-width-full-line">
-                        <!-- TODO: https://github.com/appwrite/pink/pull/248 for correct spacing -->
-                        <LabelCard
-                            name={key}
-                            bind:group={platform}
-                            variant="primary"
-                            {value}
-                            title={key}
-                            disabled={isPlatformCreated} />
-                    </div>
+                    <Pink2Card.Selector
+                        {value}
+                        id={key}
+                        title={key}
+                        imageRadius="s"
+                        name="framework"
+                        bind:group={platform} />
                 {/each}
-            </Layout.Stack>
+            </Layout.Grid>
 
             <!-- Step Two -->
             {#if !isPlatformCreated}
