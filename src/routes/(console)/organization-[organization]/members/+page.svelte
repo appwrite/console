@@ -8,14 +8,13 @@
     import Upgrade from '$lib/components/roles/upgrade.svelte';
     import { getRoleLabel } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { newMemberModal, organization } from '$lib/stores/organization';
+    import { currentPlan, newMemberModal, organization } from '$lib/stores/organization';
     import { isOwner } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import Delete from '../deleteMember.svelte';
     import Edit from './edit.svelte';
     import { isCloud } from '$lib/system';
-    import { BillingPlan } from '$lib/constants';
     import {
         IconDotsHorizontal,
         IconInfo,
@@ -71,7 +70,11 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Typography.Title>Members</Typography.Title>
-        <ConsoleButton on:mousedown={() => newMemberModal.set(true)} event="create_user" size="s">
+        <ConsoleButton
+            size="s"
+            event="create_user"
+            on:mousedown={() => newMemberModal.set(true)}
+            disabled={isCloud ? !$currentPlan?.addons?.seats?.supported : false}>
             <Icon size="s" icon={IconPlus} slot="start" />
             <span class="text">Invite</span>
         </ConsoleButton>
@@ -103,7 +106,7 @@
             <Table.Header.Cell column="mfa" {root}>2FA</Table.Header.Cell>
             <Table.Header.Cell column="actions" {root} />
         </svelte:fragment>
-        {#each data.organizationMembers.memberships as member, index}
+        {#each data.organizationMembers.memberships as member, index (member.$id)}
             <Table.Row.Base {root}>
                 <Table.Cell column="name" {root}>
                     <Layout.Stack direction="row" alignItems="center" gap="s">
@@ -138,15 +141,17 @@
                         </Button.Button>
                         <div style:min-width="232px" slot="tooltip">
                             <ActionMenu.Root>
-                                <ActionMenu.Item.Button
-                                    trailingIcon={IconPencil}
-                                    on:click={() => {
-                                        selectedMember = member;
-                                        showEdit = true;
-                                        showDropdown[index] = false;
-                                    }}>
-                                    Edit role
-                                </ActionMenu.Item.Button>
+                                {#if isCloud && $currentPlan?.supportsOrganizationRoles}
+                                    <ActionMenu.Item.Button
+                                        trailingIcon={IconPencil}
+                                        on:click={() => {
+                                            selectedMember = member;
+                                            showEdit = true;
+                                            showDropdown[index] = false;
+                                        }}>
+                                        Edit role
+                                    </ActionMenu.Item.Button>
+                                {/if}
                                 {#if member.invited && !member.joined}
                                     <ActionMenu.Item.Button
                                         trailingIcon={IconRefresh}

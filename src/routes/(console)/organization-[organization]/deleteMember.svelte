@@ -34,6 +34,7 @@
             if (isCloud && $organization) {
                 await checkForUsageLimit($organization);
             }
+            showDelete = false;
             addNotification({
                 type: 'success',
                 message: `${selectedMember.userName || 'User'} was deleted from ${selectedMember.teamName}`
@@ -42,8 +43,6 @@
         } catch (e) {
             error = e.message;
             trackError(e, Submit.MemberDelete);
-        } finally {
-            showDelete = false;
         }
     };
 
