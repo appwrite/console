@@ -11,10 +11,12 @@
         data: Partial<Models.AttributeRelationship>
     ) {
         if (!isValueOfStringEnum(RelationshipType, data.relationType)) {
-            throw new Error(`Invalid relationship type: ${data.relationType}`);
+            throw new Error(
+                `Invalid relationship type${data.relationType ? ` : ${data.relationType}` : ''}`
+            );
         }
         if (!isValueOfStringEnum(RelationMutate, data.onDelete)) {
-            throw new Error(`Invalid on delete: ${data.onDelete}`);
+            throw new Error(`Invalid deletion method${data.onDelete ? ` : ${data.onDelete}` : ''}`);
         }
 
         await sdk
@@ -137,7 +139,7 @@
     $: search = data.relatedCollection || undefined;
 
     $: if (search) {
-        const exists = collectionList.collections?.some((c) =>
+        const exists = collectionList?.collections?.some((c) =>
             c.$id.toLocaleLowerCase().includes(search.toLocaleLowerCase())
         );
 
@@ -157,7 +159,7 @@
         name="one"
         value="one"
         icon={IconArrowSmRight}>
-        <p>One Relation attribute within this collection</p>
+        One Relation attribute within this collection
     </Card.Selector>
     <Card.Selector
         title="Two-way relationship"
@@ -165,9 +167,7 @@
         name="two"
         value="two"
         icon={IconSwitchHorizontal}>
-        <p>
-            One Relation attribute within this collection and another within the related collection
-        </p>
+        One Relation attribute within this collection and another within the related collection
     </Card.Selector>
 </Layout.Stack>
 
@@ -179,6 +179,7 @@
     bind:value={data.relatedCollection}
     on:change={updateKeyName}
     options={collections?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
+
 {#if data?.relatedCollection}
     <InputText
         id="key"
@@ -207,6 +208,7 @@
         placeholder="Select a relation"
         options={relationshipType}
         disabled={editing} />
+
     <div class="u-flex u-flex-vertical u-gap-16">
         <Box>
             <div class="u-flex u-align u-cross-center u-main-center u-gap-32">
@@ -214,7 +216,7 @@
                 {#if data.twoWay}
                     <img src={arrowTwo} alt={'Two way relationship'} />
                 {:else}
-                    <img src={arrowOne} alt={'One way realationship'} />
+                    <img src={arrowOne} alt={'One way relationship'} />
                 {/if}
                 <span>{data.key}</span>
             </div>
