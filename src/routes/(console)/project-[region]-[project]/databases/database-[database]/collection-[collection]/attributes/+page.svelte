@@ -137,14 +137,16 @@
                         {#if 'format' in attribute && attribute.format}
                             <span class="u-capitalize">{attribute.format}</span>
                         {:else}
-                            <span class="u-capitalize">{attribute.type}</span>
-                            {#if isRelationship(attribute)}
-                                <span>
-                                    with <a
-                                        href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`}
-                                        ><b data-private>{attribute?.key}</b></a>
-                                </span>
-                            {/if}
+                            <p>
+                                <span class="u-capitalize">{attribute.type}</span>
+                                {#if isRelationship(attribute)}
+                                    <span>
+                                        with <a
+                                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`}
+                                            ><b data-private>{attribute?.key}</b></a>
+                                    </span>
+                                {/if}
+                            </p>
                         {/if}
                         <span>
                             {attribute.array ? '[]' : ''}
@@ -171,8 +173,8 @@
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconPencil}
                                         on:click={() => {
-                                            selectedAttribute = attribute;
                                             showEdit = true;
+                                            selectedAttribute = attribute;
                                             showDropdown[index] = false;
                                         }}>
                                         Update
