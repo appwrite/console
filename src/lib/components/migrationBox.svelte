@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { parseIfString } from '$lib/helpers/object';
     import { getProjectId } from '$lib/helpers/project';
     import { realtime } from '$lib/stores/sdk';
@@ -51,7 +51,7 @@
 
     onMount(() => {
         return realtime
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .subscribe<Models.Migration>(['console'], async (response) => {
                 if (!response.channels.includes(`projects.${getProjectId()}`)) return;
                 if (response.events.includes('migrations.*')) {
@@ -72,7 +72,7 @@
                 class="upload-box-button"
                 aria-label="close migration box"
                 on:click={() => ($showMigrationBox = false)}>
-                <span class="icon-x" aria-hidden="true" />
+                <span class="icon-x" aria-hidden="true"></span>
             </button>
         </header>
         <div class="upload-box-content is-open">
@@ -83,7 +83,8 @@
                 <div
                     class="progress-bar-container"
                     class:is-danger={migration.status === 'failed'}
-                    style="--graph-size:{percentage}%" />
+                    style="--graph-size:{percentage}%">
+                </div>
             </section>
         </div>
     </section>

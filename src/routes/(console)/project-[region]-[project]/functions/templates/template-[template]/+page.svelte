@@ -1,106 +1,104 @@
 <script lang="ts">
-    import { Card, Collapsible, Heading } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Card } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container, ContainerButton } from '$lib/layout';
     import { isCloud } from '$lib/system';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
-    import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import { template } from './store';
     import { app } from '$lib/stores/app';
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { functionsList } from '../../store';
     import { canWriteFunctions } from '$lib/stores/roles';
+    import {
+        Layout,
+        Typography,
+        Card as PinkCard,
+        Image,
+        Badge,
+        Divider,
+        Icon
+    } from '@appwrite.io/pink-svelte';
+    import { base } from '$app/paths';
+    import { page } from '$app/state';
+    import { capitalize } from '$lib/helpers/string';
+    import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
 
     $: buttonDisabled =
         isCloud && isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
 </script>
 
 <Container>
-    <div class="grid-300px-1fr">
-        <section>
-            <Collapsible>
-                <li class="collapsible-item-divider collapsible-item">
-                    <h3 class="u-flex u-gap-16 body-text-2 u-bold u-padding-block-12">
-                        Use cases
-                        <span class="inline-tag">{$template.useCases.length}</span>
-                    </h3>
-                    <div class="collapsible-content u-flex u-flex-wrap u-gap-8">
-                        {#each $template.useCases as useCase}
-                            <Pill>{useCase}</Pill>
-                        {/each}
-                    </div>
-                </li>
-                <li class="collapsible-item-divider collapsible-item">
-                    <h3 class="u-flex u-gap-16 body-text-2 u-bold u-padding-block-12">
-                        Runtimes
-                        <span class="inline-tag">{$template.runtimes.length}</span>
-                    </h3>
-                    <div class="collapsible-content u-flex u-flex-wrap u-gap-8">
-                        {#each $template.runtimes as runtime}
-                            <Pill>{runtime.name}</Pill>
-                        {/each}
-                    </div>
-                </li>
-                <li class="collapsible-item-divider collapsible-item">
-                    <section class="card u-margin-block-start-24">
-                        <h4 class="body-text-1 u-bold">Published by</h4>
-                        <img
-                            class="u-margin-block-start-8"
-                            src={$app.themeInUse === 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
-                            width="120"
-                            height="22"
-                            alt="Appwrite" />
-                    </section>
-                </li>
-            </Collapsible>
-        </section>
-        <section>
-            <Card>
-                <Heading size="7" tag="h3">
-                    <span class="u-flex u-cross-center u-gap-16 functions-avatar-holder">
-                        <div class="avatar is-size-small">
-                            <span
-                                style:--p-text-size="20px"
-                                class={$template.icon}
-                                aria-hidden="true" />
-                        </div>
-                        {$template.name}
-                    </span>
-                </Heading>
-                <p class="u-margin-block-start-24">{$template.tagline}</p>
+    <Layout.GridFraction start={1} end={3} gap="xxl">
+        <div>
+            <PinkCard.Base radius="s" padding="s">
+                <Layout.Stack gap="s">
+                    <Typography.Text color="--fgcolor-neutral-tertiary"
+                        >Published by</Typography.Text>
+                    <Image
+                        fit="contain"
+                        src={$app.themeInUse === 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
+                        width={120}
+                        height={22}
+                        alt="Appwrite" />
+                </Layout.Stack>
+            </PinkCard.Base>
+        </div>
+        <Card radius="m" padding="s">
+            <Layout.Stack gap="xl">
+                <Layout.Stack gap="l">
+                    <Layout.Stack gap="xxs">
+                        <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                            About
+                        </Typography.Text>
+                        <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
+                            {$template.tagline}
+                        </Typography.Text>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxs">
+                        <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                            Use cases
+                        </Typography.Text>
+                        <Layout.Stack direction="row" gap="xs" wrap="wrap">
+                            {#each $template.useCases as useCase}
+                                <Badge variant="secondary" size="s" content={capitalize(useCase)} />
+                            {/each}
+                        </Layout.Stack>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxs">
+                        <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                            Runtimes
+                        </Typography.Text>
+                        <Layout.Stack direction="row" gap="xs" wrap="wrap">
+                            {#each $template.runtimes as runtime}
+                                <Badge variant="secondary" size="s" content={runtime.name} />
+                            {/each}
+                        </Layout.Stack>
+                    </Layout.Stack>
+                </Layout.Stack>
 
-                <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24 u-flex-wrap">
+                <Divider />
+
+                <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
                     <Button
-                        text
+                        secondary
                         href={`https://github.com/${$template.providerOwner}/${$template.providerRepositoryId}`}
                         external>
                         View source
-                        <span class="icon-external-link" />
+                        <Icon icon={IconExternalLink} size="s" slot="end" />
                     </Button>
                     {#if $canWriteFunctions}
                         <ContainerButton
                             title="functions"
                             disabled={buttonDisabled}
-                            buttonMethod={() => connectTemplate($template)}
+                            buttonHref={`${base}/project-${page.params.region}-${page.params.project}/functions/create-function/template-${$template.id}`}
                             showIcon={false}
                             buttonText="Create function"
                             buttonEvent="create_function" />
                     {/if}
-                </div>
-            </Card>
-        </section>
-    </div>
+                </Layout.Stack>
+            </Layout.Stack>
+        </Card>
+    </Layout.GridFraction>
 </Container>
-
-<style>
-    :global(.theme-dark .collapsible-item-divider:where(:not(:last-child))) {
-        border-block-end: solid 0.0625rem hsl(var(--color-neutral-85));
-    }
-
-    :global(.theme-light .collapsible-item-divider:where(:not(:last-child))) {
-        border-block-end: solid 0.0625rem hsl(var(--color-neutral-10));
-    }
-</style>

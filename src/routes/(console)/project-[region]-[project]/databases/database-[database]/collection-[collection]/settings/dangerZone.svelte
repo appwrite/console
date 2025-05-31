@@ -1,19 +1,18 @@
 <script lang="ts">
-    import { BoxAvatar, CardGrid, Heading } from '$lib/components';
+    import { BoxAvatar, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { collection } from '../store';
     import Delete from './deleteCollection.svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     let showDelete = false;
 </script>
 
-<CardGrid danger>
-    <Heading tag="h6" size="7">Delete collection</Heading>
-    <p>
-        The collection will be permanently deleted, including all the documents within it. This
-        action is irreversible.
-    </p>
+<CardGrid>
+    <svelte:fragment slot="title">Delete collection</svelte:fragment>
+    The collection will be permanently deleted, including all the documents within it. This action is
+    irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">
@@ -24,7 +23,12 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        <Button
+            secondary
+            on:click={() => {
+                trackEvent(Click.DatabaseCollectionDelete);
+                showDelete = true;
+            }}>Delete</Button>
     </svelte:fragment>
 </CardGrid>
 

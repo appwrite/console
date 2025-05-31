@@ -29,14 +29,7 @@
     }
 </script>
 
-<Modal
-    title="Regenerate recovery codes"
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}
-    {error}
-    onSubmit={submit}
-    bind:show>
+<Modal title="Regenerate recovery codes" {error} onSubmit={submit} bind:show>
     <p>
         Are you sure you want to regenerate all recovery codes? All <b
             >previously generated recovery codes will become invalid.</b>
@@ -45,8 +38,7 @@
         factors={{ ...factors, recoveryCode: false }}
         bind:challenge
         bind:code
-        showVerifyButton={false}
-        autoSubmit={false} />
+        showVerifyButton={false} />
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>

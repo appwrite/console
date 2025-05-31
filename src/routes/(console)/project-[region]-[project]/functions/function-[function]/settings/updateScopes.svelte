@@ -1,8 +1,8 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -13,8 +13,9 @@
     import { Runtime } from '@appwrite.io/console';
     import Scopes from '$routes/(console)/project-[region]-[project]/overview/keys/scopes.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
+    import { Link } from '$lib/elements';
 
-    const functionId = $page.params.function;
+    const functionId = page.params.function;
     let functionScopes: string[] = null;
 
     onMount(async () => {
@@ -27,7 +28,7 @@
                 throw new Error(`Invalid runtime: ${$func.runtime}`);
             }
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .functions.update(
                     functionId,
                     $func.name,
@@ -68,16 +69,12 @@
 
 <Form onSubmit={updateScopes}>
     <CardGrid>
-        <Heading tag="h6" size="7">Scopes</Heading>
-        <p class="text">
-            Select scopes to grant the dynamic key generated temporarily for your function. It is
-            best practice to allow only necessary permissions. <a
-                href="https://appwrite.io/docs/advanced/platform/api-keys#scopes"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link">Learn more</a
-            >.
-        </p>
+        <svelte:fragment slot="title">Scopes</svelte:fragment>
+        Select scopes to grant the dynamic key generated temporarily for your function. It is best practice
+        to allow only necessary permissions.
+        <Link href="https://appwrite.io/docs/advanced/platform/api-keys#scopes" external
+            >Learn more</Link
+        >.
         <svelte:fragment slot="aside">
             {#if functionScopes !== null}
                 <Scopes bind:scopes={functionScopes} />

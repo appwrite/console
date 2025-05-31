@@ -11,18 +11,18 @@
     import AppleWatchOs from './appleWatchOS.svelte';
     import AppleTvos from './appleTvOS.svelte';
     import Android from './android.svelte';
-    import { Box, CardGrid, Heading } from '$lib/components';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { Box, CardGrid } from '$lib/components';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { onMount, SvelteComponent } from 'svelte';
+    import { onMount, type Component } from 'svelte';
     import { project } from '../../../store';
     import { platform } from './store';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
 
-    const types: Record<string, typeof SvelteComponent<unknown>> = {
+    const types: Record<string, Component> = {
         web: Web,
         android: Android,
         'apple-ios': AppleiOs,
@@ -71,17 +71,15 @@
 <Container>
     <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Name</Heading>
-            <p class="text">Choose any name that will help you distinguish between platforms.</p>
+            <svelte:fragment slot="title">Name</svelte:fragment>
+            Choose any name that will help you distinguish between platforms.
             <svelte:fragment slot="aside">
-                <FormList>
-                    <InputText
-                        id="name"
-                        label="Name"
-                        bind:value={name}
-                        required
-                        placeholder="Enter name" />
-                </FormList>
+                <InputText
+                    id="name"
+                    label="Name"
+                    bind:value={name}
+                    required
+                    placeholder="Enter name" />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
@@ -92,11 +90,9 @@
 
     <svelte:component this={types[$platform.type]} />
 
-    <CardGrid danger>
-        <div>
-            <Heading tag="h6" size="7">Delete platform</Heading>
-        </div>
-        <p>The Platform will be permanently deleted. This action is irreversible.</p>
+    <CardGrid>
+        <svelte:fragment slot="title">Delete platform</svelte:fragment>
+        The Platform will be permanently deleted. This action is irreversible.
         <svelte:fragment slot="aside">
             <Box>
                 <div class="u-flex u-gap-16">

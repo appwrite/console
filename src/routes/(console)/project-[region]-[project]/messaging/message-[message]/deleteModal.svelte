@@ -1,23 +1,23 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let show = false;
     export let message: Models.Message & { data: Record<string, unknown> };
 
+    let error: string;
     let description = message.data.title ?? message.data.subject ?? message.data.content ?? '';
 
     const deleteMessage = async () => {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .messaging.delete(message.$id);
             show = false;
             let notificationMessage = '';
@@ -38,25 +38,16 @@
                 message: notificationMessage
             });
             trackEvent(Submit.MessagingMessageDelete);
-            await goto(`${base}/project-${$page.params.region}-${$page.params.project}/messaging`);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.MessagingMessageDelete);
+            await goto(`${base}/project-${page.params.region}-${page.params.project}/messaging`);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.MessagingMessageDelete);
         }
     };
 </script>
 
-<Modal
-    title="Delete message"
-    bind:show
-    onSubmit={deleteMessage}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
-    <p data-private>
+<Confirm onSubmit={deleteMessage} title="Delete message" bind:open={show} bind:error>
+    <p>
         Are you sure you want to delete
         {#if description}
             <span class="u-bold">{description}</span>{:else}
@@ -77,8 +68,4 @@
             here.
         {/if}
     </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
-    </svelte:fragment>
-</Modal>
+</Confirm>

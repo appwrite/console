@@ -10,8 +10,7 @@ export const VARS = {
     CONSOLE_MODE: (env.PUBLIC_CONSOLE_MODE as Mode) ?? undefined,
     APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT ?? undefined,
     GROWTH_ENDPOINT: env.PUBLIC_GROWTH_ENDPOINT ?? undefined,
-    PUBLIC_STRIPE_KEY: env.PUBLIC_STRIPE_KEY ?? undefined,
-    APPWRITE_MULTI_REGION: env.PUBLIC_APPWRITE_MULTI_REGION ?? false
+    PUBLIC_STRIPE_KEY: env.PUBLIC_STRIPE_KEY ?? undefined
 };
 
 export const ENV = {
@@ -28,3 +27,15 @@ export const isDev = ENV.DEV;
 export const isProd = ENV.PROD;
 export const hasStripePublicKey = !!VARS.PUBLIC_STRIPE_KEY;
 export const GRACE_PERIOD_OVERRIDE = false;
+
+export const APPWRITE_OFFICIALS_ORG = 'appwriteOfficials';
+
+export function isMultiRegionSupported(url: URL): boolean {
+    if (env.PUBLIC_APPWRITE_MULTI_REGION === 'true') return true;
+
+    try {
+        return url.hostname === 'cloud.appwrite.io';
+    } catch {
+        return false;
+    }
+}

@@ -1,9 +1,10 @@
 import { browser } from '$app/environment';
 import { VARS } from '$lib/system';
 import { get, writable } from 'svelte/store';
-import type { SvelteComponent } from 'svelte';
+import type { Component } from 'svelte';
 import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
 import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
+import { Submit, trackEvent } from '$lib/actions/analytics';
 
 export type Feedback = {
     elapsed: number;
@@ -21,22 +22,19 @@ export type FeedbackData = {
 
 export type FeedbackOption = {
     type: Feedback['type'];
-    title: string;
-    desc: string;
-    component: typeof SvelteComponent<unknown>;
+    desc?: string;
+    component: Component;
 };
 
 export const feedbackOptions: FeedbackOption[] = [
     {
         type: 'general',
-        title: 'Help us improve Appwrite',
         desc: 'Appwrite evolves with your input. Share your thoughts and help us improve Appwrite.',
         component: FeedbackGeneral
     },
     {
         type: 'nps',
-        title: 'Help us improve Appwrite',
-        desc: 'Appwrite evolves with your input. Share your thoughts and help us improve Appwrite. If you would like to be contacted regarding your feedback, please share your contact details below.',
+        desc: 'How likely are you to recommend Appwrite to a friend or colleague?',
         component: FeedbackNps
     }
 ];
@@ -122,6 +120,7 @@ function createFeedbackStore() {
             userId?: string
         ) => {
             if (!VARS.GROWTH_ENDPOINT) return;
+            trackEvent(Submit.FeedbackSubmit);
 
             const customFields: Array<{ id: string; value: string | number }> = [
                 { id: '47364', value: currentPage }

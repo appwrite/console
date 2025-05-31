@@ -7,6 +7,7 @@ import { error } from '@sveltejs/kit';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.FILE);
+    depends(Dependencies.FILE_TOKENS);
 
     try {
         return {
@@ -14,7 +15,10 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             breadcrumbs: Breadcrumbs,
             file: await sdk
                 .forProject(params.region, params.project)
-                .storage.getFile(params.bucket, params.file)
+                .storage.getFile(params.bucket, params.file),
+            tokens: await sdk
+                .forProject(params.region, params.project)
+                .tokens.list(params.bucket, params.file)
         };
     } catch (e) {
         error(e.code, e.message);

@@ -1,7 +1,7 @@
 import { debounce } from '$lib/helpers/debounce';
 import { isMac } from '$lib/helpers/platform';
 import { wizard } from '$lib/stores/wizard';
-import { onMount } from 'svelte';
+import { type ComponentType, onMount } from 'svelte';
 import { derived, writable } from 'svelte/store';
 import { nanoid } from 'nanoid/non-secure';
 import { trackEvent } from '$lib/actions/analytics';
@@ -37,7 +37,8 @@ const groups = [
     'buckets',
     'files',
     'misc',
-    'settings'
+    'settings',
+    'sites'
 ] as const;
 
 export type CommandGroup = (typeof groups)[number];
@@ -48,7 +49,7 @@ type BaseCommand = {
     disabled?: boolean;
     forceEnable?: boolean;
     group?: CommandGroup;
-    icon?: string;
+    icon?: ComponentType;
     image?: string;
     rank?: number;
     nested?: boolean;

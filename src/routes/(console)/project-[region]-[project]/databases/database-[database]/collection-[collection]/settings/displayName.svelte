@@ -1,19 +1,20 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputSelectSearch, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputSelect, InputText } from '$lib/elements/forms';
     import { last, symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { attributes } from '../store';
     import { preferences } from '$lib/stores/preferences';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
-    const collectionId = $page.params.collection;
+    const collectionId = page.params.collection;
     let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
-    let search: string;
 
     async function updateDisplayName() {
         try {
@@ -55,84 +56,54 @@
 
 <Form onSubmit={updateDisplayName}>
     <CardGrid>
-        <Heading tag="h6" size="7" id="display-name">Display name</Heading>
-        <p class="text">
-            Select string attributes as display names for your documents. The selected names will be
-            used as short forms to identify documents in the Appwrite console, like when creating
-            database relationships. You can specify up to 5 names.
-        </p>
+        <svelte:fragment slot="title">Display name</svelte:fragment>
+        Select up to 5 string attributes to display as document names in the Appwrite console. These
+        help identify documents in places like relationships.
 
         <svelte:fragment slot="aside">
-            <div class="u-flex u-flex-vertical u-gap-4">
-                <ul class="u-flex-vertical u-gap-8">
-                    <li class="u-flex u-gap-8">
-                        <InputText
-                            id="id"
-                            label="Document ID"
-                            showLabel={false}
-                            placeholder="Document ID"
-                            readonly
-                            fullWidth />
-                        <div class="form-item-part u-cross-child-end u-opacity-0">
-                            <Button text noMargin disabled>
-                                <span class="icon-x" aria-hidden="true" />
+            <Layout.Stack gap="s">
+                <Layout.Stack direction="row" gap="xxs">
+                    <InputText id="id" value="Document ID" readonly />
+                    <span style:visibility="hidden">
+                        <Button icon extraCompact>
+                            <Icon icon={IconX} />
+                        </Button>
+                    </span>
+                </Layout.Stack>
+                {#if names?.length}
+                    {#each names as name, i}
+                        <Layout.Stack direction="row" gap="xxs">
+                            <InputSelect
+                                id={name}
+                                placeholder="Select attribute"
+                                bind:value={names[i]}
+                                disabled={!!names[i] && names.length > i + 1}
+                                {options} />
+                            <Button
+                                icon
+                                extraCompact
+                                on:click={() => {
+                                    names.splice(i, 1);
+                                    names = names;
+                                }}>
+                                <Icon icon={IconX} />
                             </Button>
-                        </div>
-                    </li>
-                    {#if names?.length}
-                        {#each names as name, i}
-                            <div class="u-flex u-gap-8">
-                                {#if names[i]}
-                                    <InputSelectSearch
-                                        id={name}
-                                        label={name}
-                                        showLabel={false}
-                                        interactiveOutput
-                                        placeholder="Select attribute"
-                                        bind:value={names[i]}
-                                        bind:search={names[i]}
-                                        name="attributes"
-                                        disabled
-                                        {options} />
-                                {:else}
-                                    <InputSelectSearch
-                                        id={name}
-                                        label={name}
-                                        showLabel={false}
-                                        placeholder="Select attribute"
-                                        bind:value={names[i]}
-                                        bind:search
-                                        name="attributes"
-                                        {options} />
-                                {/if}
-                                <div class="form-item-part u-cross-child-end">
-                                    <Button
-                                        text
-                                        noMargin
-                                        on:click={() => {
-                                            names.splice(i, 1);
-                                            names = names;
-                                        }}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                </div>
-                            </div>
-                        {/each}
-                    {/if}
-                </ul>
-                <Button
-                    noMargin
-                    text
-                    disabled={addAttributeDisabled}
-                    on:click={() => {
-                        names[names.length] = null;
-                        search = null;
-                        names = names;
-                    }}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add attribute</span>
-                </Button>
-            </div>
+                        </Layout.Stack>
+                    {/each}
+                {/if}
+                <div>
+                    <Button
+                        compact
+                        disabled={addAttributeDisabled}
+                        on:click={() => {
+                            names[names.length] = null;
+                            names = names;
+                        }}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add attribute
+                    </Button>
+                </div>
+            </Layout.Stack>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

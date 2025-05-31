@@ -22,7 +22,13 @@ export const timer: Action<HTMLElement, Props> = (node, props) => {
 
     function step() {
         const diffInSeconds = Math.floor((new Date().getTime() - startDate.getTime()) / 1000);
-        node.textContent = calculateTime(diffInSeconds);
+        const minutes = Math.floor(diffInSeconds / 60);
+        if (minutes > 0) {
+            const seconds = diffInSeconds % 60;
+            node.textContent = `${minutes}m ${seconds}s`;
+        } else {
+            node.textContent = calculateTime(diffInSeconds);
+        }
         frame = window.requestAnimationFrame(step);
     }
 

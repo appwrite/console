@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { IconX, IconSearch } from '@appwrite.io/pink-icons-svelte';
+    import { Input, Icon } from '@appwrite.io/pink-svelte';
+    import { createEventDispatcher } from 'svelte';
     import { onDestroy } from 'svelte';
 
     export let value = '';
@@ -8,18 +10,11 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
-    export let isWithEndButton = true;
-    export let style: string = '';
+    export let label: string = '';
 
     const dispatch = createEventDispatcher();
     let element: HTMLInputElement;
     let timer: ReturnType<typeof setTimeout>;
-
-    onMount(() => {
-        if (element && autofocus) {
-            element.focus();
-        }
-    });
 
     onDestroy(() => {
         value = '';
@@ -28,14 +23,12 @@
         }
     });
 
-    function valueChange(event: Event) {
+    const valueChange = () => {
         clearTimeout(timer);
         timer = setTimeout(() => {
-            const target = event.target as HTMLInputElement;
-            value = target.value;
             dispatch('change', value);
         }, debounce);
-    }
+    };
 
     function clearSearch() {
         value = '';
@@ -49,25 +42,20 @@
     }
 </script>
 
-<div class="input-text-wrapper" class:is-with-end-button={isWithEndButton}>
-    <input
-        {placeholder}
-        {disabled}
-        {required}
-        {style}
-        type="search"
-        class="input-text"
-        bind:this={element}
-        on:input={valueChange} />
-    <span class="icon-search" aria-hidden="true" />
-    {#if isWithEndButton && value}
-        <button
-            class="button is-text is-only-icon"
-            style="--button-size:1.5rem;"
-            aria-label="Clear search"
-            type="button"
-            on:click={clearSearch}>
-            <span class="icon-x" aria-hidden="true" />
-        </button>
-    {/if}
-</div>
+<Input.Text
+    {placeholder}
+    {disabled}
+    {required}
+    {autofocus}
+    {label}
+    bind:value
+    on:input={valueChange}>
+    <svelte:fragment slot="start">
+        <Icon icon={IconSearch} />
+    </svelte:fragment>
+    <svelte:fragment slot="end">
+        {#if value}
+            <Input.Action icon={IconX} on:click={clearSearch} />
+        {/if}
+    </svelte:fragment>
+</Input.Text>

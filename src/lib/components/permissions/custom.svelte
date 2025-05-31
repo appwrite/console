@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, FormItem, FormList, Helper, InputText } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import { Modal } from '..';
     import type { Writable } from 'svelte/store';
@@ -25,25 +25,18 @@
     $: disabled = !value || $groups.has(value);
 </script>
 
-<Modal
-    title="Custom permission"
-    description="Custom permissions allow you to grant access to specific users or teams using their ID and
-role."
-    bind:show
-    on:close={reset}
-    onSubmit={create}>
-    <FormList>
-        <FormItem>
-            <InputText
-                id="custom-permission"
-                label="Role"
-                placeholder="user:[USER_ID] or team:[TEAM_ID]/[ROLE]"
-                bind:value />
-            <Helper type="neutral">
-                A permission should be formatted as: user:[USER_ID] or team:[TEAM_ID]/[ROLE]¸
-            </Helper>
-        </FormItem>
-    </FormList>
+<Modal title="Custom permission" bind:show on:close={reset} onSubmit={create}>
+    <span slot="description">
+        Custom permissions allow you to grant access to specific users or teams using their ID and
+        role.
+    </span>
+    <InputText
+        required
+        id="custom-permission"
+        label="Role"
+        placeholder="user:[USER_ID] or team:[TEAM_ID]/[ROLE]"
+        helper="A permission should be formatted as: user:[USER_ID] or team:[TEAM_ID]/[ROLE]¸"
+        bind:value />
 
     <svelte:fragment slot="footer">
         <Button submit {disabled}>Add</Button>

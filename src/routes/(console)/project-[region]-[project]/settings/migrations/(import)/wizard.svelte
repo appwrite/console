@@ -1,19 +1,36 @@
 <script lang="ts">
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import Wizard from '$lib/layout/wizard.svelte';
+    import { Wizard } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { onDestroy } from 'svelte';
     import { formData, provider, resetImportStores } from '.';
-    import Step1 from './step1.svelte';
-    import Step2 from './step2.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { migrationFormToResources } from '$lib/stores/migration';
+    import { migrationFormToResources, type Provider } from '$lib/stores/migration';
     import { started } from '../stores';
     import { showMigrationBox } from '$lib/components/migrationBox.svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import { page } from '$app/stores';
+    import {
+        Button,
+        Card,
+        Divider,
+        Fieldset,
+        Icon,
+        Layout,
+        Typography
+    } from '@appwrite.io/pink-svelte';
+    import { Link } from '$lib/elements';
+    import { EyebrowHeading } from '$lib/components';
+    import Credentials from './credentials.svelte';
+    import ResourceForm from '$routes/(console)/(migration-wizard)/resource-form.svelte';
+    import {
+        IconCog,
+        IconCurrencyDollar,
+        IconExclamation,
+        IconTrendingUp
+    } from '@appwrite.io/pink-icons-svelte';
+    import { capitalize } from '$lib/helpers/string';
+    import { page } from '$app/state';
 
     const onExit = () => {
         resetImportStores();
@@ -26,7 +43,7 @@
             switch ($provider.provider) {
                 case 'appwrite': {
                     await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .migrations.createAppwriteMigration(
                             resources,
                             $provider.endpoint,
@@ -39,7 +56,7 @@
                 }
                 case 'supabase': {
                     await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .migrations.createSupabaseMigration(
                             resources,
                             $provider.endpoint,
@@ -55,14 +72,14 @@
                 }
                 case 'firebase': {
                     await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .migrations.createFirebaseMigration(resources, $provider.serviceAccount);
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'nhost': {
                     await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .migrations.createNHostMigration(
                             resources,
                             $provider.subdomain,
@@ -93,15 +110,153 @@
 
     onDestroy(onExit);
 
-    const steps: WizardStepsType = new Map();
-    steps.set(1, {
-        label: 'Source',
-        component: Step1
-    });
-    steps.set(2, {
-        label: 'Resources',
-        component: Step2
-    });
+    const providers: Record<Provider, string> = {
+        appwrite: 'Appwrite self-hosted',
+        firebase: 'Firebase',
+        supabase: 'Supabase',
+        nhost: 'NHost'
+    };
+
+    let showResources = false;
+    let showExitModal = false;
+    let errorInResources = false;
+    $: isFinalsButtonEnabled =
+        !errorInResources &&
+        showResources &&
+        Object.values($formData).some((category) =>
+            Object.values(category).some((value) => value === true)
+        );
 </script>
 
-<Wizard title="Create Migration" {steps} on:exit={onExit} on:finish={onFinish} />
+<Wizard title="Create migration" bind:showExitModal confirmExit {onExit}>
+    <Layout.Stack gap="l">
+        <Layout.Stack gap="xxl">
+            <Fieldset legend="Source">
+                <Layout.Stack gap="xl">
+                    {#if !showResources}
+                        <Typography.Text variant="m-400">
+                            Select a source platform with the project you want to migrate.
+                            <Link href="https://appwrite.io/docs/advanced/migrations" external>
+                                Learn more.
+                            </Link>
+                        </Typography.Text>
+
+                        <Layout.Grid rowGap="l" columns={3} columnsS={2} columnsXS={1}>
+                            {#each Object.entries(providers) as [key, platform]}
+                                <Card.Selector
+                                    bind:group={$provider.provider}
+                                    name={key}
+                                    id={key}
+                                    value={key}
+                                    title={platform}
+                                    imageRadius="s"
+                                    disabled={showResources} />
+                            {/each}
+                        </Layout.Grid>
+
+                        <Divider />
+
+                        <Credentials bind:formSubmitted={showResources} />
+                    {:else}
+                        <Layout.Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            gap="xs">
+                            <Typography.Text variant="m-500">
+                                {capitalize($provider.provider)}
+                            </Typography.Text>
+
+                            <Button.Button
+                                size="s"
+                                variant="secondary"
+                                on:click={() => (showResources = !showResources)}>
+                                Update
+                            </Button.Button>
+                        </Layout.Stack>
+                    {/if}
+                </Layout.Stack>
+            </Fieldset>
+
+            {#if showResources}
+                <Fieldset legend="Resources">
+                    <Layout.Stack gap="xl">
+                        <ResourceForm
+                            {formData}
+                            {provider}
+                            bind:errorInResources
+                            projectSdk={sdk.forProject(page.params.region, page.params.project)} />
+                    </Layout.Stack>
+                </Fieldset>
+            {/if}
+        </Layout.Stack>
+    </Layout.Stack>
+
+    <svelte:fragment slot="aside">
+        <Card.Base variant="primary" radius="s" padding="m">
+            <Layout.Stack gap="l">
+                <EyebrowHeading class="eyebrow" tag="h3" size={3}>Good to know</EyebrowHeading>
+
+                <!-- tip 1 -->
+                <Layout.Stack gap="l" direction="row" wrap="normal">
+                    <span style:padding-block="2px">
+                        <Icon icon={IconCog} size="s" />
+                    </span>
+                    <Layout.Stack gap="none">
+                        <Typography.Text variant="m-600"
+                            >Project settings are not imported</Typography.Text>
+                        You will need to set service and project settings manually.
+                    </Layout.Stack>
+                </Layout.Stack>
+
+                <!-- tip 2 -->
+                <Layout.Stack gap="l" direction="row" wrap="normal">
+                    <span style:padding-block="2px">
+                        <Icon icon={IconTrendingUp} size="s" />
+                    </span>
+                    <Layout.Stack gap="none">
+                        <Typography.Text variant="m-600"
+                            >Keep your organization plan's limits in mind</Typography.Text>
+                        Make sure to have enough storage in your organization plan when importing files.
+                    </Layout.Stack>
+                </Layout.Stack>
+
+                <!-- tip 3 -->
+                <Layout.Stack gap="l" direction="row" wrap="normal">
+                    {@const isFirebase = $provider.provider === 'firebase'}
+                    <span style:padding-block="3px">
+                        <Icon
+                            icon={isFirebase ? IconExclamation : IconCurrencyDollar}
+                            size="s"
+                            color={isFirebase ? '--fgcolor-warning' : undefined} />
+                    </span>
+                    <Layout.Stack gap="none">
+                        <Typography.Text variant="m-600">
+                            {isFirebase
+                                ? 'Possible charges by Firebase'
+                                : 'Transfer is free of charge'}
+                        </Typography.Text>
+
+                        {#if isFirebase}
+                            Appwrite does not impose charges for importing data, but please note
+                            that Firebase may have its own pricing for this service
+                        {:else}
+                            You won't be charged for Appwrite bandwidth usage for importing data
+                        {/if}
+                    </Layout.Stack>
+                </Layout.Stack>
+            </Layout.Stack>
+        </Card.Base>
+    </svelte:fragment>
+
+    <svelte:fragment slot="footer">
+        <Button.Button
+            variant="secondary"
+            on:click={() => {
+                showExitModal = true;
+            }}>Cancel</Button.Button>
+
+        <Button.Button variant="primary" disabled={!isFinalsButtonEnabled} on:click={onFinish}
+            >Create</Button.Button>
+    </svelte:fragment>
+</Wizard>

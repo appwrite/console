@@ -1,47 +1,57 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { SecondaryTabs, SecondaryTabsItem } from '$lib/components';
     import Copy from '$lib/components/copy.svelte';
     import Modal from '$lib/components/modal.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
-    import { parse } from 'envfile';
+    import { parse } from '$lib/helpers/envfile';
+    import { Icon, InlineCode, Layout, Tabs } from '@appwrite.io/pink-svelte';
+    import { InputTextarea } from '$lib/elements/forms';
+    import { IconDownload, IconDuplicate } from '@appwrite.io/pink-icons-svelte';
 
     export let isGlobal: boolean;
     export let showEditor = false;
     export let variableList: Models.VariableList;
 
-    export let sdkCreateVariable: (key: string, value: string) => Promise<unknown>;
+    const editableVariables = variableList.variables.filter((variable) => !variable.secret);
+    const secretVariables = variableList.variables.filter((variable) => variable.secret);
+
+    export let sdkCreateVariable: (
+        key: string,
+        value: string,
+        secret?: boolean
+    ) => Promise<unknown>;
     export let sdkUpdateVariable: (
         variableId: string,
         key: string,
-        value: string
+        value: string,
+        secret?: boolean
     ) => Promise<unknown>;
     export let sdkDeleteVariable: (variableId: string) => Promise<unknown>;
 
     let error = '';
-    let envCode = variableList.variables
+    let envCode = editableVariables
         .map((variable) => `${variable.key}=${variable.value}`)
         .join('\n');
     let jsonCode = JSON.stringify(
         JSON.parse(
-            `{${variableList.variables
+            `{${editableVariables
                 .map((variable) => `"${variable.key}":"${variable.value.split('"').join('\\"')}"`)
                 .join(',')}}`
         ),
         null,
         2
     );
-    const baseEnvCode = envCode;
-    const baseJsonCode = jsonCode;
+    let baseEnvCode = envCode;
+    let baseJsonCode = jsonCode;
 
     if (jsonCode === '{}') {
         jsonCode = '';
+        baseJsonCode = '';
     }
 
     let tab: 'env' | 'json' = 'env';
-    let copyParent: HTMLElement;
 
     async function handleSubmit() {
         try {
@@ -56,24 +66,31 @@
             }
 
             await Promise.all(
-                variableList.variables.map(async (variable) => {
+                editableVariables.map(async (variable) => {
                     const newValue = vars[variable.key] ?? null;
 
                     if (newValue === null) {
                         await sdkDeleteVariable(variable.$id);
                     } else if (newValue !== variable.value) {
-                        await sdkUpdateVariable(variable.$id, variable.key, newValue);
+                        await sdkUpdateVariable(variable.$id, variable.key, newValue, false);
                     }
-
                     delete vars[variable.key];
                 })
             );
 
+            // Add new variables, skipping keys that exist in secret variables
             await Promise.all(
                 Object.keys(vars).map(async (key) => {
-                    await sdkCreateVariable(key, vars[key]);
+                    if (!secretVariables.some((v) => v.key === key)) {
+                        await sdkCreateVariable(key, vars[key], false);
+                    }
                 })
             );
+            // Ensure secret variables are preserved
+            variableList.variables = [
+                ...secretVariables,
+                ...variableList.variables.filter((v) => !v.secret)
+            ];
 
             showEditor = false;
 
@@ -114,98 +131,54 @@
         (tab === 'env' && baseEnvCode === envCode) || (tab === 'json' && baseJsonCode === jsonCode);
 </script>
 
-<Modal
-    title="Editor"
-    headerDivider={false}
-    bind:show={showEditor}
-    onSubmit={handleSubmit}
-    bind:error
-    size="big">
-    <p>
+<Modal title="Editor" bind:show={showEditor} onSubmit={handleSubmit} bind:error>
+    <p slot="description">
         Edit {isGlobal ? 'global' : 'environment'} variables below or download as a
-        <span class="inline-code">.{tab}</span> file.
+        <InlineCode size="s" code={`.${tab}`} /> file.
     </p>
-
-    <div class="editor-border">
-        <SecondaryTabs large class="u-sep-block-end u-padding-8">
-            <SecondaryTabsItem
-                stretch
-                fullWidth
-                center
-                on:click={() => (tab = 'env')}
-                disabled={tab === 'env'}>
+    <Layout.Stack gap="s">
+        <Tabs.Root stretch let:root>
+            <Tabs.Item.Button {root} on:click={() => (tab = 'env')} active={tab === 'env'}>
                 ENV
-            </SecondaryTabsItem>
-            <SecondaryTabsItem
-                stretch
-                fullWidth
-                center
-                on:click={() => (tab = 'json')}
-                disabled={tab === 'json'}>
+            </Tabs.Item.Button>
+            <Tabs.Item.Button {root} on:click={() => (tab = 'json')} active={tab === 'json'}>
                 JSON
-            </SecondaryTabsItem>
-        </SecondaryTabs>
+            </Tabs.Item.Button>
+        </Tabs.Root>
 
-        <div class="input-text-wrapper">
+        <Layout.Stack gap="xs">
             {#if tab === 'env'}
-                <textarea
-                    placeholder={`SECRET_KEY=dQw4w9WgXcQ...`}
-                    class="input-text u-border-width-0"
+                <InputTextarea
+                    spellcheck={false}
+                    id="variables"
                     bind:value={envCode}
-                    style:--amount-of-buttons={0.25}
-                    style:border-radius="var(--border-radius-small)" />
+                    rows={10}
+                    placeholder={`SECRET_KEY=dQw4w9WgXcQ...`} />
             {:else if tab === 'json'}
-                <textarea
-                    placeholder={`{\n  "SECRET_KEY": "dQw4w9WgXcQ..."\n}`}
-                    class="input-text u-border-width-0"
+                <InputTextarea
+                    spellcheck={false}
+                    id="variables"
                     bind:value={jsonCode}
-                    style:--amount-of-buttons={0.25}
-                    style:border-radius="var(--border-radius-small)" />
+                    rows={10}
+                    placeholder={`{\n  "SECRET_KEY": "dQw4w9WgXcQ..."\n}`} />
             {/if}
-            <ul
-                class="buttons-list u-gap-8 u-cross-center u-position-absolute d u-inset-block-end-1 u-inset-inline-end-1 u-padding-block-8 u-padding-inline-12"
-                style="border-end-end-radius:0.0625rem;">
-                <li class="buttons-list-item">
-                    <div class="tooltip" aria-label={`Download .${tab} file`}>
-                        <button
-                            on:click={() => downloadVariables()}
-                            type="button"
-                            class="button is-small is-text is-only-icon"
-                            aria-label={`Download .${tab} file`}>
-                            <span class="icon-download" aria-hidden="true" />
-                        </button>
-                        <span class="tooltip-popup" role="tooltip">
-                            Download .{tab} file.
-                        </span>
-                    </div>
-                </li>
-                <li class="buttons-list-item">
-                    <div bind:this={copyParent}>
-                        {#key copyParent}
-                            <Copy appendTo={copyParent} value={tab == 'json' ? jsonCode : envCode}>
-                                <button
-                                    type="button"
-                                    class="button is-small is-text is-only-icon"
-                                    aria-label="Click to copy">
-                                    <span class="icon-duplicate" aria-hidden="true" />
-                                </button>
-                            </Copy>
-                        {/key}
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
+            <Layout.Stack direction="row" gap="xs">
+                <Button size="xs" on:click={() => downloadVariables()} secondary>
+                    <Icon size="s" slot="start" icon={IconDownload} />
+                    Download
+                </Button>
+                <Copy value={tab == 'json' ? jsonCode : envCode}>
+                    <Button size="xs" secondary>
+                        <Icon size="s" slot="start" icon={IconDuplicate} />
+                        Copy
+                    </Button>
+                </Copy>
+            </Layout.Stack>
+        </Layout.Stack>
+    </Layout.Stack>
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showEditor = false)}>Cancel</Button>
         <Button submit disabled={isButtonDisabled}>Save</Button>
     </svelte:fragment>
 </Modal>
-
-<style lang="scss">
-    .editor-border {
-        border: solid 0.0625rem hsl(var(--color-border));
-        border-radius: var(--border-radius-small);
-    }
-</style>

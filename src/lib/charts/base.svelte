@@ -4,15 +4,13 @@
     import { app } from '$lib/stores/app';
     import { dailyFormat, hourlyFormat, defaultConfig } from './config';
     import base from './base.json';
-    import light from './light.json';
-    import dark from './dark.json';
     import type { ECharts } from 'echarts/core';
     import type { BarSeriesOption, LineSeriesOption } from 'echarts/charts';
     import type { EChartsOption } from 'echarts';
     import { wizard } from '$lib/stores/wizard';
 
-    registerTheme('light', { ...base, ...light });
-    registerTheme('dark', { ...base, ...dark });
+    registerTheme('light', base);
+    registerTheme('dark', base);
 
     export let options: EChartsOption;
     export let series: (BarSeriesOption | LineSeriesOption)[];
@@ -90,7 +88,7 @@
 
 <svelte:window on:resize={onResize} />
 
-<div class="echart" bind:this={container} />
+<div class="echart" bind:this={container}></div>
 
 <style>
     .echart {

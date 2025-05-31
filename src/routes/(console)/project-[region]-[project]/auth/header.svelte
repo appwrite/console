@@ -1,12 +1,13 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
-    import { Cover, CoverTitle } from '$lib/layout';
+    import { Cover } from '$lib/layout';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
-    const path = `${base}/project-${$page.params.region}-${$page.params.project}/auth`;
+    const path = `${base}/project-${page.params.region}-${page.params.project}/auth`;
     const tabs = [
         {
             href: path,
@@ -50,14 +51,14 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>Auth</CoverTitle>
+        <Typography.Title color="--fgcolor-neutral-primary" size="xl">Auth</Typography.Title>
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}
             <Tab
                 href={tab.href}
                 event={tab.event}
-                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
+                selected={isTabSelected(tab, page.url.pathname, path, tabs)}>
                 {tab.title}
             </Tab>
         {/each}

@@ -1,8 +1,7 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert, CustomId, Modal } from '$lib/components';
-    import { Pill } from '$lib/elements';
-    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { CustomId, Modal } from '$lib/components';
+    import { Button, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
@@ -13,7 +12,9 @@
     import { upgradeURL } from '$lib/stores/billing';
     import CreatePolicy from './database-[database]/backups/createPolicy.svelte';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
-    import { page } from '$app/stores';
+    import { Alert, Icon, Tag } from '@appwrite.io/pink-svelte';
+    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
     export let showCreate = false;
     let totalPolicies: UserBackupPolicy[] = [];
@@ -61,7 +62,7 @@
             cronExpression(policy);
 
             return sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .backups.createPolicy(
                     ID.unique(),
                     ['databases'],
@@ -80,7 +81,7 @@
         try {
             const databaseId = id ? id : ID.unique();
             const database = await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .databases.create(databaseId, name);
             await createPolicies(databaseId);
 
@@ -108,54 +109,49 @@
     }
 </script>
 
-<Modal title="Create database" size="big" onSubmit={create} bind:show={showCreate}>
-    <FormList gap={8}>
-        <InputText
-            id="name"
-            label="Name"
-            placeholder="Enter database name"
-            bind:value={name}
-            autofocus
-            required />
+<Modal title="Create database" onSubmit={create} bind:show={showCreate}>
+    <InputText
+        id="name"
+        label="Name"
+        placeholder="Enter database name"
+        bind:value={name}
+        autofocus
+        required />
 
-        {#if !showCustomId}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}
-                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Database ID
-                    </span></Pill>
-            </div>
+    {#if !showCustomId}
+        <div>
+            <Tag
+                size="s"
+                on:click={() => {
+                    showCustomId = true;
+                }}><Icon icon={IconPencil} /> Database ID</Tag>
+        </div>
+    {/if}
+
+    <CustomId bind:show={showCustomId} name="Database" bind:id autofocus={false} />
+
+    {#if isCloud}
+        {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if showPlanUpgradeAlert}
+                <Alert.Inline
+                    dismissible
+                    title="This database won't be backed up"
+                    status="warning"
+                    on:dismiss={() => (showPlanUpgradeAlert = false)}>
+                    Upgrade your plan to ensure your data stays safe and backed up.
+                    <svelte:fragment slot="actions">
+                        <Button compact href={$upgradeURL}>Upgrade plan</Button>
+                    </svelte:fragment>
+                </Alert.Inline>
+            {/if}
         {:else}
-            <CustomId bind:show={showCustomId} name="Database" bind:id autofocus={false} />
+            <CreatePolicy
+                bind:totalPolicies
+                bind:isShowing={showCreate}
+                title="Backup policies"
+                subtitle="Protect your data and ensure quick recovery by adding backup policies." />
         {/if}
-
-        {#if isCloud}
-            <div class="u-flex-vertical u-gap-24 u-padding-block-start-24">
-                {#if $organization?.billingPlan === BillingPlan.FREE}
-                    {#if showPlanUpgradeAlert}
-                        <Alert
-                            type="warning"
-                            dismissible
-                            on:dismiss={() => (showPlanUpgradeAlert = false)}>
-                            <svelte:fragment slot="title"
-                                >This database won't be backed up
-                            </svelte:fragment>
-                            Upgrade your plan to ensure your data stays safe and backed up.
-                            <svelte:fragment slot="buttons">
-                                <Button href={$upgradeURL} text>Upgrade plan</Button>
-                            </svelte:fragment>
-                        </Alert>
-                    {/if}
-                {:else}
-                    <CreatePolicy
-                        bind:totalPolicies
-                        bind:isShowing={showCreate}
-                        title="Backup policies"
-                        subtitle="Protect your data and ensure quick recovery by adding backup policies." />
-                {/if}
-            </div>
-        {/if}
-    </FormList>
+    {/if}
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
         <Button submit>Create</Button>

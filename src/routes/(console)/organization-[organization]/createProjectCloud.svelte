@@ -1,21 +1,24 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import Step1 from './wizard/step1.svelte';
-    import Step2 from './wizard/step2.svelte';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID, Region } from '@appwrite.io/console';
-    import { createProject } from './wizard/store';
-    import { wizard } from '$lib/stores/wizard';
+    import { ID, Region as ConsoleRegion, type Models, Region } from '@appwrite.io/console';
+    import { Button } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
+    import CreateProject from '$lib/layout/createProject.svelte';
+    import { Modal } from '$lib/components';
 
-    const teamId = $page.params.organization;
+    const teamId = page.params.organization;
+    export let regions: Array<Models.ConsoleRegion> = [];
+    export let showCreateProjectCloud: boolean;
+
+    let id: string = null;
+    let name: string = 'Appwrite project';
+    let region: string = Region.Fra;
 
     async function onFinish() {
         await invalidate(Dependencies.FUNCTIONS);
@@ -25,22 +28,22 @@
         try {
             // TODO: fix typing once SDK is updated
             const project = await sdk.forConsole.projects.create(
-                $createProject?.id ?? ID.unique(),
-                $createProject.name,
+                id ?? ID.unique(),
+                name,
                 teamId,
-                $createProject.region as Region
+                region as ConsoleRegion
             );
             trackEvent(Submit.ProjectCreate, {
-                customId: !!$createProject?.id,
+                customId: !!id,
                 teamId,
-                region: $createProject.region
+                region: region
             });
             addNotification({
                 type: 'success',
-                message: `${$createProject.name} has been created`
+                message: `${name} has been created`
             });
+            await onFinish();
             await goto(`${base}/project-${project.region}-${project.$id}`);
-            wizard.hide();
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -51,22 +54,16 @@
     }
 
     onDestroy(() => {
-        $createProject = {
-            id: null,
-            name: null,
-            region: 'fra'
-        };
-    });
-
-    const stepsComponents: WizardStepsType = new Map();
-    stepsComponents.set(1, {
-        label: 'Details',
-        component: Step1
-    });
-    stepsComponents.set(2, {
-        label: 'Region',
-        component: Step2
+        id = null;
+        name = null;
+        region = 'fra';
     });
 </script>
 
-<Wizard title="Create project" steps={stepsComponents} finalMethod={create} on:exit={onFinish} />
+<Modal bind:show={showCreateProjectCloud} title={'Create project'} onSubmit={create}>
+    <CreateProject showTitle={false} bind:id bind:projectName={name} bind:region {regions}>
+    </CreateProject>
+    <svelte:fragment slot="footer">
+        <Button.Button type="submit" variant="primary" size="s">Create</Button.Button>
+    </svelte:fragment>
+</Modal>

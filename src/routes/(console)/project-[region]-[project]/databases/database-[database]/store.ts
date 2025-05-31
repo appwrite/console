@@ -7,10 +7,10 @@ export const database = derived(page, ($page) => $page.data.database as Models.D
 export const showCreate = writable(false);
 
 export const columns = writable<Column[]>([
-    { id: '$id', title: 'Collection ID', type: 'string', show: true, width: 150 },
-    { id: 'name', title: 'Name', type: 'string', show: true, width: 120 },
-    { id: '$createdAt', title: 'Created', type: 'datetime', show: true, width: 120 },
-    { id: '$updatedAt', title: 'Updated', type: 'datetime', show: true, width: 120 }
+    { id: '$id', title: 'Collection ID', type: 'string', width: 200 },
+    { id: 'name', title: 'Name', type: 'string', width: { min: 120 } },
+    { id: '$createdAt', title: 'Created', type: 'datetime', width: { min: 120 } },
+    { id: '$updatedAt', title: 'Updated', type: 'datetime', width: { min: 120 } }
 ]);
 
 export const backupRetainingOptions = [

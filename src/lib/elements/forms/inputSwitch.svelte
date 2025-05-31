@@ -1,46 +1,13 @@
 <script lang="ts">
-    import { FormItem, Helper } from '.';
+    import { Selector } from '@appwrite.io/pink-svelte';
 
-    export let label: string;
     export let id: string;
+    export let label: string;
     export let value = false;
     export let disabled = false;
-
-    let element: HTMLInputElement;
-    let error: string;
-
-    const handleInvalid = (event: Event) => {
-        event.preventDefault();
-
-        error = element.validationMessage;
-    };
-
-    $: if (value) {
-        error = null;
-    }
+    export let description: string = undefined;
 </script>
 
-<FormItem>
-    <label class="choice-item" for={id}>
-        <div class="input-text-wrapper">
-            <input
-                {id}
-                {disabled}
-                type="checkbox"
-                class="switch"
-                role="switch"
-                aria-checked={value}
-                bind:this={element}
-                bind:checked={value}
-                on:change
-                on:invalid={handleInvalid} />
-        </div>
-        <div class="choice-item-content">
-            <div class="choice-item-title">{label}</div>
-            <slot name="description" />
-        </div>
-    </label>
-    {#if error}
-        <Helper type="warning">{error}</Helper>
-    {/if}
-</FormItem>
+<Selector.Switch {id} {description} {label} {disabled} bind:checked={value} on:invalid on:change>
+    <slot name="description" slot="description" />
+</Selector.Switch>

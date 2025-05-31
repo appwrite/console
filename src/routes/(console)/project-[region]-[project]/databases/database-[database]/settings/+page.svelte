@@ -1,8 +1,8 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { BoxAvatar, Card, CardGrid, Heading } from '$lib/components';
+    import { page } from '$app/state';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { BoxAvatar, CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, Helper, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -26,7 +26,7 @@
 
     async function loadCollectionCount() {
         const { total } = await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.listCollections($database.$id, [Query.limit(1)]);
         return total;
     }
@@ -40,8 +40,8 @@
     async function updateName() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
-                .databases.update($page.params.database, databaseName);
+                .forProject(page.params.region, page.params.project)
+                .databases.update(page.params.database, databaseName);
             await invalidate(Dependencies.DATABASE);
             addNotification({
                 message: 'Name has been updated',
@@ -57,24 +57,19 @@
 
 {#if $database}
     <Container>
-        <Card>
-            <div class="common-section grid-1-2">
-                <div class="grid-1-2-col-1">
-                    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                        <Heading tag="h6" size="7">{$database.name}</Heading>
-                    </div>
-                </div>
+        <CardGrid>
+            <svelte:fragment slot="title">{$database.name}</svelte:fragment>
+            <svelte:fragment slot="aside">
                 <div class="grid-1-2-col-2">
                     <p>Created: {toLocaleDateTime($database.$createdAt)}</p>
                     <p>Last updated: {toLocaleDateTime($database.$updatedAt)}</p>
                 </div>
-            </div>
-        </Card>
+            </svelte:fragment>
+        </CardGrid>
 
         <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Name</Heading>
-
+                <svelte:fragment slot="title">Name</svelte:fragment>
                 <svelte:fragment slot="aside">
                     <ul>
                         <InputText
@@ -98,22 +93,17 @@
             </CardGrid>
         </Form>
 
-        <CardGrid danger>
-            <div>
-                <Heading tag="h6" size="7">Delete database</Heading>
-            </div>
-
-            <p>
-                The database will be permanently deleted, including all collections within it. This
-                action is irreversible.
-            </p>
+        <CardGrid>
+            <svelte:fragment slot="title">Delete database</svelte:fragment>
+            The database will be permanently deleted, including all collections within it. This action
+            is irreversible.
             <svelte:fragment slot="aside">
                 <BoxAvatar>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$database.name}</h6>
                         <span class="u-flex u-gap-8">
                             {#await loadCollectionCount()}
-                                <div class="loader is-small" />
+                                <div class="loader is-small"></div>
                             {:then count}
                                 {count}
                             {/await}
@@ -125,7 +115,12 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                <Button
+                    secondary
+                    on:click={() => {
+                        showDelete = true;
+                        trackEvent(Click.DatabaseDatabaseDelete);
+                    }}>Delete</Button>
             </svelte:fragment>
         </CardGrid>
     </Container>

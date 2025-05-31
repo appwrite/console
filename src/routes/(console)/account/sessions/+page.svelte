@@ -1,21 +1,11 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page as pageStore } from '$app/stores';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-    import { Empty, Heading, Trim } from '$lib/components';
+    import { Trim } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow,
-        TableScroll
-    } from '$lib/elements/table';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
@@ -23,6 +13,7 @@
     import type { PageData } from './$types';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
+    import { Badge, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -75,110 +66,93 @@
     }
 
     onMount(() => {
-        return page.subscribe(($page) => {
+        return pageStore.subscribe(($page) => {
             const url = new URL($page.url);
             const sessionId = url.searchParams.get('sessionId');
             if (sessionId) {
                 logoutSessionId(sessionId);
-            }
 
-            // Clear the sessionId param from the URL
-            url.searchParams.delete('sessionId');
-            goto(url.pathname + url.search, { replaceState: true });
+                // Clear the sessionId param from the URL
+                url.searchParams.delete('sessionId');
+                goto(url.pathname + url.search, { replaceState: true });
+            }
         });
     });
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Sessions</Heading>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Typography.Title>Sessions</Typography.Title>
+        <Button secondary on:click={logoutAll}>Sign out all sessions</Button>
+    </Layout.Stack>
 
-        <Button secondary on:click={logoutAll}>
-            <span class="text">Sign out all sessions</span>
-        </Button>
-    </div>
-
-    {#if data.sessions.total}
-        <TableScroll>
-            <TableHeader>
-                <TableCellHead width={250}>Client</TableCellHead>
-                <TableCellHead width={70}>Location</TableCellHead>
-                <TableCellHead width={90}>IP</TableCellHead>
-                <TableCellHead width={60} />
-            </TableHeader>
-            <TableBody>
-                {#each data.sessions.sessions as session}
-                    {@const browser = getBrowser(session.clientCode)}
-                    <TableRow>
-                        <TableCell title="Client">
-                            <div class="u-flex u-gap-12 u-cross-center">
-                                {#if session.clientName}
-                                    <div class="avatar">
-                                        {#if browser}
-                                            <img
-                                                height="20"
-                                                width="20"
-                                                src={getBrowser(session.clientCode).toString()}
-                                                style="--p-text-size: 1.25rem"
-                                                alt={session.clientName} />
-                                        {:else}
-                                            <span
-                                                class="icon-globe-alt"
-                                                style="--p-text-size: 1.25rem"
-                                                aria-hidden="true" />
-                                        {/if}
-                                    </div>
-                                    <Trim>
-                                        {session.clientName}
-                                        {session.clientVersion}
-                                        on {session.osName}
-                                        {session.osVersion}
-                                    </Trim>
+    <Table.Root
+        let:root
+        columns={[
+            { id: 'client' },
+            { id: 'location', width: 120 },
+            { id: 'ip', width: 120 },
+            { id: 'actions', width: 70 }
+        ]}>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell column="client" {root}>Client</Table.Header.Cell>
+            <Table.Header.Cell column="location" {root}>Location</Table.Header.Cell>
+            <Table.Header.Cell column="ip" {root}>IP</Table.Header.Cell>
+            <Table.Header.Cell column="actions" {root} />
+        </svelte:fragment>
+        {#each data.sessions.sessions as session}
+            {@const browser = getBrowser(session.clientCode)}
+            <Table.Row.Base {root}>
+                <Table.Cell column="client" {root}>
+                    <Layout.Stack direction="row" alignItems="center">
+                        {#if session.clientName}
+                            <div class="avatar is-size-small">
+                                {#if browser}
+                                    <img
+                                        height="20"
+                                        width="20"
+                                        src={getBrowser(session.clientCode).toString()}
+                                        style="--p-text-size: 1.25rem"
+                                        alt={session.clientName} />
                                 {:else}
-                                    <span class="avatar is-color-empty" />
-                                    <p class="text u-trim">Unknown</p>
-                                {/if}
-                                <div class="is-only-desktop">
-                                    <Pill>{session.provider}</Pill>
-                                </div>
-                                {#if session.current}
-                                    <Pill success>current session</Pill>
+                                    <span
+                                        class="icon-globe-alt"
+                                        style="--p-text-size: 1.25rem"
+                                        aria-hidden="true"></span>
                                 {/if}
                             </div>
-                        </TableCell>
-                        <TableCellText title="Location">
-                            {#if session.countryCode !== '--'}
-                                {session.countryName}
-                            {:else}
-                                Unknown
-                            {/if}
-                        </TableCellText>
-                        <TableCellText title="IP">{session.ip}</TableCellText>
-                        <TableCell title="Client">
-                            <Button secondary on:click={() => logout(session)}>Sign out</Button>
-                        </TableCell>
-                    </TableRow>
-                {/each}
-            </TableBody>
-        </TableScroll>
-    {:else}
-        <Empty>
-            <div class="u-flex u-flex-vertical u-cross-center">
-                <div class="common-section">
-                    <p>No sessions available</p>
-                </div>
-                <div class="common-section">
-                    <Button
-                        external
-                        secondary
-                        href="https://appwrite.io/docs/references/cloud/client-web/account#createEmailPasswordSession">
-                        Documentation
-                    </Button>
-                </div>
-            </div>
-        </Empty>
-    {/if}
-    <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <p class="text">Total results: {data.sessions.total}</p>
-    </div>
+                            <Trim>
+                                {session.clientName}
+                                {session.clientVersion}
+                                on {session.osName}
+                                {session.osVersion}
+                            </Trim>
+                        {:else}
+                            <span class="avatar is-color-empty"></span>
+                            <p class="text u-trim">Unknown</p>
+                        {/if}
+                        <div class="is-only-desktop">
+                            <Badge variant="secondary" content={session.provider} />
+                        </div>
+                        {#if session.current}
+                            <Badge type="success" variant="secondary" content="current session" />
+                        {/if}
+                    </Layout.Stack>
+                </Table.Cell>
+                <Table.Cell column="location" {root}>
+                    {#if session.countryCode !== '--'}
+                        {session.countryName}
+                    {:else}
+                        Unknown
+                    {/if}
+                </Table.Cell>
+                <Table.Cell column="ip" {root}>
+                    {session.ip}
+                </Table.Cell>
+                <Table.Cell column="actions" {root}>
+                    <Button size="xs" secondary on:click={() => logout(session)}>Sign out</Button>
+                </Table.Cell>
+            </Table.Row.Base>
+        {/each}
+    </Table.Root>
 </Container>

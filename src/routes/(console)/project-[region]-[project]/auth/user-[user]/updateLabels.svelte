@@ -2,15 +2,16 @@
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, Helper, InputTags } from '$lib/elements/forms';
+    import { Button, Form, InputTags } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
-    import { Pill } from '$lib/elements';
-    import { page } from '$app/stores';
+    import { Tag, Input, Layout, Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
     const alphaNumericRegExp = /^[a-zA-Z0-9]+$/;
     let suggestedLabels = ['admin', 'premium', 'mvp'];
@@ -24,7 +25,7 @@
     async function updateLabels() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .users.updateLabels($user.$id, labels);
             await invalidate(Dependencies.USER);
             isDisabled = true;
@@ -42,7 +43,6 @@
             trackError(error, Submit.UserUpdateLabels);
         }
     }
-
     // TODO: Remove type cast when console SDK is updated
     $: isDisabled =
         !!error ||
@@ -66,23 +66,23 @@
 
 <Form onSubmit={updateLabels}>
     <CardGrid>
-        <Heading tag="h6" size="7">Labels</Heading>
-        <p class="text">
-            Categorize and manage your users based on specific criteria by assigning them
-            customizable labels. New label-based roles will be assigned.
-        </p>
+        <svelte:fragment slot="title">Labels</svelte:fragment>
+        Categorize and manage your users based on specific criteria by assigning them customizable labels.
+        New label-based roles will be assigned.
         <svelte:fragment slot="aside">
-            <ul class="common-section">
-                <InputTags
-                    id="user-labels"
-                    label="Labels"
-                    placeholder="Select or type user labels"
-                    bind:tags={labels} />
-                <li class="u-flex u-gap-12 u-margin-block-start-8">
+            <Layout.Stack gap="s">
+                {#key labels.length}
+                    <InputTags
+                        id="user-labels"
+                        label="Labels"
+                        placeholder="Select or type user labels"
+                        bind:tags={labels} />
+                {/key}
+                <Layout.Stack direction="row">
                     {#each suggestedLabels as suggestedLabel}
-                        <Pill
+                        <Tag
+                            size="s"
                             selected={labels.includes(suggestedLabel)}
-                            button
                             on:click={() => {
                                 if (!labels.includes(suggestedLabel)) {
                                     labels = [...labels, suggestedLabel];
@@ -90,16 +90,14 @@
                                     labels = labels.filter((e) => e !== suggestedLabel);
                                 }
                             }}>
-                            <span class="icon-plus" aria-hidden="true" />
+                            <Icon icon={IconPlus} size="s" slot="start" />
                             {suggestedLabel}
-                        </Pill>
+                        </Tag>
                     {/each}
-                </li>
-                <li>
-                    <Helper type={error ? 'warning' : 'neutral'}
-                        >{error ? error : 'Only alphanumeric characters are allowed'}</Helper>
-                </li>
-            </ul>
+                </Layout.Stack>
+                <Input.Helper state={error ? 'warning' : 'default'}
+                    >{error ? error : 'Only alphanumeric characters are allowed'}</Input.Helper>
+            </Layout.Stack>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

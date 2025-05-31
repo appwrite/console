@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { TeamsPanel, UsersPanel } from '$lib/commandCenter/panels';
     import { readOnly } from '$lib/stores/billing';
@@ -10,35 +10,36 @@
     import { project } from '../store';
     import { showCreateUser } from './+page.svelte';
     import { showCreateTeam } from './teams/+page.svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     $: $registerCommands([
         {
             label: 'Create user',
             callback: async () => {
-                if (!$page.url.pathname.endsWith('auth')) {
+                if (!page.url.pathname.endsWith('auth')) {
                     await goto(`${base}/project-${$project.region}-${$project.$id}/auth`);
                 }
                 showCreateUser.set(true);
             },
-            keys: $page.url.pathname.endsWith('auth') ? ['c'] : ['c', 'u'],
+            keys: page.url.pathname.endsWith('auth') ? ['c'] : ['c', 'u'],
             group: 'users',
-            icon: 'plus',
-            rank: $page.url.pathname.endsWith('auth') ? 10 : 0,
+            icon: IconPlus,
+            rank: page.url.pathname.endsWith('auth') ? 10 : 0,
             disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteUsers
         },
         {
             label: 'Create team',
             callback: async () => {
-                if (!$page.url.pathname.endsWith('teams')) {
+                if (!page.url.pathname.endsWith('teams')) {
                     await goto(`${base}/project-${$project.region}-${$project.$id}/auth/teams`);
                 }
                 showCreateTeam.set(true);
             },
-            keys: $page.url.pathname.endsWith('teams') ? ['c'] : ['c', 't'],
+            keys: page.url.pathname.endsWith('teams') ? ['c'] : ['c', 't'],
 
             group: 'teams',
-            icon: 'plus',
-            rank: $page.url.pathname.endsWith('teams') ? 10 : 0,
+            icon: IconPlus,
+            rank: page.url.pathname.endsWith('teams') ? 10 : 0,
             disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteTeams
         },
         {
@@ -49,7 +50,7 @@
             },
             group: 'navigation',
             rank: 1,
-            disabled: $page.url.pathname.endsWith('teams')
+            disabled: page.url.pathname.endsWith('teams')
         },
         {
             label: 'Go to usage',
@@ -59,7 +60,7 @@
             },
             group: 'navigation',
             rank: 1,
-            disabled: $page.url.pathname.endsWith('usage')
+            disabled: page.url.pathname.endsWith('usage')
         },
         {
             label: 'Go to security',
@@ -69,7 +70,7 @@
             },
             group: 'navigation',
             rank: 1,
-            disabled: $page.url.pathname.endsWith('security') || !$canWriteUsers
+            disabled: page.url.pathname.endsWith('security') || !$canWriteUsers
         },
         {
             label: 'Go to settings',
@@ -79,7 +80,7 @@
             },
             group: 'navigation',
             rank: 1,
-            disabled: $page.url.pathname.endsWith('settings') || !$canWriteUsers
+            disabled: page.url.pathname.endsWith('settings') || !$canWriteUsers
         },
         {
             label: 'Find users',

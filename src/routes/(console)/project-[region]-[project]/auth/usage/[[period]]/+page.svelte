@@ -1,20 +1,20 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { Usage } from '$lib/layout';
-    import type { PageData } from './$types';
+    import { page } from '$app/state';
+    import { Container, Usage } from '$lib/layout';
 
-    export let data: PageData;
+    export let data;
     $: total = data.usersTotal;
     $: count = data.users;
 </script>
 
-<Usage
-    title="Users"
-    path={`${base}/project-${$page.params.region}-${$page.params.project}/auth/usage`}
-    countMetadata={{
-        legend: 'Users',
-        title: 'Registered users'
-    }}
-    {total}
-    {count} />
+<Container>
+    <Usage
+        path={`${base}/project-${page.params.region}-${page.params.project}/auth/usage`}
+        countMetadata={{
+            legend: 'Users',
+            title: 'Registered users'
+        }}
+        {total}
+        {count} />
+</Container>

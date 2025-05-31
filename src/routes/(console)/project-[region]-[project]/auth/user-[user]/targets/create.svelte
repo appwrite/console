@@ -1,11 +1,11 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
-    import { Button, InputText, FormList, InputSelect, InputPhone } from '$lib/elements/forms';
+    import { Button, InputText, InputSelect, InputPhone } from '$lib/elements/forms';
     import InputEmail from '$lib/elements/forms/inputEmail.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -29,9 +29,9 @@
     const create = async () => {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .users.createTarget(
-                    $page.params.user,
+                    page.params.user,
                     id ? id : ID.unique(),
                     providerType,
                     identifier,
@@ -73,59 +73,58 @@
     }
 </script>
 
-<Modal title="Create target" size="big" bind:show onSubmit={create}>
-    <FormList>
-        <InputSelect
-            id="provider-type"
-            label="Provider Type"
-            bind:value={providerType}
-            options={providerTypeOptions} />
-        {#if providerType === MessagingProviderType.Push}
-            <InputText
-                id="provider-id"
-                label="Provider ID"
-                placeholder="Enter provider ID"
-                bind:value={providerId}
-                required />
-            <InputText
-                id="identifier"
-                label="Identifier"
-                placeholder="Enter push token"
-                bind:value={identifier}
-                required />
-            <InputText
-                id="name"
-                label="Name"
-                placeholder="Enter target name"
-                bind:value={name}
-                required />
-        {:else if providerType === MessagingProviderType.Email}
-            <InputEmail
-                id="identifier"
-                label="Identifier"
-                placeholder="Enter email"
-                bind:value={identifier}
-                required />
-        {:else if providerType === MessagingProviderType.Sms}
-            <InputPhone
-                id="identifier"
-                label="Identifier"
-                placeholder="Enter phone number"
-                bind:value={identifier}
-                required />
-        {/if}
+<Modal title="Create target" size="l" bind:show onSubmit={create}>
+    <InputSelect
+        id="provider-type"
+        label="Provider Type"
+        bind:value={providerType}
+        options={providerTypeOptions} />
+    {#if providerType === MessagingProviderType.Push}
+        <InputText
+            id="provider-id"
+            label="Provider ID"
+            placeholder="Enter provider ID"
+            bind:value={providerId}
+            required />
+        <InputText
+            id="identifier"
+            label="Identifier"
+            placeholder="Enter push token"
+            bind:value={identifier}
+            required />
+        <InputText
+            id="name"
+            label="Name"
+            placeholder="Enter target name"
+            bind:value={name}
+            required />
+    {:else if providerType === MessagingProviderType.Email}
+        <InputEmail
+            id="identifier"
+            label="Identifier"
+            placeholder="Enter email"
+            bind:value={identifier}
+            required />
+    {:else if providerType === MessagingProviderType.Sms}
+        <InputPhone
+            id="identifier"
+            label="Identifier"
+            placeholder="Enter phone number"
+            bind:value={identifier}
+            required />
+    {/if}
 
-        {#if !showCustomId}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}
-                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Target ID
-                    </span></Pill>
-            </div>
-        {:else}
-            <CustomId bind:show={showCustomId} name="Target" bind:id autofocus={false} />
-        {/if}
-    </FormList>
+    {#if !showCustomId}
+        <div>
+            <Pill button on:click={() => (showCustomId = !showCustomId)}
+                ><span class="icon-pencil" aria-hidden="true"></span><span class="text">
+                    Target ID
+                </span></Pill>
+        </div>
+    {:else}
+        <CustomId bind:show={showCustomId} name="Target" bind:id autofocus={false} />
+    {/if}
+
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
         <Button submit>Create</Button>

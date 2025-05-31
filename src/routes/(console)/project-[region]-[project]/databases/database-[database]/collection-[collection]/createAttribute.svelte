@@ -1,10 +1,10 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { option, attributeOptions, type Option } from './attributes/store';
-    import { Button, InputText, FormList } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import type { Attributes } from './store';
@@ -13,8 +13,8 @@
 
     export let showCreate = false;
     export let selectedOption: Option['name'] = null;
-    const databaseId = $page.params.database;
-    $: collectionId = $page.params.collection;
+    const databaseId = page.params.database;
+    $: collectionId = page.params.collection;
 
     let key: string = null;
     let data: Partial<Attributes> = {
@@ -28,20 +28,13 @@
         try {
             await $option.create(databaseId, collectionId, key, data);
 
-            let selectedColumns = preferences.getCustomCollectionColumns(
-                $page.params.project,
-                collectionId
-            );
+            let selectedColumns = preferences.getCustomCollectionColumns(collectionId);
             selectedColumns.push(key ?? data?.key);
-            preferences.setCustomCollectionColumns(
-                $page.params.project,
-                $page.route,
-                selectedColumns
-            );
+            preferences.setCustomCollectionColumns(selectedColumns);
             await invalidate(Dependencies.COLLECTION);
-            if (!$page.url.pathname.includes('attributes')) {
+            if (!page.url.pathname.includes('attributes')) {
                 await goto(
-                    `${base}/project-${$page.params.region}-${$page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
                 );
             }
             addNotification({
@@ -71,55 +64,24 @@
             default: null
         };
     }
+
+    $: title = `Create ${attributeOptions.find((option) => option.name === selectedOption)?.sentenceName ?? ''} attribute`;
 </script>
 
-<Modal
-    {error}
-    size="big"
-    bind:show={showCreate}
-    onSubmit={submit}
-    icon={$option?.icon}
-    iconNotMobile={selectedOption === 'Relationship'}>
-    <svelte:fragment slot="title">
-        {#if selectedOption === 'Relationship'}
-            <span class="u-flex u-gap-16 u-cross-center">
-                {selectedOption}
-                <div class="tag eyebrow-heading-3">
-                    <span class="text u-x-small">Experimental</span>
-                </div>
-            </span>
-        {:else}
-            {selectedOption}
-        {/if}
-    </svelte:fragment>
-    <FormList>
-        {#if selectedOption !== 'Relationship'}
-            <div>
-                <InputText
-                    id="key"
-                    label="Attribute Key"
-                    placeholder="Enter Key"
-                    bind:value={key}
-                    autofocus
-                    required />
-
-                <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
-                    <span
-                        class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
-                        aria-hidden="true" />
-                    <span class="text u-line-height-1-5">
-                        Allowed characters: alphanumeric, hyphen, non-leading underscore, period.
-                    </span>
-                </div>
-            </div>
-        {/if}
-        {#if selectedOption}
-            <svelte:component
-                this={$option.component}
-                bind:data
-                on:close={() => ($option = null)} />
-        {/if}
-    </FormList>
+<Modal {error} bind:show={showCreate} onSubmit={submit} {title}>
+    {#if selectedOption !== 'Relationship'}
+        <InputText
+            id="key"
+            label="Attribute key"
+            placeholder="Enter key"
+            bind:value={key}
+            autofocus
+            helper="Allowed characters: alphanumeric, hyphen, non-leading underscore, period."
+            required />
+    {/if}
+    {#if selectedOption}
+        <svelte:component this={$option.component} bind:data onclose={() => ($option = null)} />
+    {/if}
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
         <Button submit disabled={!selectedOption}>Create</Button>

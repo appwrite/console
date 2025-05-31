@@ -29,7 +29,6 @@
     <InputCheckbox
         bind:element={el}
         id="select-{id}"
-        wrapperTag="div"
         checked={selectedIds.includes(id)}
         {disabled}
         on:click={handleClick} />

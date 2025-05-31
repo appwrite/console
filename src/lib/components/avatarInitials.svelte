@@ -1,13 +1,15 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
+    import type { ComponentProps } from 'svelte';
     import Avatar from './avatar.svelte';
 
-    export let name: string;
-    export let size: number;
-    export let background: string | undefined = undefined;
-    export let color = 'black';
+    type AvatarProps = ComponentProps<Avatar>;
 
-    $: src = sdk.forConsole.avatars.getInitials(name, size * 2, size * 2, background);
+    export let name: string;
+    export let size: AvatarProps['size'] = 'm';
+    export let background: string | undefined = undefined;
+
+    $: src = sdk.forConsole.avatars.getInitials(name, 192, 192, background).toString();
 </script>
 
-<Avatar {name} {size} {src} {color} />
+<Avatar alt={name} {size} {src} />

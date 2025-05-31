@@ -1,19 +1,19 @@
 <script lang="ts">
     import CustomId from '$lib/components/customId.svelte';
-    import Pill from '$lib/elements/pill.svelte';
+    import { Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
     import type { Attributes } from '../store';
     import AttributeItem from './attributeItem.svelte';
+    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
 
     export let attributes: Attributes[] = [];
     export let formValues: object = {};
     export let customId: string | null | undefined = undefined;
-    export let gap: '16' | '24' | '32' = '32';
 
     let showCustomId = false;
 </script>
 
 {#if attributes.length}
-    <ul class={`form-list u-gap-${gap}`}>
+    <Layout.Stack>
         {#each attributes as attribute}
             {@const label = attribute.key}
             <AttributeItem {attribute} bind:formValues {label} />
@@ -21,16 +21,15 @@
 
         {#if customId !== undefined}
             {#if !showCustomId}
-                <div>
-                    <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                        <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                            Document ID
-                        </span>
-                    </Pill>
-                </div>
+                <span>
+                    <Tag size="s" on:click={() => (showCustomId = !showCustomId)}>
+                        <Icon icon={IconPencil} slot="start" size="s" />
+                        Document ID
+                    </Tag>
+                </span>
             {:else}
                 <CustomId autofocus bind:show={showCustomId} name="Document" bind:id={customId} />
             {/if}
         {/if}
-    </ul>
+    </Layout.Stack>
 {/if}

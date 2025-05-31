@@ -1,36 +1,33 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { Usage } from '$lib/layout';
-    import type { PageData } from './$types';
+    import { page } from '$app/state';
+    import { Container, Usage } from '$lib/layout';
 
-    export let data: PageData;
+    export let data;
     $: filesTotal = data.filesTotal;
     $: files = data.files;
     $: transformationsTotal = data.imageTransformationsTotal;
     $: transformations = data.imageTransformations;
-
-    $: path = `${base}/project-${$page.params.region}-${$page.params.project}/storage/bucket-${$page.params.bucket}/usage`;
 </script>
 
-<Usage
-    {path}
-    title="Files"
-    count={files}
-    total={filesTotal}
-    countMetadata={{
-        legend: 'Files',
-        title: 'Total files'
-    }} />
+<Container>
+    <Usage
+        path={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/usage`}
+        total={filesTotal}
+        count={files}
+        countMetadata={{
+            legend: 'Files',
+            title: 'Total files'
+        }} />
 
-<Usage
-    {path}
-    title="Image transformations"
-    total={transformationsTotal}
-    count={transformations}
-    countMetadata={{
-        legend: 'Image transformations',
-        title: 'Total transformations'
-    }}
-    isCumulative
-    hideSelectPeriod />
+    <Usage
+        path={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/usage`}
+        total={transformationsTotal}
+        count={transformations}
+        countMetadata={{
+            legend: 'Image transformations',
+            title: 'Total transformations'
+        }}
+        isCumulative
+        hidePeriodSelect />
+</Container>

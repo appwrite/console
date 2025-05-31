@@ -1,19 +1,20 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Empty, EventModal, Heading } from '$lib/components';
+    import { CardGrid, Empty, EventModal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
-    import { TableCell, TableCellText, TableList } from '$lib/elements/table';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { writable, type Writable } from 'svelte/store';
     import { webhook } from './store';
+    import { Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     const eventSet: Writable<Set<string>> = writable(new Set());
 
     let showCreateEvent = false;
@@ -67,36 +68,37 @@
 
 <Form onSubmit={updateEvents}>
     <CardGrid>
-        <Heading tag="h6" size="7">Events</Heading>
-        <p class="text">
-            Set the events that will trigger your webhook. Maximum 100 events allowed.
-        </p>
+        <svelte:fragment slot="title">Events</svelte:fragment>
+        Set the events that will trigger your webhook. Maximum 100 events allowed.
         <svelte:fragment slot="aside">
             {#if $eventSet.size}
-                <TableList>
+                <Table.Root columns={1} let:root>
                     {#each Array.from($eventSet) as event}
-                        <li class="table-row">
-                            <TableCellText title="id">
-                                {event}
-                            </TableCellText>
-                            <TableCell showOverflow title="options" width={40}>
-                                <button
-                                    class="button is-text is-only-icon"
-                                    aria-label="delete id"
-                                    on:click|preventDefault={() => {
-                                        $eventSet.delete(event);
-                                        eventSet.set($eventSet);
-                                    }}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </button>
-                            </TableCell>
-                        </li>
+                        <Table.Row.Base {root}>
+                            <Table.Cell {root}>
+                                <Layout.Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center">
+                                    {event}
+                                    <Button
+                                        extraCompact
+                                        ariaLabel="delete event"
+                                        on:click={() => {
+                                            $eventSet.delete(event);
+                                            eventSet.set($eventSet);
+                                        }}>
+                                        <Icon icon={IconX} size="s" />
+                                    </Button>
+                                </Layout.Stack>
+                            </Table.Cell>
+                        </Table.Row.Base>
                     {/each}
-                </TableList>
-                <div class="u-flex u-margin-block-start-16">
-                    <Button text noMargin on:click={() => (showCreateEvent = true)}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="u-text">Add event</span>
+                </Table.Root>
+                <div>
+                    <Button secondary on:click={() => (showCreateEvent = true)}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add event
                     </Button>
                 </div>
             {:else}
@@ -111,12 +113,11 @@
 </Form>
 
 <EventModal bind:show={showCreateEvent} on:created={handleEvent}>
-    <p class="text">
-        Select events in your Appwrite project that will trigger your webhook. <a
+    <Typography.Text>
+        Select events in your Appwrite project that will trigger your webhook. <Link.Anchor
             href="https://appwrite.io/docs/advanced/platform/events"
             target="_blank"
             rel="noopener noreferrer"
-            class="link">Learn more about Appwrite Events</a
-        >.
-    </p>
+            class="link">Learn more</Link.Anchor>
+    </Typography.Text>
 </EventModal>

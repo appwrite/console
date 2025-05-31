@@ -1,20 +1,14 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import {
-        Button,
-        Form,
-        FormItem,
-        FormList,
-        InputEmail,
-        InputPassword
-    } from '$lib/elements/forms';
+    import { Button, Form, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { goto } from '$app/navigation';
+    import { Divider, Layout, Link } from '@appwrite.io/pink-svelte';
 
     let email: string;
     let userId: string;
@@ -24,8 +18,8 @@
     let confirmPassword: string;
 
     onMount(() => {
-        userId = $page.url.searchParams.get('userId');
-        secret = $page.url.searchParams.get('secret');
+        userId = page.url.searchParams.get('userId');
+        secret = page.url.searchParams.get('secret');
     });
 
     async function recover() {
@@ -70,35 +64,31 @@
 </svelte:head>
 
 <Unauthenticated>
-    <svelte:fragment slot="title">Password Recovery</svelte:fragment>
+    <svelte:fragment slot="title">Password recovery</svelte:fragment>
     <svelte:fragment>
         {#if userId && secret}
             <Form onSubmit={setPassword}>
-                <FormList>
+                <Layout.Stack>
                     <InputPassword
                         label="New password"
                         placeholder="Enter password"
                         id="password"
                         autofocus={true}
                         required={true}
-                        showPasswordButton={true}
                         bind:value={password} />
                     <InputPassword
                         label="Confirm password"
                         placeholder="Confirm password"
                         id="confirm-password"
                         required={true}
-                        showPasswordButton={true}
                         bind:value={confirmPassword} />
 
-                    <FormItem>
-                        <Button fullWidth submit>Update</Button>
-                    </FormItem>
-                </FormList>
+                    <Button fullWidth submit>Update</Button>
+                </Layout.Stack>
             </Form>
         {:else}
             <Form onSubmit={recover}>
-                <FormList>
+                <Layout.Stack>
                     <InputEmail
                         id="email"
                         label="Email"
@@ -107,19 +97,18 @@
                         required={true}
                         bind:value={email} />
 
-                    <FormItem>
-                        <Button fullWidth submit>Recover</Button>
-                    </FormItem>
-                </FormList>
+                    <Button fullWidth submit>Recover</Button>
+                </Layout.Stack>
             </Form>
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="links">
-        <li class="inline-links-item">
-            <a href={`${base}/login`}><span class="text">Sign in</span></a>
-        </li>
-        <li class="inline-links-item">
-            <a href={`${base}/register`}><span class="text">Sign Up</span></a>
-        </li>
+        <Layout.Stack direction="row" justifyContent="center" alignItems="center">
+            <Link.Anchor href={`${base}/login`} variant="quiet">Sign in</Link.Anchor>
+            <div style:height="20px">
+                <Divider vertical />
+            </div>
+            <Link.Anchor href={`${base}/register`} variant="quiet">Sign up</Link.Anchor>
+        </Layout.Stack>
     </svelte:fragment>
 </Unauthenticated>

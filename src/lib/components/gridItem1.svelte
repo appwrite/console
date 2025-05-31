@@ -1,36 +1,30 @@
-<script>
-    import { Heading } from '$lib/components';
-    export let href;
+<script lang="ts">
+    import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
+    export let href: string;
 </script>
 
-<a class="card" {href}>
-    <div class="grid-item-1">
-        <div class="grid-item-1-start-start">
-            <div class="eyebrow-heading-3"><slot name="eyebrow" /></div>
-            <Heading tag="h2" size="7"><slot name="title" /></Heading>
-            <div class="u-padding-block-start-4"><slot name="subtitle" /></div>
-        </div>
-
-        <div class="grid-item-1-start-end">
-            <slot name="status" />
-        </div>
-
-        <div class="grid-item-1-end-start">
-            <div class="u-flex u-gap-16 u-flex-wrap">
+<Card.Link class="card" {href}>
+    <Layout.Stack height="calc(182 / 16 * 1rem)" justifyContent="space-between">
+        <Layout.Stack direction="row">
+            <Layout.Stack gap="xs">
+                <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary"
+                    ><slot name="eyebrow" /></Typography.Caption>
+                <Typography.Title size="s" truncate><slot name="title" /></Typography.Title>
+                <div>
+                    <slot name="subtitle" />
+                </div>
+            </Layout.Stack>
+            <Layout.Stack direction="row" justifyContent="flex-end" alignItems="center">
+                <slot name="status" />
+            </Layout.Stack>
+        </Layout.Stack>
+        <Layout.Stack direction="row">
+            <Layout.Stack direction="row">
                 <slot />
-            </div>
-        </div>
-        <div class="grid-item-1-end-end">
-            <ul class="icons u-flex u-gap-8">
+            </Layout.Stack>
+            <Layout.Stack direction="row" justifyContent="flex-end" alignItems="center">
                 <slot name="icons" />
-            </ul>
-        </div>
-    </div>
-</a>
-
-<style>
-    /* TODO: remove this when ui library is updated*/
-    .grid-item-1 {
-        min-block-size: calc(182 / 16 * 1rem);
-    }
-</style>
+            </Layout.Stack>
+        </Layout.Stack>
+    </Layout.Stack>
+</Card.Link>

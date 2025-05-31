@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Box, CardGrid, Heading } from '$lib/components';
+    import { Box, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import BaaModal from './BAAModal.svelte';
 
@@ -7,10 +7,8 @@
 </script>
 
 <CardGrid>
-    <div>
-        <Heading tag="h6" size="7">BAA</Heading>
-    </div>
-    <p class="text">After requesting a BAA, we will contact you via email for the next steps.</p>
+    <svelte:fragment slot="title">BAA</svelte:fragment>
+    After requesting a BAA, we will contact you via email for the next steps.
     <svelte:fragment slot="aside">
         <Box>
             <h6>

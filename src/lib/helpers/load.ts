@@ -9,15 +9,8 @@ export function getPage(url: URL): number {
     return Number(url.searchParams.get('page'));
 }
 
-export function getLimit(
-    projectId: string,
-    url: URL,
-    route: Page['route'],
-    fallback: number
-): number {
-    return Number(
-        url.searchParams.get('limit') ?? preferences.get(projectId, route).limit ?? fallback
-    );
+export function getLimit(url: URL, route: Page['route'], fallback: number): number {
+    return Number(url.searchParams.get('limit') ?? preferences.get(route).limit ?? fallback);
 }
 
 export enum View {
@@ -25,14 +18,18 @@ export enum View {
     Grid = 'grid'
 }
 
-export function getView(projectId: string, url: URL, route: Page['route'], fallback: View): View {
-    return (url.searchParams.get('view') ?? preferences.get(projectId, route).view) === View.Grid
+export function getView(url: URL, route: Page['route'], fallback: View, overwrite?: View): View {
+    const view = url.searchParams.get('view') ?? preferences.get(route).view;
+
+    return view === View.Grid
         ? View.Grid
-        : (View.Table ?? fallback);
+        : view === View.Table
+          ? View.Table
+          : (overwrite ?? View.Table ?? fallback);
 }
 
-export function getColumns(projectId: string, route: Page['route'], fallback: string[]): string[] {
-    return preferences.get(projectId, route).columns ?? fallback;
+export function getColumns(route: Page['route'], fallback: string[]): string[] {
+    return preferences.get(route).columns ?? fallback;
 }
 
 export function getSearch(url: URL): string | undefined {

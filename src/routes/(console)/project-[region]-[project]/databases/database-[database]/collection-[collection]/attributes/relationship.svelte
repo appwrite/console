@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
-    import { get } from 'svelte/store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
     import { ID, type Models, Query, RelationMutate, RelationshipType } from '@appwrite.io/console';
 
     export async function submitRelationship(
@@ -17,9 +17,8 @@
             throw new Error(`Invalid on delete: ${data.onDelete}`);
         }
 
-        const $page = get(page);
         await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.createRelationshipAttribute(
                 databaseId,
                 collectionId,
@@ -42,9 +41,8 @@
             throw new Error(`Invalid on delete: ${data.onDelete}`);
         }
 
-        const $page = get(page);
         await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.updateRelationshipAttribute(
                 databaseId,
                 collectionId,
@@ -56,22 +54,23 @@
 </script>
 
 <script lang="ts">
-    import { InputText, InputSelect, InputSelectSearch } from '$lib/elements/forms';
+    import { InputText, InputSelect } from '$lib/elements/forms';
     import { onMount } from 'svelte';
-    import { Box, LabelCard } from '$lib/components';
+    import { Box } from '$lib/components';
     import { collection } from '../store';
     import arrowOne from './arrow-one.svg';
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
-    import { SelectSearchItem } from '$lib/elements';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { Card, Layout, Input } from '@appwrite.io/pink-svelte';
+    import { IconArrowSmRight, IconSwitchHorizontal } from '@appwrite.io/pink-icons-svelte';
+    import { debounce } from '$lib/helpers/debounce';
 
     // Props
-    export let data: Models.AttributeRelationship;
     export let editing = false;
+    export let data: Models.AttributeRelationship;
 
     // Constants
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
     const relationshipType = [
         { value: 'oneToOne', label: 'One to one' },
         { value: 'oneToMany', label: 'One to many' },
@@ -86,17 +85,24 @@
     ];
 
     // Variables
-    let search: string = null;
-    let collectionList: Models.CollectionList;
     let way = 'one';
+    let search = undefined;
+    let collectionList: Models.CollectionList;
+    let originalCollectionList: Models.CollectionList;
 
     // Lifecycle hooks
-    async function getCollections(search: string = null) {
-        const queries = search ? [Query.orderDesc('')] : [Query.limit(100)];
+    async function getCollections() {
+        const queries = [Query.limit(100)];
         return sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.listCollections(databaseId, queries, search);
     }
+
+    const debouncedFetchCollections = debounce(async () => {
+        collectionList = await getCollections();
+        // reset search
+        search = undefined;
+    }, 500);
 
     function updateKeyName() {
         if (!editing) {
@@ -109,10 +115,10 @@
 
     onMount(async () => {
         collectionList = await getCollections();
+        originalCollectionList = collectionList;
     });
 
     // Reactive statements
-    $: getCollections(search).then((res) => (collectionList = res));
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
 
     $: if (editing) {
@@ -127,101 +133,70 @@
             data.twoWay = false;
         }
     }
+
+    $: search = data.relatedCollection || undefined;
+
+    $: if (search) {
+        const exists = collectionList.collections?.some((c) =>
+            c.$id.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+        );
+
+        if (!exists) {
+            debouncedFetchCollections();
+        }
+    } else if (!collectionList?.total) {
+        // reset to original list!
+        collectionList = originalCollectionList;
+    }
 </script>
 
-<li>
-    <ul
-        class="grid-box"
-        style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 0.5rem;">
-        <li>
-            <LabelCard
-                name="relationship"
-                bind:group={way}
-                value="one"
-                icon="arrow-sm-right"
-                disabled={editing}>
-                <svelte:fragment slot="title">One-way relationship</svelte:fragment>
-                One Relation attribute within this collection
-            </LabelCard>
-        </li>
-        <li>
-            <LabelCard
-                name="relationship"
-                bind:group={way}
-                value="two"
-                icon="switch-horizontal"
-                disabled={editing}>
-                <svelte:fragment slot="title">Two-way relationship</svelte:fragment>
-                One Relation attribute within this collection and another within the related collection
-            </LabelCard>
-        </li>
-    </ul>
-</li>
+<Layout.Stack direction="row" wrap="wrap">
+    <Card.Selector
+        title="One-way relationship"
+        bind:group={way}
+        name="one"
+        value="one"
+        icon={IconArrowSmRight}>
+        <p>One Relation attribute within this collection</p>
+    </Card.Selector>
+    <Card.Selector
+        title="Two-way relationship"
+        bind:group={way}
+        name="two"
+        value="two"
+        icon={IconSwitchHorizontal}>
+        <p>
+            One Relation attribute within this collection and another within the related collection
+        </p>
+    </Card.Selector>
+</Layout.Stack>
 
-<div>
-    <InputSelectSearch
-        id="related"
-        label="Related Collection"
-        name="collections"
-        bind:search
-        bind:value={data.relatedCollection}
-        required
-        interactiveOutput={!editing}
-        placeholder="Select a collection"
-        disabled={editing}
-        options={collections?.map((n) => ({ value: n.$id, label: n.$id, data: [n.name] })) ?? []}
-        on:select={updateKeyName}
-        let:option={o}>
-        <SelectSearchItem data={o.data}>
-            {o.label}
-        </SelectSearchItem>
-        <svelte:fragment slot="output" let:option={o}>
-            <output class="input-text" class:is-read-only={editing}>
-                <SelectSearchItem data={o.data}>
-                    {o.label}
-                </SelectSearchItem>
-            </output>
-        </svelte:fragment>
-    </InputSelectSearch>
-</div>
-
+<Input.ComboBox
+    required
+    id="related"
+    label="Related collection"
+    placeholder="Select a collection"
+    bind:value={data.relatedCollection}
+    on:change={updateKeyName}
+    options={collections?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
 {#if data?.relatedCollection}
-    <div>
-        <InputText
-            id="key"
-            label="Attribute Key"
-            placeholder="Enter Key"
-            bind:value={data.key}
-            autofocus
-            required />
-
-        <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
-            <span
-                class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
-                aria-hidden="true" />
-            <span class="text u-line-height-1-5">Allowed characters: a-z, A-Z, 0-9, -, .</span>
-        </div>
-    </div>
+    <InputText
+        id="key"
+        label="Attribute key"
+        placeholder="Enter key"
+        bind:value={data.key}
+        helper="Allowed characters: a-z, A-Z, 0-9, -, ."
+        required />
     {#if way === 'two'}
-        <div>
-            <InputText
-                id="keyRelated"
-                label="Attribute Key (related collection)"
-                placeholder="Enter Key"
-                bind:value={data.twoWayKey}
-                required
-                readonly={editing} />
-
-            <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
-                <span
-                    class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
-                    aria-hidden="true" />
-                <span class="text u-line-height-1-5">
-                    Allowed characters: a-z, A-Z, 0-9, -, . Once created, attribute key cannot be
-                    adjusted to maintain data integrity.
-                </span>
-            </div>
-        </div>
+        <InputText
+            id="keyRelated"
+            label="Attribute key (related collection)"
+            placeholder="Enter key"
+            bind:value={data.twoWayKey}
+            required
+            helper="Allowed characters: a-z, A-Z, 0-9, -, . Once created, attribute key cannot be
+                adjusted to maintain data integrity."
+            readonly={editing} />
     {/if}
 
     <InputSelect

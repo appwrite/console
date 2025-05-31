@@ -1,5 +1,6 @@
 import { get } from 'svelte/store';
 import { sdk } from '$lib/stores/sdk';
+import { isCloud } from '$lib/system';
 import { regions } from '$lib/stores/organization';
 
 let lastLoadedOrganization = null;
@@ -10,11 +11,12 @@ let lastLoadedOrganization = null;
  * Prevents unnecessary API calls if the regions are already loaded for the same organization.
  */
 export async function loadAvailableRegions(orgId: string): Promise<void> {
+    if (!isCloud || !orgId) return;
+
     try {
         const storedRegions = get(regions);
 
-        // note that regions can vary based on an organization's plan!
-        if (storedRegions?.regions && lastLoadedOrganization === orgId) {
+        if (storedRegions.regions && lastLoadedOrganization === orgId) {
             // already loaded for this organization, fast path return.
             return;
         }

@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
+import type { Column } from '$lib/helpers/types';
 import type { UserBackupPolicy } from '$lib/helpers/backups';
 
-export const policyPricing = 20; //TODO: get this from the backend
 export const showCreatePolicy = writable(false);
 export const showCreateBackup = writable(false);
 
@@ -26,4 +26,12 @@ export const presetPolicies = writable<UserBackupPolicy[]>([
         plainTextFrequency: 'daily',
         description: 'Runs every day and is retained for 7 days'
     }
+]);
+
+export const columns = writable<Column[]>([
+    { id: 'backups', title: 'Backups', type: 'string', width: { min: 180 } },
+    { id: 'size', title: 'Size', type: 'integer', width: { min: 163 } },
+    { id: 'status', title: 'Status', type: 'enum', width: { min: 163 } },
+    { id: 'policy', title: 'Policy', type: 'string', width: { min: 163 } },
+    { id: 'actions', title: '', type: 'string', width: 48 }
 ]);

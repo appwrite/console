@@ -1,9 +1,9 @@
 <script lang="ts">
     import { trackEvent } from '$lib/actions/analytics';
-    import { Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import WizardExitModal from './wizardExitModal.svelte';
     import { goto } from '$app/navigation';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     type $$Props =
         | {
@@ -42,10 +42,11 @@
     <div class="wizard-secondary-container">
         <header class="wizard-secondary-header">
             <div class="u-flex u-main-space-between u-gap-32 u-cross-center">
-                <Heading size={5} tag="h1"><slot name="title" /></Heading>
+                <Typography.Title><slot name="title" /></Typography.Title>
+
                 <Button
                     text
-                    round
+                    icon
                     ariaLabel="close modal"
                     href={confirmExit ? null : href}
                     on:click={() => {

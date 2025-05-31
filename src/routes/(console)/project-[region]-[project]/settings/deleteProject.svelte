@@ -1,63 +1,45 @@
 <script lang="ts">
     import { base } from '$app/paths';
+    import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
     import { goto } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { BoxAvatar, CardGrid, Heading, Modal } from '$lib/components';
-    import { Button, FormList, InputText } from '$lib/elements/forms';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { addNotification } from '$lib/stores/notifications';
-    import { getApiEndpoint } from '$lib/stores/sdk';
+    import { Confirm } from '$lib/components';
     import { project, projectRegion } from '../store';
-    import { Client as TempClient, Projects as TempProjects } from '@appwrite.io/console';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { BoxAvatar, CardGrid } from '$lib/components';
+    import { Button, InputText } from '$lib/elements/forms';
+    import { organization } from '$lib/stores/organization';
+    import { addNotification } from '$lib/stores/notifications';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
+    let error: string;
     let showDelete = false;
     let name: string = null;
 
-    /**
-     * This ensures the underlying client use a region-aware endpoint
-     * to correctly route project deletion requests to the appropriate regional pool.
-     *
-     * The console project itself isn't tied to a region, so its client doesn’t
-     * include one. Without this, deletion requests would default to the manager region.
-     */
-    const temporaryProjects = (region: string) => {
-        const tempClient = new TempClient()
-            .setMode('admin')
-            .setProject('console')
-            .setEndpoint(getApiEndpoint(region));
-
-        return new TempProjects(tempClient);
-    };
-
     const handleDelete = async () => {
         try {
-            await temporaryProjects($project.region).delete($project.$id);
+            // send the project to correct region pool for deletion!
+            await sdk.forConsoleIn($project.region).projects.delete($project.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `${$project.name} has been deleted`
             });
             trackEvent(Submit.ProjectDelete);
-            await goto(base);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
+            await goto(`${base}/organization-${$organization.$id}`, {
+                replaceState: true
             });
-            trackError(error, Submit.ProjectDelete);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.ProjectDelete);
         }
     };
 </script>
 
-<CardGrid danger>
-    <div>
-        <Heading tag="h6" size="7">Delete project</Heading>
-    </div>
-    <p>
-        The project will be permanently deleted, including all the metadata, resources and stats
-        within it. This action is irreversible.
-    </p>
+<CardGrid>
+    <svelte:fragment slot="title">Delete project</svelte:fragment>
+    The project will be permanently deleted, including all the metadata, resources and stats within it.
+    This action is irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">
@@ -75,29 +57,21 @@
     </svelte:fragment>
 </CardGrid>
 
-<Modal
-    title="Delete project"
-    bind:show={showDelete}
+<Confirm
+    disabled={name !== $project.name}
     onSubmit={handleDelete}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+    title="Delete project"
+    bind:open={showDelete}
+    bind:error>
     <p>
         <b>This project will be deleted</b>, along with all of its metadata, stats, and other
         resources. <b>This action is irreversible</b>.
     </p>
-
-    <FormList>
-        <InputText
-            label={`Enter "${$project.name}" to continue`}
-            placeholder="Enter name"
-            id="project-name"
-            autofocus
-            required
-            bind:value={name} />
-    </FormList>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button disabled={!name || name !== $project.name} secondary submit>Delete</Button>
-    </svelte:fragment>
-</Modal>
+    <InputText
+        label={`Enter "${$project.name}" to continue`}
+        placeholder="Enter name"
+        id="project-name"
+        autofocus
+        required
+        bind:value={name} />
+</Confirm>

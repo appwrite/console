@@ -17,9 +17,8 @@
     import { Browser } from '@appwrite.io/console';
     import DeleteAllSessions from '../deleteAllSessions.svelte';
     import DeleteSessions from '../deleteSession.svelte';
-    import type { PageData } from './$types';
 
-    export let data: PageData;
+    export let data;
 
     let showDelete = false;
     let showDeleteAll = false;
@@ -68,7 +67,8 @@
                                         <span
                                             class="icon-globe-alt"
                                             style="--p-text-size: 1.25rem"
-                                            aria-hidden="true" />
+                                            aria-hidden="true">
+                                        </span>
                                     {/if}
                                 </div>
                                 <p class="text">
@@ -88,13 +88,13 @@
                         <TableCell>
                             <Button
                                 text
-                                round
+                                icon
                                 ariaLabel="Delete item"
                                 on:click={() => {
                                     selectedSessionId = session.$id;
                                     showDelete = true;
                                 }}>
-                                <span class="icon-trash" aria-hidden="true" />
+                                <span class="icon-trash" aria-hidden="true"></span>
                             </Button>
                         </TableCell>
                     </TableRow>

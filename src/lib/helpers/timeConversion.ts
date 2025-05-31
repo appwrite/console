@@ -94,3 +94,55 @@ export function secsToUnit(time: number, unit: Unit) {
             return time;
     }
 }
+
+/**
+ * Formats time in seconds to a detailed string showing days, hours, minutes, and seconds
+ * @param time Time in seconds
+ * @returns Formatted string like "3d 4h 30m 23s"
+ */
+export function formatTimeDetailed(time: number): string {
+    if (typeof time !== 'number' || time === undefined || time === null) {
+        return '-';
+    }
+    if (time <= 0) {
+        return '0s';
+    }
+    const seconds = Math.floor(time % 60);
+    const minutes = Math.floor((time / 60) % 60);
+    const hours = Math.floor((time / (60 * 60)) % 24);
+    const days = Math.floor(time / (60 * 60 * 24));
+
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0) parts.push(`${hours}h`);
+    if (minutes > 0) parts.push(`${minutes}m`);
+    if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`);
+
+    return parts.join(' ');
+}
+
+/**
+ * Calculates the time difference between a starting date/time and the current time.
+ * Returns the difference formatted in seconds, minutes, or hours depending on the magnitude.
+ *
+ * @export
+ * @param {Date | number | string} startTime - The starting date/time, timestamp in milliseconds, or ISO date string (e.g., '2025-03-20T15:50:43.495+00:00')
+ * @returns {string} The formatted time difference
+ */
+export function timer(startTime: Date | number | string): string {
+    let start: number;
+
+    if (startTime instanceof Date) {
+        start = startTime.getTime();
+    } else if (typeof startTime === 'number') {
+        start = startTime;
+    } else {
+        // Handle ISO date string format
+        start = new Date(startTime).getTime();
+    }
+
+    const now = new Date().getTime();
+    const diffInSeconds = (now - start) / 1000;
+
+    return calculateTime(diffInSeconds);
+}

@@ -1,20 +1,14 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import {
-        Table,
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
+
     import { symmetricDifference } from '$lib/helpers/array';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import Actions from './actions.svelte';
     import type { Permission } from './permissions.svelte';
     import Row from './row.svelte';
+    import { Card, Icon, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
     export let roles: string[] = [];
 
@@ -22,7 +16,6 @@
     let showTeam = false;
     let showLabel = false;
     let showCustom = false;
-    let showDropdown = false;
 
     const groups = writable<Map<string, Permission>>(new Map());
 
@@ -54,8 +47,6 @@
 
             return n;
         });
-
-        showDropdown = false;
     }
 
     function deleteRole(role: string): void {
@@ -86,65 +77,59 @@
 </script>
 
 {#if [...$groups.keys()]?.length}
-    <Table noMargin noStyles>
-        <TableHeader>
-            <TableCellHead width={70}>Role</TableCellHead>
-            <TableCellHead width={40} />
-        </TableHeader>
-        <TableBody>
+    <Layout.Stack>
+        <Table.Root columns={[{ id: 'role' }, { id: 'action', width: 40 }]} let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="role" {root}>Role</Table.Header.Cell>
+                <Table.Header.Cell column="action" {root} />
+            </svelte:fragment>
             {#each [...$groups.keys()].sort(sortRoles) as role}
-                <TableRow>
-                    <TableCell title="Role">
+                <Table.Row.Base {root}>
+                    <Table.Cell column="role" {root}>
                         <Row {role} />
-                    </TableCell>
-                    <TableCellText title="Remove">
-                        <div class="u-flex u-main-end">
-                            <button
-                                class="button is-text is-only-icon"
-                                type="button"
-                                aria-label="delete"
-                                on:click={() => deleteRole(role)}>
-                                <span class="icon-x" aria-hidden="true" />
-                            </button>
-                        </div>
-                    </TableCellText>
-                </TableRow>
+                    </Table.Cell>
+                    <Table.Cell column="action" {root}>
+                        <Layout.Stack justifyContent="flex-end">
+                            <Button compact icon on:click={() => deleteRole(role)}>
+                                <Icon icon={IconX} size="s" />
+                            </Button>
+                        </Layout.Stack>
+                    </Table.Cell>
+                </Table.Row.Base>
             {/each}
-        </TableBody>
-    </Table>
-    <Actions
-        bind:showLabel
-        bind:showCustom
-        bind:showDropdown
-        bind:showTeam
-        bind:showUser
-        {groups}
-        on:create={create}>
-        <Button text noMargin on:click={() => (showDropdown = !showDropdown)}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Add role</span>
-        </Button>
-    </Actions>
+        </Table.Root>
+        <Actions
+            bind:showLabel
+            bind:showCustom
+            bind:showTeam
+            bind:showUser
+            {groups}
+            on:create={create}
+            let:toggle>
+            <div>
+                <Button compact on:click={toggle}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add role
+                </Button>
+            </div>
+        </Actions>
+    </Layout.Stack>
 {:else}
-    <article class="card u-grid u-cross-center u-width-full-line dashed">
-        <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-            <div class="common-section">
-                <Actions
-                    bind:showLabel
-                    bind:showCustom
-                    bind:showDropdown
-                    bind:showTeam
-                    bind:showUser
-                    {groups}
-                    on:create={create}>
-                    <Button secondary round on:click={() => (showDropdown = !showDropdown)}>
-                        <i class="icon-plus" />
-                    </Button>
-                </Actions>
-            </div>
-            <div class="common-section">
-                <span class="text"> Add a role </span>
-            </div>
-        </div>
-    </article>
+    <Card.Base>
+        <Layout.Stack justifyContent="center" alignItems="center" gap="m">
+            <Actions
+                bind:showLabel
+                bind:showCustom
+                bind:showTeam
+                bind:showUser
+                {groups}
+                on:create={create}
+                let:toggle>
+                <Button secondary icon on:click={toggle}>
+                    <Icon icon={IconPlus} size="s" />
+                </Button>
+            </Actions>
+            <span class="text">Add a role </span>
+        </Layout.Stack>
+    </Card.Base>
 {/if}

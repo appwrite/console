@@ -1,9 +1,9 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -46,20 +46,15 @@
 
 <Form onSubmit={updateHostname}>
     <CardGrid>
-        <Heading tag="h6" size="7">Bundle ID</Heading>
-        <p class="text">
-            You can find your Bundle Identifier in the General tab for your app's primary target in
-            Xcode.
-        </p>
+        <svelte:fragment slot="title">Bundle ID</svelte:fragment>
+        You can find your Bundle Identifier in the General tab for your app's primary target in Xcode.
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    id="bundle-id"
-                    label="Bundle ID"
-                    bind:value={key}
-                    required
-                    placeholder="com.company.appname" />
-            </FormList>
+            <InputText
+                id="bundle-id"
+                label="Bundle ID"
+                bind:value={key}
+                required
+                placeholder="com.company.appname" />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

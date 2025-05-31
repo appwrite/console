@@ -1,13 +1,9 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { BillingPlan, INTERVAL } from '$lib/constants';
-    import { Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
-    import Header from '$lib/layout/header.svelte';
-    import SideNavigation from '$lib/layout/navigation.svelte';
     import Shell from '$lib/layout/shell.svelte';
     import { app } from '$lib/stores/app';
-    import { log } from '$lib/stores/logs';
     import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
     import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
     import { wizard } from '$lib/stores/wizard';
@@ -46,6 +42,18 @@
     import { base } from '$app/paths';
     import { canSeeProjects } from '$lib/stores/roles';
     import { BottomModalAlert } from '$lib/components';
+    import {
+        IconAnnotation,
+        IconBookOpen,
+        IconDiscord,
+        IconPencil,
+        IconPlus,
+        IconQuestionMarkCircle,
+        IconSparkles,
+        IconSwitchHorizontal
+    } from '@appwrite.io/pink-icons-svelte';
+    import type { LayoutData } from './$types';
+    import type { NavbarProject } from '$lib/components/navbar.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -56,8 +64,21 @@
 
     const isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
 
+    export let data: LayoutData;
+
+    $: loadedProjects = data.projects.map((project) => {
+        return {
+            name: project?.name,
+            $id: project.$id,
+            isSelected: project.$id === page.params.project,
+            region: project.region,
+            platformCount: project.platforms.length,
+            pingCount: project.pingCount
+        };
+    }) satisfies NavbarProject[];
+
     $: isOnSettingsLayout = $project?.$id
-        ? $page.url.pathname.includes(`project-${$project.$id}/settings`)
+        ? page.url.pathname.includes(`project-${$project.region}-${$project.$id}/settings`)
         : false;
 
     $: $registerCommands([
@@ -69,9 +90,9 @@
             keys: ['g', 'p'],
             group: 'navigation',
             disabled:
-                ($page.url.pathname.includes('/console/organization-') &&
-                    !$page.url.pathname.endsWith('/members') &&
-                    !$page.url.pathname.endsWith('/settings')) ||
+                (page.url.pathname.includes('/console/organization-') &&
+                    !page.url.pathname.endsWith('/members') &&
+                    !page.url.pathname.endsWith('/settings')) ||
                 !$canSeeProjects,
             rank: -1
         },
@@ -81,7 +102,7 @@
                 addSubPanel(AIPanel);
             },
             keys: ['a', 'i'],
-            icon: 'sparkles',
+            icon: IconSparkles,
             disabled: !isAssistantEnabled
         },
         {
@@ -90,7 +111,8 @@
                 isCloud ? goto(`${base}/create-organization`) : newOrgModal.set(true);
             },
             keys: ['c', 'o'],
-            group: 'organizations'
+            group: 'organizations',
+            icon: IconPlus
         },
         {
             label: 'Open documentation',
@@ -98,7 +120,7 @@
                 window.open('https://appwrite.io/docs', '_blank');
             },
             group: 'help',
-            icon: 'book-open'
+            icon: IconBookOpen
         },
         {
             label: 'Contact support',
@@ -106,7 +128,7 @@
                 window.open('https://appwrite.io/discord', '_blank');
             },
             group: 'help',
-            icon: 'question-mark-circle'
+            icon: IconQuestionMarkCircle
         },
         {
             label: 'Send feedback',
@@ -114,7 +136,7 @@
                 feedback.toggleFeedback();
             },
             group: 'help',
-            icon: 'annotation'
+            icon: IconAnnotation
         },
         {
             label: 'Join Discord community',
@@ -122,7 +144,7 @@
                 window.open('https://appwrite.io/discord', '_blank');
             },
             group: 'help',
-            icon: 'discord'
+            icon: IconDiscord
         },
         ...(['auto', 'dark', 'light'] as const).map((theme) => {
             return {
@@ -136,7 +158,7 @@
                     });
                 },
                 group: 'misc',
-                icon: 'switch-horizontal',
+                icon: IconSwitchHorizontal,
                 keys: ['t', theme[0]]
             } as const;
         }),
@@ -160,7 +182,7 @@
                     },
                     disabled: !$project?.$id,
                     group: 'security',
-                    icon: 'pencil'
+                    icon: IconPencil
                 }) as const
         ),
         // Settings
@@ -172,7 +194,7 @@
                 goto(`${base}/project-${$project.region}-${$project.$id}/settings`);
             },
             disabled:
-                !$project?.$id || (isOnSettingsLayout && $page.url.pathname.endsWith('settings')),
+                !$project?.$id || (isOnSettingsLayout && page.url.pathname.endsWith('settings')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: isOnSettingsLayout ? 40 : -1
         },
@@ -184,7 +206,7 @@
                 goto(`${base}/project-${$project.region}-${$project.$id}/settings/domains`);
             },
             disabled:
-                !$project?.$id || (isOnSettingsLayout && $page.url.pathname.includes('domains')),
+                !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('domains')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: isOnSettingsLayout ? 30 : -1
         },
@@ -195,7 +217,7 @@
                 goto(`${base}/project-${$project.region}-${$project.$id}/settings/webhooks`);
             },
             disabled:
-                !$project?.$id || (isOnSettingsLayout && $page.url.pathname.includes('webhooks')),
+                !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('webhooks')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
 
             rank: isOnSettingsLayout ? 20 : -1
@@ -207,7 +229,7 @@
                 goto(`${base}/project-${$project.region}-${$project.$id}/settings/migrations`);
             },
             disabled:
-                !$project?.$id || (isOnSettingsLayout && $page.url.pathname.includes('migrations')),
+                !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('migrations')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
 
             rank: isOnSettingsLayout ? 10 : -1
@@ -218,7 +240,7 @@
             callback: () => {
                 goto(`${base}/project-${$project.region}-${$project.$id}/settings/smtp`);
             },
-            disabled: !$project?.$id || (isOnSettingsLayout && $page.url.pathname.includes('smtp')),
+            disabled: !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('smtp')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: -1
         },
@@ -271,9 +293,9 @@
     }
 
     database.subscribe(async (database) => {
-        if (!database || !$page.params.region || !$page.params.project) return;
+        if (!database || !page.params.region || !page.params.project) return;
         // the component checks `isCloud` internally.
-        await checkForDatabaseBackupPolicies($page.params.region, $page.params.project, database);
+        await checkForDatabaseBackupPolicies(page.params.region, page.params.project, database);
     });
 
     let currentOrganizationId = null;
@@ -301,11 +323,6 @@
 
     $: checkForUsageLimits($organization);
 
-    $: if (!$log.show) {
-        $log.data = null;
-        $log.func = null;
-    }
-
     $: if ($requestedMigration) {
         openMigrationWizard();
     }
@@ -318,30 +335,28 @@
 </script>
 
 <CommandCenter />
-
 <Shell
-    showSideNavigation={$page.url.pathname !== '/console' &&
-        !$page?.params.organization &&
-        !$page.url.pathname.includes('/console/account') &&
-        !$page.url.pathname.includes('/console/card') &&
-        !$page.url.pathname.includes('/console/onboarding')}>
-    <Header slot="header" />
-    <SideNavigation slot="side" />
+    showSideNavigation={page.url.pathname !== '/console' &&
+        !page?.params.organization &&
+        !page.url.pathname.includes('/console/account') &&
+        !page.url.pathname.includes('/console/card') &&
+        !page.url.pathname.includes('/console/onboarding')}
+    showHeader={!page.url.pathname.includes('/console/onboarding/create-project')}
+    showFooter={!page.url.pathname.includes('/console/onboarding/create-project')}
+    {loadedProjects}
+    selectedProject={page.data?.project}>
+    <!--    <Header slot="header" />-->
     <slot />
     <Footer slot="footer" />
 </Shell>
 
 {#if $wizard.show && $wizard.component}
-    <svelte:component this={$wizard.component} />
+    <svelte:component this={$wizard.component} {...$wizard.props} />
 {:else if $wizard.cover}
     <svelte:component this={$wizard.cover} />
 {/if}
 
 <Create bind:show={$newOrgModal} />
-
-{#if $log.show}
-    <Logs />
-{/if}
 
 {#if $showSupportModal}
     <MobileSupportModal bind:show={$showSupportModal}></MobileSupportModal>

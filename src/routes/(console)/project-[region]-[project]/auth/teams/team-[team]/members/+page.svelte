@@ -1,21 +1,6 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import {
-        Empty,
-        EmptySearch,
-        AvatarInitials,
-        SearchQuery,
-        PaginationWithLimit
-    } from '$lib/components';
-    import {
-        Table,
-        TableHeader,
-        TableBody,
-        TableRowLink,
-        TableCellHead,
-        TableCellText,
-        TableCell
-    } from '$lib/elements/table';
+    import { page } from '$app/state';
+    import { Empty, EmptySearch, AvatarInitials, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
@@ -26,7 +11,9 @@
     import CreateMember from '../createMembership.svelte';
     import DeleteMembership from '../deleteMembership.svelte';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
+    import { Table, Layout, Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -34,7 +21,8 @@
     let showDelete = false;
     let selectedMembership: Models.Membership;
 
-    const project = $page.params.project;
+    const region = page.params.region;
+    const project = page.params.project;
 
     async function memberCreated() {
         invalidate(Dependencies.MEMBERSHIPS);
@@ -42,51 +30,60 @@
 </script>
 
 <Container>
-    <SearchQuery search={data.search} placeholder="Search by ID">
-        <Button on:click={() => (showCreate = true)} event="create_membership">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create membership</span>
+    <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+        <Button on:mousedown={() => (showCreate = true)} event="create_membership" size="s">
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Create membership
         </Button>
-    </SearchQuery>
+    </Layout.Stack>
+
     {#if data.memberships.total}
-        <Table>
-            <TableHeader>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead onlyDesktop>Roles</TableCellHead>
-                <TableCellHead onlyDesktop>Joined</TableCellHead>
-                <TableCellHead width={30} />
-            </TableHeader>
-            <TableBody>
-                {#each data.memberships.memberships as membership}
-                    {@const username = membership.userName ? membership.userName : '-'}
-                    <TableRowLink
-                        href={`${base}/project-${$page.params.region}-${project}/auth/user-${membership.userId}`}>
-                        <TableCellText title="Name">
-                            <div class="u-flex u-gap-12 u-cross-center">
-                                <AvatarInitials size={32} name={username} />
-                                <span>{username}</span>
-                            </div>
-                        </TableCellText>
-                        <TableCellText onlyDesktop title="Roles">{membership.roles}</TableCellText>
-                        <TableCellText onlyDesktop title="Joined">
-                            {toLocaleDateTime(membership.joined)}
-                        </TableCellText>
-                        <TableCell>
-                            <button
-                                class="button is-only-icon is-text"
-                                aria-label="Delete item"
-                                on:click|preventDefault={() => {
-                                    selectedMembership = membership;
-                                    showDelete = true;
-                                    trackEvent('click_delete_membership');
-                                }}>
-                                <span class="icon-trash" aria-hidden="true" />
-                            </button>
-                        </TableCell>
-                    </TableRowLink>
-                {/each}
-            </TableBody>
-        </Table>
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'name' },
+                { id: 'roles' },
+                { id: 'joined' },
+                { id: 'actions', width: 40 }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+                <Table.Header.Cell column="roles" {root}>Roles</Table.Header.Cell>
+                <Table.Header.Cell column="joined" {root}>Joined</Table.Header.Cell>
+                <Table.Header.Cell column="actions" {root} />
+            </svelte:fragment>
+            {#each data.memberships.memberships as membership}
+                {@const username = membership.userName ? membership.userName : '-'}
+                <Table.Row.Link
+                    {root}
+                    href={`${base}/project-${region}-${project}/auth/user-${membership.userId}`}>
+                    <Table.Cell column="name" {root}>
+                        <Layout.Stack direction="row" alignItems="center">
+                            <AvatarInitials size="xs" name={username} />
+                            <span>{username}</span>
+                        </Layout.Stack>
+                    </Table.Cell>
+                    <Table.Cell column="roles" {root}>
+                        {membership.roles}
+                    </Table.Cell>
+                    <Table.Cell column="joined" {root}>
+                        {toLocaleDateTime(membership.joined)}
+                    </Table.Cell>
+                    <Table.Cell column="actions" {root}>
+                        <button
+                            class="button is-only-icon is-text"
+                            aria-label="Delete item"
+                            on:click|preventDefault={() => {
+                                selectedMembership = membership;
+                                showDelete = true;
+                                trackEvent(Click.MembershipDeleteClick);
+                            }}>
+                            <span class="icon-trash" aria-hidden="true"></span>
+                        </button>
+                    </Table.Cell>
+                </Table.Row.Link>
+            {/each}
+        </Table.Root>
 
         <PaginationWithLimit
             name="Memberships"
@@ -116,7 +113,7 @@
     {/if}
 </Container>
 
-<CreateMember teamId={$page.params.team} bind:showCreate on:created={memberCreated} />
+<CreateMember teamId={page.params.team} bind:showCreate on:created={memberCreated} />
 <DeleteMembership
     {selectedMembership}
     bind:showDelete

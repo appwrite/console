@@ -1,7 +1,6 @@
 <script context="module" lang="ts">
     import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
-    import { get } from 'svelte/store';
+    import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
 
     export async function submitBoolean(
@@ -10,9 +9,8 @@
         key: string,
         data: Partial<Models.AttributeBoolean>
     ) {
-        const $page = get(page);
         await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.createBooleanAttribute(
                 databaseId,
                 collectionId,
@@ -28,9 +26,8 @@
         data: Partial<Models.AttributeBoolean>,
         originalKey?: string
     ) {
-        const $page = get(page);
         await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.updateBooleanAttribute(
                 databaseId,
                 collectionId,
@@ -43,7 +40,7 @@
 </script>
 
 <script lang="ts">
-    import { InputChoice, InputSelect } from '$lib/elements/forms';
+    import { InputSelect } from '$lib/elements/forms';
 
     export let editing = false;
     export let data: Partial<Models.AttributeBoolean> = {
@@ -53,6 +50,7 @@
     };
 
     import { createConservative } from '$lib/helpers/stores';
+    import { Selector } from '@appwrite.io/pink-svelte';
 
     let savedDefault = data.default;
 
@@ -89,10 +87,18 @@
         { label: 'False', value: false }
     ]}
     bind:value={data.default} />
-<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
-    Indicate whether this is a required attribute
-</InputChoice>
-<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
-    Indicate whether this attribute should act as an array, with the default value set as an empty
-    array.
-</InputChoice>
+<Selector.Checkbox
+    size="s"
+    id="required"
+    label="Required"
+    bind:checked={data.required}
+    disabled={data.array}
+    description="Indicate whether this attribute is required" />
+<Selector.Checkbox
+    size="s"
+    id="array"
+    label="Array"
+    bind:checked={data.array}
+    disabled={data.required || editing}
+    description="Indicate whether this attribute should act as an array, with the default value set as an empty
+    array." />

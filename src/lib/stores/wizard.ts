@@ -1,18 +1,19 @@
 import { trackEvent } from '$lib/actions/analytics';
-import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-import type { SvelteComponent } from 'svelte';
+import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
+import type { Component } from 'svelte';
 import { writable } from 'svelte/store';
 
 export type WizardStore = {
     show: boolean;
     media?: string;
-    component?: typeof SvelteComponent<unknown>;
-    cover?: typeof SvelteComponent<unknown>;
+    component?: Component;
+    cover?: Component;
     interceptor?: () => Promise<void>;
     finalAction?: () => Promise<void>;
     nextDisabled: boolean;
     step: number;
     interceptorNotificationEnabled: boolean;
+    props: Record<string, unknown>;
 };
 
 function createWizardStore() {
@@ -25,16 +26,18 @@ function createWizardStore() {
         media: null,
         nextDisabled: false,
         step: 1,
-        finalAction: null
+        finalAction: null,
+        props: {}
     });
 
     return {
         subscribe,
         set,
         start: (
-            component: typeof SvelteComponent<unknown>,
+            component: Component,
             media: string = null,
-            step: number = 1
+            step: number = 1,
+            props: Record<string, unknown> = {}
         ) =>
             update((n) => {
                 n.show = true;
@@ -46,6 +49,7 @@ function createWizardStore() {
                 n.cover = null;
                 n.nextDisabled = false;
                 n.finalAction = null;
+                n.props = props;
                 trackEvent('wizard_start');
                 return n;
             }),
@@ -75,7 +79,7 @@ function createWizardStore() {
 
                 return n;
             }),
-        showCover: (component: typeof SvelteComponent<unknown>) =>
+        showCover: (component: Component) =>
             update((n) => {
                 n.cover = component;
                 return n;
@@ -96,6 +100,8 @@ function createWizardStore() {
 }
 
 export const wizard = createWizardStore();
+
+export const isNewWizardStatusOpen = writable(false);
 
 export function updateStepStatus(map: WizardStepsType, key: number, status: boolean) {
     const updatedComponent = {
