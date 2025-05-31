@@ -1,16 +1,15 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { BoxAvatar, Confirm, CardGrid } from '$lib/components';
+    import { Button, InputText } from '$lib/elements/forms';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
-    import { goto } from '$app/navigation';
-    import { Confirm } from '$lib/components';
     import { project, projectRegion } from '../store';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { BoxAvatar, CardGrid } from '$lib/components';
-    import { Button, InputText } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
-    import { addNotification } from '$lib/stores/notifications';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     let error: string;
     let showDelete = false;
