@@ -114,7 +114,9 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
                         title={key}
                         imageRadius="s"
                         name="framework"
-                        bind:group={platform} />
+                        bind:group={platform}
+                        disabled={isCreatingPlatform || isPlatformCreated}
+                    />
                 {/each}
             </Layout.Grid>
 

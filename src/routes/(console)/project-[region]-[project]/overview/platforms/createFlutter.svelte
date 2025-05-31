@@ -171,7 +171,9 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
                         title={key}
                         imageRadius="s"
                         name="framework"
-                        bind:group={platform} />
+                        bind:group={platform}
+                        disabled={isCreatingPlatform || isPlatformCreated}
+                    />
                 {/each}
             </Layout.Grid>
 

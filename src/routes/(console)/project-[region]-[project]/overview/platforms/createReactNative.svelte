@@ -133,7 +133,7 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.para
     <Form onSubmit={createReactNativePlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->
-            <Layout.Stack gap="l">
+            <Layout.Stack gap="l" direction="row">
                 {#each Object.entries(platforms) as [key, value]}
                     <Pink2Card.Selector
                         {value}
@@ -141,7 +141,8 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.para
                         title={key}
                         imageRadius="s"
                         name="framework"
-                        bind:group={platform} />
+                        bind:group={platform}
+                        disabled={isCreatingPlatform || isPlatformCreated} />
                 {/each}
             </Layout.Stack>
 
