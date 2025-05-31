@@ -39,6 +39,7 @@
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
     import { regions as regionsStore } from '$lib/stores/organization';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     export let data;
 
@@ -163,7 +164,8 @@
                         {project.name}
                     </svelte:fragment>
                     {#each platforms as platform, i}
-                        {#if i < 3}
+                        {@const platformsLimit = $isSmallViewport ? 2 : 3}
+                        {#if i < platformsLimit}
                             {@const icon = getIconForPlatform(platform.icon)}
                             <Badge variant="secondary" content={platform.name}>
                                 <Icon {icon} size="s" slot="start" />
