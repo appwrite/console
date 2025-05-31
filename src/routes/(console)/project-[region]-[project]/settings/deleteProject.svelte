@@ -2,23 +2,23 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { BoxAvatar, CardGrid } from '$lib/components';
+    import { BoxAvatar, Confirm, CardGrid } from '$lib/components';
     import { Button, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
-    import Confirm from '$lib/components/confirm.svelte';
     import { project, projectRegion } from '../store';
     import { organization } from '$lib/stores/organization';
 
+    let error: string;
     let showDelete = false;
     let name: string = null;
-    let error: string;
 
     const handleDelete = async () => {
         try {
-            await sdk.forConsole.projects.delete($project.$id);
+            // send the project to correct region pool for deletion!
+            await sdk.forConsoleIn($project.region).projects.delete($project.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
