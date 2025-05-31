@@ -174,7 +174,7 @@
                         <Button.Button type="button" icon variant="secondary" size="s">
                             <Icon icon={IconPaperClip} color="--fgcolor-neutral-tertiary" />
                         </Button.Button>
-                        <Button.Button icon variant="secondary" size="s" type="submit">
+                        <Button.Button icon variant="secondary" size="s" type="submit" disabled={!studio.streaming && !message.trim()}>
                             {#if studio.streaming}
                                 <Icon icon={IconStop} color="--fgcolor-neutral-tertiary" />
                             {:else}
