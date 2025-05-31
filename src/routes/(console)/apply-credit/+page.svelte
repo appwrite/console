@@ -396,6 +396,8 @@
             {/if}
             {#if selectedOrgId === newOrgId}
                 Create organization
+            {:else if isUpgrade()}
+                Upgrade
             {:else}
                 Apply
             {/if}
