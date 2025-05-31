@@ -28,7 +28,7 @@
     import { LabelCard } from '$lib/components';
 
     let showExitModal = false;
-    export let isPlatformCreated = false;
+    let isPlatformCreated = false;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
     const projectId = page.params.project;
@@ -94,10 +94,9 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.para
             trackEvent(Submit.PlatformCreate, {
                 type: platform
             });
-            await Promise.all([
-                invalidate(Dependencies.PROJECT),
-                invalidate(Dependencies.PLATFORMS)
-            ]);
+
+            invalidate(Dependencies.PROJECT);
+            invalidate(Dependencies.PLATFORMS);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({

@@ -125,10 +125,8 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
                 type: platform
             });
 
-            await Promise.all([
-                invalidate(Dependencies.PROJECT),
-                invalidate(Dependencies.PLATFORMS)
-            ]);
+            invalidate(Dependencies.PROJECT);
+            invalidate(Dependencies.PLATFORMS);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
