@@ -1,14 +1,14 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     let userName: string = null;
     onMount(async () => {
@@ -18,7 +18,7 @@
     async function updateName() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .users.updateName($user.$id, userName);
             await invalidate(Dependencies.USER);
             addNotification({
@@ -38,8 +38,7 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Name</Heading>
-
+        <svelte:fragment slot="title">Name</svelte:fragment>
         <svelte:fragment slot="aside">
             <ul data-private>
                 <InputText

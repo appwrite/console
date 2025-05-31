@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { app } from '$lib/stores/app';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
@@ -20,12 +20,12 @@
     let success = '';
 
     onMount(async () => {
-        const projectId = $page.url.searchParams.get('projectId');
+        const projectId = page.url.searchParams.get('projectId');
         client.setEndpoint(endpoint).setProject(projectId).setMode('admin');
 
-        installationId = $page.url.searchParams.get('installationId');
-        repositoryId = $page.url.searchParams.get('repositoryId');
-        providerPullRequestId = $page.url.searchParams.get('providerPullRequestId') + '';
+        installationId = page.url.searchParams.get('installationId');
+        repositoryId = page.url.searchParams.get('repositoryId');
+        providerPullRequestId = page.url.searchParams.get('providerPullRequestId') + '';
     });
 
     async function approveDeployment() {

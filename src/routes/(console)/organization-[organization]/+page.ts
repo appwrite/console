@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const { scopes } = await parent();
     depends(Dependencies.ORGANIZATION);
     const page = getPage(url);
-    const limit = getLimit('console', url, route, CARD_LIMIT);
+    const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
     if (!scopes.includes('projects.read') && scopes.includes('billing.read')) {
         return redirect(301, `/console/organization-${params.organization}/billing`);
@@ -22,8 +22,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         Query.orderDesc('')
     ]);
 
-    // set `default` or something else,
-    // `undefined` in the url looks really off!
+    // set `default` if no region!
     for (const project of projects.projects) {
         project.region ??= 'default';
     }

@@ -1,8 +1,9 @@
 <script lang="ts">
     import { Drop, Trim } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { SvelteComponent, onMount } from 'svelte';
+    import { type Component, onMount } from 'svelte';
     import { Helper, Label } from '.';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let label: string = null;
     export let files: FileList;
@@ -13,7 +14,7 @@
     export let optionalText: string = null;
     export let tooltip: string = null;
     export let error: string = null;
-    export let popover: typeof SvelteComponent<unknown> = null;
+    export let popover: Component = null;
     export let popoverProps: Record<string, unknown> = {};
 
     let input: HTMLInputElement;
@@ -132,12 +133,11 @@
                     &nbsp;<button
                         type="button"
                         on:click={() => (show = !show)}
-                        class="tooltip"
                         aria-label="input tooltip">
                         <span
                             class="icon-info"
                             aria-hidden="true"
-                            style="font-size: var(--icon-size-small)" />
+                            style="font-size: var(--icon-size-small)"></span>
                     </button>
                     <svelte:fragment slot="list">
                         <div
@@ -165,7 +165,7 @@
         on:dragleave|preventDefault={() => (hovering = false)}>
         <div class="upload-file-box">
             <div class="upload-file-box-image">
-                <span class="icon-upload" aria-hidden="true" />
+                <span class="icon-upload" aria-hidden="true"></span>
             </div>
             <div class="u-min-width-0 u-text-center">
                 <h5 class="upload-file-box-title heading-level-7 u-inline">
@@ -173,13 +173,14 @@
                     <span class="is-not-desktop">Upload a File</span>
                 </h5>
                 {#if allowedFileExtensions?.length}
-                    <button
-                        class="tooltip u-inline u-margin-inline-start-4"
-                        aria-label="variables info">
-                        <span class="icon-info" aria-hidden="true" />
-                        <span class="tooltip-popup" role="tooltip"
-                            >Only {allowedFileExtensions.join(', ')} accepted.</span>
-                    </button>
+                    <Tooltip>
+                        <button
+                            class="u-inline u-margin-inline-start-4"
+                            aria-label="variables info">
+                            <span class="icon-info" aria-hidden="true"></span>
+                        </button>
+                        <p slot="tooltip">Only {allowedFileExtensions.join(', ')} accepted.</p>
+                    </Tooltip>
                 {/if}
             </div>
             <div class="u-flex u-main-center u-cross-center u-gap-16 u-flex-vertical-mobile">
@@ -204,7 +205,7 @@
                         {@const extension = file.name.split('.').pop()}
                         {@const fileSize = humanFileSize(file.size)}
                         <li class="u-flex u-cross-center u-min-width-0">
-                            <span class="icon-document" aria-hidden="true" />
+                            <span class="icon-document" aria-hidden="true"></span>
                             <span class="upload-file-box-name u-trim u-min-width-0">
                                 <Trim>{fileName}</Trim>
                             </span>
@@ -221,7 +222,7 @@
                                 class="button is-text is-only-icon u-margin-inline-start-auto"
                                 aria-label="remove file"
                                 style="--button-size:1.5rem;">
-                                <span class="icon-x" aria-hidden="true" />
+                                <span class="icon-x" aria-hidden="true"></span>
                             </button>
                         </li>
                     {/each}

@@ -1,8 +1,8 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, InputSwitch } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -11,7 +11,7 @@
     import { onMount } from 'svelte';
     import { collection } from '../store';
 
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
 
     let enabled: boolean = null;
 
@@ -22,7 +22,7 @@
     async function toggleCollection() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .databases.updateCollection(
                     databaseId,
                     $collection.$id,
@@ -48,8 +48,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7">{$collection.name}</Heading>
-
+    <svelte:fragment slot="title">{$collection.name}</svelte:fragment>
     <svelte:fragment slot="aside">
         <ul>
             <InputSwitch

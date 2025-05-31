@@ -1,23 +1,24 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
-    import { logout } from '$lib/helpers/logout';
-    import { checkForUsageLimit } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import { user } from '$lib/stores/user';
-    import { isCloud } from '$lib/system';
     import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
+    import { user } from '$lib/stores/user';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Dependencies } from '$lib/constants';
+    import { checkForUsageLimit } from '$lib/stores/billing';
+    import { isCloud } from '$lib/system';
+    import { organization } from '$lib/stores/organization';
+    import { logout } from '$lib/helpers/logout';
+    import Confirm from '$lib/components/confirm.svelte';
 
     const dispatch = createEventDispatcher();
 
     export let showDelete = false;
     export let selectedMember: Models.Membership;
+
+    let error: string;
 
     const deleteMembership = async () => {
         try {
@@ -38,12 +39,9 @@
                 message: `${selectedMember.userName || 'User'} was deleted from ${selectedMember.teamName}`
             });
             trackEvent(Submit.MemberDelete);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.MemberDelete);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.MemberDelete);
         } finally {
             showDelete = false;
         }
@@ -52,22 +50,13 @@
     $: isUser = selectedMember?.userId === $user?.$id;
 </script>
 
-<Modal
-    bind:show={showDelete}
+<Confirm
     onSubmit={deleteMembership}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
-    <svelte:fragment slot="title">
-        {isUser ? 'Leave organization' : 'Delete member'}
-    </svelte:fragment>
-    <p data-private>
-        {isUser
-            ? `Are you sure you want to leave '${selectedMember?.teamName}'?`
-            : `Are you sure you want to delete ${selectedMember?.userName} from '${selectedMember?.teamName}'?`}
-    </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>{isUser ? 'Leave' : 'Delete'}</Button>
-    </svelte:fragment>
-</Modal>
+    title={isUser ? 'Leave organization' : 'Delete member'}
+    bind:open={showDelete}
+    action={isUser ? 'Leave' : 'Delete'}
+    bind:error>
+    {isUser
+        ? `Are you sure you want to leave '${selectedMember?.teamName}'?`
+        : `Are you sure you want to delete ${selectedMember?.userName} from '${selectedMember?.teamName}'?`}
+</Confirm>

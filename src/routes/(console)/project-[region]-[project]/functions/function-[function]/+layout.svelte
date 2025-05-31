@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { realtime } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate, goto } from '$app/navigation';
@@ -10,11 +10,19 @@
     import type { Models } from '@appwrite.io/console';
     import { base } from '$app/paths';
     import { canWriteFunctions } from '$lib/stores/roles';
+    import {
+        IconCalendar,
+        IconClock,
+        IconList,
+        IconPlus,
+        IconSearch,
+        IconXCircle
+    } from '@appwrite.io/pink-icons-svelte';
 
     onMount(() => {
         let previousStatus = null;
         return realtime
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .subscribe<Models.Deployment>('console', (message) => {
                 if (previousStatus === message.payload.status) {
                     return;
@@ -40,16 +48,16 @@
         {
             label: 'Create deployment',
             async callback() {
-                if (!$page.url.pathname.endsWith($func.$id)) {
+                if (!page.url.pathname.endsWith($func.$id)) {
                     await goto(
                         `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}`
                     );
                 }
                 showCreateDeployment.set(true);
             },
-            keys: $page.url.pathname.endsWith($func.$id) ? ['c'] : ['c', 'd'],
+            keys: page.url.pathname.endsWith($func.$id) ? ['c'] : ['c', 'd'],
             group: 'functions',
-            icon: 'plus',
+            icon: IconPlus,
             disabled: !$canWriteFunctions
         },
         {
@@ -60,7 +68,7 @@
                 );
                 scrollBy({ top: -100 });
             },
-            icon: 'search',
+            icon: IconSearch,
             group: 'functions',
             disabled: !$canWriteFunctions
         },
@@ -72,7 +80,7 @@
                 );
                 scrollBy({ top: -100 });
             },
-            icon: 'calendar',
+            icon: IconCalendar,
             group: 'functions',
             disabled: !$canWriteFunctions
         },
@@ -83,7 +91,7 @@
                     `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#variables`
                 );
             },
-            icon: 'list',
+            icon: IconList,
             group: 'functions',
             disabled: !$canWriteFunctions
         },
@@ -94,7 +102,7 @@
                     `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#timeout`
                 );
             },
-            icon: 'x-circle',
+            icon: IconXCircle,
             group: 'functions',
             disabled: !$canWriteFunctions
         },
@@ -106,7 +114,7 @@
                 );
                 scrollBy({ top: -100 });
             },
-            icon: 'clock',
+            icon: IconClock,
             group: 'functions',
             disabled: !$canWriteFunctions
         },
@@ -120,7 +128,7 @@
             keys: ['g', 'd'],
             group: 'navigation',
             rank: 10,
-            disabled: $page.url.pathname.endsWith($func.$id)
+            disabled: page.url.pathname.endsWith($func.$id)
         },
         {
             label: 'Go to usage',
@@ -132,7 +140,7 @@
             keys: ['g', 'u'],
             group: 'navigation',
             rank: 10,
-            disabled: $page.url.pathname.endsWith('usage')
+            disabled: page.url.pathname.endsWith('usage')
         },
         {
             label: 'Go to executions',
@@ -144,7 +152,7 @@
             keys: ['g', 'e'],
             group: 'navigation',
             rank: 10,
-            disabled: $page.url.pathname.endsWith('executions')
+            disabled: page.url.pathname.endsWith('executions')
         },
         {
             label: 'Go to settings',
@@ -156,7 +164,7 @@
             keys: ['g', 's'],
             group: 'navigation',
             rank: 10,
-            disabled: $page.url.pathname.endsWith('settings') || !$canWriteFunctions
+            disabled: page.url.pathname.endsWith('settings') || !$canWriteFunctions
         }
     ]);
 </script>

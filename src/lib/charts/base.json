@@ -1,5 +1,121 @@
 {
-    "backgroundColor": "rgba(255,255,255,0)",
+    "backgroundColor": "var(--bgcolor-neutral-primary)",
+    "categoryAxis": {
+        "axisLine": {
+            "lineStyle": {
+                "color": "var(--fgcolor-neutral-tertiary)"
+            },
+            "show": true
+        },
+        "axisTick": {
+            "lineStyle": {
+                "color": "var(--fgcolor-neutral-tertiary)"
+            },
+            "show": true
+        },
+        "axisLabel": {
+            "color": "var(--fgcolor-neutral-tertiary)",
+            "show": true
+        },
+        "splitLine": {
+            "show": false
+        },
+        "splitArea": {
+            "show": false
+        }
+    },
+    "valueAxis": {
+        "axisLabel": {
+            "color": "var(--fgcolor-neutral-tertiary)",
+            "show": true
+        },
+        "splitLine": {
+            "lineStyle": {
+                "color": ["var(--border-neutral)"]
+            },
+            "show": true
+        },
+        "axisLine": {
+            "show": false
+        },
+        "axisTick": {
+            "show": false
+        },
+        "splitArea": {
+            "show": false
+        }
+    },
+    "logAxis": {
+        "axisLine": {
+            "lineStyle": {
+                "color": "var(--fgcolor-neutral-tertiary)"
+            },
+            "show": true
+        },
+        "axisTick": {
+            "lineStyle": {
+                "color": "var(--fgcolor-neutral-tertiary)"
+            },
+            "show": true
+        },
+        "axisLabel": {
+            "color": "var(--fgcolor-neutral-tertiary)",
+            "show": true
+        },
+        "splitLine": {
+            "lineStyle": {
+                "color": ["var(--border-neutral)"]
+            },
+            "show": true
+        },
+        "splitArea": {
+            "show": false
+        }
+    },
+    "timeAxis": {
+        "axisLine": {
+            "lineStyle": {
+                "color": "var(--fgcolor-neutral-tertiary)"
+            },
+            "show": true
+        },
+        "axisTick": {
+            "lineStyle": {
+                "color": "var(--fgcolor-neutral-tertiary)"
+            },
+            "show": true
+        },
+        "axisLabel": {
+            "color": "var(--fgcolor-neutral-tertiary)",
+            "show": true
+        },
+        "splitLine": {
+            "lineStyle": {
+                "color": ["var(--border-neutral)"]
+            },
+            "show": true
+        },
+        "splitArea": {
+            "show": false
+        }
+    },
+    "tooltip": {
+        "backgroundColor": "var(--bgcolor-neutral-primary)",
+        "borderColor": "var(--border-neutral)",
+        "textStyle": {
+            "color": "var(--fgcolor-neutral-secondary)"
+        },
+        "axisPointer": {
+            "lineStyle": {
+                "color": "var(--border-neutral-strong)",
+                "width": 1
+            },
+            "crossStyle": {
+                "color": "var(--border-neutral-strong)",
+                "width": 1
+            }
+        }
+    },
     "textStyle": {},
     "line": {
         "itemStyle": {
@@ -11,89 +127,6 @@
         "symbolSize": 4,
         "symbol": "emptyCircle",
         "smooth": true
-    },
-    "bar": {
-        "itemStyle": {
-            "barBorderColor": "#ccc"
-        }
-    },
-    "categoryAxis": {
-        "axisLine": {
-            "show": true
-        },
-        "axisTick": {
-            "show": true
-        },
-        "axisLabel": {
-            "show": true
-        },
-        "splitLine": {
-            "show": false
-        },
-        "splitArea": {
-            "show": false
-        }
-    },
-    "valueAxis": {
-        "axisLine": {
-            "show": false
-        },
-        "axisTick": {
-            "show": false
-        },
-        "axisLabel": {
-            "show": true
-        },
-        "splitLine": {
-            "show": true
-        },
-        "splitArea": {
-            "show": false
-        }
-    },
-    "logAxis": {
-        "axisLine": {
-            "show": true
-        },
-        "axisTick": {
-            "show": true
-        },
-        "axisLabel": {
-            "show": true
-        },
-        "splitLine": {
-            "show": true
-        },
-        "splitArea": {
-            "show": false
-        }
-    },
-    "timeAxis": {
-        "axisLine": {
-            "show": true
-        },
-        "axisTick": {
-            "show": true
-        },
-        "axisLabel": {
-            "show": true
-        },
-        "splitLine": {
-            "show": true
-        },
-        "splitArea": {
-            "show": false
-        }
-    },
-    "tooltip": {
-        "axisPointer": {
-            "lineStyle": {
-                "width": 1
-            },
-            "crossStyle": {
-                "width": 1
-            }
-        }
     },
     "timeline": {
         "lineStyle": {

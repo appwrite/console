@@ -2,7 +2,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import { organizationList } from '$lib/stores/organization';
     import { project } from '../store';
     import { Container } from '$lib/layout';
     import { invalidate } from '$app/navigation';
@@ -10,19 +9,16 @@
     import UpdateName from './updateName.svelte';
     import UpdateServices from './updateServices.svelte';
     import UpdateInstallations from './updateInstallations.svelte';
-    import UpdateVariables from '../updateVariables.svelte';
     import DeleteProject from './deleteProject.svelte';
-    import { CardGrid, Heading } from '$lib/components';
-    import { Button, FormList, InputSelect } from '$lib/elements/forms';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-    import { page } from '$app/stores';
     import { canWriteProjects } from '$lib/stores/roles';
-    import Transfer from './transferProject.svelte';
+    import ChangeOrganization from './changeOrganization.svelte';
+    import UpdateVariables from '../updateVariables.svelte';
+    import { page } from '$app/state';
 
     export let data;
 
     let teamId: string = null;
-    let showTransfer = false;
 
     onMount(() => {
         teamId ??= $project.teamId;
@@ -59,23 +55,28 @@
         }
     });
 
-    async function sdkCreateVariable(key: string, value: string) {
+    async function sdkCreateVariable(key: string, value: string, secret: boolean) {
         await sdk
-            .forProject($page.params.region, $page.params.project)
-            .projectApi.createVariable(key, value);
+            .forProject(page.params.region, page.params.project)
+            .projectApi.createVariable(key, value, secret);
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
 
-    async function sdkUpdateVariable(variableId: string, key: string, value: string) {
+    async function sdkUpdateVariable(
+        variableId: string,
+        key: string,
+        value: string,
+        secret: boolean
+    ) {
         await sdk
-            .forProject($page.params.region, $page.params.project)
-            .projectApi.updateVariable(variableId, key, value);
+            .forProject(page.params.region, page.params.project)
+            .projectApi.updateVariable(variableId, key, value, secret);
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
 
     async function sdkDeleteVariable(variableId: string) {
         await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .projectApi.deleteVariable(variableId);
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
@@ -92,39 +93,10 @@
                 {sdkUpdateVariable}
                 {sdkDeleteVariable}
                 isGlobal={true}
-                variableList={data.variables} />
-            <CardGrid>
-                <Heading tag="h6" size="7">Transfer project</Heading>
-                <p class="text">Transfer your project to another organization that you own.</p>
-
-                <svelte:fragment slot="aside">
-                    <FormList>
-                        <InputSelect
-                            id="organization"
-                            label="Available organizations"
-                            bind:value={teamId}
-                            options={$organizationList.teams.map((team) => ({
-                                value: team.$id,
-                                label: team.name
-                            }))} />
-                    </FormList>
-                </svelte:fragment>
-
-                <svelte:fragment slot="actions">
-                    <Button
-                        secondary
-                        disabled={teamId === $project.teamId}
-                        on:click={() => (showTransfer = true)}>Transfer</Button>
-                </svelte:fragment>
-            </CardGrid>
+                variableList={data.variables}
+                analyticsSource="project_settings" />
+            <ChangeOrganization />
             <DeleteProject />
         {/if}
     {/if}
 </Container>
-
-{#if teamId}
-    <Transfer
-        bind:teamId
-        teamName={$organizationList.teams.find((t) => t.$id === teamId).name}
-        bind:show={showTransfer} />
-{/if}

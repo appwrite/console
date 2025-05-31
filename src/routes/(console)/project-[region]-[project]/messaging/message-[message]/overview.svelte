@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import ProviderType from '../providerType.svelte';
     import MessageStatusPill from '../messageStatusPill.svelte';
@@ -9,6 +9,8 @@
     import SendModal from './sendModal.svelte';
     import ScheduleModal from './scheduleModal.svelte';
     import CancelModal from './cancelModal.svelte';
+    import { Typography } from '@appwrite.io/pink-svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { onDestroy, onMount } from 'svelte';
     import { stopPolling, pollMessagesStatus } from '../helper';
 
@@ -31,13 +33,9 @@
 </script>
 
 <CardGrid hideFooter={['processing', 'sent'].includes(message.status)}>
-    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16" data-private>
-        <ProviderType type={message.providerType} size="l">
-            <Heading tag="h6" size="7">
-                <ProviderType type={message.providerType} noIcon />
-            </Heading>
-        </ProviderType>
-    </div>
+    <ProviderType type={message.providerType} size="s" let:text>
+        <Typography.Title size="s">{text}</Typography.Title>
+    </ProviderType>
     <svelte:fragment slot="aside">
         <div class="u-flex u-main-space-between">
             <div data-private>
@@ -58,7 +56,12 @@
     <svelte:fragment slot="actions">
         {#if message.status === 'draft'}
             <div class="u-flex u-gap-16">
-                <Button text on:click={() => (showSchedule = true)}>Schedule</Button>
+                <Button
+                    text
+                    on:click={() => {
+                        showSchedule = true;
+                        trackEvent(Click.MessagingScheduleClick);
+                    }}>Schedule</Button>
                 <Button secondary on:click={() => (showSend = true)}>Send message</Button>
             </div>
         {:else if message.status === 'scheduled'}

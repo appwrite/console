@@ -1,149 +1,82 @@
 {
-    "backgroundColor": "rgba(255,255,255,0)",
-    "title": {
-        "textStyle": {
-            "color": "#373b4d"
-        },
-        "subtextStyle": {
-            "color": "#616b7c"
-        }
-    },
-    "bar": {
-        "itemStyle": {
-            "barBorderColor": "#ccc"
-        }
-    },
+    "backgroundColor": "var(--bgcolor-neutral-primary)",
     "categoryAxis": {
         "axisLine": {
             "lineStyle": {
-                "color": "#6E7079"
+                "color": "var(--fgcolor-neutral-tertiary)"
             }
         },
         "axisTick": {
             "lineStyle": {
-                "color": "#6E7079"
+                "color": "var(--fgcolor-neutral-tertiary)"
             }
         },
         "axisLabel": {
-            "color": "#6E7079"
+            "color": "var(--fgcolor-neutral-tertiary)"
         }
     },
     "valueAxis": {
         "axisLabel": {
-            "color": "#6E7079"
+            "color": "var(--fgcolor-neutral-tertiary)"
         },
         "splitLine": {
             "lineStyle": {
-                "color": ["#E8E9F0"]
+                "color": ["var(--border-neutral)"]
             }
         }
     },
     "logAxis": {
         "axisLine": {
             "lineStyle": {
-                "color": "#6E7079"
+                "color": "var(--fgcolor-neutral-tertiary)"
             }
         },
         "axisTick": {
             "lineStyle": {
-                "color": "#6E7079"
+                "color": "var(--fgcolor-neutral-tertiary)"
             }
         },
         "axisLabel": {
-            "color": "#6E7079"
+            "color": "var(--fgcolor-neutral-tertiary)"
         },
         "splitLine": {
             "lineStyle": {
-                "color": ["#E0E6F1"]
+                "color": ["var(--border-neutral)"]
             }
         }
     },
     "timeAxis": {
         "axisLine": {
             "lineStyle": {
-                "color": "#6E7079"
+                "color": "var(--fgcolor-neutral-tertiary)"
             }
         },
         "axisTick": {
             "lineStyle": {
-                "color": "#6E7079"
+                "color": "var(--fgcolor-neutral-tertiary)"
             }
         },
         "axisLabel": {
-            "color": "#6E7079"
+            "color": "var(--fgcolor-neutral-tertiary)"
         },
         "splitLine": {
             "lineStyle": {
-                "color": ["#E0E6F1"]
+                "color": ["var(--border-neutral)"]
             }
-        }
-    },
-    "toolbox": {
-        "iconStyle": {
-            "borderColor": "#999"
-        },
-        "emphasis": {
-            "iconStyle": {
-                "borderColor": "#666"
-            }
-        }
-    },
-    "legend": {
-        "textStyle": {
-            "color": "#333"
         }
     },
     "tooltip": {
+        "backgroundColor": "var(--bgcolor-neutral-primary)",
+        "borderColor": "var(--border-neutral)",
+        "textStyle": {
+            "color": "var(--fgcolor-neutral-secondary)"
+        },
         "axisPointer": {
             "lineStyle": {
-                "color": "#ccc"
+                "color": "var(--border-neutral-strong)"
             },
             "crossStyle": {
-                "color": "#ccc"
-            }
-        }
-    },
-    "timeline": {
-        "lineStyle": {
-            "color": "#DAE1F5"
-        },
-        "itemStyle": {
-            "color": "#A4B1D7"
-        },
-        "controlStyle": {
-            "color": "#A4B1D7",
-            "borderColor": "#A4B1D7"
-        },
-        "checkpointStyle": {
-            "color": "#316bf3",
-            "borderColor": "#fff"
-        },
-        "label": {
-            "color": "#A4B1D7"
-        },
-        "emphasis": {
-            "itemStyle": {
-                "color": "#FFF"
-            },
-            "controlStyle": {
-                "color": "#A4B1D7",
-                "borderColor": "#A4B1D7"
-            },
-            "label": {
-                "color": "#A4B1D7"
-            }
-        }
-    },
-    "visualMap": {
-        "color": ["#bf444c", "#d88273", "#f6efa6"]
-    },
-    "markPoint": {
-        "label": {
-            "color": "#eee"
-        },
-        "emphasis": {
-            "label": {
-                "color": "#eee"
+                "color": "var(--border-neutral-strong)"
             }
         }
     }

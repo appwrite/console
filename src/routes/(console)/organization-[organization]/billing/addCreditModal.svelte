@@ -3,7 +3,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -36,20 +36,21 @@
     }
 </script>
 
-<Modal bind:show title="Add credits" headerDivider={false} onSubmit={redeem} size="big" bind:error>
-    Apply Appwrite credits to your organization.
+<Modal bind:show title="Add credits" onSubmit={redeem} bind:error>
+    <svelte:fragment slot="description">
+        Apply Appwrite credits to your organization.
+    </svelte:fragment>
 
-    <FormList>
-        <InputText
-            placeholder="Promo code"
-            id="code"
-            autofocus
-            label="Add promo code"
-            bind:value={coupon} />
-    </FormList>
+    <InputText
+        required
+        placeholder="Promo code"
+        id="code"
+        autofocus
+        label="Add promo code"
+        bind:value={coupon} />
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Add credits</Button>
+        <Button disabled={coupon === ''} submit>Add credits</Button>
     </svelte:fragment>
 </Modal>

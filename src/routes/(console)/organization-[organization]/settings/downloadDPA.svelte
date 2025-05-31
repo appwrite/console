@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Box, CardGrid, Heading } from '$lib/components';
+    import { Box, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
     import { sdk } from '$lib/stores/sdk';
@@ -15,16 +15,10 @@
 </script>
 
 <CardGrid>
-    <div>
-        <Heading tag="h6" size="7">DPA</Heading>
-    </div>
-    <p class="text">
-        After downloading, have the DPA signed by your organization's compliance authority, such as
-        your CEO or Compliance Manager, and submit it to <a
-            class="link"
-            href="mailto:privacy@appwrite.io">privacy@appwrite.io</a
-        >.
-    </p>
+    <svelte:fragment slot="title">DPA</svelte:fragment>
+    After downloading, have the DPA signed by your organization's compliance authority, such as your
+    CEO or Compliance Manager, and submit it to
+    <a class="link" href="mailto:privacy@appwrite.io">privacy@appwrite.io</a>.
     <svelte:fragment slot="aside">
         <Box>
             <h6>
@@ -46,7 +40,7 @@
                 on:click={downloadPdf}
                 href="{base}/legal/dpa.pdf"
                 event="download_dpa">
-                <span class="icon-download" aria-hidden="true" />
+                <span class="icon-download" aria-hidden="true"></span>
                 <span class="text">Download</span>
             </Button>
         </Box>

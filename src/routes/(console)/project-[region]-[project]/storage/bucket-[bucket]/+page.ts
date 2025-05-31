@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
     depends(Dependencies.FILES);
     const page = getPage(url);
     const search = getSearch(url);
-    const limit = getLimit(params.project, url, route, PAGE_LIMIT);
+    const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
 
     const files = await sdk

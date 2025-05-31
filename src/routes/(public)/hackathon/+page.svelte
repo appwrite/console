@@ -5,8 +5,8 @@
     import HashnodeDark from './hashnode-dark.svg';
     import HashnodeLight from './hashnode-light.svg';
     import Badge from './hackathon-badge.svg';
-    import { tooltip } from '$lib/actions/tooltip';
     import { base } from '$app/paths';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 </script>
 
 <svelte:head>
@@ -48,7 +48,7 @@
             </Button>
         </div>
         <div class="ht-logos">
-            <div class="u-only-light buttons-list" />
+            <div class="u-only-light buttons-list"></div>
             <ul class="inline-links">
                 <li class="inline-links-item" style="padding-inline-start: 0;">
                     <div class="u-only-light">
@@ -71,14 +71,10 @@
     </section>
     <section class="ht-img">
         <div class="card ht-card ht-card-main u-flex u-cross-center u-main-center">
-            <img
-                height="200"
-                width="200"
-                src={Badge}
-                alt="hackathon-badge"
-                use:tooltip={{
-                    content: 'Join the hackathon to unlock this badge'
-                }} />
+            <Tooltip>
+                <img height="200" width="200" src={Badge} alt="hackathon-badge" />
+                <span slot="tooltip">Join the hackathon to unlock this badge</span>
+            </Tooltip>
         </div>
         <div class="card ht-card u-flex u-flex-vertical">
             <div class="ht-tag ht-tag-primary u-cross-child-center">

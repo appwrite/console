@@ -11,7 +11,7 @@ export const load: PageLoad = async ({ params }) => {
             : FunctionUsageRange.ThirtyDays;
         return sdk
             .forProject(params.region, params.project)
-            .functions.getFunctionUsage(params.function, period);
+            .functions.getUsage(params.function, period);
     } catch (e) {
         error(e.code, e.message);
     }

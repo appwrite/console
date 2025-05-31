@@ -1,30 +1,37 @@
 <script lang="ts">
-    import { Empty, PaginationWithLimit } from '$lib/components';
+    import { Empty, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container, GridHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import { columns, showCreate } from './store';
     import Table from './table.svelte';
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
     import { canWriteCollections } from '$lib/stores/roles';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 </script>
 
 <Container>
-    <GridHeader
-        title="Collections"
-        {columns}
-        view={data.view}
-        hideColumns={!data.collections.total}
-        hideView={!data.collections.total}>
-        {#if $canWriteCollections}
-            <Button on:click={() => ($showCreate = true)} event="create_collection">
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create collection</span>
-            </Button>
-        {/if}
-    </GridHeader>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery placeholder="Search by name or ID" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <ViewSelector
+                {columns}
+                view={data.view}
+                hideColumns={!data.collections.total}
+                hideView={!data.collections.total} />
+            {#if $canWriteCollections}
+                <Button on:click={() => ($showCreate = true)} event="create_collection">
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create collection
+                </Button>
+            {/if}
+        </Layout.Stack>
+    </Layout.Stack>
 
     {#if data.collections.total}
         {#if data.view === 'grid'}

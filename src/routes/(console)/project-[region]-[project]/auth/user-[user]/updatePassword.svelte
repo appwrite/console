@@ -1,18 +1,18 @@
 <script lang="ts">
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Button, Form, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     let newPassword: string = null;
 
     async function updatePassword() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .users.updatePassword($user.$id, newPassword);
             newPassword = null;
             addNotification({
@@ -32,22 +32,15 @@
 
 <Form onSubmit={updatePassword}>
     <CardGrid>
-        <div>
-            <Heading tag="h6" size="7">Password</Heading>
-        </div>
-
-        <p>Enter a new password. A password must contain at least 8 characters.</p>
+        <svelte:fragment slot="title">Password</svelte:fragment>
+        A password must contain at least 8 characters.
         <svelte:fragment slot="aside">
-            <ul>
-                <InputPassword
-                    id="newPassword"
-                    label="New Password"
-                    placeholder="Enter new password"
-                    autocomplete={false}
-                    meter={false}
-                    showPasswordButton={true}
-                    bind:value={newPassword} />
-            </ul>
+            <InputPassword
+                id="newPassword"
+                label="New password"
+                placeholder="Enter new password"
+                autocomplete={false}
+                bind:value={newPassword} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

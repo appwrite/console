@@ -1,14 +1,13 @@
 import { goto } from '$app/navigation';
-import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
 import { base } from '$app/paths';
-import { page } from '$app/stores';
+import { IconDatabase } from '@appwrite.io/pink-icons-svelte';
+import { page } from '$app/state';
 
 export const dbSearcher = (async (query: string) => {
-    const $page = get(page);
     const { databases } = await sdk
-        .forProject($page.params.region, $page.params.project)
+        .forProject(page.params.region, page.params.project)
         .databases.list();
 
     return databases
@@ -20,10 +19,10 @@ export const dbSearcher = (async (query: string) => {
                     label: db.name,
                     callback: () => {
                         goto(
-                            `${base}/project-${$page.params.region}-${$page.params.project}/databases/database-${db.$id}`
+                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${db.$id}`
                         );
                     },
-                    icon: 'database'
+                    icon: IconDatabase
                 }) as const
         );
 }) satisfies Searcher;

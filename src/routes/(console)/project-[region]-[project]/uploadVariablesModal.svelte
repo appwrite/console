@@ -1,22 +1,37 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import Alert from '$lib/components/alert.svelte';
-    import { Button, InputFile } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
-    import { parse } from 'envfile';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import {
+        Alert,
+        Icon,
+        InlineCode,
+        Layout,
+        Selector,
+        Tooltip,
+        Typography,
+        Upload
+    } from '@appwrite.io/pink-svelte';
+    import { parse } from '$lib/helpers/envfile';
 
-    export let isGlobal: boolean;
     export let show = false;
     export let variableList: Models.VariableList;
-    export let sdkCreateVariable: (key: string, value: string) => Promise<unknown>;
+    export let sdkCreateVariable: (
+        key: string,
+        value: string,
+        secret?: boolean
+    ) => Promise<unknown>;
     export let sdkUpdateVariable: (
         variableId: string,
         key: string,
-        value: string
+        value: string,
+        secret?: boolean
     ) => Promise<unknown>;
 
     let files: FileList;
+    let secret = false;
     let error: string;
 
     async function handleSubmit() {
@@ -47,8 +62,8 @@
                             (variable) => variable.key === key
                         );
                         return found
-                            ? sdkUpdateVariable(found.$id, key, value)
-                            : sdkCreateVariable(key, value);
+                            ? sdkUpdateVariable(found.$id, key, value, secret)
+                            : sdkCreateVariable(key, value, secret);
                     })
             );
 
@@ -64,29 +79,42 @@
     }
 </script>
 
-<Modal headerDivider={false} bind:show onSubmit={handleSubmit} bind:error>
-    <svelte:fragment slot="title">
-        Import new {isGlobal ? 'global' : 'environment'} variables
-    </svelte:fragment>
-    <div class="u-flex u-flex-vertical u-gap-24 u-margin-block-start-8">
-        <p>
-            Import new {isGlobal ? 'global' : 'environment'} variables from
-            <span class="inline-code">.env</span>
-            file that will be passed to {isGlobal
-                ? 'all functions within your project'
-                : 'your function'}.
-        </p>
+<Modal title="Import variables" bind:show bind:error onSubmit={handleSubmit}>
+    <span slot="description">
+        Import new environment variables from <InlineCode code=".env" size="s" /> file.
+    </span>
 
-        {#if variableList.total > 0}
-            <Alert type="info">
-                Existing {isGlobal ? 'global' : 'environment'} variables will be updated. They will not
-                be deleted if they are not present in your .env file.
-            </Alert>
-        {/if}
-    </div>
+    <Upload.Dropzone bind:files>
+        <Layout.Stack alignItems="center" gap="s">
+            <Layout.Stack alignItems="center" gap="s">
+                <Layout.Stack alignItems="center" justifyContent="center" direction="row" gap="s">
+                    <Typography.Text variant="l-500">
+                        Drag and drop files here or click to upload
+                    </Typography.Text>
+                    <Tooltip>
+                        <Layout.Stack alignItems="center" justifyContent="center" inline>
+                            <Icon icon={IconInfo} size="s" />
+                        </Layout.Stack>
+                        <svelte:fragment slot="tooltip">Only .env files allowed</svelte:fragment>
+                    </Tooltip>
+                </Layout.Stack>
+                <Typography.Caption variant="400">Up to 100 variables allowed</Typography.Caption>
+            </Layout.Stack>
+        </Layout.Stack>
+    </Upload.Dropzone>
 
-    <InputFile bind:files />
+    {#if variableList.total > 0}
+        <Alert.Inline>
+            This action can create and update variables but can not delete them.
+        </Alert.Inline>
+    {/if}
 
+    <Selector.Checkbox
+        size="s"
+        id="secret"
+        label="Secret"
+        bind:checked={secret}
+        description="If selected, you and your team won't be able to read the values after creation." />
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
         <Button submit disabled={!files?.length}>Import</Button>

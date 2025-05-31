@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Tab, Tabs } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { isTabSelected } from '$lib/helpers/load';
@@ -41,7 +41,7 @@
               ...permanentTabs,
               {
                   href: `${path}/payments`,
-                  title: 'Payment details',
+                  title: 'Payments',
                   event: 'payments',
                   hasChildren: true
               }
@@ -55,14 +55,14 @@
             {$user.name || $user.email}
         </CoverTitle>
         <div class="u-margin-inline-start-auto">
-            <Button secondary on:click={logout}>Logout</Button>
+            <Button secondary on:click={() => logout()}>Logout</Button>
         </div>
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}
             <Tab
                 href={tab.href}
-                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                selected={isTabSelected(tab, page.url.pathname, path, tabs)}
                 event={tab.event}>
                 {tab.title}
             </Tab>

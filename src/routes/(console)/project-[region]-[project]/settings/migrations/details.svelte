@@ -1,12 +1,24 @@
 <script lang="ts">
-    import { Alert, Code, Modal, Tab } from '$lib/components';
-    import Tabs from '$lib/components/tabs.svelte';
     import { total } from '$lib/helpers/array';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { parseIfString } from '$lib/helpers/object';
+    import { Modal, Tab } from '$lib/components';
+    import Tabs from '$lib/components/tabs.svelte';
     import { formatNum } from '$lib/helpers/string';
     import type { Models } from '@appwrite.io/console';
+    import { parseIfString } from '$lib/helpers/object';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { ResourcesFriendly } from '$lib/stores/migration';
+    import { IconCheck, IconClock, IconExclamation } from '@appwrite.io/pink-icons-svelte';
+    import {
+        Alert,
+        Card,
+        Layout,
+        Typography,
+        Code,
+        Spinner,
+        Tag,
+        Icon
+    } from '@appwrite.io/pink-svelte';
+    import { Button } from '$lib/elements/forms';
 
     export let migration: Models.Migration = null;
     export let show = false;
@@ -43,119 +55,97 @@
     };
 
     let tab = 'details' as 'details' | 'logs';
+    let logs = JSON.stringify(migration, null, 2);
 </script>
 
-<Modal bind:show size="big">
-    <svelte:fragment slot="title">
-        {#if migration.status === 'failed'}
-            Resolve migration issues
-        {:else}
-            Migration details
-        {/if}
-    </svelte:fragment>
-    <Tabs>
-        <Tab selected={tab === 'details'} on:click={() => (tab = 'details')}>Details</Tab>
-        <Tab selected={tab === 'logs'} on:click={() => (tab = 'logs')}>Logs</Tab>
+<Modal
+    bind:show
+    title={migration.status === 'failed' ? 'Resolve migration issues' : 'Migration details'}
+    hideFooter>
+    <Tabs stretch let:root>
+        <Tab {root} selected={tab === 'details'} on:click={() => (tab = 'details')}>Details</Tab>
+        <Tab {root} selected={tab === 'logs'} on:click={() => (tab = 'logs')}>Logs</Tab>
     </Tabs>
 
     {#if tab === 'logs'}
-        <Code code={JSON.stringify(migration, null, 2)} language="json" allowScroll />
+        <Code code={logs} lang="json" hideHeader />
     {:else if tab === 'details'}
-        <div class="box meta">
-            <span>Date</span>
-            <span>{toLocaleDateTime(migration.$createdAt)}</span>
-            <span>Source</span>
-            <span>{migration.source}</span>
-        </div>
+        <Card.Base variant="secondary" padding="s">
+            <Layout.Stack>
+                <Layout.Stack direction="row">
+                    <span style:flex-basis="50%">
+                        <Typography.Text variant="m-600">Date</Typography.Text>
+                    </span>
+                    <span>{toLocaleDateTime(migration.$createdAt)}</span>
+                </Layout.Stack>
+                <Layout.Stack direction="row">
+                    <span style:flex-basis="50%">
+                        <Typography.Text variant="m-600">Source</Typography.Text>
+                    </span>
+                    <span>{migration.source}</span>
+                </Layout.Stack>
+            </Layout.Stack>
+        </Card.Base>
 
         {#if Object.values(statusCounters).some(hasError)}
-            <Alert
-                type="error"
-                buttons={[
-                    {
-                        slot: 'View logs',
-                        onClick() {
-                            tab = 'logs';
-                        }
-                    }
-                ]}>
+            <Alert.Inline status="error">
                 There was an error migrating some of the project's entities.
-            </Alert>
+                <Button slot="actions" extraCompact on:click={() => (tab = 'logs')}
+                    >View logs</Button>
+            </Alert.Inline>
         {/if}
 
         {#if Object.keys(statusCounters).length}
-            <div class="box">
-                {#each Object.keys(statusCounters) as entity}
-                    {@const entityCounter = statusCounters[entity]}
-                    <div class="u-flex u-cross-center u-gap-16">
-                        <div class="icon-wrapper">
-                            {#if hasError(entityCounter)}
-                                <i class="icon-exclamation" />
-                            {:else if isLoading(entityCounter)}
-                                <div class="u-flex">
-                                    <span class="loader" />
-                                </div>
-                            {:else if hasSucceeded(entityCounter)}
-                                <i class="icon-check" />
-                            {:else}
-                                <i class="icon-clock" />
-                            {/if}
-                        </div>
+            <Card.Base padding="s" variant="secondary">
+                <Layout.Stack gap="l">
+                    {#each Object.keys(statusCounters) as entity}
+                        {@const entityCounter = statusCounters[entity]}
+                        <Layout.Stack
+                            direction="row"
+                            gap="l"
+                            alignItems="center"
+                            alignContent="center">
+                            <div class="icon-wrapper">
+                                {#if hasError(entityCounter)}
+                                    <Icon icon={IconExclamation} color="--bgcolor-warning" />
+                                {:else if isLoading(entityCounter)}
+                                    <Spinner size="s" />
+                                {:else if hasSucceeded(entityCounter)}
+                                    <Icon icon={IconCheck} />
+                                {:else}
+                                    <Icon icon={IconClock} />
+                                {/if}
+                            </div>
 
-                        <div>
-                            <span class="u-capitalize"
-                                >{total(Object.values(entityCounter)) > 1
-                                    ? ResourcesFriendly[entity].plural
-                                    : ResourcesFriendly[entity].singular}</span>
-                            <span class="inline-tag">{totalItems(entityCounter)}</span>
-                        </div>
-                    </div>
-                {/each}
-            </div>
+                            <div>
+                                <span class="u-capitalize"
+                                    >{total(Object.values(entityCounter)) > 1
+                                        ? ResourcesFriendly[entity].plural
+                                        : ResourcesFriendly[entity].singular}</span>
+
+                                <Tag size="xs" selected>{totalItems(entityCounter)}</Tag>
+                            </div>
+                        </Layout.Stack>
+                    {/each}
+                </Layout.Stack>
+            </Card.Base>
         {/if}
     {/if}
 </Modal>
 
 <style lang="scss">
-    .box {
-        padding: 0;
-
-        > div {
-            padding: 1.25rem;
-
-            &:not(:last-child) {
-                border-bottom: 1px solid hsl(var(--color-border));
-            }
-        }
-    }
-
-    .meta {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.5rem;
-        padding: 1.5rem;
-
-        :nth-child(2n) {
-            font-weight: 600;
-        }
-    }
-
     .icon-wrapper {
         position: relative;
 
         width: 1.5rem;
         height: 1.5rem;
 
-        > * {
-            position: absolute;
+        > :global(*) {
             top: 50%;
             left: 50%;
+            position: absolute;
 
             transform: translate(-50%, -50%);
         }
-    }
-
-    .icon-exclamation {
-        color: hsl(var(--color-danger-100));
     }
 </style>

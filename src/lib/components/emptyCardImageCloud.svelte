@@ -1,30 +1,26 @@
 <script>
     import { getNextTier, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import Card from './card.svelte';
+    import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let source = 'empty_state_card';
-    export let noAspectRatio = false;
 </script>
 
-<Card style="--card-padding:1.5rem; --card-padding-mobile: 2rem">
-    <div class="u-flex u-gap-24 u-flex-vertical-mobile">
+<Card.Base variant="secondary" padding="s" radius="s">
+    <Layout.Stack direction="row" gap="l">
         {#if $$slots?.image}
-            <div class="u-stretch">
-                <div
-                    style:--p-file-preview-border-color="transparent"
-                    class="file-preview is-full-cover-image u-width-full-line u-height-100-percent"
-                    style={noAspectRatio ? 'aspect-ratio: auto' : ''}>
-                    <slot name="image" />
-                </div>
+            <div style="flex-shrink:0">
+                <slot name="image" />
             </div>
         {/if}
-        <div class="u-stretch u-flex-vertical u-main-center">
-            <h3 class="body-text-2 u-bold"><slot name="title" /></h3>
-            <p class="u-margin-block-start-8">
-                <slot nextTier={tierToPlan(getNextTier($organization.billingPlan)).name} />
-            </p>
+        <Layout.Stack justifyContent="center">
+            <Layout.Stack gap="xxs">
+                <Typography.Text variant="m-600"><slot name="title" /></Typography.Text>
+                <Typography.Text>
+                    <slot nextTier={tierToPlan(getNextTier($organization.billingPlan)).name} />
+                </Typography.Text>
+            </Layout.Stack>
             <slot name="cta" {source} />
-        </div>
-    </div>
-</Card>
+        </Layout.Stack>
+    </Layout.Stack>
+</Card.Base>

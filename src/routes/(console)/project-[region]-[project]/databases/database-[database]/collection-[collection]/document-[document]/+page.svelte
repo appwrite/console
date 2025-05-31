@@ -1,25 +1,25 @@
 <script lang="ts">
+    import { Container } from '$lib/layout';
+    import { symmetricDifference } from '$lib/helpers/array';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
-    import { CardGrid, Heading } from '$lib/components';
-    import { page } from '$app/stores';
+    import { CardGrid } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
     import type { Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { doc } from './store';
     import { collection, type Attributes } from '../store';
-    import { Container } from '$lib/layout';
     import AttributeItem from './attributeItem.svelte';
-    import { symmetricDifference } from '$lib/helpers/array';
     import { isRelationship, isRelationshipToMany } from './attributes/store';
     import { deepClone } from '$lib/helpers/object';
 
-    const databaseId = $page.params.database;
-    const collectionId = $page.params.collection;
-    const documentId = $page.params.document;
+    const databaseId = page.params.database;
+    const collectionId = page.params.collection;
+    const documentId = page.params.document;
     const editing = true;
 
     function initWork() {
@@ -49,7 +49,7 @@
     async function updateData() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .databases.updateDocument(
                     databaseId,
                     collectionId,
@@ -121,7 +121,8 @@
         {#each $collection.attributes as attribute}
             {@const label = attribute.key}
             <CardGrid>
-                <Heading tag="h6" size="7">{label}</Heading>
+                <svelte:fragment slot="title">{label}</svelte:fragment>
+
                 <svelte:fragment slot="aside">
                     <AttributeItem {attribute} bind:formValues={$work} {label} {editing} />
                 </svelte:fragment>

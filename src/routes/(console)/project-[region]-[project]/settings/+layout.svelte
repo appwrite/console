@@ -1,16 +1,20 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/state';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { canWriteProjects } from '$lib/stores/roles';
-    import { openWebhooksWizard } from './webhooks/+page.svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     $: $registerCommands([
         {
             label: 'Create webhook',
-            icon: 'plus',
-            keys: $page.url.pathname.includes('webhooks') ? ['c'] : ['c', 'w'],
+            icon: IconPlus,
+            keys: page.url.pathname.includes('webhooks') ? ['c'] : ['c', 'w'],
             callback: () => {
-                openWebhooksWizard();
+                goto(
+                    `${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/create`
+                );
             },
             group: 'webhooks',
             disabled: !$canWriteProjects

@@ -1,8 +1,10 @@
 <script lang="ts">
-    import { Button, FormList } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { capitalize } from '$lib/helpers/string';
-    import type { Attributes } from '../store';
+    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import Attribute from './attribute.svelte';
+    import type { Attributes } from '../store';
 
     export let attribute: Attributes;
     export let formValues: object = {};
@@ -45,55 +47,47 @@
 
 {#if attribute.array}
     {#if formValues[attribute.key]?.length === 0}
-        <div class="u-flex u-cross-center u-main-space-between">
-            <span class="label u-margin-0">
-                {label}
-                <span class="optional u-margin-inline-start-8">
+        <Layout.Stack direction="row" alignContent="space-between">
+            <Layout.Stack gap="xxs" direction="row" alignItems="center">
+                <Typography.Text variant="m-500">{label}</Typography.Text>
+                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                     {getAttributeType(attribute)}
-                </span>
-            </span>
-            <Button text noMargin on:click={() => addArrayItem(attribute.key)}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add item</span>
+                </Typography.Text>
+            </Layout.Stack>
+            <Button secondary on:click={() => addArrayItem(attribute.key)}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add item
             </Button>
-        </div>
+        </Layout.Stack>
     {:else}
-        <ul class="u-grid u-gap-4">
+        <Layout.Stack>
             {#each [...formValues[attribute.key].keys()] as index}
-                <li class="form-item is-multiple u-gap-8">
-                    <div class="form-item-part u-stretch">
-                        <Attribute
-                            {attribute}
-                            id={`${attribute.key}-${index}`}
-                            optionalText={index === 0 ? getAttributeType(attribute) : undefined}
-                            label={index === 0 ? label : ''}
-                            bind:value={formValues[attribute.key][index]} />
-                    </div>
-                    <div class="form-item-part u-cross-child-end">
-                        <Button
-                            noMargin
-                            text
-                            round
-                            on:click={() => removeArrayItem(attribute.key, index)}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </Button>
-                    </div>
-                </li>
+                <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
+                    <Attribute
+                        {attribute}
+                        id={`${attribute.key}-${index}`}
+                        optionalText={index === 0 ? getAttributeType(attribute) : undefined}
+                        label={index === 0 ? label : ''}
+                        bind:value={formValues[attribute.key][index]} />
+                    <Button text icon on:click={() => removeArrayItem(attribute.key, index)}>
+                        <span class="icon-x" aria-hidden="true"></span>
+                    </Button>
+                </Layout.Stack>
             {/each}
-            <Button text noMargin on:click={() => addArrayItem(attribute.key)}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text"> Add item</span>
-            </Button>
-        </ul>
+            <div>
+                <Button secondary on:click={() => addArrayItem(attribute.key)}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add item
+                </Button>
+            </div>
+        </Layout.Stack>
     {/if}
 {:else}
-    <FormList>
-        <Attribute
-            {editing}
-            {attribute}
-            {label}
-            optionalText={getAttributeType(attribute)}
-            id={attribute.key}
-            bind:value={formValues[attribute.key]} />
-    </FormList>
+    <Attribute
+        {editing}
+        {attribute}
+        {label}
+        optionalText={getAttributeType(attribute)}
+        id={attribute.key}
+        bind:value={formValues[attribute.key]} />
 {/if}

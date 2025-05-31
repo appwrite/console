@@ -1,16 +1,14 @@
 <script lang="ts">
+    import { ActionMenu, Layout } from '@appwrite.io/pink-svelte';
+    import InputCheckbox from './forms/inputCheckbox.svelte';
+
     export let value = false;
-    export let padding: number | null = null;
 </script>
 
-<li class="drop-list-item">
-    <button
-        class="drop-button u-flex u-cross-center u-gap-12"
-        style:--button-padding-horizontal={padding ? `${padding / 16}rem` : ''}
-        style:--button-padding-vertical={padding ? `${padding / 16}rem` : ''}
-        on:click|preventDefault
-        type="button">
-        <input type="checkbox" class="is-small" bind:checked={value} />
+<ActionMenu.Item.Button on:click>
+    <Layout.Stack direction="row" gap="xs" alignItems="center">
+        <InputCheckbox bind:checked={value} id="filter" size="s" />
+
         <slot />
-    </button>
-</li>
+    </Layout.Stack>
+</ActionMenu.Item.Button>

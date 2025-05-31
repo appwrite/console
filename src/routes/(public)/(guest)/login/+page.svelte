@@ -1,24 +1,18 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import {
-        Button,
-        Form,
-        FormItem,
-        FormList,
-        InputEmail,
-        InputPassword
-    } from '$lib/elements/forms';
+    import { Button, Form, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { OAuthProvider } from '@appwrite.io/console';
     import { redirectTo } from '$routes/store';
     import { user } from '$lib/stores/user';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     let mail: string, pass: string, disabled: boolean;
 
@@ -28,20 +22,15 @@
         try {
             disabled = true;
             await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
-            await invalidate(Dependencies.ACCOUNT);
-            trackEvent(Submit.AccountLogin);
+
             if ($user) {
+                trackEvent(Submit.AccountLogin, { mfa_used: 'none' });
                 addNotification({
                     type: 'success',
                     message: 'Successfully logged in.'
                 });
             }
-            if ($redirectTo) {
-                window.location.href = $redirectTo;
-                return;
-            }
 
-            await invalidate(Dependencies.ACCOUNT);
             if (data?.couponData?.code) {
                 trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
                 await goto(`${base}/apply-credit?code=${data?.couponData?.code}`);
@@ -51,6 +40,13 @@
                 await goto(`${base}/apply-credit?campaign=${data.campaign?.$id}`);
                 return;
             }
+            if ($redirectTo) {
+                window.location.href = $redirectTo;
+                return;
+            }
+
+            // no specific redirect, so redirect will happen through invalidating the account
+            await invalidate(Dependencies.ACCOUNT);
         } catch (error) {
             disabled = false;
             addNotification({
@@ -64,13 +60,13 @@
     function onGithubLogin() {
         let url = window.location.origin;
 
-        if ($page.url.searchParams) {
-            const redirect = $page.url.searchParams.get('redirect');
-            $page.url.searchParams.delete('redirect');
+        if (page.url.searchParams) {
+            const redirect = page.url.searchParams.get('redirect');
+            page.url.searchParams.delete('redirect');
             if (redirect) {
-                url = `${redirect}${$page.url.search}`;
+                url = `${redirect}${page.url.search}`;
             } else {
-                url = `${base}${$page.url.search ?? ''}`;
+                url = `${base}${page.url.search ?? ''}`;
             }
         }
         sdk.forConsole.account.createOAuth2Session(
@@ -90,7 +86,7 @@
     <svelte:fragment slot="title">Sign in</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={login}>
-            <FormList>
+            <Layout.Stack>
                 <InputEmail
                     id="email"
                     label="Email"
@@ -103,31 +99,25 @@
                     label="Password"
                     placeholder="Password"
                     required={true}
-                    meter={false}
-                    showPasswordButton={true}
                     bind:value={pass} />
-                <FormItem>
-                    <Button fullWidth submit {disabled}>Sign in</Button>
-                </FormItem>
+                <Button fullWidth submit {disabled}>Sign in</Button>
                 {#if isCloud}
                     <span class="with-separators eyebrow-heading-3">or</span>
-                    <FormItem>
-                        <Button github fullWidth on:click={onGithubLogin} {disabled}>
-                            <span class="icon-github" aria-hidden="true" />
-                            <span class="text">Sign in with GitHub</span>
-                        </Button>
-                    </FormItem>
+                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                        <span class="icon-github" aria-hidden="true"></span>
+                        <span class="text">Sign in with GitHub</span>
+                    </Button>
                 {/if}
-            </FormList>
+            </Layout.Stack>
         </Form>
     </svelte:fragment>
     <svelte:fragment slot="links">
         <li class="inline-links-item">
-            <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
+            <a href={`${base}/recover`}><span class="text">Forgot password?</span></a>
         </li>
         <li class="inline-links-item">
-            <a href={`${base}/register${$page?.url?.search ?? ''}`}>
-                <span class="text">Sign Up</span>
+            <a href={`${base}/register${page?.url?.search ?? ''}`}>
+                <span class="text">Sign up</span>
             </a>
         </li>
     </svelte:fragment>

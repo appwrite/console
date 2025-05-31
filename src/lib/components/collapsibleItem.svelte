@@ -24,6 +24,7 @@
             <!-- svelte-ignore a11y-no-redundant-roles -->
             <summary
                 class={`collapsible-button u-position-relative u-gap-${gap}`}
+                style="padding: 0"
                 on:keyup={clickOnEnter}
                 on:click
                 role="button"
@@ -43,7 +44,7 @@
                         <span
                             class="icon-cheveron-down u-font-size-20"
                             class:u-color-text-disabled={disabled}
-                            aria-hidden="true" />
+                            aria-hidden="true"></span>
                     </div>
                 </slot>
             </summary>

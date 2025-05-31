@@ -1,18 +1,19 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     import { Modal, CustomId } from '$lib/components';
-    import { Pill } from '$lib/elements';
-    import { Button, InputText, FormList } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
+    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
 
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
     const dispatch = createEventDispatcher();
 
     let name = '';
@@ -24,7 +25,7 @@
         error = null;
         try {
             const collection = await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .databases.createCollection(databaseId, id ? id : ID.unique(), name);
             showCreate = false;
             dispatch('created', collection);
@@ -50,32 +51,26 @@
     }
 </script>
 
-<Modal title="Create collection" size="big" bind:show={showCreate} onSubmit={create} bind:error>
-    <FormList>
-        <InputText
-            id="name"
-            label="Name"
-            placeholder="Enter collection name"
-            bind:value={name}
-            autofocus
-            required />
+<Modal title="Create collection" size="m" bind:show={showCreate} onSubmit={create} bind:error>
+    <InputText
+        id="name"
+        label="Name"
+        placeholder="Enter collection name"
+        bind:value={name}
+        autofocus
+        required />
 
-        {#if !showCustomId}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}
-                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Collection ID
-                    </span></Pill>
-            </div>
-        {:else}
-            <CustomId
-                autofocus
-                bind:show={showCustomId}
-                name="Collection"
-                bind:id
-                fullWidth={true} />
-        {/if}
-    </FormList>
+    {#if !showCustomId}
+        <div>
+            <Tag
+                size="s"
+                on:click={() => {
+                    showCustomId = true;
+                }}><Icon icon={IconPencil} /> Collection ID</Tag>
+        </div>
+    {/if}
+    <CustomId autofocus bind:show={showCustomId} name="Collection" bind:id />
+
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
         <Button submit>Create</Button>

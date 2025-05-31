@@ -1,15 +1,20 @@
 <script>
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { Heading } from '$lib/components';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
+    import { Typography } from '@appwrite.io/pink-svelte';
 </script>
 
 <Container>
-    <div class="u-flex-vertical u-gap-16">
-        <Heading size="1" tag="h3">{$page.error.status || 'Invalid Argument'}</Heading>
-        <Heading size="4" tag="h4" trimmed={false}>{$page.error.message}</Heading>
+    <div>
+        <Typography.Title size="xl"
+            >{'status' in page.error
+                ? page.error.status || 'Invalid Argument'
+                : 'Invalid Argument'}</Typography.Title>
+        <Typography.Title>{page.error.message}</Typography.Title>
+    </div>
+    <div>
         <Button href={base}>Back to the console</Button>
     </div>
 </Container>

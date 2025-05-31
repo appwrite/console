@@ -1,8 +1,8 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -19,8 +19,8 @@
     async function updateName() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
-                .teams.updateName($page.params.team, teamName);
+                .forProject(page.params.region, page.params.project)
+                .teams.updateName(page.params.team, teamName);
             await invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Name has been updated',
@@ -39,17 +39,15 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Name</Heading>
-
+        <svelte:fragment slot="title">Name</svelte:fragment>
         <svelte:fragment slot="aside">
-            <ul>
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder="Enter team name"
-                    autocomplete={false}
-                    bind:value={teamName} />
-            </ul>
+            <InputText
+                required
+                id="name"
+                label="Name"
+                placeholder="Enter team name"
+                autocomplete={false}
+                bind:value={teamName} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

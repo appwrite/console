@@ -6,7 +6,7 @@
     export let selected: string[] = [];
     export let pageItemsIds: string[] = [];
 
-    function handleClick(e: MouseEvent) {
+    function handleClick(e: CustomEvent) {
         if (!isHTMLInputElement(e.target)) return;
         if (e.target.checked) {
             const set = new Set(selected);
@@ -26,7 +26,6 @@
 <TableCellHead width={10}>
     <InputCheckbox
         id="select-all"
-        wrapperTag="div"
         indeterminate={someSelected && !allSelected}
         checked={allSelected}
         on:click={handleClick} />

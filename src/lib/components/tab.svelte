@@ -4,10 +4,16 @@
     import { last } from '$lib/helpers/array';
     import { getElementDir } from '$lib/helpers/style';
     import { waitUntil } from '$lib/helpers/waitUntil';
+    import { Tabs } from '@appwrite.io/pink-svelte';
 
     export let selected = false;
     export let href: string = null;
     export let event: string = null;
+    export let noscroll = false;
+    export let root: { variant: 'primary' | 'secondary'; stretch: boolean } = {
+        variant: 'primary',
+        stretch: false
+    };
 
     async function handleClick(e: Event) {
         if (event) {
@@ -79,27 +85,23 @@
     }
 </script>
 
-<li class="tabs-item" role="tab">
-    {#if href}
-        <a
-            class="tabs-button"
-            {href}
-            class:is-selected={selected}
-            on:click={handleClick}
-            tabindex={selected ? 0 : -1}
-            on:keydown={handleKeyDown}>
-            <span class="text"><slot /></span>
-        </a>
-    {:else}
-        <button
-            type="button"
-            class="tabs-button"
-            class:is-selected={selected}
-            on:click|preventDefault
-            on:click={handleClick}
-            tabindex={selected ? 0 : -1}
-            on:keydown={handleKeyDown}>
-            <span class="text"><slot /></span>
-        </button>
-    {/if}
-</li>
+{#if href}
+    <Tabs.Item.Link
+        {noscroll}
+        {root}
+        {href}
+        bind:active={selected}
+        on:click={handleClick}
+        on:keydown={handleKeyDown}>
+        <slot />
+    </Tabs.Item.Link>
+{:else}
+    <Tabs.Item.Button
+        {root}
+        bind:active={selected}
+        on:click
+        on:click={handleClick}
+        on:keydown={handleKeyDown}>
+        <slot />
+    </Tabs.Item.Button>
+{/if}

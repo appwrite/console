@@ -2,13 +2,13 @@
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
+    import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
     import type { Address } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import type { Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { Layout, Link } from '@appwrite.io/pink-svelte';
 
     export let showDelete = false;
     export let selectedAddress: Address;
@@ -32,43 +32,31 @@
     }
 </script>
 
-<Modal
-    bind:show={showDelete}
+<Confirm
     onSubmit={handleDelete}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}
+    title={linkedOrgs.length ? 'Unable to delete billing address' : 'Delete billing address'}
+    bind:open={showDelete}
+    canDelete={linkedOrgs.length === 0}
     bind:error>
-    <svelte:fragment slot="title">
-        {linkedOrgs.length ? 'Unable to delete billing address' : 'Delete billing address'}
-    </svelte:fragment>
-
     {#if linkedOrgs.length === 1}
-        <p class="text">
+        <p>
             This billing address is set as the default for the <span class="u-bold"
                 >{linkedOrgs[0].name}</span
             >. As it has upcoming invoices it cannot be deleted from your account.
         </p>
     {:else if linkedOrgs.length > 1}
-        <p class="text">
+        <p>
             This billing address is set as the default for the following organisations. As they have
             upcoming invoices it cannot be deleted from your account.
         </p>
-        <ul>
+        <Layout.Stack gap="none">
             {#each linkedOrgs as org}
-                <li class="text">
-                    <a class="link" href={`${base}/organization-${org.$id}/billing`}>{org.name}</a>
-                </li>
+                <Link.Anchor href={`${base}/organization-${org.$id}/billing`}>
+                    {org.name}
+                </Link.Anchor>
             {/each}
-        </ul>
+        </Layout.Stack>
     {:else}
-        <p class="text">Are you sure you want to delete this billing address from your account?</p>
+        <p>Are you sure you want to delete this billing address from your account?</p>
     {/if}
-
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        {#if !linkedOrgs.length}
-            <Button secondary submit>Delete</Button>
-        {/if}
-    </svelte:fragment>
-</Modal>
+</Confirm>

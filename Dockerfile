@@ -37,7 +37,7 @@ ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 ENV SENTRY_RELEASE=$SENTRY_RELEASE
 ENV NODE_OPTIONS=--max_old_space_size=8192
 
-RUN pnpm run sync && pnpm run build
+RUN pnpm run build
 
 FROM nginx:1.26.3-alpine
 

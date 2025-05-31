@@ -1,35 +1,46 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { DropList, DropListItem, Empty, Heading } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { page } from '$app/state';
+    import { Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import {
-        Table,
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { canWriteCollections } from '$lib/stores/roles';
+    import {
+        ActionMenu,
+        Badge,
+        Icon,
+        Layout,
+        Link,
+        Popover,
+        Table,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import Create from '../createAttribute.svelte';
     import { isRelationship } from '../document-[document]/attributes/store';
     import FailedModal from '../failedModal.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
-    import { attributes, type Attributes } from '../store';
+    import { attributes, type Attributes, isCsvImportInProgress } from '../store';
     import CreateAttributeDropdown from './createAttributeDropdown.svelte';
     import Delete from './deleteAttribute.svelte';
     import Edit from './edit.svelte';
     import { attributeOptions, type Option } from './store';
+    import {
+        IconArrowSmRight,
+        IconDotsHorizontal,
+        IconLink,
+        IconLocationMarker,
+        IconPencil,
+        IconPlus,
+        IconSwitchHorizontal,
+        IconTrash,
+        IconViewList
+    } from '@appwrite.io/pink-icons-svelte';
+    import type { ComponentProps } from 'svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
+    import CsvDisabled from '../csvDisabled.svelte';
 
-    const projectId = $page.params.project;
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
 
-    let showCreateDropdown = false;
-    let showEmptyCreateDropdown = false;
     let showDropdown = [];
     let selectedOption: Option['name'] = null;
     let selectedAttribute: Attributes = null;
@@ -40,175 +51,165 @@
     let showFailed = false;
     let error = '';
 
-    enum attributeFormatIcon {
-        ip = 'location-marker',
-        url = 'link',
-        email = 'mail',
-        enum = 'view-list'
+    const attributeFormatIcon = {
+        ip: IconLocationMarker,
+        url: IconLink,
+        email: IconLink,
+        enum: IconViewList
+    };
+
+    function getAttributeStatusBadge(status: string): ComponentProps<Badge>['type'] {
+        switch (status) {
+            case 'processing':
+                return 'warning';
+            case 'deleting':
+            case 'stuck':
+            case 'failed':
+                return 'error';
+            default:
+                return undefined;
+        }
     }
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Attributes</Heading>
-
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Typography.Title>Attributes</Typography.Title>
         {#if $canWriteCollections}
-            <CreateAttributeDropdown bind:showCreateDropdown bind:selectedOption bind:showCreate />
+            <CreateAttributeDropdown bind:selectedOption bind:showCreate />
         {/if}
-    </div>
+    </Layout.Stack>
 
     {#if $attributes.length}
-        <Table>
-            <TableHeader>
-                <TableCellHead>Key</TableCellHead>
-                <TableCellHead onlyDesktop>Type</TableCellHead>
-                <TableCellHead onlyDesktop>Default Value</TableCellHead>
-                <TableCellHead width={30} />
-            </TableHeader>
-            <TableBody>
-                {#each $attributes as attribute, index}
-                    {@const option = attributeOptions.find(
-                        (option) => option.type === attribute.type
-                    )}
-                    <TableRow>
-                        <TableCell title="Key">
-                            <div class="u-flex u-main-space-between u-cross-center">
-                                <div class="u-flex u-cross-center u-gap-16">
-                                    <div class="avatar is-size-small u-color-text-gray">
-                                        {#if isRelationship(attribute)}
-                                            <span
-                                                class={`icon-${
-                                                    attribute?.twoWay
-                                                        ? 'switch-horizontal'
-                                                        : 'arrow-sm-right'
-                                                }`}
-                                                aria-hidden="true" />
-                                        {:else if 'format' in attribute && attribute.format}
-                                            {@const icon = attributeFormatIcon[attribute?.format]}
-                                            <span class={`icon-${icon}`} aria-hidden="true" />
-                                        {:else}
-                                            <span
-                                                class={`icon-${option.icon}`}
-                                                aria-hidden="true" />
-                                        {/if}
-                                    </div>
-                                    <span class="text u-trim-1" data-private>{attribute.key}</span>
-                                </div>
-                                {#if attribute.status !== 'available'}
-                                    <div class="u-inline-flex u-gap-12 u-cross-center">
-                                        <Pill
-                                            warning={attribute.status === 'processing'}
-                                            danger={['deleting', 'stuck', 'failed'].includes(
-                                                attribute.status
-                                            )}>
-                                            {attribute.status}
-                                        </Pill>
-                                        {#if attribute.error}
-                                            <Button
-                                                link
-                                                on:click={(e) => {
-                                                    e.preventDefault();
-                                                    error = attribute.error;
-                                                    showFailed = true;
-                                                }}>Details</Button>
-                                        {/if}
-                                    </div>
-                                {:else if attribute.required}
-                                    <Pill>Required</Pill>
-                                {/if}
-                            </div>
-                        </TableCell>
-                        <TableCellText onlyDesktop title="Type">
-                            {#if 'format' in attribute && attribute.format}
-                                <span class="u-capitalize">{attribute.format}</span>
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'key' },
+                { id: 'type' },
+                { id: 'default' },
+                { id: 'actions', width: 40 }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
+                <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
+                <Table.Header.Cell column="default" {root}>Default value</Table.Header.Cell>
+                <Table.Header.Cell column="actions" {root} />
+            </svelte:fragment>
+            {#each $attributes as attribute, index}
+                {@const option = attributeOptions.find((option) => option.type === attribute.type)}
+                <Table.Row.Base {root}>
+                    <Table.Cell column="key" {root}>
+                        <Layout.Stack direction="row" alignItems="center">
+                            {#if isRelationship(attribute)}
+                                <Icon
+                                    size="s"
+                                    icon={attribute?.twoWay
+                                        ? IconSwitchHorizontal
+                                        : IconArrowSmRight} />
+                            {:else if 'format' in attribute && attribute.format}
+                                {@const icon = attributeFormatIcon[attribute?.format]}
+                                <Icon {icon} size="s" />
                             {:else}
-                                <span class="u-capitalize">{attribute.type}</span>
-                                {#if isRelationship(attribute)}
-                                    <span>
-                                        with <a
-                                            href={`${base}/project-${$page.params.region}-${projectId}/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`}
-                                            ><b data-private>{attribute?.key}</b></a>
-                                    </span>
-                                {/if}
+                                <Icon icon={option.icon} size="s" />
                             {/if}
-                            <span>
-                                {attribute.array ? '[]' : ''}
-                            </span>
-                        </TableCellText>
-                        <TableCellText onlyDesktop title="Default Value">
-                            {attribute?.default !== null && attribute?.default !== undefined
-                                ? attribute?.default
-                                : '-'}
-                        </TableCellText>
-                        <TableCell showOverflow>
-                            <DropList
-                                bind:show={showDropdown[index]}
-                                placement="bottom-start"
-                                noArrow>
-                                <button
-                                    class="button is-only-icon is-text"
-                                    aria-label="More options"
-                                    on:click|preventDefault={() => {
-                                        showDropdown[index] = !showDropdown[index];
-                                    }}>
-                                    <span class="icon-dots-horizontal" aria-hidden="true" />
-                                </button>
-                                <svelte:fragment slot="list">
-                                    <DropListItem
-                                        event="edit_attribute"
-                                        icon="pencil"
+                            <span class="text u-trim-1" data-private>{attribute.key}</span>
+                            {#if attribute.status !== 'available'}
+                                <Badge
+                                    size="s"
+                                    variant="secondary"
+                                    content={attribute.status}
+                                    type={getAttributeStatusBadge(attribute.status)} />
+                                {#if attribute.error}
+                                    <Link.Button
+                                        variant="muted"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            error = attribute.error;
+                                            showFailed = true;
+                                        }}>Details</Link.Button>
+                                {/if}
+                            {:else if attribute.required}
+                                <Badge size="s" variant="secondary" content="required" />
+                            {/if}
+                        </Layout.Stack>
+                    </Table.Cell>
+                    <Table.Cell column="type" {root}>
+                        {#if 'format' in attribute && attribute.format}
+                            <span class="u-capitalize">{attribute.format}</span>
+                        {:else}
+                            <span class="u-capitalize">{attribute.type}</span>
+                            {#if isRelationship(attribute)}
+                                <span>
+                                    with <a
+                                        href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`}
+                                        ><b data-private>{attribute?.key}</b></a>
+                                </span>
+                            {/if}
+                        {/if}
+                        <span>
+                            {attribute.array ? '[]' : ''}
+                        </span>
+                    </Table.Cell>
+                    <Table.Cell column="default" {root}>
+                        {attribute?.default !== null && attribute?.default !== undefined
+                            ? attribute?.default
+                            : '-'}
+                    </Table.Cell>
+                    <Table.Cell column="actions" {root}>
+                        {#if $isCsvImportInProgress}
+                            <CsvDisabled>
+                                <Button disabled text icon ariaLabel="more options">
+                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                </Button>
+                            </CsvDisabled>
+                        {:else}
+                            <Popover let:toggle padding="none" placement="bottom-end">
+                                <Button text icon ariaLabel="more options" on:click={toggle}>
+                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                </Button>
+                                <ActionMenu.Root slot="tooltip">
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconPencil}
                                         on:click={() => {
                                             selectedAttribute = attribute;
                                             showEdit = true;
                                             showDropdown[index] = false;
                                         }}>
                                         Update
-                                    </DropListItem>
+                                    </ActionMenu.Item.Button>
                                     {#if !isRelationship(attribute)}
-                                        <DropListItem
-                                            icon="plus"
+                                        <ActionMenu.Item.Button
+                                            leadingIcon={IconPlus}
                                             on:click={() => {
                                                 selectedAttribute = attribute;
                                                 showCreateIndex = true;
                                                 showDropdown[index] = false;
                                             }}>
-                                            Create Index
-                                        </DropListItem>
+                                            Create index
+                                        </ActionMenu.Item.Button>
                                     {/if}
                                     {#if attribute.status !== 'processing'}
-                                        <DropListItem
-                                            icon="trash"
+                                        <ActionMenu.Item.Button
+                                            leadingIcon={IconTrash}
                                             on:click={() => {
                                                 selectedAttribute = attribute;
                                                 showDelete = true;
                                                 showDropdown[index] = false;
+                                                trackEvent(Click.DatabaseAttributeDelete);
                                             }}>
                                             Delete
-                                        </DropListItem>
+                                        </ActionMenu.Item.Button>
                                     {/if}
-                                </svelte:fragment>
-                            </DropList>
-                        </TableCell>
-                    </TableRow>
-                {/each}
-            </TableBody>
-        </Table>
-        <div class="u-flex common-section u-main-space-between">
-            <p class="text">Total results: {$attributes.length}</p>
-        </div>
+                                </ActionMenu.Root>
+                            </Popover>
+                        {/if}
+                    </Table.Cell>
+                </Table.Row.Base>
+            {/each}
+        </Table.Root>
     {:else}
-        <Empty
-            allowCreate={$canWriteCollections}
-            single
-            target="attribute"
-            on:click={() => (showEmptyCreateDropdown = true)}>
-            <div class="u-text-center">
-                <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
-                <p class="body-text-2 u-bold u-margin-block-start-4">
-                    Need a hand? Learn more in our documentation.
-                </p>
-            </div>
-            <div class="u-flex u-gap-16 u-main-center">
+        <Empty single target="attribute">
+            <svelte:fragment slot="actions">
                 <Button
                     external
                     href="https://appwrite.io/docs/products/databases/collections#attributes"
@@ -216,27 +217,29 @@
                     event="empty_documentation"
                     ariaLabel={`create {target}`}>Documentation</Button>
                 {#if $canWriteCollections}
-                    <CreateAttributeDropdown
-                        bind:showCreateDropdown={showEmptyCreateDropdown}
-                        bind:selectedOption
-                        bind:showCreate>
-                        <Button
-                            secondary
-                            event="create_attribute"
-                            on:click={() => {
-                                showEmptyCreateDropdown = !showEmptyCreateDropdown;
-                            }}>
+                    <CreateAttributeDropdown bind:selectedOption bind:showCreate let:toggle>
+                        <Button secondary event="create_attribute" on:click={toggle}>
                             Create attribute
                         </Button>
                     </CreateAttributeDropdown>
                 {/if}
-            </div>
+            </svelte:fragment>
         </Empty>
     {/if}
 </Container>
 
-<Create bind:showCreate bind:selectedOption />
-<Delete bind:showDelete {selectedAttribute} />
-<Edit bind:showEdit {selectedAttribute} />
-<CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} />
-<FailedModal bind:show={showFailed} title="Create attribute" header="Creation failed" {error} />
+{#if showCreate}
+    <Create bind:showCreate bind:selectedOption />
+{/if}
+{#if showDelete}
+    <Delete bind:showDelete {selectedAttribute} />
+{/if}
+{#if showEdit}
+    <Edit bind:showEdit {selectedAttribute} />
+{/if}
+{#if showCreateIndex}
+    <CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} />
+{/if}
+{#if showFailed}
+    <FailedModal bind:show={showFailed} title="Create attribute" header="Creation failed" {error} />
+{/if}

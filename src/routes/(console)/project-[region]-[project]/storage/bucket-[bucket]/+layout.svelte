@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import {
         registerCommands,
         registerSearchers,
@@ -10,23 +10,22 @@
     import { fileSearcher } from '$lib/commandCenter/searchers';
     import { canWriteBuckets } from '$lib/stores/roles';
     import { project } from '../../store';
-    import { showCreateFile } from './+page.svelte';
     import { bucket } from './store';
+    import { IconKey, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
 
     $: $registerCommands([
         {
             label: 'Create file',
             async callback() {
-                if (!$page.url.pathname.endsWith($bucket.$id)) {
+                if (!page.url.pathname.endsWith($bucket.$id)) {
                     goto(
-                        `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}`
+                        `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/create`
                     );
                 }
-                showCreateFile();
             },
-            keys: $page.url.pathname.endsWith($bucket.$id) ? ['c'] : ['c', 'f'],
+            keys: page.url.pathname.endsWith($bucket.$id) ? ['c'] : ['c', 'f'],
             group: 'files',
-            icon: 'plus'
+            icon: IconPlus
         },
         {
             label: 'Permissions',
@@ -37,7 +36,7 @@
                 scrollBy({ top: -100 });
             },
             group: 'buckets',
-            icon: 'key',
+            icon: IconKey,
             disabled: !$canWriteBuckets
         },
         {
@@ -48,7 +47,7 @@
                 );
             },
             group: 'buckets',
-            icon: 'puzzle',
+            icon: IconPuzzle,
             disabled: !$canWriteBuckets
         },
         {
@@ -60,7 +59,7 @@
                 scrollBy({ top: -100 });
             },
             group: 'buckets',
-            icon: 'lock-closed',
+            icon: IconLockClosed,
             disabled: !$canWriteBuckets
         },
         {
@@ -70,7 +69,7 @@
                     `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}`
                 );
             },
-            disabled: $page.url.pathname.endsWith($bucket.$id),
+            disabled: page.url.pathname.endsWith($bucket.$id),
             keys: ['g', 'f'],
             group: 'navigation',
             rank: 10
@@ -82,7 +81,7 @@
                     `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/usage`
                 );
             },
-            disabled: $page.url.pathname.endsWith('usage'),
+            disabled: page.url.pathname.endsWith('usage'),
             keys: ['g', 'u'],
             group: 'navigation',
             rank: 10
@@ -94,7 +93,7 @@
                     `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/settings`
                 );
             },
-            disabled: $page.url.pathname.endsWith('settings') || !$canWriteBuckets,
+            disabled: page.url.pathname.endsWith('settings') || !$canWriteBuckets,
             keys: ['g', 's'],
             group: 'navigation',
             rank: 10

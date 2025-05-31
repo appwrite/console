@@ -1,5 +1,5 @@
 import { getLimit, getPage, getView, pageToOffset, View } from '$lib/helpers/load';
-import { CARD_LIMIT, Dependencies } from '$lib/constants';
+import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { BackupArchive, BackupArchiveList, BackupPolicyList } from '$lib/sdk/backups';
@@ -7,9 +7,10 @@ import { isCloud } from '$lib/system';
 
 export const load = async ({ params, url, route, depends, parent }) => {
     depends(Dependencies.BACKUPS);
+
     const page = getPage(url);
-    const limit = getLimit(params.project, url, route, CARD_LIMIT);
-    const view = getView(params.project, url, route, View.Grid);
+    const limit = getLimit(url, route, PAGE_LIMIT);
+    const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
     let backups: BackupArchiveList = { total: 0, archives: [] };

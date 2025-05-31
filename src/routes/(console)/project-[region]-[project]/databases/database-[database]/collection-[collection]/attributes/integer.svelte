@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
-    import { get } from 'svelte/store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
 
@@ -10,9 +9,8 @@
         key: string,
         data: Partial<Models.AttributeInteger>
     ) {
-        const $page = get(page);
         await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.createIntegerAttribute(
                 databaseId,
                 collectionId,
@@ -31,9 +29,8 @@
         data: Partial<Models.AttributeInteger>,
         originalKey?: string
     ) {
-        const $page = get(page);
         await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.updateIntegerAttribute(
                 databaseId,
                 collectionId,
@@ -48,8 +45,7 @@
 </script>
 
 <script lang="ts">
-    import { createConservative } from '$lib/helpers/stores';
-    import { InputNumber, InputChoice } from '$lib/elements/forms';
+    import { InputNumber } from '$lib/elements/forms';
 
     export let editing = false;
 
@@ -60,6 +56,9 @@
         default: 0,
         array: false
     };
+
+    import { createConservative } from '$lib/helpers/stores';
+    import { Layout, Selector } from '@appwrite.io/pink-svelte';
 
     let savedDefault = data.default;
 
@@ -85,27 +84,20 @@
     $: handleDefaultState($required || $array);
 </script>
 
-<div>
-    <ul class="u-flex u-gap-16">
-        <li class="u-flex-basis-50-percent">
-            <InputNumber
-                id="min"
-                label="Min"
-                placeholder="Enter size"
-                bind:value={data.min}
-                required={editing} />
-        </li>
-
-        <li class="u-flex-basis-50-percent">
-            <InputNumber
-                id="max"
-                label="Max"
-                placeholder="Enter size"
-                bind:value={data.max}
-                required={editing} />
-        </li>
-    </ul>
-</div>
+<Layout.Stack direction="row" gap="s">
+    <InputNumber
+        id="min"
+        label="Min"
+        placeholder="Enter size"
+        bind:value={data.min}
+        required={editing} />
+    <InputNumber
+        id="max"
+        label="Max"
+        placeholder="Enter size"
+        bind:value={data.max}
+        required={editing} />
+</Layout.Stack>
 <InputNumber
     id="default"
     label="Default value"
@@ -115,10 +107,18 @@
     bind:value={data.default}
     disabled={data.required || data.array}
     nullable={!data.required && !data.array} />
-<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
-    Indicate whether this is a required attribute
-</InputChoice>
-<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
-    Indicate whether this attribute should act as an array, with the default value set as an empty
-    array.
-</InputChoice>
+<Selector.Checkbox
+    size="s"
+    id="required"
+    label="Required"
+    bind:checked={data.required}
+    disabled={data.array}
+    description="Indicate whether this attribute is required" />
+<Selector.Checkbox
+    size="s"
+    id="array"
+    label="Array"
+    bind:checked={data.array}
+    disabled={data.required || editing}
+    description="Indicate whether this attribute should act as an array, with the default value set as an empty
+    array." />

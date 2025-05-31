@@ -27,16 +27,15 @@
     import { CreateAttributePanel } from '$lib/commandCenter/panels';
     import { database } from '../store';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import CreateIndex from './indexes/createIndex.svelte';
-    import { wizard } from '$lib/stores/wizard';
-    import CreateDocument from './createDocument.svelte';
     import { base } from '$app/paths';
     import { canWriteCollections } from '$lib/stores/roles';
+    import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
 
     onMount(() => {
         return realtime
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .subscribe(['project', 'console'], (response) => {
                 if (
                     response.events.includes('databases.*.collections.*.attributes.*') ||
@@ -50,20 +49,22 @@
     $: $registerCommands([
         {
             label: 'Create document',
-            keys: $page.url.pathname.endsWith($collection.$id) ? ['c'] : ['c', 'd'],
+            keys: page.url.pathname.endsWith($collection.$id) ? ['c'] : ['c', 'd'],
             callback() {
-                wizard.start(CreateDocument);
+                goto(
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/create`
+                );
             },
-            icon: 'plus',
+            icon: IconPlus,
             group: 'documents'
         },
         {
             label: 'Create attribute',
-            keys: $page.url.pathname.endsWith('attributes') ? ['c'] : ['c', 'a'],
+            keys: page.url.pathname.endsWith('attributes') ? ['c'] : ['c', 'a'],
             callback() {
                 addSubPanel(CreateAttributePanel);
             },
-            icon: 'plus',
+            icon: IconPlus,
             group: 'attributes',
             disabled: !$canWriteCollections
         },
@@ -72,10 +73,10 @@
             keys: ['g', 'd'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}`
                 );
             },
-            disabled: $page.url.pathname.endsWith($collection.$id),
+            disabled: page.url.pathname.endsWith($collection.$id),
             group: 'collections'
         },
         {
@@ -83,10 +84,10 @@
             keys: ['g', 'a'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/attributes`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/attributes`
                 );
             },
-            disabled: $page.url.pathname.endsWith('attributes'),
+            disabled: page.url.pathname.endsWith('attributes'),
             group: 'collections'
         },
         {
@@ -94,10 +95,10 @@
             keys: ['g', 'i'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/indexes`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/indexes`
                 );
             },
-            disabled: $page.url.pathname.endsWith('indexes'),
+            disabled: page.url.pathname.endsWith('indexes'),
             group: 'collections'
         },
         {
@@ -105,10 +106,10 @@
             keys: ['g', 'c'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/activity`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/activity`
                 );
             },
-            disabled: $page.url.pathname.endsWith('activity'),
+            disabled: page.url.pathname.endsWith('activity'),
             group: 'collections'
         },
         {
@@ -116,10 +117,10 @@
             keys: ['g', 'u'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/usage`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/usage`
                 );
             },
-            disabled: $page.url.pathname.endsWith('usage'),
+            disabled: page.url.pathname.endsWith('usage'),
             group: 'collections'
         },
         {
@@ -127,10 +128,10 @@
             keys: ['g', 's'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/settings`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/settings`
                 );
             },
-            disabled: $page.url.pathname.endsWith('settings') || !$canWriteCollections,
+            disabled: page.url.pathname.endsWith('settings') || !$canWriteCollections,
             group: 'collections'
         },
         {
@@ -142,10 +143,10 @@
             },
             group: 'collections',
             disabled:
-                $page.url.pathname.endsWith('display-name') ||
-                $page.url.pathname.endsWith('settings') ||
+                page.url.pathname.endsWith('display-name') ||
+                page.url.pathname.endsWith('settings') ||
                 !$canWriteCollections,
-            icon: 'eye'
+            icon: IconEye
         },
         {
             label: 'Permissions',
@@ -156,10 +157,10 @@
             },
             group: 'collections',
             disabled:
-                $page.url.pathname.endsWith('permissions') ||
-                $page.url.pathname.endsWith('settings') ||
+                page.url.pathname.endsWith('permissions') ||
+                page.url.pathname.endsWith('settings') ||
                 !$canWriteCollections,
-            icon: 'puzzle'
+            icon: IconPuzzle
         },
         {
             label: 'Document security',
@@ -170,18 +171,18 @@
             },
             group: 'collections',
             disabled:
-                $page.url.pathname.endsWith('document-security') ||
-                $page.url.pathname.endsWith('settings') ||
+                page.url.pathname.endsWith('document-security') ||
+                page.url.pathname.endsWith('settings') ||
                 !$canWriteCollections,
-            icon: 'lock-closed'
+            icon: IconLockClosed
         },
         {
             label: 'Create index',
-            keys: $page.url.pathname.endsWith('indexes') ? ['c'] : ['c', 'i'],
+            keys: page.url.pathname.endsWith('indexes') ? ['c'] : ['c', 'i'],
             callback() {
                 initCreateIndex();
             },
-            icon: 'plus',
+            icon: IconPlus,
             group: 'indexes',
             disabled: !$canWriteCollections
         }
@@ -201,5 +202,10 @@
 
 <slot />
 
-<CreateAttribute {...$createAttributeArgs} />
-<CreateIndex bind:showCreateIndex={$showCreateIndex} />
+{#if $createAttributeArgs.showCreate}
+    <CreateAttribute {...$createAttributeArgs} />
+{/if}
+
+{#if $showCreateIndex}
+    <CreateIndex bind:showCreateIndex={$showCreateIndex} />
+{/if}

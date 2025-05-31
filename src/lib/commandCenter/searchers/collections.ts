@@ -4,13 +4,12 @@ import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
 import { base } from '$app/paths';
-import { page } from '$app/stores';
+import { page } from '$app/state';
 
 export const collectionsSearcher = (async (query: string) => {
     const databaseId = get(database).$id;
-    const $page = get(page);
     const { collections } = await sdk
-        .forProject($page.params.region, $page.params.project)
+        .forProject(page.params.region, page.params.project)
         .databases.listCollections(databaseId);
 
     return collections
@@ -22,7 +21,7 @@ export const collectionsSearcher = (async (query: string) => {
                     label: col.name,
                     callback: () => {
                         goto(
-                            `${base}/project-${$page.params.region}-${$page.params.project}/databases/database-${databaseId}/collection-${col.$id}`
+                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${col.$id}`
                         );
                     }
                 }) as const

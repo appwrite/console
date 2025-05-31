@@ -1,14 +1,16 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormItem, FormItemPart, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { team } from './store';
-    import { page } from '$app/stores';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
     $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($team.prefs))) {
@@ -37,7 +39,7 @@
             let updatedPrefs = Object.fromEntries(prefs);
 
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .teams.updatePrefs($team.$id, updatedPrefs);
             await invalidate(Dependencies.TEAM);
             arePrefsDisabled = true;
@@ -46,69 +48,60 @@
                 message: 'Preferences have been updated',
                 type: 'success'
             });
-            trackEvent(Submit.UserUpdatePreferences);
+            trackEvent(Submit.TeamUpdatePreferences);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.UserUpdatePreferences);
+            trackError(error, Submit.TeamUpdatePreferences);
         }
     }
 </script>
 
 <Form onSubmit={updatePrefs}>
     <CardGrid>
-        <Heading tag="h6" size="7">Preferences</Heading>
-        <p>
-            You can update your team's preferences by storing shared information on the teams's
-            objects so they can easily be shared across members.
-        </p>
+        <svelte:fragment slot="title">Preferences</svelte:fragment>
+        You can update your team's preferences by storing shared information on the teams's objects so
+        they can easily be shared across members.
         <svelte:fragment slot="aside">
-            <form class="form u-grid u-gap-16">
-                <ul class="form-list">
-                    {#if prefs}
-                        {#each prefs as [key, value], index}
-                            <FormItem isMultiple>
-                                <InputText
-                                    id={`key-${index}`}
-                                    isMultiple
-                                    fullWidth
-                                    bind:value={key}
-                                    placeholder="Enter key"
-                                    label="Key"
-                                    required />
-
-                                <InputText
-                                    id={`value-${index}`}
-                                    isMultiple
-                                    fullWidth
-                                    bind:value
-                                    placeholder="Enter value"
-                                    label="Value"
-                                    required />
-                                <FormItemPart alignEnd>
-                                    <Button
-                                        text
-                                        disabled={(!key || !value) && index === 0}
-                                        on:click={() => {
-                                            if (index === 0) {
-                                                prefs = [['', '']];
-                                            } else {
-                                                prefs.splice(index, 1);
-                                                prefs = prefs;
-                                            }
-                                        }}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                </FormItemPart>
-                            </FormItem>
-                        {/each}
-                    {/if}
-                </ul>
+            {#if prefs}
+                {#each prefs as [key, value], index}
+                    <Layout.Stack direction="row" alignItems="flex-end">
+                        <InputText
+                            id={`key-${index}`}
+                            bind:value={key}
+                            placeholder="Enter key"
+                            label={index === 0 ? 'Key' : undefined}
+                            required />
+                        <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
+                            <InputText
+                                id={`value-${index}`}
+                                bind:value
+                                placeholder="Enter value"
+                                label={index === 0 ? 'Value' : undefined}
+                                required />
+                            <Button
+                                icon
+                                compact
+                                disabled={(!key || !value) && index === 0}
+                                on:click={() => {
+                                    if (index === 0 && prefs?.length === 1) {
+                                        prefs = [['', '']];
+                                    } else {
+                                        prefs.splice(index, 1);
+                                        prefs = prefs;
+                                    }
+                                }}>
+                                <span class="icon-x" aria-hidden="true"></span>
+                            </Button>
+                        </Layout.Stack>
+                    </Layout.Stack>
+                {/each}
+            {/if}
+            <div>
                 <Button
-                    noMargin
-                    text
+                    secondary
                     disabled={prefs?.length &&
                     prefs[prefs.length - 1][0] &&
                     prefs[prefs.length - 1][1]
@@ -120,10 +113,10 @@
                             prefs = prefs;
                         }
                     }}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add Preference</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add preference
                 </Button>
-            </form>
+            </div>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

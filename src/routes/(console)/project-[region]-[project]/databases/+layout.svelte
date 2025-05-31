@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { DatabasesPanel } from '$lib/commandCenter/panels';
     import { project } from '../store';
@@ -14,7 +14,7 @@
             },
             keys: ['g', 'u'],
             disabled:
-                $page.url.pathname.includes('usage') || $page.url.pathname.includes('database-'),
+                page.url.pathname.includes('usage') || page.url.pathname.includes('database-'),
             group: 'databases'
         },
         {

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { BoxAvatar, CardGrid, Heading } from '$lib/components';
+    import { BoxAvatar, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
@@ -11,12 +11,10 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Delete message</Heading>
-    <p>
-        The message will be permanently deleted{message.status === 'scheduled'
-            ? ', and its delivery will be canceled'
-            : ''}. This action is irreversible.
-    </p>
+    <svelte:fragment slot="title">Delete message</svelte:fragment>
+    The message will be permanently deleted{message.status === 'scheduled'
+        ? ', and its delivery will be canceled'
+        : ''}. This action is irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">

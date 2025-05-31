@@ -1,8 +1,8 @@
-import { page } from '$app/stores';
 import type { Models } from '@appwrite.io/console';
 import type { BarSeriesOption } from 'echarts/charts';
 import { derived, get, writable } from 'svelte/store';
 import { regions } from '$lib/stores/organization';
+import { page } from '$app/stores';
 
 export const project = derived(
     page,
@@ -23,6 +23,25 @@ export const projectRegion = derived(project, ($project) => {
 export const onboarding = derived(
     project,
     ($project) => $project?.platforms?.length === 0 && $project?.keys?.length === 0
+);
+
+/**
+ * Region-aware version of `consoleVariables`, scoped to the project's assigned region.
+ *
+ * Falls back to the default `consoleVariables` if regional data is unavailable, just `edge-case` things.
+ */
+export const regionalConsoleVariables = derived(
+    page,
+    ($page) =>
+        ($page.data.regionalConsoleVariables ??
+            $page.data.consoleVariables) as Models.ConsoleVariables
+);
+
+/**
+ * Protocol based on regional console variables.
+ */
+export const regionalProtocol = derived(regionalConsoleVariables, ($vars) =>
+    $vars?._APP_OPTIONS_FORCE_HTTPS === 'enabled' ? 'https://' : 'http://'
 );
 
 function createStats() {

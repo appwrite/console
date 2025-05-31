@@ -1,13 +1,14 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
-    import { InnerModal } from '$lib/components';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { InputId } from '$lib/elements/forms';
     import { InputProjectId } from '$lib/elements/forms';
+    import Button from '$lib/elements/forms/button.svelte';
+    import { IconX } from '@appwrite.io/pink-icons-svelte';
+    import { Card, Divider, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     export let show = false;
     export let name: string;
     export let id: string;
     export let autofocus = true;
-    export let fullWidth = false;
     export let isProject = false;
     $: if (!show) {
         id = null;
@@ -18,22 +19,36 @@
     }
 
     $: if (show) {
-        trackEvent('click_show_custom_id');
+        trackEvent(Click.ShowCustomIdClick);
     }
 </script>
 
-<InnerModal bind:show {fullWidth}>
-    <svelte:fragment slot="title">{name} ID</svelte:fragment>
-    <svelte:fragment slot="subtitle">
-        Enter a custom {name} ID. Leave blank for a randomly generated one.
-    </svelte:fragment>
-    <svelte:fragment slot="content">
-        <div class="form">
+{#if show}
+    <Card.Base
+        variant="secondary"
+        padding="s"
+        --input-background-color="var(--bgcolor-neutral-primary)">
+        <Layout.Stack gap="xl">
+            <Layout.Stack gap="s">
+                <Layout.Stack direction="row" justifyContent="space-between" alignContent="center">
+                    <Typography.Text variant="m-600">{name} ID</Typography.Text>
+                    <Button extraCompact on:click={() => (show = false)}>
+                        <Icon icon={IconX} size="s" />
+                    </Button>
+                </Layout.Stack>
+                <Typography.Text>
+                    Enter a custom {name} ID. Leave blank for a randomly generated one.
+                </Typography.Text>
+            </Layout.Stack>
+            <span
+                style="margin-left: calc(-1* var(--space-7));margin-right: calc(-1* var(--space-7));width:auto;">
+                <Divider />
+            </span>
             {#if isProject}
                 <InputProjectId bind:value={id} {autofocus} />
             {:else}
-                <InputId bind:value={id} {autofocus} />
+                <InputId required bind:value={id} {autofocus} />
             {/if}
-        </div>
-    </svelte:fragment>
-</InnerModal>
+        </Layout.Stack>
+    </Card.Base>
+{/if}

@@ -1,44 +1,33 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Id, Modal } from '$lib/components';
-    import FloatingActionBar from '$lib/components/floatingActionBar.svelte';
+    import { Id } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellCheck,
-        TableCellHead,
-        TableCellHeadCheck,
-        TableCellText,
-        TableHeader,
-        TableRowLink,
-        TableScroll
-    } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { canWriteCollections } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
+    import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import { columns } from './store';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let data: PageData;
-    const projectId = $page.params.project;
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
 
-    let selected: string[] = [];
+    let selectedRows: string[] = [];
     let showDelete = false;
     let deleting = false;
 
     async function handleDelete() {
         showDelete = false;
 
-        const promises = selected.map((collectionId) =>
+        const promises = selectedRows.map((collectionId) =>
             sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .databases.deleteCollection(databaseId, collectionId)
         );
         try {
@@ -46,7 +35,7 @@
             trackEvent(Submit.CollectionDelete);
             addNotification({
                 type: 'success',
-                message: `${selected.length} collection${selected.length > 1 ? 's' : ''} deleted`
+                message: `${selectedRows.length} collection${selectedRows.length > 1 ? 's' : ''} deleted`
             });
             invalidate(Dependencies.COLLECTIONS);
         } catch (error) {
@@ -56,104 +45,63 @@
             });
             trackError(error, Submit.CollectionDelete);
         } finally {
-            selected = [];
+            selectedRows = [];
             showDelete = false;
         }
     }
 </script>
 
-<TableScroll>
-    <TableHeader>
-        {#if $canWriteCollections}
-            <TableCellHeadCheck
-                bind:selected
-                pageItemsIds={data.collections.collections.map((c) => c.$id)} />
-        {/if}
-        {#each $columns as column}
-            {#if column.show}
-                <TableCellHead width={column.width}>{column.title}</TableCellHead>
-            {/if}
+<Table.Root columns={$columns} allowSelection={$canWriteCollections} bind:selectedRows let:root>
+    <svelte:fragment slot="header" let:root>
+        {#each $columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
-    </TableHeader>
-    <TableBody>
-        {#each data.collections.collections as collection (collection.$id)}
-            <TableRowLink
-                href={`${base}/project-${$page.params.region}-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
-                {#if $canWriteCollections}
-                    <TableCellCheck bind:selectedIds={selected} id={collection.$id} />
-                {/if}
-                {#each $columns as column}
-                    {#if column.show}
-                        {#if column.id === '$id'}
-                            {#key $columns}
-                                <TableCell title={column.title} width={column.width}>
-                                    <Id value={collection.$id}>{collection.$id}</Id>
-                                </TableCell>
-                            {/key}
-                        {:else if column.id === 'name'}
-                            <TableCellText title={column.title} width={column.width}>
-                                {collection.name}
-                            </TableCellText>
-                        {:else}
-                            <TableCellText title={column.title} width={column.width}>
-                                {toLocaleDateTime(collection[column.id])}
-                            </TableCellText>
-                        {/if}
-                    {/if}
-                {/each}
-            </TableRowLink>
-        {/each}
-    </TableBody>
-</TableScroll>
-
-<FloatingActionBar show={selected.length > 0}>
-    <div class="u-flex u-cross-center u-main-space-between actions">
-        <div class="u-flex u-cross-center u-gap-8">
-            <span class="indicator body-text-2 u-bold">{selected.length}</span>
-            <p>
-                <span class="is-only-desktop">
-                    {selected.length > 1 ? 'collections' : 'collection'}
-                </span>
-                selected
-            </p>
-        </div>
-
-        <div class="u-flex u-cross-center u-gap-8">
-            <Button text on:click={() => (selected = [])}>Cancel</Button>
-            <Button secondary on:click={() => (showDelete = true)}>
-                <p>Delete</p>
-            </Button>
-        </div>
-    </div>
-</FloatingActionBar>
-
-<Modal
-    title="Delete Collections"
-    icon="exclamation"
-    state="warning"
-    bind:show={showDelete}
-    onSubmit={handleDelete}
-    headerDivider={false}
-    closable={!deleting}>
-    <p class="text" data-private>
-        Are you sure you want to delete <b>{selected.length}</b>
-        {selected.length > 1 ? 'collections' : 'collection'}?
-    </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
-        <Button secondary submit disabled={deleting}>Delete</Button>
     </svelte:fragment>
-</Modal>
+    {#each data.collections.collections as collection (collection.$id)}
+        <Table.Row.Link
+            {root}
+            id={collection.$id}
+            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collection.$id}`}>
+            {#each $columns as column}
+                <Table.Cell column={column.id} {root}>
+                    {#if column.id === '$id'}
+                        {#key $columns}
+                            <Id value={collection.$id}>{collection.$id}</Id>
+                        {/key}
+                    {:else if column.id === 'name'}
+                        {collection.name}
+                    {:else}
+                        {toLocaleDateTime(collection[column.id])}
+                    {/if}
+                </Table.Cell>
+            {/each}
+        </Table.Row.Link>
+    {/each}
+</Table.Root>
 
-<style lang="scss">
-    .actions {
-        .indicator {
-            border-radius: 0.25rem;
-            background: hsl(var(--color-information-100));
-            color: hsl(var(--color-neutral-0));
+{#if selectedRows.length > 0}
+    <FloatingActionBar>
+        <svelte:fragment slot="start">
+            <Badge content={selectedRows.length.toString()} />
+            <span>
+                {selectedRows.length > 1 ? 'collections' : 'collection'}
+                selected
+            </span>
+        </svelte:fragment>
+        <svelte:fragment slot="end">
+            <Button text on:click={() => (selectedRows = [])}>Cancel</Button>
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        </svelte:fragment>
+    </FloatingActionBar>
+{/if}
 
-            padding: 0rem 0.375rem;
-            display: inline-block;
-        }
-    }
-</style>
+<Confirm
+    title="Delete collections"
+    bind:open={showDelete}
+    onSubmit={handleDelete}
+    disabled={deleting}>
+    <Typography.Text>
+        Are you sure you want to delete <b>{selectedRows.length}</b>
+        {selectedRows.length > 1 ? 'collections' : 'collection'}?
+    </Typography.Text>
+</Confirm>

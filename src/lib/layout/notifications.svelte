@@ -1,25 +1,28 @@
 <script lang="ts">
-    import Notification from './notification.svelte';
     import { dismissNotification, notifications } from '../stores/notifications';
     import { flip } from 'svelte/animate';
+    import { Layout, Toast } from '@appwrite.io/pink-svelte';
 </script>
 
 {#if $notifications}
     <section>
-        <ul class="u-flex u-flex-vertical u-gap-16">
+        <Layout.Stack gap="s">
             {#each $notifications as notification (notification.id)}
-                <li animate:flip={{ duration: 500 }}>
-                    <Notification
-                        type={notification.type}
+                <span animate:flip={{ duration: 500 }}>
+                    <Toast
                         title={notification.title}
-                        icon={notification.icon}
-                        on:dismiss={() => dismissNotification(notification.id)}
-                        buttons={notification?.buttons}
-                        message={notification.message}
-                        html={notification?.isHtml} />
-                </li>
+                        status={notification.type}
+                        description={notification.message}
+                        actions={notification.buttons?.map((button) => {
+                            return {
+                                label: button.name,
+                                onClick: button.method
+                            };
+                        })}
+                        on:dismiss={() => dismissNotification(notification.id)} />
+                </span>
             {/each}
-        </ul>
+        </Layout.Stack>
     </section>
 {/if}
 

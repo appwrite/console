@@ -5,6 +5,7 @@ import { get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import type { Models } from '@appwrite.io/console';
 import { organization } from './organization';
+import { page } from '$app/state';
 
 type Preferences = {
     limit?: number;
@@ -17,14 +18,12 @@ type TeamPreferences = {
 };
 
 type PreferencesStore = {
-    [key: string]: {
-        [key: string]: Preferences;
-        collections?: {
-            [key: string]: Preferences['columns'];
-        };
-        displayNames?: {
-            [key: string]: TeamPreferences['names'];
-        };
+    [key: string]: Preferences;
+    collections?: {
+        [key: string]: Preferences['columns'];
+    };
+    displayNames?: {
+        [key: string]: TeamPreferences['names'];
     };
 } & { hideAiDisclaimer?: boolean };
 
@@ -47,62 +46,70 @@ function createPreferences() {
         subscribe,
         set,
         update,
-        get: (projectId: string, route: Page['route']): Preferences =>
-            preferences[projectId]?.[route.id] ?? {
-                limit: null,
-                view: null,
-                columns: null
-            },
+        get: (route?: Page['route']): Preferences => {
+            const parsedRoute = route ?? page.route;
+            return (
+                preferences?.[parsedRoute.id] ?? {
+                    limit: null,
+                    view: null,
+                    columns: null
+                }
+            );
+        },
 
-        getCustomCollectionColumns: (
-            projectId: string,
-            collectionId: string
-        ): Preferences['columns'] => preferences[projectId]?.collections?.[collectionId] ?? [],
-        setLimit: (projectId: string, route: Page['route'], limit: Preferences['limit']) =>
+        getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
+            return preferences?.collections?.[collectionId] ?? [];
+        },
+        setLimit: (limit: Preferences['limit']) =>
             update((n) => {
-                if (!n[projectId]?.[route.id]) {
-                    n[projectId] ??= {};
-                    n[projectId][route.id] ??= {};
+                const path = page.route.id;
+
+                if (!n?.[path]) {
+                    n ??= {};
+                    n[path] ??= {};
                 }
 
-                n[projectId][route.id].limit = limit;
+                n[path].limit = limit;
 
                 return n;
             }),
-        setView: (projectId: string, route: Page['route'], view: Preferences['view']) =>
+        setView: (view: Preferences['view']) =>
             update((n) => {
-                if (!n[projectId]?.[route.id]) {
-                    n[projectId] ??= {};
-                    n[projectId][route.id] ??= {};
+                const path = page.route.id;
+
+                if (!n?.[path]) {
+                    n ??= {};
+                    n[path] ??= {};
                 }
 
-                n[projectId][route.id].view = view;
+                n[path].view = view;
 
                 return n;
             }),
-        setColumns: (projectId: string, route: Page['route'], columns: Preferences['columns']) =>
+        setColumns: (columns: Preferences['columns']) =>
             update((n) => {
-                if (!n[projectId]?.[route.id]) {
-                    n[projectId] ??= {};
-                    n[projectId][route.id] ??= {};
+                const path = page.route.id;
+
+                if (!n?.[path]) {
+                    n ??= {};
+                    n[path] ??= {};
                 }
 
-                n[projectId][route.id].columns = columns;
+                n[path].columns = columns;
 
                 return n;
             }),
-        setCustomCollectionColumns: (
-            projectId: string,
-            route: Page['route'],
-            columns: Preferences['columns']
-        ) =>
+        setCustomCollectionColumns: (columns: Preferences['columns']) =>
             update((n) => {
-                if (!n[projectId]?.collections?.[route.id]) {
-                    n[projectId] ??= {};
-                    n[projectId].collections ??= {};
+                const current = page;
+
+                const collection = current.params.collection;
+                if (!n?.collections?.[collection]) {
+                    n ??= {};
+                    n.collections ??= {};
                 }
 
-                n[projectId].collections[route.id] = columns;
+                n.collections[collection] = columns;
 
                 return n;
             }),
@@ -116,22 +123,19 @@ function createPreferences() {
             return teamPrefs;
         },
         getDisplayNames: () => {
-            const id = get(organization)?.$id;
-            if (!id) return {};
-
-            return preferences?.[id]?.displayNames ?? {};
+            return preferences?.displayNames ?? {};
         },
         setDisplayNames: async (collectionId: string, names: TeamPreferences['names']) => {
             const id = get(organization).$id;
             let teamPrefs: Models.Preferences;
             update((n) => {
-                if (!n[id]?.displayNames) {
-                    n[id] ??= {};
-                    n[id].displayNames ??= {};
+                if (!n?.displayNames) {
+                    n ??= {};
+                    n.displayNames ??= {};
                 }
 
-                teamPrefs = n[id];
-                n[id].displayNames[collectionId] = names;
+                teamPrefs = n;
+                n.displayNames[collectionId] = names;
 
                 return n;
             });

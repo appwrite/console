@@ -1,7 +1,8 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { Usage, UsageMultiple } from '$lib/layout';
+    import { page } from '$app/state';
+    import { Container, Usage, UsageMultiple } from '$lib/layout';
+    import { Layout } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
 
     export let data: PageData;
@@ -13,30 +14,28 @@
 
     $: writes = data.databasesWrites;
     $: writesTotal = data.databasesWritesTotal;
-
-    $: path = `${base}/project-${$page.params.region}-${$page.params.project}/databases/usage`;
 </script>
 
-<div class="u-flex u-flex-vertical u-gap-16">
-    <Usage
-        {path}
-        {total}
-        {count}
-        title="Usage"
-        countMetadata={{
-            legend: 'Databases',
-            title: 'Total databases'
-        }} />
+<Container>
+    <Layout.Stack gap="l">
+        <Usage
+            path={`${base}/project-${page.params.region}-${page.params.project}/databases/usage`}
+            {total}
+            {count}
+            countMetadata={{
+                legend: 'Databases',
+                title: 'Total databases'
+            }} />
 
-    <UsageMultiple
-        title="Reads and writes"
-        showHeader={false}
-        overlapContainerCover
-        total={[readsTotal, writesTotal]}
-        count={[reads, writes]}
-        legendNumberFormat="abbreviate"
-        legendData={[
-            { name: 'Reads', value: readsTotal },
-            { name: 'Writes', value: writesTotal }
-        ]} />
-</div>
+        <UsageMultiple
+            title="Reads and writes"
+            showHeader={false}
+            total={[readsTotal, writesTotal]}
+            count={[reads, writes]}
+            legendNumberFormat="abbreviate"
+            legendData={[
+                { name: 'Reads', value: readsTotal },
+                { name: 'Writes', value: writesTotal }
+            ]} />
+    </Layout.Stack>
+</Container>

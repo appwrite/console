@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import { WizardWithSteps } from '$lib/layout';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
     import Step3 from './wizard/step3.svelte';
@@ -13,7 +13,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { providerType, messageParams } from './wizard/store';
     import { ID, MessagingProviderType, type Models } from '@appwrite.io/console';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     async function create() {
         try {
@@ -23,7 +23,7 @@
             switch ($providerType) {
                 case MessagingProviderType.Email:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.createEmail(
                             messageId,
                             $messageParams[$providerType].subject,
@@ -41,7 +41,7 @@
                     break;
                 case MessagingProviderType.Sms:
                     response = await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .messaging.createSms(
                             messageId,
                             $messageParams[$providerType].content,
@@ -66,7 +66,7 @@
                         }
 
                         response = await sdk
-                            .forProject($page.params.region, $page.params.project)
+                            .forProject(page.params.region, page.params.project)
                             .messaging.createPush(
                                 messageId,
                                 $messageParams[$providerType].title,
@@ -161,4 +161,4 @@
     $wizard.finalAction = create;
 </script>
 
-<Wizard title="Create message" steps={stepsComponents} finalAction="Send" />
+<WizardWithSteps title="Create message" steps={stepsComponents} finalAction="Send" />

@@ -1,121 +1,57 @@
 <script lang="ts">
-    import { SvelteComponent, onMount } from 'svelte';
-    import { FormItem, Helper, Label } from '.';
-    import NullCheckbox from './nullCheckbox.svelte';
-    import { Drop } from '$lib/components';
+    import { Input } from '@appwrite.io/pink-svelte';
 
-    export let label: string;
-    export let optionalText: string | undefined = undefined;
-    export let showLabel = true;
+    export let label: string = null;
     export let id: string;
     export let value = '';
     export let placeholder = '';
+    export let name: string | undefined = undefined;
     export let required = false;
     export let nullable = false;
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
-    export let tooltip: string = null;
-    export let popover: typeof SvelteComponent<unknown> = null;
-    export let popoverProps: Record<string, unknown> = {};
-    export let fullWidth = false;
 
-    let element: HTMLInputElement;
     let error: string;
-    let show = false;
 
-    onMount(() => {
-        if (element && autofocus) {
-            element.focus();
-        }
-    });
-
-    const handleInvalid = (event: Event) => {
+    const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
         event.preventDefault();
-        if (element.validity.typeMismatch) {
+
+        if (event.currentTarget.validity.typeMismatch) {
             error = 'Emails should be formatted as: name@example.com';
             return;
         }
-        if (element.validity.valueMissing) {
+        if (event.currentTarget.validity.valueMissing) {
             error = 'This field is required';
             return;
         }
-        error = element.validationMessage;
+        error = event.currentTarget.validationMessage;
     };
 
     $: if (value) {
         error = null;
     }
-
-    let prevValue = '';
-    function handleNullChange(e: CustomEvent<boolean>) {
-        const isNull = e.detail;
-        if (isNull) {
-            prevValue = value;
-            value = null;
-        } else {
-            value = prevValue;
-        }
-    }
 </script>
 
-<FormItem {fullWidth}>
-    <Label {required} {optionalText} {tooltip} hide={!showLabel} for={id}>
-        {label}{#if popover}
-            <Drop isPopover bind:show display="inline-block">
-                <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
-                &nbsp;<button
-                    type="button"
-                    on:click={() => (show = !show)}
-                    class="tooltip"
-                    aria-label="input tooltip">
-                    <span
-                        class="icon-info"
-                        aria-hidden="true"
-                        style="font-size: var(--icon-size-small)" />
-                </button>
-                <svelte:fragment slot="list">
-                    <div
-                        class="dropped card u-max-width-250"
-                        style:--card-border-radius="var(--border-radius-small)"
-                        style:--p-card-padding=".75rem"
-                        style:box-shadow="var(--shadow-large)">
-                        <svelte:component this={popover} {...popoverProps} />
-                    </div>
-                </svelte:fragment>
-            </Drop>
-        {/if}
-    </Label>
-
-    <div
-        class:input-text-wrapper={!$$slots.default}
-        class:u-flex={$$slots.default}
-        class:u-gap-16={$$slots.default}
-        class:u-cross-center={$$slots.default}>
-        <input
-            {id}
-            {placeholder}
-            {disabled}
-            {required}
-            {readonly}
-            type="email"
-            class="input-text"
-            autocomplete={autocomplete ? 'on' : 'off'}
-            bind:value
-            bind:this={element}
-            on:invalid={handleInvalid} />
-        {#if nullable && !required}
-            <ul
-                class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
-                <li class="buttons-list-item">
-                    <NullCheckbox checked={value === null} on:change={handleNullChange} />
-                </li>
-            </ul>
-        {/if}
-        <slot />
-    </div>
-    {#if error}
-        <Helper type="warning">{error}</Helper>
-    {/if}
-</FormItem>
+<Input.Text
+    {id}
+    {name}
+    {placeholder}
+    {disabled}
+    {required}
+    {readonly}
+    {label}
+    {nullable}
+    on:input
+    on:invalid={handleInvalid}
+    type="email"
+    helper={error}
+    state={error ? 'error' : 'default'}
+    autofocus={autofocus || undefined}
+    autocomplete={autocomplete ? 'on' : 'off'}
+    bind:value>
+    <slot name="start" slot="start" />
+    <slot name="info" slot="info" />
+    <slot name="end" slot="end" />
+</Input.Text>

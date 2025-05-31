@@ -1,14 +1,14 @@
-<script lang="ts">
+<!-- <script lang="ts">
     import SmsTemplate from './smsTemplate.svelte';
     import LocaleOptions from './localeOptions.svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { loadSmsTemplate } from './+page.svelte';
     import { baseSmsTemplate, smsTemplate } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { Id } from '$lib/components';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     let locale = 'en';
     let loading = false;
 
@@ -36,11 +36,11 @@
 </script>
 
 <div class="boxes-wrapper u-margin-block-start-16">
-    <LocaleOptions on:select={onLocaleChange} bind:value={locale} />
+    <LocaleOptions on:change={onLocaleChange} bind:value={locale} />
     <SmsTemplate bind:loading>
         <Id value={'{{team}}'}>{'{{team}}'}</Id>
         <Id value={'{{user}}'}>{'{{user}}'}</Id>
         <Id value={'{{project}}'}>{'{{project}}'}</Id>
         <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>
     </SmsTemplate>
-</div>
+</div> -->

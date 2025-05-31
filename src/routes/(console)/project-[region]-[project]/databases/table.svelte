@@ -1,24 +1,12 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { page } from '$app/state';
     import { Id } from '$lib/components';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRowLink,
-        TableScroll
-    } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import type { PageData } from './$types';
     import { columns } from './store';
-    import Cell from '$lib/elements/table/cell.svelte';
+    import { Tooltip, Table } from '@appwrite.io/pink-svelte';
 
-    export let data: PageData;
-    const projectId = $page.params.project;
+    export let data;
 
     function getPolicyDescription(cron: string): string {
         const [minute, hour, dayOfMonth, , dayOfWeek] = cron.split(' ');
@@ -30,68 +18,53 @@
     }
 </script>
 
-<TableScroll>
-    <TableHeader>
-        {#each $columns as column}
-            {#if column.show}
-                <TableCellHead width={column.width}>{column.title}</TableCellHead>
-            {/if}
+<Table.Root columns={$columns} let:root>
+    <svelte:fragment slot="header" let:root>
+        {#each $columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
-    </TableHeader>
-    <TableBody>
-        {#each data.databases.databases as database (database.$id)}
-            <TableRowLink
-                href={`${base}/project-${$page.params.region}-${projectId}/databases/database-${database.$id}`}>
-                {#each $columns as column}
-                    {#if column.show}
-                        {#if column.id === '$id'}
-                            {#key $columns}
-                                <TableCell width={column.width} title={column.title}>
-                                    <Id value={database.$id}>
-                                        {database.$id}
-                                    </Id>
-                                </TableCell>
-                            {/key}
-                        {:else if column.id === 'name'}
-                            <TableCellText width={column.width} title={column.title}>
-                                {database.name}
-                            </TableCellText>
-                        {:else if column.id === 'backup'}
-                            {@const policies = data.policies?.[database.$id] ?? null}
-                            {@const lastBackup = data.lastBackups?.[database.$id] ?? null}
-                            {@const description = policies
-                                ?.map((policy) => getPolicyDescription(policy.schedule))
-                                .join(', ')}
+    </svelte:fragment>
+    {#each data.databases.databases as database (database.$id)}
+        <Table.Row.Link
+            {root}
+            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${database.$id}`}>
+            {#each $columns as column}
+                <Table.Cell column={column.id} {root}>
+                    {#if column.id === '$id'}
+                        {#key $columns}
+                            <Id value={database.$id}>
+                                {database.$id}
+                            </Id>
+                        {/key}
+                    {:else if column.id === 'name'}
+                        {database.name}
+                    {:else if column.id === 'backup'}
+                        {@const policies = data.policies?.[database.$id] ?? null}
+                        {@const lastBackup = data.lastBackups?.[database.$id] ?? null}
+                        {@const description = policies
+                            ?.map((policy) => getPolicyDescription(policy.schedule))
+                            .join(', ')}
 
-                            <Cell title={column.title} width={column.width}>
-                                <span
-                                    class="u-trim"
-                                    use:tooltip={{
-                                        placement: 'bottom',
-                                        disabled: !policies || !lastBackup,
-                                        content: `Last backup: ${lastBackup}`
-                                    }}>
-                                    {#if !policies}
-                                        <span class="icon-exclamation" /> No backup policies
-                                    {:else}
-                                        {description}
-                                    {/if}
-                                </span>
-                            </Cell>
-                        {:else}
-                            <TableCellText width={column.width} title={column.title}>
-                                {toLocaleDateTime(database[column.id])}
-                            </TableCellText>
-                        {/if}
+                        <Tooltip
+                            placement="bottom"
+                            disabled={!policies || !lastBackup}
+                            maxWidth="fit-content">
+                            <span class="u-trim">
+                                {#if !policies}
+                                    <span class="icon-exclamation"></span> No backup policies
+                                {:else}
+                                    {description}
+                                {/if}
+                            </span>
+                            <span slot="tooltip">
+                                {`Last backup: ${lastBackup}`}
+                            </span>
+                        </Tooltip>
+                    {:else}
+                        {toLocaleDateTime(database[column.id])}
                     {/if}
-                {/each}
-            </TableRowLink>
-        {/each}
-    </TableBody>
-</TableScroll>
-
-<style lang="scss">
-    .icon-exclamation {
-        color: hsl(var(--color-warning-100)) !important;
-    }
-</style>
+                </Table.Cell>
+            {/each}
+        </Table.Row.Link>
+    {/each}
+</Table.Root>

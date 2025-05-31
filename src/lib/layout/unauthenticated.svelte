@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Avatar, AvatarInitials, Card, Heading } from '$lib/components';
+    import { AvatarInitials, Card } from '$lib/components';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.png';
@@ -8,6 +8,7 @@
     import type { Coupon } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
     import type { Campaign } from '$lib/stores/campaigns';
+    import { Typography, Layout, Avatar } from '@appwrite.io/pink-svelte';
     import { getCampaignImageUrl } from '$routes/(public)/card/helpers';
 
     export const imgLight = LoginLight;
@@ -15,6 +16,7 @@
 
     export let campaign: Campaign = null;
     export let coupon: Coupon = null;
+    export let align: 'start' | 'center' | 'end' = 'start';
 
     $: variation = ((coupon?.campaign ?? campaign) ? campaign?.template : 'default') as
         | 'default'
@@ -47,7 +49,7 @@
             ? ''
             : `url(${$app.themeInUse === 'dark' ? imgDark : imgLight})`}>
         {#if variation !== 'default'}
-            <div class="side-bg-container" />
+            <div class="side-bg-container"></div>
         {/if}
         <div
             class="logo u-flex u-gap-16"
@@ -71,118 +73,89 @@
         </div>
 
         {#if variation === 'default'}
-            <div class="u-flex u-stretch" />
+            <div class="u-flex u-stretch"></div>
 
             <div class="tag-line is-not-mobile">
                 <p>Build like a team of hundreds<span class="underscore">_</span></p>
             </div>
         {:else if variation === 'card'}
-            <section
-                class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line">
-                <img
-                    src={getCampaignImageUrl(campaign?.image[$app.themeInUse])}
-                    class="u-block u-image-object-fit-cover side-bg-img"
-                    alt="promo" />
+            <div style:max-inline-size="30rem" style:height="100%">
+                <Layout.Stack justifyContent="center" alignItems="center" height="100%" gap="xxxl">
+                    <img
+                        src={getCampaignImageUrl(campaign?.image[$app.themeInUse])}
+                        class="u-block u-image-object-fit-cover side-bg-img"
+                        alt="promo" />
 
-                <div class="u-text-center auth-container">
-                    <div class="is-only-mobile u-width-full-line">
-                        <Heading
-                            size="5"
-                            tag="h3"
-                            class="u-margin-block-start-16"
-                            trimmed={false}
-                            style="font-weight:normal">
-                            {generateTitle()}
-                        </Heading>
-                    </div>
-                    <div class="is-not-mobile u-width-full-line">
-                        <Heading
-                            size="4"
-                            tag="h3"
-                            class="u-margin-block-start-32"
-                            trimmed={false}
-                            style="font-weight:normal">
-                            {generateTitle()}
-                        </Heading>
-                    </div>
-                    <p class="u-margin-block-start-16">
-                        {generateDesc()}
-                    </p>
-                </div>
-            </section>
+                    <Layout.Stack gap="s">
+                        <Typography.Title size="s" color="--fgcolor-neutral-primary" align="center"
+                            >{generateTitle()}</Typography.Title>
+                        <Typography.Text
+                            variant="l-400"
+                            color="--fgcolor-neutral-secondary"
+                            align="center">
+                            {generateDesc()}
+                        </Typography.Text>
+                    </Layout.Stack>
+                </Layout.Stack>
+            </div>
         {:else if variation === 'review'}
-            <section
-                class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line review-container">
-                <div class="u-text-center">
-                    <div class="is-only-mobile u-width-full-line">
-                        <Heading
-                            size="5"
-                            tag="h3"
-                            class="u-margin-block-start-48"
-                            trimmed={false}
-                            style="font-weight:normal">
-                            {generateTitle()}
-                        </Heading>
-                    </div>
-                    <div class="is-not-mobile u-width-full-line">
-                        <Heading
-                            size="3"
-                            tag="h3"
-                            class="u-margin-block-start-32"
-                            trimmed={false}
-                            style="font-weight:normal">
-                            {generateTitle()}
-                        </Heading>
-                    </div>
-                </div>
-
-                <p class="body-text-1 u-margin-block-start-16 u-text-center">{generateDesc()}</p>
-                <div class="review-container u-margin-block-start-64">
-                    <Card style="--p-card-padding: 1.25rem">
-                        <p class="body-text-1">
-                            {currentReview.review}
-                        </p>
-                        <div class="u-margin-block-start-16 u-flex u-gap-16">
-                            {#if currentReview?.image}
-                                <Avatar
-                                    src={getCampaignImageUrl(currentReview?.image)}
-                                    name={currentReview.name}
-                                    size={40} />
-                            {:else}
-                                <AvatarInitials size={40} name={currentReview.name} />
-                            {/if}
-                            <div>
-                                <p class="body-text-2 u-bold">{currentReview.name}</p>
-                                <p class="body-text-2">{currentReview.description}</p>
-                            </div>
-                        </div>
+            <div style:max-inline-size="30rem" style:height="100%">
+                <Layout.Stack justifyContent="center" alignItems="center" height="100%" gap="xxxl">
+                    <Card radius="m" padding="s">
+                        <Layout.Stack gap="xl">
+                            <Typography.Text variant="l-400" color="--fgcolor-neutral-secondary">
+                                {currentReview.review}</Typography.Text>
+                            <Layout.Stack gap="s" direction="row">
+                                {#if currentReview?.image}
+                                    <Avatar
+                                        src={getCampaignImageUrl(currentReview?.image)}
+                                        alt={currentReview.name}
+                                        size="m" />
+                                {:else}
+                                    <AvatarInitials size="m" name={currentReview.name} />
+                                {/if}
+                                <Layout.Stack direction="column" gap="xxxs">
+                                    <Typography.Text
+                                        variant="m-500"
+                                        color="--fgcolor-neutral-primary"
+                                        >{currentReview.name}</Typography.Text>
+                                    <Typography.Text
+                                        variant="m-400"
+                                        color="--fgcolor-neutral-secondary"
+                                        >{currentReview.description}</Typography.Text>
+                                </Layout.Stack>
+                            </Layout.Stack>
+                        </Layout.Stack>
                     </Card>
-                </div>
-                {#if campaign?.footer}
-                    <div
-                        class="u-flex u-gap-16 u-cross-center u-main-center review-footer-container">
-                        <p class="u-bold" style:text-transform="uppercase">provided to you by</p>
-                        <img
-                            style:max-block-size="2.5rem"
-                            src={getCampaignImageUrl(campaign?.image[$app.themeInUse])}
-                            alt={coupon?.campaign ?? campaign.$id} />
-                    </div>
-                {/if}
-            </section>
+                    <Layout.Stack gap="s">
+                        <Typography.Title size="s" align="center" color="--fgcolor-neutral-primary"
+                            >{generateTitle()}</Typography.Title>
+                        <Typography.Text variant="l-400" align="center"
+                            >{generateDesc()}</Typography.Text>
+                    </Layout.Stack>
+                    {#if campaign?.footer}
+                        <div
+                            class="u-flex u-gap-16 u-cross-center u-main-center review-footer-container">
+                            <p class="u-bold" style:text-transform="uppercase">
+                                provided to you by
+                            </p>
+                            <img
+                                style:max-block-size="2.5rem"
+                                src={getCampaignImageUrl(campaign?.image[$app.themeInUse])}
+                                alt={coupon?.campaign ?? campaign.$id} />
+                        </div>
+                    {/if}
+                </Layout.Stack>
+            </div>
         {/if}
     </section>
     <section class="grid-1-1-col-2 u-flex u-flex-vertical u-cross-center u-main-center">
         <slot name="top" />
         <div class="container u-flex u-flex-vertical u-cross-center u-main-center">
             <div class="auth-container u-width-full-line">
-                <h1 class="heading-level-4 u-margin-block-start-auto is-not-mobile">
+                <Typography.Title size="m" {align}>
                     <slot name="title" />
-                </h1>
-                <h1
-                    class="heading-level-5 u-margin-block-start-auto is-only-mobile"
-                    class:u-padding-block-start-24={variation !== 'default'}>
-                    <slot name="title" />
-                </h1>
+                </Typography.Title>
                 <div class="u-margin-block-start-24">
                     <slot />
                 </div>
@@ -216,7 +189,7 @@
 </main>
 
 <style lang="scss">
-    @use '@appwrite.io/pink/src/abstract/variables/devices';
+    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
 
     .side-bg {
         position: relative;
@@ -305,7 +278,7 @@
         }
 
         .tag-line {
-            font-family: 'Aeonik Pro';
+            font-family: 'Aeonik Pro', 'Inter', sans-serif;
             font-size: 4rem;
             font-style: normal;
             font-weight: 400;

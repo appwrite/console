@@ -1,7 +1,4 @@
 export { default as Form } from './form.svelte';
-export { default as FormItem } from './formItem.svelte';
-export { default as FormItemPart } from './formItemPart.svelte';
-export { default as FormList } from './formList.svelte';
 export { default as Button } from './button.svelte';
 export { default as InputDomain } from './inputDomain.svelte';
 export { default as InputEmail } from './inputEmail.svelte';
@@ -16,7 +13,6 @@ export { default as InputDateTime } from './inputDateTime.svelte';
 export { default as InputSearch } from './inputSearch.svelte';
 export { default as InputRadio } from './inputRadio.svelte';
 export { default as InputSelect } from './inputSelect.svelte';
-export { default as InputSelectSearch } from './inputSelectSearch.svelte';
 export { default as InputCheckbox } from './inputCheckbox.svelte';
 export { default as InputChoice } from './inputChoice.svelte';
 export { default as InputPhone } from './inputPhone.svelte';
