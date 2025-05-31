@@ -171,7 +171,7 @@
                     }}></textarea>
                 <div class="options">
                     <Layout.Stack direction="row" justifyContent="flex-end">
-                        <Button.Button type="button" icon variant="secondary" size="s">
+                        <Button.Button type="button" icon variant="text" size="s">
                             <Icon icon={IconPaperClip} color="--fgcolor-neutral-tertiary" />
                         </Button.Button>
                         <Button.Button icon variant="secondary" size="s" type="submit" disabled={!studio.streaming && !message.trim()}>
