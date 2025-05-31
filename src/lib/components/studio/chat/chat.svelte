@@ -170,7 +170,7 @@
                         minimizeChat = false;
                     }}></textarea>
                 <div class="options">
-                    <Layout.Stack direction="row" justifyContent="flex-end">
+                    <Layout.Stack direction="row" justifyContent="flex-end" gap="xs">
                         <Button.Button type="button" icon variant="text" size="s">
                             <Icon icon={IconPaperClip} color="--fgcolor-neutral-tertiary" />
                         </Button.Button>
