@@ -32,7 +32,7 @@
         return proxy?.redirectUrl
             ? 'Redirect to ' + proxy.redirectUrl
             : proxy?.deploymentVcsProviderBranch
-              ? 'Deployed from' + proxy.deploymentVcsProviderBranch
+              ? 'Deployed from ' + proxy.deploymentVcsProviderBranch
               : 'Active deployment';
     };
 </script>
