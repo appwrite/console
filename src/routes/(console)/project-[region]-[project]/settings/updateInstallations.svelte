@@ -7,7 +7,6 @@
     import type { Models } from '@appwrite.io/console';
     import GitDisconnectModal from './GitDisconnectModal.svelte';
     import { isSelfHosted } from '$lib/system';
-    import { consoleVariables } from '$routes/(console)/store';
     import {
         ActionMenu,
         Alert,
@@ -28,6 +27,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { ComponentType } from 'svelte';
     import { Link } from '$lib/elements';
+    import { regionalConsoleVariables } from '../store';
 
     export let total: number;
     export let limit: number;
@@ -37,7 +37,7 @@
     let showGitDisconnect = false;
     let showInstallationDropdown: boolean[] = [];
     let selectedInstallation: Models.Installation;
-    const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
+    const isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
 
     function getInstallationLink(installation: Models.Installation) {
         switch (installation.provider) {

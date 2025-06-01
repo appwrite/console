@@ -58,7 +58,7 @@
     const projectId = page.params.project;
 
     const updateConfigCode = (prefix = '') => `${prefix}APPWRITE_PROJECT_ID = "${projectId}"
-${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
+${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
     type FrameworkType = {
         key: string;
@@ -100,7 +100,7 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.p
             smallIcon: IconNuxt,
             portNumber: 3000,
             runCommand: 'npm run dev',
-            updateConfigCode: updateConfigCode('NUXT_')
+            updateConfigCode: updateConfigCode('NUXT_PUBLIC_')
         },
         {
             key: 'nextjs',

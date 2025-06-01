@@ -5,6 +5,7 @@
     import { getFlagUrl } from '$lib/helpers/flag';
     import { isCloud } from '$lib/system.js';
     import type { Models } from '@appwrite.io/console';
+    import { filterRegions } from '$lib/helpers/regions';
 
     export let projectName: string;
     export let id: string;
@@ -13,25 +14,6 @@
     export let showTitle = true;
 
     let showCustomId = false;
-
-    function getRegions() {
-        return regions
-            .filter((region) => region.$id !== 'default')
-            .sort((regionA, regionB) => {
-                if (regionA.disabled && !regionB.disabled) {
-                    return 1;
-                }
-                return regionA.name > regionB.name ? 1 : -1;
-            })
-            .map((region) => {
-                return {
-                    label: region.name,
-                    value: region.$id,
-                    leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
-                    disabled: region.disabled || !region.available
-                };
-            });
-    }
 </script>
 
 <svelte:head>
@@ -69,7 +51,7 @@
                         <Input.Select
                             bind:value={region}
                             placeholder="Select a region"
-                            options={getRegions()}
+                            options={filterRegions(regions)}
                             label="Region" />
                         <Typography.Text>Region cannot be changed after creation</Typography.Text>
                     </Layout.Stack>

@@ -8,12 +8,12 @@
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
     import { Divider, Tabs } from '@appwrite.io/pink-svelte';
-    import { consoleVariables } from '$routes/(console)/store';
     import { isCloud } from '$lib/system';
     import { page } from '$app/state';
     import { isASubdomain } from '$lib/helpers/tlds';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     let {
         show = $bindable(false),
@@ -26,13 +26,16 @@
     const isSubDomain = $derived.by(() => isASubdomain(selectedProxyRule?.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
+
     $effect(() => {
-        if ($consoleVariables._APP_DOMAIN_SITES && isSubDomain) {
+        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
             selectedTab = 'cname';
-        } else if ($consoleVariables._APP_DOMAIN_TARGET_A) {
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
             selectedTab = 'a';
-        } else if ($consoleVariables._APP_DOMAIN_TARGET_AAAA) {
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
             selectedTab = 'aaaa';
+        } else {
+            selectedTab = 'nameserver';
         }
     });
 
@@ -53,7 +56,7 @@
             });
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
-            error = e;
+            error = e.message;
             trackError(e, Submit.DomainUpdateVerification);
         }
     }
@@ -68,7 +71,7 @@
 <Modal title="Retry verification" bind:show onSubmit={retryDomain} bind:error>
     <div>
         <Tabs.Root variant="secondary" let:root>
-            {#if isSubDomain && !!$consoleVariables._APP_DOMAIN_SITES && $consoleVariables._APP_DOMAIN_SITES !== 'localhost'}
+            {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'cname')}
@@ -84,7 +87,7 @@
                     Nameservers
                 </Tabs.Item.Button>
             {/if}
-            {#if !!$consoleVariables._APP_DOMAIN_TARGET_A && $consoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'}
+            {#if !isCloud && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_A && $regionalConsoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'a')}
@@ -92,7 +95,7 @@
                     A
                 </Tabs.Item.Button>
             {/if}
-            {#if !!$consoleVariables._APP_DOMAIN_TARGET_AAAA && $consoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'}
+            {#if !isCloud && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'aaaa')}

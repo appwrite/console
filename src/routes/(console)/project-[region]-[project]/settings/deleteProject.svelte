@@ -10,6 +10,7 @@
     import { isCloud } from '$lib/system';
     import Confirm from '$lib/components/confirm.svelte';
     import { project, projectRegion } from '../store';
+    import { organization } from '$lib/stores/organization';
 
     let showDelete = false;
     let name: string = null;
@@ -24,7 +25,9 @@
                 message: `${$project.name} has been deleted`
             });
             trackEvent(Submit.ProjectDelete);
-            await goto(base);
+            await goto(`${base}/organization-${$organization.$id}`, {
+                replaceState: true
+            });
         } catch (e) {
             error = e.message;
             trackError(e, Submit.ProjectDelete);

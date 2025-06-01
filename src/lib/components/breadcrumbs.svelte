@@ -14,6 +14,7 @@
     import { base } from '$app/paths';
     import { newOrgModal } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { page } from '$app/stores';
 
     type Project = {
         name: string;
@@ -64,7 +65,7 @@
     export let organizations: Organization[] = [];
 
     $: selectedOrg = organizations.find((organization) => organization.isSelected);
-    $: selectedProject = selectedOrg?.projects.find((project) => project.isSelected);
+    $: selectedProject = $page.data.project;
 
     let organisationBottomSheetOpen = false;
     let projectsBottomSheetOpen = false;
@@ -81,7 +82,7 @@
             title: 'Switch Organization',
             items: organizations.map((organization) => ({
                 name: organization.name,
-                href: `/console/organization-${organization?.$id}`
+                href: `${base}/organization-${organization?.$id}`
             }))
         },
         bottom: {
@@ -97,12 +98,12 @@
 
     $: organizationsBottomSheet = !selectedOrg
         ? switchOrganization
-        : {
+        : ({
               top: {
                   items: [
                       {
                           name: 'Organization overview',
-                          href: `/console/organization-${selectedOrg?.$id}`
+                          href: `${base}/organization-${selectedOrg?.$id}`
                       }
                   ]
               },
@@ -126,8 +127,8 @@
                                 }
                             ]
                         }
-          };
-    let projectsBottomSheet: SheetMenu;
+          } satisfies SheetMenu);
+
     $: projectsBottomSheet = {
         top:
             selectedOrg?.projects.length > 1
@@ -140,12 +141,12 @@
                                     if (index < 4) {
                                         return {
                                             name: project.name,
-                                            href: `/console/project-${project.region}-${project.$id}/overview`
+                                            href: `${base}/project-${project.region}-${project.$id}/overview`
                                         };
                                     } else if (index === 4) {
                                         return {
                                             name: 'All projects',
-                                            href: `/console/organization-${selectedOrg?.$id}`
+                                            href: `${base}/organization-${selectedOrg?.$id}`
                                         };
                                     }
                                     return null;
@@ -157,7 +158,7 @@
                           {
                               name: 'Create project',
                               trailingIcon: IconPlus,
-                              href: `/console/organization-${selectedOrg?.$id}?create-project`
+                              href: `${base}/organization-${selectedOrg?.$id}?create-project`
                           }
                       ]
                   },
@@ -168,12 +169,12 @@
                           {
                               name: 'Create project',
                               trailingIcon: IconPlus,
-                              href: `/console/organization-${selectedOrg?.$id}?create-project`
+                              href: `${base}/organization-${selectedOrg?.$id}?create-project`
                           }
                       ]
                   }
                 : undefined
-    };
+    } satisfies SheetMenu;
 
     function onResize() {
         if ((organisationBottomSheetOpen || projectsBottomSheetOpen) && !$isSmallViewport) {
@@ -220,7 +221,7 @@
             {#if selectedOrg}
                 <div use:melt={$itemOrganizations}>
                     <ActionMenu.Root>
-                        <ActionMenu.Item.Anchor href={`/console/organization-${selectedOrg?.$id}`}
+                        <ActionMenu.Item.Anchor href={`${base}/organization-${selectedOrg?.$id}`}
                             >Organization overview</ActionMenu.Item.Anchor
                         ></ActionMenu.Root>
                 </div>
@@ -240,7 +241,7 @@
                                     <div use:melt={$itemOrganizations}>
                                         <ActionMenu.Root>
                                             <ActionMenu.Item.Anchor
-                                                href={`/console/organization-${organization?.$id}`}
+                                                href={`${base}/organization-${organization?.$id}`}
                                                 >{organization.name}</ActionMenu.Item.Anchor>
                                         </ActionMenu.Root>
                                     </div>
@@ -271,7 +272,7 @@
                     <div use:melt={$itemOrganizations}>
                         <ActionMenu.Root>
                             <ActionMenu.Item.Anchor
-                                href={`/console/organization-${organization?.$id}`}
+                                href={`${base}/organization-${organization?.$id}`}
                                 >{organization.name}</ActionMenu.Item.Anchor
                             ></ActionMenu.Root>
                     </div>
@@ -317,17 +318,19 @@
                             <div use:melt={$itemProjects}>
                                 <ActionMenu.Root>
                                     <ActionMenu.Item.Anchor
-                                        href={`/console/project-${project.region}-${project.$id}`}
-                                        >{project.name}</ActionMenu.Item.Anchor
-                                    ></ActionMenu.Root>
+                                        href={`${base}/project-${project.region}-${project.$id}`}>
+                                        {project.name}
+                                    </ActionMenu.Item.Anchor>
+                                </ActionMenu.Root>
                             </div>
                         {:else if index === 4}
                             <div use:melt={$itemProjects}>
                                 <ActionMenu.Root>
                                     <ActionMenu.Item.Anchor
-                                        href={`/console/organization-${selectedOrg.$id}`}
-                                        >All projects</ActionMenu.Item.Anchor
-                                    ></ActionMenu.Root>
+                                        href={`${base}/organization-${selectedOrg.$id}`}>
+                                        All projects
+                                    </ActionMenu.Item.Anchor>
+                                </ActionMenu.Root>
                             </div>
                         {/if}
                     {/each}
@@ -337,18 +340,16 @@
                     <ActionMenu.Root>
                         <ActionMenu.Item.Anchor
                             leadingIcon={IconPlusSm}
-                            href={`/console/organization-${selectedOrg?.$id}?create-project`}
-                            >Create project</ActionMenu.Item.Anchor
-                        ></ActionMenu.Root>
+                            href={`${base}/organization-${selectedOrg?.$id}?create-project`}>
+                            Create project
+                        </ActionMenu.Item.Anchor></ActionMenu.Root>
                 </div>
             </Card.Base>
         </div>
     {/if}
 </div>
-<BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet}
-></BottomSheet.Menu>
-<BottomSheet.Menu bind:isOpen={projectsBottomSheetOpen} menu={projectsBottomSheet}
-></BottomSheet.Menu>
+<BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet} />
+<BottomSheet.Menu bind:isOpen={projectsBottomSheetOpen} menu={projectsBottomSheet} />
 
 <style lang="scss">
     .menu {

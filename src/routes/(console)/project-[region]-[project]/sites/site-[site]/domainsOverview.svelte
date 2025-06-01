@@ -5,13 +5,13 @@
     import OpenOnMobileModal from '../(components)/openOnMobileModal.svelte';
     import { timeFromNow } from '$lib/helpers/date';
     import { IconQrcode } from '@appwrite.io/pink-icons-svelte';
-    import { protocol } from '$routes/(console)/store';
     import { type Models } from '@appwrite.io/console';
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Card, Trim } from '$lib/components';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { RuleTrigger } from '$lib/stores/sdk';
+    import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
     export let proxyRuleList: Models.ProxyRuleList;
 
@@ -75,7 +75,7 @@
                     <Layout.Stack gap="xxs" inline>
                         <Link
                             variant="quiet"
-                            href={`${$protocol}${rule.domain}`}
+                            href={`${$regionalProtocol}${rule.domain}`}
                             size="m"
                             external
                             icon>

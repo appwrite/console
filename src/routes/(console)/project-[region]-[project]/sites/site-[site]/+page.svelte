@@ -5,7 +5,6 @@
     import DomainsOverview from './domainsOverview.svelte';
     import DeploymentsOverview from './deploymentsOverview.svelte';
     import { Button } from '$lib/elements/forms';
-    import { protocol } from '$routes/(console)/store';
     import InstantRollbackDomain from './instantRollbackModal.svelte';
     import { app } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
@@ -14,6 +13,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { base } from '$app/paths';
+    import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
     export let data;
     let showRollback = false;
@@ -35,7 +35,7 @@
                     {#if data.proxyRuleList.total}
                         <Button
                             external
-                            href={`${$protocol}${data.proxyRuleList.rules[0]?.domain}`}>
+                            href={`${$regionalProtocol}${data.proxyRuleList.rules[0]?.domain}`}>
                             Visit
                         </Button>
                     {/if}

@@ -1,9 +1,9 @@
 <script lang="ts">
     import { LabelCard } from '$lib/components';
-    import { consoleVariables } from '$routes/(console)/store';
     import { Layout } from '@appwrite.io/pink-svelte';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
-    const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
+    const isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
     export let connectBehaviour: 'now' | 'later' = isVcsEnabled ? 'now' : 'later';
 </script>
 

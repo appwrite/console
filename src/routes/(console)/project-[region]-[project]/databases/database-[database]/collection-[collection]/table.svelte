@@ -27,9 +27,11 @@
         Link,
         Badge,
         FloatingActionBar,
-        InteractiveText
+        InteractiveText,
+        Typography,
     } from '@appwrite.io/pink-svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
+
     export let data: PageData;
 
     const databaseId = page.params.database;
@@ -106,6 +108,7 @@
                 type: attribute.type as ColumnType,
                 show: selected?.includes(attribute.key) ?? true,
                 array: attribute?.array,
+                width: { min: 168 },
                 format:
                     'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
                 elements: 'elements' in attribute ? attribute.elements : null
@@ -170,7 +173,12 @@
     let:root
     allowSelection
     bind:selectedRows
-    columns={[{ id: '$id', width: 200 }, ...$columns, { id: '$created' }, { id: '$updated' }]}>
+    columns={[
+        { id: '$id', width: 200 },
+        ...$columns,
+        { id: '$created', width: 200 },
+        { id: '$updated', width: 200 }
+    ]}>
     <svelte:fragment slot="header" let:root>
         <Table.Header.Cell column="$id" {root}>Document ID</Table.Header.Cell>
         {#each $columns as column}
@@ -198,7 +206,7 @@
                     {#if isRelationship(attr)}
                         {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
                         {#if !isRelationshipToMany(attr)}
-                            {#if document[+id]}
+                            {#if document[id]}
                                 {@const related = document[id]}
                                 <Link.Button
                                     variant="muted"
@@ -251,10 +259,12 @@
                             </button>
                         {:else}
                             <Tooltip disabled={!formatted.truncated} placement="bottom">
-                                <span>
+                                <Typography.Text truncate>
                                     {formatted.value}
-                                </span>
-                                <span style:white-space="pre-wrap" slot="tooltip">
+                                </Typography.Text>
+                            <span
+                                 style:white-space="pre-wrap"
+                                style:word-break="break-all" slot="tooltip">
                                     {formatted.whole}
                                 </span>
                             </Tooltip>

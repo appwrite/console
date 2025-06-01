@@ -2,7 +2,6 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { protocol } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
     import { IconDotsHorizontal, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import {
@@ -17,6 +16,7 @@
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
     import { columns } from './store';
+    import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
     let {
         proxyRules
@@ -52,7 +52,10 @@
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === 'domain'}
                         <Layout.Stack direction="row" gap="xs">
-                            <Link external href={`${$protocol}${rule.domain}`} variant="quiet">
+                            <Link
+                                external
+                                variant="quiet"
+                                href={`${$regionalProtocol}${rule.domain}`}>
                                 <Typography.Text truncate>
                                     {rule.domain}
                                 </Typography.Text>
@@ -92,7 +95,7 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
-                                {#if rule.status !== 'verified'}
+                                {#if rule.status !== 'verified' && rule.status !== 'verifying'}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconRefresh}
                                         on:click={(e) => {

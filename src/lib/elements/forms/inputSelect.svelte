@@ -17,7 +17,6 @@
         leadingIcon?: ComponentType;
         leadingHtml?: string;
     }[];
-    export let isSearchable = false;
 
     let element: HTMLSelectElement;
     let error: string;
@@ -54,7 +53,6 @@
     {optionalText}
     {placeholder}
     {disabled}
-    {isSearchable}
     helper={error ?? helper}
     {required}
     state={error ? 'error' : 'default'}

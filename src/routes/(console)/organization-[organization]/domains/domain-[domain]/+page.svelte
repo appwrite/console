@@ -25,9 +25,11 @@
     import ImportRecordModal from './importRecordModal.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import RetryDomainModal from '$routes/(console)/organization-[organization]/domains/retryDomainModal.svelte';
 
     export let data;
 
+    let showRetry = false;
     let showCreate = false;
     let showPresetModal = false;
     let showImportModal = false;
@@ -62,7 +64,7 @@
 
 <Container>
     <Layout.Stack gap="xxxl">
-        <DomainMetrics domain={data.domain} />
+        <DomainMetrics domain={data.domain} retryVerification={() => (showRetry = true)} />
 
         <Layout.Stack gap="l">
             {#if data.recordList.total}
@@ -144,4 +146,8 @@
 
 {#if showImportModal}
     <ImportRecordModal bind:show={showImportModal} />
+{/if}
+
+{#if showRetry}
+    <RetryDomainModal bind:show={showRetry} selectedDomain={data.domain} />
 {/if}

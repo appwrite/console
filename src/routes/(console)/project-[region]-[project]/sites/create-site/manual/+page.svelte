@@ -15,9 +15,11 @@
     import type { Models } from '@appwrite.io/console';
     import Configuration from '../configuration.svelte';
     import { buildVerboseDomain } from '../store';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import {
+        project,
+        regionalConsoleVariables
+    } from '$routes/(console)/project-[region]-[project]/store';
     import { organization } from '$lib/stores/organization';
-    import { consoleVariables } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { InvalidFileType, removeFile } from '$lib/helpers/files';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -32,7 +34,7 @@
 
     let name = 'My website';
     let id = ID.unique();
-    let domain = `${id}.${$consoleVariables._APP_DOMAIN_SITES}`;
+    let domain = `${id}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`;
     let framework: Models.Framework =
         data.frameworks.frameworks?.find((f) => f.key === 'other') ??
         data.frameworks.frameworks?.[0];
@@ -46,14 +48,14 @@
     $: maxSize =
         isCloud && $currentPlan
             ? $currentPlan.deploymentSize * 1000000
-            : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+            : $regionalConsoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
 
     $: readableMaxSize = humanFileSize(maxSize);
 
     async function create() {
         try {
             domain = await buildVerboseDomain(
-                $consoleVariables._APP_DOMAIN_SITES,
+                $regionalConsoleVariables._APP_DOMAIN_SITES,
                 name,
                 $organization.name,
                 $project.name,
@@ -89,7 +91,10 @@
             // Add domain
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.createSiteRule(`${domain}.${$consoleVariables._APP_DOMAIN_SITES}`, site.$id);
+                .proxy.createSiteRule(
+                    `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
+                    site.$id
+                );
 
             //Add variables
             const promises = variables.map((variable) =>

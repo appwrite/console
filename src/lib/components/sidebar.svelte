@@ -39,11 +39,11 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
 
     import type { HTMLAttributes } from 'svelte/elements';
-    import type { NavbarProject } from '$lib/components/navbar.svelte';
+    import type { Models } from '@appwrite.io/console';
 
     type $$Props = HTMLAttributes<HTMLElement> & {
         state?: 'closed' | 'open' | 'icons';
-        project: NavbarProject | undefined;
+        project: Models.Project | undefined;
         avatar: string;
         progressCard?: {
             title: string;
@@ -84,7 +84,7 @@
 </script>
 
 <div
-    class:only-mobile-tablet={project === undefined}
+    class:only-mobile-tablet={!project}
     style:--overlay-on-neutral={$app.themeInUse === 'dark'
         ? 'var(--neutral-750)'
         : 'var(--neutral-100)'}>

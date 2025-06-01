@@ -54,7 +54,6 @@
     let showCreditModal = false;
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
-    let couponData: Partial<Coupon> = data.coupon;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
@@ -63,9 +62,9 @@
         if (page.url.searchParams.has('code')) {
             const coupon = page.url.searchParams.get('code');
             try {
-                couponData = await sdk.forConsole.billing.getCouponAccount(coupon);
+                selectedCoupon = await sdk.forConsole.billing.getCouponAccount(coupon);
             } catch (e) {
-                couponData = {
+                selectedCoupon = {
                     code: null,
                     status: null,
                     credits: null
@@ -191,7 +190,7 @@
                 selectedPlan,
                 paymentMethodId,
                 null,
-                couponData?.code,
+                selectedCoupon?.code,
                 newCollaborators,
                 billingBudget,
                 taxId ? taxId : null
@@ -355,10 +354,10 @@
             <EstimatedTotalBox
                 {collaborators}
                 {isDowngrade}
-                plans={data.plansInfo}
                 billingPlan={selectedPlan}
                 bind:couponData={selectedCoupon}
-                bind:billingBudget />
+                bind:billingBudget
+                organizationId={data.organization.$id} />
         {:else if data.organization.billingPlan !== BillingPlan.CUSTOM}
             <PlanComparisonBox downgrade={isDowngrade} />
         {/if}

@@ -29,19 +29,19 @@
     import { queries } from '$lib/components/filters';
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
-    import type { Domain } from '$lib/sdk/domains';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { columns } from './store';
     import { View } from '$lib/helpers/load';
+    import type { Models } from '@appwrite.io/console';
 
     export let data;
 
     let showDelete = false;
     let showRetry = false;
-    let selectedDomain: Domain = null;
+    let selectedDomain: Models.Domain = null;
 
-    const isDomainVerified = (domain: Domain) => {
-        return domain.nameservers.toLocaleLowerCase() === 'appwrite';
+    const isDomainVerified = (domain: Models.Domain) => {
+        return domain.nameservers.toLowerCase() === 'appwrite';
     };
 </script>
 
@@ -103,7 +103,7 @@
                                 {:else if column.id === 'nameservers'}
                                     {domain.nameservers || '-'}
                                 {:else if column.id === 'expiry_date'}
-                                    {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}
+                                    {domain?.expire ? toLocaleDateTime(domain.expire) : '-'}
                                 {:else if column.id === 'renewal'}
                                     {domain?.renewal ? toLocaleDateTime(domain.renewal) : '-'}
                                 {:else if column.id === 'auto_renewal'}
@@ -128,7 +128,7 @@
 
                                 <svelte:fragment slot="tooltip" let:toggle>
                                     <ActionMenu.Root>
-                                        {#if isDomainVerified(domain)}
+                                        {#if !isDomainVerified(domain)}
                                             <ActionMenu.Item.Button
                                                 leadingIcon={IconRefresh}
                                                 on:click={(e) => {

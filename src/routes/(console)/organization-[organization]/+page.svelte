@@ -38,7 +38,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
-    import { organization, regions as regionsStore } from '$lib/stores/organization';
+    import { regions as regionsStore } from '$lib/stores/organization';
 
     export let data;
 
@@ -112,15 +112,11 @@
         }
     };
     onMount(async () => {
-        if (isCloud && $organization.$id) {
-            const regions = await sdk.forConsole.billing.listRegions($organization.$id);
-            regionsStore.set(regions);
-            checkPricingRefAndRedirect(page.url.searchParams);
-        }
+        checkPricingRefAndRedirect(page.url.searchParams);
     });
 
     function findRegion(project: Models.Project) {
-        return $regionsStore?.regions?.find((region) => region.$id === project.region);
+        return $regionsStore.regions.find((region) => region.$id === project.region);
     }
 </script>
 
