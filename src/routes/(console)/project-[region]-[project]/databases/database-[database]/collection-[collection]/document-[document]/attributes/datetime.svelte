@@ -6,11 +6,13 @@
     export let label: string;
     export let value: string;
     export let attribute: Models.AttributeDatetime;
+    export let type: 'date' | 'time' | 'datetime-local' = 'date';
 </script>
 
 <InputDateTime
     {id}
     {label}
+    {type}
+    bind:value
     required={attribute.required}
-    nullable={!attribute.required}
-    bind:value />
+    nullable={!attribute.required} />
