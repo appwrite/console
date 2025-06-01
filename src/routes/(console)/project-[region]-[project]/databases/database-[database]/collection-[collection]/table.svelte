@@ -28,7 +28,7 @@
         Badge,
         FloatingActionBar,
         InteractiveText,
-        Typography,
+        Typography
     } from '@appwrite.io/pink-svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
@@ -262,9 +262,10 @@
                                 <Typography.Text truncate>
                                     {formatted.value}
                                 </Typography.Text>
-                            <span
-                                 style:white-space="pre-wrap"
-                                style:word-break="break-all" slot="tooltip">
+                                <span
+                                    slot="tooltip"
+                                    style:white-space="pre-wrap"
+                                    style:word-break="break-all">
                                     {formatted.whole}
                                 </span>
                             </Tooltip>
