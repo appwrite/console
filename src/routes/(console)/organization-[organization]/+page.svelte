@@ -19,8 +19,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { sdk } from '$lib/stores/sdk';
     import { loading } from '$routes/store';
-    import type { Models } from '@appwrite.io/console';
-    import { ID, Region } from '@appwrite.io/console';
+    import { ID, Region, type Models } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[region]-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
     import { onMount, type ComponentType } from 'svelte';
@@ -162,23 +161,28 @@
                     <svelte:fragment slot="title">
                         {project.name}
                     </svelte:fragment>
-                    {#each platforms as platform, i}
-                        {#if i < 2}
-                            {@const icon = getIconForPlatform(platform.icon)}
-                            <Badge variant="secondary" content={platform.name}>
-                                <Icon {icon} size="s" slot="start" />
-                            </Badge>
-                        {/if}
+
+                    {#each platforms.slice(0, 2) as platform}
+                        {@const icon = getIconForPlatform(platform.icon)}
+                        <Badge
+                            variant="secondary"
+                            content={platform.name}
+                            style="width: max-content;">
+                            <Icon {icon} size="s" slot="start" />
+                        </Badge>
                     {/each}
-                    {#if platforms?.length > 2}
-                        <Badge variant="secondary" content={`+${project.platforms.length - 2}`} />
+
+                    {#if platforms.length > 3}
+                        <Badge
+                            variant="secondary"
+                            content={`+${platforms.length - 2}`}
+                            style="width: max-content;" />
                     {/if}
+
                     <svelte:fragment slot="icons">
                         {#if isCloud && $regionsStore?.regions}
                             {@const region = findRegion(project)}
-                            <span class="u-color-text-gray u-medium u-line-height-2">
-                                {region?.name}
-                            </span>
+                            <Typography.Text>{region.name}</Typography.Text>
                         {/if}
                     </svelte:fragment>
                 </GridItem1>
