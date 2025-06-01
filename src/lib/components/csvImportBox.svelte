@@ -27,37 +27,35 @@
     const importItems: Writable<ImportItemsMap> = writable(new Map());
 
     async function showCompletionNotification(
-        databaseId: string,
-        collectionId: string,
-        importData: Payload
+        database: string,
+        collection: string,
+        payload: Payload
     ) {
-        await invalidate(Dependencies.DOCUMENTS);
-        const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}`;
+        const isSuccess = payload.status === 'completed';
 
-        // extract clean message from nested backend error.
-        const match = importData.errors.join('').match(/message: '(.*)' Message:/i);
-        const errorMessage = match?.[1];
+        // TODO: the migrations worker sends 2 events!
+        const isError = !isSuccess && !!payload.error;
 
-        const type = importData.status === 'completed' ? 'success' : 'error';
-        const message =
-            importData.status === 'completed'
-                ? 'CSV import finished successfully.'
-                : `${errorMessage}`;
+        if (!isSuccess && !isError) return;
+
+        const type = isSuccess ? 'success' : 'error';
+        const message = isError ? payload.error : 'CSV import finished successfully.';
+
+        const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${database}/collection-${collection}`;
 
         addNotification({
             type,
             message,
             isHtml: true,
             buttons:
-                collectionId === page.params.collection || type === 'error'
-                    ? undefined
-                    : [
-                          {
-                              name: 'View documents',
-                              method: () => goto(url)
-                          }
-                      ]
+                isSuccess && collection !== page.params.collection
+                    ? [{ name: 'View documents', method: () => goto(url) }]
+                    : undefined
         });
+
+        if (isSuccess) {
+            await invalidate(Dependencies.DOCUMENTS);
+        }
     }
 
     async function updateOrAddItem(importData: Payload | Models.Migration) {
