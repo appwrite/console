@@ -6,7 +6,7 @@
     export let label: string;
     export let value: string;
     export let attribute: Models.AttributeDatetime;
-    export let type: 'date' | 'time' | 'datetime-local' = 'date';
+    export let type: 'date' | 'time' | 'datetime-local' = 'datetime-local';
 </script>
 
 <InputDateTime
