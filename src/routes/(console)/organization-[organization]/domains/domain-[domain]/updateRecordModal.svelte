@@ -13,7 +13,6 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { symmetricDifference } from '$lib/helpers/array';
     import { deepClone } from '$lib/helpers/object';
-    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
     import { recordTypes } from './store';
     import { invalidate } from '$app/navigation';
