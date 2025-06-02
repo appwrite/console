@@ -5,6 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { repositories } from '$routes/(console)/project-[region]-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '$lib/stores/vcs';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import {
         Layout,
         Table,
@@ -137,7 +138,7 @@
                     <InputSearch placeholder="Search repositories" disabled />
                 </Layout.Stack>
             {:then installations}
-                <Layout.Stack direction="row">
+                <Layout.Stack direction={$isSmallViewport ? 'column' : 'row'}>
                     <InputSelect
                         id="installation"
                         options={[
@@ -237,7 +238,8 @@
                                                     <Layout.Stack
                                                         gap="s"
                                                         direction="row"
-                                                        alignItems="center">
+                                                        alignItems="center"
+                                                        justifyContent="space-between">
                                                         <Typography.Text
                                                             truncate
                                                             color="--fgcolor-neutral-secondary">
@@ -249,27 +251,25 @@
                                                                 icon={IconLockClosed}
                                                                 color="--fgcolor-neutral-tertiary" />
                                                         {/if}
-                                                        <time datetime={repo.pushedAt}>
-                                                            <Typography.Caption
-                                                                variant="400"
-                                                                truncate
-                                                                color="--fgcolor-neutral-tertiary">
-                                                                {timeFromNow(repo.pushedAt)}
-                                                            </Typography.Caption>
-                                                        </time>
-                                                    </Layout.Stack>
-                                                    {#if action === 'button'}
-                                                        <Layout.Stack
-                                                            direction="row"
-                                                            justifyContent="flex-end">
+                                                        {#if !$isSmallViewport}
+                                                            <time datetime={repo.pushedAt}>
+                                                                <Typography.Caption
+                                                                    variant="400"
+                                                                    truncate
+                                                                    color="--fgcolor-neutral-tertiary">
+                                                                    {timeFromNow(repo.pushedAt)}
+                                                                </Typography.Caption>
+                                                            </time>
+                                                        {/if}
+                                                        {#if action === 'button'}
                                                             <PinkButton.Button
                                                                 size="xs"
                                                                 variant="secondary"
                                                                 on:click={() => connect(repo)}>
                                                                 Connect
                                                             </PinkButton.Button>
-                                                        </Layout.Stack>
-                                                    {/if}
+                                                        {/if}
+                                                    </Layout.Stack>
                                                 </Layout.Stack>
                                             </Table.Cell>
                                         </Table.Row.Base>
