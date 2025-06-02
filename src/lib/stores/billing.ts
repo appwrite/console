@@ -492,11 +492,11 @@ export async function checkForMissingPaymentMethod() {
 
 // Display upgrade banner for new users after 1 week for 30 days
 export async function checkForNewDevUpgradePro(org: Organization) {
-    // already dismissed by user!
-    if (localStorage.getItem('newDevUpgradePro')) return;
-
     // browser or plan check.
     if (!browser || org?.billingPlan !== BillingPlan.FREE) return;
+
+    // already dismissed by user!
+    if (localStorage.getItem('newDevUpgradePro')) return;
 
     // saves one trip to backend!
     const notValidKey = `${org.$id}:isNotValid`;
