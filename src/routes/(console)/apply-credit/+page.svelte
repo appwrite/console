@@ -255,6 +255,14 @@
             })();
         }
     }
+
+    // after adding a payment method, fetch the payment methods again so the input can be updated
+    $: if (
+        paymentMethodId &&
+        !methods?.paymentMethods?.find((method) => method.$id === paymentMethodId)
+    ) {
+        loadPaymentMethods();
+    }
 </script>
 
 <svelte:head>
