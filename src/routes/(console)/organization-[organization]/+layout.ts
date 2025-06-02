@@ -13,6 +13,7 @@ import { preferences } from '$lib/stores/preferences';
 import { defaultRoles, defaultScopes } from '$lib/constants';
 import type { Plan } from '$lib/sdk/billing';
 import { loadAvailableRegions } from '$routes/(console)/regions';
+import type { Organization } from '$lib/stores/organization';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const { preferences: prefs } = await parent();
@@ -40,7 +41,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         }
 
         const [organization, members] = await Promise.all([
-            sdk.forConsole.teams.get(params.organization),
+            sdk.forConsole.teams.get(params.organization) as Promise<Organization>,
             sdk.forConsole.teams.listMemberships(params.organization),
             preferences.loadTeamPrefs(params.organization),
             loadAvailableRegions(params.organization)
