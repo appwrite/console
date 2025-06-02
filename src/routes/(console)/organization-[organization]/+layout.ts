@@ -21,16 +21,18 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.ORGANIZATION);
     depends(Dependencies.MEMBERS);
     depends(Dependencies.PAYMENT_METHODS);
+
     let roles = isCloud ? [] : defaultRoles;
     let scopes = isCloud ? [] : defaultScopes;
     let currentPlan: Plan = null;
 
     try {
         if (isCloud) {
-            const res = await sdk.forConsole.billing.getRoles(params.organization);
-            roles = res.roles;
-            scopes = res.scopes;
-            currentPlan = await sdk.forConsole.billing.getOrganizationPlan(params.organization);
+            [{ roles, scopes }, currentPlan] = await Promise.all([
+                sdk.forConsole.billing.getRoles(params.organization),
+                sdk.forConsole.billing.getOrganizationPlan(params.organization)
+            ]);
+
             if (scopes.includes('billing.read')) {
                 loadFailedInvoices(params.organization);
             }
