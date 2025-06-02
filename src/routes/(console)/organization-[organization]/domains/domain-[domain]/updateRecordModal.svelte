@@ -20,6 +20,7 @@
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
     import type { RecordType } from '$lib/stores/domains';
+    import { updateRecord } from '$lib/helpers/domains';
 
     export let show = false;
     export let selectedRecord: Models.DnsRecord;
@@ -43,112 +44,7 @@
 
     async function handleSubmit() {
         try {
-            switch (record.type) {
-                case 'A':
-                    await sdk.forConsole.domains.updateRecordA(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-                case 'AAAA':
-                    await sdk.forConsole.domains.updateRecordAAAA(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-                case 'CNAME':
-                    await sdk.forConsole.domains.updateRecordCNAME(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-                case 'MX':
-                    await sdk.forConsole.domains.updateRecordMX(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.priority,
-                        record.comment
-                    );
-
-                    break;
-                case 'TXT':
-                    await sdk.forConsole.domains.updateRecordTXT(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-                case 'NS':
-                    await sdk.forConsole.domains.updateRecordNS(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-
-                case 'CAA':
-                    await sdk.forConsole.domains.updateRecordCAA(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-                case 'HTTPS':
-                    await sdk.forConsole.domains.updateRecordHTTPS(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-                case 'ALIAS':
-                    await sdk.forConsole.domains.updateRecordAlias(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-
-                default:
-                    break;
-            }
+            await updateRecord(record, page.params.domain);
             show = false;
             invalidate(Dependencies.DOMAINS);
             addNotification({

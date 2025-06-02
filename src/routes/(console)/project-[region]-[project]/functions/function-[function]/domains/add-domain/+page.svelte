@@ -18,7 +18,7 @@
     import { ConnectRepoModal } from '$lib/components/git/index.js';
     import { isValueOfStringEnum } from '$lib/helpers/types.js';
     import { isCloud } from '$lib/system';
-    import { project, regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { getApexDomain } from '$lib/helpers/tlds';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/domains`;
