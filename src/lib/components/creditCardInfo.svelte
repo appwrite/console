@@ -2,9 +2,9 @@
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { Badge, Layout, Link, Popover, Table } from '@appwrite.io/pink-svelte';
     import CreditCardBrandImage from './creditCardBrandImage.svelte';
-    import type { RootProp } from '@appwrite.io/pink-svelte/dist/table';
+    import type { TableRootProp } from '$lib/helpers/types';
 
-    export let root: RootProp;
+    export let root: TableRootProp;
     export let paymentMethod: PaymentMethodData;
     export let isBackup: boolean = false;
 </script>
@@ -19,8 +19,9 @@
     </Layout.Stack>
 </Table.Cell>
 <Table.Cell column="name" {root}>{paymentMethod?.name}</Table.Cell>
-<Table.Cell column="expiry" {root}
-    >{paymentMethod?.expiryMonth}/{paymentMethod?.expiryYear}</Table.Cell>
+<Table.Cell column="expiry" {root}>
+    {paymentMethod?.expiryMonth}/{paymentMethod?.expiryYear}
+</Table.Cell>
 <Table.Cell column="status" {root}>
     {#if paymentMethod?.lastError || paymentMethod?.expired}
         <Popover let:toggle>

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/state';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { iconPath } from '$lib/stores/app';
@@ -39,12 +40,9 @@
 
     onMount(async () => {
         try {
-            const content = await sdk.forProject.vcs.getRepositoryContents(
-                $installation.$id,
-                $repository.id,
-                currentPath
-            );
-            // console.log(content);
+            const content = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.getRepositoryContents($installation.$id, $repository.id, currentPath);
             directories[0].fileCount = content.contents?.length ?? 0;
             directories[0].children = content.contents
                 .filter((e) => e.isDirectory)
@@ -56,10 +54,9 @@
                     loading: false
                 }));
             currentDir = directories[0];
-            // console.log(directories);
             isLoading = false;
-        } catch (e) {
-            console.log(e);
+        } catch {
+            return;
         }
     });
 
@@ -83,12 +80,10 @@
             directories = [...directories];
 
             try {
-                const content = await sdk.forProject.vcs.getRepositoryContents(
-                    $installation.$id,
-                    $repository.id,
-                    path
-                );
-                // console.log(content);
+                const content = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.getRepositoryContents($installation.$id, $repository.id, path);
+
                 const fileCount = content.contents?.length ?? 0;
                 const contentDirectories = content.contents.filter((e) => e.isDirectory);
 
@@ -103,12 +98,14 @@
                     fileCount: undefined,
                     thumbnailUrl: undefined
                 }));
-                const runtime = await sdk.forProject.vcs.createRepositoryDetection(
-                    $installation.$id,
-                    $repository.id,
-                    product === 'sites' ? VCSDetectionType.Framework : VCSDetectionType.Runtime,
-                    path
-                );
+                const runtime = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.createRepositoryDetection(
+                        $installation.$id,
+                        $repository.id,
+                        product === 'sites' ? VCSDetectionType.Framework : VCSDetectionType.Runtime,
+                        path
+                    );
                 if (product === 'sites') {
                     currentDir.children.forEach((dir) => {
                         dir.thumbnailUrl = $iconPath(runtime.framework, 'color');
@@ -145,6 +142,6 @@
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Save</Button>
+        <Button submit disabled={isLoading}>Save</Button>
     </svelte:fragment>
 </Modal>

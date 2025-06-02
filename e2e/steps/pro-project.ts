@@ -19,7 +19,7 @@ export async function enterCreditCard(page: Page) {
     await stripe.locator('id=Field-expiryInput').fill('1250');
     await stripe.locator('id=Field-cvcInput').fill('123');
     await stripe.locator('id=Field-countryInput').selectOption('DE');
-    await page.getByRole('button', { name: 'Add', exact: true }).click();
+    await dialog.getByRole('button', { name: 'Add', exact: true }).click();
     await dialog.waitFor({
         state: 'hidden'
     });
@@ -27,30 +27,28 @@ export async function enterCreditCard(page: Page) {
 
 export async function createProProject(page: Page): Promise<Metadata> {
     const organizationId = await test.step('create organization', async () => {
-        await page.goto('./');
-        await page.waitForURL('./onboarding');
+        await page.goto('./create-organization');
         await page.locator('id=name').fill('test org');
-        await page.locator('id=plan').selectOption('tier-1');
-        await page.getByRole('button', { name: 'get started' }).click();
-        await page.waitForURL('./create-organization**');
+        await page.getByRole('radio', { name: /^Pro\b/ }).check();
+        // `create organization` because there's already free created on start!
+        await page.getByRole('button', { name: 'create organization' }).click();
         await page.getByRole('button', { name: 'add' }).first().click();
         await enterCreditCard(page);
         // skip members
         await page.getByRole('button', { name: 'create organization' }).click();
-        await page.waitForURL('./organization-**');
+        await page.waitForURL(/\/organization-[^/]+/);
 
         return getOrganizationIdFromUrl(page.url());
     });
 
     const projectId = await test.step('create project', async () => {
-        await page.waitForURL('./organization-**');
+        await page.waitForURL(/\/organization-[^/]+/);
         await page.getByRole('button', { name: 'create project' }).first().click();
-        await page.getByPlaceholder('project name').fill('test project');
-        await page.getByRole('button', { name: 'next' }).click();
-        await page.locator('label').filter({ hasText: 'frankfurt' }).click();
-        await page.getByRole('button', { name: 'create' }).click();
-        await page.waitForURL('./project-**/overview/platforms');
-        expect(page.url()).toContain('/project-');
+        const dialog = page.locator('dialog[open]');
+        await dialog.getByPlaceholder('Project name').fill('test project');
+        await dialog.getByRole('button', { name: 'create' }).click();
+        await page.waitForURL(/\/project-fra-[^/]+/);
+        expect(page.url()).toContain('/console/project-fra-');
 
         return getProjectIdFromUrl(page.url());
     });

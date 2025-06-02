@@ -3,21 +3,15 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        PlanComparisonBox,
-        PlanSelection,
-        SelectPaymentMethod,
-        SelectPlan
-    } from '$lib/components/billing';
+    import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, InputTags, InputText } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
-
-    import type { Coupon, PaymentList } from '$lib/sdk/billing';
+    import type { Coupon } from '$lib/sdk/billing';
     import { isOrganization, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { type OrganizationError, type Organization } from '$lib/stores/organization';
+    import type { OrganizationError, Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe';
     import { ID } from '@appwrite.io/console';
@@ -37,16 +31,10 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let methods: PaymentList;
     let name: string;
     let billingPlan: BillingPlan = BillingPlan.FREE;
     let paymentMethodId: string;
     let collaborators: string[] = [];
-    let couponData: Partial<Coupon> = {
-        code: null,
-        status: null,
-        credits: null
-    };
     let taxId: string;
 
     let billingBudget: number;
@@ -61,9 +49,9 @@
             const coupon = page.url.searchParams.get('coupon');
             try {
                 const response = await sdk.forConsole.billing.getCouponAccount(coupon);
-                couponData = response;
+                selectedCoupon = response;
             } catch (e) {
-                couponData = {
+                selectedCoupon = {
                     code: null,
                     status: null,
                     credits: null
@@ -94,11 +82,6 @@
             }
         }
     });
-
-    async function loadPaymentMethods() {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
-        paymentMethodId = methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
-    }
 
     async function validate(organizationId: string, invites: string[]) {
         try {
@@ -139,7 +122,7 @@
                     selectedPlan,
                     paymentMethodId,
                     null,
-                    couponData.code ? couponData.code : null,
+                    selectedCoupon?.code,
                     collaborators,
                     billingBudget,
                     taxId
@@ -160,7 +143,7 @@
                         '',
                         clientSecret,
                         paymentMethodId,
-                        '/console/create-organization?' + params.toString()
+                        `/console/create-organization?${params}`
                     );
                     await validate(org.teamId, collaborators);
                 }
@@ -207,35 +190,47 @@
                     required />
             </Fieldset>
             <Fieldset legend="Select plan">
-                <Typography.Text>
-                    For more details on our plans, visit our
-                    <Link.Anchor
-                        href="https://appwrite.io/pricing"
-                        target="_blank"
-                        rel="noopener noreferrer">pricing page</Link.Anchor
-                    >.
-                </Typography.Text>
-                <PlanSelection
-                    bind:billingPlan={selectedPlan}
-                    anyOrgFree={data.hasFreeOrganizations}
-                    isNewOrg />
+                <Layout.Stack>
+                    <Typography.Text>
+                        For more details on our plans, visit our
+                        <Link.Anchor
+                            href="https://appwrite.io/pricing"
+                            target="_blank"
+                            rel="noopener noreferrer">pricing page</Link.Anchor
+                        >.
+                    </Typography.Text>
+
+                    <PlanSelection
+                        bind:billingPlan={selectedPlan}
+                        anyOrgFree={data.hasFreeOrganizations}
+                        isNewOrg />
+                </Layout.Stack>
             </Fieldset>
             {#if selectedPlan !== BillingPlan.FREE}
                 <Fieldset legend="Payment">
-                    <SelectPaymentMethod
-                        methods={data.paymentMethods}
-                        bind:value={paymentMethodId}
-                        bind:taxId>
-                        <svelte:fragment slot="actions">
-                            {#if !selectedCoupon?.code}
-                                <Divider vertical style="height: 2rem;" />
-                                <Button compact on:click={() => (showCreditModal = true)}>
-                                    <Icon icon={IconPlus} slot="start" size="s" />
-                                    Add credits
-                                </Button>
-                            {/if}
-                        </svelte:fragment>
-                    </SelectPaymentMethod>
+                    <Layout.Stack gap="s" alignItems="flex-start">
+                        <SelectPaymentMethod
+                            methods={data.paymentMethods}
+                            bind:value={paymentMethodId}
+                            bind:taxId>
+                            <svelte:fragment slot="actions">
+                                {#if !selectedCoupon?.code && paymentMethodId}
+                                    <Divider vertical style="height: 2rem;" />
+                                    <Button compact on:click={() => (showCreditModal = true)}>
+                                        <Icon icon={IconPlus} slot="start" size="s" />
+                                        Add credits
+                                    </Button>
+                                {/if}
+                            </svelte:fragment>
+                        </SelectPaymentMethod>
+
+                        {#if !selectedCoupon?.code && !paymentMethodId}
+                            <Button compact on:click={() => (showCreditModal = true)}>
+                                <Icon icon={IconPlus} slot="start" size="s" />
+                                Add credits
+                            </Button>
+                        {/if}
+                    </Layout.Stack>
                 </Fieldset>
                 <Fieldset legend="Invite members">
                     <InputTags
@@ -252,7 +247,6 @@
             <EstimatedTotalBox
                 billingPlan={selectedPlan}
                 {collaborators}
-                plans={data.plansInfo}
                 bind:couponData={selectedCoupon}
                 bind:billingBudget />
         {:else}

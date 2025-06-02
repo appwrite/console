@@ -15,6 +15,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
+        Badge,
         Card,
         Empty,
         Icon,
@@ -28,16 +29,20 @@
     import { queries } from '$lib/components/filters';
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
-    import type { Domain } from '$lib/sdk/domains';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { columns } from './store';
     import { View } from '$lib/helpers/load';
+    import type { Models } from '@appwrite.io/console';
 
     export let data;
 
     let showDelete = false;
     let showRetry = false;
-    let selectedDomain: Domain = null;
+    let selectedDomain: Models.Domain = null;
+
+    const isDomainVerified = (domain: Models.Domain) => {
+        return domain.nameservers.toLowerCase() === 'appwrite';
+    };
 </script>
 
 <Container>
@@ -76,19 +81,29 @@
                         <Table.Cell column={column.id} {root}>
                             <Typography.Text truncate>
                                 {#if column.id === 'domain'}
-                                    <Link
-                                        external
-                                        icon
-                                        href={`${$protocol}${domain.domain}`}
-                                        variant="quiet">
-                                        {domain.domain}
-                                    </Link>
+                                    <Layout.Stack direction="row" gap="xs">
+                                        <Link
+                                            external
+                                            href={`${$protocol}${domain.domain}`}
+                                            variant="quiet">
+                                            <Typography.Text truncate>
+                                                {domain.domain}
+                                            </Typography.Text>
+                                        </Link>
+                                        {#if !isDomainVerified(domain)}
+                                            <Badge
+                                                variant="secondary"
+                                                type="warning"
+                                                content="Not verified"
+                                                size="s" />
+                                        {/if}
+                                    </Layout.Stack>
                                 {:else if column.id === 'registrar'}
                                     {domain.registrar || '-'}
                                 {:else if column.id === 'nameservers'}
                                     {domain.nameservers || '-'}
                                 {:else if column.id === 'expiry_date'}
-                                    {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}
+                                    {domain?.expire ? toLocaleDateTime(domain.expire) : '-'}
                                 {:else if column.id === 'renewal'}
                                     {domain?.renewal ? toLocaleDateTime(domain.renewal) : '-'}
                                 {:else if column.id === 'auto_renewal'}
@@ -113,7 +128,7 @@
 
                                 <svelte:fragment slot="tooltip" let:toggle>
                                     <ActionMenu.Root>
-                                        {#if domain.nameservers !== 'Appwrite'}
+                                        {#if !isDomainVerified(domain)}
                                             <ActionMenu.Item.Button
                                                 leadingIcon={IconRefresh}
                                                 on:click={(e) => {
@@ -209,5 +224,5 @@
 {/if}
 
 {#if showRetry}
-    <RetryDomainModal show={showRetry} {selectedDomain} />
+    <RetryDomainModal bind:show={showRetry} {selectedDomain} />
 {/if}

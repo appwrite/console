@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Column } from '$lib/helpers/types';
     import { type Writable } from 'svelte/store';
-    import { CustomFilters, FiltersBottomSheet } from '$lib/components/filters';
+    import { CustomFilters } from '$lib/components/filters';
     import { addFilterAndApply, type FilterData } from './quickFilters';
     import { parsedTags } from './setFilters';
     import Menu from '../menu/menu.svelte';
@@ -19,8 +19,6 @@
         filterCols: FilterData[];
         analyticsSource?: string;
     } = $props();
-
-    $inspect(filterCols);
 </script>
 
 <Menu>

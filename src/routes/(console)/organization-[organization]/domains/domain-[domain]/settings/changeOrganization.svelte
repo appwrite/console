@@ -4,13 +4,13 @@
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, InputSelect } from '$lib/elements/forms';
-    import type { Domain } from '$lib/sdk/domains';
     import { addNotification } from '$lib/stores/notifications';
     import type { OrganizationList } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { base } from '$app/paths';
 
-    export let domain: Domain;
+    export let domain: Models.Domain;
     export let organizations: OrganizationList;
     let selectedOrg: string = null;
 
@@ -54,6 +54,6 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button on:click={moveDomain} disabled={!selectedOrg}>Move</Button>
+        <Button on:click={moveDomain} disabled={!selectedOrg || options?.length === 0}>Move</Button>
     </svelte:fragment>
 </CardGrid>

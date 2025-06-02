@@ -30,7 +30,7 @@
     });
 
     $: avatars = $members.memberships?.map((m) => m.userName || m.userEmail) ?? [];
-    $: organizationId = page.params.organization;
+    $: organizationId = $organization?.$id ?? page.params.organization;
     $: path = `${base}/organization-${organizationId}`;
     $: tabs = [
         {
@@ -45,7 +45,6 @@
             event: 'domains',
             title: 'Domains',
             disabled: !isCloud
-            // disabled: !(isCloud && $canSeeDomains) //TODO: enable this before release
         },
         {
             href: `${path}/members`,
@@ -76,7 +75,7 @@
     ].filter((tab) => !tab.disabled);
 </script>
 
-{#if $organization?.$id && !isStudio}
+{#if $organization.$id && !isStudio}
     <Cover>
         <svelte:fragment slot="header">
             <span class="u-flex u-cross-center u-gap-8 u-min-width-0">

@@ -1,0 +1,249 @@
+<script lang="ts">
+    import { Empty, EmptySearch, PaginationWithLimit } from '$lib/components';
+    import { Filters, hasPageQueries, queries } from '$lib/components/filters';
+    import ViewSelector from '$lib/components/viewSelector.svelte';
+    import { Button } from '$lib/elements/forms';
+    import type { Column, ColumnType } from '$lib/helpers/types';
+    import { Container } from '$lib/layout';
+    import { preferences } from '$lib/stores/preferences';
+    import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
+    import { Card, Icon, Layout, Empty as PinkEmpty } from '@appwrite.io/pink-svelte';
+    import type { PageData } from './$types';
+    import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
+    import type { Option } from './attributes/store';
+    import CreateAttribute from './createAttribute.svelte';
+    import { collection, columns, isCsvImportInProgress } from './store';
+    import Table from './table.svelte';
+    import { writable } from 'svelte/store';
+    import FilePicker from '$lib/components/filePicker.svelte';
+    import { page } from '$app/state';
+    import { sdk } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { isSmallViewport } from '$lib/stores/viewport';
+    import { base } from '$app/paths';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import type { Models } from '@appwrite.io/console';
+    import { organization } from '$lib/stores/organization';
+    import { APPWRITE_OFFICIALS_ORG, isCloud } from '$lib/system';
+    import { consoleProfile, isStudio } from '$lib/system';
+
+    export let data: PageData;
+
+    let showImportCSV = false;
+    let showCreateAttribute = false;
+    let selectedAttribute: Option['name'] = null;
+
+    const filterColumns = writable<Column[]>([]);
+
+    $: selected = preferences.getCustomCollectionColumns(page.params.collection);
+    $: columns.set(
+        $collection.attributes.map((attribute) => ({
+            id: attribute.key,
+            title: attribute.key,
+            type: attribute.type as ColumnType,
+            show: selected?.includes(attribute.key) ?? true,
+            array: attribute?.array,
+            format: 'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
+            elements: 'elements' in attribute ? attribute.elements : null
+        }))
+    );
+    $: filterColumns.set([
+        ...$columns,
+        ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
+            id,
+            title: id,
+            show: true,
+            type: (id === '$id' ? 'string' : 'datetime') as ColumnType
+        }))
+    ]);
+
+    $: hasAttributes = !!$collection.attributes.length;
+    $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
+
+    async function onSelect(file: Models.File) {
+        $isCsvImportInProgress = true;
+
+        try {
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .migrations.createCsvMigration(
+                    file.bucketId,
+                    file.$id,
+                    `${page.params.database}:${page.params.collection}`
+                );
+
+            addNotification({
+                type: 'success',
+                message: 'Documents import from csv has started'
+            });
+
+            trackEvent(Submit.DatabaseImportCsv);
+        } catch (e) {
+            trackError(e, Submit.DatabaseImportCsv);
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        } finally {
+            $isCsvImportInProgress = false;
+        }
+    }
+
+    /**
+     * Controls visibility of CSV Imports feature:
+     * - Shown if running on self-hosted
+     * - Shown on cloud only if the organization is Appwrite's.
+     * - Hidden on cloud for any non-Appwrite organization.
+     */
+    $: showCsvImports = !isCloud || $organization.$id === APPWRITE_OFFICIALS_ORG;
+</script>
+
+{#key page.params.collection}
+    <Container>
+        <Layout.Stack direction="column" gap="xl">
+            <Layout.Stack direction="row" justifyContent="space-between">
+                <Filters
+                    query={data.query}
+                    {columns}
+                    disabled={!(hasAttributes && hasValidAttributes)}
+                    analyticsSource="database_documents" />
+                <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+                    <ViewSelector view={data.view} {columns} hideView />
+                    {#if showCsvImports}
+                        <Button
+                            secondary
+                            event={Click.DatabaseImportCsv}
+                            disabled={!(hasAttributes && hasValidAttributes)}
+                            on:click={() => (showImportCSV = true)}>
+                            Import CSV
+                        </Button>
+                    {/if}
+                    {#if !$isSmallViewport}
+                        <Button
+                            disabled={!(hasAttributes && hasValidAttributes)}
+                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                            event="create_document">
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Create document
+                        </Button>
+                    {/if}
+                </Layout.Stack>
+            </Layout.Stack>
+            {#if $isSmallViewport}
+                <Button
+                    disabled={!(hasAttributes && hasValidAttributes)}
+                    href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                    event="create_document">
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create document
+                </Button>
+            {/if}
+        </Layout.Stack>
+
+        {#if hasAttributes && hasValidAttributes}
+            {#if data.documents.total}
+                <Table {data} />
+
+                <PaginationWithLimit
+                    name="Documents"
+                    limit={data.limit}
+                    offset={data.offset}
+                    total={data.documents.total} />
+            {:else if $hasPageQueries}
+                <EmptySearch hidePages>
+                    <div class="common-section">
+                        <div class="u-text-center common-section">
+                            <b class="body-text-2 u-bold">Sorry, we couldn't find any documents.</b>
+                            <p>There are no documents that match your filters.</p>
+                        </div>
+                        <div class="u-flex common-section u-main-center">
+                            <Button
+                                secondary
+                                on:click={() => {
+                                    queries.clearAll();
+                                    queries.apply();
+                                    trackEvent(Submit.FilterClear, {
+                                        source: 'database_documents'
+                                    });
+                                }}>
+                                Clear filters
+                            </Button>
+                        </div>
+                    </div>
+                </EmptySearch>
+            {:else}
+                <Empty
+                    allowCreate={$canWriteDocuments}
+                    single
+                    href="https://appwrite.io/docs/products/databases/documents"
+                    target="document">
+                    <svelte:fragment slot="actions">
+                        <Button
+                            external
+                            href="https://appwrite.io/docs/products/databases/documents"
+                            text
+                            event="empty_documentation"
+                            size="s"
+                            ariaLabel="create document">Documentation</Button>
+                        <Button
+                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                            secondary
+                            disabled={!$canWriteDocuments}
+                            size="s">
+                            Create document
+                        </Button>
+                    </svelte:fragment>
+                </Empty>
+            {/if}
+        {:else}
+            <Card.Base padding="none">
+                <PinkEmpty
+                    title="Create an attribute to get started."
+                    description={!consoleProfile.hasAppwriteDocumentation
+                        ? ''
+                        : 'Need a hand? Learn more in our documentation.'}>
+                    <slot name="actions" slot="actions">
+                        {#if consoleProfile.hasAppwriteDocumentation}
+                            <Button
+                                external
+                                href="https://appwrite.io/docs/products/databases/collections#attributes"
+                                text
+                                event="empty_documentation"
+                                size="s">Documentation</Button>
+                        {/if}
+                        {#if $canWriteCollections}
+                            <CreateAttributeDropdown
+                                bind:selectedOption={selectedAttribute}
+                                bind:showCreate={showCreateAttribute}
+                                let:toggle>
+                                <Button secondary event="create_attribute" on:click={toggle}>
+                                    Create attribute
+                                </Button>
+                            </CreateAttributeDropdown>
+                        {/if}
+                    </slot>
+                </PinkEmpty>
+            </Card.Base>
+        {/if}
+    </Container>
+{/key}
+
+{#if showCreateAttribute}
+    <CreateAttribute
+        bind:showCreate={showCreateAttribute}
+        bind:selectedOption={selectedAttribute} />
+{/if}
+
+{#if showImportCSV}
+    <!-- CSVs can be text/plain or text/csv sometimes! -->
+    <FilePicker
+        {onSelect}
+        mimeTypeQuery="text/"
+        allowedExtension="csv"
+        bind:show={showImportCSV}
+        gridImageDimensions={{
+            imageHeight: 32,
+            imageWidth: 32
+        }} />
+{/if}

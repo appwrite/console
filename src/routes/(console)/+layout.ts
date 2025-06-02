@@ -4,7 +4,7 @@ import type { Tier } from '$lib/stores/billing';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
-import { Query } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
     await parent();
@@ -38,7 +38,7 @@ export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
         ? await sdk.forConsole.teams.list()
         : await sdk.forConsole.billing.listOrganization();
 
-    let projects = [];
+    let projects: Models.Project[] = [];
     let currentOrgId = params.organization ? params.organization : prefs.organization;
 
     if (!currentOrgId && organizations.teams.length > 0) {
@@ -47,10 +47,15 @@ export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
     if (currentOrgId) {
         const orgProjects = await sdk.forConsole.projects.list([
             Query.equal('teamId', currentOrgId),
-            Query.limit(100),
+            Query.limit(5),
             Query.orderDesc('$updatedAt')
         ]);
         projects = orgProjects.projects.length > 0 ? orgProjects.projects : [];
+    }
+
+    // set `default` if no region!
+    for (const project of projects) {
+        project.region ??= 'default';
     }
 
     return {

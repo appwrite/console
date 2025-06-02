@@ -10,8 +10,8 @@
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
-    import { type Coupon, type PaymentList } from '$lib/sdk/billing';
-    import { isOrganization, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { type Coupon } from '$lib/sdk/billing';
+    import { isOrganization, plansInfo, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -54,7 +54,6 @@
     let showCreditModal = false;
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
-    let couponData: Partial<Coupon> = data.coupon;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
@@ -63,10 +62,9 @@
         if (page.url.searchParams.has('code')) {
             const coupon = page.url.searchParams.get('code');
             try {
-                const response = await sdk.forConsole.billing.getCouponAccount(coupon);
-                couponData = response;
+                selectedCoupon = await sdk.forConsole.billing.getCouponAccount(coupon);
             } catch (e) {
-                couponData = {
+                selectedCoupon = {
                     code: null,
                     status: null,
                     credits: null
@@ -179,7 +177,7 @@
 
     async function upgrade() {
         try {
-            //Add collaborators
+            // Add collaborators
             let newCollaborators = [];
             if (collaborators?.length) {
                 newCollaborators = collaborators.filter(
@@ -192,7 +190,7 @@
                 selectedPlan,
                 paymentMethodId,
                 null,
-                couponData?.code,
+                selectedCoupon?.code,
                 newCollaborators,
                 billingBudget,
                 taxId ? taxId : null
@@ -242,9 +240,9 @@
         }
     }
 
-    $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan.order;
-    $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan.order;
-    $: isButtonDisabled = $organization.billingPlan === selectedPlan;
+    $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan?.order;
+    $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan?.order;
+    $: isButtonDisabled = $organization?.billingPlan === selectedPlan;
 </script>
 
 <svelte:head>
@@ -356,10 +354,10 @@
             <EstimatedTotalBox
                 {collaborators}
                 {isDowngrade}
-                plans={data.plansInfo}
                 billingPlan={selectedPlan}
                 bind:couponData={selectedCoupon}
-                bind:billingBudget />
+                bind:billingBudget
+                organizationId={data.organization.$id} />
         {:else if data.organization.billingPlan !== BillingPlan.CUSTOM}
             <PlanComparisonBox downgrade={isDowngrade} />
         {/if}

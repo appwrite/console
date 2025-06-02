@@ -15,8 +15,7 @@
             await sdk.forConsole.projects.get(projectId);
             const jwt = await sdk.forConsole.account.createJWT();
             window.location.href = `${origin}/_appwrite/authorize?jwt=${jwt.jwt}&path=${path}`;
-        } catch (error) {
-            console.log(error);
+        } catch {
             goto(
                 `${base}/auth/preview/access?origin=${origin}&path=${path}&projectId=${projectId}`
             );

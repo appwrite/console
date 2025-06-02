@@ -328,14 +328,14 @@
     input[type='radio'],
     input[type='checkbox']:not([class='switch']),
     input[type='switchbox'] {
-        .theme-dark &:not(:checked) {
+        .theme-dark &:not(:checked):not(:disabled) {
             background-color: transparent; /* take whatever color is behind */
             border: 1px solid var(--color-mid-neutral-70, #56565c);
         }
     }
 
     input[type='checkbox'][class='switch'] {
-        .theme-dark &:not(:checked) {
+        .theme-dark &:not(:checked):not(:disabled) {
             background-color: var(--color-mid-neutral-70, #56565c);
         }
     }

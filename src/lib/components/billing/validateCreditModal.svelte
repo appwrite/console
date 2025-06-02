@@ -38,14 +38,6 @@
                     message: 'Credits applied successfully'
                 });
             }
-            couponData = response;
-            dispatch('validation', couponData);
-            coupon = null;
-            show = false;
-            addNotification({
-                type: 'success',
-                message: 'Credits applied successfully'
-            });
         } catch (e) {
             error = e.message;
         }

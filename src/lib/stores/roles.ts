@@ -1,8 +1,8 @@
 import { page } from '$app/stores';
 import { derived } from 'svelte/store';
 
-export const roles = derived(page, ($page) => $page.data?.roles ?? []);
-export const scopes = derived(page, ($page) => $page.data?.scopes ?? []);
+export const roles = derived(page, ($page) => ($page.data?.roles ?? []) as string[]);
+export const scopes = derived(page, ($page) => ($page.data?.scopes ?? []) as string[]);
 
 export const isDeveloper = derived(roles, ($roles) => $roles.includes('developer'));
 export const isBilling = derived(roles, ($roles) => $roles.includes('billing'));
@@ -50,4 +50,3 @@ export const canSeeTeams = derived(scopes, ($scopes) => $scopes.includes('teams.
 export const canSeeBuckets = derived(scopes, ($scopes) => $scopes.includes('buckets.read'));
 export const canSeeMessages = derived(scopes, ($scopes) => $scopes.includes('messages.read'));
 export const canSeeSites = derived(scopes, ($scopes) => $scopes.includes('sites.read'));
-export const canSeeDomains = derived(scopes, ($scopes) => $scopes.includes('domains.read')); //TODO: check if correct

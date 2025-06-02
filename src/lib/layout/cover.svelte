@@ -39,9 +39,9 @@
     </Layout.Stack>
     <slot />
 {:else}
-    <div class="top-cover-console" class:no-padding={isStudio} style:block-size={blocksize}>
+    <div class="top-cover-console" style:block-size={blocksize}>
         <div class="cover-container" {style}>
-            <Layout.Stack direction="row" alignItems="center">
+            <Layout.Stack direction="row" alignItems="baseline">
                 <slot name="header" />
             </Layout.Stack>
             <slot />

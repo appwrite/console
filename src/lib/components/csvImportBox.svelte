@@ -31,9 +31,8 @@
         collectionId: string,
         importData: Payload
     ) {
-        const projectId = page.params.project;
         await invalidate(Dependencies.DOCUMENTS);
-        const url = `${base}/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`;
+        const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}`;
 
         // extract clean message from nested backend error.
         const match = importData.errors.join('').match(/message: '(.*)' Message:/i);
@@ -73,10 +72,9 @@
 
         if (!collectionName && collectionId) {
             try {
-                const collection = await sdk.forProject.databases.getCollection(
-                    databaseId,
-                    collectionId
-                );
+                const collection = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .databases.getCollection(databaseId, collectionId);
                 collectionName = collection.name;
             } catch {
                 collectionName = null;
@@ -142,8 +140,11 @@
     }
 
     onMount(() => {
-        sdk.forProject.migrations
-            .list([Query.equal('source', 'CSV'), Query.equal('status', ['pending', 'processing'])])
+        sdk.forProject(page.params.region, page.params.project)
+            .migrations.list([
+                Query.equal('source', 'CSV'),
+                Query.equal('status', ['pending', 'processing'])
+            ])
             .then((migrations) => {
                 migrations.migrations.forEach(updateOrAddItem);
             });

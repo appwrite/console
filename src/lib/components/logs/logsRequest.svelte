@@ -13,11 +13,22 @@
     } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
 
-    export let selectedLog: Models.Execution;
+    let {
+        selectedLog,
+        product
+    }: {
+        selectedLog: Models.Execution;
+        product: 'site' | 'function';
+    } = $props();
 
-    let requestTab: 'parameters' | 'headers' = 'parameters';
+    let requestTab: 'parameters' | 'headers' = $state('parameters');
 
-    let parameters = [];
+    let parameters = $state([]);
+
+    const href =
+        product === 'site'
+            ? 'https://appwrite.io/docs/products/sites/logs#log-details'
+            : 'https://appwrite.io/docs/products/functions/develop#logging';
 
     onMount(() => {
         try {
@@ -121,8 +132,8 @@
 
             <Input.Helper state="default">
                 <span>
-                    Missing headers? Check the <Link variant="muted" href="#" external>docs</Link> to
-                    see the supported data and how to log it.
+                    Missing headers? Check the <Link variant="muted" {href} external>docs</Link> to see
+                    the supported data and how to log it.
                 </span>
             </Input.Helper>
         {:else}

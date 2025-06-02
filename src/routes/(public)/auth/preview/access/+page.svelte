@@ -102,12 +102,6 @@
             await register();
         }
     }
-
-    async function requestAccess() {
-        //TODO: Implement request access
-    }
-
-    $: console.log(data);
 </script>
 
 {#if $app.themeInUse === 'dark'}

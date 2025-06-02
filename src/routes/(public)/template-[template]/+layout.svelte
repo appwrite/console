@@ -1,6 +1,5 @@
 <script lang="ts">
     import { app } from '$lib/stores/app';
-    import { Typography } from '@appwrite.io/pink-svelte';
 
     let { children } = $props();
 </script>
