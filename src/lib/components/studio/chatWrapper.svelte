@@ -11,7 +11,7 @@
     import { createStreamParser } from '$lib/components/studio/chat/parser.js';
     import { sdk } from '$lib/stores/sdk.js';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { previewFrameRef } from '$routes/(console)/project-[project]/store';
+    import { previewFrameRef } from '$routes/(console)/project-[region]-[project]/store';
     import { queue } from './chat/queue.svelte';
 
     $effect(() => {

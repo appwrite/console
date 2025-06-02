@@ -1,12 +1,12 @@
 <script lang="ts">
-    import InputText from '$lib/elements/forms/inputText.svelte';
+    import InputText from '../../../../../lib/elements/forms/inputText.svelte';
     import {
         IconDeviceMobile,
         IconExternalLink,
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
     import { Layout, Icon, Divider, Button } from '@appwrite.io/pink-svelte';
-    import { previewFrameRef } from '$routes/(console)/project-[project]/store';
+    import { previewFrameRef } from '$routes/(console)/project-[region]-[project]/store';
     import { SvelteURL } from 'svelte/reactivity';
     import type { EventHandler } from 'svelte/elements';
 

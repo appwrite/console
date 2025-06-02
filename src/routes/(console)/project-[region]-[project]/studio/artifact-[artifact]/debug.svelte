@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { queue } from '$lib/components/studio/chat/queue.svelte';
-    import { studio } from '$lib/components/studio/studio.svelte';
+    import { queue } from '$lib/components/studio/chat/queue.svelte.js';
+    import { studio } from '$lib/components/studio/studio.svelte.js';
     import { conversation } from '$lib/stores/chat';
     import { Accordion, Button, Code, Typography } from '@appwrite.io/pink-svelte';
 

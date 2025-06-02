@@ -11,7 +11,7 @@
         IconTerminal,
         IconPlus
     } from '@appwrite.io/pink-icons-svelte';
-    import { previewFrameRef } from '$routes/(console)/project-[project]/store';
+    import { previewFrameRef } from '$routes/(console)/project-[region]-[project]/store';
     import {
         disableBodySelect,
         enabledBodySelect,
@@ -21,11 +21,11 @@
         saveTerminalOpenToPrefs
     } from '$lib/helpers/studioLayout';
     import { showChat } from '$lib/stores/chat';
-    import { default as IconChatLayout } from '../assets/chat-layout.svelte';
-    import { default as IconImagine } from '../assets/icon-imagine.svelte';
+    import { default as IconChatLayout } from '$routes/(console)/project-[region]-[project]/studio/assets/chat-layout.svelte';
+    import { default as IconImagine } from '$routes/(console)/project-[region]-[project]/studio/assets/icon-imagine.svelte';
     import { createArtifact } from '$lib/helpers/artifact';
     import Code from './code.svelte';
-    import { studio } from '$lib/components/studio/studio.svelte';
+    import { studio } from '$lib/components/studio/studio.svelte.js';
     import { untrack } from 'svelte';
     import Debug from './debug.svelte';
 
@@ -129,7 +129,7 @@
                   return {
                       name: artifact.name,
                       isActive: page.params.artifact === artifact.$id,
-                      href: `${base}/project-${page.params.project}/studio/artifact-${artifact.$id}`
+                      href: `${base}/project-${page.params.region}-${page.params.project}/studio/artifact-${artifact.$id}`
                   };
               })
             : [];
@@ -158,7 +158,7 @@
                     href: undefined,
                     isActive: false,
                     onClick: () => {
-                        createArtifact();
+                        createArtifact(page.params.region, page.params.project);
                     },
                     icon: IconPlus
                 }

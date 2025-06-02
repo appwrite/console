@@ -6,7 +6,7 @@ import { isStudio } from '$lib/system';
 
 export const load: PageLoad = async ({ params }) => {
     if (isStudio) {
-        redirect(302, `${base}/project-${params.project}/studio`);
+        redirect(302, `${base}/project-${params.region}-${params.project}/studio`);
     }
     if (hasOnboardingDismissed(params.project)) {
         redirect(302, `${base}/project-${params.region}-${params.project}/overview`);

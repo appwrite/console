@@ -5,10 +5,10 @@ import { base } from '$app/paths';
 import { page } from '$app/state';
 import { Dependencies } from '$lib/constants';
 
-export async function createArtifact(projectId?: string) {
-    const artifact = await sdk.forProject.imagine.create(ID.unique());
+export async function createArtifact(region: string, projectId?: string) {
+    const artifact = await sdk.forProject(region, projectId).imagine.create(ID.unique());
     await goto(
-        `${base}/project-${projectId ?? page.params.project}/studio/artifact-${artifact.$id}`
+        `${base}/project-${region}-${projectId ?? page.params.project}/studio/artifact-${artifact.$id}`
     );
     invalidate(Dependencies.ARTIFACTS);
 }

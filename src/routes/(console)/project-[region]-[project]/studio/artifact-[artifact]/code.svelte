@@ -1,12 +1,12 @@
 <script lang="ts">
     import Editor from '$lib/components/editor/editor.svelte';
     import Filesystem from '$lib/components/editor/filesystem.svelte';
-    import { studio } from '$lib/components/studio/studio.svelte';
-    import type { SyncWorkDirData } from '$lib/components/studio/synapse.svelte';
+    import { studio } from '$lib/components/studio/studio.svelte.js';
+    import type { SyncWorkDirData } from '$lib/components/studio/synapse.svelte.js';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { disableBodySelect, enabledBodySelect } from '$lib/helpers/studioLayout';
     import { onDestroy, onMount } from 'svelte';
-    import { queue } from '$lib/components/studio/chat/queue.svelte';
+    import { queue } from '$lib/components/studio/chat/queue.svelte.js';
 
     let instance: Editor;
     let resizerLeftPosition = $state(250);

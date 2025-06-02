@@ -155,7 +155,9 @@
             </svelte:fragment>
 
             {#each data.projects.projects as project}
-                <Table.Row.Link href={`${base}/project-${project.$id}/studio`} {root}>
+                <Table.Row.Link
+                    href={`${base}/project-${project.region}-${project.$id}/studio`}
+                    {root}>
                     <Table.Cell column="name" {root}>{project.name}</Table.Cell>
                     <Table.Cell column="updated" {root}
                         >{timeFromNow(project.$updatedAt)}</Table.Cell>
@@ -189,56 +191,58 @@
             </DropList>
         </div>
 
-    {#if data.projects.total}
-        <CardContainer
-            disableEmpty={!$canWriteProjects}
-            total={data.projects.total}
-            offset={data.offset}
-            on:click={handleCreateProject}>
-            {#each data.projects.projects as project}
-                {@const platforms = filterPlatforms(
-                    project.platforms.map((platform) => getPlatformInfo(platform.type))
-                )}
-                <GridItem1 href={`${base}/project-${project.region}-${project.$id}`}>
-                    <svelte:fragment slot="eyebrow">
-                        {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
-                    </svelte:fragment>
-                    <svelte:fragment slot="title">
-                        {project.name}
-                    </svelte:fragment>
-                    {#each platforms as platform, i}
-                        {#if i < 3}
-                            {@const icon = getIconForPlatform(platform.icon)}
-                            <Badge variant="secondary" content={platform.name}>
-                                <Icon {icon} size="s" slot="start" />
-                            </Badge>
+        {#if data.projects.total}
+            <CardContainer
+                disableEmpty={!$canWriteProjects}
+                total={data.projects.total}
+                offset={data.offset}
+                on:click={handleCreateProject}>
+                {#each data.projects.projects as project}
+                    {@const platforms = filterPlatforms(
+                        project.platforms.map((platform) => getPlatformInfo(platform.type))
+                    )}
+                    <GridItem1 href={`${base}/project-${project.region}-${project.$id}`}>
+                        <svelte:fragment slot="eyebrow">
+                            {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
+                        </svelte:fragment>
+                        <svelte:fragment slot="title">
+                            {project.name}
+                        </svelte:fragment>
+                        {#each platforms as platform, i}
+                            {#if i < 3}
+                                {@const icon = getIconForPlatform(platform.icon)}
+                                <Badge variant="secondary" content={platform.name}>
+                                    <Icon {icon} size="s" slot="start" />
+                                </Badge>
+                            {/if}
+                        {/each}
+                        {#if platforms?.length > 3}
+                            <Badge
+                                variant="secondary"
+                                content={`+${project.platforms.length - 3}`} />
                         {/if}
-                    {/each}
-                    {#if platforms?.length > 3}
-                        <Badge variant="secondary" content={`+${project.platforms.length - 3}`} />
-                    {/if}
-                    <svelte:fragment slot="icons">
-                        {#if isCloud && $regionsStore?.regions}
-                            {@const region = findRegion(project)}
-                            <span class="u-color-text-gray u-medium u-line-height-2">
-                                {region?.name}
-                            </span>
-                        {/if}
-                    </svelte:fragment>
-                </GridItem1>
-            {/each}
-            <svelte:fragment slot="empty">
-                <p>Create a new project</p>
-            </svelte:fragment>
-        </CardContainer>
-    {:else}
-        <Empty
-            single
-            allowCreate={$canWriteProjects}
-            on:click={handleCreateProject}
-            target="project"
-            href="https://appwrite.io/docs/quick-starts"></Empty>
-    {/if}
+                        <svelte:fragment slot="icons">
+                            {#if isCloud && $regionsStore?.regions}
+                                {@const region = findRegion(project)}
+                                <span class="u-color-text-gray u-medium u-line-height-2">
+                                    {region?.name}
+                                </span>
+                            {/if}
+                        </svelte:fragment>
+                    </GridItem1>
+                {/each}
+                <svelte:fragment slot="empty">
+                    <p>Create a new project</p>
+                </svelte:fragment>
+            </CardContainer>
+        {:else}
+            <Empty
+                single
+                allowCreate={$canWriteProjects}
+                on:click={handleCreateProject}
+                target="project"
+                href="https://appwrite.io/docs/quick-starts"></Empty>
+        {/if}
 
         <PaginationWithLimit
             name="Projects"

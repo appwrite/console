@@ -4,7 +4,7 @@
     import { IconChevronDown, IconSearch } from '@appwrite.io/pink-icons-svelte';
     import { BottomSheet } from '$lib/components';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { previewFrameRef } from '$routes/(console)/project-[project]/store';
+    import { previewFrameRef } from '$routes/(console)/project-[region]-[project]/store';
     import type { SubMenu } from '$lib/components/bottom-sheet';
     import type { ComponentType } from 'svelte';
     import { InputText } from '$lib/elements/forms/index.js';

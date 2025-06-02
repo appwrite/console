@@ -3,6 +3,6 @@ import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ params }) => {
     return {
-        artifact: await sdk.forProject.imagine.get(params.artifact)
+        artifact: await sdk.forProject(params.region, params.project).imagine.get(params.artifact)
     };
 };
