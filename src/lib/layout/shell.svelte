@@ -113,7 +113,7 @@
     $: state = $isSidebarOpen ? 'open' : 'closed';
 
     let isProjectPage;
-    $: isProjectPage = $page.route?.id.includes('project-');
+    $: isProjectPage = $page.route?.id?.includes('project-');
 
     function handleResize() {
         $isSidebarOpen = false;
