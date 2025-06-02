@@ -30,7 +30,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         currentOrgId,
         organizations,
         currentProjectId: params.project ?? '',
-        // that this is an unresolved promise
+        // this is an unresolved promise
         projectsPromise: loadNonBlocking(currentOrgId)
     };
 };
