@@ -56,6 +56,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { HTMLAttributes } from 'svelte/elements';
     import { beforeNavigate } from '$app/navigation';
+    import { page } from '$app/state';
 
     let showSupport = false;
 
@@ -134,7 +135,7 @@
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} />
-        {#if selectedProject && selectedProject.pingCount === 0}
+        {#if page.route?.id?.includes('project-') && selectedProject && selectedProject.pingCount === 0}
             <div class="only-desktop" style:margin-inline-start="-16px">
                 <Button.Anchor
                     href={`${base}/project-${selectedProject.region}-${selectedProject.$id}/get-started`}
