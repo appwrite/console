@@ -4,7 +4,7 @@
     import type { NavbarProject } from '$lib/components/navbar.svelte';
     import { isNewWizardStatusOpen, wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
-    import { setContext } from 'svelte';
+    import { onMount, setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -19,15 +19,20 @@
     import { page } from '$app/stores';
     import type { Models } from '@appwrite.io/console';
 
-    export let showSideNavigation = false;
     export let showHeader = true;
     export let showFooter = true;
-    export let loadedProjects: Array<NavbarProject> = [];
+    export let showSideNavigation = false;
     export let selectedProject: Models.Project | null = null;
+    export let projectsPromise: Promise<Models.ProjectList> = Promise.resolve({
+        total: 0,
+        projects: []
+    });
 
     let yOnMenuOpen: number;
     let showContentTransition = false;
     let timeoutId: ReturnType<typeof setTimeout>;
+
+    $: loadedProjects = [];
 
     page.subscribe(({ url }) => {
         $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
@@ -127,6 +132,20 @@
 
         return undefined;
     };
+
+    onMount(async () => {
+        const projects = await projectsPromise;
+        loadedProjects = projects.projects.map((project) => {
+            return {
+                name: project?.name,
+                $id: project.$id,
+                isSelected: project.$id === $page.params.project,
+                region: project.region,
+                platformCount: project.platforms.length,
+                pingCount: project.pingCount
+            };
+        }) satisfies NavbarProject[];
+    });
 </script>
 
 <svelte:window on:resize={handleResize} />

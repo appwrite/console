@@ -1,9 +1,11 @@
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
+import { Query } from '@appwrite.io/console';
 import { Dependencies } from '$lib/constants';
 import type { Tier } from '$lib/stores/billing';
 import type { Plan, PlanList } from '$lib/sdk/billing';
+import { consoleVariables, version } from '$routes/(console)/store';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
     await parent();
@@ -27,7 +29,9 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         preferences,
         currentOrgId,
         organizations,
-        currentProjectId: params.project ?? ''
+        currentProjectId: params.project ?? '',
+        // that this is an unresolved promise
+        projectsPromise: loadNonBlocking(currentOrgId)
     };
 };
 
@@ -50,4 +54,24 @@ function toPlanMap(plansArray: PlanList | null): Map<Tier, Plan> {
     }
 
     return map;
+}
+
+function loadNonBlocking(orgId: string) {
+    // load in background.
+    const { endpoint, project } = sdk.forConsole.client.config;
+
+    fetch(`${endpoint}/health/version`, {
+        headers: { 'X-Appwrite-Project': project }
+    })
+        .then((res) => res.json().catch(() => null))
+        .then((data) => version.set(data?.version));
+
+    sdk.forConsole.console.variables().then((vars) => consoleVariables.set(vars));
+
+    // return promise for page context
+    return sdk.forConsole.projects.list([
+        Query.equal('teamId', orgId),
+        Query.limit(5),
+        Query.orderDesc('$updatedAt')
+    ]);
 }

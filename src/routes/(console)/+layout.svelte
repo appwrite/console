@@ -36,7 +36,7 @@
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
-    import { activeHeaderAlert, consoleVariables, version } from './store';
+    import { activeHeaderAlert, consoleVariables } from './store';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { base } from '$app/paths';
@@ -53,9 +53,6 @@
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
-    import type { NavbarProject } from '$lib/components/navbar.svelte';
-    import { sdk } from '$lib/stores/sdk';
-    import { type Models, Query } from '@appwrite.io/console';
 
     export let data: LayoutData;
 
@@ -66,65 +63,7 @@
             .join(' ');
     }
 
-    let loadingVersion = false;
-    let loadingConsoleVars = false;
-    let loadingProjectsForShell = false;
-
-    function loadConsoleVariables() {
-        if (!$version && !loadingVersion) {
-            const { endpoint, project } = sdk.forConsole.client.config;
-
-            loadingVersion = true;
-            fetch(`${endpoint}/health/version`, {
-                headers: { 'X-Appwrite-Project': project }
-            })
-                .then((res) => res.json().catch(() => null))
-                .then((data) => version.set(data?.version))
-                .finally(() => (loadingVersion = false));
-        }
-
-        if (!$consoleVariables && !loadingConsoleVars) {
-            loadingConsoleVars = true;
-            sdk.forConsole.console
-                .variables()
-                .then((vars) => consoleVariables.set(vars))
-                .finally(() => (loadingConsoleVars = false));
-        }
-    }
-
-    let latestProjects: Models.Project[] = [];
-    function loadProjectsForShell() {
-        if (latestProjects.length || loadingProjectsForShell) return;
-
-        loadingProjectsForShell = true;
-
-        sdk.forConsole.projects
-            .list([
-                Query.equal('teamId', data.currentOrgId),
-                Query.limit(5),
-                Query.orderDesc('$updatedAt')
-            ])
-            .then((res) => {
-                latestProjects = res.projects ?? [];
-                for (const project of latestProjects) {
-                    project.region ??= 'default';
-                }
-            })
-            .finally(() => (loadingProjectsForShell = false));
-    }
-
     $: isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
-
-    $: loadedProjects = latestProjects.map((project) => {
-        return {
-            name: project?.name,
-            $id: project.$id,
-            isSelected: project.$id === page.params.project,
-            region: project.region,
-            platformCount: project.platforms.length,
-            pingCount: project.pingCount
-        };
-    }) satisfies NavbarProject[];
 
     $: isOnSettingsLayout = $project?.$id
         ? page.url.pathname.includes(`project-${$project.region}-${$project.$id}/settings`)
@@ -312,10 +251,6 @@
         }
     ]);
 
-    loadProjectsForShell();
-
-    loadConsoleVariables();
-
     onMount(async () => {
         loading.set(false);
         if (!localStorage.getItem('feedbackElapsed')) {
@@ -397,7 +332,7 @@
         !page.url.pathname.includes('/console/onboarding')}
     showHeader={!page.url.pathname.includes('/console/onboarding/create-project')}
     showFooter={!page.url.pathname.includes('/console/onboarding/create-project')}
-    {loadedProjects}
+    projectsPromise={data.projectsPromise}
     selectedProject={page.data?.project}>
     <!--    <Header slot="header" />-->
     <slot />
