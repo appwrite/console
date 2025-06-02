@@ -1,3 +1,12 @@
+<script lang="ts" context="module">
+    import type { RecordType } from '$lib/stores/domains';
+
+    export function showPriority(record: Models.DnsRecord | RecordType): boolean {
+        const type = typeof record === 'string' ? record : record.type;
+        return type.toLowerCase() === 'mx' || type.toLowerCase() === 'srv';
+    }
+</script>
+
 <script lang="ts">
     import { PaginationWithLimit } from '$lib/components';
     import {
@@ -86,7 +95,7 @@
                             </Typography.Text>
                         {:else if column.id === 'priority'}
                             <Typography.Text>
-                                {record?.priority || '-'}
+                                {showPriority(record) ? record?.priority || '-' : '-'}
                             </Typography.Text>
                         {:else if column.id === 'comment'}
                             <Typography.Text truncate>

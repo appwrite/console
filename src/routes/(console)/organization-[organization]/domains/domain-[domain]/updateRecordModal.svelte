@@ -20,6 +20,7 @@
     import type { Models } from '@appwrite.io/console';
     import type { RecordType } from '$lib/stores/domains';
     import { updateRecord } from '$lib/helpers/domains';
+    import { showPriority } from './table.svelte';
 
     export let show = false;
     export let selectedRecord: Models.DnsRecord;
@@ -63,9 +64,6 @@
 
     $: isDisabled = !symmetricDifference(Object.values(record), Object.values(selectedRecord))
         ?.length;
-
-    $: showPriority =
-        record.name.toLocaleLowerCase() === 'mx' || record.name.toLocaleLowerCase() === 'srv';
 </script>
 
 <Modal title="Update DNS record" bind:show bind:error onSubmit={handleSubmit}>
@@ -104,7 +102,7 @@
                     </span>
                 </Tooltip>
             </InputNumber>
-            {#if showPriority}
+            {#if showPriority(record)}
                 <InputNumber
                     id="priority"
                     label="Priority"

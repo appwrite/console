@@ -17,6 +17,7 @@
     import { invalidate } from '$app/navigation';
     import type { RecordType } from '$lib/stores/domains';
     import { createRecord } from '$lib/helpers/domains';
+    import { showPriority } from './table.svelte';
 
     export let show = false;
 
@@ -110,7 +111,7 @@
                     </span>
                 </Tooltip>
             </InputNumber>
-            {#if type === 'MX'}
+            {#if showPriority(type)}
                 <InputNumber
                     id="priority"
                     label="Priority"
