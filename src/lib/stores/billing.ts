@@ -516,8 +516,8 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     try {
         await sdk.forConsole.billing.getCouponAccount(NEW_DEV_PRO_UPGRADE_COUPON);
     } catch (error) {
-        // already utilized if the error is 409
         if (
+            // already utilized if error is 409
             error instanceof AppwriteException &&
             error?.code === 409 &&
             error.type === 'billing_coupon_already_used'
