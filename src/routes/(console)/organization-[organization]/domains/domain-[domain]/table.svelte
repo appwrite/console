@@ -95,7 +95,7 @@
                             </Typography.Text>
                         {:else if column.id === 'priority'}
                             <Typography.Text>
-                                {showPriority(record) ? record?.priority || '-' : '-'}
+                                {showPriority(record) ? (record?.priority ?? '0') : '-'}
                             </Typography.Text>
                         {:else if column.id === 'comment'}
                             <Typography.Text truncate>
