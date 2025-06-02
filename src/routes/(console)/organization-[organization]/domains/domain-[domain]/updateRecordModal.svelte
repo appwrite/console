@@ -20,6 +20,7 @@
     import type { Models } from '@appwrite.io/console';
     import type { RecordType } from '$lib/stores/domains';
     import { updateRecord } from '$lib/helpers/domains';
+    import { showPriority } from './table.svelte';
 
     export let show = false;
     export let selectedRecord: Models.DnsRecord;
@@ -101,19 +102,21 @@
                     </span>
                 </Tooltip>
             </InputNumber>
-            <InputNumber
-                id="priority"
-                label="Priority"
-                placeholder="Enter number"
-                bind:value={record.priority}>
-                <Tooltip slot="info">
-                    <Icon icon={IconInfo} size="s" />
-                    <span slot="tooltip">
-                        Sets the priority for this DNS record. Lower numbers indicate higher
-                        priority (e.g., 10 is higher than 20).
-                    </span>
-                </Tooltip>
-            </InputNumber>
+            {#if showPriority(record)}
+                <InputNumber
+                    id="priority"
+                    label="Priority"
+                    placeholder="Enter number"
+                    bind:value={record.priority}>
+                    <Tooltip slot="info">
+                        <Icon icon={IconInfo} size="s" />
+                        <span slot="tooltip">
+                            Sets the priority for this DNS record. Lower numbers indicate higher
+                            priority (e.g., 10 is higher than 20).
+                        </span>
+                    </Tooltip>
+                </InputNumber>
+            {/if}
         </Layout.Stack>
 
         <InputTextarea

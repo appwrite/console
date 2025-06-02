@@ -1,3 +1,12 @@
+<script lang="ts" context="module">
+    import type { RecordType } from '$lib/stores/domains';
+
+    export function showPriority(record: Models.DnsRecord | RecordType): boolean {
+        const type = typeof record === 'string' ? record : record.type;
+        return type.toLowerCase() === 'mx' || type.toLowerCase() === 'srv';
+    }
+</script>
+
 <script lang="ts">
     import { PaginationWithLimit } from '$lib/components';
     import {
@@ -29,6 +38,15 @@
     let showEdit = false;
     let showDelete = false;
     let selectedRecord: Models.DnsRecord = null;
+
+    function formatRecordName(name: string) {
+        const limit = 30;
+        return {
+            value: name.length > limit ? `${name.slice(0, limit)}...` : name,
+            truncated: name.length > limit,
+            whole: name
+        };
+    }
 </script>
 
 <Layout.Stack>
@@ -47,9 +65,16 @@
                 {#each $columns as column}
                     <Table.Cell column={column.id} {root}>
                         {#if column.id === 'name'}
-                            <Typography.Code>
-                                {record.name}
-                            </Typography.Code>
+                            {@const formatted = formatRecordName(record.name)}
+                            <Tooltip placement="bottom" disabled={!formatted.truncated}>
+                                <Typography.Text truncate>{formatted.value}</Typography.Text>
+                                <span
+                                    slot="tooltip"
+                                    style:white-space="pre-wrap"
+                                    style:word-break="break-all">
+                                    {formatted.whole}
+                                </span>
+                            </Tooltip>
                         {:else if column.id === 'type'}
                             <Typography.Text>
                                 {record.type}
@@ -70,7 +95,7 @@
                             </Typography.Text>
                         {:else if column.id === 'priority'}
                             <Typography.Text>
-                                {record?.priority ?? '-'}
+                                {showPriority(record) ? (record?.priority ?? '0') : '-'}
                             </Typography.Text>
                         {:else if column.id === 'comment'}
                             <Typography.Text truncate>
