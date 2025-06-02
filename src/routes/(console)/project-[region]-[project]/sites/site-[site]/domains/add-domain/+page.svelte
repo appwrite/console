@@ -22,7 +22,7 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { ConnectRepoModal } from '$lib/components/git/index.js';
-    import { project, regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { isCloud } from '$lib/system';
     import { getApexDomain } from '$lib/helpers/tlds';
 
@@ -76,7 +76,7 @@
             } else if (behaviour === 'REDIRECT') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(domainName, $regionalProtocol + redirect, statusCode);
+                    .proxy.createRedirectRule(domainName, redirect, statusCode);
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)

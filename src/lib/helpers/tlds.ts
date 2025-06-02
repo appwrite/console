@@ -15,7 +15,6 @@ export function isASubdomain(domain: string | null): boolean {
 
     const { domain: apex, subdomain } = parse(domain);
     if (!apex) return false;
-    if (subdomain === 'www') return false;
 
     return !!subdomain;
 }
