@@ -4,8 +4,7 @@ import type { PageLoad } from './$types';
 import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
 
 export const load: PageLoad = async ({ params }) => {
-    if (hasOnboardingDismissed(params.project)) {
-        redirect(302, `${base}/project-${params.region}-${params.project}/overview`);
-    }
-    redirect(302, `${base}/project-${params.region}-${params.project}/get-started`);
+    const path = !hasOnboardingDismissed(params.project) ? 'get-started' : 'overview/platforms';
+
+    redirect(302, `${base}/project-${params.region}-${params.project}/${path}`);
 };
