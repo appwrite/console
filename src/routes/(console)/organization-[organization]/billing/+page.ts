@@ -1,9 +1,11 @@
-import { Dependencies } from '$lib/constants';
+import { BillingPlan, Dependencies } from '$lib/constants';
 import type { Address } from '$lib/sdk/billing';
-import type { Organization } from '$lib/stores/organization';
+import { currentPlan, type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
+import { get } from 'svelte/store';
+import { isCloud } from '$lib/system';
 
 export const load: PageLoad = async ({ parent, depends }) => {
     const { organization, scopes } = await parent();
@@ -49,12 +51,18 @@ export const load: PageLoad = async ({ parent, depends }) => {
         // ignore error
     }
 
+    const areCreditsSupported = isCloud
+        ? (get(currentPlan)?.supportsCredits ??
+          (organization.billingPlan !== BillingPlan.FREE &&
+              organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))
+        : false;
+
     const [paymentMethods, addressList, billingAddress, creditList, aggregationBillingPlan] =
         await Promise.all([
             sdk.forConsole.billing.listPaymentMethods(),
             sdk.forConsole.billing.listAddresses(),
             billingAddressPromise,
-            sdk.forConsole.billing.listCredits(organization.$id),
+            areCreditsSupported ? sdk.forConsole.billing.listCredits(organization.$id) : null,
             sdk.forConsole.billing.getPlan(billingAggregation?.plan ?? organization.billingPlan)
         ]);
 
@@ -65,6 +73,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
         aggregationBillingPlan,
         creditList,
         billingAggregation,
-        billingInvoice
+        billingInvoice,
+        areCreditsSupported
     };
 };

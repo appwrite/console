@@ -19,6 +19,7 @@
         Layout,
         Link,
         Popover,
+        Skeleton,
         Table
     } from '@appwrite.io/pink-svelte';
     import {
@@ -39,13 +40,17 @@
 
     onMount(request);
 
+    let isLoadingInvoices = false;
+
     async function request() {
-        // isLoadingInvoices = true;
+        isLoadingInvoices = true;
         invoiceList = await sdk.forConsole.billing.listInvoices(page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
             Query.orderDesc('$createdAt')
         ]);
+
+        isLoadingInvoices = false;
     }
 
     $: if (page.url.searchParams.get('type') === 'validate-invoice') {
@@ -61,27 +66,40 @@
     $: if (offset !== null) {
         request();
     }
+
+    const columns = [
+        { id: 'dueDate' },
+        { id: 'status', width: { min: 200 } },
+        { id: 'amount', width: { min: 120 } },
+        { id: 'action', width: 40 }
+    ];
 </script>
 
 <CardGrid>
     <svelte:fragment slot="title">Payment history</svelte:fragment>
     Transaction history for this organization. Download invoices for more details about your payments.
     <svelte:fragment slot="aside">
-        {#if invoiceList.total > 0}
-            <Table.Root
-                let:root
-                columns={[
-                    { id: 'dueDate' },
-                    { id: 'status', width: { min: 200 } },
-                    { id: 'amount', width: { min: 120 } },
-                    { id: 'action', width: 40 }
-                ]}>
+        {#if invoiceList.total > 0 || isLoadingInvoices}
+            <Table.Root let:root {columns}>
                 <svelte:fragment slot="header" let:root>
                     <Table.Header.Cell column="dueDate" {root}>Due date</Table.Header.Cell>
                     <Table.Header.Cell column="status" {root}>Status</Table.Header.Cell>
                     <Table.Header.Cell column="amount" {root}>Amount due</Table.Header.Cell>
                     <Table.Header.Cell column="action" {root} />
                 </svelte:fragment>
+
+                {#if isLoadingInvoices}
+                    {#each Array.from({ length: 2 }) as _}
+                        <Table.Row.Base {root}>
+                            {#each columns as column}
+                                <Table.Cell column={column.id} {root}>
+                                    <Skeleton variant="line" height={20} width="100%" />
+                                </Table.Cell>
+                            {/each}
+                        </Table.Row.Base>
+                    {/each}
+                {/if}
+
                 {#each invoiceList?.invoices as invoice}
                     {@const status = invoice.status}
                     <Table.Row.Base {root}>

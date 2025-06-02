@@ -22,8 +22,9 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { base } from '$app/paths';
+    import type { PageData } from './$types';
 
-    export let data;
+    export let data: PageData;
 
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
@@ -136,7 +137,7 @@
     <BillingAddress billingAddress={data?.billingAddress} />
     <TaxId />
     <BudgetCap />
-    <AvailableCredit />
+    <AvailableCredit areCreditsSupported={data.areCreditsSupported} />
 </Container>
 
 {#if $selectedInvoice}
