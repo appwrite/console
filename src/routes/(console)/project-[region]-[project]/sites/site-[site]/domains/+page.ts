@@ -28,15 +28,15 @@ export const load = async ({ params, depends, url, route }) => {
                 [
                     Query.or([
                         Query.and([
-                          Query.equal('type', RuleType.REDIRECT),
-                          Query.equal('trigger', RuleTrigger.MANUAL),
+                            Query.equal('type', RuleType.REDIRECT),
+                            Query.equal('trigger', RuleTrigger.MANUAL)
                         ]),
                         Query.and([
-                          Query.equal('type', RuleType.DEPLOYMENT),
-                          Query.equal('trigger', RuleTrigger.MANUAL),
-                          Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
-                          Query.equal('deploymentResourceId', params.site),
-                        ]),   
+                            Query.equal('type', RuleType.DEPLOYMENT),
+                            Query.equal('trigger', RuleTrigger.MANUAL),
+                            Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
+                            Query.equal('deploymentResourceId', params.site)
+                        ])
                     ]),
                     Query.limit(limit),
                     Query.offset(offset),

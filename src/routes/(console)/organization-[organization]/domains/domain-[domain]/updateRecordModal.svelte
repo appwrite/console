@@ -26,18 +26,18 @@
 
     let record = deepClone(selectedRecord);
     let error = '';
-    
+
     const placeholders: Record<RecordType, string> = {
-      'A': '76.75.21.21',
-      'AAAA': '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
-      'CNAME': 'stage.example.com',
-      'MX': 'mail.example.com',
-      'TXT': 'v=spf1 include:_spf.example.com ~all',
-      'NS': 'ns1.example.com',
-      'SRV': '10 5 8080 example.com',
-      'CAA': '0 issue "letsencrypt.org"',
-      'HTTPS': 'https://example.com',
-      'ALIAS': 'www.example.com'
+        A: '76.75.21.21',
+        AAAA: '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
+        CNAME: 'stage.example.com',
+        MX: 'mail.example.com',
+        TXT: 'v=spf1 include:_spf.example.com ~all',
+        NS: 'ns1.example.com',
+        SRV: '10 5 8080 example.com',
+        CAA: '0 issue "letsencrypt.org"',
+        HTTPS: 'https://example.com',
+        ALIAS: 'www.example.com'
     };
     $: placeholder = placeholders[record.type] ?? 'Enter value';
 
@@ -188,7 +188,7 @@
             </Input.Helper>
         </Layout.Stack>
 
-        <InputText id="value" label="Value" placeholder={placeholder} bind:value={record.value}>
+        <InputText id="value" label="Value" {placeholder} bind:value={record.value}>
             <Tooltip slot="info">
                 <Icon icon={IconInfo} size="s" />
                 <span slot="tooltip">
