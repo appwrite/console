@@ -4,8 +4,8 @@
     import Footer from '$lib/layout/footer.svelte';
     import Shell from '$lib/layout/shell.svelte';
     import { app } from '$lib/stores/app';
-    import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
     import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
+    import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { afterUpdate, onMount } from 'svelte';
     import { loading } from '$routes/store';
@@ -36,7 +36,7 @@
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
-    import { activeHeaderAlert, consoleVariables } from './store';
+    import { activeHeaderAlert, consoleVariables, version } from './store';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { base } from '$app/paths';
@@ -54,6 +54,10 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
     import type { NavbarProject } from '$lib/components/navbar.svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { type Models, Query } from '@appwrite.io/console';
+
+    export let data: LayoutData;
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -62,11 +66,56 @@
             .join(' ');
     }
 
-    const isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
+    let loadingVersion = false;
+    let loadingConsoleVars = false;
+    let loadingProjectsForShell = false;
 
-    export let data: LayoutData;
+    function loadConsoleVariables() {
+        if (!$version && !loadingVersion) {
+            const { endpoint, project } = sdk.forConsole.client.config;
 
-    $: loadedProjects = data.projects.map((project) => {
+            loadingVersion = true;
+            fetch(`${endpoint}/health/version`, {
+                headers: { 'X-Appwrite-Project': project }
+            })
+                .then((res) => res.json().catch(() => null))
+                .then((data) => version.set(data?.version))
+                .finally(() => (loadingVersion = false));
+        }
+
+        if (!$consoleVariables && !loadingConsoleVars) {
+            loadingConsoleVars = true;
+            sdk.forConsole.console
+                .variables()
+                .then((vars) => consoleVariables.set(vars))
+                .finally(() => (loadingConsoleVars = false));
+        }
+    }
+
+    let latestProjects: Models.Project[] = [];
+    function loadProjectsForShell() {
+        if (latestProjects.length || loadingProjectsForShell) return;
+
+        loadingProjectsForShell = true;
+
+        sdk.forConsole.projects
+            .list([
+                Query.equal('teamId', data.currentOrgId),
+                Query.limit(5),
+                Query.orderDesc('$updatedAt')
+            ])
+            .then((res) => {
+                latestProjects = res.projects ?? [];
+                for (const project of latestProjects) {
+                    project.region ??= 'default';
+                }
+            })
+            .finally(() => (loadingProjectsForShell = false));
+    }
+
+    $: isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
+
+    $: loadedProjects = latestProjects.map((project) => {
         return {
             name: project?.name,
             $id: project.$id,
@@ -262,6 +311,11 @@
             rank: -1
         }
     ]);
+
+    loadProjectsForShell();
+
+    loadConsoleVariables();
+
     onMount(async () => {
         loading.set(false);
         if (!localStorage.getItem('feedbackElapsed')) {

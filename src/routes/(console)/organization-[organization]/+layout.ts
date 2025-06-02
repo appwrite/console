@@ -10,12 +10,13 @@ import { headerAlert } from '$lib/stores/headerAlert';
 import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte';
 import { get } from 'svelte/store';
 import { preferences } from '$lib/stores/preferences';
-import type { Organization } from '$lib/stores/organization';
 import { defaultRoles, defaultScopes } from '$lib/constants';
 import type { Plan } from '$lib/sdk/billing';
 import { loadAvailableRegions } from '$routes/(console)/regions';
 
-export const load: LayoutLoad = async ({ params, depends }) => {
+export const load: LayoutLoad = async ({ params, depends, parent }) => {
+    const { preferences: prefs } = await parent();
+
     depends(Dependencies.ORGANIZATION);
     depends(Dependencies.MEMBERS);
     depends(Dependencies.PAYMENT_METHODS);
@@ -41,19 +42,17 @@ export const load: LayoutLoad = async ({ params, depends }) => {
                 }
             }
         }
-        const prefs = await sdk.forConsole.account.getPrefs();
         if (prefs.organization !== params.organization) {
             const newPrefs = { ...prefs, organization: params.organization };
-            sdk.forConsole.account.updatePrefs(newPrefs);
+            void sdk.forConsole.account.updatePrefs(newPrefs);
         }
 
         const [organization, members] = await Promise.all([
-            sdk.forConsole.teams.get(params.organization) as Promise<Organization>,
+            sdk.forConsole.teams.get(params.organization),
             sdk.forConsole.teams.listMemberships(params.organization),
-            preferences.loadTeamPrefs(params.organization)
+            preferences.loadTeamPrefs(params.organization),
+            loadAvailableRegions(params.organization)
         ]);
-
-        await loadAvailableRegions(params.organization);
 
         return {
             header: Header,
@@ -65,9 +64,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             scopes
         };
     } catch (e) {
-        const prefs = await sdk.forConsole.account.getPrefs();
         const newPrefs = { ...prefs, organization: null };
-        sdk.forConsole.account.updatePrefs(newPrefs);
+        void sdk.forConsole.account.updatePrefs(newPrefs);
         error(e.code, e.message);
     }
 };
