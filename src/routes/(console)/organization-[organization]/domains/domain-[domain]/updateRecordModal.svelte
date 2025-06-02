@@ -63,6 +63,9 @@
 
     $: isDisabled = !symmetricDifference(Object.values(record), Object.values(selectedRecord))
         ?.length;
+
+    $: showPriority =
+        record.name.toLocaleLowerCase() === 'mx' || record.name.toLocaleLowerCase() === 'srv';
 </script>
 
 <Modal title="Update DNS record" bind:show bind:error onSubmit={handleSubmit}>
@@ -101,19 +104,21 @@
                     </span>
                 </Tooltip>
             </InputNumber>
-            <InputNumber
-                id="priority"
-                label="Priority"
-                placeholder="Enter number"
-                bind:value={record.priority}>
-                <Tooltip slot="info">
-                    <Icon icon={IconInfo} size="s" />
-                    <span slot="tooltip">
-                        Sets the priority for this DNS record. Lower numbers indicate higher
-                        priority (e.g., 10 is higher than 20).
-                    </span>
-                </Tooltip>
-            </InputNumber>
+            {#if showPriority}
+                <InputNumber
+                    id="priority"
+                    label="Priority"
+                    placeholder="Enter number"
+                    bind:value={record.priority}>
+                    <Tooltip slot="info">
+                        <Icon icon={IconInfo} size="s" />
+                        <span slot="tooltip">
+                            Sets the priority for this DNS record. Lower numbers indicate higher
+                            priority (e.g., 10 is higher than 20).
+                        </span>
+                    </Tooltip>
+                </InputNumber>
+            {/if}
         </Layout.Stack>
 
         <InputTextarea
