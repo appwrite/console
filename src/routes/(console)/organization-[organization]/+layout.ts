@@ -31,15 +31,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
             scopes = res.scopes;
             currentPlan = await sdk.forConsole.billing.getOrganizationPlan(params.organization);
             if (scopes.includes('billing.read')) {
-                await failedInvoice.load(params.organization);
-                if (get(failedInvoice)) {
-                    headerAlert.add({
-                        show: true,
-                        component: ProjectsAtRisk,
-                        id: 'projectsAtRisk',
-                        importance: 1
-                    });
-                }
+                loadFailedInvoices(params.organization);
             }
         }
         if (prefs.organization !== params.organization) {
@@ -69,3 +61,17 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         error(e.code, e.message);
     }
 };
+
+// load the invoice and add a banner in bg
+function loadFailedInvoices(teamId: string) {
+    failedInvoice.load(teamId).then(() => {
+        if (get(failedInvoice)) {
+            headerAlert.add({
+                show: true,
+                component: ProjectsAtRisk,
+                id: 'projectsAtRisk',
+                importance: 1
+            });
+        }
+    });
+}
