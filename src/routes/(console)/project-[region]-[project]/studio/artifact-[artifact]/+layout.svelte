@@ -15,10 +15,10 @@
     import {
         disableBodySelect,
         enabledBodySelect,
+        getStudioView,
         getTerminalHeightFromPrefs,
         getTerminalOpenFromPrefs,
-        saveTerminalHeightToPrefs,
-        saveTerminalOpenToPrefs
+        saveImaginePrefs
     } from '$lib/helpers/studioLayout';
     import { showChat } from '$lib/stores/chat';
     import { default as IconChatLayout } from '$routes/(console)/project-[region]-[project]/studio/assets/chat-layout.svelte';
@@ -32,14 +32,13 @@
 
     const { children, data } = $props();
 
-    let view: 'preview' | 'editor' = $state(
-        page.url.searchParams.has('code') ? 'editor' : 'preview'
-    );
+    let view: 'preview' | 'editor' = $state(getStudioView() ?? 'preview');
 
     let debug = $state(false);
 
     function changeView(newView: 'preview' | 'editor') {
         view = newView;
+        saveImaginePrefs('studioView', newView);
     }
 
     $effect(() => {
@@ -62,7 +61,7 @@
 
     $effect(() => {
         if (terminalOpen !== undefined) {
-            saveTerminalOpenToPrefs(terminalOpen);
+            saveImaginePrefs('studioTerminalOpen', terminalOpen);
         }
     });
 
@@ -106,7 +105,7 @@
 
     function stopResize() {
         isResizing = false;
-        saveTerminalHeightToPrefs(resizerTopPosition);
+        saveImaginePrefs('studioTerminalHeight', resizerTopPosition);
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
         window.removeEventListener('touchmove', resize);

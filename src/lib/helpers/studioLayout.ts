@@ -5,69 +5,66 @@ import { page } from '$app/state';
 
 const userPreferences = () => get(user)?.prefs;
 
-export function getChatWidthFromPrefs(): number {
+const getImaginePrefs = () => {
     const currentPrefs = userPreferences();
-    if (currentPrefs?.studioChatWidth) {
+    return currentPrefs?.imagine;
+};
+
+export function getChatWidthFromPrefs(): number {
+    const imaginePrefs = getImaginePrefs();
+    if (imaginePrefs?.studioChatWidth) {
         if (window) {
             const maxSize = page.data?.subNavigation
                 ? window.innerWidth - 660
                 : window.innerWidth - 460;
 
-            if (parseInt(currentPrefs.studioChatWidth) > maxSize) {
+            if (parseInt(imaginePrefs.studioChatWidth) > maxSize) {
                 return maxSize;
             }
         }
-        return parseInt(currentPrefs.studioChatWidth);
+        return parseInt(imaginePrefs.studioChatWidth);
     }
     return 500;
 }
-export function saveChatWidthToPrefs(position: number) {
-    const currentPrefs = userPreferences();
-    const newPrefs = {
-        ...currentPrefs,
-        studioChatWidth: position
-    };
-
-    sdk.forConsole.account.updatePrefs(newPrefs);
-}
 
 export function getTerminalHeightFromPrefs(): number {
-    const currentPrefs = userPreferences();
-    if (currentPrefs?.studioTerminalHeight) {
+    const imaginePrefs = getImaginePrefs();
+    if (imaginePrefs?.studioTerminalHeight) {
         if (window) {
             const maxSize = window.innerHeight - 400;
 
-            if (parseInt(currentPrefs.studioTerminalHeight) > maxSize) {
+            if (parseInt(imaginePrefs.studioTerminalHeight) > maxSize) {
                 return maxSize;
             }
         }
-        return parseInt(currentPrefs.studioTerminalHeight);
+        return parseInt(imaginePrefs.studioTerminalHeight);
     }
     return 350;
 }
 
-export function saveTerminalHeightToPrefs(position: number) {
+export function getStudioView() {
+    const imaginePrefs = getImaginePrefs();
+    return imaginePrefs?.studioView as 'editor' | 'preview' | null;
+}
+
+export function saveImaginePrefs(key: string, value: string | number | boolean): void {
     const currentPrefs = userPreferences();
+    const imaginePrefs = getImaginePrefs();
+
     const newPrefs = {
         ...currentPrefs,
-        studioTerminalHeight: position
+        imagine: {
+            ...imaginePrefs,
+            [key]: value
+        }
     };
 
     sdk.forConsole.account.updatePrefs(newPrefs);
 }
 
 export function getTerminalOpenFromPrefs(): boolean {
-    const currentPrefs = userPreferences();
-    return currentPrefs?.studioTerminalOpen as unknown as boolean;
-}
-
-export function saveTerminalOpenToPrefs(isOpen: boolean) {
-    const currentPrefs = userPreferences();
-    const newPrefs = {
-        ...currentPrefs,
-        studioTerminalOpen: isOpen
-    };
-    sdk.forConsole.account.updatePrefs(newPrefs);
+    const imaginePrefs = getImaginePrefs();
+    return imaginePrefs?.studioTerminalOpen as unknown as boolean;
 }
 
 export function disableBodySelect(direction: 'row' | 'column' = 'column') {

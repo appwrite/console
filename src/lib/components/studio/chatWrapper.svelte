@@ -6,7 +6,7 @@
         disableBodySelect,
         enabledBodySelect,
         getChatWidthFromPrefs,
-        saveChatWidthToPrefs
+        saveImaginePrefs
     } from '$lib/helpers/studioLayout.js';
     import { createStreamParser } from '$lib/components/studio/chat/parser.js';
     import { sdk } from '$lib/stores/sdk.js';
@@ -78,7 +78,7 @@
             resizerLeftPosition = 500;
         }
         const saveWidth = page.data?.subNavigation ? resizerLeftPosition - 24 : resizerLeftPosition;
-        saveChatWidthToPrefs(saveWidth);
+        saveImaginePrefs('studioChatWidth', saveWidth);
 
         isResizing = false;
         window.removeEventListener('mousemove', resize);
