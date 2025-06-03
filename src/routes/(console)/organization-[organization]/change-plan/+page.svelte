@@ -302,8 +302,7 @@
                 </Layout.Stack>
             </Fieldset>
 
-            <!-- Show email input if upgrading from free plan -->
-            {#if selectedPlan !== BillingPlan.FREE && data.organization.billingPlan === BillingPlan.FREE}
+            {#if isUpgrade}
                 <Fieldset legend="Payment">
                     <SelectPaymentMethod
                         methods={data.paymentMethods}
