@@ -1,53 +1,61 @@
 <script lang="ts">
-    import { formatCurrency } from '$lib/helpers/numbers';
+    import { Button } from '$lib/elements/forms';
     import type { Coupon } from '$lib/sdk/billing';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { formatCurrency } from '$lib/helpers/numbers';
+    import { IconTag, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
 
     export let couponData: Partial<Coupon> = {
         code: null,
         status: null,
         credits: null
     };
+
     export let fixedCoupon = false;
 </script>
 
 {#if couponData?.credits}
-    <span class="u-flex u-main-space-between">
-        <div class="u-flex u-cross-center u-gap-4">
-            <p class="text">
-                <span class="icon-tag u-color-text-success" aria-hidden="true"></span>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack inline direction="row" gap="s" alignItems="center" alignContent="center">
+            <Layout.Stack
+                inline
+                direction="row"
+                gap="xxs"
+                alignItems="center"
+                alignContent="center">
+                <Icon icon={IconTag} color="--fgcolor-success" size="s" />
                 {#if couponData.credits >= 100}
                     {couponData?.code?.toUpperCase()}
                 {:else}
-                    <span
-                        ><Tooltip
-                            >Credits applied <span slot="tooltip"
-                                >{couponData?.code?.toUpperCase()}</span
-                            ></Tooltip
-                        ></span>
+                    <Tooltip>
+                        <Typography.Text color="--fgcolor-neutral-primary"
+                            >Credits applied</Typography.Text>
+                        <span slot="tooltip">{couponData?.code?.toUpperCase()}</span>
+                    </Tooltip>
                 {/if}
-            </p>
+            </Layout.Stack>
+
             {#if !fixedCoupon}
-                <button
-                    type="button"
-                    class="button is-text is-only-icon"
-                    style="--button-size:1.5rem;"
-                    aria-label="Close"
-                    title="Close"
-                    on:click={() =>
-                        (couponData = {
+                <Button
+                    extraCompact
+                    icon
+                    on:click={() => {
+                        couponData = {
                             code: null,
                             status: null,
                             credits: null
-                        })}>
-                    <span class="icon-x" aria-hidden="true"></span>
-                </button>
+                        };
+                    }}>
+                    <Icon icon={IconX} size="s" />
+                </Button>
             {/if}
-        </div>
+        </Layout.Stack>
+
         {#if couponData.credits >= 100}
-            <p class="inline-tag">Credits applied</p>
+            <Badge variant="secondary" content="Credits applied" />
         {:else}
-            <span class="u-color-text-success">-{formatCurrency(couponData.credits)}</span>
+            <Typography.Text color="--fgcolor-success"
+                >-{formatCurrency(couponData.credits)}</Typography.Text>
         {/if}
-    </span>
+    </Layout.Stack>
 {/if}
