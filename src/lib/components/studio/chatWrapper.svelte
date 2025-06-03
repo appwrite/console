@@ -198,4 +198,7 @@
             background-color: var(--border-neutral-strong);
         }
     }
+    .hidden {
+        display: none;
+    }
 </style>
