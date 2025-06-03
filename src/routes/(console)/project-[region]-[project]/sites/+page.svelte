@@ -72,6 +72,24 @@
 
 <Container>
     {#if data.sitesLive}
+        <Layout.Stack direction="row" justifyContent="space-between">
+            <Layout.Stack direction="row" alignItems="center">
+                <SearchQuery placeholder="Search by name" />
+            </Layout.Stack>
+            <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+                <ViewSelector
+                    {columns}
+                    view={data.view}
+                    hideColumns
+                    hideView={!data.siteList.total} />
+                {#if $canWriteSites}
+                    <Button on:mousedown={() => (show = true)} event="create_site" size="s">
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create site
+                    </Button>
+                {/if}
+            </Layout.Stack>
+        </Layout.Stack>
         {#if data.siteList.total}
             {#if data.view === View.Grid}
                 <Grid siteList={data.siteList} />
