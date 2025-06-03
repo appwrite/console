@@ -39,7 +39,7 @@
         {#if selectedPaymentMethod?.country?.toLowerCase() === 'in'}
             <Alert.Inline status="warning">
                 <svelte:fragment slot="title">Indian credit or debit card-holders</svelte:fragment>
-                To comply with RBI regulations in India, Appwrite will ask for verification to charge
+                To comply with RBI regulations in India, we will ask for verification to charge
                 up to $150 USD on your payment method. We will never charge more than the cost of your
                 plan and the resources you use, or your budget cap limit. For higher usage limits, please
                 contact us.

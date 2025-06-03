@@ -28,6 +28,7 @@
     import { studio } from '$lib/components/studio/studio.svelte.js';
     import { untrack } from 'svelte';
     import Debug from './debug.svelte';
+    import ArtifactActionMenu from './artifactActionMenu.svelte';
 
     const { children, data } = $props();
 
@@ -211,9 +212,7 @@
                 {/if}
 
                 <Layout.Stack gap="s" direction="row" alignItems="center" inline>
-                    <Status
-                        label={studio.status}
-                        status={studio.status === 'connected' ? 'complete' : 'pending'} />
+                    <ArtifactActionMenu />
                     <Button.Button size="s" variant="primary">Release</Button.Button>
                 </Layout.Stack>
             </Layout.Stack>

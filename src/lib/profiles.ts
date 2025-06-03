@@ -17,6 +17,7 @@ type Profile = {
     hasGoogleLogin: boolean;
     hasAccountLogin: boolean;
     hasAppwriteDocumentation: boolean;
+    description: string;
 };
 
 export const ConsoleCloudProfile: Profile = {
@@ -29,13 +30,14 @@ export const ConsoleCloudProfile: Profile = {
     hasSites: true,
     hasProjectProgressBars: true,
     hasFullPageSignup: false,
-    defaultProjectName: 'Appwrite project',
+    defaultProjectName: 'New project',
     hasChat: false,
     hasGithubLogin: true,
     githubLoginProvider: OAuthProvider.Github,
     hasGoogleLogin: false,
     hasAccountLogin: true,
-    hasAppwriteDocumentation: true
+    hasAppwriteDocumentation: true,
+    description: "Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools."
 };
 
 export const ConsoleSelfhostedProfile: Profile = {
@@ -48,12 +50,13 @@ export const ConsoleSelfhostedProfile: Profile = {
     hasSites: true,
     hasProjectProgressBars: true,
     hasFullPageSignup: false,
-    defaultProjectName: 'Appwrite project',
+    defaultProjectName: 'New project',
     hasChat: false,
     hasGithubLogin: false,
     hasGoogleLogin: false,
     hasAccountLogin: true,
-    hasAppwriteDocumentation: true
+    hasAppwriteDocumentation: true,
+    description: "Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools."
 };
 
 export const StudioProfile: Profile = {
@@ -66,11 +69,12 @@ export const StudioProfile: Profile = {
     hasSites: true,
     hasProjectProgressBars: false,
     hasFullPageSignup: true,
-    defaultProjectName: 'Imagine project',
+    defaultProjectName: 'New project',
     hasChat: true,
     hasGithubLogin: true,
     githubLoginProvider: 'github2',
     hasGoogleLogin: true,
     hasAccountLogin: true,
-    hasAppwriteDocumentation: false
+    hasAppwriteDocumentation: false,
+    description: "Imagine the fastest way to go from your imagination to scale. Batteries included."
 };

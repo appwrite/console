@@ -76,11 +76,17 @@
 
 <style lang="scss">
     .iframe-container {
-        height: 100%;
+        background-color: red;
+        margin-inline-start: calc(-1 * var(--space-4));
+        margin-bottom: calc(-1 * var(--space-4));
+        width: calc(100% + var(--space-7));
+        height: calc(100% - 88px);
+        overflow: visible;
 
         @media (min-width: 768px) {
-            flex-grow: 1;
-            height: auto;
+            margin-inline-start: calc(-1 * var(--space-7));
+            margin-bottom: calc(-1 * var(--space-7));
+            width: calc(100% + 2 * var(--space-7));
         }
     }
 
@@ -90,14 +96,9 @@
     }
     iframe {
         border: none;
+        width: 100%;
         height: 100%;
-
-        margin-inline-start: calc(-1 * var(--space-4));
-        width: calc(100% + var(--space-7));
-        @media (min-width: 768px) {
-            margin-inline-start: calc(-1 * var(--space-7));
-            width: calc(100% + 2 * var(--space-7));
-        }
+        display: block;
     }
 
     .divider-wrapper {
