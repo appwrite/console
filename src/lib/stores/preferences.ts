@@ -7,6 +7,7 @@ import type { Models } from '@appwrite.io/console';
 import { organization } from './organization';
 import { page } from '$app/state';
 import { user } from '$lib/stores/user';
+import deepEqual from 'deep-equal';
 
 type Preferences = {
     limit?: number;
@@ -74,19 +75,17 @@ function createPreferences() {
      * Update the local store and then synchronizes them on user prefs.
      */
     function updateAndSync(callback: (prefs: PreferencesStore) => void) {
-        let oldPrefsSnapshot: string;
+        let oldPrefsSnapshot: PreferencesStore;
         let newPrefsSnapshot: PreferencesStore;
 
         update((currentPrefs) => {
-            oldPrefsSnapshot = JSON.stringify(currentPrefs);
+            oldPrefsSnapshot = currentPrefs;
             callback(currentPrefs);
             newPrefsSnapshot = currentPrefs;
             return currentPrefs;
         });
 
-        // Skip API if no changes (sufficient for simple objects).
-        // The key order seemed to be maintained during local tests.
-        if (oldPrefsSnapshot === JSON.stringify(newPrefsSnapshot)) {
+        if (deepEqual(oldPrefsSnapshot, newPrefsSnapshot)) {
             return;
         }
 
