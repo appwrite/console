@@ -122,7 +122,7 @@
                     selectedPlan,
                     paymentMethodId,
                     null,
-                    selectedCoupon.code ? selectedCoupon.code : null,
+                    selectedCoupon?.code,
                     collaborators,
                     billingBudget,
                     taxId

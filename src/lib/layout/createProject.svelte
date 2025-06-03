@@ -49,6 +49,7 @@
                 {#if isCloud && regions.length > 0}
                     <Layout.Stack gap="xs">
                         <Input.Select
+                            required
                             bind:value={region}
                             placeholder="Select a region"
                             options={filterRegions(regions)}

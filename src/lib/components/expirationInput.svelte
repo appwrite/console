@@ -129,5 +129,10 @@
     bind:value={expirationSelect} />
 
 {#if expirationSelect === 'custom'}
-    <InputDateTime required id="expire" label={dateSelectorLabel} bind:value={expirationCustom} />
+    <InputDateTime
+        required
+        type="date"
+        id="expire"
+        label={dateSelectorLabel}
+        bind:value={expirationCustom} />
 {/if}

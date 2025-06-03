@@ -112,6 +112,9 @@
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = $isSidebarOpen ? 'open' : 'closed';
 
+    let isProjectPage;
+    $: isProjectPage = $page.route?.id?.includes('project-');
+
     function handleResize() {
         $isSidebarOpen = false;
         showAccountMenu = false;
@@ -156,7 +159,7 @@
     <div
         class="content"
         class:has-transition={showContentTransition}
-        class:icons-content={state === 'icons'}
+        class:icons-content={state === 'icons' && isProjectPage}
         class:no-sidebar={!showSideNavigation}>
         <section class="main-content" data-test={showSideNavigation}>
             {#if $page.data?.header}
