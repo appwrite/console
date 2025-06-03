@@ -93,17 +93,11 @@
 
 <style lang="scss">
     .iframe-container {
-        background-color: red;
-        margin-inline-start: calc(-1 * var(--space-4));
-        margin-bottom: calc(-1 * var(--space-4));
-        width: calc(100% + var(--space-7));
-        height: calc(100% - 88px);
-        overflow: visible;
+        height: 100%;
 
         @media (min-width: 768px) {
-            margin-inline-start: calc(-1 * var(--space-7));
-            margin-bottom: calc(-1 * var(--space-7));
-            width: calc(100% + 2 * var(--space-7));
+            flex-grow: 1;
+            height: auto;
         }
     }
 
@@ -114,6 +108,7 @@
     iframe {
         border: none;
         position: absolute;
+        background-color: red;
 
         margin-inline-start: calc(-1 * var(--space-4));
         width: calc(100% + var(--space-7));
