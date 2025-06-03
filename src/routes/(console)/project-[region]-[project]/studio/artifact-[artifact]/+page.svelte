@@ -9,13 +9,26 @@
     import { previewFrameRef } from '$routes/(console)/project-[region]-[project]/store';
     import { SvelteURL } from 'svelte/reactivity';
     import type { EventHandler } from 'svelte/elements';
+    import { onMount } from 'svelte';
 
     let previewUrl = new SvelteURL('https://preview.torsten.work');
 
     let iframeRef: HTMLIFrameElement | null = $state(null);
+    let iframeContainerRef: HTMLDivElement | null = $state(null);
     $effect(() => {
         previewFrameRef.set(iframeRef);
     });
+
+    onMount(() => {
+        calculateIframeHeight();
+    });
+
+    const calculateIframeHeight = () => {
+        if (iframeContainerRef && iframeRef) {
+            const height = iframeContainerRef.offsetHeight;
+            iframeRef.style.height = `${height + 5}px`;
+        }
+    };
 
     const onsubmit: EventHandler<SubmitEvent, HTMLFormElement> = (event) => {
         event.preventDefault();
@@ -30,6 +43,7 @@
     let showMobileDevice = $state(false);
 </script>
 
+<svelte:window on:resize={calculateIframeHeight} />
 <Layout.Stack direction="column" gap="s">
     <form {onsubmit}>
         <Layout.Stack direction="row" alignItems="center">
@@ -63,7 +77,10 @@
         <Divider />
     </div>
 </Layout.Stack>
-<div class="iframe-container" class:mobile-container={showMobileDevice}>
+<div
+    class="iframe-container"
+    class:mobile-container={showMobileDevice}
+    bind:this={iframeContainerRef}>
     {#key refresh}
         <iframe
             src={previewUrl.toString()}
@@ -90,7 +107,7 @@
     }
     iframe {
         border: none;
-        height: 100%;
+        position: absolute;
 
         margin-inline-start: calc(-1 * var(--space-4));
         width: calc(100% + var(--space-7));
