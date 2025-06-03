@@ -6,7 +6,7 @@
     import { trackPageView } from '$lib/actions/analytics';
     import { Notifications, Progress } from '$lib/layout';
     import { app, type AppStore } from '$lib/stores/app';
-    import { isCloud } from '$lib/system';
+    import { consoleProfile, isCloud } from '$lib/system';
     import { onDestroy, onMount } from 'svelte';
     import { requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
@@ -192,6 +192,8 @@
 <svelte:window on:resize={updateViewport} on:load={updateViewport} />
 
 <svelte:head>
+    <meta name="description" content={consoleProfile.description} />
+
     {#each preloadFonts as font}
         <link rel="preload" href={font} as="font" type="font/woff2" crossorigin="anonymous" />
     {/each}
