@@ -6,6 +6,8 @@ import { sdk } from './sdk';
 import type { Models } from '@appwrite.io/console';
 import { organization } from './organization';
 import { page } from '$app/state';
+import { user } from '$lib/stores/user';
+import deepEqual from 'deep-equal';
 
 type Preferences = {
     limit?: number;
@@ -27,12 +29,39 @@ type PreferencesStore = {
     };
 } & { hideAiDisclaimer?: boolean };
 
+async function updateConsolePreferences(store: PreferencesStore): Promise<void> {
+    const currentPreferences = get(user).prefs ?? (await sdk.forConsole.account.getPrefs());
+    if (!currentPreferences?.console || Array.isArray(currentPreferences.console)) {
+        currentPreferences.console = {};
+    }
+
+    currentPreferences.console = {
+        ...currentPreferences.console,
+        ...store
+    };
+
+    await sdk.forConsole.account.updatePrefs(currentPreferences);
+}
+
 function createPreferences() {
     const { subscribe, set, update } = writable<PreferencesStore>({});
     let preferences: PreferencesStore = {};
 
     if (browser) {
-        set(JSON.parse(globalThis.localStorage.getItem('preferences') ?? '{}'));
+        // fresh fetch.
+        sdk.forConsole.account
+            .getPrefs()
+            .then((userPreferences) => {
+                if (!userPreferences?.console || Array.isArray(userPreferences.console)) {
+                    userPreferences.console = {};
+                }
+
+                set(userPreferences.console);
+            })
+            .catch(() => {
+                // exception is thrown if there's no session; in that case - fallback!
+                set(JSON.parse(globalThis.localStorage.getItem('preferences') ?? '{}'));
+            });
     }
 
     subscribe((v) => {
@@ -41,6 +70,28 @@ function createPreferences() {
             globalThis.localStorage.setItem('preferences', JSON.stringify(v));
         }
     });
+
+    /**
+     * Update the local store and then synchronizes them on user prefs.
+     */
+    function updateAndSync(callback: (prefs: PreferencesStore) => void): Promise<void> {
+        let oldPrefsSnapshot: PreferencesStore;
+        let newPrefsSnapshot: PreferencesStore;
+
+        update((currentPrefs) => {
+            oldPrefsSnapshot = currentPrefs;
+            callback(currentPrefs);
+            newPrefsSnapshot = currentPrefs;
+            return currentPrefs;
+        });
+
+        if (deepEqual(oldPrefsSnapshot, newPrefsSnapshot)) {
+            return;
+        }
+
+        // sync the preferences.
+        return updateConsolePreferences(newPrefsSnapshot);
+    }
 
     return {
         subscribe,
@@ -61,7 +112,7 @@ function createPreferences() {
             return preferences?.collections?.[collectionId] ?? [];
         },
         setLimit: (limit: Preferences['limit']) =>
-            update((n) => {
+            updateAndSync((n) => {
                 const path = page.route.id;
 
                 if (!n?.[path]) {
@@ -74,7 +125,7 @@ function createPreferences() {
                 return n;
             }),
         setView: (view: Preferences['view']) =>
-            update((n) => {
+            updateAndSync((n) => {
                 const path = page.route.id;
 
                 if (!n?.[path]) {
@@ -87,7 +138,7 @@ function createPreferences() {
                 return n;
             }),
         setColumns: (columns: Preferences['columns']) =>
-            update((n) => {
+            updateAndSync((n) => {
                 const path = page.route.id;
 
                 if (!n?.[path]) {
@@ -100,10 +151,8 @@ function createPreferences() {
                 return n;
             }),
         setCustomCollectionColumns: (columns: Preferences['columns']) =>
-            update((n) => {
-                const current = page;
-
-                const collection = current.params.collection;
+            updateAndSync((n) => {
+                const collection = page.params.collection;
                 if (!n?.collections?.[collection]) {
                     n ??= {};
                     n.collections ??= {};
