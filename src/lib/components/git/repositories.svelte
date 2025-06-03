@@ -240,27 +240,32 @@
                                                         direction="row"
                                                         alignItems="center"
                                                         justifyContent="space-between">
-                                                        <Typography.Text
-                                                            truncate
-                                                            color="--fgcolor-neutral-secondary">
-                                                            {repo.name}
-                                                        </Typography.Text>
-                                                        {#if repo.private}
-                                                            <Icon
-                                                                size="s"
-                                                                icon={IconLockClosed}
-                                                                color="--fgcolor-neutral-tertiary" />
-                                                        {/if}
-                                                        {#if !$isSmallViewport}
-                                                            <time datetime={repo.pushedAt}>
-                                                                <Typography.Caption
-                                                                    variant="400"
-                                                                    truncate
-                                                                    color="--fgcolor-neutral-tertiary">
-                                                                    {timeFromNow(repo.pushedAt)}
-                                                                </Typography.Caption>
-                                                            </time>
-                                                        {/if}
+                                                        <Layout.Stack
+                                                            direction="row"
+                                                            gap="s"
+                                                            alignItems="center">
+                                                            <Typography.Text
+                                                                truncate
+                                                                color="--fgcolor-neutral-secondary">
+                                                                {repo.name}
+                                                            </Typography.Text>
+                                                            {#if repo.private}
+                                                                <Icon
+                                                                    size="s"
+                                                                    icon={IconLockClosed}
+                                                                    color="--fgcolor-neutral-tertiary" />
+                                                            {/if}
+                                                            {#if !$isSmallViewport}
+                                                                <time datetime={repo.pushedAt}>
+                                                                    <Typography.Caption
+                                                                        variant="400"
+                                                                        truncate
+                                                                        color="--fgcolor-neutral-tertiary">
+                                                                        {timeFromNow(repo.pushedAt)}
+                                                                    </Typography.Caption>
+                                                                </time>
+                                                            {/if}
+                                                        </Layout.Stack>
                                                         {#if action === 'button'}
                                                             <PinkButton.Button
                                                                 size="xs"
