@@ -6,12 +6,12 @@
 </script>
 
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let breadcrumbs: Breadcrumb[];
 
     function track() {
-        trackEvent('click_breadcrumb');
+        trackEvent(Click.BreadcrumbClick);
     }
 </script>
 

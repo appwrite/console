@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
     import { hideBillingHeaderRoutes, paymentMissingMandate } from '$lib/stores/billing';
@@ -16,7 +16,7 @@
     }
 </script>
 
-{#if $paymentMissingMandate && $paymentMissingMandate?.country?.toLowerCase() === 'in' && $paymentMissingMandate.mandateId === null && !hideBillingHeaderRoutes.includes($page.url.pathname)}
+{#if $paymentMissingMandate && $paymentMissingMandate?.country?.toLowerCase() === 'in' && $paymentMissingMandate.mandateId === null && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     <HeaderAlert title="Authorization required" type="info">
         The payment method for {$organization.name} needs to be verified.
         <svelte:fragment slot="buttons">

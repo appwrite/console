@@ -1,11 +1,12 @@
 <script lang="ts">
     import { createEventDispatcher, onDestroy, onMount } from 'svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { disableCommands } from '$lib/commandCenter';
 
     export let show = false;
     export let size: 'small' | 'big' | 'huge' = null;
     export let closable = true;
+    export let closeByEscape = true;
     export let headerDivider = true;
     export let style = '';
 
@@ -23,7 +24,7 @@
 
     function handleBLur(event: MouseEvent) {
         if (event.target === dialog) {
-            trackEvent('click_close_modal', {
+            trackEvent(Click.ModalCloseClick, {
                 from: 'backdrop'
             });
             closeModal();
@@ -48,9 +49,9 @@
     }
 
     function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Escape') {
+        if (event.key === 'Escape' && closeByEscape) {
             event.preventDefault();
-            trackEvent('click_close_modal', {
+            trackEvent(Click.ModalCloseClick, {
                 from: 'escape'
             });
             closeModal();
@@ -79,12 +80,14 @@
     on:cancel|preventDefault
     {style}>
     {#if show}
-        <slot close={closeModal} />
+        <div class="content">
+            <slot close={closeModal} />
+        </div>
     {/if}
 </dialog>
 
 <style lang="scss">
-    @use '@appwrite.io/pink/src/abstract/variables/devices';
+    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
 
     .modal.is-huge {
         block-size: 100%;

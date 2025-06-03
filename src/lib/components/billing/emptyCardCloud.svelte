@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Card } from '..';
 
     export let service: string;
@@ -11,25 +12,24 @@
 
 <Card>
     <slot>
-        <div class="u-flex u-flex-vertical u-main-center u-cross-center u-gap-8">
-            <h6 class="body-text-1 u-bold u-trim-1">Upgrade to add {service}</h6>
-            <p class="text u-text-center">
+        <Layout.Stack alignItems="center">
+            <Typography.Text variant="m-600">Upgrade to add {service}</Typography.Text>
+            <Typography.Text>
                 Upgrade to a {tierToPlan(BillingPlan.PRO).name} plan to add {service} to your organization
-            </p>
+            </Typography.Text>
 
             <Button
-                class="u-margin-block-start-16"
                 secondary
                 fullWidthMobile
                 href={$upgradeURL}
                 on:click={() => {
-                    trackEvent('click_organization_upgrade', {
+                    trackEvent(Click.OrganizationClickUpgrade, {
                         from: 'button',
                         source: eventSource
                     });
                 }}>
                 Upgrade
             </Button>
-        </div>
+        </Layout.Stack>
     </slot>
 </Card>

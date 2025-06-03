@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { initCreateAttribute } from '$routes/(console)/project-[project]/databases/database-[database]/collection-[collection]/+layout.svelte';
-    import { attributeOptions } from '$routes/(console)/project-[project]/databases/database-[database]/collection-[collection]/attributes/store';
+    import { initCreateAttribute } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/collection-[collection]/+layout.svelte';
+    import { attributeOptions } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/collection-[collection]/attributes/store';
     import Template from './template.svelte';
 
     let search = '';
@@ -22,7 +22,7 @@
 
 <Template options={filteredOptions} bind:search>
     <div class="u-flex u-cross-center u-gap-8" slot="option" let:option>
-        <i class="icon-{option.icon}" />
+        <i class="icon-{option.icon}"></i>
         <span>{option.label}</span>
     </div>
 </Template>

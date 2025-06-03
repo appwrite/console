@@ -1,4 +1,4 @@
-import '@appwrite.io/pink';
+import '@appwrite.io/pink-legacy';
 import '@appwrite.io/pink-icons';
 import 'tippy.js/dist/tippy.css';
 import { sdk } from '$lib/stores/sdk';
@@ -30,7 +30,9 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     if (account) {
         return {
             account: account,
-            organizations: await sdk.forConsole.teams.list()
+            organizations: !isCloud
+                ? await sdk.forConsole.teams.list()
+                : await sdk.forConsole.billing.listOrganization()
         };
     }
 

@@ -1,12 +1,13 @@
 <script lang="ts">
     import { Remarkable } from 'remarkable';
     import Template from './template.svelte';
+    import { Alert, Keyboard, Layout } from '@appwrite.io/pink-svelte';
 
     const markdownInstance = new Remarkable();
 
-    import { Alert, AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
+    import { AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
     import { user } from '$lib/stores/user';
-    import { useCompletion } from 'ai/svelte';
+    import { useCompletion } from '@ai-sdk/svelte';
     import { subPanels } from '../subPanels';
 
     import { isLanguage, type Language } from '$lib/components/code.svelte';
@@ -19,7 +20,8 @@
         headers: {
             'x-appwrite-project': 'console'
         },
-        credentials: 'include'
+        credentials: 'include',
+        streamProtocol: 'text'
     });
 
     const examples = [
@@ -157,14 +159,13 @@
     </div>
 
     <div slot="option" let:option class="u-flex u-cross-center u-gap-8">
-        <i class="icon-question-mark-circle" />
+        <i class="icon-question-mark-circle"></i>
         <span>{option.label}</span>
     </div>
 
     {#if !$preferences.hideAiDisclaimer}
         <div style="padding: 1rem; padding-block-end: 0;">
-            <Alert
-                type="default"
+            <Alert.Inline
                 dismissible
                 on:dismiss={() => {
                     $preferences.hideAiDisclaimer = true;
@@ -172,14 +173,14 @@
                 <span slot="title">
                     We collect user responses to refine our experimental AI feature.
                 </span>
-            </Alert>
+            </Alert.Inline>
         </div>
     {/if}
 
     {#if $isLoading || answer}
         <div class="content">
             <div class="u-flex u-gap-8 u-cross-center">
-                <div class="avatar is-size-x-small">{getInitials($user.name)}</div>
+                <div class="avatar is-size-x-small">{getInitials($user.name || $user.email)}</div>
                 <p class="u-opacity-75">{previousQuestion}</p>
             </div>
             <div class="u-flex u-gap-8 u-margin-block-start-24">
@@ -217,57 +218,54 @@
 
     {#if $error}
         <div style="padding: 1rem; padding-block-end: 0;">
-            <Alert type="error">
-                <span slot="title">Something went wrong</span>
-                <p>
-                    An unexpected error occurred while handling your request. Please try again
-                    later.
-                </p>
-            </Alert>
+            <Alert.Inline status="error" title="Something went wrong">
+                An unexpected error occurred while handling your request. Please try again later.
+            </Alert.Inline>
         </div>
     {/if}
 
-    <div class="footer" slot="footer">
-        <div class="u-flex u-cross-center u-gap-4">
-            <AvatarInitials size={32} name={$user.name} />
-            <form
-                class="input-text-wrapper u-width-full-line"
-                style="--amount-of-buttons: 1;"
-                on:submit|preventDefault={(e) => {
-                    handleSubmit(e);
-                }}>
-                <!--  svelte-ignore a11y-autofocus -->
-                <input
-                    type="text"
-                    class="input-text"
-                    placeholder="Ask a question..."
-                    autofocus
-                    bind:value={$input}
-                    disabled={$isLoading} />
-                <div class="options-list">
-                    <button
-                        class="options-list-button"
-                        aria-label="ask AI"
-                        type="submit"
-                        disabled={!$input.trim() || $isLoading}>
-                        <span class="icon-arrow-sm-right" aria-hidden="true" />
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="u-flex u-main-end u-cross-center u-gap-16 u-margin-block-start-16">
-            <div class="u-flex u-cross-center u-gap-4">
-                <kbd class="kbd">Enter</kbd>
-                <span>to search</span>
-            </div>
-            <div class="sep" />
-            <div class="u-flex u-cross-center u-gap-4">
-                <kbd class="kbd">Esc</kbd>
-                <span>to {$subPanels.length === 1 ? 'close' : 'go back'}</span>
-            </div>
-        </div>
-    </div>
+    <Layout.Stack slot="footer">
+        <Layout.Stack gap="l">
+            <Layout.Stack direction="row" gap="s">
+                <AvatarInitials size="s" name={$user.name} />
+                <form
+                    class="input-text-wrapper u-width-full-line"
+                    style="--amount-of-buttons: 1;"
+                    on:submit|preventDefault={(e) => {
+                        handleSubmit(e);
+                    }}>
+                    <!--  svelte-ignore a11y-autofocus -->
+                    <input
+                        type="text"
+                        class="input-text"
+                        placeholder="Ask a question..."
+                        autofocus
+                        bind:value={$input}
+                        disabled={$isLoading} />
+                    <div class="options-list">
+                        <button
+                            class="options-list-button"
+                            aria-label="ask AI"
+                            type="submit"
+                            disabled={!$input.trim() || $isLoading}>
+                            <span class="icon-arrow-sm-right" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </form>
+            </Layout.Stack>
+            <Layout.Stack direction="row" justifyContent="space-between" gap="xxl">
+                <Layout.Stack direction="row" alignItems="center" gap="xxs">
+                    <Keyboard key="Enter" autoWidth={true} /> <span>to search</span></Layout.Stack>
+                <Layout.Stack
+                    direction="row"
+                    justifyContent="flex-end"
+                    alignItems="center"
+                    gap="xxs">
+                    <Keyboard key="Esc" autoWidth={true} />
+                    <span>to {$subPanels.length === 1 ? 'close' : 'go back'}</span></Layout.Stack>
+            </Layout.Stack>
+        </Layout.Stack>
+    </Layout.Stack>
 </Template>
 
 <style lang="scss">
@@ -277,14 +275,6 @@
 
     :global(.theme-light) .content {
         --logo-bg: #f2f2f8;
-    }
-
-    :global(.theme-dark) .footer {
-        --sep-clr: hsl(var(--color-neutral-150));
-    }
-
-    :global(.theme-light) .footer {
-        --sep-clr: hsl(var(--color-neutral-30));
     }
 
     .content {
@@ -319,14 +309,6 @@
 
         :global(.answer a) {
             text-decoration: underline;
-        }
-    }
-
-    .footer {
-        .sep {
-            width: 1px;
-            height: 1.5rem;
-            background-color: var(--sep-clr);
         }
     }
 

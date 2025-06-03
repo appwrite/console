@@ -15,11 +15,15 @@ if (browser) {
     dayjs.extend(relativeTime);
 }
 
-export const toLocaleDate = (datetime: string) => {
+export const toLocaleDate = (datetime: string, format: 'dd mm yyyy' | 'default' = 'default') => {
     const date = new Date(datetime);
 
     if (isNaN(date.getTime())) {
         return 'n/a';
+    }
+
+    if (format === 'dd mm yyyy') {
+        return `${date.getDate().toString().padStart(2, '0')} ${date.toLocaleString('en', { month: 'short' })} ${date.getFullYear()}`;
     }
 
     const options: Intl.DateTimeFormatOptions = {
@@ -31,7 +35,11 @@ export const toLocaleDate = (datetime: string) => {
     return date.toLocaleDateString('en', options);
 };
 
-export const toLocaleDateTime = (datetime: string | number) => {
+export const toLocaleDateTime = (
+    datetime: string | number,
+    is12HourFormat: boolean = false,
+    timeZone: string | undefined = undefined
+) => {
     const date = new Date(datetime);
 
     if (isNaN(date.getTime())) {
@@ -39,12 +47,14 @@ export const toLocaleDateTime = (datetime: string | number) => {
     }
 
     const options: Intl.DateTimeFormatOptions = {
+        timeZone,
         year: 'numeric',
         month: 'short',
         day: 'numeric',
         hour: 'numeric',
         minute: 'numeric',
-        hourCycle: 'h23'
+        hourCycle: is12HourFormat ? 'h12' : 'h23',
+        ...(is12HourFormat && { hour12: true })
     };
 
     return date.toLocaleDateString('en', options);
@@ -80,6 +90,29 @@ export const toLocaleTimeISO = (datetime: string | number) => {
 
     // Use Sweden's locale (sv) since it matches ISO format
     return date.toLocaleTimeString('sv');
+};
+
+/**
+ * Returns a local datetime string in ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sss),
+ * matching local time, without the 'Z' suffix.
+ *
+ * @returns Local ISO string (with ms) or 'n/a' if invalid
+ */
+export const toLocalDateTimeISO = (datetime: string | number): string => {
+    const date = new Date(datetime);
+
+    if (isNaN(date.getTime())) {
+        return 'n/a';
+    }
+
+    // Get timezone offset in minutes, convert to ms
+    const tzOffsetMs = date.getTimezoneOffset() * 60 * 1000;
+
+    // Shift date to local time
+    const local = new Date(date.getTime() - tzOffsetMs);
+
+    // Drop the trailing 'Z' to keep it as local
+    return local.toISOString().replace('Z', '');
 };
 
 export const utcHourToLocaleHour = (utcTimeString: string) => {
@@ -163,6 +196,13 @@ export const diffDays = (date1: Date, date2: Date) => {
 };
 
 export function timeFromNow(datetime: string): string {
+    if (!datetime) {
+        return 'unknown time';
+    }
+    if (!isValidDate(datetime)) {
+        return 'invalid date';
+    }
+
     return dayjs().to(dayjs(datetime));
 }
 
@@ -180,4 +220,21 @@ export function getTomorrow(date: Date) {
     tomorrow.setHours(0, 0, 0, 0);
 
     return tomorrow;
+}
+
+export function getUTCOffset(): string {
+    const offsetMinutes = -new Date().getTimezoneOffset();
+    const hours = Math.floor(offsetMinutes / 60);
+    const minutes = Math.abs(offsetMinutes % 60);
+
+    return `${hours >= 0 ? '+' : ''}${hours}${minutes ? `:${minutes.toString().padStart(2, '0')}` : ''}`;
+}
+
+export function toISOString(date: string): string {
+    const d = new Date(date);
+
+    if (isNaN(d.getTime())) {
+        return 'n/a';
+    }
+    return d.toISOString();
 }

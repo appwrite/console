@@ -4,8 +4,6 @@
     import { Pill } from '$lib/elements';
     import { createEventDispatcher } from 'svelte';
     import { at, empty } from '$lib/helpers/array';
-    import Copy from './copy.svelte';
-    import { selectionStart } from '$lib/actions/selectionStart';
     import { singular } from '$lib/helpers/string';
     import {
         eventServices as services,
@@ -13,8 +11,9 @@
         type EventResource,
         type EventService
     } from '$lib/constants';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { Tooltip, Input, Tag, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { trackEvent } from '$lib/actions/analytics';
+    import { IconCheck, IconDuplicate, IconPencil, IconX } from '@appwrite.io/pink-icons-svelte';
 
     // Props
     export let show = false;
@@ -189,7 +188,6 @@
     let customInput: string = null;
     let customInputCursor = -1;
     let showInput = false;
-    let copyParent: HTMLElement;
 
     $: if (show && initialValue) {
         customInput = initialValue;
@@ -235,7 +233,6 @@
 
     $: if (!show) {
         resetSelected();
-        helper = null;
         customInput = null;
         showInput = false;
     }
@@ -245,61 +242,58 @@
     }
 </script>
 
-<Modal title="Create event" bind:show onSubmit={create} size="big">
+<Modal title="Create event" bind:show onSubmit={create}>
     <slot />
-    <div>
-        <p class="u-text">Choose a service</p>
-        <div class="u-flex u-gap-8 u-margin-block-start-8 u-flex-wrap">
+    <Layout.Stack gap="s">
+        <Typography.Text variant="m-500">Choose a service</Typography.Text>
+        <Layout.Stack gap="s" wrap="wrap" direction="row">
             {#each available.services as service}
-                <Pill
+                <Tag
                     disabled={showInput}
                     selected={selected.service?.name === service.name}
-                    button
                     on:click={() => select('service', service)}>
                     {service.name}
-                </Pill>
+                </Tag>
             {/each}
-        </div>
-    </div>
+        </Layout.Stack>
+    </Layout.Stack>
 
     {#if !empty(available.resources)}
-        <div>
-            <p class="u-text">Choose a resource (optional)</p>
-            <div class="u-flex u-gap-8 u-margin-block-start-8">
+        <Layout.Stack gap="s">
+            <Typography.Text variant="m-500">Choose a resource (optional)</Typography.Text>
+            <Layout.Stack gap="s" wrap="wrap" direction="row">
                 {#each available.resources as resource}
-                    <Pill
+                    <Tag
                         disabled={showInput}
                         selected={selected.resource?.name === resource.name}
-                        button
                         on:click={() => select('resource', resource)}>
                         {resource.name}
-                    </Pill>
+                    </Tag>
                 {/each}
-            </div>
-        </div>
+            </Layout.Stack>
+        </Layout.Stack>
     {/if}
 
     {#if !empty(available.actions)}
-        <div>
-            <p class="u-text">Choose an action (optional)</p>
-            <div class="u-flex u-gap-8 u-margin-block-start-8">
+        <Layout.Stack gap="s">
+            <Typography.Text variant="m-500">Choose an action (optional)</Typography.Text>
+            <Layout.Stack gap="s" wrap="wrap" direction="row">
                 {#each available.actions as action}
-                    <Pill
+                    <Tag
                         disabled={showInput}
                         selected={selected.action?.name === action.name}
-                        button
                         on:click={() => select('action', action)}>
                         {action.name}
-                    </Pill>
+                    </Tag>
                 {/each}
-            </div>
-        </div>
+            </Layout.Stack>
+        </Layout.Stack>
     {/if}
 
     {#if !empty(available.attributes)}
-        <div>
-            <p class="u-text">Choose an attribute (optional)</p>
-            <div class="u-flex u-gap-8 u-margin-block-start-8">
+        <Layout.Stack gap="s">
+            <Typography.Text variant="m-500">Choose an attribute (optional)</Typography.Text>
+            <Layout.Stack gap="s" wrap="wrap" direction="row">
                 {#each available.attributes as attribute}
                     <Pill
                         disabled={showInput}
@@ -309,71 +303,40 @@
                         {attribute}
                     </Pill>
                 {/each}
-            </div>
-        </div>
+            </Layout.Stack>
+        </Layout.Stack>
     {/if}
 
     {#if showInput}
-        <div class="input-text-wrapper" style="--amount-of-buttons:2">
-            <input
-                type="text"
-                placeholder="Enter custom event"
-                bind:value={customInput}
-                use:selectionStart={{ onChange: (newValue) => (customInputCursor = newValue) }} />
-            <div class="options-list">
-                <button on:click={toggleShowInput} class="options-list-button" aria-label="confirm">
-                    <span class="icon-check" aria-hidden="true" />
-                </button>
-                <button on:click={toggleShowInput} class="options-list-button" aria-label="cancel">
-                    <span class="icon-x" aria-hidden="true" />
-                </button>
-            </div>
-            <p style="height: 2rem;">{helper ?? ''}</p>
-        </div>
+        <Layout.Stack gap="s">
+            <Input.Text bind:value={customInput} placeholder="Enter custom event">
+                <svelte:fragment slot="end">
+                    <Input.Action icon={IconCheck} on:click={toggleShowInput} />
+                    <Input.Action icon={IconX} />
+                </svelte:fragment>
+            </Input.Text>
+
+            <!-- TODO: get checked by design -->
+            <Typography.Caption variant="400">{helper ?? ''}</Typography.Caption>
+        </Layout.Stack>
     {:else}
-        <div class="input-text-wrapper" style="--amount-of-buttons:2" bind:this={copyParent}>
-            <!--
-                This object syntax avoids TS erroring because 'type' isn't a valid HTMLDivElement attribute
-                (we need to set it to 'text' to add styling)
-             -->
-            <div {...{ type: 'text' }} style="min-height: 2.5rem;">
-                {#each eventString as route, i}
-                    <span
-                        role="tooltip"
-                        class:u-opacity-0-5={helper !== route.description}
-                        on:mouseenter={() => (helper = route.description)}
-                        on:mouseleave={() => (helper = null)}>
-                        {route.value}
-                    </span>
-                    <span class="u-opacity-0-5">
-                        {i + 1 < eventString?.length ? '.' : ''}
-                    </span>
-                {/each}
-            </div>
-            <div class="options-list">
-                {#key copyParent}
-                    <button
+        <Input.Text
+            value={eventString.map((e) => e.value).join('.')}
+            placeholder="Enter custom event"
+            readonly>
+            <svelte:fragment slot="end">
+                <Tooltip>
+                    <Input.Action
+                        icon={IconPencil}
                         on:click={(e) => {
                             customInput = inputValue;
                             toggleShowInput(e);
-                        }}
-                        use:tooltip={{ content: 'Edit event', appendTo: copyParent }}
-                        class="options-list-button"
-                        aria-label="edit event">
-                        <span class="icon-pencil" aria-hidden="true" />
-                    </button>
-                    <button
-                        disabled={!inputValue}
-                        class="options-list-button"
-                        aria-label="copy text">
-                        <Copy value={inputValue} appendTo={copyParent}>
-                            <span class="icon-duplicate" aria-hidden="true" />
-                        </Copy>
-                    </button>
-                {/key}
-            </div>
-            <p style="height: 2rem;">{helper ?? ''}</p>
-        </div>
+                        }} />
+                    <div slot="tooltip">Edit event</div>
+                </Tooltip>
+                <Input.Action icon={IconDuplicate} />
+            </svelte:fragment>
+        </Input.Text>
     {/if}
 
     <svelte:fragment slot="footer">

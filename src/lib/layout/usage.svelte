@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+    import { ProjectUsageRange, type Models } from '@appwrite.io/console';
     export type UsagePeriods = '24h' | '30d' | '90d';
 
     export function periodToDates(period: UsagePeriods): {
@@ -41,10 +42,20 @@
 
     export function accumulateFromEndingTotal(
         metrics: Models.Metric[],
-        endingTotal: number
+        endingTotal: number,
+        startingDayToFillZero: Date = null
     ): Array<[string, number]> {
         return (metrics ?? []).reduceRight(
             (acc, curr) => {
+                if (startingDayToFillZero !== null && startingDayToFillZero instanceof Date) {
+                    const date = new Date(curr.date);
+                    if (date > startingDayToFillZero) {
+                        acc.data.unshift([date.toISOString(), 0]);
+                        acc.total -= 0;
+
+                        return acc;
+                    }
+                }
                 acc.data.unshift([curr.date, acc.total]);
                 acc.total -= curr.value;
                 return acc;
@@ -58,60 +69,74 @@
 </script>
 
 <script lang="ts">
-    import { Container } from '$lib/layout';
+    import { page } from '$app/state';
+    import { goto } from '$app/navigation';
+
     import { BarChart } from '$lib/charts';
+    import { Card } from '$lib/components';
+    import { InputSelect } from '$lib/elements/forms';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
-    import { Card, SecondaryTabs, SecondaryTabsItem, Heading } from '$lib/components';
-    import { ProjectUsageRange, type Models } from '@appwrite.io/console';
-    import { page } from '$app/stores';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     type MetricMetadata = {
         title: string;
         legend: string;
     };
 
-    export let title: string;
     export let total: number;
     export let count: Models.Metric[];
     export let countMetadata: MetricMetadata;
     export let path: string = null;
+    export let hidePeriodSelect = false;
+    export let isCumulative: boolean = false;
 </script>
 
-<Container>
-    <div class="u-flex u-main-space-between common-section">
-        <Heading tag="h2" size="5">{title}</Heading>
-        <SecondaryTabs>
-            <SecondaryTabsItem href={`${path}/24h`} disabled={$page.params.period === '24h'}>
-                24h
-            </SecondaryTabsItem>
-            <SecondaryTabsItem
-                href={`${path}/30d`}
-                disabled={!$page.params.period || $page.params.period === '30d'}>
-                30d
-            </SecondaryTabsItem>
-            <SecondaryTabsItem href={`${path}/90d`} disabled={$page.params.period === '90d'}>
-                90d
-            </SecondaryTabsItem>
-        </SecondaryTabs>
-    </div>
+<Layout.Stack gap="s">
+    {#if !hidePeriodSelect}
+        <div
+            style:max-width="250px"
+            style:--input-background-color="var(--bgcolor-neutral-primary)">
+            <InputSelect
+                on:change={(e) => goto(`${path}/${e.detail}`)}
+                id="period"
+                options={[
+                    {
+                        label: '24 hours',
+                        value: '24h'
+                    },
+                    {
+                        label: '30 days',
+                        value: '30d'
+                    },
+                    {
+                        label: '90 days',
+                        value: '90d'
+                    }
+                ]}
+                value={page.params.period ?? '30d'} />
+        </div>
+    {/if}
     <Card>
         {#if count}
-            <Heading tag="h6" size="6">{formatNumberWithCommas(total)}</Heading>
-            <p>{countMetadata.title}</p>
-            <div class="u-margin-block-start-16" />
+            <Layout.Stack gap="xs">
+                <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
+                <Typography.Text>{countMetadata.title}</Typography.Text>
+            </Layout.Stack>
             <div class="chart-container">
                 <BarChart
-                    formatted={$page.params.period === '24h' ? 'hours' : 'days'}
+                    formatted={page.params.period === '24h' ? 'hours' : 'days'}
                     series={[
                         {
                             name: countMetadata.legend,
-                            data: accumulateFromEndingTotal(count, total)
+                            data: isCumulative
+                                ? count.map((m) => [m.date, m.value])
+                                : accumulateFromEndingTotal(count, total)
                         }
                     ]} />
             </div>
         {/if}
     </Card>
-</Container>
+</Layout.Stack>
 
 <style lang="scss">
     .chart-container {

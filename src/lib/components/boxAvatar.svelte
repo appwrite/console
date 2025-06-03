@@ -1,13 +1,14 @@
 <script lang="ts">
     import { Box } from '.';
+    import { Layout } from '@appwrite.io/pink-svelte';
 </script>
 
 <Box>
-    <div class="u-flex u-gap-16">
+    <Layout.Stack direction="row" justifyContent="flex-start" alignItems="center">
         <slot name="image" />
-        <div class="u-cross-child-center u-line-height-1-5">
+        <div>
             <slot name="title" />
             <slot />
         </div>
-    </div>
+    </Layout.Stack>
 </Box>

@@ -1,29 +1,29 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        CreditsApplied,
-        EstimatedTotalBox,
-        SelectPaymentMethod
-    } from '$lib/components/billing';
+    import { CreditsApplied, SelectPaymentMethod } from '$lib/components/billing';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputSelect, InputTags, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import {
-        WizardSecondaryContainer,
-        WizardSecondaryContent,
-        WizardSecondaryFooter
-    } from '$lib/layout';
-    import { type PaymentList } from '$lib/sdk/billing';
-    import { app } from '$lib/stores/app';
+    import { Wizard } from '$lib/layout';
+    import type { PaymentList, Plan } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organizationList, type Organization } from '$lib/stores/organization';
+    import {
+        organizationList,
+        type Organization,
+        type OrganizationError
+    } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe.js';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
+    import { isOrganization, plansInfo, type Tier } from '$lib/stores/billing';
+    import { Fieldset, Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
 
     export let data;
 
@@ -68,19 +68,47 @@
     let coupon: string;
     let couponData = data?.couponData;
     let campaign = data?.campaign;
-    let billingPlan = BillingPlan.PRO;
+    let billingPlan: Tier = BillingPlan.PRO;
+    let tempOrgId = null;
+    let currentPlan: Plan;
+
+    $: onlyNewOrgs = campaign?.onlyNewOrgs || couponData?.onlyNewOrgs;
+
+    $: selectedOrgId = tempOrgId;
+
+    function isUpgrade() {
+        const newPlan = $plansInfo.get(billingPlan);
+        return currentPlan && newPlan && currentPlan.order < newPlan.order;
+    }
 
     onMount(async () => {
         await loadPaymentMethods();
         if (!$organizationList?.total || campaign?.onlyNewOrgs) {
             selectedOrgId = newOrgId;
         }
-        if ($page.url.searchParams.has('org')) {
-            selectedOrgId = $page.url.searchParams.get('org');
+        if (page.url.searchParams.has('org')) {
+            selectedOrgId = page.url.searchParams.get('org');
             canSelectOrg = false;
         }
         if (campaign?.plan) {
             billingPlan = campaign.plan;
+        }
+
+        if ($organizationList.total > 0 && tempOrgId === null) {
+            tempOrgId = $organizationList.teams[0].$id;
+        }
+        if (page.url.searchParams.has('type')) {
+            const type = page.url.searchParams.get('type');
+            if (type === 'payment_confirmed') {
+                const organizationId = page.url.searchParams.get('id');
+                collaborators = page.url.searchParams.get('invites').split(',');
+
+                await sdk.forConsole.billing.validateOrganization(organizationId, collaborators);
+            }
+        }
+
+        if (!selectedOrgId && $organizationList?.total) {
+            selectedOrgId = $organizationList.teams[0].$id;
         }
     });
 
@@ -96,82 +124,88 @@
 
     async function handleSubmit() {
         if (!couponForm.checkValidity()) return;
+        isSubmitting.set(true);
         try {
-            let org: Organization;
+            let org: Organization | OrganizationError;
             // Create new org
             if (selectedOrgId === newOrgId) {
                 org = await sdk.forConsole.billing.createOrganization(
                     newOrgId,
                     name,
                     billingPlan,
-                    paymentMethodId
+                    paymentMethodId,
+                    null,
+                    couponData.code ? couponData.code : null,
+                    collaborators,
+                    billingBudget,
+                    taxId
                 );
             }
+
             // Upgrade existing org
-            else if (selectedOrg?.billingPlan !== billingPlan) {
+            else if (selectedOrg?.billingPlan !== billingPlan && isUpgrade()) {
                 org = await sdk.forConsole.billing.updatePlan(
                     selectedOrg.$id,
                     billingPlan,
                     paymentMethodId,
-                    null
+                    null,
+                    couponData.code ? couponData.code : null,
+                    collaborators
                 );
             }
-            // Existing pro org
+            // Existing pro org, apply credits
             else {
                 org = selectedOrg;
-            }
-
-            // Add coupon
-            if (couponData?.code) {
                 await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
             }
 
-            // Add budget
-            if (billingBudget) {
-                await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
+            if (!isOrganization(org) && org.status === 402) {
+                let clientSecret = org.clientSecret;
+                let params = new URLSearchParams();
+                params.append('type', 'payment_confirmed');
+                params.append('org', org.teamId);
+                for (const [key, value] of page.url.searchParams.entries()) {
+                    if (key !== 'type' && key !== 'id') {
+                        params.append(key, value);
+                    }
+                }
+                params.append('invites', collaborators.join(','));
+                await confirmPayment(
+                    '',
+                    clientSecret,
+                    paymentMethodId,
+                    `/console/apply-credit?${params}`
+                );
+                org = await sdk.forConsole.billing.validateOrganization(org.teamId, collaborators);
             }
 
-            // Add collaborators
-            if (collaborators?.length) {
-                collaborators.forEach(async (collaborator) => {
-                    await sdk.forConsole.teams.createMembership(
-                        org.$id,
-                        ['owner'],
-                        collaborator,
-                        undefined,
-                        undefined,
-                        `${$page.url.origin}${base}/invite`
-                    );
+            if (isOrganization(org)) {
+                trackEvent(Submit.CreditRedeem, {
+                    coupon: couponData.code,
+                    campaign: couponData?.campaign
                 });
+                await invalidate(Dependencies.ORGANIZATION);
+                await goto(`${base}/organization-${org.$id}`);
+                addNotification({
+                    type: 'success',
+                    message: 'Credits applied successfully'
+                });
+                await invalidate(Dependencies.ACCOUNT);
             }
-
-            // Add tax ID
-            if (taxId) {
-                await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
-            }
-            trackEvent(Submit.CreditRedeem, {
-                coupon: couponData.code,
-                campaign: couponData?.campaign
-            });
-            await invalidate(Dependencies.ORGANIZATION);
-            await goto(`${base}/organization-${org.$id}`);
-            addNotification({
-                type: 'success',
-                message: 'Credits applied successfully'
-            });
-            await invalidate(Dependencies.ACCOUNT);
         } catch (e) {
             trackError(e, Submit.CreditRedeem);
             addNotification({
                 type: 'error',
                 message: e.message
             });
+        } finally {
+            isSubmitting.set(false);
         }
     }
 
     async function addCoupon() {
         try {
-            const response = await sdk.forConsole.billing.getCoupon(coupon);
+            const response = await sdk.forConsole.billing.getCouponAccount(coupon);
             couponData = response;
             coupon = null;
             addNotification({
@@ -190,131 +224,171 @@
         (team) => team.$id === selectedOrgId
     ) as Organization;
 
-    $: billingPlan =
-        selectedOrg?.billingPlan === BillingPlan.SCALE
-            ? BillingPlan.SCALE
-            : (campaign?.plan ?? BillingPlan.PRO);
+    function getBillingPlan(): Tier | undefined {
+        const campaignPlan =
+            campaign?.plan && $plansInfo.get(campaign.plan) ? $plansInfo.get(campaign.plan) : null;
+        const newPlan = $plansInfo.get(billingPlan);
+
+        // if campaign has a plan and it's higher than the selected new plan
+        if (campaignPlan?.order > newPlan?.order) {
+            return campaignPlan.$id as Tier;
+        }
+
+        // if current plan's order is higher than the selected new plan
+        if (currentPlan?.order > newPlan?.order) {
+            return currentPlan.$id as Tier;
+        }
+
+        return billingPlan;
+    }
+
+    $: if (currentPlan) {
+        billingPlan = getBillingPlan();
+    }
+
+    $: isNewOrg = selectedOrgId && selectedOrgId !== newOrgId;
+
+    $: {
+        if (isNewOrg) {
+            (async () => {
+                currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
+            })();
+        }
+    }
+
+    // after adding a payment method, fetch the payment methods again so the input can be updated
+    $: if (
+        paymentMethodId &&
+        !methods?.paymentMethods?.find((method) => method.$id === paymentMethodId)
+    ) {
+        loadPaymentMethods();
+    }
 </script>
 
 <svelte:head>
     <title>Apply credits - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer href={previousPage} bind:showExitModal confirmExit>
-    <svelte:fragment slot="title">Apply credits</svelte:fragment>
-    <WizardSecondaryContent>
+<Wizard bind:showExitModal href={previousPage} confirmExit title="Apply credits">
+    <Layout.Stack gap="l">
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
-            <FormList>
-                {#if $organizationList?.total && !campaign?.onlyNewOrgs && canSelectOrg}
-                    <InputSelect
-                        bind:value={selectedOrgId}
-                        label="Select organization"
-                        {options}
-                        required
-                        placeholder="Select organization"
-                        id="organization" />
-                {/if}
-                {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
-                    {#if selectedOrgId === newOrgId}
-                        <InputText
-                            label="Organization name"
-                            placeholder="Enter organization name"
-                            id="name"
-                            required
-                            bind:value={name} />
-                    {/if}
-                    <InputTags
-                        bind:tags={collaborators}
-                        label="Invite members by email"
-                        tooltip="Invited members will have access to all services and payment data within your organization"
-                        placeholder="Enter email address(es)"
-                        validityRegex={emailRegex}
-                        validityMessage="Invalid email address"
-                        id="members" />
-                    <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
-                {/if}
-            </FormList>
-        </Form>
-        <Form bind:this={couponForm} onSubmit={addCoupon}>
-            <FormList>
-                {#if !data?.couponData?.code && selectedOrgId}
-                    <InputText
-                        required
-                        disabled={!!couponData?.credits}
-                        bind:value={coupon}
-                        placeholder="Enter coupon code"
-                        id="code"
-                        label="Coupon code">
-                        <Button submit secondary disabled={!!couponData?.credits}>
-                            <span class="text">Apply</span>
-                        </Button>
-                    </InputText>
-                {/if}
-            </FormList>
-        </Form>
-        <svelte:fragment slot="aside">
-            {#if campaign?.template === 'card'}
-                <div
-                    class="box card-container u-position-relative"
-                    style:--box-border-radius="var(--border-radius-small)">
-                    <div class="card-bg"></div>
-                    <div class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative">
-                        <img
-                            src={campaign?.image[$app.themeInUse]}
-                            class="u-block u-image-object-fit-cover card-img"
-                            alt="promo" />
-                        <p class="text">
-                            {#if couponData?.credits}
-                                {campaign.title.replace('VALUE', couponData.credits.toString())}
-                            {:else}
-                                {campaign.title}
-                            {/if}
-                        </p>
-                    </div>
-                </div>
-            {/if}
-            {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE && selectedOrg?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
-                <section
-                    class="card u-margin-block-start-24"
-                    style:--p-card-padding="1.5rem"
-                    style:--p-card-border-radius="var(--border-radius-small)">
-                    {#if couponData?.code && couponData?.status === 'active'}
-                        <CreditsApplied bind:couponData fixedCoupon={!!data?.couponData?.code} />
-                        <p class="text u-margin-block-start-12">
-                            Credits will automatically be applied to your next invoice on <b
-                                >{toLocaleDate(selectedOrg?.billingNextInvoiceDate)}.</b>
-                        </p>
-                    {:else}
-                        <p class="text">Add a coupon code to apply credits to your organization.</p>
-                    {/if}
-                </section>
-            {:else if selectedOrgId}
-                <div class:u-margin-block-start-24={campaign?.template === 'card'}>
-                    <EstimatedTotalBox
-                        fixedCoupon={!!data?.couponData?.code}
-                        {billingPlan}
-                        {collaborators}
-                        bind:couponData
-                        bind:billingBudget>
-                        {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}
-                            <div class="u-margin-block-end-24">
-                                <p class="body-text-1 u-bold">{campaign?.cta}</p>
-                                <p class="text u-margin-block-start-8">
-                                    {#if couponData?.code && couponData?.status === 'active' && campaign?.claimed}
-                                        {campaign?.claimed}
-                                    {:else if campaign?.unclaimed}
-                                        {campaign?.unclaimed}
-                                    {/if}
-                                </p>
-                            </div>
+            <Layout.Stack gap="xl">
+                <Fieldset legend="Setup">
+                    <Layout.Stack gap="l">
+                        {#if $organizationList?.total && !onlyNewOrgs && canSelectOrg}
+                            <InputSelect
+                                bind:value={selectedOrgId}
+                                label="Organization"
+                                {options}
+                                required
+                                placeholder="Select organization"
+                                id="organization" />
                         {/if}
-                    </EstimatedTotalBox>
-                </div>
-            {/if}
-        </svelte:fragment>
-    </WizardSecondaryContent>
+                        {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+                            {#if selectedOrgId === newOrgId}
+                                <InputText
+                                    label="Organization name"
+                                    placeholder="Enter name"
+                                    id="name"
+                                    required
+                                    bind:value={name} />
+                            {/if}
+                            <InputTags
+                                bind:tags={collaborators}
+                                label="Invite members by email"
+                                placeholder="Enter email address(es)"
+                                pattern={emailRegex.toString()}
+                                id="members">
+                                <Tooltip slot="info">
+                                    <Icon icon={IconInfo} size="s" />
+                                    <span slot="tooltip">
+                                        Invited members will have access to all services and payment
+                                        data within your organization
+                                    </span>
+                                </Tooltip>
+                            </InputTags>
+                        {/if}
+                    </Layout.Stack>
+                </Fieldset>
+                {#if (selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)) || (!data?.couponData?.code && selectedOrgId)}
+                    <Fieldset legend="Payment">
+                        <Layout.Stack gap="xl">
+                            {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+                                <SelectPaymentMethod
+                                    bind:methods
+                                    bind:value={paymentMethodId}
+                                    bind:taxId />
+                            {/if}
+                            <Form bind:this={couponForm} onSubmit={addCoupon}>
+                                {#if !data?.couponData?.code && selectedOrgId}
+                                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                                        <InputText
+                                            required
+                                            disabled={!!couponData?.credits}
+                                            bind:value={coupon}
+                                            placeholder="Enter code"
+                                            id="code"
+                                            label="Coupon code">
+                                        </InputText>
 
-    <WizardSecondaryFooter>
+                                        <Button
+                                            submit
+                                            secondary
+                                            size="s"
+                                            disabled={!!couponData?.credits}>
+                                            <span class="text">Add</span>
+                                        </Button>
+                                    </Layout.Stack>
+                                {/if}
+                            </Form>
+                        </Layout.Stack>
+                    </Fieldset>
+                {/if}
+            </Layout.Stack>
+        </Form>
+    </Layout.Stack>
+    <svelte:fragment slot="aside">
+        {#if selectedOrg?.$id && selectedOrg?.billingPlan === billingPlan}
+            <section
+                class="card"
+                style:--p-card-padding="1.5rem"
+                style:--p-card-border-radius="var(--border-radius-small)">
+                {#if couponData?.code && couponData?.status === 'active'}
+                    <CreditsApplied bind:couponData fixedCoupon={!!data?.couponData?.code} />
+                    <p class="text u-margin-block-start-12">
+                        Credits will automatically be applied to your next invoice on <b
+                            >{toLocaleDate(selectedOrg?.billingNextInvoiceDate)}.</b>
+                    </p>
+                {:else}
+                    <p class="text">Add a coupon code to apply credits to your organization.</p>
+                {/if}
+            </section>
+        {:else if selectedOrgId}
+            <div>
+                <EstimatedTotalBox
+                    fixedCoupon={!!data?.couponData?.code}
+                    {billingPlan}
+                    {collaborators}
+                    bind:couponData
+                    bind:billingBudget
+                    organizationId={isNewOrg ? selectedOrgId : null}>
+                    {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}
+                        <div class="u-margin-block-end-24">
+                            <p class="body-text-1 u-bold">{campaign?.cta}</p>
+                            <p class="text u-margin-block-start-8">
+                                {#if couponData?.code && couponData?.status === 'active' && campaign?.claimed}
+                                    {campaign?.claimed}
+                                {:else if campaign?.unclaimed}
+                                    {campaign?.unclaimed}
+                                {/if}
+                            </p>
+                        </div>
+                    {/if}
+                </EstimatedTotalBox>
+            </div>
+        {/if}
+    </svelte:fragment>
+    <svelte:fragment slot="footer">
         <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
@@ -325,15 +399,18 @@
             }}
             disabled={$isSubmitting}>
             {#if $isSubmitting}
-                <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true" />
+                <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true"
+                ></span>
             {/if}
             {#if selectedOrgId === newOrgId}
-                Create Organization
+                Create organization
+            {:else if isUpgrade()}
+                Upgrade
             {:else}
-                Apply Credits
+                Apply
             {/if}
         </Button>
-    </WizardSecondaryFooter>
+    </svelte:fragment>
     <svelte:fragment slot="exit">
         You can apply your credits to an organization at a later date. All other data entered will
         be lost.
@@ -341,42 +418,4 @@
             Credits expire {toLocaleDate(couponData.expiration)}.
         {/if}
     </svelte:fragment>
-</WizardSecondaryContainer>
-
-<style lang="scss">
-    .card-container {
-        overflow: hidden;
-    }
-    .card-bg {
-        position: absolute;
-        overflow: hidden;
-        height: 100%;
-        width: 100%;
-        inset: 0;
-    }
-    .card-bg::before {
-        position: absolute;
-        inset-block-start: -30px;
-        inset-inline-end: -30px;
-        content: '';
-        display: block;
-        inline-size: 30%;
-        block-size: 30%;
-        background: radial-gradient(49.55% 43.54% at 47% 50.69%, #e7f8f7 0%, #85dbd8 100%);
-        filter: blur(70px);
-    }
-    .card-bg::after {
-        position: absolute;
-        inset-block-end: -30px;
-        inset-inline-start: -30px;
-        content: '';
-        display: block;
-        inline-size: 30%;
-        block-size: 30%;
-        background: radial-gradient(50% 46.73% at 50% 53.27%, #fe9567 28.17%, #fd366e 59.38%);
-        filter: blur(70px);
-    }
-    .card-img {
-        max-width: 12.5rem;
-    }
-</style>
+</Wizard>

@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { Modal, Output, Copy, Alert } from '$lib/components';
+    import { Modal, Output, Copy } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Table, TableBody, TableCell, TableRow } from '$lib/elements/table';
     import { type Models } from '@appwrite.io/console';
+    import { IconDownload, IconDuplicate } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Alert, Layout, Divider, Table } from '@appwrite.io/pink-svelte';
 
     export let showRecoveryCodes = false;
     export let codes: Models.MfaRecoveryCodes = null;
@@ -11,54 +12,44 @@
 <Modal title="Recovery codes" bind:show={showRecoveryCodes}>
     {#if codes}
         {@const formattedBackupCodes = codes.recoveryCodes.join('\n')}
-        <Alert type="warning">
-            <span slot="title">
-                Securely store your recovery codes as they won't be visible again for security
-                purposes
+        <Alert.Inline
+            status="warning"
+            title="Securely store your recovery codes as they won't be visible again for security
+        purposes">
+            Use security codes for emergency sign-ins in case you've lost access to your mobile
+            device. Each recovery code can only be used once.
+        </Alert.Inline>
+        <Layout.Stack direction="row-reverse" alignItems="center" gap="s">
+            <Button
+                download="appwrite-backups.txt"
+                href={`data:application/octet-stream;charset=utf-8,${formattedBackupCodes}`}
+                text>
+                <Icon icon={IconDownload} slot="start" size="s" />
+                Download .txt
+            </Button>
+            <span style:height="20px">
+                <Divider vertical />
             </span>
-            <p>
-                Use security codes for emergency sign-ins in case you've lost access to your mobile
-                device. Each recovery code can only be used once.
-            </p>
-        </Alert>
-        <div
-            style:flex-direction="row-reverse"
-            class="u-flex u-flex-vertical-mobile u-main-space-between u-gap-16">
-            <ul class="buttons-list">
-                <li class="buttons-list-item">
-                    <Button
-                        download="appwrite-backups.txt"
-                        href={`data:application/octet-stream;charset=utf-8,${formattedBackupCodes}`}
-                        text>
-                        <span class="icon-download u-font-size-20" aria-hidden="true" />
-                        <span class="text">Download .txt</span>
-                    </Button>
-                </li>
-                <li class="buttons-list-item">
-                    <Copy value={formattedBackupCodes} appendTo="parent">
-                        <Button text>
-                            <span class="icon-duplicate" />
-                            <span class="text">Copy all</span>
-                        </Button>
-                    </Copy>
-                </li>
-            </ul>
-        </div>
-        <Table noMargin noStyles>
-            <TableBody>
-                {#each codes.recoveryCodes as code}
-                    <TableRow>
-                        <TableCell title="code">
-                            <Output value={code} hideCopyIcon>{code}</Output>
-                        </TableCell>
-                        <TableCell title="actions" width={24}>
-                            <Copy value={code} appendTo="parent">
-                                <span class="icon-duplicate" aria-hidden="true" />
-                            </Copy>
-                        </TableCell>
-                    </TableRow>
-                {/each}
-            </TableBody>
-        </Table>
+            <Copy value={formattedBackupCodes}>
+                <Button text>
+                    <Icon icon={IconDuplicate} slot="start" size="s" />
+                    Copy all
+                </Button>
+            </Copy>
+        </Layout.Stack>
+        <Table.Root columns={[{ id: 'code' }, { id: 'action', width: 24 }]} let:root>
+            {#each codes.recoveryCodes as code}
+                <Table.Row.Base {root}>
+                    <Table.Cell column="code" {root}>
+                        <Output value={code} hideCopyIcon>{code}</Output>
+                    </Table.Cell>
+                    <Table.Cell column="action" {root}>
+                        <Copy value={code}>
+                            <Icon icon={IconDuplicate} />
+                        </Copy>
+                    </Table.Cell>
+                </Table.Row.Base>
+            {/each}
+        </Table.Root>
     {/if}
 </Modal>

@@ -1,5 +1,4 @@
 import { goto } from '$app/navigation';
-
 import { derived, get, writable } from 'svelte/store';
 import { page } from '$app/stores';
 import deepEqual from 'deep-equal';
@@ -245,36 +244,40 @@ function formatArray(array: string[]) {
     }
 }
 
-function generateDefaultOperators() {
+export function generateDefaultOperators() {
     const operators: Record<string, Operator> = {};
     operatorsDefault.forEach((operator, operatorName) => {
         operators[operatorName] = {
             toQuery: operator.query,
             toTag: (attribute, input = null, type = null) => {
-                if (input === null) {
-                    return {
-                        value: '',
-                        tag: `**${attribute}** ${operatorName}`
-                    };
-                } else if (Array.isArray(input) && input.length > 2) {
-                    return {
-                        value: input,
-                        tag: `**${attribute}** ${operatorName} **${formatArray(input)}** `
-                    };
-                } else if (type === ValidTypes.Datetime) {
-                    return {
-                        value: input,
-                        tag: `**${attribute}** ${operatorName} **${toLocaleDateTime(input.toString())}**`
-                    };
-                } else {
-                    return { value: input, tag: `**${attribute}** ${operatorName} **${input}**` };
-                }
+                return generateTag(attribute, operatorName, input, type);
             },
             types: operator.types,
             hideInput: operator.hideInput
         };
     });
     return operators;
+}
+
+export function generateTag(attribute: string, operatorName: string, input = null, type = null) {
+    if (input === null) {
+        return {
+            value: '',
+            tag: `**${attribute}** ${operatorName}`
+        };
+    } else if (Array.isArray(input) && input.length > 2) {
+        return {
+            value: input,
+            tag: `**${attribute}** ${operatorName} **${formatArray(input)}** `
+        };
+    } else if (type === ValidTypes.Datetime) {
+        return {
+            value: input,
+            tag: `**${attribute}** ${operatorName} **${toLocaleDateTime(input.toString())}**`
+        };
+    } else {
+        return { value: input, tag: `**${attribute}** ${operatorName} **${input}**` };
+    }
 }
 
 export const operators = generateDefaultOperators();

@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
+    import { WizardWithSteps } from '$lib/layout';
     import { onDestroy } from 'svelte';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { feedbackData } from '$lib/stores/feedback';
     import Step1 from './wizard/feedback/step1.svelte';
     import Step2 from './wizard/feedback/step2.svelte';
@@ -22,4 +22,4 @@
     });
 </script>
 
-<Wizard title="Feedback" steps={stepsComponents} finalAction="Close" />
+<WizardWithSteps title="Feedback" steps={stepsComponents} finalAction="Close" />

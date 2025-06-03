@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import { Heading } from '$lib/components';
+    import { page } from '$app/state';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
-    const project = $page.url.searchParams.get('project');
-    const link = `appwrite-callback-${project}://${$page.url.search}`;
+    const project = page.url.searchParams.get('project');
+    const link = `appwrite-callback-${project}://${page.url.search}`;
 
     const redirect = new Promise((_resolve, reject) => {
         if (!project) {
@@ -16,19 +16,18 @@
 {#await redirect then}
     <article class="card u-padding-16">
         <div class="u-flex u-flex-vertical u-gap-16">
-            <Heading tag="h1" size="4">You're now logged in</Heading>
+            <Typography.Title>You're now logged in</Typography.Title>
             <p class="text">You will be automatically redirected back to your app shortly.</p>
             <p class="text">
                 If you are not redirected, please click on the following
-                <a class="link" href={`appwrite-callback-${project}://${$page.url.search}`}>link</a
-                >.
+                <a class="link" href={`appwrite-callback-${project}://${page.url.search}`}>link</a>.
             </p>
         </div>
     </article>
 {:catch}
     <article class="card u-padding-16">
         <div class="u-flex u-flex-vertical u-gap-16">
-            <Heading tag="h1" size="4">Missing redirect URL</Heading>
+            <Typography.Title>Missing redirect URL</Typography.Title>
             <p class="text">
                 Your OAuth login flow is missing a proper redirect URL. Please check the
                 <a
@@ -42,7 +41,7 @@
 {/await}
 
 <style lang="scss">
-    @use '@appwrite.io/pink/src/abstract/variables/devices';
+    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
     // override padding for screens bigger than mobile
     @media #{devices.$break2open} {
         article.card {

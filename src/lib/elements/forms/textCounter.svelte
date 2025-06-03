@@ -5,7 +5,7 @@
 
 <span class="text-counter" class:active={count > 0}>
     <span class="text-counter-count">{count}</span>
-    <span class="text-counter-separator" />
+    <span class="text-counter-separator"></span>
     <span class="text-counter-max">{max}</span>
 </span>
 

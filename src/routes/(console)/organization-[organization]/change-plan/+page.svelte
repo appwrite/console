@@ -1,122 +1,97 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert } from '$lib/components';
-    import {
-        EstimatedTotalBox,
-        PlanComparisonBox,
-        SelectPaymentMethod
-    } from '$lib/components/billing';
+    import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
     import PlanExcess from '$lib/components/billing/planExcess.svelte';
-    import PlanSelection from '$lib/components/billing/planSelection.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
-    import Default from '$lib/components/roles/default.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
-    import {
-        Button,
-        Form,
-        FormList,
-        InputSelect,
-        InputTags,
-        InputTextarea,
-        Label
-    } from '$lib/elements/forms';
+    import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
-    import {
-        WizardSecondaryContainer,
-        WizardSecondaryContent,
-        WizardSecondaryFooter
-    } from '$lib/layout';
-    import { type Coupon, type PaymentList } from '$lib/sdk/billing';
-    import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { Wizard } from '$lib/layout';
+    import { type Coupon } from '$lib/sdk/billing';
+    import { isOrganization, plansInfo, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import {
-        currentPlan,
-        organization,
-        organizationList,
-        type Organization
-    } from '$lib/stores/organization';
+    import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
-    import { onMount } from 'svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import {
+        Alert,
+        Divider,
+        Fieldset,
+        Icon,
+        Layout,
+        Link,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
+    import { onMount } from 'svelte';
+    import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
 
     export let data;
 
-    $: anyOrgFree = $organizationList.teams?.find(
-        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
-    );
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
+    let selectedPlan: BillingPlan = data.plan as BillingPlan;
+    let selectedCoupon: Partial<Coupon> | null = data.coupon;
     let previousPage: string = base;
     let showExitModal = false;
-    afterNavigate(({ from }) => {
-        previousPage = from?.url?.pathname || previousPage;
-    });
-
     let formComponent: Form;
     let isSubmitting = writable(false);
-    let methods: PaymentList;
-    let billingPlan: Tier = $organization.billingPlan;
-    let paymentMethodId: string;
+    let paymentMethodId: string =
+        data.organization.paymentMethodId ??
+        data.paymentMethods.paymentMethods.find((method) => !!method?.last4)?.$id;
     let collaborators: string[] =
         data?.members?.memberships
             ?.map((m) => {
                 if (m.userEmail !== $user.email) return m.userEmail;
             })
             ?.filter(Boolean) ?? [];
-    let couponData: Partial<Coupon> = {
-        code: null,
-        status: null,
-        credits: null
-    };
     let taxId: string;
     let billingBudget: number;
     let showCreditModal = false;
-
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
-    let selfService: boolean;
 
+    afterNavigate(({ from }) => {
+        previousPage = from?.url?.pathname || previousPage;
+    });
     onMount(async () => {
-        if ($page.url.searchParams.has('code')) {
-            const coupon = $page.url.searchParams.get('code');
+        if (page.url.searchParams.has('code')) {
+            const coupon = page.url.searchParams.get('code');
             try {
-                const response = await sdk.forConsole.billing.getCoupon(coupon);
-                couponData = response;
+                selectedCoupon = await sdk.forConsole.billing.getCouponAccount(coupon);
             } catch (e) {
-                couponData = {
+                selectedCoupon = {
                     code: null,
                     status: null,
                     credits: null
                 };
             }
         }
-        if ($page.url.searchParams.has('plan')) {
-            const plan = $page.url.searchParams.get('plan');
+        if (page.url.searchParams.has('plan')) {
+            const plan = page.url.searchParams.get('plan');
             if (plan && plan in BillingPlan) {
-                billingPlan = plan as BillingPlan;
+                selectedPlan = plan as BillingPlan;
             }
         }
-        if ($organization?.billingPlan === BillingPlan.SCALE) {
-            billingPlan = BillingPlan.SCALE;
-        } else {
-            billingPlan = BillingPlan.PRO;
+
+        if (page.url.searchParams.has('type')) {
+            const type = page.url.searchParams.get('type');
+            if (type === 'payment_confirmed') {
+                const organizationId = page.url.searchParams.get('id');
+                const invites = page.url.searchParams.get('invites').split(',');
+                await validate(organizationId, invites);
+            }
         }
-
-        selfService = $currentPlan?.selfService ?? true;
+        if ($currentPlan?.$id === BillingPlan.SCALE) {
+            selectedPlan = BillingPlan.SCALE;
+        } else {
+            selectedPlan = BillingPlan.PRO;
+        }
     });
-
-    async function loadPaymentMethods() {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
-
-        paymentMethodId =
-            $organization?.paymentMethodId ??
-            methods.paymentMethods.find((method) => !!method?.last4)?.$id ??
-            null;
-    }
 
     async function handleSubmit() {
         if (isDowngrade) {
@@ -129,8 +104,8 @@
     async function downgrade() {
         try {
             await sdk.forConsole.billing.updatePlan(
-                $organization.$id,
-                billingPlan,
+                data.organization.$id,
+                selectedPlan,
                 paymentMethodId,
                 null
             );
@@ -141,30 +116,29 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: tierToPlan($organization.billingPlan).name,
-                    to: tierToPlan(billingPlan).name,
-                    email: $user.email,
+                    from: tierToPlan(data.organization.billingPlan).name,
+                    to: tierToPlan(selectedPlan).name,
+                    email: data.account.email,
                     reason: feedbackDowngradeOptions.find(
                         (option) => option.value === feedbackDowngradeReason
                     )?.label,
-                    orgId: $organization.$id,
-                    userId: $user.$id,
+                    orgId: data.organization.$id,
+                    userId: data.account.$id,
                     message: feedbackMessage ?? ''
                 })
             });
+
+            await invalidate(Dependencies.ORGANIZATION);
 
             await goto(previousPage);
             addNotification({
                 type: 'success',
                 isHtml: true,
-                message: `
-                        <b>${$organization.name}</b> will change to ${
-                            tierToPlan(billingPlan).name
-                        } plan at the end of the current billing cycle.`
+                message: `<b>${$organization.name}</b> plan has been successfully updated.`
             });
 
             trackEvent(Submit.OrganizationDowngrade, {
-                plan: tierToPlan(billingPlan)?.name
+                plan: tierToPlan(selectedPlan)?.name
             });
         } catch (e) {
             addNotification({
@@ -175,61 +149,88 @@
         }
     }
 
+    async function validate(organizationId: string, invites: string[]) {
+        try {
+            let org = await sdk.forConsole.billing.validateOrganization(organizationId, invites);
+            if (isOrganization(org)) {
+                await invalidate(Dependencies.ACCOUNT);
+                await invalidate(Dependencies.ORGANIZATION);
+
+                await goto(previousPage);
+                addNotification({
+                    type: 'success',
+                    message: 'Your organization has been upgraded'
+                });
+
+                trackEvent(Submit.OrganizationUpgrade, {
+                    plan: tierToPlan(selectedPlan)?.name
+                });
+            }
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+            trackError(e, Submit.OrganizationCreate);
+        }
+    }
+
     async function upgrade() {
         try {
-            const org = await sdk.forConsole.billing.updatePlan(
-                $organization.$id,
-                billingPlan,
-                paymentMethodId,
-                null
-            );
-
-            //Add coupon
-            if (couponData?.code) {
-                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
-                trackEvent(Submit.CreditRedeem);
-            }
-
-            //Add budget
-            if (billingBudget) {
-                await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-            }
-
-            //Add collaborators
+            // Add collaborators
+            let newCollaborators = [];
             if (collaborators?.length) {
-                const newCollaborators = collaborators.filter(
+                newCollaborators = collaborators.filter(
                     (collaborator) =>
                         !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
                 );
-                newCollaborators.forEach(async (collaborator) => {
-                    await sdk.forConsole.teams.createMembership(
-                        org.$id,
-                        ['owner'],
-                        collaborator,
-                        undefined,
-                        undefined,
-                        `${$page.url.origin}${base}/invite`
-                    );
+            }
+            const org = await sdk.forConsole.billing.updatePlan(
+                data.organization.$id,
+                selectedPlan,
+                paymentMethodId,
+                null,
+                selectedCoupon?.code,
+                newCollaborators,
+                billingBudget,
+                taxId ? taxId : null
+            );
+
+            if (!isOrganization(org) && org.status == 402) {
+                let clientSecret = org.clientSecret;
+                let params = new URLSearchParams();
+                for (const [key, value] of page.url.searchParams.entries()) {
+                    if (key !== 'type' && key !== 'id') {
+                        params.append(key, value);
+                    }
+                }
+                params.append('type', 'payment_confirmed');
+                params.append('id', org.teamId);
+                params.append('invites', collaborators.join(','));
+                params.append('plan', selectedPlan);
+                await confirmPayment(
+                    '',
+                    clientSecret,
+                    paymentMethodId,
+                    '/console/change-plan?' + params.toString()
+                );
+                await validate(org.teamId, collaborators);
+            }
+
+            if (isOrganization(org)) {
+                await invalidate(Dependencies.ACCOUNT);
+                await invalidate(Dependencies.ORGANIZATION);
+
+                await goto(previousPage);
+                addNotification({
+                    type: 'success',
+                    message: 'Your organization has been upgraded'
+                });
+
+                trackEvent(Submit.OrganizationUpgrade, {
+                    plan: tierToPlan(selectedPlan)?.name
                 });
             }
-
-            //Add tax ID
-            if (taxId) {
-                await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
-            }
-
-            await invalidate(Dependencies.ACCOUNT);
-            await invalidate(Dependencies.ORGANIZATION);
-
-            await goto(previousPage);
-            addNotification({
-                type: 'success',
-                message: 'Your organization has been upgraded'
-            });
-
-            trackEvent(Submit.OrganizationUpgrade, {
-                plan: tierToPlan(billingPlan)?.name
-            });
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -239,124 +240,139 @@
         }
     }
 
-    $: isUpgrade = billingPlan > $organization.billingPlan;
-    $: isDowngrade = billingPlan < $organization.billingPlan;
-    $: if (billingPlan !== BillingPlan.FREE) {
-        loadPaymentMethods();
-    }
-    $: isButtonDisabled = $organization.billingPlan === billingPlan;
+    $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan?.order;
+    $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan?.order;
+    $: isButtonDisabled = $organization?.billingPlan === selectedPlan;
 </script>
 
 <svelte:head>
     <title>Change plan - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer bind:showExitModal href={previousPage} confirmExit>
-    <svelte:fragment slot="title">Change plan</svelte:fragment>
-    <WizardSecondaryContent>
-        <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
-            <Label class="label u-margin-block-start-16">Select plan</Label>
-            <p class="text">
-                For more details on our plans, visit our
-                <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
-            </p>
-            {#if !selfService}
-                <Alert class="u-position-relative u-margin-block-start-16" type="info"
-                    >Your contract is not eligible for manual changes. Please reach out to schedule
-                    a call or setup a dialog.</Alert>
-            {/if}
-            <PlanSelection
-                bind:billingPlan
-                bind:selfService
-                anyOrgFree={!!anyOrgFree}
-                class="u-margin-block-16" />
+<Wizard
+    title="Change plan"
+    href={`${base}/organization-${page.params.organization}`}
+    bind:showExitModal
+    confirmExit>
+    <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
+        <Layout.Stack gap="xxl">
+            <Fieldset legend="Select plan">
+                <Layout.Stack gap="l">
+                    <Typography.Text>
+                        For more details on our plans, visit our
+                        <Link.Anchor
+                            href="https://appwrite.io/pricing"
+                            target="_blank"
+                            rel="noopener noreferrer">pricing page</Link.Anchor
+                        >.
+                    </Typography.Text>
 
-            {#if isDowngrade}
-                {#if billingPlan === BillingPlan.FREE}
-                    <PlanExcess
-                        tier={BillingPlan.FREE}
-                        class="u-margin-block-start-24"
-                        members={data?.members?.total ?? 0} />
-                {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE && collaborators?.length > 0}
-                    {@const extraMembers = collaborators?.length ?? 0}
-                    <Alert type="error" class="u-margin-block-start-24">
-                        <svelte:fragment slot="title">
-                            Your monthly payments will be adjusted for the Pro plan
-                        </svelte:fragment>
-                        After switching plans,
-                        <b
-                            >you will be charged {formatCurrency(
+                    {#if !data.selfService}
+                        <Alert.Inline status="info">
+                            Your contract is not eligible for manual changes. Please reach out to
+                            schedule a call or setup a dialog.
+                        </Alert.Inline>
+                    {/if}
+
+                    <PlanSelection
+                        bind:billingPlan={selectedPlan}
+                        selfService={data.selfService}
+                        anyOrgFree={data.hasFreeOrgs} />
+
+                    {#if isDowngrade}
+                        {#if selectedPlan === BillingPlan.FREE}
+                            <PlanExcess tier={BillingPlan.FREE} />
+                        {:else if selectedPlan === BillingPlan.PRO && data.organization.billingPlan === BillingPlan.SCALE && collaborators?.length > 0}
+                            {@const extraMembers = collaborators?.length ?? 0}
+                            {@const price = formatCurrency(
                                 extraMembers *
-                                    ($plansInfo?.get(billingPlan)?.addons?.member?.price ?? 0)
-                            )} monthly for {extraMembers} team members.</b> This will be reflected in
-                        your next invoice.
-                    </Alert>
-                {/if}
-            {/if}
-            <!-- Show email input if upgrading from free plan -->
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan === BillingPlan.FREE}
-                <FormList class="u-margin-block-start-16">
+                                    ($plansInfo?.get(selectedPlan)?.addons?.seats?.price ?? 0)
+                            )}
+                            <Alert.Inline status="error">
+                                <svelte:fragment slot="title">
+                                    Your monthly payments will be adjusted for the Pro plan
+                                </svelte:fragment>
+                                After switching plans,
+                                <b
+                                    >you will be charged {price} monthly for {extraMembers} team members.</b>
+                                This will be reflected in your next invoice.
+                            </Alert.Inline>
+                        {/if}
+                    {/if}
+                </Layout.Stack>
+            </Fieldset>
+
+            {#if isUpgrade}
+                <Fieldset legend="Payment">
+                    <SelectPaymentMethod
+                        methods={data.paymentMethods}
+                        bind:value={paymentMethodId}
+                        bind:taxId>
+                        <svelte:fragment slot="actions">
+                            {#if !selectedCoupon?.code}
+                                <Divider vertical style="height: 2rem" />
+                                <Button compact on:click={() => (showCreditModal = true)}>
+                                    <Icon icon={IconPlus} slot="start" size="s" />
+                                    Add credits
+                                </Button>
+                            {/if}
+                        </svelte:fragment>
+                    </SelectPaymentMethod>
+                </Fieldset>
+                <Fieldset legend="Invite members">
                     <InputTags
                         bind:tags={collaborators}
                         label="Invite members by email"
-                        popover={Default}
                         placeholder="Enter email address(es)"
-                        validityRegex={emailRegex}
-                        validityMessage="Invalid email address"
                         id="members" />
-                    <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
-                </FormList>
-                {#if !couponData?.code}
-                    <Button
-                        text
-                        noMargin
-                        class="u-margin-block-start-16"
-                        on:click={() => (showCreditModal = true)}>
-                        <span class="icon-plus"></span> <span class="text">Add credits</span>
-                    </Button>
-                {/if}
+                </Fieldset>
             {/if}
-            {#if isDowngrade && billingPlan === BillingPlan.FREE}
-                <FormList class="u-margin-block-start-24">
-                    <InputSelect
-                        id="reason"
-                        label="Reason for plan change"
-                        placeholder="Select one"
-                        required
-                        options={feedbackDowngradeOptions}
-                        bind:value={feedbackDowngradeReason} />
-                    <InputTextarea
-                        id="comment"
-                        required
-                        label="If you need to elaborate, please do so here"
-                        placeholder="Enter feedback"
-                        bind:value={feedbackMessage} />
-                </FormList>
+            {#if isDowngrade && selectedPlan === BillingPlan.FREE}
+                <Fieldset legend="Feedback">
+                    <Layout.Stack gap="xl">
+                        <InputSelect
+                            id="reason"
+                            label="Reason for plan change"
+                            placeholder="Select one"
+                            required
+                            options={feedbackDowngradeOptions}
+                            bind:value={feedbackDowngradeReason} />
+                        <InputTextarea
+                            id="comment"
+                            required
+                            label="If you need to elaborate, please do so here"
+                            placeholder="Enter feedback"
+                            bind:value={feedbackMessage} />
+                    </Layout.Stack>
+                </Fieldset>
             {/if}
-        </Form>
-        <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM}
-                <EstimatedTotalBox
-                    {billingPlan}
-                    {collaborators}
-                    bind:couponData
-                    bind:billingBudget
-                    {isDowngrade} />
-            {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
-                <PlanComparisonBox downgrade={isDowngrade} />
-            {/if}
-        </svelte:fragment>
-    </WizardSecondaryContent>
-
-    <WizardSecondaryFooter>
+        </Layout.Stack>
+    </Form>
+    <svelte:fragment slot="aside">
+        {#if selectedPlan !== BillingPlan.FREE && data.organization.billingPlan !== selectedPlan && data.organization.billingPlan !== BillingPlan.CUSTOM}
+            <EstimatedTotalBox
+                {collaborators}
+                {isDowngrade}
+                billingPlan={selectedPlan}
+                bind:couponData={selectedCoupon}
+                bind:billingBudget
+                organizationId={data.organization.$id} />
+        {:else if data.organization.billingPlan !== BillingPlan.CUSTOM}
+            <PlanComparisonBox downgrade={isDowngrade} />
+        {/if}
+    </svelte:fragment>
+    <svelte:fragment slot="footer">
         <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting || isButtonDisabled || !selfService}>
+            disabled={$isSubmitting || isButtonDisabled || !data.selfService}>
             Change plan
         </Button>
-    </WizardSecondaryFooter>
-</WizardSecondaryContainer>
+    </svelte:fragment>
+</Wizard>
 
-<ValidateCreditModal bind:show={showCreditModal} bind:couponData />
+<ValidateCreditModal
+    bind:show={showCreditModal}
+    bind:couponData={selectedCoupon}
+    isNewOrg={false} />

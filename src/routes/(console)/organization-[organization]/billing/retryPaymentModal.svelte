@@ -6,13 +6,8 @@
     import type { Invoice } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { page } from '$app/stores';
-    import {
-        confirmPayment,
-        initializeStripe,
-        isStripeInitialized,
-        submitStripeCard
-    } from '$lib/stores/stripe';
+    import { page } from '$app/state';
+    import { confirmPayment, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { organization } from '$lib/stores/organization';
     import { toLocaleDate } from '$lib/helpers/date';
     import { PaymentBoxes } from '$lib/components/billing';
@@ -20,6 +15,7 @@
     import { onMount } from 'svelte';
     import { getApiEndpoint, sdk } from '$lib/stores/sdk';
     import { formatCurrency } from '$lib/helpers/numbers';
+    import { base } from '$app/paths';
 
     export let show = false;
     export let invoice: Invoice;
@@ -70,17 +66,24 @@
             if (setAsDefault) {
                 await sdk.forConsole.billing.setDefaultPaymentMethod(paymentMethodId);
             }
-            const { clientSecret } = await sdk.forConsole.billing.retryPayment(
+            const { clientSecret, status } = await sdk.forConsole.billing.retryPayment(
                 $organization.$id,
                 invoice.$id,
                 paymentMethodId
             );
 
-            await confirmPayment(
-                $organization.$id,
-                clientSecret,
-                paymentMethodId ? paymentMethodId : $organization.paymentMethodId
-            );
+            if (status !== 'succeeded' && status !== 'cancelled') {
+                // probably still pending, confirm via stripe!
+                await confirmPayment(
+                    $organization.$id,
+                    clientSecret,
+                    paymentMethodId ? paymentMethodId : $organization.paymentMethodId,
+                    `${base}/organization-${$organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
+                );
+
+                await sdk.forConsole.billing.updateInvoiceStatus($organization.$id, invoice.$id);
+            }
+
             invalidate(Dependencies.ORGANIZATION);
             invalidate(Dependencies.INVOICES);
 
@@ -98,15 +101,10 @@
         }
     }
 
-    $: if (paymentMethodId === null && !$isStripeInitialized) {
-        initializeStripe();
-    }
-
+    $: filteredMethods = $paymentMethods?.paymentMethods.filter((method) => !!method?.last4);
     $: if (paymentMethodId) {
         isStripeInitialized.set(false);
     }
-    $: filteredMethods = $paymentMethods?.paymentMethods.filter((method) => !!method?.last4);
-
     $: if (!show) {
         invoice = null;
     }
@@ -118,19 +116,17 @@
     state="warning"
     onSubmit={handleSubmit}
     size="big"
-    headerDivider={false}
     title="Retry payment">
     <!-- TODO: format currency -->
     <p class="text">
-        Your payment of <span class="inline-tag">${formatCurrency(invoice.grossAmount)}</span> due
-        on {toLocaleDate(invoice.dueAt)} has failed. Retry your payment to avoid service interruptions
-        with your projects.
+        Your payment of <span class="inline-tag">{formatCurrency(invoice.grossAmount)}</span> due on {toLocaleDate(
+            invoice.dueAt
+        )} has failed. Retry your payment to avoid service interruptions with your projects.
     </p>
 
     <Button
         external
-        link
-        href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}>
+        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
         View invoice
     </Button>
 

@@ -10,10 +10,9 @@
     import { setContext } from 'svelte';
     import { writable } from 'svelte/store';
 
-    export let noMargin = false;
     export let noStyle = false;
     export let isModal = false;
-    export let onSubmit: (e: SubmitEvent) => Promise<void> | void;
+    export let onSubmit: (e: SubmitEvent) => Promise<unknown> | unknown;
     let classes = '';
     export { classes as class };
 
@@ -26,6 +25,7 @@
     export function checkValidity() {
         return form.checkValidity();
     }
+
     export function triggerSubmit() {
         form.requestSubmit();
     }
@@ -41,8 +41,13 @@
     bind:this={form}
     class={classes}
     class:form={!noStyle}
-    class:common-section={!noMargin}
     class:modal-form={isModal}
     on:submit|preventDefault={submit}>
     <slot />
 </form>
+
+<style>
+    .modal-form {
+        position: absolute;
+    }
+</style>

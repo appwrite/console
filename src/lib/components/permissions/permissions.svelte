@@ -11,28 +11,23 @@
 
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
     import { symmetricDifference } from '$lib/helpers/array';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import Actions from './actions.svelte';
     import Row from './row.svelte';
-    import Table from '$lib/elements/table/table.svelte';
+    import { Icon, Selector, Table } from '@appwrite.io/pink-svelte';
+    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import type { PinkColumn } from '$lib/helpers/types';
 
     export let withCreate = false;
+    export let hideOnClick = false;
     export let permissions: string[] = [];
 
     let showUser = false;
     let showTeam = false;
     let showLabel = false;
     let showCustom = false;
-    let showDropdown = false;
 
     const groups = writable<Map<string, Permission>>(new Map());
 
@@ -69,8 +64,6 @@
 
             return n;
         });
-
-        showDropdown = false;
     }
 
     function fromPermissionString(permission: string): void {
@@ -133,93 +126,85 @@
 
         return a.localeCompare(b);
     }
+
+    const columns: PinkColumn[] = [
+        { id: 'role', width: { min: 80 } },
+        { id: 'create', width: { min: 80 }, hide: !withCreate },
+        { id: 'read', width: { min: 80 } },
+        { id: 'update', width: { min: 80 } },
+        { id: 'delete', width: { min: 80 } },
+        { id: 'action', width: 40 }
+    ];
 </script>
 
 {#if [...$groups]?.length}
     <div class="table-wrapper">
-        <Table noMargin noStyles>
-            <TableHeader>
-                <TableCellHead width={140}>Role</TableCellHead>
+        <Table.Root {columns} let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="role" {root}>Role</Table.Header.Cell>
                 {#if withCreate}
-                    <TableCellHead width={60}>Create</TableCellHead>
+                    <Table.Header.Cell column="create" {root}>Create</Table.Header.Cell>
                 {/if}
-                <TableCellHead width={50}>Read</TableCellHead>
-                <TableCellHead width={60}>Update</TableCellHead>
-                <TableCellHead width={60}>Delete</TableCellHead>
-                <TableCellHead width={32} />
-            </TableHeader>
-            <TableBody>
-                {#each [...$groups].sort(sortRoles) as [role, permission] (role)}
-                    <TableRow>
-                        <TableCell title="Role">
-                            <Row {role} />
-                        </TableCell>
+                <Table.Header.Cell column="read" {root}>Read</Table.Header.Cell>
+                <Table.Header.Cell column="update" {root}>Update</Table.Header.Cell>
+                <Table.Header.Cell column="delete" {root}>Delete</Table.Header.Cell>
+                <Table.Header.Cell column="action" {root} />
+            </svelte:fragment>
+            {#each [...$groups].sort(sortRoles) as [role, permission] (role)}
+                <Table.Row.Base {root}>
+                    <Table.Cell column="role" {root}>
+                        <Row {role} />
+                    </Table.Cell>
+                    <Table.Cell column="create" {root}>
+                        <Selector.Checkbox
+                            checked={permission.create}
+                            on:change={() => togglePermission(role, 'create')} />
+                    </Table.Cell>
+                    <Table.Cell column="read" {root}>
+                        <Selector.Checkbox
+                            size="s"
+                            checked={permission.read}
+                            on:change={() => togglePermission(role, 'read')} />
+                    </Table.Cell>
+                    <Table.Cell column="update" {root}>
+                        <Selector.Checkbox
+                            size="s"
+                            checked={permission.update}
+                            on:change={() => togglePermission(role, 'update')} />
+                    </Table.Cell>
+                    <Table.Cell column="delete" {root}>
+                        <Selector.Checkbox
+                            size="s"
+                            checked={permission.delete}
+                            on:change={() => togglePermission(role, 'delete')} />
+                    </Table.Cell>
 
-                        {#if withCreate}
-                            <TableCell title="Create">
-                                <input
-                                    type="checkbox"
-                                    class="icon-check"
-                                    aria-label="Create"
-                                    checked={permission.create}
-                                    on:change={() => togglePermission(role, 'create')} />
-                            </TableCell>
-                        {/if}
-                        <TableCell title="Read">
-                            <input
-                                type="checkbox"
-                                class="icon-check"
-                                aria-label="Read"
-                                checked={permission.read}
-                                on:change={() => togglePermission(role, 'read')} />
-                        </TableCell>
-                        <TableCell title="Update">
-                            <input
-                                type="checkbox"
-                                class="icon-check"
-                                aria-label="Update"
-                                checked={permission.update}
-                                on:change={() => togglePermission(role, 'update')} />
-                        </TableCell>
-                        <TableCell title="Delete">
-                            <input
-                                type="checkbox"
-                                class="icon-check"
-                                aria-label="Delete"
-                                checked={permission.delete}
-                                on:change={() => togglePermission(role, 'delete')} />
-                        </TableCell>
-
-                        <TableCell title="Remove" width={40}>
-                            <div class="u-flex">
-                                <button
-                                    class="button is-text is-only-icon"
-                                    type="button"
-                                    aria-label="delete"
-                                    on:click={() => deleteRole(role)}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </button>
-                            </div>
-                        </TableCell>
-                    </TableRow>
-                {/each}
-            </TableBody>
-        </Table>
+                    <Table.Cell column="action" {root}>
+                        <Button compact icon ariaLabel="delete" on:click={() => deleteRole(role)}>
+                            <Icon icon={IconX} size="s" />
+                        </Button>
+                    </Table.Cell>
+                </Table.Row.Base>
+            {/each}
+        </Table.Root>
     </div>
 
-    <Actions
-        bind:showLabel
-        bind:showCustom
-        bind:showDropdown
-        bind:showTeam
-        bind:showUser
-        {groups}
-        on:create={create}>
-        <Button text noMargin on:click={() => (showDropdown = !showDropdown)}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Add role</span>
-        </Button>
-    </Actions>
+    <div>
+        <Actions
+            bind:showLabel
+            bind:showCustom
+            bind:showTeam
+            bind:showUser
+            {groups}
+            {hideOnClick}
+            on:create={create}
+            let:toggle>
+            <Button secondary on:click={toggle}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add role
+            </Button>
+        </Actions>
+    </div>
 {:else}
     <article class="card u-grid u-cross-center u-width-full-line dashed">
         <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -227,13 +212,14 @@
                 <Actions
                     bind:showLabel
                     bind:showCustom
-                    bind:showDropdown
                     bind:showTeam
                     bind:showUser
                     {groups}
-                    on:create={create}>
-                    <Button secondary round on:click={() => (showDropdown = !showDropdown)}>
-                        <i class="icon-plus" />
+                    {hideOnClick}
+                    on:create={create}
+                    let:toggle>
+                    <Button compact icon on:click={toggle}>
+                        <Icon icon={IconPlus} size="s" />
                     </Button>
                 </Actions>
             </div>
@@ -243,3 +229,14 @@
         </div>
     </article>
 {/if}
+
+<style lang="scss">
+    .table-wrapper {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+</style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
+    import { WizardWithSteps } from '$lib/layout';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
@@ -60,7 +60,7 @@
     });
 </script>
 
-<Wizard
+<WizardWithSteps
     title="Add credits"
     steps={$addCreditWizardSteps}
     finalAction="Add credits"

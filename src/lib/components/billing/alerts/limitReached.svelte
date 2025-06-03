@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { page } from '$app/state';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
@@ -9,7 +9,7 @@
     import { organization } from '$lib/stores/organization';
 </script>
 
-{#if $organization?.$id && $organization?.billingPlan === BillingPlan.FREE && $readOnly && !hideBillingHeaderRoutes.includes($page.url.pathname)}
+{#if $organization?.$id && $organization?.billingPlan === BillingPlan.FREE && $readOnly && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     <HeaderAlert
         type="error"
         title={`${$organization.name} usage has reached the ${tierToPlan($organization.billingPlan).name} plan limit`}>
@@ -26,7 +26,7 @@
             <Button
                 href={$upgradeURL}
                 on:click={() => {
-                    trackEvent('click_organization_upgrade', {
+                    trackEvent(Click.OrganizationClickUpgrade, {
                         from: 'button',
                         source: 'limit_reached_banner'
                     });

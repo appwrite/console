@@ -108,9 +108,9 @@ pnpm run lint
 
 Diagnostic tool that checks for the following:
 
--   Unused CSS
--   Svelte A11y hints
--   TypeScript compiler errors
+- Unused CSS
+- Svelte A11y hints
+- TypeScript compiler errors
 
 ```bash
 pnpm run check
@@ -130,11 +130,11 @@ doc-548-submit-a-pull-request-section-to-contribution-guide
 
 When `TYPE` can be:
 
--   **feat** - is a new feature
--   **doc** - documentation only changes
--   **cicd** - changes related to CI/CD system
--   **fix** - a bug fix
--   **refactor** - code change that neither fixes a bug nor adds a feature
+- **feat** - is a new feature
+- **doc** - documentation only changes
+- **cicd** - changes related to CI/CD system
+- **fix** - a bug fix
+- **refactor** - code change that neither fixes a bug nor adds a feature
 
 **All PRs must include a commit message with a description of the changes made!**
 
@@ -175,12 +175,12 @@ $ git push origin [name_of_your_new_branch]
 
 Before committing always make sure to run all available tools to improve the codebase:
 
--   Formatter
-    -   `pnpm run format`
--   Tests
-    -   `pnpm test`
--   Diagnostics
-    -   `pnpm run check`
+- Formatter
+    - `pnpm run format`
+- Tests
+    - `pnpm test`
+- Diagnostics
+    - `pnpm run check`
 
 ### Performance
 
@@ -188,9 +188,9 @@ Page load times are a key consideration for users of all browsers and device typ
 
 There are some general things we can do in front-end development:
 
--   Minimize HTTP requests
--   Minimize blocking – content should be readable before client-side processing
--   Lazy load "supplementary" content, especially images
+- Minimize HTTP requests
+- Minimize blocking – content should be readable before client-side processing
+- Lazy load "supplementary" content, especially images
 
 ### Don't Repeat Yourself (DRY)
 
@@ -202,12 +202,12 @@ If you stick to this principle, you will ensure that you will only ever need to 
 
 Separate _structure_ from _presentation_ from _behavior_ to aid maintainability and understanding.
 
--   Keep CSS (presentation), JS (behavior) and HTML (structure) in the same respective Svelte component
--   Avoid writing inline CSS or Javascript in HTML
--   Avoid writing CSS or HTML in Javascript
--   Don't choose HTML elements to imply style
--   Where appropriate, use CSS or Svelte rather than Javascript for animations and transitions
--   Try to use templates when defining markup in Javascript
+- Keep CSS (presentation), JS (behavior) and HTML (structure) in the same respective Svelte component
+- Avoid writing inline CSS or Javascript in HTML
+- Avoid writing CSS or HTML in Javascript
+- Don't choose HTML elements to imply style
+- Where appropriate, use CSS or Svelte rather than Javascript for animations and transitions
+- Try to use templates when defining markup in Javascript
 
 ### Write code to be read
 

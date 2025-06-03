@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import type { PaymentList } from '$lib/sdk/billing';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
+    import { isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { PaymentBoxes } from '$lib/components/billing';
     import { addCreditWizardStore } from '../store';
@@ -30,10 +29,6 @@
         }
     }
 
-    $: if ($addCreditWizardStore.paymentMethodId === null && !$isStripeInitialized) {
-        initializeStripe();
-    }
-
     $: if ($addCreditWizardStore.paymentMethodId) {
         isStripeInitialized.set(false);
     }
@@ -49,10 +44,8 @@
     </svelte:fragment>
 
     <p class="text"><b>Payment method</b></p>
-    <FormList class="u-margin-block-start-8">
-        <PaymentBoxes
-            methods={filteredMethods}
-            bind:name
-            bind:group={$addCreditWizardStore.paymentMethodId} />
-    </FormList>
+    <PaymentBoxes
+        methods={filteredMethods}
+        bind:name
+        bind:group={$addCreditWizardStore.paymentMethodId} />
 </WizardStep>
