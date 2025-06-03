@@ -74,7 +74,7 @@ function createPreferences() {
     /**
      * Update the local store and then synchronizes them on user prefs.
      */
-    function updateAndSync(callback: (prefs: PreferencesStore) => void) {
+    function updateAndSync(callback: (prefs: PreferencesStore) => void): Promise<void> {
         let oldPrefsSnapshot: PreferencesStore;
         let newPrefsSnapshot: PreferencesStore;
 
@@ -90,7 +90,7 @@ function createPreferences() {
         }
 
         // sync the preferences.
-        updateConsolePreferences(newPrefsSnapshot);
+        return updateConsolePreferences(newPrefsSnapshot);
     }
 
     return {
