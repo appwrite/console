@@ -1,6 +1,9 @@
 <script lang="ts">
-    import { formatCurrency } from '$lib/helpers/numbers';
     import type { Coupon } from '$lib/sdk/billing';
+    import { formatCurrency } from '$lib/helpers/numbers';
+    import { IconTag } from '@appwrite.io/pink-icons-svelte';
+    import { Badge, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+
     export let label: string;
     export let value: number;
     export let couponData: Partial<Coupon> = {
@@ -19,19 +22,16 @@
 </script>
 
 {#if adjustedValue > 0}
-    <span class="u-flex u-main-space-between">
-        <div class="u-flex u-cross-center u-gap-4">
-            <p class="text">
-                <span class="icon-tag u-color-text-success" aria-hidden="true"></span>
-                <span>
-                    {label}
-                </span>
-            </p>
-        </div>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack inline direction="row" gap="xxs" alignItems="center" alignContent="center">
+            <Icon icon={IconTag} color="--fgcolor-success" size="s" />
+            <Typography.Text>{label}</Typography.Text>
+        </Layout.Stack>
         {#if value >= 100}
-            <p class="inline-tag">Credits applied</p>
+            <Badge variant="secondary" content="Credits applied" />
         {:else}
-            <span class="u-color-text-success">-{formatCurrency(adjustedValue)}</span>
+            <Typography.Text color="--fgcolor-success"
+                >-{formatCurrency(adjustedValue)}</Typography.Text>
         {/if}
-    </span>
+    </Layout.Stack>
 {/if}
