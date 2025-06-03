@@ -7,6 +7,7 @@
     import { CreditsApplied } from '.';
     import { sdk } from '$lib/stores/sdk';
     import { AppwriteException } from '@appwrite.io/console';
+    import DiscountsApplied from './discountsApplied.svelte';
 
     export let billingPlan: Tier;
     export let collaborators: string[];
@@ -35,7 +36,8 @@
                 if (
                     e.type === 'billing_coupon_not_found' ||
                     e.type === 'billing_coupon_already_used' ||
-                    e.type === 'billing_credit_unsupported'
+                    e.type === 'billing_credit_unsupported' ||
+                    e.type === 'billing_coupon_not_eligible'
                 ) {
                     couponData = {
                         code: null,
@@ -65,7 +67,8 @@
                 if (
                     e.type === 'billing_coupon_not_found' ||
                     e.type === 'billing_coupon_already_used' ||
-                    e.type === 'billing_credit_unsupported'
+                    e.type === 'billing_credit_unsupported' ||
+                    e.type === 'billing_coupon_not_eligible'
                 ) {
                     couponData = {
                         code: null,
@@ -80,13 +83,6 @@
     $: organizationId
         ? getUpdatePlanEstimate(organizationId, billingPlan, collaborators, couponData?.code)
         : getEstimate(billingPlan, collaborators, couponData?.code);
-
-    $: estimatedTotal =
-        couponData?.status === 'active'
-            ? estimation?.grossAmount - couponData.credits >= 0
-                ? estimation?.grossAmount - couponData.credits
-                : 0
-            : estimation?.grossAmount;
 </script>
 
 {#if estimation}
@@ -102,6 +98,9 @@
                         >{formatCurrency(item.value)}</Typography.Text>
                 </Layout.Stack>
             {/each}
+            {#each estimation.discounts ?? [] as item}
+                <DiscountsApplied {couponData} {...item} />
+            {/each}
 
             {#if couponData?.status === 'active'}
                 <CreditsApplied bind:couponData {fixedCoupon} />
@@ -110,15 +109,15 @@
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Typography.Text>Total due</Typography.Text>
                 <Typography.Text>
-                    {formatCurrency(estimatedTotal)}
+                    {formatCurrency(estimation.grossAmount)}
                 </Typography.Text>
             </Layout.Stack>
 
             <Typography.Text>
-                You'll pay <b>{formatCurrency(estimatedTotal)}</b>
+                You'll pay <b>{formatCurrency(estimation.grossAmount)}</b>
                 now.
                 {#if couponData?.code}Once your credits run out,{:else}Then{/if} you'll be charged
-                <b>{formatCurrency(estimation.grossAmount)}</b> every 30 days.
+                <b>{formatCurrency(estimation.amount)}</b> every 30 days.
             </Typography.Text>
 
             <InputChoice
