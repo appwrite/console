@@ -21,8 +21,11 @@
     export let showHeader = true;
     export let showFooter = true;
     export let showSideNavigation = false;
-    export let projectsPromise: Promise<Models.ProjectList>;
     export let selectedProject: Models.Project | null = null;
+    export let projectsPromise: Promise<Models.ProjectList> = Promise.resolve({
+        total: 0,
+        projects: []
+    });
 
     let yOnMenuOpen: number;
     let showContentTransition = false;
