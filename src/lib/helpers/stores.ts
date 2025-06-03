@@ -36,3 +36,49 @@ export function createConservative<Obj extends Record<string, unknown>>(obj: Obj
         listen
     };
 }
+
+export function asyncWritable<T>(initialPromise?: Promise<T> | T) {
+    const { subscribe, set: setState } = writable<
+        | {
+              loading: true;
+              error: null;
+              data: null;
+          }
+        | {
+              loading: false;
+              error: Error;
+              data: null;
+          }
+        | {
+              loading: false;
+              error: null;
+              data: T;
+          }
+    >({
+        loading: true,
+        error: null,
+        data: null
+    });
+
+    function run(promise: typeof initialPromise) {
+        setState({ loading: true, error: null, data: null });
+        if (promise instanceof Promise) {
+            promise
+                .then((data) => {
+                    setState({ loading: false, error: null, data });
+                })
+                .catch((error) => {
+                    setState({ loading: false, error, data: null });
+                });
+        } else {
+            setState({ loading: false, error: null, data: promise });
+        }
+    }
+
+    if (initialPromise) run(initialPromise);
+
+    return {
+        subscribe,
+        set: run
+    };
+}

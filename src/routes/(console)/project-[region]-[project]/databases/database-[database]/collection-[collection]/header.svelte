@@ -71,15 +71,14 @@
             {/key}
         </svelte:fragment>
 
-        <Tabs>
-            {#each tabs as tab}
-                <Tab
-                    href={tab.href}
-                    selected={isTabSelected(tab, page.url.pathname, path, tabs)}
-                    event={tab.event}>
-                    {tab.title}
-                </Tab>
-            {/each}
-        </Tabs>
-    </Cover>
-</div>
+    <Tabs>
+        {#each tabs as tab}
+            <Tab
+                href={tab.href}
+                selected={isTabSelected(tab, page.url.pathname, path, tabs)}
+                event={tab.event}>
+                {tab.title}
+            </Tab>
+        {/each}
+    </Tabs>
+</Cover>

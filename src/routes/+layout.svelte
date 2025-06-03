@@ -6,26 +6,36 @@
     import { trackPageView } from '$lib/actions/analytics';
     import { Notifications, Progress } from '$lib/layout';
     import { app, type AppStore } from '$lib/stores/app';
-    import { isCloud } from '$lib/system';
-    import { onMount } from 'svelte';
+    import { consoleProfile, isCloud } from '$lib/system';
+    import { onDestroy, onMount } from 'svelte';
     import { requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { loading } from '$routes/store';
     import { Root } from '@appwrite.io/pink-svelte';
-    import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
+    import {
+        ThemeDark,
+        ThemeLight,
+        ThemeDarkCloud,
+        ThemeLightCloud,
+        ThemeLightStudio
+    } from '../themes';
     import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
     import { feedback } from '$lib/stores/feedback';
+    import { isStudio } from '$lib/system.js';
+    import { ThemeDarkStudio } from '$themes';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
             case 'dark':
-                return isCloud ? ThemeDarkCloud : ThemeDark;
+                return isStudio ? ThemeDarkStudio : isCloud ? ThemeDarkCloud : ThemeDark;
             case 'light':
-                return isCloud ? ThemeLightCloud : ThemeLight;
+                return isStudio ? ThemeLightStudio : isCloud ? ThemeLightCloud : ThemeLight;
         }
     }
+
+    let browserTheme = 'light';
 
     onMount(async () => {
         updateViewport();
@@ -102,6 +112,21 @@
                 feedback.toggleFeedback();
             }
         });
+
+        //check for the browser theme, which is separate from the console theme
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        browserTheme = mediaQuery.matches ? 'dark' : 'light';
+
+        // Listen for changes in the preferred color scheme
+        const handler = (e) => {
+            browserTheme = e.matches ? 'dark' : 'light';
+        };
+
+        mediaQuery.addEventListener('change', handler);
+
+        onDestroy(() => {
+            mediaQuery.removeEventListener('change', handler);
+        });
     });
 
     afterNavigate((navigation) => {
@@ -109,7 +134,6 @@
             trackPageView(navigation.to.route.id);
         }
     });
-
     $: {
         if (browser) {
             const isCloudClass = isCloud ? 'is-cloud' : '';
@@ -155,22 +179,35 @@
         'https://fonts.appwrite.io/aeonik-fono/AeonikFono-Medium.woff2',
         'https://fonts.appwrite.io/aeonik-fono/AeonikFono-Bold.woff2'
     ];
+
+    $: favicon = isStudio
+        ? browserTheme === 'dark'
+            ? 'imagine-dark.svg'
+            : 'imagine-icon.svg'
+        : 'appwrite-icon.svg';
+
+    const maskIcon = isStudio ? 'imagine-icon.png' : 'appwrite-icon.png';
 </script>
 
 <svelte:window on:resize={updateViewport} on:load={updateViewport} />
 
 <svelte:head>
+    <meta name="description" content={consoleProfile.description} />
+
     {#each preloadFonts as font}
         <link rel="preload" href={font} as="font" type="font/woff2" crossorigin="anonymous" />
     {/each}
-    <link rel="preload" as="style" type="text/css" href="/console/fonts/main.css" />
+    <link rel="preload" as="style" type="text/css" href={`${base}/fonts/main.css`} />
     <link rel="stylesheet" href={`${base}/fonts/main.css`} />
+
+    <link rel="icon" type="image/svg+xml" href={`/console/logos/${favicon}`} />
+    <link rel="mask-icon" type="image/png" href={`/console/logos/${maskIcon}`} />
 
     {#if isCloud}
         {#each preloadFontsCloud as font}
             <link rel="preload" href={font} as="font" type="font/woff2" crossorigin="anonymous" />
         {/each}
-        <link rel="preload" as="style" type="text/css" href="/console/fonts/cloud.css" />
+        <link rel="preload" as="style" type="text/css" href={`${base}/fonts/cloud.css`} />
         <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
     {/if}
 </svelte:head>

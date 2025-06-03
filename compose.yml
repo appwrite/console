@@ -9,6 +9,7 @@ services:
                 PUBLIC_APPWRITE_ENDPOINT: ${PUBLIC_APPWRITE_ENDPOINT}
                 PUBLIC_GROWTH_ENDPOINT: ${PUBLIC_GROWTH_ENDPOINT}
                 PUBLIC_STRIPE_KEY: ${PUBLIC_STRIPE_KEY}
+                PUBLIC_PROJECT_PROFILE: ${PUBLIC_PROJECT_PROFILE}
                 SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
         develop:
             watch:
@@ -25,5 +26,6 @@ services:
             - PUBLIC_APPWRITE_ENDPOINT
             - PUBLIC_GROWTH_ENDPOINT
             - PUBLIC_STRIPE_KEY
+            - PUBLIC_PROJECT_PROFILE
         ports:
             - '3000:80'

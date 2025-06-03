@@ -4,7 +4,7 @@
     import { Container } from '$lib/layout';
     import CreateProject from './createProject.svelte';
     import CreateOrganization from '../createOrganization.svelte';
-    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE, isCloud, isStudio } from '$lib/system';
     import { page } from '$app/state';
     import { registerCommands } from '$lib/commandCenter';
     import {
@@ -25,7 +25,15 @@
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Badge, Icon, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Divider,
+        Icon,
+        Typography,
+        Card,
+        Layout,
+        Table
+    } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
         IconApple,
@@ -38,6 +46,8 @@
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
     import { regions as regionsStore } from '$lib/stores/organization';
+    import type { Column } from '@appwrite.io/pink-svelte/dist/table';
+    import { timeFromNow } from '$lib/helpers/date';
 
     export let data;
 
@@ -117,32 +127,68 @@
     function findRegion(project: Models.Project) {
         return $regionsStore.regions.find((region) => region.$id === project.region);
     }
+
+    const columns: Column[] = [{ id: 'name' }, { id: 'updated' }];
 </script>
 
-<Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Typography.Title>Projects</Typography.Title>
-
-        <DropList bind:show={showDropdown} placement="bottom-end">
+{#if isStudio}
+    <Layout.Stack>
+        <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography.Text variant="m-500" color="--fgcolor-neutral-secondary"
+                >Projects</Typography.Text>
             {#if $canWriteProjects}
                 <Button
+                    size="s"
                     on:click={handleCreateProject}
                     event="create_project"
-                    disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create project
-                </Button>
+                    disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>Create project</Button>
             {/if}
-            <svelte:fragment slot="list">
-                <DropListItem on:click={() => (showCreate = true)}>Empty project</DropListItem>
-                <DropListItem on:click={importProject}>
-                    <div class="u-flex u-gap-8 u-cross-center">
-                        Import project <span class="tag eyebrow-heading-3">Experimental</span>
-                    </div>
-                </DropListItem>
+        </Layout.Stack>
+
+        <Divider />
+
+        <Table.Root let:root {columns}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="name" {root}>Project name</Table.Header.Cell>
+                <Table.Header.Cell column="updated" {root}>Updated</Table.Header.Cell>
             </svelte:fragment>
-        </DropList>
-    </div>
+
+            {#each data.projects.projects as project}
+                <Table.Row.Link
+                    href={`${base}/project-${project.region}-${project.$id}/studio`}
+                    {root}>
+                    <Table.Cell column="name" {root}>{project.name}</Table.Cell>
+                    <Table.Cell column="updated" {root}
+                        >{timeFromNow(project.$updatedAt)}</Table.Cell>
+                </Table.Row.Link>
+            {/each}
+        </Table.Root>
+    </Layout.Stack>
+{:else}
+    <Container>
+        <div class="u-flex u-gap-12 common-section u-main-space-between">
+            <Typography.Title>Projects</Typography.Title>
+
+            <DropList bind:show={showDropdown} placement="bottom-end">
+                {#if $canWriteProjects}
+                    <Button
+                        on:click={handleCreateProject}
+                        event="create_project"
+                        disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create project
+                    </Button>
+                {/if}
+                <svelte:fragment slot="list">
+                    <DropListItem on:click={() => (showCreate = true)}>Empty project</DropListItem>
+                    <DropListItem on:click={importProject}>
+                        <div class="u-flex u-gap-8 u-cross-center">
+                            Import project <span class="tag eyebrow-heading-3">Experimental</span>
+                        </div>
+                    </DropListItem>
+                </svelte:fragment>
+            </DropList>
+        </div>
 
     {#if data.projects.total}
         <CardContainer
@@ -200,12 +246,13 @@
             href="https://appwrite.io/docs/quick-starts"></Empty>
     {/if}
 
-    <PaginationWithLimit
-        name="Projects"
-        limit={data.limit}
-        offset={data.offset}
-        total={data.projects.total} />
-</Container>
+        <PaginationWithLimit
+            name="Projects"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.projects.total} />
+    </Container>
+{/if}
 
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />

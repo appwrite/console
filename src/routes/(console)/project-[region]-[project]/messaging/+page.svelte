@@ -39,6 +39,7 @@
     import { Confirm } from '$lib/components';
     import { onDestroy, onMount } from 'svelte';
     import { stopPolling, pollMessagesStatus } from './helper';
+    import { consoleProfile } from '$lib/system';
 
     export let data;
     let selected: string[] = [];
@@ -218,7 +219,13 @@
             </div>
         </EmptySearch>
     {:else}
-        <Empty single target="message" on:click={() => ($showCreate = true)}>
+        <Empty
+            single
+            target="message"
+            on:click={() => ($showCreate = true)}
+            description={consoleProfile.hasChat
+                ? 'Messaging let you send push notifications, email, or SMS.'
+                : 'Need a hand? Learn more in our documentation.'}>
             <svelte:fragment slot="actions">
                 <Button
                     external

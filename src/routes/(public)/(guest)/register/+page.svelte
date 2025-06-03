@@ -11,15 +11,16 @@
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Unauthenticated } from '$lib/layout';
+    import { Unauthenticated, UnauthenticatedStudio } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { ID, OAuthProvider } from '@appwrite.io/console';
-    import { isCloud } from '$lib/system';
+    import { consoleProfile, isCloud } from '$lib/system';
     import { page } from '$app/state';
     import { redirectTo } from '$routes/store';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Layout, Link, Typography } from '@appwrite.io/pink-svelte';
+    import { Layout, Link, Modal, Typography } from '@appwrite.io/pink-svelte';
+    import DesktopLight from '../login/assets/desktop-light.png';
 
     export let data;
 
@@ -70,10 +71,23 @@
 
     function onGithubLogin() {
         sdk.forConsole.account.createOAuth2Session(
-            OAuthProvider.Github,
+            consoleProfile.githubLoginProvider as OAuthProvider,
             window.location.origin,
             window.location.origin,
             ['read:user', 'user:email']
+        );
+    }
+
+    function onGoogleLogin() {
+        sdk.forConsole.account.createOAuth2Session(
+            OAuthProvider.Google,
+            window.location.origin,
+            window.location.origin,
+            [
+                'https://www.googleapis.com/auth/userinfo.email',
+                'https://www.googleapis.com/auth/userinfo.profile',
+                'openid'
+            ]
         );
     }
 </script>
@@ -82,9 +96,8 @@
     <title>Sign up - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated coupon={data?.couponData} campaign={data?.campaign}>
-    <svelte:fragment slot="title">Sign up</svelte:fragment>
-    <svelte:fragment>
+{#if consoleProfile.hasFullPageSignup}
+    <UnauthenticatedStudio title="Sign up">
         <Form onSubmit={register}>
             <Layout.Stack>
                 <InputText
@@ -119,21 +132,115 @@
                         target="_blank"
                         rel="noopener noreferrer">General Terms of Use</Link.Anchor
                     >.</InputChoice>
+                <div></div>
                 <Button fullWidth submit {disabled}>Sign up</Button>
-                {#if isCloud}
+                {#if isCloud && (consoleProfile.hasGithubLogin || consoleProfile.hasGoogleLogin)}
                     <span class="with-separators eyebrow-heading-3">or</span>
-                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                {/if}
+                {#if isCloud && consoleProfile.hasGoogleLogin}
+                    <Button fullWidth on:click={onGoogleLogin} {disabled}>
+                        <span class="icon-google" aria-hidden="true"></span>
+                        <span class="text">Sign in with Google</span>
+                    </Button>
+                {/if}
+                {#if isCloud && consoleProfile.hasGithubLogin}
+                    <Button fullWidth on:click={onGithubLogin} {disabled}>
                         <span class="icon-github" aria-hidden="true"></span>
                         <span class="text">Sign up with GitHub</span>
                     </Button>
                 {/if}
+                <div></div>
+                <Layout.Stack direction="row" justifyContent="center">
+                    <a href={`${base}/login${page?.url?.search ?? ''}`}
+                        ><Typography.Text variant="m-500" color="--neutral-750"
+                            >Sign in instead</Typography.Text
+                        ></a>
+                </Layout.Stack>
             </Layout.Stack>
         </Form>
-    </svelte:fragment>
-    <svelte:fragment slot="links">
-        <Typography.Text variant="m-400">
-            Already got an account? <Link.Anchor href={`${base}/login${page?.url?.search ?? ''}`}
-                >Sign in</Link.Anchor>
-        </Typography.Text>
-    </svelte:fragment>
-</Unauthenticated>
+    </UnauthenticatedStudio>
+{:else}
+    <Unauthenticated coupon={data?.couponData} campaign={data?.campaign}>
+        <svelte:fragment slot="title">Sign up</svelte:fragment>
+        <svelte:fragment>
+            <Form onSubmit={register}>
+                <Layout.Stack>
+                    <InputText
+                        id="name"
+                        label="Name"
+                        placeholder="Your name"
+                        autofocus
+                        required
+                        bind:value={name} />
+                    <InputEmail
+                        id="email"
+                        label="Email"
+                        placeholder="Your email"
+                        required
+                        bind:value={mail} />
+                    <InputPassword
+                        id="password"
+                        label="Password"
+                        placeholder="Your password"
+                        helper="Password must be at least 8 characters long"
+                        required
+                        bind:value={pass} />
+                    <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
+                        By registering, you agree that you have read, understand, and acknowledge
+                        our <Link.Anchor
+                            href="https://appwrite.io/privacy"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            Privacy Policy</Link.Anchor>
+                        and accept our
+                        <Link.Anchor
+                            href="https://appwrite.io/terms"
+                            target="_blank"
+                            rel="noopener noreferrer">General Terms of Use</Link.Anchor
+                        >.</InputChoice>
+                    <Button fullWidth submit {disabled}>Sign up</Button>
+                    {#if isCloud}
+                        <span class="with-separators eyebrow-heading-3">or</span>
+                        <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                            <span class="icon-github" aria-hidden="true"></span>
+                            <span class="text">Sign up with GitHub</span>
+                        </Button>
+                    {/if}
+                </Layout.Stack>
+            </Form>
+        </svelte:fragment>
+        <svelte:fragment slot="links">
+            <Typography.Text variant="m-400">
+                Already got an account? <Link.Anchor
+                    href={`${base}/login${page?.url?.search ?? ''}`}>Sign in</Link.Anchor>
+            </Typography.Text>
+        </svelte:fragment>
+    </Unauthenticated>
+{/if}
+
+<style lang="scss">
+    .full-page-signup {
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        z-index: 3;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        div {
+            width: 600px;
+        }
+    }
+
+    .overlay-image {
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        filter: blur(4px);
+        background-size: cover;
+    }
+</style>

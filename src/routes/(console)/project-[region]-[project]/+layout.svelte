@@ -24,6 +24,7 @@
         canWriteProjects,
         canWriteSites
     } from '$lib/stores/roles';
+    import { consoleProfile } from '$lib/system';
     import CsvImportBox from '$lib/components/csvImportBox.svelte';
 
     onMount(() => {
@@ -116,12 +117,14 @@
 
 <slot />
 
-<div class="layout-level-progress-bars">
-    <UploadBox />
-    <MigrationBox />
-    <BackupRestoreBox />
-    <CsvImportBox />
-</div>
+{#if consoleProfile.hasProjectProgressBars}
+    <div class="layout-level-progress-bars">
+        <UploadBox />
+        <MigrationBox />
+        <BackupRestoreBox />
+        <CsvImportBox />
+    </div>
+{/if}
 
 <style>
     .layout-level-progress-bars {

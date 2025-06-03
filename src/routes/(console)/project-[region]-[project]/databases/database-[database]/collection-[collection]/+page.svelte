@@ -26,6 +26,7 @@
     import type { Models } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
     import { APPWRITE_OFFICIALS_ORG, isCloud } from '$lib/system';
+    import { consoleProfile, isStudio } from '$lib/system';
 
     export let data: PageData;
 
@@ -199,14 +200,18 @@
             <Card.Base padding="none">
                 <PinkEmpty
                     title="Create an attribute to get started."
-                    description="Need a hand? Learn more in our documentation.">
+                    description={!consoleProfile.hasAppwriteDocumentation
+                        ? ''
+                        : 'Need a hand? Learn more in our documentation.'}>
                     <slot name="actions" slot="actions">
-                        <Button
-                            external
-                            href="https://appwrite.io/docs/products/databases/collections#attributes"
-                            text
-                            event="empty_documentation"
-                            size="s">Documentation</Button>
+                        {#if consoleProfile.hasAppwriteDocumentation}
+                            <Button
+                                external
+                                href="https://appwrite.io/docs/products/databases/collections#attributes"
+                                text
+                                event="empty_documentation"
+                                size="s">Documentation</Button>
+                        {/if}
                         {#if $canWriteCollections}
                             <CreateAttributeDropdown
                                 bind:selectedOption={selectedAttribute}

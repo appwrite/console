@@ -66,10 +66,10 @@ body {
     width: 124px;
     height: 124px;
     margin: 10px;
-    border: 10px solid rgb(219, 26, 90);
+    border: 10px solid var(--console-loading-color, transparent);
     border-radius: 50%;
     animation: animation 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    border-color: rgb(219, 26, 90) transparent transparent transparent;
+    border-color: var(--console-loading-color, transparent) transparent transparent transparent;
 }
 .page-loader .animation > div:nth-child(1) {
     animation-delay: -0.45s;

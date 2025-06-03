@@ -76,3 +76,4 @@ function createStats() {
 }
 
 export const stats = createStats();
+export const previewFrameRef = writable<HTMLIFrameElement | null>(null);

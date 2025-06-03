@@ -9,6 +9,7 @@
     import { canWriteCollections } from '$lib/stores/roles';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { consoleProfile } from '$lib/system';
 
     export let data: PageData;
 </script>
@@ -49,6 +50,9 @@
         <Empty
             single
             allowCreate={$canWriteCollections}
+            description={consoleProfile.hasChat
+                ? 'Collections let you group and manage structured documents.'
+                : 'Need a hand? Learn more in our documentation.'}
             href="https://appwrite.io/docs/products/databases/collections"
             target="collection"
             on:click={() => ($showCreate = true)} />

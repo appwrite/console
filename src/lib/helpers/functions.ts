@@ -1,12 +1,10 @@
-export const throttle = (fn: () => void, delay: number) => {
-    let timeout = false;
-    return () => {
-        if (!timeout) {
-            timeout = true;
-            fn.apply(this);
-            setTimeout(() => {
-                timeout = false;
-            }, delay);
+export function throttle(callback: () => void, delay: number): () => void {
+    let lastCall = 0;
+    return function () {
+        const now = Date.now();
+        if (now - lastCall >= delay) {
+            lastCall = now;
+            callback();
         }
     };
-};
+}

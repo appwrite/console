@@ -6,6 +6,7 @@
     import { Layout, Table, Card, Empty } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import type { PinkColumn } from '$lib/helpers/types';
+    import { consoleProfile, isStudio } from '$lib/system';
 
     export let logs: Models.LogList;
     export let offset = 0;
@@ -75,12 +76,16 @@
         <Card.Base padding="none">
             <Empty
                 title="No activities available"
-                description="Need a hand? Learn more in our documentation."
+                description={!consoleProfile.hasAppwriteDocumentation
+                    ? ''
+                    : 'Need a hand? Learn more in our documentation.'}
                 type="secondary">
                 <svelte:fragment slot="actions">
-                    <Button external secondary href="https://appwrite.io/docs">
-                        Documentation
-                    </Button>
+                    {#if consoleProfile.hasAppwriteDocumentation}
+                        <Button external secondary href="https://appwrite.io/docs">
+                            Documentation
+                        </Button>
+                    {/if}
                 </svelte:fragment>
             </Empty>
         </Card.Base>
