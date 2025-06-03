@@ -1,3 +1,4 @@
+import { get } from 'svelte/store';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
@@ -13,7 +14,6 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.CONSOLE_VARIABLES);
     depends(Dependencies.ORGANIZATION);
 
-    const { endpoint, project } = sdk.forConsole.client.config;
     const [preferences, plansArray, organizations] = await loadPromises();
 
     const plansInfo = toPlanMap(plansArray);
@@ -23,13 +23,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         preferences.organization ??
         (organizations.teams.length > 0 ? organizations.teams[0].$id : undefined);
 
-    fetch(`${endpoint}/health/version`, {
-        headers: { 'X-Appwrite-Project': project }
-    })
-        .then((res) => res.json().catch(() => null))
-        .then((data) => version.set(data?.version));
-
-    sdk.forConsole.console.variables().then((vars) => consoleVariables.set(vars));
+    makeAsyncCallsIfNecessary();
 
     return {
         plansInfo,
@@ -66,4 +60,20 @@ function toPlanMap(plansArray: PlanList | null): Map<Tier, Plan> {
     }
 
     return map;
+}
+
+function makeAsyncCallsIfNecessary() {
+    const { endpoint, project } = sdk.forConsole.client.config;
+
+    if (get(version) === null) {
+        fetch(`${endpoint}/health/version`, {
+            headers: { 'X-Appwrite-Project': project }
+        })
+            .then((res) => res.json().catch(() => null))
+            .then((data) => version.set(data?.version));
+    }
+
+    if (get(consoleVariables) === null) {
+        sdk.forConsole.console.variables().then((vars) => consoleVariables.set(vars));
+    }
 }

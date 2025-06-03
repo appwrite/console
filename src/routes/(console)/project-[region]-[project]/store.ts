@@ -3,6 +3,7 @@ import type { BarSeriesOption } from 'echarts/charts';
 import { derived, get, writable } from 'svelte/store';
 import { regions } from '$lib/stores/organization';
 import { page } from '$app/stores';
+import { getConsoleVariableForRegion } from '$routes/(console)/regions';
 
 export const project = derived(page, ($page) => $page.data.project as Models.Project);
 
@@ -30,7 +31,7 @@ export const onboarding = derived(
 export const regionalConsoleVariables = derived(
     page,
     ($page) =>
-        ($page.data.regionalConsoleVariables ??
+        (getConsoleVariableForRegion($page.params.region) ??
             $page.data.consoleVariables) as Models.ConsoleVariables
 );
 
