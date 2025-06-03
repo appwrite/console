@@ -2,16 +2,17 @@ import { Query, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
+import type { PageLoad } from './$types';
 
-export const load = async ({ url, depends, route, params }) => {
+export const load: PageLoad = async ({ url, depends, route, params, parent }) => {
+    const { sitesLive } = await parent();
+
     depends(Dependencies.SITES);
     const page = getPage(url);
     const search = getSearch(url);
     const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
     const view = getView(url, route, View.Grid, View.Grid);
-
-    const sitesLive = false;
 
     if (!sitesLive)
         return {
