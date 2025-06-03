@@ -11,7 +11,6 @@ import { get } from 'svelte/store';
 import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 import { loadAvailableRegions } from '$routes/(console)/regions';
-import { roles as rolesStore, scopes as scopesStore } from '$lib/stores/roles';
 import { type Organization } from '$lib/stores/organization';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
@@ -34,17 +33,11 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         }
         await preferences.loadTeamPrefs(project.teamId);
 
-        // get values from saved stores if available!
-        const [rolesStoreValue, scopesStoreValue] = [get(rolesStore), get(scopesStore)];
-        const areBothAvailable = !!(rolesStoreValue.length && scopesStoreValue.length);
-
         let roles = isCloud ? [] : defaultRoles;
         let scopes = isCloud ? [] : defaultScopes;
         if (isCloud) {
             currentPlan = await sdk.forConsole.billing.getOrganizationPlan(project.teamId);
-            const res = areBothAvailable
-                ? { roles: rolesStoreValue, scopes: scopesStoreValue }
-                : await sdk.forConsole.billing.getRoles(project.teamId);
+            const res = await sdk.forConsole.billing.getRoles(project.teamId);
             roles = res.roles;
             scopes = res.scopes;
             if (scopes.includes('billing.read')) {
