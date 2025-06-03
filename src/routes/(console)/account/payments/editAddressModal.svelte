@@ -22,9 +22,7 @@
     ];
 
     onMount(async () => {
-        const countryList = await sdk
-            .forProject(page.params.region, page.params.project)
-            .locale.listCountries();
+        const countryList = await sdk.forConsole.locale.listCountries();
         options = countryList.countries.map((country) => {
             return {
                 value: country.code,

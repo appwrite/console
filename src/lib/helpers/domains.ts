@@ -90,6 +90,105 @@ export async function createRecord(record: Partial<Models.DnsRecord>, domainId: 
     }
 }
 
+export async function updateRecord(record: Partial<Models.DnsRecord>, domainId: string) {
+    switch (record.type) {
+        case 'A':
+            return await sdk.forConsole.domains.updateRecordA(
+                domainId,
+                record.$id,
+                record.name,
+                record.value,
+                record.ttl,
+                record.comment
+            );
+        case 'AAAA':
+            return await sdk.forConsole.domains.updateRecordAAAA(
+                domainId,
+                record.$id,
+                record.name,
+                record.value,
+                record.ttl,
+                record.comment
+            );
+        case 'CNAME':
+            return await sdk.forConsole.domains.updateRecordCNAME(
+                domainId,
+                record.$id,
+                record.name,
+                record.value,
+                record.ttl,
+                record.comment
+            );
+        case 'MX':
+            return await sdk.forConsole.domains.updateRecordMX(
+                domainId,
+                record.$id,
+                record.name,
+                record.value,
+                record.ttl,
+                record.priority,
+                record.comment
+            );
+        case 'TXT':
+            return await sdk.forConsole.domains.updateRecordTXT(
+                domainId,
+                record.$id,
+                record.name,
+                record.value,
+                record.ttl,
+                record.comment
+            );
+        case 'NS':
+            return await sdk.forConsole.domains.updateRecordNS(
+                domainId,
+                record.$id,
+                record.name,
+                record.value,
+                record.ttl,
+                record.comment
+            );
+        case 'SRV':
+            return await sdk.forConsole.domains.updateRecordSRV(
+                domainId,
+                record.$id,
+                record.name,
+                record.value,
+                record.ttl,
+                record.priority,
+                record.weight,
+                record.port,
+                record?.comment || undefined
+            );
+        case 'CAA':
+            return await sdk.forConsole.domains.updateRecordCAA(
+                domainId,
+                record.$id,
+                record.name,
+                record.value,
+                record.ttl,
+                record.comment
+            );
+        case 'HTTPS':
+            return await sdk.forConsole.domains.updateRecordHTTPS(
+                domainId,
+                record.$id,
+                record.name,
+                record.value,
+                record.ttl,
+                record.comment
+            );
+        case 'ALIAS':
+            return await sdk.forConsole.domains.updateRecordAlias(
+                domainId,
+                record.$id,
+                record.name,
+                record.value,
+                record.ttl,
+                record.comment
+            );
+    }
+}
+
 export type ParsedRecords = {
     A: Partial<Models.DnsRecord>[];
     AAAA: Partial<Models.DnsRecord>[];

@@ -4,6 +4,7 @@
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
     import {
+        Card as Pink2Card,
         Code,
         Layout,
         Icon,
@@ -25,7 +26,6 @@
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
-    import { LabelCard } from '$lib/components';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -125,10 +125,8 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
                 type: platform
             });
 
-            await Promise.all([
-                invalidate(Dependencies.PROJECT),
-                invalidate(Dependencies.PLATFORMS)
-            ]);
+            invalidate(Dependencies.PROJECT);
+            invalidate(Dependencies.PLATFORMS);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -165,19 +163,18 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
     <Form onSubmit={createFlutterPlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->
-            <Layout.Stack gap="l" direction="row">
+            <Layout.Grid gap="l" rowGap="l" columns={3} columnsXS={2} columnsXXS={1}>
                 {#each Object.entries(platforms) as [key, value]}
-                    <div class="u-width-full-line">
-                        <!-- TODO: https://github.com/appwrite/pink/pull/248 for correct spacing -->
-                        <LabelCard
-                            name={key}
-                            bind:group={platform}
-                            variant="primary"
-                            {value}
-                            title={key} />
-                    </div>
+                    <Pink2Card.Selector
+                        {value}
+                        id={key}
+                        title={key}
+                        imageRadius="s"
+                        name="framework"
+                        bind:group={platform}
+                        disabled={isCreatingPlatform || isPlatformCreated} />
                 {/each}
-            </Layout.Stack>
+            </Layout.Grid>
 
             <!-- Step Two -->
             {#if !isPlatformCreated}

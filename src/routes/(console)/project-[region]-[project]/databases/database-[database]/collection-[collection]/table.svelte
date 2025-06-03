@@ -25,6 +25,7 @@
         FloatingActionBar,
         Typography
     } from '@appwrite.io/pink-svelte';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data: PageData;
@@ -244,17 +245,23 @@
                         {/if}
                     {:else}
                         {@const formatted = formatColumn(document[id])}
-                        <Tooltip disabled={!formatted.truncated} placement="bottom">
-                            <Typography.Text truncate>
-                                {formatted.value}
-                            </Typography.Text>
-                            <span
-                                style:white-space="pre-wrap"
-                                style:word-break="break-all"
-                                slot="tooltip">
-                                {formatted.whole}
-                            </span>
-                        </Tooltip>
+                        {@const isDatetimeAttribute = attr.type === 'datetime'}
+                        {#if isDatetimeAttribute}
+                            <DualTimeView time={formatted.whole}>
+                                <span slot="title">Timestamp</span>
+                                {toLocaleDateTime(formatted.whole, true, 'UTC')}
+                            </DualTimeView>
+                        {:else}
+                            <Tooltip placement="bottom" disabled={!formatted.truncated}>
+                                <Typography.Text truncate>{formatted.value}</Typography.Text>
+                                <span
+                                    slot="tooltip"
+                                    style:white-space="pre-wrap"
+                                    style:word-break="break-all">
+                                    {formatted.whole}
+                                </span>
+                            </Tooltip>
+                        {/if}
                     {/if}
                 </Table.Cell>
             {/each}
