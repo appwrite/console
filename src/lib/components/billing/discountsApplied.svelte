@@ -25,7 +25,7 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack inline direction="row" gap="xxs" alignItems="center" alignContent="center">
             <Icon icon={IconTag} color="--fgcolor-success" size="s" />
-            <Typography.Text>{label}</Typography.Text>
+            <Typography.Text color="--fgcolor-neutral-primary">{label}</Typography.Text>
         </Layout.Stack>
         {#if value >= 100}
             <Badge variant="secondary" content="Credits applied" />
