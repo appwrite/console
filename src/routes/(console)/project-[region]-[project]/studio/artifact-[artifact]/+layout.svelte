@@ -83,7 +83,7 @@
         window.addEventListener('mouseup', stopResize);
         window.addEventListener('touchmove', resize);
         window.addEventListener('touchend', stopResize);
-        disableBodySelect();
+        disableBodySelect('row');
         if ($previewFrameRef) {
             $previewFrameRef.style.pointerEvents = 'none';
         }

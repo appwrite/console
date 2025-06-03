@@ -70,11 +70,17 @@ export function saveTerminalOpenToPrefs(isOpen: boolean) {
     sdk.forConsole.account.updatePrefs(newPrefs);
 }
 
-export function disableBodySelect() {
+export function disableBodySelect(direction: 'row' | 'column' = 'column') {
     document.body.style.userSelect = 'none';
     document.body.style.webkitUserSelect = 'none';
+    if (direction === 'row') {
+        document.body.style.cursor = 'row-resize';
+    } else {
+        document.body.style.cursor = 'col-resize';
+    }
 }
 export function enabledBodySelect() {
     document.body.style.userSelect = '';
     document.body.style.webkitUserSelect = '';
+    document.body.style.cursor = 'auto';
 }
