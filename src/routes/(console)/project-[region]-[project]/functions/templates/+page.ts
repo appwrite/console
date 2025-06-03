@@ -12,13 +12,9 @@ export const load: PageLoad = async ({ url, depends, params }) => {
         runtimes: url.searchParams.getAll('runtime')
     };
 
-    const localSdkInstance = sdk.forProject(params.region, params.project);
-
-    const { templates: allTemplates } = await localSdkInstance.functions.listTemplates(
-        undefined,
-        undefined,
-        100
-    );
+    const { templates: allTemplates } = await sdk
+        .forProject(params.region, params.project)
+        .functions.listTemplates(undefined, undefined, 100);
 
     const runtimes = new Set<string>();
     const useCases = new Set<string>();
@@ -51,7 +47,6 @@ export const load: PageLoad = async ({ url, depends, params }) => {
         runtimes,
         useCases,
         search,
-        templates,
-        functions: await localSdkInstance.functions.list()
+        templates
     };
 };

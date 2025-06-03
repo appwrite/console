@@ -12,19 +12,16 @@ import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 import { loadAvailableRegions } from '$routes/(console)/regions';
 import { roles as rolesStore, scopes as scopesStore } from '$lib/stores/roles';
-import { organization as orgStore, type Organization } from '$lib/stores/organization';
+import { type Organization } from '$lib/stores/organization';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PROJECT);
     let currentPlan: Plan = null;
-    const orgFromStore: Organization = get(orgStore);
 
     try {
         const project = await sdk.forConsole.projects.get(params.project);
         const [organization, prefs, regionalConsoleVariables, _] = await Promise.all([
-            orgFromStore
-                ? (Promise.resolve(orgFromStore) as Promise<Organization>)
-                : (sdk.forConsole.teams.get(project.teamId) as Promise<Organization>),
+            sdk.forConsole.teams.get(project.teamId) as Promise<Organization>,
             sdk.forConsole.account.getPrefs(),
             sdk.forConsoleIn(project.region).console.variables(),
             loadAvailableRegions(project.teamId)
