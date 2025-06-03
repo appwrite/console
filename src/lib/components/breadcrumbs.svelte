@@ -147,7 +147,7 @@
                                 i < 4
                                     ? {
                                           name: project.name,
-                                          href: `${base}/project-${project.region}-${project.$id}/overview`
+                                          href: `${base}/project-${project.region}-${project.$id}/overview/platforms`
                                       }
                                     : {
                                           name: 'All projects',
@@ -330,7 +330,7 @@
                                 <div use:melt={$itemProjects}>
                                     <ActionMenu.Root>
                                         <ActionMenu.Item.Anchor
-                                            href={`${base}/project-${project.region}-${project.$id}`}>
+                                            href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
                                             {project.name}
                                         </ActionMenu.Item.Anchor>
                                     </ActionMenu.Root>
