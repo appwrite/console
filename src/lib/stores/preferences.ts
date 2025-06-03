@@ -153,7 +153,6 @@ function createPreferences() {
             }),
         setCustomCollectionColumns: (columns: Preferences['columns']) =>
             updateAndSync((n) => {
-
                 const collection = page.params.collection;
                 if (!n?.collections?.[collection]) {
                     n ??= {};
