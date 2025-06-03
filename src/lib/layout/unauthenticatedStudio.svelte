@@ -1,7 +1,7 @@
 <script lang="ts">
     import DesktopLight from '../../routes/(public)/(guest)/login/assets/desktop-light.png';
     import { Card, Divider, Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
-    import { default as IconImagine } from '../../routes/(console)/project-[project]/studio/assets/icon-imagine.svelte';
+    import { default as IconImagine } from '$routes/(console)/project-[region]-[project]/studio/assets/icon-imagine.svelte';
 
     let { title }: { title: string } = $props();
 </script>

@@ -31,10 +31,12 @@ const userVisitedEducationPage = (): boolean => {
 export const load: PageLoad = async ({ parent, url }) => {
     const { organizations, account } = await parent();
 
+    const isApplyingCredit = url.pathname.includes('apply-credit');
+
     if (userVisitedEducationPage()) {
         await handleGithubEducationMembership(account.name, account.email);
         redirect(303, base);
-    } else if (organizations.total) {
+    } else if (organizations.total && !isApplyingCredit) {
         const teamId = account.prefs.organization ?? organizations.teams[0].$id;
         if (!teamId) {
             redirect(303, `${base}/account/organizations${url.search}`);
@@ -45,7 +47,7 @@ export const load: PageLoad = async ({ parent, url }) => {
                 `${base}/organization-${teamId}${url.search}`
             );
         }
-    } else {
+    }  else if (!isApplyingCredit) {
         redirect(
             303,
             isStudio

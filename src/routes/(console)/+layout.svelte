@@ -31,7 +31,7 @@
     import { addSubPanel } from '$lib/commandCenter/subPanels';
     import { addNotification } from '$lib/stores/notifications';
     import { openMigrationWizard } from './(migration-wizard)';
-    import { project } from './project-[project]/store';
+    import { project } from './project-[region]-[project]/store';
     import { feedback } from '$lib/stores/feedback';
     import { consoleProfile, hasStripePublicKey, isCloud, isStudio, VARS } from '$lib/system';
     import { stripe } from '$lib/stores/stripe';
@@ -53,6 +53,8 @@
         IconSparkles,
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
+    import type { LayoutData } from './$types';
+    import type { NavbarProject } from '$lib/components/navbar.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -63,19 +65,21 @@
 
     const isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
 
-    export let data;
+    export let data: LayoutData;
+
     $: loadedProjects = data.projects.map((project) => {
         return {
             name: project?.name,
             $id: project.$id,
-            isSelected: data.currentProjectId === project.$id,
+            isSelected: project.$id === page.params.project,
+            region: project.region,
             platformCount: project.platforms.length,
             pingCount: project.pingCount
         };
-    });
+    }) satisfies NavbarProject[];
 
     $: isOnSettingsLayout = $project?.$id
-        ? page.url.pathname.includes(`project-${$project.$id}/settings`)
+        ? page.url.pathname.includes(`project-${$project.region}-${$project.$id}/settings`)
         : false;
 
     $: $registerCommands([
@@ -172,7 +176,9 @@
                 ({
                     label: kebabToSentenceCase(heading),
                     async callback() {
-                        await goto(`${base}/project-${$project.$id}/auth/security#${heading}`);
+                        await goto(
+                            `${base}/project-${$project.region}-${$project.$id}/auth/security#${heading}`
+                        );
                         scrollBy({ top: -100 });
                     },
                     disabled: !$project?.$id,
@@ -186,7 +192,7 @@
 
             keys: isOnSettingsLayout ? ['g', 'o'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.$id}/settings`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/settings`);
             },
             disabled:
                 !$project?.$id || (isOnSettingsLayout && page.url.pathname.endsWith('settings')),
@@ -198,7 +204,7 @@
 
             keys: isOnSettingsLayout ? ['g', 'd'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.$id}/settings/domains`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/settings/domains`);
             },
             disabled:
                 !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('domains')),
@@ -209,7 +215,7 @@
             label: 'Go to webhooks',
             keys: isOnSettingsLayout ? ['g', 'w'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.$id}/settings/webhooks`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/settings/webhooks`);
             },
             disabled:
                 !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('webhooks')),
@@ -221,7 +227,7 @@
             label: 'Go to migrations',
             keys: isOnSettingsLayout ? ['g', 'm'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.$id}/settings/migrations`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/settings/migrations`);
             },
             disabled:
                 !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('migrations')),
@@ -233,7 +239,7 @@
             label: 'Go to SMTP settings',
             keys: isOnSettingsLayout ? ['g', 's'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.$id}/settings/smtp`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/settings/smtp`);
             },
             disabled: !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('smtp')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
@@ -288,9 +294,9 @@
     }
 
     database.subscribe(async (database) => {
-        if (!database) return;
+        if (!database || !page.params.region || !page.params.project) return;
         // the component checks `isCloud` internally.
-        await checkForDatabaseBackupPolicies(database);
+        await checkForDatabaseBackupPolicies(page.params.region, page.params.project, database);
     });
 
     let currentOrganizationId = null;
@@ -339,10 +345,10 @@
             !page.url.pathname.includes('/console/account') &&
             !page.url.pathname.includes('/console/card') &&
             !page.url.pathname.includes('/console/onboarding')}
-        showHeader={!page.url.pathname.includes('/console/onboarding')}
-        showFooter={!page.url.pathname.includes('/console/onboarding')}
-        bind:loadedProjects
-        bind:projects={data.projects}>
+        showHeader={!page.url.pathname.includes('/console/onboarding/create-project')}
+        showFooter={!page.url.pathname.includes('/console/onboarding/create-project')}
+        {loadedProjects}
+        selectedProject={page.data?.project}>
         <!--    <Header slot="header" />-->
         <slot />
         <Footer slot="footer" />

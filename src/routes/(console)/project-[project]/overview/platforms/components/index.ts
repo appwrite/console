@@ -1,9 +1,0 @@
-export { default as AngularFrameworkIcon } from './AngularFrameworkIcon.svelte';
-export { default as ConnectionLine } from './ConnectionLine.svelte';
-export { default as JavascriptFrameworkIcon } from './JavascriptFrameworkIcon.svelte';
-export { default as NextjsFrameworkIcon } from './NextjsFrameworkIcon.svelte';
-export { default as NoFrameworkIcon } from './NoFrameworkIcon.svelte';
-export { default as NuxtFrameworkIcon } from './NuxtFrameworkIcon.svelte';
-export { default as ReactFrameworkIcon } from './ReactFrameworkIcon.svelte';
-export { default as SvelteFrameworkIcon } from './SvelteFrameworkIcon.svelte';
-export { default as VueFrameworkIcon } from './AngularFrameworkIcon.svelte';

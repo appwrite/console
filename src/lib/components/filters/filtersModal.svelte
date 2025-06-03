@@ -11,14 +11,7 @@
     } from '$lib/elements/forms';
     import type { Writable } from 'svelte/store';
     import Modal from '../modal.svelte';
-    import {
-        addFilter,
-        generateTag,
-        operators,
-        queries,
-        ValidOperators,
-        type TagValue
-    } from './store';
+    import { generateTag, operators, ValidOperators, type TagValue } from './store';
     import type { Column } from '$lib/helpers/types';
     import { TagList } from '.';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';

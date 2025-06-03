@@ -17,39 +17,18 @@
         ? new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toString()
         : org?.billingNextInvoiceDate;
 
-    const planData = [
-        {
-            id: 'members',
-            resource: 'Organization members',
-            unit: 'member'
-        },
-        { id: 'bandwidth', resource: 'Bandwidth', unit: 'GB' },
-        { id: 'storage', resource: 'Storage', unit: 'GB' },
-        {
-            id: 'executions',
-            resource: 'Function executions',
-            unit: ' executions'
-        },
-        {
-            id: 'users',
-            resource: 'Users',
-            unit: ' Users'
-        },
-        {
-            id: 'realtime',
-            resource: 'Concurrent connections',
-            unit: ' connections'
-        }
-    ];
-
     $: isFree = org.billingPlan === BillingPlan.FREE;
 
     // equal or above means unlimited!
-    $: getCorrectSeatsCountValue = (count: number): string | number => {
+    const getCorrectSeatsCountValue = (count: number): string | number => {
         // php int max is always larger than js
         const exceedsSafeLimit = count >= Number.MAX_SAFE_INTEGER;
         return exceedsSafeLimit ? 'Unlimited' : count || 0;
     };
+
+    function getPlanLimit(key: string): number | false {
+        return plan[key] || false;
+    }
 </script>
 
 <Modal bind:show title="Usage rates">
@@ -77,29 +56,33 @@
             <Table.Header.Cell column="limit" {root}>Limit</Table.Header.Cell>
             <Table.Header.Cell column="rate" {root}>Rate</Table.Header.Cell>
         </svelte:fragment>
-        {#each planData as usage}
-            {#if usage['id'] === 'members'}
-                <Table.Row.Base {root}>
-                    <Table.Cell column="resource" {root}>{usage.resource}</Table.Cell>
-                    <Table.Cell column="limit" {root}>
-                        {getCorrectSeatsCountValue(plan.addons.seats.limit)}
-                    </Table.Cell>
+        {#each Object.values(plan.addons) as addon}
+            <Table.Row.Base {root}>
+                <Table.Cell column="resource" {root}>{addon.invoiceDesc}</Table.Cell>
+                <Table.Cell column="limit" {root}>
+                    {getCorrectSeatsCountValue(addon.limit)}
+                </Table.Cell>
+                {#if !isFree}
                     <Table.Cell column="rate" {root}>
-                        {formatCurrency(plan.addons?.seats?.price)}/{usage?.unit}
+                        {formatCurrency(addon.price)}/member
                     </Table.Cell>
-                </Table.Row.Base>
-            {:else}
-                {@const addon = plan.addons[usage.id]}
+                {/if}
+            </Table.Row.Base>
+        {/each}
+        {#each Object.entries(plan.usage) as [key, usage]}
+            {@const limit = getPlanLimit(key)}
+            {@const show = limit !== false}
+            {#if show}
                 <Table.Row.Base {root}>
-                    <Table.Cell column="resource" {root}>{usage.resource}</Table.Cell>
+                    <Table.Cell column="resource" {root}>{usage.name}</Table.Cell>
                     <Table.Cell column="limit" {root}>
-                        {abbreviateNumber(plan[usage.id])}{usage?.unit}
+                        {abbreviateNumber(limit)}{usage.unit}
                     </Table.Cell>
                     {#if !isFree}
                         <Table.Cell column="rate" {root}>
-                            {formatCurrency(addon?.price)}/{['MB', 'GB', 'TB'].includes(addon?.unit)
-                                ? addon?.value
-                                : abbreviateNumber(addon?.value, 0)}{usage?.unit}
+                            {formatCurrency(usage.price)}/{abbreviateNumber(
+                                usage.value
+                            )}{usage.unit}
                         </Table.Cell>
                     {/if}
                 </Table.Row.Base>

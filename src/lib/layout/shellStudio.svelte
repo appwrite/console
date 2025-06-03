@@ -36,7 +36,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { conversation, showChat } from '$lib/stores/chat';
     import { type Snippet } from 'svelte';
-    import { default as LogoImagine } from '../../routes/(console)/project-[project]/studio/assets/imagine-logo.svelte';
+    import { default as LogoImagine } from '$routes/(console)/project-[region]-[project]/studio/assets/imagine-logo.svelte';
 
     let hasProjectSidebar = $state(false);
     let hasOrganizationSidebar = $state(false);

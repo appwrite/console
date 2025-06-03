@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import type { Domain } from '$lib/sdk/domains';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { consoleVariables } from '$routes/(console)/store';
@@ -16,13 +15,19 @@
         Input,
         InteractiveText
     } from '@appwrite.io/pink-svelte';
+    import { base } from '$app/paths';
+    import { page } from '$app/state';
+    import { goto } from '$app/navigation';
+    import type { Models } from '@appwrite.io/console';
 
-    export let domain: Domain;
+    export let domain: Models.Domain;
 
     let verified = undefined;
 
+    const routeBase = `${base}/organization-${page.params.organization}/domains/domain-${domain.$id}`;
+
     // TODO: split _APP_DOMAINS_NAMESERVERS?
-    let nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',') ?? [
+    const nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',') ?? [
         'ns1.appwrite.io',
         'ns2.appwrite.io'
     ];
@@ -30,8 +35,21 @@
     async function verifyStatus() {
         try {
             domain = await sdk.forConsole.domains.updateNameservers(domain.$id);
-            verified = domain.nameservers === 'Appwrite';
-            console.log(domain);
+            verified = domain.nameservers.toLowerCase() === 'appwrite';
+            if (verified) {
+                addNotification({
+                    type: 'success',
+                    message: 'Domain verified'
+                });
+
+                await goto(routeBase);
+            } else {
+                addNotification({
+                    type: 'error',
+                    message:
+                        'Domain verification failed. Please check your domain settings or try again later'
+                });
+            }
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -39,8 +57,6 @@
             });
         }
     }
-
-    $: console.log($consoleVariables._APP_DOMAINS_NAMESERVERS);
 </script>
 
 <Fieldset legend="Verification">
@@ -53,8 +69,9 @@
         </div>
         <Layout.Stack gap="s">
             <Layout.Stack gap="s" direction="row" alignItems="center">
-                <Typography.Text variant="l-500" color="--fgcolor-neutral-primary"
-                    >{domain.domain}</Typography.Text>
+                <Typography.Text variant="l-500" color="--fgcolor-neutral-primary">
+                    {domain.domain}
+                </Typography.Text>
 
                 {#if verified === false}
                     <Badge
@@ -62,12 +79,8 @@
                         type="error"
                         size="xs"
                         content="Verification failed" />
-                {:else}
-                    <Badge
-                        variant="secondary"
-                        type="warning"
-                        size="xs"
-                        content="Pending verification" />
+                {:else if verified === true}
+                    <Badge variant="secondary" type="success" size="xs" content="Verified" />
                 {/if}
             </Layout.Stack>
             <Typography.Text variant="m-400">

@@ -11,7 +11,7 @@
     import { createStreamParser } from '$lib/components/studio/chat/parser.js';
     import { sdk } from '$lib/stores/sdk.js';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { previewFrameRef } from '$routes/(console)/project-[project]/store';
+    import { previewFrameRef } from '$routes/(console)/project-[region]-[project]/store';
     import { queue } from './chat/queue.svelte';
 
     $effect(() => {
@@ -96,12 +96,13 @@
 
     async function getConversation(artifactId: string) {
         parser.reset();
-        const { conversations } = await sdk.forProject.imagine.listConversations(artifactId);
+        const { conversations } = await sdk
+            .forProject(page.params.region, page.params.project)
+            .imagine.listConversations(artifactId);
         if (conversations.length === 0) {
-            const convo = sdk.forProject.imagine.createConversation(
-                artifactId,
-                `Conversation ${new Date().getTime()}`
-            );
+            const convo = sdk
+                .forProject(page.params.region, page.params.project)
+                .imagine.createConversation(artifactId, `Conversation ${new Date().getTime()}`);
             conversation.set(convo);
         } else {
             conversation.set(conversations[0]);
@@ -116,10 +117,9 @@
 
     conversation.subscribe(async (convo) => {
         if (!convo.data) return;
-        const { messages } = await sdk.forProject.imagine.listMessages(
-            convo.data.artifactId,
-            convo.data.$id
-        );
+        const { messages } = await sdk
+            .forProject(page.params.region, page.params.project)
+            .imagine.listMessages(convo.data.artifactId, convo.data.$id);
 
         for (const message of messages) {
             const from = message.role === 'assistant' ? 'system' : 'user';
@@ -197,5 +197,8 @@
             width: 2px;
             background-color: var(--border-neutral-strong);
         }
+    }
+    .hidden {
+        display: none;
     }
 </style>

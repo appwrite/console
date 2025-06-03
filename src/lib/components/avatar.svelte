@@ -1,6 +1,12 @@
 <script lang="ts">
     import { Avatar } from '@appwrite.io/pink-svelte';
-    import type { AvatarProps } from '@appwrite.io/pink-svelte/dist/avatar/Avatar.svelte';
+
+    type AvatarProps = Partial<{
+        src: string;
+        alt: string;
+        size: 'xs' | 's' | 'm' | 'l' | 'xl';
+        empty: boolean;
+    }>;
 
     export let size: AvatarProps['size'] = 'm';
     export let src: AvatarProps['src'] = undefined;

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
@@ -10,7 +10,7 @@
     $: redirectUrl = `${base}/organization-${$organization.$id}/billing#update-budget`;
 </script>
 
-{#if $showBudgetAlert && $organization?.$id && $organization?.billingPlan !== BillingPlan.FREE && $readOnly && !hideBillingHeaderRoutes.includes($page.url.pathname)}
+{#if $showBudgetAlert && $organization?.$id && $organization?.billingPlan !== BillingPlan.FREE && $readOnly && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     <HeaderAlert type="error" title="Budget limit reached">
         <svelte:fragment>
             This organization has reached its budget limit and is now blocked. To continue using

@@ -47,3 +47,15 @@ export const isProd = ENV.PROD;
 export const hasStripePublicKey = !!VARS.PUBLIC_STRIPE_KEY;
 export const GRACE_PERIOD_OVERRIDE = false;
 export const consoleProfile = getProfile();
+
+export const APPWRITE_OFFICIALS_ORG = 'appwriteOfficials';
+
+export function isMultiRegionSupported(url: URL): boolean {
+    if (env.PUBLIC_APPWRITE_MULTI_REGION === 'true') return true;
+
+    try {
+        return url.hostname === 'cloud.appwrite.io';
+    } catch {
+        return false;
+    }
+}

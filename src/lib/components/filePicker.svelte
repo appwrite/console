@@ -29,7 +29,7 @@
     import Form from '$lib/elements/forms/form.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
-    import { showCreateBucket } from '$routes/(console)/project-[project]/storage/+page.svelte';
+    import { showCreateBucket } from '$routes/(console)/project-[region]-[project]/storage/+page.svelte';
     import { consoleProfile, isStudio } from '$lib/system';
 
     export let show: boolean;
@@ -59,20 +59,21 @@
 
     function getPreview(bucketId: string, fileId: string, size: number = 64) {
         return (
-            sdk.forProject.storage.getFilePreview(bucketId, fileId, size, size).toString() +
-            '&mode=admin'
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.getFilePreview(bucketId, fileId, size, size)
+                .toString() + '&mode=admin'
         );
     }
 
     async function uploadFile() {
         try {
             uploading = true;
-            const file = await sdk.forProject.storage.createFile(
-                selectedBucket,
-                ID.unique(),
-                fileSelector.files[0],
-                [Permission.read(Role.any())]
-            );
+            const file = await sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.createFile(selectedBucket, ID.unique(), fileSelector.files[0], [
+                    Permission.read(Role.any())
+                ]);
             search.set($search === null ? '' : null);
             selectFile(file);
         } catch (e) {
@@ -120,7 +121,9 @@
     let buckets: Promise<Models.BucketList> = loadBuckets();
 
     async function loadBuckets() {
-        const response = await sdk.forProject.storage.listBuckets();
+        const response = await sdk
+            .forProject(page.params.region, page.params.project)
+            .storage.listBuckets();
         const bucket = response.buckets[0] ?? null;
         if (bucket) {
             currentBucket = bucket;
@@ -149,8 +152,9 @@
 
     $: files =
         currentBucket &&
-        sdk.forProject.storage
-            .listFiles(currentBucket.$id, getProperQuery(), $search || undefined)
+        sdk
+            .forProject(page.params.region, page.params.project)
+            .storage.listFiles(currentBucket.$id, getProperQuery(), $search || undefined)
             .then((response) => {
                 if ($search === '') {
                     searchEnabled = response.total > 0;
@@ -164,8 +168,6 @@
     }
 
     $: extension = allowedExtension === '*' ? mimeTypeQuery : `.${allowedExtension}`;
-
-    $: console.log(`Allowed extensions: ${allowedExtension}, MimeType: ${mimeTypeQuery}`);
 </script>
 
 <svelte:document on:visibilitychange={handleVisibilityChange} />
@@ -187,6 +189,7 @@
                                 required
                                 disabled
                                 id="bucket"
+                                value={null}
                                 options={[]}
                                 label="Bucket"
                                 placeholder="Loading buckets..." />
@@ -535,7 +538,7 @@
                                             secondary
                                             on:click={async () => {
                                                 await goto(
-                                                    `${base}/project-${page.params.project}/storage`
+                                                    `${base}/project-${page.params.region}-${page.params.project}/storage`
                                                 );
                                                 $showCreateBucket = true;
                                             }}>
@@ -547,8 +550,8 @@
                         {/if}
                     {/await}
                 </Layout.Stack>
-            </div>
-        </Layout.Stack>
+            </div></Layout.Stack>
+
         <svelte:fragment slot="footer">
             <Layout.Stack direction="row" justifyContent="flex-end">
                 <Button text on:click={closeModal}>Cancel</Button>

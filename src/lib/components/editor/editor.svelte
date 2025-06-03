@@ -5,7 +5,7 @@
     import { studio } from '../studio/studio.svelte';
     import * as monaco from 'monaco-editor';
     import type { Action } from 'svelte/action';
-    import IconImagine from '$routes/(console)/project-[project]/studio/assets/icon-imagine.svelte';
+    import IconImagine from '$routes/(console)/project-[region]-[project]/studio/assets/icon-imagine.svelte';
 
     type Props = {
         onsave?: (code: string) => void | Promise<void>;

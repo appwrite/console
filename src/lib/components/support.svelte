@@ -5,18 +5,30 @@
     import { isSupportOnline, showSupportModal } from '$routes/(console)/wizard/support/store';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { localeShortTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { plansInfo } from '$lib/stores/billing';
     import { Card } from '$lib/components/index';
     import { app } from '$lib/stores/app';
-    import { currentPlan } from '$lib/stores/organization';
+    import { currentPlan, type Organization, organizationList } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { base } from '$app/paths';
 
     export let show = false;
 
     export let showHeader = true;
 
-    $: hasPremiumSupport = $currentPlan?.premiumSupport ?? false;
+    $: hasPremiumSupport = $currentPlan?.premiumSupport ?? allOrgsHavePremiumSupport ?? false;
+
+    $: allOrgsHavePremiumSupport = $organizationList.teams.every(
+        (team) => $plansInfo.get((team as Organization).billingPlan)?.premiumSupport
+    );
+
+    // there can only be one free organization
+    $: freeOrganization = $organizationList.teams.find(
+        (team) => !$plansInfo.get((team as Organization).billingPlan)?.premiumSupport
+    );
+
+    $: upgradeURL = `${base}/organization-${freeOrganization?.$id}/change-plan`;
 
     $: supportTimings = `${utcHourToLocaleHour('16:00')} - ${utcHourToLocaleHour('00:00')} ${localeShortTimezoneName()}`;
 
@@ -55,7 +67,7 @@
         }
     ];
 
-    const showCloudSupport = (index) => {
+    const showCloudSupport = (index: number) => {
         return (index === 0 && isCloud) || index > 0;
     };
 </script>
@@ -79,7 +91,7 @@
                     <div class="u-flex u-gap-12 u-cross-center">
                         {#if !hasPremiumSupport}
                             <Button
-                                href={$upgradeURL}
+                                href={upgradeURL}
                                 on:click={() => {
                                     trackEvent(Click.OrganizationClickUpgrade, {
                                         from: 'button',

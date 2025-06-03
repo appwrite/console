@@ -37,7 +37,7 @@
     let countryList: Models.CountryList;
 
     onMount(async () => {
-        countryList = await sdk.forProject.locale.listCountries();
+        countryList = await sdk.forConsole.locale.listCountries();
     });
 
     $: orgList = $organizationList.teams as unknown as Organization[];

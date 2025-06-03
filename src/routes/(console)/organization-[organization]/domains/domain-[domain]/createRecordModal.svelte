@@ -11,13 +11,13 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
     import { recordTypes } from './store';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
     import type { RecordType } from '$lib/stores/domains';
     import { createRecord } from '$lib/helpers/domains';
+    import { showPriority } from './table.svelte';
 
     export let show = false;
 
@@ -28,6 +28,22 @@
     let priority: number;
     let comment: string;
     let error = '';
+    let weight: number;
+    let port: number;
+
+    const placeholders: Record<RecordType, string> = {
+        A: '76.75.21.21',
+        AAAA: '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
+        CNAME: 'stage.example.com',
+        MX: 'mail.example.com',
+        TXT: 'v=spf1 include:_spf.example.com ~all',
+        NS: 'ns1.example.com',
+        SRV: '10 5 8080 example.com',
+        CAA: '0 issue "letsencrypt.org"',
+        HTTPS: 'https://example.com',
+        ALIAS: 'www.example.com'
+    };
+    $: placeholder = placeholders[type] ?? 'Enter value';
 
     async function handleSubmit() {
         const record = {
@@ -36,7 +52,9 @@
             value,
             ttl,
             priority,
-            comment
+            comment,
+            weight,
+            port
         };
         try {
             await createRecord(record, page.params.domain);
@@ -74,7 +92,7 @@
             </Input.Helper>
         </Layout.Stack>
 
-        <InputText id="value" label="Value" placeholder="76.75.21.21" bind:value>
+        <InputText id="value" label="Value" {placeholder} bind:value>
             <Tooltip slot="info">
                 <Icon icon={IconInfo} size="s" />
                 <span slot="tooltip">
@@ -93,20 +111,32 @@
                     </span>
                 </Tooltip>
             </InputNumber>
-            <InputNumber
-                id="priority"
-                label="Priority"
-                placeholder="Enter number"
-                bind:value={priority}>
-                <Tooltip slot="info">
-                    <Icon icon={IconInfo} size="s" />
-                    <span slot="tooltip">
-                        Sets the priority for this DNS record. Lower numbers indicate higher
-                        priority (e.g., 10 is higher than 20).
-                    </span>
-                </Tooltip>
-            </InputNumber>
+            {#if showPriority(type)}
+                <InputNumber
+                    id="priority"
+                    label="Priority"
+                    placeholder="Enter number"
+                    bind:value={priority}>
+                    <Tooltip slot="info">
+                        <Icon icon={IconInfo} size="s" />
+                        <span slot="tooltip">
+                            Sets the priority for this DNS record. Lower numbers indicate higher
+                            priority (e.g., 10 is higher than 20).
+                        </span>
+                    </Tooltip>
+                </InputNumber>
+            {/if}
         </Layout.Stack>
+        {#if type === 'SRV'}
+            <Layout.Stack direction="row" gap="l">
+                <InputNumber id="port" label="Port" placeholder="Enter port" bind:value={port} />
+                <InputNumber
+                    id="weight"
+                    label="Weight"
+                    placeholder="Enter weight"
+                    bind:value={weight} />
+            </Layout.Stack>
+        {/if}
 
         <InputTextarea
             id="comment"

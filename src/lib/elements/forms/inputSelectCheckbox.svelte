@@ -1,7 +1,7 @@
 <script lang="ts">
     import { DropList } from '$lib/components';
     import { SelectSearchCheckbox } from '..';
-    import { Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
+    import { Icon, Tag } from '@appwrite.io/pink-svelte';
     import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
 
     type Option = {

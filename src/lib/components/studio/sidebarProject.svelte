@@ -43,7 +43,7 @@
                             style={`--space-5: 8px; background-color: ${
                                 isActive ? 'var(--overlay-neutral-hover)' : 'auto'
                             }; --icon-fill: ${isActive ? 'var(--fgcolor-neutral-primary)' : 'var(--fgcolor-neutral-tertiary)'}`}
-                            href={`${base}/project-${project.$id}/${menuItem.path}`}
+                            href={`${base}/project-${project.region}-${project.$id}/${menuItem.path}`}
                             leadingIcon={menuItem.icon}
                             size="l"
                             on:click={() => {

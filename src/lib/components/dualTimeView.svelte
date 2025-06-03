@@ -97,7 +97,11 @@
         <Layout.Stack gap="s" alignContent="flex-start">
             <!-- `Raw time` as per design -->
             <Typography.Caption color="--fgcolor-neutral-tertiary" variant="400">
-                {timeToString}
+                {#if $$slots.title}
+                    <slot name="title" />
+                {:else}
+                    {timeToString}
+                {/if}
             </Typography.Caption>
 
             <!-- `Absolute time` as per design -->
@@ -110,7 +114,7 @@
                     <InteractiveText
                         isVisible
                         variant="copy"
-                        text={toLocaleDateTime(time, 'UTC')}
+                        text={toLocaleDateTime(time, false, 'UTC')}
                         value={toISOString(time)} />
 
                     <Badge variant="secondary" content="UTC" size="xs" />

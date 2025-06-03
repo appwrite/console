@@ -113,7 +113,6 @@ function createFeedbackStore() {
             currentPage: string,
             name?: string,
             email?: string,
-            // eslint-disable-next-line
             billingPlan?: string,
             value?: number,
             orgId?: string,

@@ -3,6 +3,14 @@ export const CARD_LIMIT = 6; // default card limit
 export const INTERVAL = 5 * 60000; // default interval to check for feedback
 export const NEW_DEV_PRO_UPGRADE_COUPON = 'appw50';
 
+export const REGION_FRA = 'fra';
+export const REGION_SYD = 'syd';
+export const REGION_NYC = 'nyc';
+
+export const SUBDOMAIN_FRA = 'fra.';
+export const SUBDOMAIN_SYD = 'syd.';
+export const SUBDOMAIN_NYC = 'nyc.';
+
 export enum Dependencies {
     FACTORS = 'dependency:factors',
     IDENTITIES = 'dependency:identities',
@@ -10,6 +18,7 @@ export enum Dependencies {
     INVOICES = 'dependency:invoices',
     ADDRESS = 'dependency:address',
     UPGRADE_PLAN = 'dependency:upgrade_plan',
+    CREATE_ORGANIZATION = 'dependency:create_organization',
     PAYMENT_METHODS = 'dependency:paymentMethods',
     ORGANIZATION = 'dependency:organization',
     MEMBERS = 'dependency:members',
@@ -368,6 +377,18 @@ export const scopes: {
     {
         scope: 'migrations.write',
         description: 'Access to create migrations',
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'tokens.read',
+        description: "Access to read your project's file tokens",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'tokens.write',
+        description: 'Access to create file tokens',
         category: 'Other',
         icon: 'globe'
     },

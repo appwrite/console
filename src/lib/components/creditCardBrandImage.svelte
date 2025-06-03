@@ -9,7 +9,7 @@
 
     function getCreditCardImage(brand: string, width = 46, height = 32) {
         if (!isValueOfStringEnum(CreditCard, brand)) return '';
-        return sdk.forConsole.avatars.getCreditCard(brand, width, height).toString();
+        return sdk.forConsole.avatars.getCreditCard(brand, width, height);
     }
 </script>
 

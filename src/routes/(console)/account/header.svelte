@@ -41,7 +41,7 @@
               ...permanentTabs,
               {
                   href: `${path}/payments`,
-                  title: 'Payment details',
+                  title: 'Payments',
                   event: 'payments',
                   hasChildren: true
               }
@@ -52,7 +52,7 @@
 <Cover>
     <svelte:fragment slot="header">
         <CoverTitle>
-            {$user.name || $user.email}
+            {$user?.name || $user?.email}
         </CoverTitle>
         <div class="u-margin-inline-start-auto">
             <Button secondary on:click={() => logout()}>Logout</Button>

@@ -33,22 +33,18 @@
             await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
             await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
 
-            if ($redirectTo) {
-                window.location.href = $redirectTo;
-                return;
-            }
-
-            await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
+
             if (data?.couponData?.code) {
                 await goto(`${base}/apply-credit?code=${data?.couponData?.code}`);
                 return;
-            }
-            if (data?.campaign) {
+            } else if (data?.campaign?.$id) {
                 await goto(`${base}/apply-credit?campaign=${data.campaign.$id}`);
                 return;
-            }
-            if (page.url.searchParams) {
+            } else if ($redirectTo) {
+                window.location.href = $redirectTo;
+                return;
+            } else if (page.url.searchParams) {
                 const redirect = page.url.searchParams.get('redirect');
                 page.url.searchParams.delete('redirect');
                 if (redirect) {
@@ -61,6 +57,8 @@
             } else {
                 await goto(base);
             }
+
+            await invalidate(Dependencies.ACCOUNT);
         } catch (error) {
             disabled = false;
             addNotification({

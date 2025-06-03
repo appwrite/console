@@ -1,17 +1,17 @@
 import { page } from '$app/stores';
 import type { Column } from '$lib/helpers/types';
-import type { Domain } from '$lib/sdk/domains';
+import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 
-export const domain = derived(page, ($page) => $page.data.domain as Domain);
+export const domain = derived(page, ($page) => $page.data.domain as Models.Domain);
 export const columns = writable<Column[]>([
-    { id: 'name', title: 'Name', type: 'string' },
-    { id: 'type', title: 'Type', type: 'string' },
-    { id: 'value', title: 'Value', type: 'string' },
-    { id: 'ttl', title: 'TTL', type: 'integer' },
-    { id: 'priority', title: 'Priority', type: 'integer', hide: true },
-    { id: 'comment', title: 'Comment', type: 'string', hide: true },
-    { id: '$createdAt', title: 'Created', type: 'datetime' }
+    { id: 'name', title: 'Name', type: 'string', width: { min: 200 } },
+    { id: 'type', title: 'Type', type: 'string', width: 125 },
+    { id: 'value', title: 'Value', type: 'string', width: 250 },
+    { id: 'ttl', title: 'TTL', type: 'integer', width: 100 },
+    { id: 'priority', title: 'Priority', type: 'integer', width: 80, hide: true },
+    { id: 'comment', title: 'Comment', type: 'string', width: { min: 180 } },
+    { id: '$createdAt', title: 'Created', type: 'datetime', width: { min: 120 } }
 ]);
 
 export const recordTypes = [
@@ -53,7 +53,7 @@ export const recordTypes = [
     {
         value: 'CAA',
         label: 'CAA',
-        helper: 'CAA records specify which certificate authorities are allowed to issue SSL certificates for your domain, helping to prevent unauthorized certificate issuance.'
+        helper: 'CAA records define which certificate authorities can issue SSL certificates for your domain. To avoid setup issues, make sure certainly.com is authorized.'
     },
     {
         value: 'HTTPS',

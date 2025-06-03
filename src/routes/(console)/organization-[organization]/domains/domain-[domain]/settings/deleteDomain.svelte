@@ -2,10 +2,10 @@
     import { BoxAvatar, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import type { Models } from '@appwrite.io/console';
     import Delete from '../../deleteDomainModal.svelte';
-    import type { Domain } from '$lib/sdk/domains';
 
-    export let domain: Domain;
+    export let domain: Models.Domain;
     let show = false;
 </script>
 

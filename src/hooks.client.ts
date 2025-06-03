@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/sveltekit';
+import { isCloud, isProd, isStudio } from '$lib/system';
 import { AppwriteException } from '@appwrite.io/console';
 import type { HandleClientError } from '@sveltejs/kit';
-import { isCloud, isProd, isStudio } from '$lib/system';
 
 Sentry.init({
     enabled: isCloud && isProd,
@@ -30,17 +30,15 @@ function setLoader() {
 
 setLoader();
 
-export const handleError: HandleClientError = Sentry.handleErrorWithSentry(
-    async ({ error, message, status }) => {
-        console.error(error);
-        if (error instanceof AppwriteException) {
-            status = error.code === 0 ? undefined : error.code;
-            message = error.message;
-        }
-
-        return {
-            message,
-            status
-        };
+export const handleError: HandleClientError = ({ error, message, status }) => {
+    console.error(error);
+    if (error instanceof AppwriteException) {
+        status = error.code === 0 ? undefined : error.code;
+        message = error.message;
     }
-);
+
+    return {
+        message,
+        status
+    };
+};
