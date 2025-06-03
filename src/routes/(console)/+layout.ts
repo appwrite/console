@@ -13,6 +13,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.CONSOLE_VARIABLES);
     depends(Dependencies.ORGANIZATION);
 
+    const { endpoint, project } = sdk.forConsole.client.config;
     const [preferences, plansArray, organizations] = await loadPromises();
 
     const plansInfo = toPlanMap(plansArray);
@@ -22,6 +23,14 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         preferences.organization ??
         (organizations.teams.length > 0 ? organizations.teams[0].$id : undefined);
 
+    fetch(`${endpoint}/health/version`, {
+        headers: { 'X-Appwrite-Project': project }
+    })
+        .then((res) => res.json().catch(() => null))
+        .then((data) => version.set(data?.version));
+
+    sdk.forConsole.console.variables().then((vars) => consoleVariables.set(vars));
+
     return {
         plansInfo,
         roles: [],
@@ -30,8 +39,11 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         currentOrgId,
         organizations,
         currentProjectId: params.project ?? '',
-        // this is an unresolved promise
-        projectsPromise: loadNonBlocking(currentOrgId)
+        projectsPromise: sdk.forConsole.projects.list([
+            Query.equal('teamId', currentOrgId),
+            Query.limit(5),
+            Query.orderDesc('$updatedAt')
+        ])
     };
 };
 
@@ -54,24 +66,4 @@ function toPlanMap(plansArray: PlanList | null): Map<Tier, Plan> {
     }
 
     return map;
-}
-
-function loadNonBlocking(orgId: string) {
-    // load in background.
-    const { endpoint, project } = sdk.forConsole.client.config;
-
-    fetch(`${endpoint}/health/version`, {
-        headers: { 'X-Appwrite-Project': project }
-    })
-        .then((res) => res.json().catch(() => null))
-        .then((data) => version.set(data?.version));
-
-    sdk.forConsole.console.variables().then((vars) => consoleVariables.set(vars));
-
-    // return promise for page context
-    return sdk.forConsole.projects.list([
-        Query.equal('teamId', orgId),
-        Query.limit(5),
-        Query.orderDesc('$updatedAt')
-    ]);
 }

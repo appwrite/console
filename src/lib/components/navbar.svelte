@@ -57,6 +57,8 @@
     import type { HTMLAttributes } from 'svelte/elements';
     import { beforeNavigate } from '$app/navigation';
     import { page } from '$app/state';
+    import type { Models } from '@appwrite.io/console';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
 
     let showSupport = false;
 
@@ -68,7 +70,7 @@
             isSelected: boolean;
             showUpgrade: boolean;
             tierName: string;
-            projects: Array<NavbarProject>;
+            projects: Promise<Models.ProjectList>;
         }>;
         showAccountMenu: boolean;
     };
@@ -116,7 +118,7 @@
     }
 
     $: currentOrg = organizations.find((org) => org.isSelected);
-    $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
+
     beforeNavigate(() => (showAccountMenu = false));
 </script>
 
@@ -135,12 +137,13 @@
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} />
-        {#if page.route?.id?.includes('project-') && selectedProject && selectedProject.pingCount === 0}
+        {#if page.route?.id?.includes('project-') && $project && $project.pingCount === 0}
             <div class="only-desktop" style:margin-inline-start="-16px">
                 <Button.Anchor
-                    href={`${base}/project-${selectedProject.region}-${selectedProject.$id}/get-started`}
+                    size="xs"
                     variant="secondary"
-                    size="xs">Connect</Button.Anchor>
+                    href={`${base}/project-${$project.region}-${$project.$id}/get-started`}
+                    >Connect</Button.Anchor>
             </div>
         {/if}
     </div>

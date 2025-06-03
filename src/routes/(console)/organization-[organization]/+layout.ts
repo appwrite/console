@@ -39,7 +39,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         }
         if (prefs.organization !== params.organization) {
             const newPrefs = { ...prefs, organization: params.organization };
-            void sdk.forConsole.account.updatePrefs(newPrefs);
+            sdk.forConsole.account.updatePrefs(newPrefs);
         }
 
         const [organization, members] = await Promise.all([
@@ -60,7 +60,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         };
     } catch (e) {
         const newPrefs = { ...prefs, organization: null };
-        void sdk.forConsole.account.updatePrefs(newPrefs);
+        sdk.forConsole.account.updatePrefs(newPrefs);
         error(e.code, e.message);
     }
 };

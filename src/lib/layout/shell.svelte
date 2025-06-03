@@ -1,10 +1,9 @@
 <script lang="ts">
     import { beforeNavigate } from '$app/navigation';
     import { Navbar, Sidebar } from '$lib/components';
-    import type { NavbarProject } from '$lib/components/navbar.svelte';
     import { isNewWizardStatusOpen, wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
-    import { onMount, setContext } from 'svelte';
+    import { setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -22,17 +21,12 @@
     export let showHeader = true;
     export let showFooter = true;
     export let showSideNavigation = false;
+    export let projectsPromise: Promise<Models.ProjectList>;
     export let selectedProject: Models.Project | null = null;
-    export let projectsPromise: Promise<Models.ProjectList> = Promise.resolve({
-        total: 0,
-        projects: []
-    });
 
     let yOnMenuOpen: number;
     let showContentTransition = false;
     let timeoutId: ReturnType<typeof setTimeout>;
-
-    $: loadedProjects = [];
 
     page.subscribe(({ url }) => {
         $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
@@ -107,7 +101,7 @@
                 showUpgrade: billingPlan === BillingPlan.FREE,
                 tierName: isCloud ? tierToPlan(billingPlan).name : null,
                 isSelected: $organization?.$id === org.$id,
-                projects: loadedProjects
+                projects: projectsPromise
             };
         })
     };
@@ -132,20 +126,6 @@
 
         return undefined;
     };
-
-    onMount(async () => {
-        const projects = await projectsPromise;
-        loadedProjects = projects.projects.map((project) => {
-            return {
-                name: project?.name,
-                $id: project.$id,
-                isSelected: project.$id === $page.params.project,
-                region: project.region,
-                platformCount: project.platforms.length,
-                pingCount: project.pingCount
-            };
-        }) satisfies NavbarProject[];
-    });
 </script>
 
 <svelte:window on:resize={handleResize} />

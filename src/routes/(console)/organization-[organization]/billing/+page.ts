@@ -62,6 +62,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
             sdk.forConsole.billing.listPaymentMethods(),
             sdk.forConsole.billing.listAddresses(),
             billingAddressPromise,
+            // todo: best to add a `getAvailableCredit` endpoint. cc @dlohani => PLA-3006
             areCreditsSupported ? sdk.forConsole.billing.listCredits(organization.$id) : null,
             sdk.forConsole.billing.getPlan(billingAggregation?.plan ?? organization.billingPlan)
         ]);

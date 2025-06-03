@@ -1,6 +1,14 @@
 <script lang="ts">
     import { createMenubar, melt } from '@melt-ui/svelte';
-    import { Badge, Icon, type SheetMenu, ActionMenu, Card } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Icon,
+        type SheetMenu,
+        Layout,
+        ActionMenu,
+        Card,
+        Skeleton
+    } from '@appwrite.io/pink-svelte';
     import {
         IconChevronDown,
         IconChevronRight,
@@ -14,20 +22,15 @@
     import { base } from '$app/paths';
     import { newOrgModal } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { page } from '$app/stores';
+    import type { Models } from '@appwrite.io/console';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
 
-    type Project = {
-        name: string;
-        $id: string;
-        isSelected: boolean;
-        region: string;
-    };
     type Organization = {
         name: string;
         $id: string;
         tierName: string;
         isSelected: boolean;
-        projects: Array<Project>;
+        projects: Promise<Models.ProjectList>;
     };
 
     const {
@@ -64,17 +67,20 @@
 
     export let organizations: Organization[] = [];
 
-    $: selectedOrg = organizations.find((organization) => organization.isSelected);
-    $: selectedProject = $page.data.project;
-
-    let organisationBottomSheetOpen = false;
     let projectsBottomSheetOpen = false;
+    let organisationBottomSheetOpen = false;
+    let loadedProjects: Models.ProjectList = { total: 0, projects: [] };
 
     function createOrg() {
         trackEvent(Click.OrganizationClickCreate, { source: 'breadcrumbs' });
         if (isCloud) {
             goto(`${base}/create-organization`);
         } else newOrgModal.set(true);
+    }
+
+    async function loadProjectsFromPromise() {
+        loadedProjects = await selectedOrg.projects;
+        return loadedProjects;
     }
 
     const switchOrganization = {
@@ -95,6 +101,8 @@
             ]
         }
     };
+
+    $: selectedOrg = organizations.find((organization) => organization.isSelected);
 
     $: organizationsBottomSheet = !selectedOrg
         ? switchOrganization
@@ -131,27 +139,22 @@
 
     $: projectsBottomSheet = {
         top:
-            selectedOrg?.projects.length > 1
+            loadedProjects.total > 1
                 ? {
                       title: 'Switch project',
-                      items: !selectedOrg
-                          ? []
-                          : selectedOrg?.projects
-                                .map((project, index) => {
-                                    if (index < 4) {
-                                        return {
-                                            name: project.name,
-                                            href: `${base}/project-${project.region}-${project.$id}/overview`
-                                        };
-                                    } else if (index === 4) {
-                                        return {
-                                            name: 'All projects',
-                                            href: `${base}/organization-${selectedOrg?.$id}`
-                                        };
-                                    }
-                                    return null;
-                                })
-                                .filter((project) => project !== null)
+                      items: selectedOrg
+                          ? loadedProjects.projects.slice(0, 5).map((project, i) =>
+                                i < 4
+                                    ? {
+                                          name: project.name,
+                                          href: `${base}/project-${project.region}-${project.$id}/overview`
+                                      }
+                                    : {
+                                          name: 'All projects',
+                                          href: `${base}/organization-${selectedOrg.$id}`
+                                      }
+                            )
+                          : []
                   }
                 : {
                       items: [
@@ -163,7 +166,7 @@
                       ]
                   },
         bottom:
-            selectedOrg?.projects.length > 1
+            loadedProjects.total > 1
                 ? {
                       items: [
                           {
@@ -208,7 +211,7 @@
                 organisationBottomSheetOpen = true;
             }}
             aria-label="Open organizations tab">
-            <span class="orgName" class:noProjects={!selectedProject}
+            <span class="orgName" class:noProjects={!$project}
                 >{selectedOrg?.name ?? 'Organization'}</span>
             <span class="not-mobile"
                 ><Badge variant="secondary" content={selectedOrg?.tierName ?? ''} /></span>
@@ -288,7 +291,7 @@
         </Card.Base>
     </div>
 
-    {#if selectedOrg && selectedProject}
+    {#if selectedOrg && $project}
         <span class="breadcrumb-separator">/</span>
         {#if !$isSmallViewport}
             <button
@@ -296,7 +299,7 @@
                 class="trigger"
                 use:melt={$triggerProjects}
                 aria-label="Open projects tab">
-                <span class="projectName">{selectedProject.name}</span>
+                <span class="projectName">{$project.name}</span>
                 <Icon icon={IconChevronDown} size="s" />
             </button>
         {:else}
@@ -305,37 +308,47 @@
                 class="trigger"
                 on:click={() => (projectsBottomSheetOpen = true)}
                 aria-label="Open projects tab">
-                <span class="projectName">{selectedProject.name}</span>
+                <span class="projectName">{$project.name}</span>
                 <Icon icon={IconChevronDown} size="s" />
             </button>
         {/if}
 
         <div class="menu" use:melt={$menuProjects}>
             <Card.Base padding="xxxs" shadow={true}>
-                {#if selectedOrg.projects.length > 1}
-                    {#each selectedOrg.projects as project, index}
-                        {#if index < 4}
-                            <div use:melt={$itemProjects}>
-                                <ActionMenu.Root>
-                                    <ActionMenu.Item.Anchor
-                                        href={`${base}/project-${project.region}-${project.$id}`}>
-                                        {project.name}
-                                    </ActionMenu.Item.Anchor>
-                                </ActionMenu.Root>
-                            </div>
-                        {:else if index === 4}
-                            <div use:melt={$itemProjects}>
-                                <ActionMenu.Root>
-                                    <ActionMenu.Item.Anchor
-                                        href={`${base}/organization-${selectedOrg.$id}`}>
-                                        All projects
-                                    </ActionMenu.Item.Anchor>
-                                </ActionMenu.Root>
-                            </div>
-                        {/if}
-                    {/each}
-                    <div class="separator" use:melt={$separatorProjects}></div>
-                {/if}
+                {#await loadProjectsFromPromise()}
+                    <div style:margin-inline="0.25rem" style:margin-block="0.25rem">
+                        <Layout.Stack gap="s">
+                            <!-- 2 should be enough -->
+                            <Skeleton width="100%" height={30} variant="line" />
+                            <Skeleton width="100%" height={30} variant="line" />
+                        </Layout.Stack>
+                    </div>
+                {:then projects}
+                    {#if projects.total > 1}
+                        {#each projects.projects as project, index}
+                            {#if index < 4}
+                                <div use:melt={$itemProjects}>
+                                    <ActionMenu.Root>
+                                        <ActionMenu.Item.Anchor
+                                            href={`${base}/project-${project.region}-${project.$id}`}>
+                                            {project.name}
+                                        </ActionMenu.Item.Anchor>
+                                    </ActionMenu.Root>
+                                </div>
+                            {:else if index === 4}
+                                <div use:melt={$itemProjects}>
+                                    <ActionMenu.Root>
+                                        <ActionMenu.Item.Anchor
+                                            href={`${base}/organization-${selectedOrg.$id}`}>
+                                            All projects
+                                        </ActionMenu.Item.Anchor>
+                                    </ActionMenu.Root>
+                                </div>
+                            {/if}
+                        {/each}
+                        <div class="separator" use:melt={$separatorProjects}></div>
+                    {/if}
+                {/await}
                 <div use:melt={$itemProjects}>
                     <ActionMenu.Root>
                         <ActionMenu.Item.Anchor
