@@ -24,8 +24,7 @@
     import { base } from '$app/paths';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
-    import { organization } from '$lib/stores/organization';
-    import { APPWRITE_OFFICIALS_ORG, isCloud } from '$lib/system';
+    import { flags } from '$lib/flags';
 
     export let data: PageData;
 
@@ -88,14 +87,6 @@
             $isCsvImportInProgress = false;
         }
     }
-
-    /**
-     * Controls visibility of CSV Imports feature:
-     * - Shown if running on self-hosted
-     * - Shown on cloud only if the organization is Appwrite's.
-     * - Hidden on cloud for any non-Appwrite organization.
-     */
-    $: showCsvImports = !isCloud || $organization.$id === APPWRITE_OFFICIALS_ORG;
 </script>
 
 {#key page.params.collection}
@@ -109,7 +100,7 @@
                     analyticsSource="database_documents" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     <ViewSelector view={data.view} {columns} hideView />
-                    {#if showCsvImports}
+                    {#if flags.showCsvImport}
                         <Button
                             secondary
                             event={Click.DatabaseImportCsv}
