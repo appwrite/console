@@ -11,7 +11,7 @@ export const load = async ({ url, depends, route, params }) => {
     const offset = pageToOffset(page, limit);
     const view = getView(url, route, View.Grid, View.Grid);
 
-    const sitesLive = false;
+    const sitesLive = true;
 
     if (!sitesLive)
         return {
