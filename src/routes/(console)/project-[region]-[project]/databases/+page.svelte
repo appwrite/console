@@ -17,8 +17,6 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import EmptySearch from '$lib/components/emptySearch.svelte';
-    import ErrorResourceBlocked from '../errorResourceBlocked.svelte';
-    import ErrorFailedToLoad from '../errorFailedToLoad.svelte';
 
     export let data: PageData;
 
@@ -48,64 +46,56 @@
     ]);
 </script>
 
-{#if data.error}
-    {#if data.error.type === 'general_resource_blocked'}
-        <ErrorResourceBlocked resource="Databases" />
-    {:else}
-        <ErrorFailedToLoad resource="Databases" />
-    {/if}
-{:else}
-    <Container>
-        <Layout.Stack direction="row" justifyContent="space-between">
-            <Layout.Stack direction="row" alignItems="center">
-                <SearchQuery placeholder="Search by name or ID" />
-            </Layout.Stack>
-            <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                <ViewSelector
-                    {columns}
-                    view={data.view}
-                    hideColumns={!data.databases.total}
-                    hideView={!data.databases.total} />
-                {#if $canWriteDatabases}
-                    <Button
-                        on:click={() => (showCreate = true)}
-                        event="create_database"
-                        disabled={isCreationDisabled}>
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Create database
-                    </Button>
-                {/if}
-            </Layout.Stack>
+<Container>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery placeholder="Search by name or ID" />
         </Layout.Stack>
-
-        {#if data.databases.total}
-            {#if data.view === 'grid'}
-                <Grid {data} bind:showCreate />
-            {:else}
-                <Table {data} />
-            {/if}
-
-            <PaginationWithLimit
-                name="Databases"
-                limit={data.limit}
-                offset={data.offset}
-                total={data.databases.total} />
-        {:else if data.search}
-            <EmptySearch target="databases" hidePagination>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <ViewSelector
+                {columns}
+                view={data.view}
+                hideColumns={!data.databases.total}
+                hideView={!data.databases.total} />
+            {#if $canWriteDatabases}
                 <Button
-                    href={`${base}/project-${page.params.region}-${page.params.project}/databases`}
-                    size="s"
-                    secondary>Clear Search</Button>
-            </EmptySearch>
-        {:else}
-            <Empty
-                single
-                href="https://appwrite.io/docs/products/databases/databases"
-                target="database"
-                allowCreate={$canWriteDatabases}
-                on:click={() => (showCreate = true)} />
-        {/if}
-    </Container>
+                    on:click={() => (showCreate = true)}
+                    event="create_database"
+                    disabled={isCreationDisabled}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create database
+                </Button>
+            {/if}
+        </Layout.Stack>
+    </Layout.Stack>
 
-    <Create bind:showCreate on:created={handleCreate} />
-{/if}
+    {#if data.databases.total}
+        {#if data.view === 'grid'}
+            <Grid {data} bind:showCreate />
+        {:else}
+            <Table {data} />
+        {/if}
+
+        <PaginationWithLimit
+            name="Databases"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.databases.total} />
+    {:else if data.search}
+        <EmptySearch target="databases" hidePagination>
+            <Button
+                href={`${base}/project-${page.params.region}-${page.params.project}/databases`}
+                size="s"
+                secondary>Clear Search</Button>
+        </EmptySearch>
+    {:else}
+        <Empty
+            single
+            href="https://appwrite.io/docs/products/databases/databases"
+            target="database"
+            allowCreate={$canWriteDatabases}
+            on:click={() => (showCreate = true)} />
+    {/if}
+</Container>
+
+<Create bind:showCreate on:created={handleCreate} />

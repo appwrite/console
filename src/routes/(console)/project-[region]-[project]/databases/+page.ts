@@ -8,6 +8,7 @@ import type { BackupPolicy } from '$lib/sdk/backups';
 import { isSelfHosted } from '$lib/system';
 import { isCloud } from '$lib/system';
 import type { Plan } from '$lib/sdk/billing';
+import { error } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ url, route, depends, params, parent }) => {
     depends(Dependencies.DATABASES);
@@ -39,16 +40,12 @@ export const load: PageLoad = async ({ url, route, depends, params, parent }) =>
             lastBackups
         };
 
-    } catch (error) {
-        return {
-            error: {
-                type: error.type,
-            },
-            offset,
-            limit,
-            view,
-            search,
-        };
+    } catch (e) {
+        error(e.status || 500, {
+            message: e.message,
+            type: e.type || 'unknown',
+            resource: 'databases'
+        });
     }
 };
 

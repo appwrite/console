@@ -1,2 +1,9 @@
 /// <reference types="@sveltejs/kit" />
-interface Window {}
+interface Window { }
+
+namespace App {
+    interface Error {
+        type: string,
+        resource: ?string = '',
+    }
+}
