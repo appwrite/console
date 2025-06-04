@@ -21,23 +21,35 @@ export const load: PageLoad = async ({ url, route, depends, params, parent }) =>
     // already loaded by parent.
     const { currentPlan } = await parent();
 
-    const { databases, policies, lastBackups } = await fetchDatabasesAndBackups(
-        limit,
-        offset,
-        params,
-        search,
-        currentPlan
-    );
+    try {
+        const { databases, policies, lastBackups } = await fetchDatabasesAndBackups(
+            limit,
+            offset,
+            params,
+            search,
+            currentPlan
+        );
+        return {
+            offset,
+            limit,
+            view,
+            search,
+            policies,
+            databases,
+            lastBackups
+        };
 
-    return {
-        offset,
-        limit,
-        view,
-        search,
-        policies,
-        databases,
-        lastBackups
-    };
+    } catch (error) {
+        return {
+            error: {
+                type: error.type,
+            },
+            offset,
+            limit,
+            view,
+            search,
+        };
+    }
 };
 
 async function fetchDatabasesAndBackups(
