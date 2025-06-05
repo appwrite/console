@@ -3,6 +3,7 @@ import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
 import { CARD_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
+import { error } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ url, route, params }) => {
     const page = getPage(url);
@@ -10,17 +11,27 @@ export const load: PageLoad = async ({ url, route, params }) => {
     const view = getView(url, route, View.Grid);
     const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
-
-    return {
-        offset,
-        limit,
-        view,
-        search,
-        buckets: await sdk
+    try {
+        const buckets = await sdk
             .forProject(params.region, params.project)
             .storage.listBuckets(
                 [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
                 search || undefined
-            )
-    };
+            );
+
+        return {
+            offset,
+            limit,
+            view,
+            search,
+            buckets,
+        };
+    } catch (e) {
+        error(e.code || 500, {
+            message: e.message,
+            type: e.type || 'unknown',
+            resource: 'storage'
+        }
+        );
+    }
 };

@@ -12,6 +12,7 @@ import {
 import { sdk } from '$lib/stores/sdk';
 import { Query, type Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
+import { error } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ depends, url, route, params }) => {
     depends(Dependencies.MESSAGING_MESSAGES);
@@ -26,14 +27,8 @@ export const load: PageLoad = async ({ depends, url, route, params }) => {
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
 
-    return {
-        offset,
-        limit,
-        search,
-        query,
-        page,
-        view,
-        messages: (await sdk
+    try {
+        const messages = (await sdk
             .forProject(params.region, params.project)
             .messaging.listMessages(
                 [
@@ -44,8 +39,27 @@ export const load: PageLoad = async ({ depends, url, route, params }) => {
                 ],
                 search || undefined
             )) as {
-            total: number;
-            messages: (Models.Message & { data: Record<string, string> })[]; // Add typing for message.data
-        }
-    };
+                total: number;
+                messages: (Models.Message & { data: Record<string, string> })[]; // Add typing for message.data
+            };
+
+        return {
+            messages,
+            offset,
+            limit,
+            search,
+            query,
+            page,
+            view,
+        };
+    } catch (e) {
+        return error(
+            e.code || 500,
+            {
+                message: e.message,
+                type: e.type || 'unknown',
+                resource: 'messaging'
+            }
+        )
+    }
 };
