@@ -20,7 +20,7 @@
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
     import { isCloud } from '$lib/system';
-    import { getApiEndpoint, sdk } from '$lib/stores/sdk';
+    import { getApiEndpoint } from '$lib/stores/sdk';
     import { capitalize } from '$lib/helpers/string';
     import { page } from '$app/state';
 
