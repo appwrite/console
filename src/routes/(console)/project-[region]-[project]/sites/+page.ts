@@ -26,19 +26,17 @@ export const load = async ({ url, depends, route, params }) => {
             } as Models.SiteList
         };
 
-    const siteList = await sdk
-        .forProject(params.region, params.project)
-        .sites.list(
-            [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-            search || undefined
-        );
-
     return {
         sitesLive,
         offset,
         limit,
         search,
-        siteList,
+        siteList: await sdk
+            .forProject(params.region, params.project)
+            .sites.list(
+                [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+                search || undefined
+            ),
         view
     };
 };
