@@ -41,5 +41,4 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
         breadcrumbs: Breadcrumbs,
         document
     };
-
 };

@@ -44,8 +44,8 @@ export const load: PageLoad = async ({ depends, url, route, params }) => {
                 ],
                 search || undefined
             )) as {
-                total: number;
-                messages: (Models.Message & { data: Record<string, string> })[]; // Add typing for message.data
-            }
+            total: number;
+            messages: (Models.Message & { data: Record<string, string> })[]; // Add typing for message.data
+        }
     };
 };

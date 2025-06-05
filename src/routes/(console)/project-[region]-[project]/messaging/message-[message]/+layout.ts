@@ -71,5 +71,4 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         header: Header,
         breadcrumbs: Breadcrumbs
     };
-
 };

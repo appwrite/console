@@ -22,7 +22,6 @@ export const load: PageLoad = async ({ url, route, params }) => {
         limit,
         view,
         search,
-        buckets,
+        buckets
     };
-
 };

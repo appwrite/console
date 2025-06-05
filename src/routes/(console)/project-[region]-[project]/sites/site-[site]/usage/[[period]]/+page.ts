@@ -7,6 +7,6 @@ export const load: PageLoad = async ({ params }) => {
     const period = isValueOfStringEnum(SiteUsageRange, params.period)
         ? params.period
         : SiteUsageRange.ThirtyDays;
-    
+
     return sdk.forProject(params.region, params.project).sites.getUsage(params.site, period);
 };

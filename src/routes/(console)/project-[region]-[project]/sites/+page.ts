@@ -26,7 +26,6 @@ export const load = async ({ url, depends, route, params }) => {
             } as Models.SiteList
         };
 
-
     return {
         sitesLive,
         offset,
@@ -40,4 +39,4 @@ export const load = async ({ url, depends, route, params }) => {
             ),
         view
     };
-}
+};

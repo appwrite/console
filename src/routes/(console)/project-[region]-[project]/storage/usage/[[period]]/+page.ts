@@ -8,5 +8,4 @@ export const load: PageLoad = async ({ params }) => {
         ? params.period
         : StorageUsageRange.ThirtyDays;
     return sdk.forProject(params.region, params.project).storage.getUsage(period);
-
 };

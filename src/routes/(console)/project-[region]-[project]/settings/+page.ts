@@ -22,5 +22,4 @@ export const load: PageLoad = async ({ depends, url, params }) => {
         variables,
         installations
     };
-
 };

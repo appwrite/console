@@ -10,9 +10,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.FUNCTION);
     depends(Dependencies.DEPLOYMENTS);
 
-    const func = await sdk
-        .forProject(params.region, params.project)
-        .functions.get(params.function);
+    const func = await sdk.forProject(params.region, params.project).functions.get(params.function);
 
     //TODO remove rule limit of 1 and display extra rules
     const proxyRuleList = await sdk

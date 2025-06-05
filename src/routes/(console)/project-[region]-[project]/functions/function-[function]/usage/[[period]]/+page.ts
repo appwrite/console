@@ -10,5 +10,4 @@ export const load: PageLoad = async ({ params }) => {
     return sdk
         .forProject(params.region, params.project)
         .functions.getUsage(params.function, period);
-
 };

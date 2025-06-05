@@ -11,5 +11,4 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         breadcrumbs: Breadcrumbs,
         team: await sdk.forProject(params.region, params.project).teams.get(params.team)
     };
-
 };
