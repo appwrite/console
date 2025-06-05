@@ -2,7 +2,8 @@
     import { page } from '$app/state';
     import { Container } from '$lib/layout';
     import { Card, Typography } from '@appwrite.io/pink-svelte';
-    function getResource(id: string) {        
+    import { capitalize } from '$lib/helpers/string';
+    function getResource(id: string) {
         id = id.replace('/(console)/project-[region]-[project]/', '');
         let parts = id.split('/');
         const resource = parts[0];
@@ -15,7 +16,7 @@
     {#if page.error.type === 'general_resource_blocked'}
         {@const resource = getResource(page.route.id)}
         <Card.Base>
-            <Typography.Title size="s">Your {resource} is paused</Typography.Title>
+            <Typography.Title size="s">Your {capitalize(resource)} is paused</Typography.Title>
             <p class="text-red-500">
                 We've detected unusual activity and temporarily paused your {resource}. If you
                 believe this is a mistake or need urgent access, please contact support@appwrite.io.
