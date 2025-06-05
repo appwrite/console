@@ -2,7 +2,6 @@ import { Query, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
-import { error } from '@sveltejs/kit';
 
 export const load = async ({ url, depends, route, params }) => {
     depends(Dependencies.SITES);
@@ -27,28 +26,18 @@ export const load = async ({ url, depends, route, params }) => {
             } as Models.SiteList
         };
 
-    try {
-        const siteList = await sdk
+
+    return {
+        sitesLive,
+        offset,
+        limit,
+        search,
+        siteList: await sdk
             .forProject(params.region, params.project)
             .sites.list(
                 [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
                 search || undefined
-            );
-
-        return {
-            sitesLive,
-            offset,
-            limit,
-            search,
-            siteList,
-            view
-        };
-    } catch (e) {
-        error(e.code || 500,
-            {
-                message: e.message,
-                type: e.type || 'unknown',
-                resource: 'sites'
-            });
-    }
-};
+            ),
+        view
+    };
+}

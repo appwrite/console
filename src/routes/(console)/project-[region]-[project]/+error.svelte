@@ -1,12 +1,19 @@
-<script>
+<script lang="ts">
     import { page } from '$app/state';
     import { Container } from '$lib/layout';
     import { Card, Typography } from '@appwrite.io/pink-svelte';
+    function getResource(id: string) {        
+        id = id.replace('/(console)/project-[region]-[project]/', '');
+        let parts = id.split('/');
+        const resource = parts[0];
+
+        return resource === 'settings' ? 'project' : resource;
+    }
 </script>
 
 <Container>
     {#if page.error.type === 'general_resource_blocked'}
-        {@const resource = page.error.resource || 'project'}
+        {@const resource = getResource(page.route.id)}
         <Card.Base>
             <Typography.Title size="s">Your {resource} is paused</Typography.Title>
             <p class="text-red-500">

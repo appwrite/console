@@ -2,7 +2,6 @@ import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
-import { error } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ depends, url, params }) => {
     depends(Dependencies.PROJECT_VARIABLES);
@@ -10,25 +9,18 @@ export const load: PageLoad = async ({ depends, url, params }) => {
     const limit = PAGE_LIMIT;
     const offset = Number(url.searchParams.get('offset') ?? 0);
 
-    try {
-        const [variables, installations] = await Promise.all([
-            sdk.forProject(params.region, params.project).projectApi.listVariables(),
-            sdk
-                .forProject(params.region, params.project)
-                .vcs.listInstallations([Query.limit(limit), Query.offset(offset)])
-        ]);
+    const [variables, installations] = await Promise.all([
+        sdk.forProject(params.region, params.project).projectApi.listVariables(),
+        sdk
+            .forProject(params.region, params.project)
+            .vcs.listInstallations([Query.limit(limit), Query.offset(offset)])
+    ]);
 
-        return {
-            limit,
-            offset,
-            variables,
-            installations
-        };
-    } catch (e) {
-        error(e.code || 500, {
-            message: e.message,
-            type: e.type || 'unknown',
-            resource: 'project'
-        });
-    }
+    return {
+        limit,
+        offset,
+        variables,
+        installations
+    };
+
 };
