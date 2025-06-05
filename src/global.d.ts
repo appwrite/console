@@ -3,7 +3,7 @@ interface Window { }
 
 namespace App {
     interface Error {
-        type: string,
-        resource: ?string = '',
+        type: string = 'unknown',
+        resource: string = 'project',
     }
 }
