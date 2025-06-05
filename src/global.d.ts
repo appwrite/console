@@ -3,12 +3,12 @@ interface Window { }
 
 namespace App {
     interface Error {
-        type: string = 'unknown',
+        type?: string,
     }
 
     interface HandleClientError {
         message: string;
         status?: number;
-        type: string;
+        type?: string;
     }
 }
