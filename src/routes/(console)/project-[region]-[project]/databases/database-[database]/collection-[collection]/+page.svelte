@@ -100,7 +100,7 @@
                     analyticsSource="database_documents" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     <ViewSelector view={data.view} {columns} hideView />
-                    {#if flags.showCsvImport(data.account, data.organization)}
+                    {#if flags.showCsvImport(data)}
                         <Button
                             secondary
                             event={Click.DatabaseImportCsv}
