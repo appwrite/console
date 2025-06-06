@@ -1,4 +1,7 @@
 import { env } from '$env/dynamic/public';
+import { get } from 'svelte/store';
+import { user } from '$lib/stores/user';
+import { organization } from '$lib/stores/organization';
 
 export const PUBLIC_CONSOLE_FEATURE_FLAGS = env.PUBLIC_CONSOLE_FEATURE_FLAGS ?? '';
 
@@ -9,9 +12,19 @@ function setupFlag(name: string, _description: string) {
         return true;
     }
 
-    // TODO: Check team prefs
+    const userInstance = get(user);
+    const userPrefs = userInstance?.prefs ?? {};
+    const userFlag = userPrefs[`flags-${name}`] ?? null;
+    if (userFlag) {
+        return true;
+    }
 
-    // TODO: Check user prefs
+    const organizationInstance = get(organization);
+    const organizationPrefs = organizationInstance?.prefs ?? {};
+    const organizationFlag = organizationPrefs[`flags-${name}`] ?? null;
+    if (organizationFlag) {
+        return true;
+    }
 
     return false;
 }
