@@ -41,7 +41,6 @@
 
     let verified = $state(false);
 
-    let error = $state(null);
     async function retryDomain() {
         try {
             const domain = await sdk
@@ -56,19 +55,17 @@
             });
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
-            error = e.message;
+            addNotification({
+                type: 'error',
+                message:
+                    'Domain verification failed. Please check your domain settings or try again later'
+            });
             trackError(e, Submit.DomainUpdateVerification);
         }
     }
-
-    $effect(() => {
-        if (!show) {
-            error = null;
-        }
-    });
 </script>
 
-<Modal title="Retry verification" bind:show onSubmit={retryDomain} bind:error>
+<Modal title="Retry verification" bind:show onSubmit={retryDomain}>
     <div>
         <Tabs.Root variant="secondary" let:root>
             {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
