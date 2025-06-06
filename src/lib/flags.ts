@@ -7,12 +7,12 @@ const flagsRaw = (env.PUBLIC_CONSOLE_FEATURE_FLAGS ?? '').split(',');
 
 function isFlagEnabled(name: string) {
     // loose generic to allow safe access while retaining type safety
-    return <T extends { user?: Account; organization?: Organization }>(data: T) => {
-        const { user, organization } = data;
+    return <T extends { account?: Account; organization?: Organization }>(data: T) => {
+        const { account, organization } = data;
 
         return !!(
             flagsRaw.includes(name) ||
-            user?.prefs?.[`flags-${name}`] ||
+            account?.prefs?.[`flags-${name}`] ||
             organization?.prefs?.[`flags-${name}`]
         );
     };
