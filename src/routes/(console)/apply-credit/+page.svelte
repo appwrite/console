@@ -396,7 +396,7 @@
                     handleSubmit();
                 }
             }}
-            disabled={$isSubmitting}>
+            disabled={!couponData?.code || $isSubmitting}>
             {#if $isSubmitting}
                 <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true"
                 ></span>
