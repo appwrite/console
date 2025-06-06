@@ -119,7 +119,7 @@
     beforeNavigate(() => (showAccountMenu = false));
 </script>
 
-<Navbar.Base {...$$props}>
+<Navbar.Base>
     <div slot="left" class="left">
         <div class="only-mobile-tablet">
             <button
@@ -130,7 +130,9 @@
                 <Icon icon={IconMenuAlt4} />
             </button>
         </div>
-        <a href={base} class="only-desktop">
+        <a
+            href={currentOrg?.$id ? `${base}/organization-${currentOrg?.$id}` : base}
+            class="only-desktop">
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} />
