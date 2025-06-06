@@ -22,6 +22,7 @@
     import { isCloud } from '$lib/system';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import { capitalize } from '$lib/helpers/string';
+    import { page } from '$app/state';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList;
@@ -46,7 +47,7 @@
 
     function getFilePreview(fileId: string) {
         // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
-        const endpoint = getApiEndpoint();
+        const endpoint = getApiEndpoint(page.params.region);
         return endpoint + `/storage/buckets/screenshots/files/${fileId}/view?project=console`;
     }
 </script>
