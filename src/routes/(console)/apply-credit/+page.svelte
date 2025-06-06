@@ -252,6 +252,7 @@
         (async () => {
             currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
         })();
+        loadPaymentMethods();
     }
 
     // after adding a payment method, fetch the payment methods again so the input can be updated
