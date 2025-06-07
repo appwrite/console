@@ -1,8 +1,9 @@
-import type { Invoice } from '$lib/sdk/billing';
 import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
-import { Query, type Models } from '@appwrite.io/console';
+import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
+import type { UsageProjectInfo } from '../../store';
+import type { Invoice, OrganizationUsage } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice } = params;
@@ -49,6 +50,7 @@ export const load: PageLoad = async ({ params, parent }) => {
         startDate = currentInvoice.from;
         endDate = currentInvoice.to;
     }
+
     const [invoices, usage, organizationMembers, plan] = await Promise.all([
         sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
         sdk.forConsole.billing.listUsage(params.organization, startDate, endDate),
@@ -56,36 +58,49 @@ export const load: PageLoad = async ({ params, parent }) => {
         sdk.forConsole.billing.getOrganizationPlan(org.$id)
     ]);
 
-    const projects: { [key: string]: Models.Project } = {};
-    if (usage?.projects?.length > 0) {
-        // in batches of 100 (the max number of values in a query)
-        const requests = [];
-        const chunk = 100;
-        for (let i = 0; i < usage.projects.length; i += chunk) {
-            const queries = [
-                Query.limit(chunk),
-                Query.equal(
-                    '$id',
-                    usage.projects.slice(i, i + chunk).map((p) => p.projectId)
-                )
-            ];
-            requests.push(sdk.forConsole.projects.list(queries));
-        }
-
-        const responses = await Promise.all(requests);
-        for (const response of responses) {
-            for (const project of response.projects) {
-                projects[project.$id] = project;
-            }
-        }
-    }
-
     return {
         plan,
         invoices,
-        projects,
         currentInvoice,
         organizationMembers,
-        organizationUsage: usage
+        organizationUsage: usage,
+        projectsPromise: getUsageProjectsPromise(usage)
     };
 };
+
+// all this to get the project's name and region!
+function getUsageProjectsPromise(usage: OrganizationUsage) {
+    return (async () => {
+        const projects: { [key: string]: UsageProjectInfo } = {};
+
+        if (usage?.projects?.length > 0) {
+            const chunk = 100;
+            const requests = [];
+            for (let i = 0; i < usage.projects.length; i += chunk) {
+                const queries = [
+                    Query.limit(chunk),
+                    Query.equal(
+                        '$id',
+                        usage.projects.slice(i, i + chunk).map((p) => p.projectId)
+                    )
+                ];
+
+                // this returns too much of data that we don't need!
+                requests.push(sdk.forConsole.projects.list(queries));
+            }
+
+            const responses = await Promise.all(requests);
+            for (const response of responses) {
+                for (const project of response.projects) {
+                    projects[project.$id] = {
+                        $id: project.$id,
+                        name: project.name,
+                        region: project.region
+                    };
+                }
+            }
+        }
+
+        return projects;
+    })();
+}

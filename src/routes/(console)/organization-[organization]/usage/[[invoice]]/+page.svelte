@@ -21,32 +21,39 @@
     import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { Icon, Layout, Link, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconChartSquareBar, IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { onMount } from 'svelte';
+    import type { UsageProjectInfo } from '../../store';
 
     export let data;
 
     const tier = data?.plan
         ? (data.plan.$id as Tier)
         : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
+
     const plan = data?.plan ?? undefined;
 
     $: projects = (data.organizationUsage as OrganizationUsage).projects;
+
+    let usageProjects: { [key: string]: UsageProjectInfo } = {};
 
     $: legendData = [
         {
             name: 'Reads',
             value: data.organizationUsage.databasesReads.reduce(
-                (sum, singleDay) => sum + singleDay.value,
+                (sum: number, singleDay: { date: string; value: number }) => sum + singleDay.value,
                 0
             )
         },
         {
             name: 'Writes',
             value: data.organizationUsage.databasesWrites.reduce(
-                (sum, singleDay) => sum + singleDay.value,
+                (sum: number, singleDay: { date: string; value: number }) => sum + singleDay.value,
                 0
             )
         }
     ];
+
+    onMount(async () => (usageProjects = await data.projectsPromise));
 </script>
 
 <Container>
@@ -129,7 +136,7 @@
                         }
                     ]} />
                 {#if projects?.length > 0}
-                    <ProjectBreakdown {projects} metric="bandwidth" {data} />
+                    <ProjectBreakdown {projects} metric="bandwidth" {usageProjects} />
                 {/if}
             {:else}
                 <Card isDashed>
@@ -177,7 +184,7 @@
                             }
                         ]} />
                     {#if projects?.length > 0}
-                        <ProjectBreakdown {projects} metric="users" {data} />
+                        <ProjectBreakdown {projects} metric="users" {usageProjects} />
                     {/if}
                 </Layout.Stack>
             {:else}
@@ -230,7 +237,7 @@
 
                     {#if projects?.length > 0}
                         <ProjectBreakdown
-                            {data}
+                            {usageProjects}
                             {projects}
                             databaseOperationMetric={['databasesReads', 'databasesWrites']} />
                     {/if}
@@ -284,7 +291,7 @@
                         }
                     ]} />
                 {#if projects?.length > 0}
-                    <ProjectBreakdown {projects} metric="imageTransformations" {data} />
+                    <ProjectBreakdown {projects} metric="imageTransformations" {usageProjects} />
                 {/if}
             {:else}
                 <Card isDashed>
@@ -335,7 +342,7 @@
                             }
                         ]} />
                     {#if projects?.length > 0}
-                        <ProjectBreakdown {projects} metric="executions" {data} />
+                        <ProjectBreakdown {projects} metric="executions" {usageProjects} />
                     {/if}
                 </Layout.Stack>
             {:else}
@@ -401,7 +408,7 @@
                         progressMax={max}
                         progressBarData={progressBarStorageDate} />
                     {#if projects?.length > 0}
-                        <ProjectBreakdown {projects} metric="storage" {data} />
+                        <ProjectBreakdown {projects} metric="storage" {usageProjects} />
                     {/if}
                 </Layout.Stack>
             {:else}
@@ -512,7 +519,7 @@
                             {projects}
                             metric="authPhoneTotal"
                             estimate="authPhoneEstimate"
-                            {data} />
+                            {usageProjects} />
                     {/if}
                 </Layout.Stack>
             {:else}
