@@ -23,12 +23,14 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         sdk.forConsoleIn(project.region).console.variables(),
         loadAvailableRegions(project.teamId)
     ]);
+
     if (prefs?.organization !== project.teamId) {
         sdk.forConsole.account.updatePrefs({
             ...prefs,
             organization: project.teamId
         });
     }
+
     await preferences.loadTeamPrefs(project.teamId);
     let roles = isCloud ? [] : defaultRoles;
     let scopes = isCloud ? [] : defaultScopes;
@@ -38,15 +40,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         roles = res.roles;
         scopes = res.scopes;
         if (scopes.includes('billing.read')) {
-            await failedInvoice.load(project.teamId);
-            if (get(failedInvoice)) {
-                headerAlert.add({
-                    show: true,
-                    component: PaymentFailed,
-                    id: 'paymentFailed',
-                    importance: 1
-                });
-            }
+            loadFailedInvoices(project.teamId);
         }
     }
 
@@ -59,3 +53,17 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         currentPlan
     };
 };
+
+// load the invoice and add a banner in bg
+function loadFailedInvoices(teamId: string) {
+    failedInvoice.load(teamId).then(() => {
+        if (get(failedInvoice)) {
+            headerAlert.add({
+                show: true,
+                component: PaymentFailed,
+                id: 'paymentFailed',
+                importance: 1
+            });
+        }
+    });
+}

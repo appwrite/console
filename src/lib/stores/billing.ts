@@ -24,7 +24,7 @@ import type {
 } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
-import { Query } from '@appwrite.io/console';
+import { AppwriteException, Query } from '@appwrite.io/console';
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
 import { addNotification, notifications } from './notifications';
@@ -492,25 +492,41 @@ export async function checkForMissingPaymentMethod() {
 
 // Display upgrade banner for new users after 1 week for 30 days
 export async function checkForNewDevUpgradePro(org: Organization) {
-    if (org?.billingPlan !== BillingPlan.FREE || !browser) return;
+    // browser or plan check.
+    if (!browser || org?.billingPlan !== BillingPlan.FREE) return;
 
-    const orgs = await sdk.forConsole.billing.listOrganization([
-        Query.notEqual('billingPlan', BillingPlan.FREE)
-    ]);
-    if (orgs?.total) return;
+    // already dismissed by user!
+    if (localStorage.getItem('newDevUpgradePro')) return;
+
+    // saves one trip to backend!
+    const notValidKey = `${org.$id}:isNotValid`;
+    if (localStorage.getItem(notValidKey)) return;
 
     const now = new Date().getTime();
     const account = get(user);
     const accountCreated = new Date(account.$createdAt).getTime();
     if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
-    const isDismissed = !!localStorage.getItem('newDevUpgradePro');
-    if (isDismissed) return;
-    // check if coupon already applied
+
+    const organizations = await sdk.forConsole.billing.listOrganization([
+        Query.notEqual('billingPlan', BillingPlan.FREE)
+    ]);
+
+    if (organizations?.total) return;
+
     try {
         await sdk.forConsole.billing.getCouponAccount(NEW_DEV_PRO_UPGRADE_COUPON);
-    } catch (e) {
+    } catch (error) {
+        if (
+            // already utilized if error is 409
+            error instanceof AppwriteException &&
+            error?.code === 409 &&
+            error.type === 'billing_coupon_already_used'
+        ) {
+            localStorage.setItem(notValidKey, 'true');
+        }
         return;
     }
+
     headerAlert.add({
         id: 'newDevUpgradePro',
         component: newDevUpgradePro,

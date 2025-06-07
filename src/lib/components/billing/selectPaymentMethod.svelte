@@ -11,9 +11,9 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
 
-    export let methods: PaymentList;
     export let value: string;
     export let taxId = '';
+    export let methods: PaymentList;
 
     let showTaxId = false;
     let showPaymentModal = false;

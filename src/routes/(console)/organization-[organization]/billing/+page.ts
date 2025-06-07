@@ -1,12 +1,13 @@
-import { Dependencies } from '$lib/constants';
+import { BillingPlan, Dependencies } from '$lib/constants';
 import type { Address } from '$lib/sdk/billing';
-import type { Organization } from '$lib/stores/organization';
+import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
+import { isCloud } from '$lib/system';
 
 export const load: PageLoad = async ({ parent, depends }) => {
-    const { organization, scopes } = await parent();
+    const { organization, scopes, currentPlan, countryList, locale } = await parent();
 
     if (!scopes.includes('billing.read')) {
         return redirect(301, `/console/organization-${organization.$id}`);
@@ -49,12 +50,19 @@ export const load: PageLoad = async ({ parent, depends }) => {
         // ignore error
     }
 
+    const areCreditsSupported = isCloud
+        ? (currentPlan?.supportsCredits ??
+          (organization.billingPlan !== BillingPlan.FREE &&
+              organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))
+        : false;
+
     const [paymentMethods, addressList, billingAddress, creditList, aggregationBillingPlan] =
         await Promise.all([
             sdk.forConsole.billing.listPaymentMethods(),
             sdk.forConsole.billing.listAddresses(),
             billingAddressPromise,
-            sdk.forConsole.billing.listCredits(organization.$id),
+            // todo: best to add a `getAvailableCredit` endpoint. cc @dlohani => PLA-3006
+            areCreditsSupported ? sdk.forConsole.billing.listCredits(organization.$id) : null,
             sdk.forConsole.billing.getPlan(billingAggregation?.plan ?? organization.billingPlan)
         ]);
 
@@ -65,6 +73,9 @@ export const load: PageLoad = async ({ parent, depends }) => {
         aggregationBillingPlan,
         creditList,
         billingAggregation,
-        billingInvoice
+        billingInvoice,
+        areCreditsSupported,
+        countryList,
+        locale
     };
 };

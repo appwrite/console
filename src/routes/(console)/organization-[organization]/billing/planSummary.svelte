@@ -28,7 +28,7 @@
 
     let showCancel: boolean = false;
 
-    const availableCredit = creditList.available;
+    const availableCredit = creditList?.available;
     const today = new Date();
     const isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&

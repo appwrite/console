@@ -1,7 +1,6 @@
 <script lang="ts">
     import { beforeNavigate } from '$app/navigation';
     import { Navbar, Sidebar } from '$lib/components';
-    import type { NavbarProject } from '$lib/components/navbar.svelte';
     import { isNewWizardStatusOpen, wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
     import { setContext } from 'svelte';
@@ -19,11 +18,14 @@
     import { page } from '$app/stores';
     import type { Models } from '@appwrite.io/console';
 
-    export let showSideNavigation = false;
     export let showHeader = true;
     export let showFooter = true;
-    export let loadedProjects: Array<NavbarProject> = [];
+    export let showSideNavigation = false;
     export let selectedProject: Models.Project | null = null;
+    export let projectsPromise: Promise<Models.ProjectList> = Promise.resolve({
+        total: 0,
+        projects: []
+    });
 
     let yOnMenuOpen: number;
     let showContentTransition = false;
@@ -101,10 +103,13 @@
                 $id: org.$id,
                 showUpgrade: billingPlan === BillingPlan.FREE,
                 tierName: isCloud ? tierToPlan(billingPlan).name : null,
-                isSelected: $organization?.$id === org.$id,
-                projects: loadedProjects
+                isSelected: $organization?.$id === org.$id
             };
-        })
+        }),
+
+        projectsPromise: projectsPromise,
+
+        currentProject: selectedProject
     };
 
     let showAccountMenu = false;

@@ -22,8 +22,15 @@
         IconSwitchHorizontal,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
+    import type { Models } from '@appwrite.io/console';
+    import type { PageData } from './$types';
 
-    export let billingAddress: Address = null;
+    export let data: PageData;
+
+    const locale: Models.Locale = data.locale;
+    const countryList: Models.CountryList = data.countryList;
+
+    let billingAddress: Address = data?.billingAddress;
 
     let showCreate = false;
     let showEdit = false;
@@ -34,14 +41,14 @@
         try {
             await sdk.forConsole.billing.setBillingAddress($organization.$id, addressId);
 
-            await invalidate(Dependencies.ADDRESS);
-            await invalidate(Dependencies.ORGANIZATION);
-
             addNotification({
                 type: 'success',
                 message: `A new billing address has been added to ${$organization.name}`
             });
             trackEvent(Submit.OrganizationBillingAddressUpdate);
+
+            invalidate(Dependencies.ADDRESS);
+            invalidate(Dependencies.ORGANIZATION);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -133,10 +140,14 @@
 </CardGrid>
 
 {#if showCreate}
-    <AddressModal bind:show={showCreate} organization={$organization?.$id} />
+    <AddressModal bind:show={showCreate} organization={$organization?.$id} {countryList} {locale} />
 {/if}
 {#if showEdit}
-    <EditAddressModal bind:show={showEdit} bind:selectedAddress={billingAddress} />
+    <EditAddressModal
+        {locale}
+        {countryList}
+        bind:show={showEdit}
+        bind:selectedAddress={billingAddress} />
 {/if}
 {#if showReplace}
     <ReplaceAddress bind:show={showReplace} />

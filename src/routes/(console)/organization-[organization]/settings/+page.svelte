@@ -15,8 +15,10 @@
     import { isCloud } from '$lib/system';
     import Baa from './BAA.svelte';
     import Soc2 from './Soc2.svelte';
+    import type { PageData } from './$types';
 
-    export let data;
+    export let data: PageData;
+
     let name: string;
     let showDelete = false;
 
@@ -70,8 +72,8 @@
 
         {#if isCloud}
             <DownloadDPA />
-            <Baa />
-            <Soc2 />
+            <Baa locale={data.locale} countryList={data.countryList} />
+            <Soc2 locale={data.locale} countryList={data.countryList} />
         {/if}
 
         <CardGrid>
