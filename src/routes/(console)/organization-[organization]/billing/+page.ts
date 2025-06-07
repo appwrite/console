@@ -1,14 +1,13 @@
 import { BillingPlan, Dependencies } from '$lib/constants';
 import type { Address } from '$lib/sdk/billing';
-import { currentPlan, type Organization } from '$lib/stores/organization';
+import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { get } from 'svelte/store';
 import { isCloud } from '$lib/system';
 
 export const load: PageLoad = async ({ parent, depends }) => {
-    const { organization, scopes } = await parent();
+    const { organization, scopes, currentPlan } = await parent();
 
     if (!scopes.includes('billing.read')) {
         return redirect(301, `/console/organization-${organization.$id}`);
@@ -52,7 +51,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
     }
 
     const areCreditsSupported = isCloud
-        ? (get(currentPlan)?.supportsCredits ??
+        ? (currentPlan?.supportsCredits ??
           (organization.billingPlan !== BillingPlan.FREE &&
               organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))
         : false;

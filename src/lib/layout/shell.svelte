@@ -103,10 +103,13 @@
                 $id: org.$id,
                 showUpgrade: billingPlan === BillingPlan.FREE,
                 tierName: isCloud ? tierToPlan(billingPlan).name : null,
-                isSelected: $organization?.$id === org.$id,
-                projects: projectsPromise
+                isSelected: $organization?.$id === org.$id
             };
-        })
+        }),
+
+        projectsPromise: projectsPromise,
+
+        currentProject: selectedProject
     };
 
     let showAccountMenu = false;

@@ -36,7 +36,7 @@
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
-    import { activeHeaderAlert, consoleVariables } from './store';
+    import { activeHeaderAlert, consoleVariables, version } from './store';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { base } from '$app/paths';
@@ -53,6 +53,7 @@
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
+    import { sdk } from '$lib/stores/sdk';
 
     export let data: LayoutData;
 

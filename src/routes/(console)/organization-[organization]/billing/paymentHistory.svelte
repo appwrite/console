@@ -89,7 +89,7 @@
                 </svelte:fragment>
 
                 {#if isLoadingInvoices}
-                    {#each Array.from({ length: 2 }) as _}
+                    {#each Array.from({ length: 2 }).keys() as index (index)}
                         <Table.Row.Base {root}>
                             {#each columns as column}
                                 <Table.Cell column={column.id} {root}>
