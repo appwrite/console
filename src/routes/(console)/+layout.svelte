@@ -36,7 +36,7 @@
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
-    import { activeHeaderAlert, consoleVariables, version } from './store';
+    import { activeHeaderAlert, consoleVariables } from './store';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { base } from '$app/paths';
@@ -54,6 +54,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
     import { sdk } from '$lib/stores/sdk';
+    import { type Models, Query } from '@appwrite.io/console';
 
     export let data: LayoutData;
 
@@ -313,6 +314,19 @@
 
     $: checkForUsageLimits($organization);
 
+    function getProjectsPromise(): Promise<Models.ProjectList> {
+        return sdk.forConsole.projects.list([
+            Query.equal(
+                'teamId',
+                data.currentOrgId ?? currentOrganizationId ?? page.params.organization
+            ),
+            Query.limit(5),
+            Query.orderDesc('$updatedAt')
+        ]);
+    }
+
+    $: projectsPromise = getProjectsPromise();
+
     $: if ($requestedMigration) {
         openMigrationWizard();
     }
@@ -333,7 +347,7 @@
         !page.url.pathname.includes('/console/onboarding')}
     showHeader={!page.url.pathname.includes('/console/onboarding/create-project')}
     showFooter={!page.url.pathname.includes('/console/onboarding/create-project')}
-    projectsPromise={data.projectsPromise}
+    projectsPromise={projectsPromise}
     selectedProject={page.data?.project}>
     <!--    <Header slot="header" />-->
     <slot />

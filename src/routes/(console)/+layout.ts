@@ -1,12 +1,11 @@
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
-import { Query } from '@appwrite.io/console';
 import { Dependencies } from '$lib/constants';
 import type { Tier } from '$lib/stores/billing';
 import type { Plan, PlanList } from '$lib/sdk/billing';
 
-export const load: LayoutLoad = async ({ params, depends, parent }) => {
+export const load: LayoutLoad = async ({ depends, parent }) => {
     await parent();
     depends(Dependencies.RUNTIMES);
     depends(Dependencies.CONSOLE_VARIABLES);
@@ -27,7 +26,6 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const plansInfo = toPlanMap(plansArray);
 
     const currentOrgId =
-        params.organization ??
         preferences.organization ??
         (organizations.teams.length > 0 ? organizations.teams[0].$id : undefined);
 
@@ -39,13 +37,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         currentOrgId,
         organizations,
         consoleVariables,
-        version: versionData?.version ?? null,
-        currentProjectId: params.project ?? '',
-        projectsPromise: sdk.forConsole.projects.list([
-            Query.equal('teamId', currentOrgId),
-            Query.limit(5),
-            Query.orderDesc('$updatedAt')
-        ])
+        version: versionData?.version ?? null
     };
 };
 
