@@ -2,8 +2,6 @@
     import { CardGrid, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addressList } from '$lib/stores/billing';
-    import { sdk } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
     import AddressModal from './addressModal.svelte';
     import type { Models } from '@appwrite.io/console';
     import DeleteAddress from './deleteAddressModal.svelte';
@@ -29,16 +27,14 @@
         Typography
     } from '@appwrite.io/pink-svelte';
 
+    export let locale: Models.Locale;
+    export let countryList: Models.CountryList;
+
     let show = false;
     let showEdit = false;
     let selectedAddress: Address;
     let selectedLinkedOrgs: Organization[] = [];
     let showDelete = false;
-    let countryList: Models.CountryList;
-
-    onMount(async () => {
-        countryList = await sdk.forConsole.locale.listCountries();
-    });
 
     $: orgList = $organizationList.teams as unknown as Organization[];
 </script>
@@ -144,6 +140,6 @@
     </svelte:fragment>
 </CardGrid>
 
-<AddressModal bind:show />
-<EditAddressModal bind:show={showEdit} {selectedAddress} />
+<AddressModal {locale} {countryList} bind:show />
+<EditAddressModal bind:show={showEdit} {selectedAddress} {locale} {countryList} />
 <DeleteAddress bind:showDelete {selectedAddress} linkedOrgs={selectedLinkedOrgs} />
