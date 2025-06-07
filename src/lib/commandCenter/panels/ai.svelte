@@ -167,13 +167,10 @@
         <div style="padding: 1rem; padding-block-end: 0;">
             <Alert.Inline
                 dismissible
+                title="We collect user responses to refine our experimental AI feature."
                 on:dismiss={() => {
                     $preferences.hideAiDisclaimer = true;
-                }}>
-                <span slot="title">
-                    We collect user responses to refine our experimental AI feature.
-                </span>
-            </Alert.Inline>
+                }} />
         </div>
     {/if}
 
@@ -229,8 +226,11 @@
             <Layout.Stack direction="row" gap="s">
                 <AvatarInitials size="s" name={$user.name} />
                 <form
-                    class="input-text-wrapper u-width-full-line"
+                    class="u-full-width input-text-wrapper"
                     style="--amount-of-buttons: 1;"
+                    style:display="flex"
+                    style:width="100%"
+                    style:align-items="center"
                     on:submit|preventDefault={(e) => {
                         handleSubmit(e);
                     }}>
@@ -238,6 +238,7 @@
                     <input
                         type="text"
                         class="input-text"
+                        style:width="100%"
                         placeholder="Ask a question..."
                         autofocus
                         bind:value={$input}
