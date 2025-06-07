@@ -7,13 +7,17 @@ import { isCloud } from '$lib/system';
 export const load: PageLoad = async ({ depends, params }) => {
     depends(Dependencies.ORGANIZATION);
 
-    const [projects, invoices] = await Promise.all([
+    const [projects, invoices, countryList, locale] = await Promise.all([
         sdk.forConsole.projects.list([Query.equal('teamId', params.organization)]),
-        isCloud ? sdk.forConsole.billing.listInvoices(params.organization) : undefined
+        isCloud ? sdk.forConsole.billing.listInvoices(params.organization) : undefined,
+        sdk.forConsole.locale.listCountries(),
+        sdk.forConsole.locale.get()
     ]);
 
     return {
         projects,
-        invoices
+        invoices,
+        countryList,
+        locale
     };
 };
