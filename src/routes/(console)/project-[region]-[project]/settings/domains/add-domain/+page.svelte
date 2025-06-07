@@ -12,6 +12,7 @@
     import { isCloud } from '$lib/system';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { getApexDomain } from '$lib/helpers/tlds';
+    import type { Models } from '@appwrite.io/console';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/settings/domains`;
 
@@ -29,18 +30,21 @@
 
     async function addDomain() {
         const apexDomain = getApexDomain(domainName);
-        let domain = data.domains?.domains.find((d) => d.domain === apexDomain);
+        let domain = data.domains?.domains.find((d: Models.Domain) => d.domain === apexDomain);
 
         if (apexDomain && !domain && isCloud) {
             try {
                 domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
             } catch (error) {
-                addNotification({
-                    type: 'error',
-                    message: error.message
-                });
-
-                return;
+                // apex might already be added on organization level, skip.
+                const alreadyAdded = error?.type === 'domain_already_exists';
+                if (!alreadyAdded) {
+                    addNotification({
+                        type: 'error',
+                        message: error.message
+                    });
+                    return;
+                }
             }
         }
 
