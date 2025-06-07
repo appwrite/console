@@ -134,7 +134,7 @@
         currentInvoice={data?.billingInvoice} />
     <PaymentHistory />
     <PaymentMethods />
-    <BillingAddress billingAddress={data?.billingAddress} />
+    <BillingAddress {data} />
     <TaxId />
     <BudgetCap />
     <AvailableCredit areCreditsSupported={data.areCreditsSupported} />

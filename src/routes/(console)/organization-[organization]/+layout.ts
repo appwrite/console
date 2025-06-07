@@ -42,9 +42,11 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
             sdk.forConsole.account.updatePrefs(newPrefs);
         }
 
-        const [organization, members] = await Promise.all([
+        const [organization, members, countryList, locale] = await Promise.all([
             sdk.forConsole.teams.get(params.organization) as Promise<Organization>,
             sdk.forConsole.teams.listMemberships(params.organization),
+            sdk.forConsole.locale.listCountries(),
+            sdk.forConsole.locale.get(),
             preferences.loadTeamPrefs(params.organization),
             loadAvailableRegions(params.organization)
         ]);
@@ -56,7 +58,9 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
             currentPlan,
             members,
             roles,
-            scopes
+            scopes,
+            countryList,
+            locale
         };
     } catch (e) {
         const newPrefs = { ...prefs, organization: null };

@@ -4,14 +4,13 @@ import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import { isCloud } from '$lib/system';
 
-export const load: PageLoad = async ({ depends, params }) => {
+export const load: PageLoad = async ({ depends, params, parent }) => {
+    const { countryList, locale } = await parent();
     depends(Dependencies.ORGANIZATION);
 
-    const [projects, invoices, countryList, locale] = await Promise.all([
+    const [projects, invoices] = await Promise.all([
         sdk.forConsole.projects.list([Query.equal('teamId', params.organization)]),
-        isCloud ? sdk.forConsole.billing.listInvoices(params.organization) : undefined,
-        sdk.forConsole.locale.listCountries(),
-        sdk.forConsole.locale.get()
+        isCloud ? sdk.forConsole.billing.listInvoices(params.organization) : undefined
     ]);
 
     return {

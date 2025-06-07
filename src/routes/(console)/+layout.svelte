@@ -347,7 +347,7 @@
         !page.url.pathname.includes('/console/onboarding')}
     showHeader={!page.url.pathname.includes('/console/onboarding/create-project')}
     showFooter={!page.url.pathname.includes('/console/onboarding/create-project')}
-    projectsPromise={projectsPromise}
+    {projectsPromise}
     selectedProject={page.data?.project}>
     <!--    <Header slot="header" />-->
     <slot />

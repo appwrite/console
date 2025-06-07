@@ -24,5 +24,5 @@
 <Container>
     <Typography.Title size="s">Payment details</Typography.Title>
     <PaymentMethods bind:showPayment />
-    <BillingAddress countryList={data.countryList} locale={data.locale} />
+    <BillingAddress {data} />
 </Container>

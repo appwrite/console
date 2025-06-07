@@ -26,9 +26,12 @@
         Tag,
         Typography
     } from '@appwrite.io/pink-svelte';
+    import type { PageData } from './$types';
 
-    export let locale: Models.Locale;
-    export let countryList: Models.CountryList;
+    export let data: PageData;
+
+    const locale: Models.Locale = data.locale;
+    const countryList: Models.CountryList = data.countryList;
 
     let show = false;
     let showEdit = false;

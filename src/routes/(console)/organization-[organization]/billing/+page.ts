@@ -7,7 +7,7 @@ import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
 
 export const load: PageLoad = async ({ parent, depends }) => {
-    const { organization, scopes, currentPlan } = await parent();
+    const { organization, scopes, currentPlan, countryList, locale } = await parent();
 
     if (!scopes.includes('billing.read')) {
         return redirect(301, `/console/organization-${organization.$id}`);
@@ -74,6 +74,8 @@ export const load: PageLoad = async ({ parent, depends }) => {
         creditList,
         billingAggregation,
         billingInvoice,
-        areCreditsSupported
+        areCreditsSupported,
+        countryList,
+        locale
     };
 };
