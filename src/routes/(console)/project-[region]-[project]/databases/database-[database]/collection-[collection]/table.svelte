@@ -90,7 +90,7 @@
                     ? `${formattedColumn.slice(0, 20)}...`
                     : formattedColumn,
             truncated: formattedColumn.length > 20,
-            whole: formattedColumn
+            whole: `${formattedColumn.slice(0, 100)}...`
         };
     }
 
@@ -196,7 +196,7 @@
                 {/key}
             </Table.Cell>
 
-            {#each $columns as { id }}
+            {#each $columns as { id } (id)}
                 {@const attr = $attributes.find((n) => n.key === id)}
                 <Table.Cell column={id} {root}>
                     {#if isRelationship(attr)}
@@ -251,16 +251,21 @@
                                 <span slot="title">Timestamp</span>
                                 {toLocaleDateTime(formatted.whole, true, 'UTC')}
                             </DualTimeView>
-                        {:else}
+                        {:else if formatted.truncated}
                             <Tooltip placement="bottom" disabled={!formatted.truncated}>
                                 <Typography.Text truncate>{formatted.value}</Typography.Text>
                                 <span
+                                    let:showing
                                     slot="tooltip"
                                     style:white-space="pre-wrap"
                                     style:word-break="break-all">
-                                    {formatted.whole}
+                                    {#if showing}
+                                        {formatted.whole}
+                                    {/if}
                                 </span>
                             </Tooltip>
+                        {:else}
+                            <Typography.Text truncate>{formatted.value}</Typography.Text>
                         {/if}
                     {/if}
                 </Table.Cell>
