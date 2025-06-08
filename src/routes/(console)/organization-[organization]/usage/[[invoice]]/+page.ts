@@ -1,14 +1,14 @@
-import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import type { UsageProjectInfo } from '../../store';
 import type { Invoice, OrganizationUsage } from '$lib/sdk/billing';
+import { get } from 'svelte/store';
+import { projects as projectsStore } from '../../store';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice } = params;
-    const parentData = await parent();
-    const org = parentData.organization as Organization;
+    const { organization: org, currentPlan: plan } = await parent();
 
     /**
      * Temporary fix during migration to billing system
@@ -51,16 +51,17 @@ export const load: PageLoad = async ({ params, parent }) => {
         endDate = currentInvoice.to;
     }
 
-    const [invoices, usage, organizationMembers, plan] = await Promise.all([
-        sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
-        sdk.forConsole.billing.listUsage(params.organization, startDate, endDate),
-        sdk.forConsole.teams.listMemberships(params.organization, [Query.limit(100)]),
-        sdk.forConsole.billing.getOrganizationPlan(org.$id)
+    const [usage, organizationMembers] = await Promise.all([
+        sdk.forConsole.billing.listUsage(org.$id, startDate, endDate),
+        // this section is cloud only,
+        // so it is fine to use this check and fetch memberships conditionally!
+        !plan?.addons?.seats?.supported
+            ? null
+            : sdk.forConsole.teams.listMemberships(org.$id, [Query.limit(100)])
     ]);
 
     return {
         plan,
-        invoices,
         currentInvoice,
         organizationMembers,
         organizationUsage: usage,
@@ -71,32 +72,42 @@ export const load: PageLoad = async ({ params, parent }) => {
 // all this to get the project's name and region!
 function getUsageProjects(usage: OrganizationUsage) {
     return (async () => {
+        const existing = get(projectsStore)?.projects ?? [];
         const projects: Record<string, UsageProjectInfo> = {};
 
-        if (usage?.projects?.length > 0) {
-            const chunk = 100;
-            const requests = [];
-            for (let i = 0; i < usage.projects.length; i += chunk) {
-                const queries = [
-                    Query.limit(chunk),
-                    Query.equal(
-                        '$id',
-                        usage.projects.slice(i, i + chunk).map((p) => p.projectId)
-                    )
-                ];
+        const storeIds = new Set<string>();
+        for (const project of existing) {
+            projects[project.$id] = {
+                name: project.name,
+                region: project.region
+            };
 
-                // this returns too much of data that we don't need!
-                requests.push(sdk.forConsole.projects.list(queries));
-            }
+            storeIds.add(project.$id);
+        }
 
-            const responses = await Promise.all(requests);
-            for (const response of responses) {
-                for (const project of response.projects) {
-                    projects[project.$id] = {
-                        name: project.name,
-                        region: project.region
-                    };
-                }
+        // filter missing ones
+        const toFetch = usage.projects.filter((p) => !storeIds.has(p.projectId));
+
+        if (toFetch.length === 0) {
+            return projects;
+        }
+
+        const limit = 100;
+        const requests = [];
+        for (let index = 0; index < toFetch.length; index += limit) {
+            const chunkIds = toFetch.slice(index, index + limit).map((p) => p.projectId);
+            requests.push(
+                sdk.forConsole.projects.list([Query.limit(limit), Query.equal('$id', chunkIds)])
+            );
+        }
+
+        const responses = await Promise.all(requests);
+        for (const response of responses) {
+            for (const project of response.projects) {
+                projects[project.$id] = {
+                    name: project.name,
+                    region: project.region
+                };
             }
         }
 
