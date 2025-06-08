@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { BillingPlan } from '$lib/constants';
+    import { BASE_BILLING_PLANS, BillingPlan } from '$lib/constants';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { plansInfo, type Tier, tierFree, tierPro, tierScale } from '$lib/stores/billing';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan, organization } from '$lib/stores/organization';
     import { Badge, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { LabelCard } from '..';
 
@@ -14,6 +14,8 @@
     $: freePlan = $plansInfo.get(BillingPlan.FREE);
     $: proPlan = $plansInfo.get(BillingPlan.PRO);
     $: scalePlan = $plansInfo.get(BillingPlan.SCALE);
+
+    $: isBasePlan = BASE_BILLING_PLANS.includes($currentPlan?.$id);
 </script>
 
 <Layout.Stack>
@@ -72,4 +74,25 @@
             {formatCurrency(scalePlan?.price ?? 0)} per month + usage
         </Typography.Text>
     </LabelCard>
+    {#if !isBasePlan}
+        <LabelCard
+            name="plan"
+            bind:group={billingPlan}
+            value={$currentPlan.$id}
+            title={$currentPlan.name}>
+            <svelte:fragment slot="action">
+                {#if $organization?.billingPlan === $currentPlan.$id && !isNewOrg}
+                    <Badge variant="secondary" size="xs" content="Current plan" />
+                {/if}
+            </svelte:fragment>
+            <Typography.Caption variant="400">
+                {$currentPlan.desc}
+            </Typography.Caption>
+            <Typography.Text>
+                {@const isZeroPrice = ($currentPlan?.price ?? 0) <= 0}
+                {@const price = formatCurrency($currentPlan?.price ?? 0)}
+                {isZeroPrice ? price : `${price} per month + usage`}
+            </Typography.Text>
+        </LabelCard>
+    {/if}
 </Layout.Stack>

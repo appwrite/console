@@ -28,7 +28,12 @@ import { Query } from '@appwrite.io/console';
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
 import { addNotification, notifications } from './notifications';
-import { currentPlan, organization, type Organization, type OrganizationError } from './organization';
+import {
+    currentPlan,
+    organization,
+    type Organization,
+    type OrganizationError
+} from './organization';
 import { canSeeBilling } from './roles';
 import { sdk } from './sdk';
 import { user } from './user';
@@ -270,11 +275,11 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
 }
 
 export function checkForEnterpriseTrial(org: Organization) {
-    const remaining  = calculateEnterpriseTrial(org);
+    const remaining = calculateEnterpriseTrial(org);
     console.log('remaining', remaining);
-    if(calculateEnterpriseTrial(org) > 0) {
-         headerAlert.add({
-            id: 'temaEnterprieseTrial',
+    if (calculateEnterpriseTrial(org) > 0) {
+        headerAlert.add({
+            id: 'teamEnterpriseTrial',
             component: EnterpriseTrial,
             show: true,
             importance: 11

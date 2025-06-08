@@ -55,12 +55,7 @@
                 Your enterprise trial expires in {remainingDays} days.
             </Typography.Text>
 
-
-            <Button
-                secondary
-                fullWidthMobile
-                class="u-line-height-1 u-gap-16"
-                href={upgradeUrl}>
+            <Button secondary fullWidthMobile class="u-line-height-1 u-gap-16" href={upgradeUrl}>
                 Upgrade
             </Button>
         </Layout.Stack>
