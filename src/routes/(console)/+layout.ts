@@ -6,22 +6,33 @@ import type { Tier } from '$lib/stores/billing';
 import type { Plan, PlanList } from '$lib/sdk/billing';
 
 export const load: LayoutLoad = async ({ depends, parent }) => {
-    await parent();
+    let { organizations } = await parent();
+
     depends(Dependencies.RUNTIMES);
     depends(Dependencies.CONSOLE_VARIABLES);
     depends(Dependencies.ORGANIZATION);
 
     const { endpoint, project } = sdk.forConsole.client.config;
-    const [preferences, plansArray, organizations, versionData, consoleVariables] =
-        await Promise.all([
-            sdk.forConsole.account.getPrefs(),
-            isCloud ? sdk.forConsole.billing.getPlansInfo() : null,
-            isCloud ? sdk.forConsole.billing.listOrganization() : sdk.forConsole.teams.list(),
-            fetch(`${endpoint}/health/version`, {
-                headers: { 'X-Appwrite-Project': project }
-            }).then((response) => response.json() as { version?: string }),
-            sdk.forConsole.console.variables()
-        ]);
+    const [preferences, plansArray, orgs, versionData, consoleVariables] = await Promise.all([
+        sdk.forConsole.account.getPrefs(),
+        isCloud ? sdk.forConsole.billing.getPlansInfo() : null,
+        // reuse from parent if available, else load fresh.
+        // know that the parent loads these orgs conditionally!
+        !organizations
+            ? isCloud
+                ? sdk.forConsole.billing.listOrganization()
+                : sdk.forConsole.teams.list()
+            : organizations,
+
+        fetch(`${endpoint}/health/version`, {
+            headers: { 'X-Appwrite-Project': project }
+        }).then((response) => response.json() as { version?: string }),
+        sdk.forConsole.console.variables()
+    ]);
+
+    if (!organizations) {
+        organizations = orgs;
+    }
 
     const plansInfo = toPlanMap(plansArray);
 
