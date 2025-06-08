@@ -39,7 +39,7 @@
         setNavigationHeight();
     });
 
-    $: upgradeUrl = `${base}/organization-${$organization?.$id}/billing`;
+    $: upgradeUrl = `${base}/organization-${$organization?.$id}/change-plan`;
     $: remainingDays = calculateEnterpriseTrial($organization);
 </script>
 
