@@ -11,7 +11,7 @@ import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequi
 import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
 import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
-import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
+import { type Size, sizeToBytes } from '$lib/helpers/sizeConvertion';
 import type {
     AddressesList,
     Aggregation,
@@ -275,8 +275,6 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
 }
 
 export function checkForEnterpriseTrial(org: Organization) {
-    const remaining = calculateEnterpriseTrial(org);
-    console.log('remaining', remaining);
     if (calculateEnterpriseTrial(org) > 0) {
         headerAlert.add({
             id: 'teamEnterpriseTrial',
@@ -294,11 +292,9 @@ export function calculateEnterpriseTrial(org: Organization) {
 
     let diffCycle = endDate.getTime() - startDate.getTime();
     diffCycle = Math.ceil(diffCycle / (1000 * 60 * 60 * 24)) + 1;
-    console.log('diffCycle', diffCycle);
     if (diffCycle === 15) {
         const remaining = endDate.getTime() - today.getTime();
-        const days = Math.ceil(remaining / (1000 * 60 * 60 * 24)) + 1;
-        return days;
+        return Math.ceil(remaining / (1000 * 60 * 60 * 24)) + 1;
     }
     return 0;
 }

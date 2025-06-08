@@ -305,7 +305,7 @@
         if (currentOrganizationId === org.$id) return;
         if (isCloud) {
             currentOrganizationId = org.$id;
-            await checkForEnterpriseTrial(org);
+            checkForEnterpriseTrial(org);
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
             await checkForNewDevUpgradePro(org);

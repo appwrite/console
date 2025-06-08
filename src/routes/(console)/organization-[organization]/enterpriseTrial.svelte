@@ -4,28 +4,55 @@
     import { organization } from '$lib/stores/organization';
     import { calculateEnterpriseTrial, hideBillingHeaderRoutes } from '$lib/stores/billing';
     import { base } from '$app/paths';
-    import { isTabletViewport } from '$lib/stores/viewport';
     import GradientBanner from '$lib/components/billing/gradientBanner.svelte';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Typography } from '@appwrite.io/pink-svelte';
 
     $: upgradeUrl = `${base}/organization-${$organization?.$id}/change-plan`;
     $: remainingDays = calculateEnterpriseTrial($organization);
 </script>
 
 {#if $organization?.$id && remainingDays > 0 && !hideBillingHeaderRoutes.includes(page.url.pathname)}
-    <GradientBanner>
-        <Layout.Stack
-            gap="m"
-            alignItems="center"
-            alignContent="space-between"
-            direction={$isTabletViewport ? 'column' : 'row'}>
+    <GradientBanner variant="image">
+        <div class="banner-fullwidth-grid">
             <Typography.Text>
-                Your enterprise trial expires in {remainingDays} days.
+                Your enterprise trial expires in <Badge
+                    variant="secondary"
+                    content={remainingDays.toString()} /> days.
             </Typography.Text>
 
-            <Button secondary fullWidthMobile class="u-line-height-1 u-gap-16" href={upgradeUrl}>
-                Upgrade
-            </Button>
-        </Layout.Stack>
+            <Button secondary fullWidthMobile href={upgradeUrl}>Upgrade</Button>
+        </div>
     </GradientBanner>
 {/if}
+
+<style lang="scss">
+    .banner-fullwidth-grid {
+        width: 100vw;
+        display: grid;
+        padding: 0 3rem;
+        align-items: center;
+        grid-template-columns: 1fr auto 1fr;
+
+        > :global(:first-child) {
+            grid-column: 2;
+            justify-self: center;
+
+            @media (max-width: 768px) {
+                grid-column: unset;
+            }
+        }
+
+        > :global(:last-child) {
+            grid-column: 3;
+            justify-self: end;
+        }
+
+        @media (max-width: 768px) {
+            gap: 12px;
+            width: 100%;
+            display: flex;
+            padding: unset;
+            flex-direction: column;
+        }
+    }
+</style>
