@@ -27,7 +27,7 @@
                 Your enterprise trial expires in <Badge
                     size="xs"
                     variant="secondary"
-                    content={remainingDays.toString()} /> days.
+                    content={remainingDays.toString()} /> days
             </Typography.Text>
 
             <Button size="xs" secondary fullWidthMobile href={upgradeUrl}>Upgrade</Button>

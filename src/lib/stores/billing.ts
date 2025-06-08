@@ -291,10 +291,10 @@ export function calculateEnterpriseTrial(org: Organization) {
     const today = new Date();
 
     let diffCycle = endDate.getTime() - startDate.getTime();
-    diffCycle = Math.ceil(diffCycle / (1000 * 60 * 60 * 24)) + 1;
-    if (diffCycle === 15) {
+    diffCycle = Math.ceil(diffCycle / (1000 * 60 * 60 * 24));
+    if (diffCycle === 14) {
         const remaining = endDate.getTime() - today.getTime();
-        return Math.ceil(remaining / (1000 * 60 * 60 * 24)) + 1;
+        return Math.ceil(remaining / (1000 * 60 * 60 * 24));
     }
     return 0;
 }
