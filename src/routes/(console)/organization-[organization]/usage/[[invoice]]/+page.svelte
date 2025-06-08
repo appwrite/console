@@ -34,7 +34,7 @@
 
     $: projects = (data.organizationUsage as OrganizationUsage).projects;
 
-    let usageProjects: { [key: string]: UsageProjectInfo } = {};
+    let usageProjects: Record<string, UsageProjectInfo> = {};
 
     $: legendData = [
         {
@@ -53,7 +53,7 @@
         }
     ];
 
-    onMount(async () => (usageProjects = await data.projectsPromise));
+    onMount(async () => (usageProjects = await data.projects));
 </script>
 
 <Container>

@@ -314,18 +314,14 @@
 
     $: checkForUsageLimits($organization);
 
-    function getProjectsPromise(): Promise<Models.ProjectList> {
-        return sdk.forConsole.projects.list([
-            Query.equal(
-                'teamId',
-                data.currentOrgId ?? currentOrganizationId ?? page.params.organization
-            ),
-            Query.limit(5),
-            Query.orderDesc('$updatedAt')
-        ]);
-    }
-
-    $: projectsPromise = getProjectsPromise();
+    $: projects = sdk.forConsole.projects.list([
+        Query.equal(
+            'teamId',
+            data.currentOrgId ?? currentOrganizationId ?? page.params.organization
+        ),
+        Query.limit(5),
+        Query.orderDesc('$updatedAt')
+    ]);
 
     $: if ($requestedMigration) {
         openMigrationWizard();
@@ -347,7 +343,7 @@
         !page.url.pathname.includes('/console/onboarding')}
     showHeader={!page.url.pathname.includes('/console/onboarding/create-project')}
     showFooter={!page.url.pathname.includes('/console/onboarding/create-project')}
-    {projectsPromise}
+    {projects}
     selectedProject={page.data?.project}>
     <!--    <Header slot="header" />-->
     <slot />

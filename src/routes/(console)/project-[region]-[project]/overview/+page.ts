@@ -5,18 +5,19 @@ import type { PageLoad } from './$types';
 import { selectedTab } from './store';
 
 export const load: PageLoad = async ({ params }) => {
-    let subroute: string;
     const tab = get(selectedTab);
 
     switch (tab) {
         case 'keys':
         case 'dev-keys':
-            subroute = tab;
-            break;
+            return redirect(
+                302,
+                `${base}/project-${params.region}-${params.project}/overview/${tab}`
+            );
         default:
-            subroute = 'platforms';
-            break;
+            return redirect(
+                302,
+                `${base}/project-${params.region}-${params.project}/overview/platforms`
+            );
     }
-
-    redirect(302, `${base}/project-${params.region}-${params.project}/overview/${subroute}`);
 };

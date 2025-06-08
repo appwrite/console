@@ -25,7 +25,7 @@
     export let projects: OrganizationUsage['projects'];
     export let metric: Metric | undefined = undefined;
     export let estimate: Estimate | undefined = undefined;
-    export let usageProjects: { [key: string]: UsageProjectInfo } = {};
+    export let usageProjects: Record<string, UsageProjectInfo> = {};
     export let databaseOperationMetric: DatabaseOperationMetric[] | undefined = undefined;
 
     function getMetricTitle(metric: Metric): string {

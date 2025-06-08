@@ -64,12 +64,12 @@ export const load: PageLoad = async ({ params, parent }) => {
         currentInvoice,
         organizationMembers,
         organizationUsage: usage,
-        projectsPromise: getUsageProjectsPromise(usage)
+        projects: getUsageProjects(usage)
     };
 };
 
 // all this to get the project's name and region!
-function getUsageProjectsPromise(usage: OrganizationUsage) {
+function getUsageProjects(usage: OrganizationUsage) {
     return (async () => {
         const projects: { [key: string]: UsageProjectInfo } = {};
 

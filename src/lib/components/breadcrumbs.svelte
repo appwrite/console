@@ -68,7 +68,7 @@
 
     export let organizations: Organization[] = [];
     export let currentProject: Models.Project | null = null;
-    export let projectsPromise: Promise<Models.ProjectList> = Promise.resolve(loadedProjects);
+    export let projects: Promise<Models.ProjectList> = Promise.resolve(loadedProjects);
 
     let projectsBottomSheetOpen = false;
     let organisationBottomSheetOpen = false;
@@ -99,15 +99,15 @@
         }
     };
 
-    async function createProjectsBottomSheet(): Promise<SheetMenu> {
+    async function createProjectsBottomSheet(organization: Organization): Promise<SheetMenu> {
         isLoadingProjects = true;
-        loadedProjects = await projectsPromise;
+        loadedProjects = await projects;
         isLoadingProjects = false;
 
         const createProjectItem = {
             name: 'Create project',
             trailingIcon: IconPlus,
-            href: `${base}/organization-${selectedOrg?.$id}?create-project`
+            href: `${base}/organization-${organization?.$id}?create-project`
         };
 
         if (loadedProjects.total > 1 && selectedOrg) {
@@ -135,15 +135,15 @@
         };
     }
 
-    function createOrganizationBottomSheet() {
-        return !selectedOrg
+    function createOrganizationBottomSheet(organization: Organization) {
+        return !organization
             ? switchOrganization
             : ({
                   top: {
                       items: [
                           {
                               name: 'Organization overview',
-                              href: `${base}/organization-${selectedOrg?.$id}`
+                              href: `${base}/organization-${organization?.$id}`
                           }
                       ]
                   },
@@ -177,11 +177,11 @@
         }
     }
 
-    $: projectsBottomSheet = createProjectsBottomSheet();
+    $: selectedOrg = organizations.find((org) => org.isSelected);
 
-    $: organizationsBottomSheet = createOrganizationBottomSheet();
+    $: projectsBottomSheet = createProjectsBottomSheet(selectedOrg);
 
-    $: selectedOrg = organizations.find((organization) => organization.isSelected);
+    $: organizationsBottomSheet = createOrganizationBottomSheet(selectedOrg);
 </script>
 
 <svelte:window on:resize={onResize} />

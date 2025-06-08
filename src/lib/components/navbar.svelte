@@ -107,7 +107,7 @@
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
     export let showAccountMenu = false;
     export let currentProject: Models.Project = undefined;
-    export let projectsPromise: Promise<Models.ProjectList> = undefined;
+    export let projects: Promise<Models.ProjectList> = undefined;
 
     let activeTheme = $app.theme;
     let shouldAnimateThemeToggle = false;
@@ -139,7 +139,7 @@
             class="only-desktop">
             <img src={logo.src} alt={logo.alt} />
         </a>
-        <Breadcrumbs {organizations} {projectsPromise} {currentProject} />
+        <Breadcrumbs {organizations} {projects} {currentProject} />
         {#if page.route?.id?.includes('project-') && currentProject && currentProject.pingCount === 0}
             <div class="only-desktop" style:margin-inline-start="-16px">
                 <Button.Anchor
