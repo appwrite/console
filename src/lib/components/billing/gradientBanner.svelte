@@ -93,6 +93,7 @@
         height: 100%;
         padding-left: 25vw;
         position: absolute;
+        border-bottom: 1px solid var(--border-neutral);
 
         @media (max-width: 768px) {
             & img {
