@@ -80,6 +80,7 @@
         width: 100%;
         z-index: 100;
         position: fixed;
+        padding: 0.8rem;
 
         &.darker {
             background: var(--bgcolor-neutral-default);
