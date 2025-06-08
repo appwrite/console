@@ -2,7 +2,7 @@
     import { page } from '$app/state';
     import { Id, RegionEndpoint } from '$lib/components';
     import { Cover } from '$lib/layout';
-    import { project } from '../store';
+    import { project, projectRegion } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
@@ -16,12 +16,14 @@
 {#if !page.url.pathname.includes('get-started')}
     <Cover>
         <svelte:fragment slot="header">
-            <Typography.Title color="--fgcolor-neutral-primary" size="xl">
-                {$project?.name}
-            </Typography.Title>
-            <Layout.Stack alignItems="center" direction="row" inline>
-                <Id value={$project.$id}>{$project.$id}</Id>
-                <RegionEndpoint />
+            <Layout.Stack alignItems="baseline" direction={$isSmallViewport ? 'column' : 'row'}>
+                <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
+                    {$project?.name}
+                </Typography.Title>
+                <Layout.Stack direction="row">
+                    <Id value={$project.$id}>{$project.$id}</Id>
+                    <RegionEndpoint region={$projectRegion} />
+                </Layout.Stack>
             </Layout.Stack>
         </svelte:fragment>
     </Cover>
