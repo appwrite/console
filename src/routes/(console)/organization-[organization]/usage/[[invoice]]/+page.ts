@@ -71,7 +71,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 // all this to get the project's name and region!
 function getUsageProjects(usage: OrganizationUsage) {
     return (async () => {
-        const projects: { [key: string]: UsageProjectInfo } = {};
+        const projects: Record<string, UsageProjectInfo> = {};
 
         if (usage?.projects?.length > 0) {
             const chunk = 100;
@@ -93,7 +93,6 @@ function getUsageProjects(usage: OrganizationUsage) {
             for (const response of responses) {
                 for (const project of response.projects) {
                     projects[project.$id] = {
-                        $id: project.$id,
                         name: project.name,
                         region: project.region
                     };
