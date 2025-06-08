@@ -6,13 +6,22 @@
     import { base } from '$app/paths';
     import GradientBanner from '$lib/components/billing/gradientBanner.svelte';
     import { Badge, Typography } from '@appwrite.io/pink-svelte';
+    import { activeHeaderAlert } from '../store';
 
     $: upgradeUrl = `${base}/organization-${$organization?.$id}/change-plan`;
     $: remainingDays = calculateEnterpriseTrial($organization);
+
+    let show = true;
+
+    function handleClose() {
+        show = false;
+        const now = new Date().getTime();
+        localStorage.setItem($activeHeaderAlert.id, now.toString());
+    }
 </script>
 
-{#if $organization?.$id && remainingDays > 0 && !hideBillingHeaderRoutes.includes(page.url.pathname)}
-    <GradientBanner variant="image">
+{#if $organization?.$id && remainingDays > 0 && !hideBillingHeaderRoutes.includes(page.url.pathname) && show}
+    <GradientBanner variant="image" on:close={handleClose}>
         <div class="banner-fullwidth-grid">
             <Typography.Text>
                 Your enterprise trial expires in <Badge
