@@ -13,6 +13,7 @@
     import Create from './createOrganization.svelte';
     import {
         calculateTrialDay,
+        checkForEnterpriseTrial,
         checkForMandate,
         checkForMarkedForDeletion,
         checkForMissingPaymentMethod,
@@ -304,6 +305,7 @@
         if (currentOrganizationId === org.$id) return;
         if (isCloud) {
             currentOrganizationId = org.$id;
+            await checkForEnterpriseTrial(org);
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
             await checkForNewDevUpgradePro(org);
