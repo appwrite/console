@@ -54,7 +54,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
     import { sdk } from '$lib/stores/sdk';
-    import { type Models, Query } from '@appwrite.io/console';
+    import { Query } from '@appwrite.io/console';
 
     export let data: LayoutData;
 
