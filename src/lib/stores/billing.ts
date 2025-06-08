@@ -28,12 +28,13 @@ import { Query } from '@appwrite.io/console';
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
 import { addNotification, notifications } from './notifications';
-import { organization, type Organization, type OrganizationError } from './organization';
+import { currentPlan, organization, type Organization, type OrganizationError } from './organization';
 import { canSeeBilling } from './roles';
 import { sdk } from './sdk';
 import { user } from './user';
 import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budgetLimitAlert.svelte';
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
+import EnterpriseTrial from '$routes/(console)/organization-[organization]/enterpriseTrial.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
@@ -268,6 +269,35 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
     return isLimited && total >= limit && !hasUsageFees;
 }
 
+export function checkForEnterpriseTrial(org: Organization) {
+    const remaining  = calculateEnterpriseTrial(org);
+    console.log('remaining', remaining);
+    if(calculateEnterpriseTrial(org) > 0) {
+         headerAlert.add({
+            id: 'temaEnterprieseTrial',
+            component: EnterpriseTrial,
+            show: true,
+            importance: 11
+        });
+    }
+}
+
+export function calculateEnterpriseTrial(org: Organization) {
+    const endDate = new Date(org.billingNextInvoiceDate);
+    const startDate = new Date(org.billingCurrentInvoiceDate);
+    const today = new Date();
+
+    let diffCycle = endDate.getTime() - startDate.getTime();
+    diffCycle = Math.ceil(diffCycle / (1000 * 60 * 60 * 24)) + 1;
+    console.log('diffCycle', diffCycle);
+    if (diffCycle === 15) {
+        const remaining = endDate.getTime() - today.getTime();
+        const days = Math.ceil(remaining / (1000 * 60 * 60 * 24)) + 1;
+        return days;
+    }
+    return 0;
+}
+
 export function calculateTrialDay(org: Organization) {
     if (org?.billingPlan === BillingPlan.FREE) return false;
     const endDate = new Date(org?.billingStartDate);
@@ -323,7 +353,7 @@ export async function checkForUsageLimit(org: Organization) {
     ];
 
     const members = org.total;
-    const plan = get(plansInfo)?.get(org.billingPlan);
+    const plan = get(currentPlan);
     const membersOverflow =
         members > plan.addons.seats.limit ? members - (plan.addons.seats.limit || members) : 0;
 
