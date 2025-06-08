@@ -255,14 +255,10 @@
 
     <CardGrid gap="none">
         <svelte:fragment slot="title">Image transformations</svelte:fragment>
-        Calculated for all functions that are executed in all projects in your organization.
-        <p class="text">
-            The total number of unique image transformations across all projects in your
-            organization. <a
-                href="https://appwrite.io/docs/advanced/platform/image-transformations"
-                class="link">Learn more</a
-            >.
-        </p>
+        The total number of unique image transformations across all projects in your organization.
+        <a href="https://appwrite.io/docs/advanced/platform/image-transformations" class="link"
+            >Learn more</a
+        >.
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.imageTransformationsTotal}
                 {@const current = data.organizationUsage.imageTransformationsTotal}
