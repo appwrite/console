@@ -23,13 +23,14 @@
 {#if $organization?.$id && remainingDays > 0 && !hideBillingHeaderRoutes.includes(page.url.pathname) && show}
     <GradientBanner variant="image" on:close={handleClose}>
         <div class="banner-fullwidth-grid">
-            <Typography.Text>
+            <Typography.Text color="--fgcolor-neutral-primary">
                 Your enterprise trial expires in <Badge
+                    size="xs"
                     variant="secondary"
                     content={remainingDays.toString()} /> days.
             </Typography.Text>
 
-            <Button secondary fullWidthMobile href={upgradeUrl}>Upgrade</Button>
+            <Button size="xs" secondary fullWidthMobile href={upgradeUrl}>Upgrade</Button>
         </div>
     </GradientBanner>
 {/if}
@@ -54,6 +55,7 @@
         > :global(:last-child) {
             grid-column: 3;
             justify-self: end;
+            margin-inline-end: 4px;
         }
 
         @media (max-width: 768px) {

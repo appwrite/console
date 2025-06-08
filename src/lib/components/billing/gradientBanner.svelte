@@ -91,7 +91,7 @@
         top: 0;
         width: 100%;
         height: 100%;
-        padding-left: 30vw;
+        padding-left: 25vw;
         position: absolute;
 
         @media (max-width: 768px) {
@@ -101,9 +101,11 @@
         }
     }
 
-    @media (max-width: 768px) {
-        :global(.top-banner-button.position) {
+    :global(.top-banner-button.position) {
+        z-index: 1;
+        @media (max-width: 768px) {
             position: absolute;
+            padding-block-start: 1rem;
             padding-block-end: 3.7625rem;
         }
     }
