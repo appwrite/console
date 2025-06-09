@@ -60,7 +60,7 @@
 
         const isSiteDomain = domainName.endsWith($regionalConsoleVariables._APP_DOMAIN_SITES);
 
-        if (apexDomain && !domain && isCloud && !isSiteDomain) {
+        if (isCloud && apexDomain && !domain && !isSiteDomain) {
             try {
                 domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
             } catch (error) {
