@@ -4,13 +4,20 @@
     import { Cover } from '$lib/layout';
     import { project, projectRegion } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
-    import { goto, invalidate } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Layout, Button, Typography } from '@appwrite.io/pink-svelte';
     import { user } from '$lib/stores/user';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+
+    function dismissOnboarding() {
+        setHasOnboardingDismissed($project.$id);
+        trackEvent('onboarding_hub_platform_dismiss');
+        // TODO: @ernst, do we need this invalidate?
+        // await invalidate(Dependencies.ORGANIZATION);
+        goto(`${base}/project-${$project.region}-${$project.$id}/overview`);
+    }
 </script>
 
 {#if !page.url.pathname.includes('get-started')}
@@ -47,15 +54,9 @@
                 </Layout.Stack>
                 <div class="dashboard-header-button">
                     {#if !hasOnboardingDismissed($project.$id)}
-                        <Button.Button
-                            variant="secondary"
-                            size="s"
-                            on:click={async () => {
-                                trackEvent('onboarding_hub_platform_dismiss');
-                                await setHasOnboardingDismissed($project.$id);
-                                await invalidate(Dependencies.ORGANIZATION);
-                                goto(`${base}/project-${$project.region}-${$project.$id}/overview`);
-                            }}>Dismiss this page</Button.Button>
+                        <Button.Button size="s" variant="secondary" on:click={dismissOnboarding}>
+                            Dismiss this page
+                        </Button.Button>
                     {/if}
                 </div>
             </Layout.Stack>

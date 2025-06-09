@@ -1,10 +1,8 @@
 import { sdk } from '$lib/stores/sdk';
-import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
+import { Query } from '@appwrite.io/console';
 import type { UsageProjectInfo } from '../../store';
 import type { Invoice, OrganizationUsage } from '$lib/sdk/billing';
-import { get } from 'svelte/store';
-import { projects as projectsStore } from '../../store';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice } = params;
@@ -72,30 +70,11 @@ export const load: PageLoad = async ({ params, parent }) => {
 // all this to get the project's name and region!
 function getUsageProjects(usage: OrganizationUsage) {
     return (async () => {
-        const existing = get(projectsStore)?.projects ?? [];
         const projects: Record<string, UsageProjectInfo> = {};
-
-        const storeIds = new Set<string>();
-        for (const project of existing) {
-            projects[project.$id] = {
-                name: project.name,
-                region: project.region
-            };
-
-            storeIds.add(project.$id);
-        }
-
-        // filter missing ones
-        const toFetch = usage.projects.filter((p) => !storeIds.has(p.projectId));
-
-        if (toFetch.length === 0) {
-            return projects;
-        }
-
         const limit = 100;
         const requests = [];
-        for (let index = 0; index < toFetch.length; index += limit) {
-            const chunkIds = toFetch.slice(index, index + limit).map((p) => p.projectId);
+        for (let index = 0; index < usage.projects.length; index += limit) {
+            const chunkIds = usage.projects.slice(index, index + limit).map((p) => p.projectId);
             requests.push(
                 sdk.forConsole.projects.list([Query.limit(limit), Query.equal('$id', chunkIds)])
             );
