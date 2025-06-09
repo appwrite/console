@@ -18,7 +18,7 @@
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Tooltip, Typography, Layout, Badge } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
 
     let areMembersLimited: boolean;
     $: organization.subscribe(() => {
@@ -75,7 +75,7 @@
     ].filter((tab) => !tab.disabled);
 </script>
 
-{#if $organization.$id}
+{#if $organization?.$id}
     <Cover>
         <svelte:fragment slot="header">
             <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
