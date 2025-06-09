@@ -30,6 +30,7 @@
     } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
+    import { loadAvailableRegions } from '$routes/(console)/regions';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
 
     export let data;
@@ -54,18 +55,18 @@
     let showCreditModal = false;
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
-    let couponData: Partial<Coupon> = data.coupon;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
     });
+
     onMount(async () => {
         if (page.url.searchParams.has('code')) {
             const coupon = page.url.searchParams.get('code');
             try {
-                couponData = await sdk.forConsole.billing.getCouponAccount(coupon);
+                selectedCoupon = await sdk.forConsole.billing.getCouponAccount(coupon);
             } catch (e) {
-                couponData = {
+                selectedCoupon = {
                     code: null,
                     status: null,
                     credits: null
@@ -191,7 +192,7 @@
                 selectedPlan,
                 paymentMethodId,
                 null,
-                couponData?.code,
+                selectedCoupon?.code,
                 newCollaborators,
                 billingBudget,
                 taxId ? taxId : null
@@ -219,6 +220,11 @@
             }
 
             if (isOrganization(org)) {
+                /**
+                 * Reload on upgrade (e.g. Free → Paid)
+                 */
+                loadAvailableRegions(org.$id, true);
+
                 await invalidate(Dependencies.ACCOUNT);
                 await invalidate(Dependencies.ORGANIZATION);
 
@@ -303,8 +309,7 @@
                 </Layout.Stack>
             </Fieldset>
 
-            <!-- Show email input if upgrading from free plan -->
-            {#if selectedPlan !== BillingPlan.FREE && data.organization.billingPlan === BillingPlan.FREE}
+            {#if isUpgrade}
                 <Fieldset legend="Payment">
                     <SelectPaymentMethod
                         methods={data.paymentMethods}
@@ -355,10 +360,10 @@
             <EstimatedTotalBox
                 {collaborators}
                 {isDowngrade}
-                plans={data.plansInfo}
                 billingPlan={selectedPlan}
                 bind:couponData={selectedCoupon}
-                bind:billingBudget />
+                bind:billingBudget
+                organizationId={data.organization.$id} />
         {:else if data.organization.billingPlan !== BillingPlan.CUSTOM}
             <PlanComparisonBox downgrade={isDowngrade} />
         {/if}

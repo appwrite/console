@@ -5,12 +5,12 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { Confirm } from '$lib/components';
-    import type { Domain } from '$lib/sdk/domains';
     import { base } from '$app/paths';
     import { page } from '$app/state';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let selectedDomain: Domain;
+    export let selectedDomain: Models.Domain;
 
     let error = '';
     let domainsList = `${base}/organization-${page.params.organization}/domains`;

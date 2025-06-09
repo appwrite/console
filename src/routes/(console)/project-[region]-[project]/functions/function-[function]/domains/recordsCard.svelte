@@ -11,7 +11,7 @@
         InteractiveText
     } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
-    import { consoleVariables } from '$routes/(console)/store';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let proxyRule: Models.ProxyRule;
 </script>
@@ -43,7 +43,7 @@
                         <InteractiveText
                             variant="copy"
                             isVisible
-                            text={$consoleVariables._APP_DOMAIN_TARGET_CNAME} />
+                            text={$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME} />
                     </Table.Cell>
                 </Table.Row.Base>
             </Table.Root>

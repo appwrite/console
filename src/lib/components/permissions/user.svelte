@@ -14,6 +14,7 @@
         Layout,
         Link,
         Selector,
+        Spinner,
         Table,
         Typography
     } from '@appwrite.io/pink-svelte';
@@ -27,9 +28,10 @@
 
     let search = '';
     let offset = 0;
-    let results: Models.UserList<Record<string, unknown>>;
-    let selected: Set<string> = new Set();
+    let isLoading = false;
     let hasSelection = false;
+    let selected: Set<string> = new Set();
+    let results: Models.UserList<Record<string, unknown>>;
 
     function reset() {
         offset = 0;
@@ -44,9 +46,11 @@
 
     async function request() {
         if (!show) return;
+        isLoading = true;
         results = await sdk
             .forProject(page.params.region, page.params.project)
             .users.list([Query.limit(5), Query.offset(offset)], search || undefined);
+        isLoading = false;
     }
 
     function onSelection(role: string) {
@@ -74,8 +78,11 @@
 </script>
 
 <Modal title="Select users" bind:show onSubmit={create} on:close={reset}>
-    <Typography.Text>Grant access to any authenticated or anonymous user.</Typography.Text>
+    <Typography.Text slot="description"
+        >Grant access to any authenticated or anonymous user.</Typography.Text>
+
     <InputSearch autofocus placeholder="Search by name, email, phone or ID" bind:value={search} />
+
     {#if results?.users?.length}
         <Table.Root columns={[{ id: 'checkbox', width: 40 }, { id: 'user' }]} let:root>
             {#each results.users as user (user.$id)}
@@ -86,8 +93,8 @@
                         <Selector.Checkbox
                             size="s"
                             id={user.$id}
-                            checked={exists || selected.has(role)}
-                            disabled={exists} />
+                            disabled={exists}
+                            checked={exists || selected.has(role)} />
                     </Table.Cell>
                     <Table.Cell column="user" {root}>
                         <Layout.Stack direction="row" alignItems="center" gap="s">
@@ -141,7 +148,12 @@
 
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
             <p class="text">Total results: {results?.total}</p>
-            <PaginationInline limit={5} bind:offset total={results?.total} hidePages />
+            <PaginationInline
+                limit={5}
+                bind:offset
+                total={results?.total}
+                hidePages
+                on:change={request} />
         </Layout.Stack>
     {:else if search}
         <EmptySearch bind:search target="users" hidePages>
@@ -153,6 +165,11 @@
                 size="s">Documentation</Button>
             <Button secondary on:click={() => (search = '')}>Clear search</Button>
         </EmptySearch>
+    {:else if isLoading}
+        <!-- 275px nearly matches the height of at-least 5 items in the table above -->
+        <div style:margin-inline="auto" style:min-height="275px" style:align-content="center">
+            <Spinner size="m" />
+        </div>
     {:else}
         <Card.Base padding="none">
             <Empty title="You have no users. Create a user to see them here." type="secondary">

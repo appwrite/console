@@ -27,12 +27,17 @@ export const load = async ({ params, depends, url, route }) => {
             .proxy.listRules(
                 [
                     Query.or([
-                        Query.equal('type', RuleType.DEPLOYMENT),
-                        Query.equal('type', RuleType.REDIRECT)
+                        Query.and([
+                            Query.equal('type', RuleType.REDIRECT),
+                            Query.equal('trigger', RuleTrigger.MANUAL)
+                        ]),
+                        Query.and([
+                            Query.equal('type', RuleType.DEPLOYMENT),
+                            Query.equal('trigger', RuleTrigger.MANUAL),
+                            Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
+                            Query.equal('deploymentResourceId', params.site)
+                        ])
                     ]),
-                    Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
-                    Query.equal('deploymentResourceId', params.site),
-                    Query.equal('trigger', RuleTrigger.MANUAL),
                     Query.limit(limit),
                     Query.offset(offset),
                     Query.orderDesc(''),

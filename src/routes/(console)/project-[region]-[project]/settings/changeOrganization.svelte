@@ -30,7 +30,7 @@
     <svelte:fragment slot="actions">
         <Button
             secondary
-            disabled={teamId === $project.teamId}
+            disabled={teamId === $project.teamId || !teamId}
             on:click={() => (showTransfer = true)}>Move</Button>
     </svelte:fragment>
 </CardGrid>

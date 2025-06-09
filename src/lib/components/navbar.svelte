@@ -55,6 +55,7 @@
     import { user } from '$lib/stores/user';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { HTMLAttributes } from 'svelte/elements';
+    import { beforeNavigate } from '$app/navigation';
 
     let showSupport = false;
 
@@ -115,9 +116,10 @@
 
     $: currentOrg = organizations.find((org) => org.isSelected);
     $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
+    beforeNavigate(() => (showAccountMenu = false));
 </script>
 
-<Navbar.Base {...$$props}>
+<Navbar.Base>
     <div slot="left" class="left">
         <div class="only-mobile-tablet">
             <button
@@ -128,7 +130,9 @@
                 <Icon icon={IconMenuAlt4} />
             </button>
         </div>
-        <a href={base} class="only-desktop">
+        <a
+            href={currentOrg?.$id ? `${base}/organization-${currentOrg?.$id}` : base}
+            class="only-desktop">
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} />

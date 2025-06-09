@@ -59,7 +59,7 @@
         {/each}
     </svelte:fragment>
     {#each data.identities.identities as identity (identity.$id)}
-        <Table.Row.Base {root}>
+        <Table.Row.Base {root} id={identity.$id}>
             {#each columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

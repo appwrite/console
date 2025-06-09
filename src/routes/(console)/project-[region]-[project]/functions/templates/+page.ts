@@ -3,7 +3,7 @@ import { getSearch } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, depends, parent, params }) => {
+export const load: PageLoad = async ({ url, depends, params }) => {
     depends(Dependencies.FUNCTIONS);
 
     const search = getSearch(url);
@@ -12,9 +12,11 @@ export const load: PageLoad = async ({ url, depends, parent, params }) => {
         runtimes: url.searchParams.getAll('runtime')
     };
 
-    const { templatesList } = await parent();
+    let { templates } = await sdk
+        .forProject(params.region, params.project)
+        .functions.listTemplates(undefined, undefined, 100);
 
-    const [runtimes, useCases] = templatesList.templates.reduce(
+    const [runtimes, useCases] = templates.reduce(
         ([rt, uc], next) => {
             next.runtimes.forEach((runtime) => rt.add(runtime.name));
             next.useCases.forEach((useCase) => uc.add(useCase));
@@ -23,7 +25,7 @@ export const load: PageLoad = async ({ url, depends, parent, params }) => {
         [new Set<string>(), new Set<string>()]
     );
 
-    const templates = templatesList.templates.filter((template) => {
+    templates = templates.filter((template) => {
         if (
             filter.runtimes.length > 0 &&
             !template.runtimes.some((n) => filter.runtimes.includes(n.name))

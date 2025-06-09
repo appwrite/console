@@ -21,6 +21,7 @@
     async function cardSaved(event: CustomEvent<PaymentMethodData>) {
         value = event.detail.$id;
         invalidate(Dependencies.UPGRADE_PLAN);
+        invalidate(Dependencies.CREATE_ORGANIZATION);
     }
 
     onMount(() => {

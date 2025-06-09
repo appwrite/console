@@ -8,7 +8,7 @@
     import { Button, Form, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Wizard } from '$lib/layout';
-    import { type PaymentList, type Plan } from '$lib/sdk/billing';
+    import type { PaymentList, Plan } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import {
         organizationList,
@@ -72,12 +72,12 @@
     let tempOrgId = null;
     let currentPlan: Plan;
 
-    $: onlyNewOrgs = (campaign && campaign.onlyNewOrgs) || (couponData && couponData.onlyNewOrgs);
+    $: onlyNewOrgs = campaign?.onlyNewOrgs || couponData?.onlyNewOrgs;
 
     $: selectedOrgId = tempOrgId;
 
     function isUpgrade() {
-        const newPlan = page.data.plansInfo.get(billingPlan);
+        const newPlan = $plansInfo.get(billingPlan);
         return currentPlan && newPlan && currentPlan.order < newPlan.order;
     }
 
@@ -174,7 +174,7 @@
                     '',
                     clientSecret,
                     paymentMethodId,
-                    '/console/apply-credit?' + params.toString()
+                    `/console/apply-credit?${params}`
                 );
                 org = await sdk.forConsole.billing.validateOrganization(org.teamId, collaborators);
             }
@@ -205,7 +205,7 @@
 
     async function addCoupon() {
         try {
-            const response = await sdk.forConsole.billing.getCoupon(coupon);
+            const response = await sdk.forConsole.billing.getCouponAccount(coupon);
             couponData = response;
             coupon = null;
             addNotification({
@@ -227,33 +227,40 @@
     function getBillingPlan(): Tier | undefined {
         const campaignPlan =
             campaign?.plan && $plansInfo.get(campaign.plan) ? $plansInfo.get(campaign.plan) : null;
-        const orgPlan =
-            selectedOrg?.billingPlan && $plansInfo.get(selectedOrg.billingPlan)
-                ? $plansInfo.get(selectedOrg.billingPlan)
-                : null;
+        const newPlan = $plansInfo.get(billingPlan);
 
-        if (!campaignPlan && !orgPlan) {
-            return;
+        // if campaign has a plan and it's higher than the selected new plan
+        if (campaignPlan?.order > newPlan?.order) {
+            return campaignPlan.$id as Tier;
         }
-        if (!campaignPlan) {
-            return selectedOrg?.billingPlan;
+
+        // if current plan's order is higher than the selected new plan
+        if (currentPlan?.order > newPlan?.order) {
+            return currentPlan.$id as Tier;
         }
-        if (!orgPlan) {
-            return campaign.plan;
-        }
-        return campaignPlan.order > orgPlan.order ? campaign.plan : selectedOrg?.billingPlan;
+
+        return billingPlan;
     }
 
-    $: if (selectedOrg) {
+    $: if (currentPlan) {
         billingPlan = getBillingPlan();
     }
 
-    $: {
-        if (selectedOrgId) {
-            (async () => {
-                currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
-            })();
-        }
+    $: isNewOrg = !(selectedOrgId && selectedOrgId !== newOrgId);
+
+    $: if (!isNewOrg) {
+        (async () => {
+            currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
+        })();
+        loadPaymentMethods();
+    }
+
+    // after adding a payment method, fetch the payment methods again so the input can be updated
+    $: if (
+        paymentMethodId &&
+        !methods?.paymentMethods?.find((method) => method.$id === paymentMethodId)
+    ) {
+        loadPaymentMethods();
     }
 </script>
 
@@ -361,9 +368,9 @@
                     fixedCoupon={!!data?.couponData?.code}
                     {billingPlan}
                     {collaborators}
-                    plans={$plansInfo}
                     bind:couponData
-                    bind:billingBudget>
+                    bind:billingBudget
+                    organizationId={!isNewOrg ? selectedOrgId : null}>
                     {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}
                         <div class="u-margin-block-end-24">
                             <p class="body-text-1 u-bold">{campaign?.cta}</p>
@@ -389,13 +396,15 @@
                     handleSubmit();
                 }
             }}
-            disabled={$isSubmitting}>
+            disabled={!couponData?.code || $isSubmitting}>
             {#if $isSubmitting}
                 <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true"
                 ></span>
             {/if}
             {#if selectedOrgId === newOrgId}
                 Create organization
+            {:else if isUpgrade()}
+                Upgrade
             {:else}
                 Apply
             {/if}

@@ -25,8 +25,8 @@
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
-    import { consoleVariables } from '$routes/(console)/store';
     import Domain from '../../domain.svelte';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let data;
     let showExitModal = false;
@@ -119,7 +119,10 @@
             // Add domain
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.createSiteRule(`${domain}.${$consoleVariables._APP_DOMAIN_SITES}`, site.$id);
+                .proxy.createSiteRule(
+                    `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
+                    site.$id
+                );
 
             //Add variables
             const promises = variables.map((variable) =>

@@ -1,10 +1,11 @@
-import { BillingPlan } from '$lib/constants';
+import { BillingPlan, Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import type { Coupon } from '$lib/sdk/billing';
 import type { Organization } from '$lib/stores/organization';
 
-export const load: PageLoad = async ({ url, parent }) => {
+export const load: PageLoad = async ({ url, parent, depends }) => {
+    depends(Dependencies.CREATE_ORGANIZATION);
     const { organizations } = await parent();
     const [coupon, paymentMethods] = await Promise.all([
         getCoupon(url),
@@ -41,7 +42,7 @@ async function getCoupon(url: URL): Promise<Coupon | null> {
     if (url.searchParams.has('code')) {
         const coupon = url.searchParams.get('code');
         try {
-            return sdk.forConsole.billing.getCoupon(coupon);
+            return sdk.forConsole.billing.getCouponAccount(coupon);
         } catch (e) {
             return null;
         }

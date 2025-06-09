@@ -63,4 +63,4 @@ export const currentPlan = derived(page, ($page) => $page.data?.currentPlan as P
 export const members = derived(page, ($page) => $page.data.members as Models.MembershipList);
 export const projectsCount = derived(page, ($page) => $page.data.projects?.length || 0);
 
-export const regions = writable<Models.ConsoleRegionList | undefined>(undefined);
+export const regions = writable<Models.ConsoleRegionList>({ total: 0, regions: [] });

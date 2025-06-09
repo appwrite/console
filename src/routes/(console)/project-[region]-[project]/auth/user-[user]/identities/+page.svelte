@@ -13,18 +13,23 @@
     export let data;
 
     const columns = writable<Column[]>([
-        { id: '$id', title: 'Identity ID', type: 'string', width: 200 },
-        { id: 'provider', title: 'Provider', type: 'string', width: 80 },
-        { id: 'providerUid', title: 'Provider UID', type: 'string', hide: true, width: 80 },
-        { id: 'providerEmail', title: 'Email', type: 'string', width: 80 },
+        { id: '$id', title: 'Identity ID', type: 'string', width: { min: 200 } },
+        { id: 'provider', title: 'Provider', type: 'string', width: { min: 80 } },
+        {
+            id: 'providerUid',
+            title: 'Provider UID',
+            type: 'string',
+            hide: true,
+            width: { min: 80 }
+        },
+        { id: 'providerEmail', title: 'Email', type: 'string', width: { min: 80 } },
         {
             id: 'providerAccessTokenExpiry',
             title: 'Expiry Date',
-            type: 'datetime',
-            width: 60
+            type: 'datetime'
         },
-        { id: '$createdAt', title: 'Created', type: 'datetime', width: 80 },
-        { id: '$updatedAt', title: 'Updated', type: 'datetime', hide: true, width: 80 }
+        { id: '$createdAt', title: 'Created', type: 'datetime', width: { min: 80 } },
+        { id: '$updatedAt', title: 'Updated', type: 'datetime', hide: true, width: { min: 80 } }
     ]);
 </script>
 

@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
     import { ID, type Models, Query, RelationMutate, RelationshipType } from '@appwrite.io/console';
 
     export async function submitRelationship(
@@ -10,10 +11,12 @@
         data: Partial<Models.AttributeRelationship>
     ) {
         if (!isValueOfStringEnum(RelationshipType, data.relationType)) {
-            throw new Error(`Invalid relationship type: ${data.relationType}`);
+            throw new Error(
+                `Invalid relationship type${data.relationType ? ` : ${data.relationType}` : ''}`
+            );
         }
         if (!isValueOfStringEnum(RelationMutate, data.onDelete)) {
-            throw new Error(`Invalid on delete: ${data.onDelete}`);
+            throw new Error(`Invalid deletion method${data.onDelete ? ` : ${data.onDelete}` : ''}`);
         }
 
         await sdk
@@ -60,13 +63,13 @@
     import arrowOne from './arrow-one.svg';
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Card, Layout } from '@appwrite.io/pink-svelte';
+    import { Card, Layout, Input } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight, IconSwitchHorizontal } from '@appwrite.io/pink-icons-svelte';
+    import { debounce } from '$lib/helpers/debounce';
 
     // Props
-    export let data: Models.AttributeRelationship;
     export let editing = false;
+    export let data: Models.AttributeRelationship;
 
     // Constants
     const databaseId = page.params.database;
@@ -84,17 +87,24 @@
     ];
 
     // Variables
-    let search: string = null;
-    let collectionList: Models.CollectionList;
     let way = 'one';
+    let search = undefined;
+    let collectionList: Models.CollectionList;
+    let originalCollectionList: Models.CollectionList;
 
     // Lifecycle hooks
-    async function getCollections(search: string = null) {
-        const queries = search ? [Query.orderDesc('')] : [Query.limit(100)];
+    async function getCollections() {
+        const queries = [Query.limit(100)];
         return sdk
             .forProject(page.params.region, page.params.project)
             .databases.listCollections(databaseId, queries, search);
     }
+
+    const debouncedFetchCollections = debounce(async () => {
+        collectionList = await getCollections();
+        // reset search
+        search = undefined;
+    }, 500);
 
     function updateKeyName() {
         if (!editing) {
@@ -107,10 +117,10 @@
 
     onMount(async () => {
         collectionList = await getCollections();
+        originalCollectionList = collectionList;
     });
 
     // Reactive statements
-    $: getCollections(search).then((res) => (collectionList = res));
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
 
     $: if (editing) {
@@ -125,6 +135,21 @@
             data.twoWay = false;
         }
     }
+
+    $: search = data.relatedCollection || undefined;
+
+    $: if (search) {
+        const exists = collectionList?.collections?.some((c) =>
+            c.$id.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+        );
+
+        if (!exists) {
+            debouncedFetchCollections();
+        }
+    } else if (!collectionList?.total) {
+        // reset to original list!
+        collectionList = originalCollectionList;
+    }
 </script>
 
 <Layout.Stack direction="row" wrap="wrap">
@@ -134,7 +159,7 @@
         name="one"
         value="one"
         icon={IconArrowSmRight}>
-        <p>One Relation attribute within this collection</p>
+        One Relation attribute within this collection
     </Card.Selector>
     <Card.Selector
         title="Two-way relationship"
@@ -142,13 +167,11 @@
         name="two"
         value="two"
         icon={IconSwitchHorizontal}>
-        <p>
-            One Relation attribute within this collection and another within the related collection
-        </p>
+        One Relation attribute within this collection and another within the related collection
     </Card.Selector>
 </Layout.Stack>
 
-<InputSelect
+<Input.ComboBox
     required
     id="related"
     label="Related collection"
@@ -163,7 +186,6 @@
         label="Attribute key"
         placeholder="Enter key"
         bind:value={data.key}
-        autofocus
         helper="Allowed characters: a-z, A-Z, 0-9, -, ."
         required />
     {#if way === 'two'}
@@ -186,6 +208,7 @@
         placeholder="Select a relation"
         options={relationshipType}
         disabled={editing} />
+
     <div class="u-flex u-flex-vertical u-gap-16">
         <Box>
             <div class="u-flex u-align u-cross-center u-main-center u-gap-32">
@@ -193,7 +216,7 @@
                 {#if data.twoWay}
                     <img src={arrowTwo} alt={'Two way relationship'} />
                 {:else}
-                    <img src={arrowOne} alt={'One way realationship'} />
+                    <img src={arrowOne} alt={'One way relationship'} />
                 {/if}
                 <span>{data.key}</span>
             </div>

@@ -9,6 +9,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
+    import { filterRegions } from '$lib/helpers/regions';
 
     export let projectName: string;
     export let id: string;
@@ -18,25 +19,6 @@
     export let projects: number = undefined;
 
     let showCustomId = false;
-
-    function getRegions() {
-        return regions
-            .filter((region) => region.$id !== 'default')
-            .sort((regionA, regionB) => {
-                if (regionA.disabled && !regionB.disabled) {
-                    return 1;
-                }
-                return regionA.name > regionB.name ? 1 : -1;
-            })
-            .map((region) => {
-                return {
-                    label: region.name,
-                    value: region.$id,
-                    leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
-                    disabled: region.disabled
-                };
-            });
-    }
 </script>
 
 <svelte:head>
@@ -44,6 +26,7 @@
         <link rel="preload" as="image" href={getFlagUrl(region.flag)} />
     {/each}
 </svelte:head>
+
 <form on:submit|preventDefault>
     <Layout.Stack direction="column" gap="xxl">
         {#if showTitle}
@@ -79,9 +62,10 @@
                 {#if isCloud && regions.length > 0}
                     <Layout.Stack gap="xs">
                         <Input.Select
+                            required
                             bind:value={region}
                             placeholder="Select a region"
-                            options={getRegions()}
+                            options={filterRegions(regions)}
                             label="Region" />
                         <Typography.Text>Region cannot be changed after creation</Typography.Text>
                     </Layout.Stack>

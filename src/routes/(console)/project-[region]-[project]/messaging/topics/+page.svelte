@@ -28,6 +28,7 @@
 
     export let data: PageData;
 
+    const region = page.params.region;
     const project = page.params.project;
     const columns = writable<Column[]>([
         { id: '$id', title: 'Topic ID', type: 'string', width: 200 },
@@ -64,7 +65,9 @@
     ]);
 
     const topicCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
-        await goto(`${base}/project-${project}/messaging/topics/topic-${event.detail.$id}`);
+        await goto(
+            `${base}/project-${region}-${project}/messaging/topics/topic-${event.detail.$id}`
+        );
     };
 </script>
 

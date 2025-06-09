@@ -49,7 +49,7 @@ async function getCoupon(url: URL): Promise<Coupon | null> {
     if (url.searchParams.has('code')) {
         const coupon = url.searchParams.get('code');
         try {
-            return sdk.forConsole.billing.getCoupon(coupon);
+            return sdk.forConsole.billing.getCouponAccount(coupon);
         } catch (e) {
             return null;
         }

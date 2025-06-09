@@ -6,6 +6,7 @@
     import { onMount } from 'svelte';
     import { Accordion, Table } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
+    import type { PageData } from './$types';
 
     type Metric =
         | 'users'
@@ -21,7 +22,7 @@
 
     type DatabaseOperationMetric = Extract<Metric, 'databasesReads' | 'databasesWrites'>;
 
-    export let data;
+    export let data: PageData;
     export let projects: OrganizationUsage['projects'];
     export let metric: Metric | undefined = undefined;
     export let estimate: Estimate | undefined = undefined;
@@ -137,7 +138,7 @@
                 {#if !$canSeeProjects}
                     <Table.Row.Base {root}>
                         <Table.Cell column="project" {root}>
-                            {data.projectNames[project.projectId]?.name ?? 'Unknown'}
+                            {data.projects[project.projectId]?.name ?? 'Unknown'}
                         </Table.Cell>
                         <Table.Cell column="reads" {root}>
                             {format(project.databasesReads ?? 0)}
@@ -155,7 +156,7 @@
                 {:else}
                     <Table.Row.Link href={getProjectUsageLink(project.projectId)} {root}>
                         <Table.Cell column="project" {root}>
-                            {data.projectNames[project.projectId]?.name ?? 'Unknown'}
+                            {data.projects[project.projectId]?.name ?? 'Unknown'}
                         </Table.Cell>
                         <Table.Cell column="reads" {root}>
                             {format(project.databasesReads ?? 0)}

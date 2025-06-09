@@ -9,7 +9,6 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
-    import { protocol } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
     import { Runtime, StatusCode, type Models } from '@appwrite.io/console';
@@ -73,7 +72,7 @@
             } else if (behaviour === 'REDIRECT') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(domainName, $protocol + redirect, statusCode);
+                    .proxy.createRedirectRule(domainName, redirect, statusCode);
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
@@ -83,7 +82,9 @@
                 await goto(routeBase);
                 await invalidate(Dependencies.FUNCTION_DOMAINS);
             } else {
-                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
+                await goto(
+                    `${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}&domain=${domain.$id}`
+                );
                 await invalidate(Dependencies.FUNCTION_DOMAINS);
             }
         } catch (error) {

@@ -25,6 +25,25 @@ export const onboarding = derived(
     ($project) => $project?.platforms?.length === 0 && $project?.keys?.length === 0
 );
 
+/**
+ * Region-aware version of `consoleVariables`, scoped to the project's assigned region.
+ *
+ * Falls back to the default `consoleVariables` if regional data is unavailable, just `edge-case` things.
+ */
+export const regionalConsoleVariables = derived(
+    page,
+    ($page) =>
+        ($page.data.regionalConsoleVariables ??
+            $page.data.consoleVariables) as Models.ConsoleVariables
+);
+
+/**
+ * Protocol based on regional console variables.
+ */
+export const regionalProtocol = derived(regionalConsoleVariables, ($vars) =>
+    $vars?._APP_OPTIONS_FORCE_HTTPS === 'enabled' ? 'https://' : 'http://'
+);
+
 function createStats() {
     const { subscribe, set, update } = writable<Map<string, BarSeriesOption['data']>>(new Map());
 

@@ -22,8 +22,10 @@
         Button,
         Link,
         Badge,
-        FloatingActionBar
+        FloatingActionBar,
+        Typography
     } from '@appwrite.io/pink-svelte';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data: PageData;
@@ -88,7 +90,7 @@
                     ? `${formattedColumn.slice(0, 20)}...`
                     : formattedColumn,
             truncated: formattedColumn.length > 20,
-            whole: formattedColumn
+            whole: `${formattedColumn.slice(0, 100)}...`
         };
     }
 
@@ -102,6 +104,7 @@
                 type: attribute.type as ColumnType,
                 show: selected?.includes(attribute.key) ?? true,
                 array: attribute?.array,
+                width: { min: 168 },
                 format:
                     'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
                 elements: 'elements' in attribute ? attribute.elements : null
@@ -166,7 +169,12 @@
     let:root
     allowSelection
     bind:selectedRows
-    columns={[{ id: '$id', width: 200 }, ...$columns, { id: '$created' }, { id: '$updated' }]}>
+    columns={[
+        { id: '$id', width: 200 },
+        ...$columns,
+        { id: '$created', width: 200 },
+        { id: '$updated', width: 200 }
+    ]}>
     <svelte:fragment slot="header" let:root>
         <Table.Header.Cell column="$id" {root}>Document ID</Table.Header.Cell>
         {#each $columns as column}
@@ -188,13 +196,13 @@
                 {/key}
             </Table.Cell>
 
-            {#each $columns as { id }}
+            {#each $columns as { id } (id)}
                 {@const attr = $attributes.find((n) => n.key === id)}
                 <Table.Cell column={id} {root}>
                     {#if isRelationship(attr)}
                         {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
                         {#if !isRelationshipToMany(attr)}
-                            {#if document[+id]}
+                            {#if document[id]}
                                 {@const related = document[id]}
                                 <Link.Button
                                     variant="muted"
@@ -237,14 +245,28 @@
                         {/if}
                     {:else}
                         {@const formatted = formatColumn(document[id])}
-                        <Tooltip disabled={!formatted.truncated} placement="bottom">
-                            <span>
-                                {formatted.value}
-                            </span>
-                            <span style:white-space="pre-wrap" slot="tooltip">
-                                {formatted.whole}
-                            </span>
-                        </Tooltip>
+                        {@const isDatetimeAttribute = attr.type === 'datetime'}
+                        {#if isDatetimeAttribute}
+                            <DualTimeView time={formatted.whole}>
+                                <span slot="title">Timestamp</span>
+                                {toLocaleDateTime(formatted.whole, true, 'UTC')}
+                            </DualTimeView>
+                        {:else if formatted.truncated}
+                            <Tooltip placement="bottom" disabled={!formatted.truncated}>
+                                <Typography.Text truncate>{formatted.value}</Typography.Text>
+                                <span
+                                    let:showing
+                                    slot="tooltip"
+                                    style:white-space="pre-wrap"
+                                    style:word-break="break-all">
+                                    {#if showing}
+                                        {formatted.whole}
+                                    {/if}
+                                </span>
+                            </Tooltip>
+                        {:else}
+                            <Typography.Text truncate>{formatted.value}</Typography.Text>
+                        {/if}
                     {/if}
                 </Table.Cell>
             {/each}

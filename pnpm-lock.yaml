@@ -14,9 +14,6 @@ importers:
       '@appwrite.io/console':
         specifier: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19
         version: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19
-      '@appwrite.io/pink':
-        specifier: 0.25.0
-        version: 0.25.0
       '@appwrite.io/pink-icons':
         specifier: 0.25.0
         version: 0.25.0
@@ -27,8 +24,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3
       '@appwrite.io/pink-svelte':
-        specifier: https://try-module.cloud/module/@appwrite/@appwrite.io/pink-svelte@90cb757
-        version: https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@90cb757(svelte@5.25.3)
+        specifier: https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@4e03f34
+        version: https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@4e03f34(svelte@5.25.3)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -138,6 +135,9 @@ importers:
       '@vitest/ui':
         specifier: ^3.0.9
         version: 3.0.9(vitest@3.0.9)
+      color:
+        specifier: ^5.0.0
+        version: 5.0.0
       eslint:
         specifier: ^9.23.0
         version: 9.23.0
@@ -281,14 +281,11 @@ packages:
   '@appwrite.io/pink-legacy@1.0.3':
     resolution: {integrity: sha512-GGde5fmPhs+s6/3aFeMPc/kKADG/gTFkYQSy6oBN8pK0y0XNCLrZZgBv+EBbdhwdtqVEWXa0X85Mv9w7jcIlwQ==}
 
-  '@appwrite.io/pink-svelte@https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@90cb757':
-    resolution: {tarball: https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@90cb757}
+  '@appwrite.io/pink-svelte@https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@4e03f34':
+    resolution: {tarball: https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@4e03f34}
     version: 2.0.0-RC.2
     peerDependencies:
       svelte: ^4.0.0
-
-  '@appwrite.io/pink@0.25.0':
-    resolution: {integrity: sha512-9z4G/iAhjvVpM7tkNqzGqrokst4hvNt3Fkf2jD4W6n8j//EJbQ3mJ0I+5dye5Sry0a33wUanq5DSztqFNYq5zw==}
 
   '@asamuzakjp/css-color@3.1.1':
     resolution: {integrity: sha512-hpRD68SV2OMcZCsrbdkccTw5FXjNDLo5OuqSHyHZfwweGsDWZwDJ2+gONyNAbazZclobMirACLw0lk8WVxIqxA==}
@@ -1720,8 +1717,24 @@ packages:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
     engines: {node: '>=7.0.0'}
 
+  color-convert@3.1.0:
+    resolution: {integrity: sha512-TVoqAq8ZDIpK5lsQY874DDnu65CSsc9vzq0wLpNQ6UMBq81GSZocVazPiBbYGzngzBOIRahpkTzCLVe2at4MfA==}
+    engines: {node: '>=14.6'}
+
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+
+  color-name@2.0.0:
+    resolution: {integrity: sha512-SbtvAMWvASO5TE2QP07jHBMXKafgdZz8Vrsrn96fiL+O92/FN/PLARzUW5sKt013fjAprK2d2iCn2hk2Xb5oow==}
+    engines: {node: '>=12.20'}
+
+  color-string@2.0.1:
+    resolution: {integrity: sha512-5z9FbYTZPAo8iKsNEqRNv+OlpBbDcoE+SY9GjLfDUHEfcNNV7tS9eSAlFHEaub/r5tBL9LtskAeq1l9SaoZ5tQ==}
+    engines: {node: '>=18'}
+
+  color@5.0.0:
+    resolution: {integrity: sha512-16BlyiuyLq3MLxpRWyOTiWsO3ii/eLQLJUQXBSNcxMBBSnyt1ee9YUdaozQp03ifwm5woztEZGDbk9RGVuCsdw==}
+    engines: {node: '>=18'}
 
   combined-stream@1.0.8:
     resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
@@ -2663,9 +2676,6 @@ packages:
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
-
-  normalize.css@8.0.1:
-    resolution: {integrity: sha512-qizSNPO93t1YUuUhP22btGOo3chcvDFqFaj2TRybP0DMxkHOCTYwp3n34fel4a31ORXy4m1Xq0Gyqpb5m33qIg==}
 
   nwsapi@2.2.20:
     resolution: {integrity: sha512-/ieB+mDe4MrrKMT8z+mQL8klXydZWGR5Dowt4RAGKbJ3kIGEx3X4ljUo+6V73IXtUPWgfOlU5B9MlGxFO5T+cA==}
@@ -3644,7 +3654,7 @@ snapshots:
       '@appwrite.io/pink-icons': 1.0.0
       the-new-css-reset: 1.11.3
 
-  '@appwrite.io/pink-svelte@https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-svelte@90cb757(svelte@5.25.3)':
+  '@appwrite.io/pink-svelte@https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@4e03f34(svelte@5.25.3)':
     dependencies:
       '@appwrite.io/pink-icons-svelte': 2.0.0-RC.1(svelte@5.25.3)
       '@floating-ui/dom': 1.6.13
@@ -3658,12 +3668,6 @@ snapshots:
       svelte: 5.25.3
       svelte-motion: 0.12.2(svelte@5.25.3)
       svelte-sonner: 0.3.28(svelte@5.25.3)
-
-  '@appwrite.io/pink@0.25.0':
-    dependencies:
-      '@appwrite.io/pink-icons': 0.25.0
-      normalize.css: 8.0.1
-      the-new-css-reset: 1.11.3
 
   '@asamuzakjp/css-color@3.1.1':
     dependencies:
@@ -5271,7 +5275,22 @@ snapshots:
     dependencies:
       color-name: 1.1.4
 
+  color-convert@3.1.0:
+    dependencies:
+      color-name: 2.0.0
+
   color-name@1.1.4: {}
+
+  color-name@2.0.0: {}
+
+  color-string@2.0.1:
+    dependencies:
+      color-name: 2.0.0
+
+  color@5.0.0:
+    dependencies:
+      color-convert: 3.1.0
+      color-string: 2.0.1
 
   combined-stream@1.0.8:
     dependencies:
@@ -6253,8 +6272,6 @@ snapshots:
   node-releases@2.0.19: {}
 
   normalize-path@3.0.0: {}
-
-  normalize.css@8.0.1: {}
 
   nwsapi@2.2.20: {}
 
