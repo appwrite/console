@@ -5,13 +5,13 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Fieldset, Layout, Tooltip, Icon, Input, Alert } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
-    import { Runtime, StatusCode, type Models } from '@appwrite.io/console';
+    import { type Models, ProxyResourceType, Runtime, StatusCode } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
@@ -75,7 +75,13 @@
             } else if (behaviour === 'REDIRECT') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(domainName, redirect, statusCode);
+                    .proxy.createRedirectRule(
+                        domainName,
+                        redirect,
+                        statusCode,
+                        page.params.function,
+                        ProxyResourceType.Function
+                    );
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)

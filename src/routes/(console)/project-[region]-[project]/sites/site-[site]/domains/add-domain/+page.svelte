@@ -5,7 +5,7 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Fieldset, Layout, Tooltip, Icon, Input, Alert } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
@@ -16,6 +16,7 @@
         BuildRuntime,
         Framework,
         type Models,
+        ProxyResourceType,
         StatusCode
     } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
@@ -85,7 +86,13 @@
             } else if (behaviour === 'REDIRECT') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(domainName, redirect, statusCode);
+                    .proxy.createRedirectRule(
+                        domainName,
+                        redirect,
+                        statusCode,
+                        page.params.site,
+                        ProxyResourceType.Site
+                    );
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
