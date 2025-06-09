@@ -22,7 +22,7 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { ConnectRepoModal } from '$lib/components/git/index.js';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import { project, regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { isCloud } from '$lib/system';
     import { getApexDomain } from '$lib/helpers/tlds';
 
@@ -55,7 +55,9 @@
         const apexDomain = getApexDomain(domainName);
         let domain = data.domains?.domains.find((d) => d.domain === apexDomain);
 
-        if (apexDomain && !domain && isCloud) {
+        const isSiteDomain = domain.endsWith($regionalConsoleVariables._APP_DOMAIN_SITES);
+        
+        if (apexDomain && !domain && isCloud && !isSiteDomain) {
             try {
                 domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
             } catch (error) {
