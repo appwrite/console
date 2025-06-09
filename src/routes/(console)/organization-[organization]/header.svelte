@@ -32,8 +32,7 @@
 
     $: organization = page.data.organization as Organization;
     $: avatars = $members.memberships?.map((m) => m.userName || m.userEmail) ?? [];
-    $: organizationId = organization?.$id ?? page.params.organization;
-    $: path = `${base}/organization-${organizationId}`;
+    $: path = `${base}/organization-${organization.$id}`;
     $: tabs = [
         {
             href: path,
