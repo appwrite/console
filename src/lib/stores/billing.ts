@@ -534,9 +534,9 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     const now = new Date().getTime();
     const account = get(user);
     const accountCreated = new Date(account.$createdAt).getTime();
-    // if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
-    // const isDismissed = !!localStorage.getItem('newDevUpgradePro');
-    // if (isDismissed) return;
+    if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
+    const isDismissed = !!localStorage.getItem('newDevUpgradePro');
+    if (isDismissed) return;
     // check if coupon already applied
     try {
         await sdk.forConsole.billing.getCouponAccount(NEW_DEV_PRO_UPGRADE_COUPON);
