@@ -39,12 +39,11 @@
     let showDelete = false;
     let selectedRecord: Models.DnsRecord = null;
 
-    function formatRecordName(name: string) {
-        const limit = 30;
+    function formatName(name: string, limit: number = 30) {
         return {
-            value: name.length > limit ? `${name.slice(0, limit)}...` : name,
-            truncated: name.length > limit,
-            whole: name
+            value: name ? (name.length > limit ? `${name.slice(0, limit)}...` : name) : '-',
+            truncated: name ? name.length > limit : undefined,
+            whole: name ?? '-'
         };
     }
 </script>
@@ -65,7 +64,7 @@
                 {#each $columns as column}
                     <Table.Cell column={column.id} {root}>
                         {#if column.id === 'name'}
-                            {@const formatted = formatRecordName(record.name)}
+                            {@const formatted = formatName(record.name)}
                             <Tooltip placement="bottom" disabled={!formatted.truncated}>
                                 <Typography.Text truncate>{formatted.value}</Typography.Text>
                                 <span
@@ -99,7 +98,22 @@
                             </Typography.Text>
                         {:else if column.id === 'comment'}
                             <Typography.Text truncate>
-                                {record?.comment ?? '-'}
+                                {@const formatted = formatName(record?.comment)}
+                                <Tooltip
+                                    placement="bottom"
+                                    maxWidth="fit-content"
+                                    disabled={!formatted.truncated}>
+                                    <Typography.Text truncate>{formatted.value}</Typography.Text>
+                                    <span
+                                        slot="tooltip"
+                                        let:showing
+                                        style:white-space="pre-wrap"
+                                        style:word-break="break-all">
+                                        {#if showing}
+                                            {formatted.whole}
+                                        {/if}
+                                    </span>
+                                </Tooltip>
                             </Typography.Text>
                         {:else if column.id === '$createdAt'}
                             <DualTimeView time={record.$createdAt} />
