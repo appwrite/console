@@ -74,7 +74,7 @@
             {formatCurrency(scalePlan?.price ?? 0)} per month + usage
         </Typography.Text>
     </LabelCard>
-    {#if !isBasePlan}
+    {#if $currentPlan && !isBasePlan}
         <LabelCard
             name="plan"
             bind:group={billingPlan}
