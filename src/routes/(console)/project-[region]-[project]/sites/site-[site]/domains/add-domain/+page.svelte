@@ -16,7 +16,6 @@
         BuildRuntime,
         Framework,
         type Models,
-        ProxyResourceType,
         StatusCode
     } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
@@ -89,9 +88,7 @@
                     .proxy.createRedirectRule(
                         domainName,
                         redirect,
-                        statusCode,
-                        page.params.site,
-                        ProxyResourceType.Site
+                        statusCode
                     );
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk

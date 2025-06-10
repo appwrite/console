@@ -11,7 +11,7 @@
     import { sortBranches } from '$lib/stores/vcs';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
-    import { type Models, ProxyResourceType, Runtime, StatusCode } from '@appwrite.io/console';
+    import { type Models, Runtime, StatusCode } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
@@ -78,9 +78,7 @@
                     .proxy.createRedirectRule(
                         domainName,
                         redirect,
-                        statusCode,
-                        page.params.function,
-                        ProxyResourceType.Function
+                        statusCode
                     );
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
