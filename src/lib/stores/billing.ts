@@ -275,6 +275,7 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
 }
 
 export function checkForEnterpriseTrial(org: Organization) {
+    if (!org || !org.billingNextInvoiceDate) return;
     if (calculateEnterpriseTrial(org) > 0) {
         headerAlert.add({
             id: 'teamEnterpriseTrial',
@@ -533,9 +534,9 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     const now = new Date().getTime();
     const account = get(user);
     const accountCreated = new Date(account.$createdAt).getTime();
-    if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
-    const isDismissed = !!localStorage.getItem('newDevUpgradePro');
-    if (isDismissed) return;
+    // if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
+    // const isDismissed = !!localStorage.getItem('newDevUpgradePro');
+    // if (isDismissed) return;
     // check if coupon already applied
     try {
         await sdk.forConsole.billing.getCouponAccount(NEW_DEV_PRO_UPGRADE_COUPON);
