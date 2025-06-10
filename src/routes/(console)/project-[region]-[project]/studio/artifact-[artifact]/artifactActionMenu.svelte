@@ -1,10 +1,7 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { ActionMenu, Icon, Popover, Status } from '@appwrite.io/pink-svelte';
-    import {
-        IconDotsHorizontal,
-        IconTrash
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconDotsHorizontal, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { studio } from '$lib/components/studio/studio.svelte';
     // Props can be added as needed
 </script>
@@ -59,4 +56,4 @@
             </ActionMenu.Item.Button>
         </ActionMenu.Root>
     </svelte:fragment>
-</Popover> 
+</Popover>

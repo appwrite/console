@@ -37,7 +37,8 @@ export const ConsoleCloudProfile: Profile = {
     hasGoogleLogin: false,
     hasAccountLogin: true,
     hasAppwriteDocumentation: true,
-    description: "Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools."
+    description:
+        'Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools.'
 };
 
 export const ConsoleSelfhostedProfile: Profile = {
@@ -56,7 +57,8 @@ export const ConsoleSelfhostedProfile: Profile = {
     hasGoogleLogin: false,
     hasAccountLogin: true,
     hasAppwriteDocumentation: true,
-    description: "Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools."
+    description:
+        'Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools.'
 };
 
 export const StudioProfile: Profile = {
@@ -76,5 +78,5 @@ export const StudioProfile: Profile = {
     hasGoogleLogin: true,
     hasAccountLogin: true,
     hasAppwriteDocumentation: false,
-    description: "Imagine the fastest way to go from your imagination to scale. Batteries included."
+    description: 'Imagine the fastest way to go from your imagination to scale. Batteries included.'
 };

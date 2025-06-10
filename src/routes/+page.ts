@@ -47,7 +47,7 @@ export const load: PageLoad = async ({ parent, url }) => {
                 `${base}/organization-${teamId}${url.search}`
             );
         }
-    }  else if (!isApplyingCredit) {
+    } else if (!isApplyingCredit) {
         redirect(
             303,
             isStudio

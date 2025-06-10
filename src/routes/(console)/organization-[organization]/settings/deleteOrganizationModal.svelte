@@ -41,7 +41,9 @@
                 await goto(`${base}/account/organizations`);
             } else {
                 await goto(
-                    isStudio ? `${base}/account/organizations` : `${base}/onboarding/create-organization`
+                    isStudio
+                        ? `${base}/account/organizations`
+                        : `${base}/onboarding/create-organization`
                 );
             }
             await invalidate(Dependencies.ACCOUNT);
