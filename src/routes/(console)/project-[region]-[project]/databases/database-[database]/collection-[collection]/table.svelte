@@ -251,7 +251,7 @@
                     {:else}
                         {@const formatted = formatColumn(document[id])}
                         {@const isDatetimeAttribute = attr.type === 'datetime'}
-                        {@const isEncryptedAttribute = isString(attr) && !attr.encrypt}
+                        {@const isEncryptedAttribute = isString(attr) && attr.encrypt}
                         {#if isDatetimeAttribute}
                             <DualTimeView time={formatted.whole}>
                                 <span slot="title">Timestamp</span>

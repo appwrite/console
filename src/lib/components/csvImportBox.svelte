@@ -32,14 +32,15 @@
         payload: Payload
     ) {
         const isSuccess = payload.status === 'completed';
-
-        // TODO: the migrations worker sends 2 events!
-        const isError = !isSuccess && !!payload.error;
+        const isError = !isSuccess && !!payload.errors;
 
         if (!isSuccess && !isError) return;
 
         const type = isSuccess ? 'success' : 'error';
-        const message = isError ? payload.error : 'CSV import finished successfully.';
+        const message = isSuccess
+            ? 'CSV import finished successfully.'
+            : (payload.errors[0]?.message ??
+              'Import failed. Check your CSV for correct fields and required values.');
 
         const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${database}/collection-${collection}`;
 
