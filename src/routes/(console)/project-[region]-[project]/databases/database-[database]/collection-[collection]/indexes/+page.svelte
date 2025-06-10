@@ -86,6 +86,7 @@
                     <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
                     <Table.Header.Cell column="attributes" {root}>Attributes</Table.Header.Cell>
                     <Table.Header.Cell column="orders" {root}>Asc/Desc</Table.Header.Cell>
+                    <Table.Header.Cell column="lengths" {root}>Lengths</Table.Header.Cell>
                     <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
                 {#each data.collection.indexes as index}
@@ -117,6 +118,9 @@
                         </Table.Cell>
                         <Table.Cell column="orders" {root}>
                             {index.orders}
+                        </Table.Cell>
+                        <Table.Cell column="lengths" {root}>
+                            {index.lengths}
                         </Table.Cell>
                         <Table.Cell column="actions" {root}>
                             <Popover let:toggle padding="none" placement="bottom-end">

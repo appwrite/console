@@ -36,7 +36,7 @@
             label: attribute.key
         }));
 
-    let attributeList = [{ value: '', order: '' }];
+    let attributeList = [{ value: '', order: '', length: null }];
 
     function generateIndexKey() {
         let indexKeys = $indexes.map((index) => index.key);
@@ -51,8 +51,8 @@
 
     function initialize() {
         attributeList = externalAttribute
-            ? [{ value: externalAttribute.key, order: 'ASC' }]
-            : [{ value: '', order: 'ASC' }];
+            ? [{ value: externalAttribute.key, order: 'ASC', length: null }]
+            : [{ value: '', order: 'ASC', length: null }];
         selectedType = IndexType.Key;
         key = `index_${$indexes.length + 1}`;
     }
@@ -78,8 +78,10 @@
                 key,
                 selectedType,
                 attributeList.map((a) => a.value),
-                attributeList.map((a) => a.order)
+                attributeList.map((a) => a.order),
+                attributeList.map((a) => a.length)
             );
+
             await Promise.allSettled([
                 invalidate(Dependencies.COLLECTION),
                 invalidate(Dependencies.DATABASE)
