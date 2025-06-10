@@ -275,6 +275,7 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
 }
 
 export function checkForEnterpriseTrial(org: Organization) {
+    if (!org || !org.billingNextInvoiceDate) return;
     if (calculateEnterpriseTrial(org) > 0) {
         headerAlert.add({
             id: 'teamEnterpriseTrial',
