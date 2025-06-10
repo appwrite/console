@@ -6,4 +6,4 @@ export { default as NoFrameworkIcon } from './NoFrameworkIcon.svelte';
 export { default as NuxtFrameworkIcon } from './NuxtFrameworkIcon.svelte';
 export { default as ReactFrameworkIcon } from './ReactFrameworkIcon.svelte';
 export { default as SvelteFrameworkIcon } from './SvelteFrameworkIcon.svelte';
-export { default as VueFrameworkIcon } from './AngularFrameworkIcon.svelte';
+export { default as VueFrameworkIcon } from './VueFrameworkIcon.svelte';

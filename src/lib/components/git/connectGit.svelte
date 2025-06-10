@@ -1,14 +1,14 @@
 <script lang="ts">
-    import Button from '$lib/elements/forms/button.svelte';
-    import { consoleVariables } from '$routes/(console)/store';
-    import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { Alert, Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
     import { isSelfHosted } from '$lib/system';
     import { connectGitHub } from '$lib/stores/git';
+    import Button from '$lib/elements/forms/button.svelte';
+    import { IconGithub } from '@appwrite.io/pink-icons-svelte';
+    import { Alert, Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let callbackState: Record<string, string> = null;
 
-    let isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
+    let isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
 </script>
 
 <Layout.Stack>

@@ -1,16 +1,20 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { Alert, Box, Modal } from '$lib/components';
-    import { Button, InputText, InputTextarea } from '$lib/elements/forms';
+    import { project } from '../../store';
+    import { Box, Modal } from '$lib/components';
     import { getFormData } from '$lib/helpers/form';
     import { feedback, feedbackData } from '$lib/stores/feedback';
-    import { organization } from '$lib/stores/organization';
+    import { Alert, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Button, InputText, InputTextarea } from '$lib/elements/forms';
+
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
-    import { project } from '../../store';
+    import { organization } from '$lib/stores/organization';
 
     export let show = false;
-    let submitted = false;
+
+    let endpointUrl = '';
+    let redirecting = false;
 
     const isValidEndpoint = (endpoint: string) => {
         try {
@@ -47,7 +51,7 @@
 
     const onSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
-        submitted = true;
+        redirecting = true;
 
         const formData = getFormData<{ endpoint: string; feedback: string }>(e);
 
@@ -114,56 +118,58 @@
         const dest = `${removeTrailingSlash(endpoint)}/?migrate=${encodeURIComponent(
             JSON.stringify(migrationData)
         )}`;
+
+        redirecting = false;
         window.location.href = dest;
     };
-
-    function handleInvalid(event: Event) {
-        const input = event.target as HTMLInputElement;
-        const value = input.value;
-
-        if (!isValidEndpoint(value)) {
-            input.setCustomValidity('Please enter a valid endpoint');
-        } else {
-            input.setCustomValidity('');
-        }
-        input.reportValidity();
-    }
 </script>
 
 <Modal title="Export to self-hosted instance" bind:show {onSubmit}>
-    <Alert isStandalone>
-        <svelte:fragment slot="title">API key creation</svelte:fragment>
-        By initiating the transfer, an API key will be automatically generated in the background, which
-        you can delete after completion
-    </Alert>
+    <Layout.Stack gap="l">
+        <Alert.Inline status="info">
+            <svelte:fragment slot="title">API key creation</svelte:fragment>
+            By initiating the transfer, an API key will be automatically generated in the background,
+            which you can delete after completion
+        </Alert.Inline>
 
-    <InputText
-        label="Endpoint self-hosted instance"
-        required
-        id="endpoint"
-        placeholder="https://[YOUR_APPWRITE_HOSTNAME]"
-        autofocus
-        on:input={(e) => {
-            if (!submitted) return;
-            handleInvalid(e);
-        }} />
+        <InputText
+            required
+            id="endpoint"
+            autofocus
+            bind:value={endpointUrl}
+            label="Endpoint self-hosted instance"
+            placeholder="https://<YOUR_APPWRITE_HOSTNAME>" />
 
-    <Box>
-        <p class="u-bold">Share your feedback: why our self-hosted solution works better for you</p>
-        <p class="u-margin-block-start-8">
-            We appreciate your continued support and we understand that our self-hosted solution
-            might better fit your needs. To help us improve our Cloud solution, please share why it
-            works better for you. Your feedback is important to us and we'll use it to make our
-            services better.
-        </p>
-        <div class="u-margin-block-start-24">
-            <InputTextarea id="feedback" label="Your feedback" placeholder="Type here..." />
-        </div>
-    </Box>
+        <Box>
+            <Layout.Stack gap="xl">
+                <Typography.Text variant="m-600">
+                    Share your feedback: why our self-hosted solution works better for you
+                </Typography.Text>
 
-    <div class="u-flex u-gap-16 u-cross-center" slot="footer">
-        <span> You will be redirected to your self-hosted instance </span>
+                We appreciate your continued support and we understand that our self-hosted solution
+                might better fit your needs. To help us improve our Cloud solution, please share why
+                it works better for you. Your feedback is important to us and we'll use it to make
+                our services better.
 
-        <Button submit>Continue</Button>
-    </div>
+                <InputTextarea id="feedback" label="Your feedback" placeholder="Type here..." />
+            </Layout.Stack>
+        </Box>
+    </Layout.Stack>
+
+    <Layout.Stack
+        direction="row"
+        gap="l"
+        alignItems="center"
+        justifyContent="flex-end"
+        slot="footer">
+        You will be redirected to your self-hosted instance
+
+        <Button
+            submit
+            forceShowLoader
+            submissionLoader={redirecting}
+            disabled={!isValidEndpoint(endpointUrl)}>
+            Continue
+        </Button>
+    </Layout.Stack>
 </Modal>

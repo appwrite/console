@@ -9,7 +9,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import { specificationsList } from '$lib/stores/specifications';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime, type Models } from '@appwrite.io/console';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -17,17 +16,11 @@
 
     const functionId = page.params.function;
     export let runtimesList: Models.RuntimeList;
-    let { runtime, entrypoint, specification } = $func;
+    let { runtime, entrypoint } = $func;
 
     const options = runtimesList.runtimes.map((runtime) => ({
         label: `${runtime.name} - ${runtime.version}`,
         value: runtime.$id
-    }));
-    const specificationOptions = $specificationsList.specifications.map((size) => ({
-        label:
-            `${size.cpus} CPU, ${size.memory} MB RAM` +
-            (!size.enabled ? ` (Upgrade to use this)` : ''),
-        value: size.slug
     }));
 
     async function updateRuntime() {
@@ -99,12 +92,6 @@
                     required
                     placeholder="Enter entrypoint"
                     bind:value={entrypoint} />
-                <InputSelect
-                    label="CPU and memory"
-                    id="size"
-                    placeholder="Select runtime specification"
-                    bind:value={specification}
-                    options={specificationOptions} />
             </Layout.Stack>
         </svelte:fragment>
 

@@ -1,14 +1,15 @@
 import { sdk } from '$lib/stores/sdk';
-import { buildVerboseDomain } from '../../store.js';
 import { ID } from '@appwrite.io/console';
+import { buildVerboseDomain } from '../../store.js';
 
 export const load = async ({ parent, params }) => {
-    const { installations, frameworks, project, organization, consoleVariables } = await parent();
+    const { installations, frameworks, project, organization, regionalConsoleVariables } =
+        await parent();
     const template = await sdk
         .forProject(params.region, params.project)
         .sites.getTemplate(params.template);
     const domain = await buildVerboseDomain(
-        consoleVariables._APP_DOMAIN_SITES,
+        regionalConsoleVariables._APP_DOMAIN_SITES,
         template.name,
         organization.name,
         project.name,

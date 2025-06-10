@@ -15,11 +15,12 @@
 
     let name: string;
     let error: string;
+    let modal: FakeModal;
 
     async function handleSubmit() {
         try {
             const card = await submitStripeCard(name, page?.params?.organization ?? null);
-            show = false;
+            modal.closeModal();
             invalidate(Dependencies.PAYMENT_METHODS);
             dispatch('submit', card);
             addNotification({
@@ -65,7 +66,12 @@
     }
 </script>
 
-<FakeModal bind:show title="Add payment method" bind:error onSubmit={handleSubmit}>
+<FakeModal
+    bind:this={modal}
+    bind:show
+    title="Add payment method"
+    bind:error
+    onSubmit={handleSubmit}>
     <slot />
     <InputText
         id="name"
@@ -82,7 +88,10 @@
             </div>
         {/if}
 
-        <div class="stripe-element" bind:this={element}>
+        <div
+            style:display={isLoading ? 'none' : 'initial'}
+            class="stripe-element"
+            bind:this={element}>
             <!-- Stripe will create form elements here -->
         </div>
     </div>
@@ -105,7 +114,8 @@
         .loader-element {
             width: 100%;
             align-self: center;
-            justify-items: end;
+            justify-content: center;
+            display: flex;
         }
     }
 </style>

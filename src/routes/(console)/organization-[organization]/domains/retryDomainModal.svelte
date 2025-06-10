@@ -4,15 +4,15 @@
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
-    import type { Domain } from '$lib/sdk/domains';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { Input, InteractiveText, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
     import { consoleVariables } from '$routes/(console)/store';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let selectedDomain: Domain;
+    export let selectedDomain: Models.Domain;
     const nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',') ?? [
         'ns1.appwrite.io',
         'ns2.appwrite.io'
@@ -23,7 +23,7 @@
         try {
             const domain = await sdk.forConsole.domains.updateNameservers(selectedDomain.$id);
             show = false;
-            if (domain.nameservers === 'Appwrite') {
+            if (domain.nameservers.toLowerCase() === 'appwrite') {
                 addNotification({
                     type: 'success',
                     message: `${selectedDomain.domain} has been verified`
@@ -31,13 +31,14 @@
             } else {
                 addNotification({
                     type: 'error',
-                    message: `Domain verification failed. Please check your domain settings or try again later`
+                    message:
+                        'Domain verification failed. Please check your domain settings or try again later'
                 });
             }
             await invalidate(Dependencies.DOMAINS);
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
-            error = e;
+            error = e.message;
             trackError(e, Submit.DomainUpdateVerification);
         }
     }

@@ -97,7 +97,11 @@
         <Layout.Stack gap="s" alignContent="flex-start">
             <!-- `Raw time` as per design -->
             <Typography.Caption color="--fgcolor-neutral-tertiary" variant="400">
-                {timeToString}
+                {#if $$slots.title}
+                    <slot name="title" />
+                {:else}
+                    {timeToString}
+                {/if}
             </Typography.Caption>
 
             <!-- `Absolute time` as per design -->

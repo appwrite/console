@@ -7,30 +7,36 @@
     import { capitalize } from '$lib/helpers/string';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import type { DnsRecordsList } from '$lib/sdk/domains';
     import { presets } from './store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { createRecord } from '$lib/helpers/domains';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
     export let selectedPreset: (typeof presets)[number];
-    let records: DnsRecordsList;
+    let records: Models.DnsRecordsList;
     let error = '';
     async function fetchPreset() {
         switch (selectedPreset.toLowerCase()) {
             case 'zoho':
-                return await sdk.forConsole.domains.getPresetZoho(page.params.domain);
+                records = await sdk.forConsole.domains.getPresetZoho(page.params.domain);
+                return records;
             case 'mailgun':
-                return await sdk.forConsole.domains.getPresetMailgun(page.params.domain);
+                records = await sdk.forConsole.domains.getPresetMailgun(page.params.domain);
+                return records;
             case 'outlook':
-                return await sdk.forConsole.domains.getPresetOutlook(page.params.domain);
+                records = await sdk.forConsole.domains.getPresetOutlook(page.params.domain);
+                return records;
             case 'proton mail':
-                return await sdk.forConsole.domains.getPresetProtonMail(page.params.domain);
+                records = await sdk.forConsole.domains.getPresetProtonMail(page.params.domain);
+                return records;
             case 'icloud':
-                return await sdk.forConsole.domains.getPresetICloud(page.params.domain);
+                records = await sdk.forConsole.domains.getPresetICloud(page.params.domain);
+                return records;
             case 'google workspace':
-                return await sdk.forConsole.domains.getPresetGoogleWorkspace(page.params.domain);
+                records = await sdk.forConsole.domains.getPresetGoogleWorkspace(page.params.domain);
+                return records;
         }
     }
 

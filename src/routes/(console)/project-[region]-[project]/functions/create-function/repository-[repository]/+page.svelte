@@ -13,7 +13,6 @@
     import { ID, Runtime, VCSDeploymentType } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { consoleVariables } from '$routes/(console)/store';
     import Details from '../(components)/details.svelte';
     import ProductionBranchFieldset from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
@@ -22,6 +21,7 @@
     import { Dependencies } from '$lib/constants';
     import RepoCard from './repoCard.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let data;
 
@@ -92,7 +92,7 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.createFunctionRule(
-                    `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
+                    `${ID.unique()}.${$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS}`,
                     func.$id
                 );
 

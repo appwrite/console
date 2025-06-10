@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Link } from '$lib/elements';
-    import { consoleVariables } from '$routes/(console)/store';
     import {
         Badge,
         Layout,
@@ -9,9 +8,10 @@
         InteractiveText,
         Alert
     } from '@appwrite.io/pink-svelte';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let domain: string;
-    export let verified = false;
+    export let verified = undefined;
     export let variant: 'cname' | 'a' | 'aaaa';
     export let service: 'sites' | 'general' = 'general';
 
@@ -21,12 +21,12 @@
         switch (variant) {
             case 'cname':
                 return service === 'general'
-                    ? $consoleVariables._APP_DOMAIN_TARGET_CNAME
-                    : $consoleVariables._APP_DOMAIN_SITES;
+                    ? $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME
+                    : $regionalConsoleVariables._APP_DOMAIN_SITES;
             case 'a':
-                return $consoleVariables._APP_DOMAIN_TARGET_A;
+                return $regionalConsoleVariables._APP_DOMAIN_TARGET_A;
             case 'aaaa':
-                return $consoleVariables._APP_DOMAIN_TARGET_AAAA;
+                return $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA;
         }
     }
 </script>
@@ -37,16 +37,10 @@
             <Typography.Text variant="l-500" color="--fgcolor-neutral-primary">
                 {domain}
             </Typography.Text>
-            {#if verified}
+            {#if verified === true}
                 <Badge variant="secondary" type="success" size="xs" content="Verified" />
             {:else if verified === false}
                 <Badge variant="secondary" type="error" size="xs" content="Verification failed" />
-            {:else}
-                <Badge
-                    variant="secondary"
-                    type="warning"
-                    size="xs"
-                    content="Pending verification" />
             {/if}
         </Layout.Stack>
         <Typography.Text variant="m-400">
