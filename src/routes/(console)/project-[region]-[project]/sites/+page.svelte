@@ -28,15 +28,11 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
-    import { APPWRITE_OFFICIALS_ORG, isCloud } from '$lib/system';
-    import { addNotification } from '$lib/stores/notifications';
-    import { isOnWaitlistSites, joinWaitlistSites } from '$lib/helpers/waitlist';
     import { isSmallViewport } from '$lib/stores/viewport';
 
     export let data;
 
     let show = false;
-    let isOnWaitlist = isOnWaitlistSites();
 
     $: $registerCommands([
         {
@@ -46,7 +42,6 @@
             },
             keys: ['c'],
             disabled:
-                !showSites ||
                 isServiceLimited('sites', $organization?.billingPlan, data.siteList?.total) ||
                 !$canWriteSites,
             icon: IconPlus,
@@ -64,16 +59,7 @@
         });
     });
 
-    /**
-     * Controls visibility of Sites feature:
-     * - Shown if running on self-hosted
-     * - Shown on cloud only if the organization is Appwrite's.
-     * - Hidden on cloud for any non-Appwrite organization.
-     */
-    $: showSites = !isCloud || $organization.$id === APPWRITE_OFFICIALS_ORG;
-
     $: isDark = $app.themeInUse === 'dark';
-
     $: imgSrc = isDark
         ? $isSmallViewport
             ? EmptyDarkMobile
@@ -81,23 +67,11 @@
         : $isSmallViewport
           ? EmptyLightMobile
           : EmptyLight;
-
     $: imgClass = $isSmallViewport ? 'mobile' : 'desktop';
-
-    function addToWaitlist() {
-        joinWaitlistSites();
-        addNotification({
-            type: 'success',
-            title: 'Waitlist joined',
-            message: "We'll let you know as soon as Appwrite Sites is ready for you."
-        });
-
-        isOnWaitlist = true;
-    }
 </script>
 
 <Container>
-    {#if showSites}
+    {#if data.sitesLive}
         <Layout.Stack direction="row" justifyContent="space-between">
             <Layout.Stack direction="row" alignItems="center">
                 <SearchQuery placeholder="Search by name" />
@@ -146,37 +120,18 @@
                 <img src={imgSrc} alt="create" aria-hidden="true" height="242" class={imgClass} />
 
                 <Layout.Stack>
-                    {#if isOnWaitlist}
+                    <Layout.Stack gap="m" alignItems="center">
                         <Typography.Title size="s" align="center" color="--fgcolor-neutral-primary">
-                            You've successfully joined the Sites waitlist
+                            Appwrite Sites is in high demand
                         </Typography.Title>
 
-                        <Typography.Text align="center" color="--fgcolor-neutral-secondary">
-                            We can't wait for you to try out Sites on Cloud. You will get access
-                            soon.
-                        </Typography.Text>
-                    {:else}
-                        <Layout.Stack gap="m" alignItems="center">
-                            <Typography.Title
-                                size="s"
-                                align="center"
-                                color="--fgcolor-neutral-primary">
-                                Appwrite Sites is in high demand
-                            </Typography.Title>
-
-                            <div style:max-width="600px">
-                                <Typography.Text align="center" color="--fgcolor-neutral-secondary">
-                                    To ensure a smooth experience for everyone, we’re rolling out
-                                    access gradually. Join the waitlist and be one of the first to
-                                    deploy with Sites.
-                                </Typography.Text>
-                            </div>
-
-                            <div style:margin-block-start="1rem">
-                                <Button on:click={addToWaitlist}>Join waitlist</Button>
-                            </div>
-                        </Layout.Stack>
-                    {/if}
+                        <div style:max-width="600px">
+                            <Typography.Text align="center" color="--fgcolor-neutral-secondary">
+                                To ensure a smooth experience for everyone, we’re rolling out access
+                                gradually.
+                            </Typography.Text>
+                        </div>
+                    </Layout.Stack>
                 </Layout.Stack>
             </Layout.Stack>
         </Card.Base>

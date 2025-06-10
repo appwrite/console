@@ -34,7 +34,7 @@
 
     function getFilePreview(fileId: string) {
         // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
-        const endpoint = getApiEndpoint();
+        const endpoint = getApiEndpoint(page.params.region);
         return endpoint + `/storage/buckets/screenshots/files/${fileId}/view?project=console`;
     }
 </script>

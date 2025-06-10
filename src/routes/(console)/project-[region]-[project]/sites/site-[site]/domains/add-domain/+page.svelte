@@ -16,13 +16,17 @@
         BuildRuntime,
         Framework,
         type Models,
+        ProxyResourceType,
         StatusCode
     } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { ConnectRepoModal } from '$lib/components/git/index.js';
-    import { project, regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
+    import {
+        project,
+        regionalConsoleVariables
+    } from '$routes/(console)/project-[region]-[project]/store';
     import { isCloud } from '$lib/system';
     import { getApexDomain } from '$lib/helpers/tlds';
 
@@ -53,17 +57,23 @@
 
     async function addDomain() {
         const apexDomain = getApexDomain(domainName);
-        let domain = data.domains?.domains.find((d) => d.domain === apexDomain);
+        let domain = data.domains?.domains.find((d: Models.Domain) => d.domain === apexDomain);
 
-        if (apexDomain && !domain && isCloud) {
+        const isSiteDomain = domainName.endsWith($regionalConsoleVariables._APP_DOMAIN_SITES);
+
+        if (isCloud && apexDomain && !domain && !isSiteDomain) {
             try {
                 domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
             } catch (error) {
-                addNotification({
-                    type: 'error',
-                    message: error.message
-                });
-                return;
+                // apex might already be added on organization level, skip.
+                const alreadyAdded = error?.type === 'domain_already_exists';
+                if (!alreadyAdded) {
+                    addNotification({
+                        type: 'error',
+                        message: error.message
+                    });
+                    return;
+                }
             }
         }
 
@@ -76,7 +86,13 @@
             } else if (behaviour === 'REDIRECT') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(domainName, $regionalProtocol + redirect, statusCode);
+                    .proxy.createRedirectRule(
+                        domainName,
+                        redirect,
+                        statusCode,
+                        page.params.site,
+                        ProxyResourceType.Site
+                    );
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)

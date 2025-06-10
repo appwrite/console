@@ -77,7 +77,7 @@
     $: selectedOrgId = tempOrgId;
 
     function isUpgrade() {
-        const newPlan = page.data.plansInfo.get(billingPlan);
+        const newPlan = $plansInfo.get(billingPlan);
         return currentPlan && newPlan && currentPlan.order < newPlan.order;
     }
 
@@ -227,33 +227,40 @@
     function getBillingPlan(): Tier | undefined {
         const campaignPlan =
             campaign?.plan && $plansInfo.get(campaign.plan) ? $plansInfo.get(campaign.plan) : null;
-        const orgPlan =
-            selectedOrg?.billingPlan && $plansInfo.get(selectedOrg.billingPlan)
-                ? $plansInfo.get(selectedOrg.billingPlan)
-                : null;
+        const newPlan = $plansInfo.get(billingPlan);
 
-        if (!campaignPlan && !orgPlan) {
-            return;
+        // if campaign has a plan and it's higher than the selected new plan
+        if (campaignPlan?.order > newPlan?.order) {
+            return campaignPlan.$id as Tier;
         }
-        if (!campaignPlan) {
-            return selectedOrg?.billingPlan;
+
+        // if current plan's order is higher than the selected new plan
+        if (currentPlan?.order > newPlan?.order) {
+            return currentPlan.$id as Tier;
         }
-        if (!orgPlan) {
-            return campaign.plan;
-        }
-        return campaignPlan.order > orgPlan.order ? campaign.plan : selectedOrg?.billingPlan;
+
+        return billingPlan;
     }
 
-    $: if (selectedOrg) {
+    $: if (currentPlan) {
         billingPlan = getBillingPlan();
     }
 
-    $: {
-        if (selectedOrgId) {
-            (async () => {
-                currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
-            })();
-        }
+    $: isNewOrg = !(selectedOrgId && selectedOrgId !== newOrgId);
+
+    $: if (!isNewOrg) {
+        (async () => {
+            currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
+        })();
+        loadPaymentMethods();
+    }
+
+    // after adding a payment method, fetch the payment methods again so the input can be updated
+    $: if (
+        paymentMethodId &&
+        !methods?.paymentMethods?.find((method) => method.$id === paymentMethodId)
+    ) {
+        loadPaymentMethods();
     }
 </script>
 
@@ -363,7 +370,7 @@
                     {collaborators}
                     bind:couponData
                     bind:billingBudget
-                    organizationId={selectedOrgId}>
+                    organizationId={!isNewOrg ? selectedOrgId : null}>
                     {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}
                         <div class="u-margin-block-end-24">
                             <p class="body-text-1 u-bold">{campaign?.cta}</p>
@@ -389,13 +396,15 @@
                     handleSubmit();
                 }
             }}
-            disabled={$isSubmitting}>
+            disabled={!couponData?.code || $isSubmitting}>
             {#if $isSubmitting}
                 <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true"
                 ></span>
             {/if}
             {#if selectedOrgId === newOrgId}
                 Create organization
+            {:else if isUpgrade()}
+                Upgrade
             {:else}
                 Apply
             {/if}

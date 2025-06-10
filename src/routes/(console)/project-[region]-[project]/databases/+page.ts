@@ -28,7 +28,6 @@ export const load: PageLoad = async ({ url, route, depends, params, parent }) =>
         search,
         currentPlan
     );
-
     return {
         offset,
         limit,

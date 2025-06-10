@@ -30,6 +30,7 @@
         InteractiveText,
         Typography
     } from '@appwrite.io/pink-svelte';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data: PageData;
@@ -94,7 +95,7 @@
                     ? `${formattedColumn.slice(0, 20)}...`
                     : formattedColumn,
             truncated: formattedColumn.length > 20,
-            whole: formattedColumn
+            whole: `${formattedColumn.slice(0, 100)}...`
         };
     }
 
@@ -200,7 +201,7 @@
                 {/key}
             </Table.Cell>
 
-            {#each $columns as { id }}
+            {#each $columns as { id } (id)}
                 {@const attr = $attributes.find((n) => n.key === id)}
                 <Table.Cell column={id} {root}>
                     {#if isRelationship(attr)}
@@ -249,7 +250,14 @@
                         {/if}
                     {:else}
                         {@const formatted = formatColumn(document[id])}
-                        {#if isString(attr) && !attr.encrypt}
+                        {@const isDatetimeAttribute = attr.type === 'datetime'}
+                        {@const isEncryptedAttribute = isString(attr) && !attr.encrypt}
+                        {#if isDatetimeAttribute}
+                            <DualTimeView time={formatted.whole}>
+                                <span slot="title">Timestamp</span>
+                                {toLocaleDateTime(formatted.whole, true, 'UTC')}
+                            </DualTimeView>
+                        {:else if isEncryptedAttribute}
                             <button on:click={(e) => e.preventDefault()}>
                                 <InteractiveText
                                     copy={false}
@@ -257,18 +265,21 @@
                                     isVisible={false}
                                     text={formatted.value} />
                             </button>
-                        {:else}
-                            <Tooltip disabled={!formatted.truncated} placement="bottom">
-                                <Typography.Text truncate>
-                                    {formatted.value}
-                                </Typography.Text>
+                        {:else if formatted.truncated}
+                            <Tooltip placement="bottom" disabled={!formatted.truncated}>
+                                <Typography.Text truncate>{formatted.value}</Typography.Text>
                                 <span
+                                    let:showing
                                     slot="tooltip"
                                     style:white-space="pre-wrap"
                                     style:word-break="break-all">
-                                    {formatted.whole}
+                                    {#if showing}
+                                        {formatted.whole}
+                                    {/if}
                                 </span>
                             </Tooltip>
+                        {:else}
+                            <Typography.Text truncate>{formatted.value}</Typography.Text>
                         {/if}
                     {/if}
                 </Table.Cell>
