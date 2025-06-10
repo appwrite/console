@@ -107,7 +107,7 @@
         if (addAttributeDisabled) return;
 
         // We assign instead of pushing to trigger Svelte's reactivity
-        attributeList = [...attributeList, { value: '', order: '' }];
+        attributeList = [...attributeList, { value: '', order: '', length: null }];
     }
 </script>
 
