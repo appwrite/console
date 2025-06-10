@@ -22,8 +22,7 @@
         const alertHeight = container?.getBoundingClientRect()?.height || 0;
         const { header, sidebar, content } = queryLayoutElements();
         const headerHeight = header?.getBoundingClientRect().height || 0;
-        const offset = alertHeight + (!isTabletViewport && header ? headerHeight : 0);
-
+        const offset = alertHeight + (!$isTabletViewport && header ? headerHeight : 0);
         if (header) header.style.top = `${alertHeight}px`;
         if (sidebar) {
             sidebar.style.top = `${offset}px`;
