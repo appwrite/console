@@ -5,7 +5,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, InputSelect, InputText } from '$lib/elements/forms';
+    import { Button, InputNumber, InputSelect, InputText } from '$lib/elements/forms';
     import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -79,7 +79,7 @@
                 selectedType,
                 attributeList.map((a) => a.value),
                 attributeList.map((a) => a.order),
-                attributeList.map((a) => a.length)
+                attributeList.map((a) => a.length ? Number(a.length) : null)
             );
 
             await Promise.allSettled([
@@ -137,24 +137,25 @@
                     placeholder="Select Attribute"
                     bind:value={attribute.value} />
 
-                <InputText
+                <InputSelect
+                    options={[
+                        { value: 'ASC', label: 'ASC' },
+                        { value: 'DESC', label: 'DESC' }
+                    ]}
                     required
-                    id="length"
-                    label="Length"
-                    placeholder="Enter Length"
-                    bind:value={attribute.length} />
+                    id={`order-${i}`}
+                    label={i === 0 ? 'Order' : undefined}
+                    bind:value={attribute.order}
+                    placeholder="Select Order" />
 
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
-                    <InputSelect
-                        options={[
-                            { value: 'ASC', label: 'ASC' },
-                            { value: 'DESC', label: 'DESC' }
-                        ]}
-                        required
-                        id={`order-${i}`}
-                        label={i === 0 ? 'Order' : undefined}
-                        bind:value={attribute.order}
-                        placeholder="Select Order" />
+                    {#if selectedType === IndexType.Key}
+                        <InputNumber
+                            id={`length-${i}`}
+                            label={i === 0 ? 'Length' : undefined}
+                            placeholder="Enter Length"
+                            bind:value={attribute.length} />
+                    {/if}
                     <Button
                         icon
                         compact

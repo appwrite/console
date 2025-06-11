@@ -86,7 +86,7 @@
                     <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
                     <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
                     <Table.Header.Cell column="attributes" {root}>Attributes</Table.Header.Cell>
-                    <Table.Header.Cell column="orders" {root}>Asc/Desc</Table.Header.Cell>
+                    <Table.Header.Cell column="orders" {root}>Orders</Table.Header.Cell>
                     <Table.Header.Cell column="lengths" {root}>Lengths</Table.Header.Cell>
                     <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
