@@ -20,5 +20,6 @@ function isFlagEnabled(name: string) {
 
 export const flags = {
     showSites: isFlagEnabled('sites'),
-    showCsvImport: isFlagEnabled('csv-import')
+    showCsvImport: isFlagEnabled('csv-import'),
+    showAttributeEncrypt: isFlagEnabled('attribute-encrypt'),
 };

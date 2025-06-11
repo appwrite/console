@@ -50,6 +50,7 @@
     import { ActionMenu, Selector } from '@appwrite.io/pink-svelte';
     import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
     import { Popover, Layout, Tag, Typography, Link } from '@appwrite.io/pink-svelte';
+    import { flags } from '$lib/flags';
 
     export let data: Partial<Models.AttributeString> = {
         required: false,
@@ -61,6 +62,11 @@
     export let editing = false;
 
     let savedDefault = data.default;
+
+    let showEncrypt = flags.showAttributeEncrypt({
+        organization: page.data.organization,
+        account: page.data.account
+    });
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
@@ -84,7 +90,7 @@
 
     $: handleDefaultState($required || $array);
 
-    // check plan on cloud, always allow on self-hosted!
+    // Check plan on cloud, always allow on self-hosted
     $: supportsStringEncryption = isCloud ? $currentPlan?.databasesAllowEncrypt : true;
 </script>
 
@@ -125,6 +131,7 @@
     disabled={data.required || editing}
     description="Indicate whether this attribute is an array. Defaults to an empty array." />
 
+{#if showEncrypt }
 <Layout.Stack gap="xs" direction="column">
     <div class="popover-holder" class:disabled-checkbox={!supportsStringEncryption || editing}>
         <Layout.Stack inline gap="s" alignItems="flex-start" direction="row">
@@ -169,6 +176,7 @@
         </Layout.Stack>
     </div>
 </Layout.Stack>
+{/if}
 
 <style lang="scss">
     .popover-holder {
