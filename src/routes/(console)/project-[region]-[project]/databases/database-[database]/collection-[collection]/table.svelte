@@ -169,7 +169,7 @@
 
     let checked = false;
 
-    let showEncrypt = flags.showAttributeEncrypt(data)
+    let showEncrypt = flags.showAttributeEncrypt(data);
 </script>
 
 <Table.Root
