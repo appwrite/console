@@ -136,6 +136,14 @@
                     label={i === 0 ? 'Attribute' : undefined}
                     placeholder="Select Attribute"
                     bind:value={attribute.value} />
+
+                <InputText
+                    required
+                    id="length"
+                    label="Length"
+                    placeholder="Enter Length"
+                    bind:value={attribute.length} />
+
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                     <InputSelect
                         options={[

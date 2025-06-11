@@ -79,6 +79,7 @@
                     { id: 'type' },
                     { id: 'attributes' },
                     { id: 'orders' },
+                    { id: 'lengths' },
                     { id: 'actions', width: 40 }
                 ]}>
                 <svelte:fragment slot="header" let:root>
