@@ -255,7 +255,7 @@
                                 <span slot="title">Timestamp</span>
                                 {toLocaleDateTime(formatted.whole, true, 'UTC')}
                             </DualTimeView>
-                        {:else if isString(attr) && !attr.encrypt}
+                        {:else if isString(attr) && attr.encrypt}
                             <button on:click={(e) => e.preventDefault()}>
                                 <InteractiveText
                                     copy={false}
