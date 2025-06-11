@@ -79,7 +79,7 @@
                 selectedType,
                 attributeList.map((a) => a.value),
                 attributeList.map((a) => a.order),
-                attributeList.map((a) => a.length ? Number(a.length) : null)
+                attributeList.map((a) => (a.length ? Number(a.length) : null))
             );
 
             await Promise.allSettled([
