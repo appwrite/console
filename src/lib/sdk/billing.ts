@@ -310,6 +310,7 @@ export type Plan = {
     users: number;
     teams: number;
     databases: number;
+    databasesAllowEncrypt: boolean;
     buckets: number;
     fileSize: number;
     functions: number;

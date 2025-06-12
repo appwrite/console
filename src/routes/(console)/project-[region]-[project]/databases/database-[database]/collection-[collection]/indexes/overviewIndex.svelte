@@ -39,6 +39,12 @@
                     id={`value-${selectedIndex.orders[i]}`}
                     value={selectedIndex.orders[i]}
                     readonly />
+                <InputText
+                    required
+                    label={i === 0 ? 'Length' : ''}
+                    id={`value-${selectedIndex.lengths[i]}`}
+                    value={selectedIndex.lengths[i]?.toString() ?? null}
+                    readonly />
             </Layout.Stack>
         {/each}
     {/if}
