@@ -18,6 +18,7 @@ type Profile = {
     hasAccountLogin: boolean;
     hasAppwriteDocumentation: boolean;
     description: string;
+    autoCreateOrgAndProject: boolean;
 };
 
 export const ConsoleCloudProfile: Profile = {
@@ -38,7 +39,8 @@ export const ConsoleCloudProfile: Profile = {
     hasAccountLogin: true,
     hasAppwriteDocumentation: true,
     description:
-        'Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools.'
+        'Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools.',
+    autoCreateOrgAndProject: false
 };
 
 export const ConsoleSelfhostedProfile: Profile = {
@@ -58,7 +60,8 @@ export const ConsoleSelfhostedProfile: Profile = {
     hasAccountLogin: true,
     hasAppwriteDocumentation: true,
     description:
-        'Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools.'
+        'Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools.',
+    autoCreateOrgAndProject: false
 };
 
 export const StudioProfile: Profile = {
@@ -78,5 +81,7 @@ export const StudioProfile: Profile = {
     hasGoogleLogin: true,
     hasAccountLogin: true,
     hasAppwriteDocumentation: false,
-    description: 'Imagine the fastest way to go from your imagination to scale. Batteries included.'
+    description:
+        'Imagine the fastest way to go from your imagination to scale. Batteries included.',
+    autoCreateOrgAndProject: true
 };

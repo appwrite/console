@@ -2,7 +2,9 @@ import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import type { PageLoad } from './$types';
 import { sdk } from '$lib/stores/sdk';
-import { isStudio, VARS } from '$lib/system';
+import { consoleProfile, isStudio, VARS } from '$lib/system';
+import { ID, Region } from '@appwrite.io/console';
+import { createArtifact } from '$lib/helpers/artifact';
 
 const handleGithubEducationMembership = async (name: string, email: string) => {
     const result = await sdk.forConsole.billing.setMembership('github-student-developer');
@@ -39,6 +41,7 @@ export const load: PageLoad = async ({ parent, url }) => {
     } else if (organizations.total && !isApplyingCredit) {
         const teamId = account.prefs.organization ?? organizations.teams[0].$id;
         if (!teamId) {
+            console.log('this is the redirect');
             redirect(303, `${base}/account/organizations${url.search}`);
         } else {
             redirect(
@@ -46,6 +49,27 @@ export const load: PageLoad = async ({ parent, url }) => {
 
                 `${base}/organization-${teamId}${url.search}`
             );
+        }
+    } else if (organizations.total === 0 && consoleProfile.autoCreateOrgAndProject) {
+        const team = await sdk.forConsole.teams.create(ID.unique(), 'Personal projects');
+        const defaultRegion = Region.Fra;
+        if (team) {
+            const project = await sdk.forConsole.projects.create(
+                ID.unique(),
+                consoleProfile.defaultProjectName,
+                team.$id,
+                defaultRegion
+            );
+
+            if (isStudio) {
+                createArtifact(defaultRegion, project.$id);
+            } else {
+                redirect(
+                    303,
+
+                    `${base}/organization-${team.$id}/project-${defaultRegion}-${project.$id}`
+                );
+            }
         }
     } else if (!isApplyingCredit) {
         redirect(
