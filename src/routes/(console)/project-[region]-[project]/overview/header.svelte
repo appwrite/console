@@ -14,8 +14,6 @@
     function dismissOnboarding() {
         setHasOnboardingDismissed($project.$id);
         trackEvent('onboarding_hub_platform_dismiss');
-        // TODO: @ernst, do we need this invalidate?
-        // await invalidate(Dependencies.ORGANIZATION);
         goto(`${base}/project-${$project.region}-${$project.$id}/overview`);
     }
 </script>
