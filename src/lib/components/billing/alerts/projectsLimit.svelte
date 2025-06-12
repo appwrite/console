@@ -1,18 +1,17 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { Click, trackEvent } from '$lib/actions/analytics';
+    import { Click } from '$lib/actions/analytics';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
     import { hideBillingHeaderRoutes, upgradeURL } from '$lib/stores/billing';
     import { currentPlan } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
-    import { BillingPlan } from '@appwrite.io/console';
     let showSelectProject = false;
 </script>
 
 <SelectProjectCloud bind:showSelectProject />
 
-{#if $currentPlan.$id === BillingPlan.Tier0 && !hideBillingHeaderRoutes.includes(page.url.pathname)}
+{#if $currentPlan && $currentPlan.projects > 0 && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     <HeaderAlert title="Action required: You have more than {$currentPlan.projects} projects.">
         <svelte:fragment>
             Choose which projects to keep before [date] or upgrade to Pro. Projects over the limit
@@ -26,11 +25,10 @@
                 }}>Manage projects</Button>
             <Button
                 href={$upgradeURL}
-                on:click={() => {
-                    trackEvent(Click.OrganizationClickUpgrade, {
-                        from: 'button',
-                        source: 'projects_limit_banner'
-                    });
+                event={Click.OrganizationClickUpgrade}
+                eventData={{
+                    from: 'button',
+                    source: 'projects_limit_banner'
                 }}
                 secondary
                 fullWidthMobile>

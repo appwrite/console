@@ -283,7 +283,8 @@ export function calculateTrialDay(org: Organization) {
     return days;
 }
 
-export async function checkForProjectsLimit(org: Organization, projects: number) {
+export function checkForProjectsLimit(org: Organization, projects: number) {
+    if (!isCloud) return;
     if (!org || !projects) return;
     const plan = get(plansInfo)?.get(org.billingPlan);
     if (!plan) return;
