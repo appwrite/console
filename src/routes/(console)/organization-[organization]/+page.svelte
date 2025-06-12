@@ -25,7 +25,7 @@
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Badge, Icon, Typography, Alert } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Typography, Alert, Tag } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
         IconApple,
@@ -119,6 +119,14 @@
     function findRegion(project: Models.Project) {
         return $regionsStore.regions.find((region) => region.$id === project.region);
     }
+
+    function isSetToArchive(project: Models.Project): boolean {
+        if (!isCloud) return false;
+        if (data.organization.projects.length === 0) return false;
+        if (!project || !project.$id) return false;
+        return !data.organization.projects.includes(project.$id);
+    }
+
     $: projectsToArchive = data.projects.projects.filter(
         (project) => !data.organization.projects.includes(project.$id)
     );
@@ -152,15 +160,16 @@
     </div>
 
     {#if isCloud && data.organization.projects.length > 0 && $canWriteProjects}
-        <Alert.Inline title={`${data.projects.total - data.organization.projects.length} projects will be archived on [date]`}>
+        <Alert.Inline
+            title={`${data.projects.total - data.organization.projects.length} projects will be archived on [date]`}>
             <Typography.Text>
                 {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
-                {@html text}{index == projectsToArchive.length - 2
-                    ? ', and '
-                    : index < projectsToArchive.length - 1
-                      ? ', '
-                      : ''}
-            {/each} 
+                    {@html text}{index == projectsToArchive.length - 2
+                        ? ', and '
+                        : index < projectsToArchive.length - 1
+                          ? ', '
+                          : ''}
+                {/each}
                 will be archived
             </Typography.Text>
             <svelte:fragment slot="actions">
@@ -187,6 +196,17 @@
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         {project.name}
+                    </svelte:fragment>
+
+                    <svelte:fragment slot="status">
+                        {#if isSetToArchive(project)}
+                            <Tag
+                                size="s"
+                                on:click={(event) => {
+                                    event.preventDefault();
+                                    showSelectProject = true;
+                                }}>Set to archive</Tag>
+                        {/if}
                     </svelte:fragment>
 
                     {#each platforms.slice(0, 2) as platform}
