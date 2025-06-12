@@ -104,6 +104,11 @@
     .mobile-container {
         width: 400px;
         margin: 0 auto;
+
+        iframe {
+            width: inherit;
+            margin-inline-start: 0;
+        }
     }
     iframe {
         border: none;
