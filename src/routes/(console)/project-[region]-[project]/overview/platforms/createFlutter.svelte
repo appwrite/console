@@ -115,9 +115,11 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
                 projectId,
                 platform,
                 $createPlatform.name,
-                $createPlatform.key || undefined,
+                platform === PlatformType.Flutterweb ? undefined : $createPlatform.key || undefined,
                 undefined,
-                undefined
+                platform === PlatformType.Flutterweb
+                    ? $createPlatform.hostname || undefined
+                    : undefined
             );
 
             isPlatformCreated = true;
@@ -189,19 +191,35 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
                                 bind:value={$createPlatform.name} />
 
                             <!-- Tooltips on InputText don't work as of now -->
-                            <InputText
-                                id="hostname"
-                                label={hostname[platform]}
-                                placeholder={placeholder[platform].hostname}
-                                required
-                                bind:value={$createPlatform.key}>
-                                <Tooltip slot="info" maxWidth="15rem">
-                                    <Icon icon={IconInfo} size="s" />
-                                    <Typography.Caption variant="400" slot="tooltip">
-                                        {placeholder[platform].tooltip}
-                                    </Typography.Caption>
-                                </Tooltip>
-                            </InputText>
+                            {#if platform === PlatformType.Flutterweb}
+                                <InputText
+                                    id="hostname"
+                                    label={hostname[platform]}
+                                    placeholder={placeholder[platform].hostname}
+                                    required
+                                    bind:value={$createPlatform.hostname}>
+                                    <Tooltip slot="info" maxWidth="15rem">
+                                        <Icon icon={IconInfo} size="s" />
+                                        <Typography.Caption variant="400" slot="tooltip">
+                                            {placeholder[platform].tooltip}
+                                        </Typography.Caption>
+                                    </Tooltip>
+                                </InputText>
+                            {:else}
+                                <InputText
+                                    id="key"
+                                    label={hostname[platform]}
+                                    placeholder={placeholder[platform].hostname}
+                                    required
+                                    bind:value={$createPlatform.key}>
+                                    <Tooltip slot="info" maxWidth="15rem">
+                                        <Icon icon={IconInfo} size="s" />
+                                        <Typography.Caption variant="400" slot="tooltip">
+                                            {placeholder[platform].tooltip}
+                                        </Typography.Caption>
+                                    </Tooltip>
+                                </InputText>
+                            {/if}
                         </Layout.Stack>
 
                         <Button
@@ -212,7 +230,7 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
                             submissionLoader={isCreatingPlatform}
                             disabled={!platform ||
                                 !$createPlatform.name ||
-                                !$createPlatform.key ||
+                                (!$createPlatform.key && !$createPlatform.hostname) ||
                                 isCreatingPlatform}>
                             Create platform
                         </Button>

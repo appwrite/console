@@ -229,7 +229,7 @@
                                 style:padding-inline-end="8px"
                                 style:padding-block="4px">
                                 <Typography.Text variant="m-500">
-                                    {$user.email}
+                                    {$user?.email}
                                 </Typography.Text>
                             </div>
                             <ActionMenu.Item.Anchor
