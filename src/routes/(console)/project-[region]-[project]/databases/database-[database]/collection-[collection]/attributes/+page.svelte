@@ -117,7 +117,7 @@
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Layout.Stack inline direction="row" alignItems="center" gap="xxs">
                                     <span class="text u-trim-1" data-private>{attribute.key}</span>
-                                    {#if isString(attribute) && !attribute.encrypt}
+                                    {#if isString(attribute) && attribute.encrypt}
                                         <Tooltip>
                                             <Icon
                                                 size="s"

@@ -50,6 +50,7 @@
     import { ActionMenu, Selector } from '@appwrite.io/pink-svelte';
     import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
     import { Popover, Layout, Tag, Typography, Link } from '@appwrite.io/pink-svelte';
+    import { flags } from '$lib/flags';
 
     export let data: Partial<Models.AttributeString> = {
         required: false,
@@ -61,6 +62,8 @@
     export let editing = false;
 
     let savedDefault = data.default;
+
+    let showEncrypt = flags.showAttributeEncrypt(page.data);
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
@@ -84,7 +87,7 @@
 
     $: handleDefaultState($required || $array);
 
-    // check plan on cloud, always allow on self-hosted!
+    // Check plan on cloud, always allow on self-hosted
     $: supportsStringEncryption = isCloud ? $currentPlan?.databasesAllowEncrypt : true;
 </script>
 
@@ -125,50 +128,53 @@
     disabled={data.required || editing}
     description="Indicate whether this attribute is an array. Defaults to an empty array." />
 
-<Layout.Stack gap="xs" direction="column">
-    <div class="popover-holder" class:disabled-checkbox={!supportsStringEncryption || editing}>
-        <Layout.Stack inline gap="s" alignItems="flex-start" direction="row">
-            <Popover let:toggle placement="bottom-start">
-                <Selector.Checkbox
-                    size="s"
-                    id="encrypt"
-                    bind:checked={data.encrypt}
-                    disabled={!supportsStringEncryption || editing} />
+{#if showEncrypt}
+    <Layout.Stack gap="xs" direction="column">
+        <div class="popover-holder" class:disabled-checkbox={!supportsStringEncryption || editing}>
+            <Layout.Stack inline gap="s" alignItems="flex-start" direction="row">
+                <Popover let:toggle placement="bottom-start">
+                    <Selector.Checkbox
+                        size="s"
+                        id="encrypt"
+                        bind:checked={data.encrypt}
+                        disabled={!supportsStringEncryption || editing} />
 
-                <Layout.Stack gap="xxs" direction="column">
-                    <button
-                        type="button"
-                        class="u-cursor-pointer"
-                        on:click={(e) => {
-                            if (!supportsStringEncryption) {
-                                toggle(e);
-                            } else {
-                                data.encrypt = !data.encrypt;
-                            }
-                        }}>
-                        <Layout.Stack inline gap="xxs" direction="row" alignItems="center">
-                            <Typography.Text variant="m-500">Encrypted</Typography.Text>
-                            {#if !supportsStringEncryption}
-                                <Tag variant="default" size="xs" on:click={toggle}>Pro</Tag>
-                            {/if}
-                        </Layout.Stack>
-                    </button>
-                    <Typography.Text color="--fgcolor-neutral-tertiary">
-                        Indicate whether this attribute is encrypted. Encrypted attributes cannot be
-                        queried.
-                    </Typography.Text>
-                </Layout.Stack>
+                    <Layout.Stack gap="xxs" direction="column">
+                        <button
+                            type="button"
+                            class="u-cursor-pointer"
+                            on:click={(e) => {
+                                if (!supportsStringEncryption) {
+                                    toggle(e);
+                                } else {
+                                    data.encrypt = !data.encrypt;
+                                }
+                            }}>
+                            <Layout.Stack inline gap="xxs" direction="row" alignItems="center">
+                                <Typography.Text variant="m-500">Encrypted</Typography.Text>
+                                {#if !supportsStringEncryption}
+                                    <Tag variant="default" size="xs" on:click={toggle}>Pro</Tag>
+                                {/if}
+                            </Layout.Stack>
+                        </button>
+                        <Typography.Text color="--fgcolor-neutral-tertiary">
+                            Indicate whether this attribute is encrypted. Encrypted attributes
+                            cannot be queried.
+                        </Typography.Text>
+                    </Layout.Stack>
 
-                <ActionMenu.Root width="180px" slot="tooltip">
-                    <Typography.Text variant="m-500">
-                        Available on Pro plan. <Link.Anchor href={$upgradeURL}>Upgrade</Link.Anchor>
-                        to enable encrypted attributes.
-                    </Typography.Text>
-                </ActionMenu.Root>
-            </Popover>
-        </Layout.Stack>
-    </div>
-</Layout.Stack>
+                    <ActionMenu.Root width="180px" slot="tooltip">
+                        <Typography.Text variant="m-500">
+                            Available on Pro plan. <Link.Anchor href={$upgradeURL}
+                                >Upgrade</Link.Anchor>
+                            to enable encrypted attributes.
+                        </Typography.Text>
+                    </ActionMenu.Root>
+                </Popover>
+            </Layout.Stack>
+        </div>
+    </Layout.Stack>
+{/if}
 
 <style lang="scss">
     .popover-holder {
