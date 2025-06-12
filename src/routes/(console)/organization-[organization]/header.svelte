@@ -75,7 +75,7 @@
     ].filter((tab) => !tab.disabled);
 </script>
 
-{#if $organization.$id && !isStudio}
+{#if !isStudio && $organization.$id}
     <Cover>
         <svelte:fragment slot="header">
             <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
