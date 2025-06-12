@@ -23,14 +23,13 @@
         Navbar,
         Icon,
         Layout,
-        Link,
         Tooltip,
-        Card,
         ActionMenu,
         ToggleButton,
         Button,
         Avatar,
-        Typography
+        Typography,
+        Popover
     } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import {
@@ -119,7 +118,7 @@
     beforeNavigate(() => (showAccountMenu = false));
 </script>
 
-<Navbar.Base {...$$props}>
+<Navbar.Base>
     <div slot="left" class="left">
         <div class="only-mobile-tablet">
             <button
@@ -130,7 +129,9 @@
                 <Icon icon={IconMenuAlt4} />
             </button>
         </div>
-        <a href={base} class="only-desktop">
+        <a
+            href={currentOrg?.$id ? `${base}/organization-${currentOrg?.$id}` : base}
+            class="only-desktop">
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} />
@@ -207,91 +208,79 @@
                     </Button.Button>
                     <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
             </Layout.Stack>
-            <Link.Button
-                on:click={() => {
-                    showAccountMenu = !showAccountMenu;
-                    shouldAnimateThemeToggle = false;
-                    if (showAccountMenu) {
-                        trackEvent(Click.MenuDropDownClick);
-                    }
-                }}>
-                <div style:user-select="none">
+            <Popover let:toggle let:showing>
+                <button
+                    type="button"
+                    on:click|preventDefault={(e) => {
+                        toggle(e);
+                        shouldAnimateThemeToggle = false;
+                        if (showing) {
+                            trackEvent(Click.MenuDropDownClick);
+                        }
+                    }}
+                    style:user-select="none">
                     <Avatar size="s" src={avatar} />
-                </div>
-            </Link.Button>
-            {#if showAccountMenu}
-                <div class="account-container">
-                    <Card.Base padding="xxxs" shadow={true}>
+                </button>
+                <svelte:fragment slot="tooltip" let:toggle>
+                    <ActionMenu.Root noPadding>
                         <Layout.Stack gap="xxs">
-                            <ActionMenu.Root>
-                                <Layout.Stack gap="xxs">
-                                    <div
-                                        style:padding-inline-start="10px"
-                                        style:padding-inline-end="8px"
-                                        style:padding-block="4px">
-                                        <Typography.Text variant="m-500">
-                                            {$user.email}
-                                        </Typography.Text>
-                                    </div>
-                                    <ActionMenu.Item.Anchor
-                                        trailingIcon={IconUser}
-                                        size="l"
-                                        href={`${base}/account`}>
-                                        Account</ActionMenu.Item.Anchor>
+                            <div
+                                style:padding-inline-start="10px"
+                                style:padding-inline-end="8px"
+                                style:padding-block="4px">
+                                <Typography.Text variant="m-500">
+                                    {$user?.email}
+                                </Typography.Text>
+                            </div>
+                            <ActionMenu.Item.Anchor
+                                trailingIcon={IconUser}
+                                on:click={toggle}
+                                size="l"
+                                href={`${base}/account`}>
+                                Account</ActionMenu.Item.Anchor>
 
-                                    <ActionMenu.Item.Button
-                                        trailingIcon={IconLogoutRight}
-                                        size="l"
-                                        on:click={() => logout()}>Sign out</ActionMenu.Item.Button>
-                                    <div
-                                        style:padding-inline-start="10px"
-                                        style:padding-inline-end="8px">
-                                        <Layout.Stack
-                                            justifyContent="space-between"
-                                            direction="row"
-                                            alignItems="center">
-                                            <Typography.Text>Theme</Typography.Text>
-                                            <div
-                                                class:keepTransformTransition={shouldAnimateThemeToggle}>
-                                                <ToggleButton
-                                                    bind:active={activeTheme}
-                                                    on:change={() => {
-                                                        setTimeout(() => {
-                                                            shouldAnimateThemeToggle = true;
-                                                        }, 150);
-                                                    }}
-                                                    buttons={[
-                                                        {
-                                                            id: 'light',
-                                                            label: 'Light',
-                                                            icon: IconSun
-                                                        },
-                                                        {
-                                                            id: 'dark',
-                                                            label: 'Dark',
-                                                            icon: IconMoon
-                                                        },
-                                                        {
-                                                            id: 'auto',
-                                                            label: 'System',
-                                                            icon: IconMode
-                                                        }
-                                                    ]}></ToggleButton>
-                                            </div>
-                                        </Layout.Stack>
+                            <ActionMenu.Item.Button
+                                trailingIcon={IconLogoutRight}
+                                size="l"
+                                on:click={() => logout()}>Sign out</ActionMenu.Item.Button>
+                            <div style:padding-inline-start="10px" style:padding-inline-end="8px">
+                                <Layout.Stack
+                                    justifyContent="space-between"
+                                    direction="row"
+                                    alignItems="center">
+                                    <Typography.Text>Theme</Typography.Text>
+                                    <div class:keepTransformTransition={shouldAnimateThemeToggle}>
+                                        <ToggleButton
+                                            bind:active={activeTheme}
+                                            on:change={() => {
+                                                setTimeout(() => {
+                                                    shouldAnimateThemeToggle = true;
+                                                }, 150);
+                                            }}
+                                            buttons={[
+                                                {
+                                                    id: 'light',
+                                                    label: 'Light',
+                                                    icon: IconSun
+                                                },
+                                                {
+                                                    id: 'dark',
+                                                    label: 'Dark',
+                                                    icon: IconMoon
+                                                },
+                                                {
+                                                    id: 'auto',
+                                                    label: 'System',
+                                                    icon: IconMode
+                                                }
+                                            ]}></ToggleButton>
                                     </div>
                                 </Layout.Stack>
-                            </ActionMenu.Root>
+                            </div>
                         </Layout.Stack>
-                    </Card.Base>
-                </div>
-                <button
-                    class="account-backdrop"
-                    aria-label="Account menu"
-                    on:click={() => {
-                        showAccountMenu = false;
-                    }}></button>
-            {/if}
+                    </ActionMenu.Root>
+                </svelte:fragment>
+            </Popover>
         </div>
     </div>
 </Navbar.Base>
@@ -401,24 +390,6 @@
         .only-desktop {
             display: flex;
         }
-    }
-
-    .account-container {
-        position: absolute;
-        right: var(--space-7);
-        top: var(--base-44);
-        width: 244px;
-        display: flex;
-        z-index: 1;
-    }
-
-    .account-backdrop {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: transparent;
     }
 
     /* The default drop list has a max-inline width of 280px, which squeezes the support modal. */

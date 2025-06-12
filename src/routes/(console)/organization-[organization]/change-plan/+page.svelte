@@ -30,6 +30,7 @@
     } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
+    import { loadAvailableRegions } from '$routes/(console)/regions';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
 
     export let data;
@@ -58,6 +59,7 @@
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
     });
+
     onMount(async () => {
         if (page.url.searchParams.has('code')) {
             const coupon = page.url.searchParams.get('code');
@@ -218,6 +220,11 @@
             }
 
             if (isOrganization(org)) {
+                /**
+                 * Reload on upgrade (e.g. Free → Paid)
+                 */
+                loadAvailableRegions(org.$id, true);
+
                 await invalidate(Dependencies.ACCOUNT);
                 await invalidate(Dependencies.ORGANIZATION);
 
@@ -302,8 +309,7 @@
                 </Layout.Stack>
             </Fieldset>
 
-            <!-- Show email input if upgrading from free plan -->
-            {#if selectedPlan !== BillingPlan.FREE && data.organization.billingPlan === BillingPlan.FREE}
+            {#if isUpgrade}
                 <Fieldset legend="Payment">
                     <SelectPaymentMethod
                         methods={data.paymentMethods}

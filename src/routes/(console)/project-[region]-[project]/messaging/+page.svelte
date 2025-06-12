@@ -1,19 +1,11 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import {
-        Empty,
-        EmptyFilter,
-        EmptySearch,
-        Id,
-        PaginationWithLimit,
-        SearchQuery,
-        ViewSelector
-    } from '$lib/components';
-    import { Filters, hasPageQueries } from '$lib/components/filters';
+    import { Empty, EmptyFilter, EmptySearch, Id, PaginationWithLimit } from '$lib/components';
+    import { hasPageQueries } from '$lib/components/filters';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Container } from '$lib/layout';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { MessagingProviderType } from '@appwrite.io/console';
     import CreateMessageDropdown from './createMessageDropdown.svelte';
     import FailedModal from './failedModal.svelte';
@@ -106,18 +98,18 @@
 </script>
 
 <Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search by description, type, status, or ID" />
-        </Layout.Stack>
-        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Filters query={data.query} {columns} analyticsSource="messaging_messages" />
-            <ViewSelector view={data.view} {columns} hideView />
-            {#if $canWriteMessages}
-                <CreateMessageDropdown />
-            {/if}
-        </Layout.Stack>
-    </Layout.Stack>
+    <ResponsiveContainerHeader
+        {columns}
+        bind:view={data.view}
+        hideView
+        hasFilters
+        hasSearch
+        analyticsSource="messaging_messages"
+        searchPlaceholder="Search by description, type, status, or ID">
+        {#if $canWriteMessages}
+            <CreateMessageDropdown />
+        {/if}
+    </ResponsiveContainerHeader>
 
     {#if data.messages.total}
         <Table.Root

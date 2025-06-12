@@ -246,14 +246,13 @@
         billingPlan = getBillingPlan();
     }
 
-    $: isNewOrg = selectedOrgId && selectedOrgId !== newOrgId;
+    $: isNewOrg = !(selectedOrgId && selectedOrgId !== newOrgId);
 
-    $: {
-        if (isNewOrg) {
-            (async () => {
-                currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
-            })();
-        }
+    $: if (!isNewOrg) {
+        (async () => {
+            currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
+        })();
+        loadPaymentMethods();
     }
 
     // after adding a payment method, fetch the payment methods again so the input can be updated
@@ -371,7 +370,7 @@
                     {collaborators}
                     bind:couponData
                     bind:billingBudget
-                    organizationId={isNewOrg ? selectedOrgId : null}>
+                    organizationId={!isNewOrg ? selectedOrgId : null}>
                     {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}
                         <div class="u-margin-block-end-24">
                             <p class="body-text-1 u-bold">{campaign?.cta}</p>
@@ -397,7 +396,7 @@
                     handleSubmit();
                 }
             }}
-            disabled={$isSubmitting}>
+            disabled={!couponData?.code || $isSubmitting}>
             {#if $isSubmitting}
                 <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true"
                 ></span>

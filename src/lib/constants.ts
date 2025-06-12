@@ -531,6 +531,8 @@ export enum BillingPlan {
     ENTERPRISE = 'ent-1'
 }
 
+export const BASE_BILLING_PLANS: string[] = [BillingPlan.FREE, BillingPlan.PRO, BillingPlan.SCALE];
+
 export const feedbackDowngradeOptions = [
     {
         value: 'availableFeatures',

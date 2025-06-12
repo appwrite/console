@@ -7,11 +7,16 @@ import type { NotificationPrefItem } from '$lib/helpers/notifications';
 export type Account = Models.User<
     {
         organization?: string;
+        console: Models.Preferences;
         notificationPrefs: Record<string, NotificationPrefItem>;
     } & Record<string, string>
 >;
 
 export const user = derived(page, ($page) => {
-    if (browser) sessionStorage.setItem('account', JSON.stringify($page.data.account));
-    return $page.data.account as Account;
+    if ($page.data?.account) {
+        if (browser) {
+            sessionStorage.setItem('account', JSON.stringify($page.data.account));
+        }
+        return $page.data.account as Account;
+    } else return null;
 });

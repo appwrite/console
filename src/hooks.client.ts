@@ -32,13 +32,17 @@ setLoader();
 
 export const handleError: HandleClientError = ({ error, message, status }) => {
     console.error(error);
+
+    let type;
     if (error instanceof AppwriteException) {
         status = error.code === 0 ? undefined : error.code;
         message = error.message;
+        type = error.type;
     }
 
     return {
         message,
-        status
+        status,
+        type
     };
 };

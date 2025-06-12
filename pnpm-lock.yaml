@@ -12,8 +12,8 @@ importers:
         specifier: ^1.1.24
         version: 1.1.24(svelte@5.25.3)(zod@3.24.3)
       '@appwrite.io/console':
-        specifier: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19
-        version: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19
+        specifier: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@a5e5564
+        version: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@a5e5564
       '@appwrite.io/pink-icons':
         specifier: 0.25.0
         version: 0.25.0
@@ -24,8 +24,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3
       '@appwrite.io/pink-svelte':
-        specifier: https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@d7e3b86
-        version: https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@d7e3b86(svelte@5.25.3)
+        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@ee1b778
+        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@ee1b778(svelte@5.25.3)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -275,12 +275,13 @@ packages:
   '@analytics/type-utils@0.6.2':
     resolution: {integrity: sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg==}
 
-  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19':
-    resolution: {tarball: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19}
+  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@a5e5564':
+    resolution: {tarball: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@a5e5564}
     version: 1.8.0
 
-  '@appwrite.io/pink-icons-svelte@2.0.0-RC.1':
-    resolution: {integrity: sha512-iLFlV55hj8mGuAbmxJGenxN5RaZMmVT4GJb9dv/MP1xBAtYibFq7JvBcxm18qV2KU8c31Rntf+Ub4GL7HwqTYg==}
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@ee1b7788cd3f877c9aa1b6487976bd63a6196870':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@ee1b7788cd3f877c9aa1b6487976bd63a6196870}
+    version: 2.0.0-RC.1
     peerDependencies:
       svelte: ^4.0.0
 
@@ -299,8 +300,8 @@ packages:
   '@appwrite.io/pink-legacy@1.0.3':
     resolution: {integrity: sha512-GGde5fmPhs+s6/3aFeMPc/kKADG/gTFkYQSy6oBN8pK0y0XNCLrZZgBv+EBbdhwdtqVEWXa0X85Mv9w7jcIlwQ==}
 
-  '@appwrite.io/pink-svelte@https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@d7e3b86':
-    resolution: {tarball: https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@d7e3b86}
+  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@ee1b778':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@ee1b778}
     version: 2.0.0-RC.2
     peerDependencies:
       svelte: ^4.0.0
@@ -3840,9 +3841,9 @@ snapshots:
 
   '@analytics/type-utils@0.6.2': {}
 
-  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e190a19': {}
+  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@a5e5564': {}
 
-  '@appwrite.io/pink-icons-svelte@2.0.0-RC.1(svelte@5.25.3)':
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@ee1b7788cd3f877c9aa1b6487976bd63a6196870(svelte@5.25.3)':
     dependencies:
       svelte: 5.25.3
 
@@ -3859,9 +3860,9 @@ snapshots:
       '@appwrite.io/pink-icons': 1.0.0
       the-new-css-reset: 1.11.3
 
-  '@appwrite.io/pink-svelte@https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@d7e3b86(svelte@5.25.3)':
+  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@ee1b778(svelte@5.25.3)':
     dependencies:
-      '@appwrite.io/pink-icons-svelte': 2.0.0-RC.1(svelte@5.25.3)
+      '@appwrite.io/pink-icons-svelte': https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@ee1b7788cd3f877c9aa1b6487976bd63a6196870(svelte@5.25.3)
       '@floating-ui/dom': 1.6.13
       '@melt-ui/pp': 0.3.2(@melt-ui/svelte@0.86.6(svelte@5.25.3))(svelte@5.25.3)
       '@melt-ui/svelte': 0.86.6(svelte@5.25.3)
