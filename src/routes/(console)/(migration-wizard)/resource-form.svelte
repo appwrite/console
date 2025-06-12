@@ -167,7 +167,10 @@
                     {error}
                     {formGroup}
                     groupKey={getAsType(groupKey)}
-                    reportValue={report?.[getReportKey(groupKey)]} />
+                    reportValue={report?.[getReportKey(groupKey)]}
+                    on:updateFormGroup={(e) => {
+                        $formData[groupKey] = e.detail;
+                    }} />
             {/if}
         {/each}
     {/if}

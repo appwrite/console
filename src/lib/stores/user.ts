@@ -13,6 +13,10 @@ export type Account = Models.User<
 >;
 
 export const user = derived(page, ($page) => {
-    if (browser) sessionStorage.setItem('account', JSON.stringify($page.data.account));
-    return $page.data.account as Account;
+    if ($page.data?.account) {
+        if (browser) {
+            sessionStorage.setItem('account', JSON.stringify($page.data.account));
+        }
+        return $page.data.account as Account;
+    } else return null;
 });

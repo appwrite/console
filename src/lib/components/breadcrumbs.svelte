@@ -20,7 +20,7 @@
     import { isCloud } from '$lib/system';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { newOrgModal } from '$lib/stores/organization';
+    import { currentPlan, newOrgModal } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
 
@@ -182,6 +182,14 @@
     $: projectsBottomSheet = createProjectsBottomSheet(selectedOrg);
 
     $: organizationsBottomSheet = createOrganizationBottomSheet(selectedOrg);
+
+    $: correctPlanName =
+        // the plan names are hardcoded in some cases and are not available locally,
+        // so we rely on the plan's source of truth - `$currentPlan`
+        $currentPlan &&
+        $currentPlan?.name.toLocaleLowerCase() !== selectedOrg?.tierName.toLocaleLowerCase()
+            ? $currentPlan.name
+            : selectedOrg?.tierName; // fallback
 </script>
 
 <svelte:window on:resize={onResize} />
@@ -195,9 +203,9 @@
             aria-label="Open organizations tab">
             <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
             <span class="not-mobile"
-                >{#if selectedOrg?.tierName}<Badge
+                >{#if correctPlanName}<Badge
                         variant="secondary"
-                        content={selectedOrg?.tierName} />{/if}</span>
+                        content={correctPlanName} />{/if}</span>
             <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
         </button>
     {:else}
@@ -211,7 +219,7 @@
             <span class="orgName" class:noProjects={!currentProject}
                 >{selectedOrg?.name ?? 'Organization'}</span>
             <span class="not-mobile"
-                ><Badge variant="secondary" content={selectedOrg?.tierName ?? ''} /></span>
+                ><Badge variant="secondary" content={correctPlanName ?? ''} /></span>
             <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
         </button>
     {/if}
