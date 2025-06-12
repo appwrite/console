@@ -18,6 +18,19 @@
         children: Snippet<[toggle: () => void, selectedColumnsNumber: number]>;
     } = $props();
 
+    let maxHeight = $state('none');
+    let containerRef;
+
+    const calcMaxHeight = () => {
+        if (containerRef) {
+            // get parent row element for correct top position
+            const parent = containerRef.parentElement.parentElement;
+            const { top } = parent.getBoundingClientRect();
+
+            maxHeight = `${window.innerHeight - top - 48}px`;
+        }
+    };
+
     onMount(async () => {
         if (isCustomCollection) {
             const prefs = preferences.getCustomCollectionColumns(page.params.collection);
@@ -50,6 +63,8 @@
                 preferences.setColumns(columns);
             }
         });
+
+        calcMaxHeight();
     });
 
     let selectedColumnsNumber = $derived(
@@ -61,29 +76,32 @@
     );
 </script>
 
+<svelte:window on:resize={calcMaxHeight} />
 {#if $columns?.length}
     <Popover let:toggle placement="bottom-end" padding="none">
         {@render children(toggle, selectedColumnsNumber)}
         <svelte:fragment slot="tooltip">
-            <ActionMenu.Root>
-                {#each $columns as column}
-                    {#if !column?.exclude}
-                        <ActionMenu.Item.Button
-                            on:click={() => (column.hide = !column.hide)}
-                            disabled={allowNoColumns
-                                ? false
-                                : selectedColumnsNumber <= 1 && column.hide !== true}>
-                            <Layout.Stack direction="row" gap="s">
-                                <Selector.Checkbox
-                                    checked={!column.hide}
-                                    size="s"
-                                    on:click={() => (column.hide = !column.hide)} />
-                                {column.title}
-                            </Layout.Stack>
-                        </ActionMenu.Item.Button>
-                    {/if}
-                {/each}
-            </ActionMenu.Root>
+            <div style:max-height={maxHeight} style:overflow="scroll" bind:this={containerRef}>
+                <ActionMenu.Root>
+                    {#each $columns as column}
+                        {#if !column?.exclude}
+                            <ActionMenu.Item.Button
+                                on:click={() => (column.hide = !column.hide)}
+                                disabled={allowNoColumns
+                                    ? false
+                                    : selectedColumnsNumber <= 1 && column.hide !== true}>
+                                <Layout.Stack direction="row" gap="s">
+                                    <Selector.Checkbox
+                                        checked={!column.hide}
+                                        size="s"
+                                        on:click={() => (column.hide = !column.hide)} />
+                                    {column.title}
+                                </Layout.Stack>
+                            </ActionMenu.Item.Button>
+                        {/if}
+                    {/each}
+                </ActionMenu.Root>
+            </div>
         </svelte:fragment>
     </Popover>
 {/if}
