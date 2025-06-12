@@ -107,7 +107,7 @@
                     helper="Password must be at least 8 characters long"
                     required
                     bind:value={pass} />
-                <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
+                <InputChoice required bind:value={terms} id="terms" label="terms" showLabel={false}>
                     By registering, you agree that you have read, understand, and acknowledge our <Link.Anchor
                         href="https://appwrite.io/privacy"
                         target="_blank"
@@ -119,10 +119,16 @@
                         target="_blank"
                         rel="noopener noreferrer">General Terms of Use</Link.Anchor
                     >.</InputChoice>
-                <Button fullWidth submit {disabled}>Sign up</Button>
+
+                <Button fullWidth submit disabled={disabled || !terms}>Sign up</Button>
+
                 {#if isCloud}
                     <span class="with-separators eyebrow-heading-3">or</span>
-                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                    <Button
+                        secondary
+                        fullWidth
+                        on:click={onGithubLogin}
+                        disabled={disabled || !terms}>
                         <span class="icon-github" aria-hidden="true"></span>
                         <span class="text">Sign up with GitHub</span>
                     </Button>

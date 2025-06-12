@@ -18,7 +18,7 @@
     export let projects: number;
 
     let id: string = null;
-    let name: string = 'Appwrite project';
+    let name: string = 'New project';
     let region: string = Region.Fra;
     let error: string = null;
 

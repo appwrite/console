@@ -8,7 +8,7 @@
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import { daysLeftInTrial, getServiceLimit, plansInfo, readOnly } from '$lib/stores/billing';
-    import { members, newMemberModal, organization } from '$lib/stores/organization';
+    import { members, newMemberModal, type Organization } from '$lib/stores/organization';
     import {
         canSeeBilling,
         canSeeProjects,
@@ -18,20 +18,21 @@
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Tooltip, Typography, Layout, Badge } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
 
     let areMembersLimited: boolean;
-    $: organization.subscribe(() => {
+
+    $: {
         const limit = getServiceLimit('members') || Infinity;
         const isLimited = limit !== 0 && limit < Infinity;
         areMembersLimited =
             isCloud &&
             (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && $members?.total >= limit));
-    });
+    }
 
+    $: organization = page.data.organization as Organization;
     $: avatars = $members.memberships?.map((m) => m.userName || m.userEmail) ?? [];
-    $: organizationId = $organization?.$id ?? page.params.organization;
-    $: path = `${base}/organization-${organizationId}`;
+    $: path = `${base}/organization-${organization.$id}`;
     $: tabs = [
         {
             href: path,
@@ -75,26 +76,26 @@
     ].filter((tab) => !tab.disabled);
 </script>
 
-{#if $organization.$id}
+{#if organization?.$id}
     <Cover>
         <svelte:fragment slot="header">
             <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
                 <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
-                    {$organization.name}
+                    {organization.name}
                 </Typography.Title>
-                {#if isCloud && $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                {#if isCloud && organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                     <Badge variant="secondary" content="Education">
                         <Icon icon={IconGithub} size="s" slot="start" />
                     </Badge>
-                {:else if isCloud && $organization?.billingPlan === BillingPlan.FREE}
+                {:else if isCloud && organization?.billingPlan === BillingPlan.FREE}
                     <Badge variant="secondary" content="Free"></Badge>
                 {/if}
-                {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trialDays}
+                {#if isCloud && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
                     <Tooltip>
                         <Badge variant="secondary" content="Trial" />
                         <svelte:fragment slot="tooltip">
                             {`Your trial ends on ${toLocaleDate(
-                                $organization.billingStartDate
+                                organization.billingStartDate
                             )}. ${$daysLeftInTrial} days remaining.`}
                         </svelte:fragment>
                     </Tooltip>
