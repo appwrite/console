@@ -36,7 +36,10 @@
             <Alert.Inline status="warning" title="You’ve reached your limit of 2 projects">
                 Extra projects are available on paid plans for an additional fee
                 <svelte:fragment slot="actions">
-                    <Button href={`${base}/organization-${page.params.organization}/billing`} external text>Upgrade</Button>
+                    <Button
+                        href={`${base}/organization-${page.params.organization}/billing`}
+                        external
+                        text>Upgrade</Button>
                 </svelte:fragment>
             </Alert.Inline>
         {/if}

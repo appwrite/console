@@ -588,7 +588,10 @@ export class Billing {
         );
     }
 
-    async updateSelectedProjects(organizationId: string, projects: string[]): Promise<Organization> {
+    async updateSelectedProjects(
+        organizationId: string,
+        projects: string[]
+    ): Promise<Organization> {
         const path = `/organizations/${organizationId}/projects`;
         const params = {
             projects
