@@ -32,7 +32,6 @@
     } from '@appwrite.io/pink-svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-    import { flags } from '$lib/flags';
     export let data: PageData;
 
     const databaseId = page.params.database;
