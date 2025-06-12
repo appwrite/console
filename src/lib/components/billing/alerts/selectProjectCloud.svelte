@@ -5,9 +5,12 @@
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     export let showSelectProject: boolean;
     export let projects: Array<Models.Project> = [];
+    export let selectedProjects: Array<string> = [];
 
     let error: string | null = null;
 
@@ -22,8 +25,6 @@
             });
     });
 
-    let selectedProjects: Array<string> = [];
-
     let projectsToArchive: Array<Models.Project> = [];
 
     $: projectsToArchive = projects.filter((project) => !selectedProjects.includes(project.$id));
@@ -35,6 +36,7 @@
                 selectedProjects
             );
             showSelectProject = false;
+            invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',
                 message: `Updated selected projects to keep`

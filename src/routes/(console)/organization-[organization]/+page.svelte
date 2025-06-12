@@ -25,7 +25,7 @@
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Badge, Icon, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Typography, Alert } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
         IconApple,
@@ -38,12 +38,14 @@
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
     import { regions as regionsStore } from '$lib/stores/organization';
+    import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
 
     export let data;
 
     let showCreate = false;
     let showCreateProjectCloud = false;
     let addOrganization = false;
+    let showSelectProject = false;
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -117,7 +119,12 @@
     function findRegion(project: Models.Project) {
         return $regionsStore.regions.find((region) => region.$id === project.region);
     }
+    $: projectsToArchive = data.projects.projects.filter(
+        (project) => !data.organization.projects.includes(project.$id)
+    );
 </script>
+
+<SelectProjectCloud selectedProjects={data.organization.projects || []} bind:showSelectProject />
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
@@ -143,6 +150,26 @@
             </svelte:fragment>
         </DropList>
     </div>
+
+    {#if isCloud && data.organization.projects.length > 0 && $canWriteProjects}
+        <Alert.Inline title={`${data.projects.total - data.organization.projects.length} projects will be archived on [date]`}>
+            <Typography.Text>
+                {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
+                {@html text}{index == projectsToArchive.length - 2
+                    ? ', and '
+                    : index < projectsToArchive.length - 1
+                      ? ', '
+                      : ''}
+            {/each} 
+                will be archived
+            </Typography.Text>
+            <svelte:fragment slot="actions">
+                <Button secondary size="s" on:click={() => (showSelectProject = true)}>
+                    Manage projects
+                </Button>
+            </svelte:fragment>
+        </Alert.Inline>
+    {/if}
 
     {#if data.projects.total}
         <CardContainer
@@ -210,5 +237,8 @@
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />
 {#if showCreateProjectCloud}
-    <CreateProjectCloud projects={data.projects.total} bind:showCreateProjectCloud regions={$regionsStore.regions} />
+    <CreateProjectCloud
+        projects={data.projects.total}
+        bind:showCreateProjectCloud
+        regions={$regionsStore.regions} />
 {/if}
