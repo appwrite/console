@@ -3,6 +3,8 @@
     import { Empty, Card, Layout, Avatar, Icon, Typography } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { consoleProfile, isStudio } from '$lib/system';
+    import { showChat, showPrompt } from '$lib/stores/chat';
 
     export let single = false;
     export let target: string = null;
@@ -28,13 +30,22 @@
     <Card.Base padding="none">
         <Empty title={`Create your first ${target}`} {description} {src}>
             <slot name="actions" slot="actions">
-                <Button
-                    external
-                    {href}
-                    text
-                    event="empty_documentation"
-                    size="s"
-                    ariaLabel="create {target}">Documentation</Button>
+                {#if consoleProfile.hasChat}
+                    <Button
+                        text
+                        size="s"
+                        on:click={() => {
+                            showChat.set(true);
+                            showPrompt.set(true);
+                        }}>Learn more</Button>
+                {:else}<Button
+                        external
+                        {href}
+                        text
+                        event="empty_documentation"
+                        size="s"
+                        ariaLabel="create {target}">Documentation</Button>
+                {/if}
                 <Button
                     secondary
                     on:mousedown

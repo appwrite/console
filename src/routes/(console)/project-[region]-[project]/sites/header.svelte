@@ -5,6 +5,7 @@
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { isStudio } from '$lib/system';
 
     $: path = `${base}/project-${page.params.region}-${page.params.project}/sites`;
     $: tabs = [
@@ -24,7 +25,8 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <Typography.Title color="--fgcolor-neutral-primary" size="xl">Sites</Typography.Title>
+        <Typography.Title color="--fgcolor-neutral-primary" size={isStudio ? 's' : 'xl'}
+            >Sites</Typography.Title>
     </svelte:fragment>
 
     <Tabs variant="primary" let:root>

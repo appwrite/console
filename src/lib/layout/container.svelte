@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Layout } from '@appwrite.io/pink-svelte';
+    import { isStudio } from '$lib/system';
     export let overlapCover = false;
     export let size: 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl' = null;
 
@@ -8,13 +9,17 @@
         : '';
 </script>
 
-<div style:container-type="inline-size" class:overlap-cover={overlapCover}>
-    <div class="console-container" {style}>
-        <Layout.Stack gap="l">
-            <slot />
-        </Layout.Stack>
+{#if isStudio}
+    <slot />
+{:else}
+    <div style:container-type="inline-size" class:overlap-cover={overlapCover}>
+        <div class="console-container" {style}>
+            <Layout.Stack gap="l">
+                <slot />
+            </Layout.Stack>
+        </div>
     </div>
-</div>
+{/if}
 
 <style>
     .overlap-cover {

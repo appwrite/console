@@ -17,6 +17,7 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import EmptySearch from '$lib/components/emptySearch.svelte';
+    import { consoleProfile } from '$lib/system';
 
     export let data: PageData;
 
@@ -94,6 +95,9 @@
             href="https://appwrite.io/docs/products/databases/databases"
             target="database"
             allowCreate={$canWriteDatabases}
+            description={consoleProfile.hasChat
+                ? 'Databases let you store and query structured data.'
+                : 'Need a hand? Learn more in our documentation.'}
             on:click={() => (showCreate = true)} />
     {/if}
 </Container>

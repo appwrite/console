@@ -8,6 +8,7 @@
     import type { OrganizationList } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
+    import { base } from '$app/paths';
 
     export let domain: Models.Domain;
     export let organizations: OrganizationList;
@@ -20,7 +21,7 @@
                 type: 'success',
                 message: 'Domain moved successfully'
             });
-            await goto(`/console/organization-${selectedOrg}/domains/`);
+            await goto(`${base}/organization-${selectedOrg}/domains/`);
             await invalidate(Dependencies.ORGANIZATION);
             await invalidate(Dependencies.DOMAINS);
         } catch (e) {

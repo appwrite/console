@@ -5,6 +5,7 @@
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { isStudio } from '$lib/system';
 
     const projectId = page.params.project;
     const path = `${base}/project-${page.params.region}-${projectId}/databases`;
@@ -26,7 +27,8 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <Typography.Title color="--fgcolor-neutral-primary" size="xl">Databases</Typography.Title>
+        <Typography.Title color="--fgcolor-neutral-primary" size={isStudio ? 's' : 'xl'}
+            >Databases</Typography.Title>
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}

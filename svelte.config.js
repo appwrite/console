@@ -26,12 +26,7 @@ const config = {
             precompress: true
         }),
         paths: {
-            base: '/console'
-        }
-    },
-    vitePlugin: {
-        inspector: {
-            toggleKeyCombo: 'meta-shift-i'
+            base: `/console`
         }
     }
 };
