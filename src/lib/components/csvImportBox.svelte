@@ -36,12 +36,18 @@
 
         if (!isSuccess && !isError) return;
 
-        const type = isSuccess ? 'success' : 'error';
-        const message = isSuccess
-            ? 'CSV import finished successfully.'
-            : (payload.errors[0]?.message ??
-              'Import failed. Check your CSV for correct fields and required values.');
+        let errorMessage = 'Import failed. Check your CSV for correct fields and required values.';
+        if (isError && Array.isArray(payload.errors)) {
+            try {
+                // the `errors` is a list of json encoded string.
+                errorMessage = JSON.parse(payload.errors[0]).message;
+            } catch {
+                // do nothing, fallback to default message.
+            }
+        }
 
+        const type = isSuccess ? 'success' : 'error';
+        const message = isError ? errorMessage : 'CSV import finished successfully.';
         const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${database}/collection-${collection}`;
 
         addNotification({
