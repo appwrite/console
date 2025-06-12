@@ -168,8 +168,6 @@
     ) as Models.AttributeRelationship[];
 
     let checked = false;
-
-    let showEncrypt = flags.showAttributeEncrypt(data);
 </script>
 
 <Table.Root
