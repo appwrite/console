@@ -7,6 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { page } from '$app/stores';
 
     export let showSelectProject: boolean;
     export let selectedProjects: Array<string> = [];
@@ -15,14 +16,7 @@
     let error: string | null = null;
 
     onMount(() => {
-        sdk.forConsole.projects
-            .list()
-            .then((response) => {
-                projects = response.projects || [];
-            })
-            .catch((error) => {
-                console.error('Failed to fetch projects:', error);
-            });
+        projects = $page.data.projects?.projects || [];
     });
 
     let projectsToArchive: Array<Models.Project> = [];

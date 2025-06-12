@@ -291,7 +291,7 @@ export function checkForProjectsLimit(org: Organization, projects: number) {
     if (plan.$id !== BillingPlan.FREE) return;
     if (org.projects.length > 0) return;
 
-    if (projects >= plan.projects) {
+    if (projects > plan.projects) {
         headerAlert.add({
             id: 'projectsLimitReached',
             component: ProjectsLimit,
