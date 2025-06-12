@@ -1,0 +1,92 @@
+<script lang="ts">
+    import { type Models } from '@appwrite.io/console';
+    import { Alert, Button, Table } from '@appwrite.io/pink-svelte';
+    import { Modal } from '$lib/components';
+    import { onMount } from 'svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { page } from '$app/stores';
+
+    export let showSelectProject: boolean;
+    export let selectedProjects: Array<string> = [];
+
+    let projects: Array<Models.Project> = [];
+    let error: string | null = null;
+
+    onMount(() => {
+        projects = $page.data.projects?.projects || [];
+    });
+
+    let projectsToArchive: Array<Models.Project> = [];
+
+    $: projectsToArchive = projects.filter((project) => !selectedProjects.includes(project.$id));
+
+    async function updateSelected() {
+        try {
+            await sdk.forConsole.billing.updateSelectedProjects(
+                projects[0].teamId,
+                selectedProjects
+            );
+            showSelectProject = false;
+            invalidate(Dependencies.ORGANIZATION);
+            addNotification({
+                type: 'success',
+                message: `Updated selected projects to keep`
+            });
+        } catch (e) {
+            error = e.message;
+        }
+    }
+</script>
+
+<Modal bind:show={showSelectProject} title={'Manage projects'} onSubmit={updateSelected}>
+    <svelte:fragment slot="description">
+        Choose which two projects over will be blocked after this date.
+    </svelte:fragment>
+    {#if error}
+        <Alert.Inline status="error" title="Error">{error}</Alert.Inline>
+    {/if}
+    <Table.Root
+        let:root
+        allowSelection
+        bind:selectedRows={selectedProjects}
+        columns={[{ id: 'name' }, { id: 'created' }]}>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell column="name" {root}>Project Name</Table.Header.Cell>
+            <Table.Header.Cell column="created" {root}>Created</Table.Header.Cell>
+        </svelte:fragment>
+        {#each projects as project}
+            <Table.Row.Base {root} id={project.$id}>
+                <Table.Cell column="name" {root}>{project.name}</Table.Cell>
+                <Table.Cell column="created" {root}
+                    >{new Date(project.$createdAt).toLocaleDateString()}
+                    {new Date(project.$createdAt).toLocaleTimeString()}</Table.Cell>
+            </Table.Row.Base>
+        {/each}
+    </Table.Root>
+    {#if selectedProjects.length > 2}
+        <div class="u-text-warning u-mb-4">
+            You can only select two projects. Please deselect others to continue.
+        </div>
+    {/if}
+    {#if selectedProjects.length === 2}
+        <Alert.Inline
+            status="warning"
+            title={`${projects.length - selectedProjects.length} projects will be archived on [date]`}>
+            {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
+                {@html text}{index == projectsToArchive.length - 2
+                    ? ', and '
+                    : index < projectsToArchive.length - 1
+                      ? ', '
+                      : ''}
+            {/each} will be archived.
+        </Alert.Inline>
+    {/if}
+    <svelte:fragment slot="footer">
+        <Button.Button variant="secondary" on:click={() => (showSelectProject = false)}
+            >Cancel</Button.Button>
+        <Button.Button disabled={selectedProjects.length !== 2}>Save</Button.Button>
+    </svelte:fragment>
+</Modal>

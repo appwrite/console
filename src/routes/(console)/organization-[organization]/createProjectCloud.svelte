@@ -15,6 +15,7 @@
     const teamId = page.params.organization;
     export let regions: Array<Models.ConsoleRegion> = [];
     export let showCreateProjectCloud: boolean;
+    export let projects: number;
 
     let id: string = null;
     let name: string = 'New project';
@@ -60,7 +61,13 @@
 </script>
 
 <Modal bind:show={showCreateProjectCloud} title={'Create project'} onSubmit={create} bind:error>
-    <CreateProject showTitle={false} bind:id bind:projectName={name} bind:region {regions}>
+    <CreateProject
+        {projects}
+        showTitle={false}
+        bind:id
+        bind:projectName={name}
+        bind:region
+        {regions}>
     </CreateProject>
     <svelte:fragment slot="footer">
         <Button.Button type="submit" variant="primary" size="s">Create</Button.Button>
