@@ -172,7 +172,7 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
                         <Typography.Text variant="m-500"
                             >2. Open the file <InlineCode
                                 size="s"
-                                code="data/repository/AppwriteRepository.kt" /> and update the configuration
+                                code="constants/AppwriteConfig.kt" /> and update the configuration
                             settings.</Typography.Text>
 
                         <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
