@@ -9,9 +9,9 @@
     import { Dependencies } from '$lib/constants';
 
     export let showSelectProject: boolean;
-    export let projects: Array<Models.Project> = [];
     export let selectedProjects: Array<string> = [];
 
+    let projects: Array<Models.Project> = [];
     let error: string | null = null;
 
     onMount(() => {
