@@ -12,8 +12,8 @@ importers:
         specifier: ^1.1.24
         version: 1.1.24(svelte@5.25.3)(zod@3.24.3)
       '@appwrite.io/console':
-        specifier: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@a5e5564
-        version: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@a5e5564
+        specifier: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@2153
+        version: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@2153
       '@appwrite.io/pink-icons':
         specifier: 0.25.0
         version: 0.25.0
@@ -257,8 +257,8 @@ packages:
   '@analytics/type-utils@0.6.2':
     resolution: {integrity: sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg==}
 
-  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@a5e5564':
-    resolution: {tarball: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@a5e5564}
+  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@2153':
+    resolution: {tarball: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@2153}
     version: 1.8.0
 
   '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@ee1b7788cd3f877c9aa1b6487976bd63a6196870':
@@ -3636,7 +3636,7 @@ snapshots:
 
   '@analytics/type-utils@0.6.2': {}
 
-  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@a5e5564': {}
+  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@2153': {}
 
   '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@ee1b7788cd3f877c9aa1b6487976bd63a6196870(svelte@5.25.3)':
     dependencies:

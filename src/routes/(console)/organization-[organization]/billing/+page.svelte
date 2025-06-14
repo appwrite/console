@@ -8,7 +8,7 @@
     import AvailableCredit from './availableCredit.svelte';
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
-    import { failedInvoice, paymentMethods, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { failedInvoice, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
@@ -26,11 +26,12 @@
 
     export let data: PageData;
 
-    $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
+    // why are these reactive?
+    $: defaultPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
     );
 
-    $: backupPaymentMethod = $paymentMethods?.paymentMethods?.find(
+    $: backupPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.backupPaymentMethodId
     );
 
@@ -128,12 +129,12 @@
     {/if}
     <Typography.Title>Billing</Typography.Title>
     <PlanSummary
-        creditList={data?.creditList}
+        availableCredit={data?.availableCredit}
         currentPlan={data?.aggregationBillingPlan}
         currentAggregation={data?.billingAggregation}
         currentInvoice={data?.billingInvoice} />
     <PaymentHistory />
-    <PaymentMethods />
+    <PaymentMethods methods={data?.paymentMethods} />
     <BillingAddress {data} />
     <TaxId />
     <BudgetCap />

@@ -7,11 +7,12 @@ import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
 
 export const load: PageLoad = async ({ parent, depends }) => {
-    const { organization, scopes, currentPlan, countryList, locale } = await parent();
+    const { organization, scopes, currentPlan, countryList, locale, plansInfo } = await parent();
 
     if (!scopes.includes('billing.read')) {
         return redirect(301, `/console/organization-${organization.$id}`);
     }
+
     depends(Dependencies.PAYMENT_METHODS);
     depends(Dependencies.ORGANIZATION);
     depends(Dependencies.CREDIT);
@@ -56,22 +57,26 @@ export const load: PageLoad = async ({ parent, depends }) => {
               organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))
         : false;
 
-    const [paymentMethods, addressList, billingAddress, creditList, aggregationBillingPlan] =
-        await Promise.all([
-            sdk.forConsole.billing.listPaymentMethods(),
-            sdk.forConsole.billing.listAddresses(),
-            billingAddressPromise,
-            // todo: best to add a `getAvailableCredit` endpoint. cc @dlohani => PLA-3006
-            areCreditsSupported ? sdk.forConsole.billing.listCredits(organization.$id) : null,
-            sdk.forConsole.billing.getPlan(billingAggregation?.plan ?? organization.billingPlan)
-        ]);
+    const [paymentMethods, addressList, billingAddress, availableCredit] = await Promise.all([
+        sdk.forConsole.billing.listPaymentMethods(),
+        sdk.forConsole.billing.listAddresses(),
+        billingAddressPromise,
+        areCreditsSupported ? sdk.forConsole.billing.getAvailableCredit(organization.$id) : null
+    ]);
+
+    const aggregationBillingPlan = plansInfo.get(
+        billingAggregation?.plan ?? organization.billingPlan
+    );
+
+    // make number
+    const credits = availableCredit ? availableCredit.available : null;
 
     return {
         paymentMethods,
         addressList,
         billingAddress,
         aggregationBillingPlan,
-        creditList,
+        availableCredit: credits,
         billingAggregation,
         billingInvoice,
         areCreditsSupported,
