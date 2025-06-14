@@ -130,115 +130,118 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.para
 </script>
 
 <Wizard title="Add React Native platform" bind:showExitModal confirmExit>
-    <Form onSubmit={createReactNativePlatform}>
-        <Layout.Stack gap="xxl">
-            <!-- Step One -->
-            <Layout.Stack gap="l" direction="row">
-                {#each Object.entries(platforms) as [key, value]}
-                    <Pink2Card.Selector
-                        {value}
-                        id={key}
-                        title={key}
-                        imageRadius="s"
-                        name="framework"
-                        bind:group={platform}
-                        disabled={isCreatingPlatform || isPlatformCreated} />
-                {/each}
-            </Layout.Stack>
-
-            <!-- Step Two -->
-            {#if !isPlatformCreated}
-                <Fieldset legend="Details">
-                    <Layout.Stack gap="l" alignItems="flex-end">
-                        <Layout.Stack gap="s">
-                            <InputText
-                                id="name"
-                                label="Name"
-                                placeholder={placeholder[platform].name}
-                                required
-                                bind:value={$createPlatform.name} />
-
-                            <!-- Tooltips on InputText don't work as of now -->
-                            <InputText
-                                id="hostname"
-                                label={hostname[platform]}
-                                placeholder={placeholder[platform].hostname}
-                                required
-                                bind:value={$createPlatform.key}>
-                                <Tooltip slot="info" maxWidth="15rem">
-                                    <Icon icon={IconInfo} size="s" />
-                                    <Typography.Caption variant="400" slot="tooltip">
-                                        {placeholder[platform].tooltip}
-                                    </Typography.Caption>
-                                </Tooltip>
-                            </InputText>
-                        </Layout.Stack>
-
-                        <Button
-                            fullWidthMobile
-                            size="s"
-                            submit
-                            forceShowLoader
-                            submissionLoader={isCreatingPlatform}
-                            disabled={!platform ||
-                                !$createPlatform.name ||
-                                !$createPlatform.key ||
-                                isCreatingPlatform}>
-                            Create platform
-                        </Button>
-                    </Layout.Stack>
-                </Fieldset>
-            {:else}
-                <Layout.Stack gap="xxl">
-                    <Card padding="s" radius="s">
-                        <Layout.Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            gap="xs">
-                            <Layout.Stack direction="row" alignItems="center" gap="s">
-                                <Icon size="m" icon={IconReact} />
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                    {$createPlatform.name} ({$createPlatform.key})
-                                </Typography.Text>
-                            </Layout.Stack>
-                        </Layout.Stack>
-                    </Card>
+    <Layout.Stack gap="xxl">
+        <Form onSubmit={createReactNativePlatform}>
+            <Layout.Stack gap="xxl">
+                <!-- Step One -->
+                <Layout.Stack gap="l" direction="row">
+                    {#each Object.entries(platforms) as [key, value]}
+                        <Pink2Card.Selector
+                            {value}
+                            id={key}
+                            title={key}
+                            imageRadius="s"
+                            name="framework"
+                            bind:group={platform}
+                            disabled={isCreatingPlatform || isPlatformCreated} />
+                    {/each}
                 </Layout.Stack>
-            {/if}
 
-            <!-- Step Three -->
-            {#if isPlatformCreated}
-                <Fieldset legend="Clone starter">
-                    <Layout.Stack gap="l">
-                        <Typography.Text variant="m-500">
-                            1. Clone the starter kit from GitHub using the terminal or VSCode.
-                        </Typography.Text>
+                <!-- Step Two -->
+                {#if !isPlatformCreated}
+                    <Fieldset legend="Details">
+                        <Layout.Stack gap="l" alignItems="flex-end">
+                            <Layout.Stack gap="s">
+                                <InputText
+                                    id="name"
+                                    label="Name"
+                                    placeholder={placeholder[platform].name}
+                                    required
+                                    bind:value={$createPlatform.name} />
 
-                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
-                        <div class="pink2-code-margin-fix">
-                            <Code lang="bash" lineNumbers code={gitCloneCode} />
-                        </div>
+                                <!-- Tooltips on InputText don't work as of now -->
+                                <InputText
+                                    id="hostname"
+                                    label={hostname[platform]}
+                                    placeholder={placeholder[platform].hostname}
+                                    required
+                                    bind:value={$createPlatform.key}>
+                                    <Tooltip slot="info" maxWidth="15rem">
+                                        <Icon icon={IconInfo} size="s" />
+                                        <Typography.Caption variant="400" slot="tooltip">
+                                            {placeholder[platform].tooltip}
+                                        </Typography.Caption>
+                                    </Tooltip>
+                                </InputText>
+                            </Layout.Stack>
 
-                        <Typography.Text variant="m-500"
-                            >2. Open the file <InlineCode
+                            <Button
+                                fullWidthMobile
                                 size="s"
-                                code="lib/constants/appwrite.js" /> and update the configuration settings.</Typography.Text>
-
-                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
-                        <div class="pink2-code-margin-fix">
-                            <Code lang="javascript" lineNumbers code={updateConfigCode} />
-                        </div>
-
-                        <Typography.Text variant="m-500"
-                            >3. Run the app on a connected device or simulator, then click the <InlineCode
-                                size="s"
-                                code="Send a ping" /> button to verify the setup.</Typography.Text>
+                                submit
+                                forceShowLoader
+                                submissionLoader={isCreatingPlatform}
+                                disabled={!platform ||
+                                    !$createPlatform.name ||
+                                    !$createPlatform.key ||
+                                    isCreatingPlatform}>
+                                Create platform
+                            </Button>
+                        </Layout.Stack>
+                    </Fieldset>
+                {:else}
+                    <Layout.Stack gap="xxl">
+                        <Card padding="s" radius="s">
+                            <Layout.Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="center"
+                                gap="xs">
+                                <Layout.Stack direction="row" alignItems="center" gap="s">
+                                    <Icon size="m" icon={IconReact} />
+                                    <Typography.Text
+                                        variant="m-400"
+                                        color="--fgcolor-neutral-primary">
+                                        {$createPlatform.name} ({$createPlatform.key})
+                                    </Typography.Text>
+                                </Layout.Stack>
+                            </Layout.Stack>
+                        </Card>
                     </Layout.Stack>
-                </Fieldset>
-            {/if}
-        </Layout.Stack>
-    </Form>
+                {/if}
+            </Layout.Stack>
+        </Form>
+
+        <!-- Step Three -->
+        {#if isPlatformCreated}
+            <Fieldset legend="Clone starter">
+                <Layout.Stack gap="l">
+                    <Typography.Text variant="m-500">
+                        1. Clone the starter kit from GitHub using the terminal or VSCode.
+                    </Typography.Text>
+
+                    <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                    <div class="pink2-code-margin-fix">
+                        <Code lang="bash" lineNumbers code={gitCloneCode} />
+                    </div>
+
+                    <Typography.Text variant="m-500"
+                        >2. Open the file <InlineCode size="s" code="lib/constants/appwrite.js" /> and
+                        update the configuration settings.</Typography.Text>
+
+                    <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                    <div class="pink2-code-margin-fix">
+                        <Code lang="javascript" lineNumbers code={updateConfigCode} />
+                    </div>
+
+                    <Typography.Text variant="m-500"
+                        >3. Run the app on a connected device or simulator, then click the <InlineCode
+                            size="s"
+                            code="Send a ping" /> button to verify the setup.</Typography.Text>
+                </Layout.Stack>
+            </Fieldset>
+        {/if}
+    </Layout.Stack>
     <svelte:fragment slot="aside">
         <Card padding="l" class="responsive-padding">
             <Layout.Stack gap="xxl">
