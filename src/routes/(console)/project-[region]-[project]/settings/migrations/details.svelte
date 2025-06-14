@@ -20,8 +20,17 @@
     } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
 
-    export let migration: Models.Migration = null;
     export let show = false;
+    export let migration: Models.Migration = null;
+
+    // convert to proper json objects from string!
+    migration.errors = migration.errors.map((err) => {
+        try {
+            return JSON.parse(err);
+        } catch {
+            return err;
+        }
+    });
 
     type StatusCounters = {
         [resource in 'Database' | 'Collection' | 'Function' | 'Users']?: StatusCounter;
@@ -55,7 +64,7 @@
     };
 
     let tab = 'details' as 'details' | 'logs';
-    let logs = JSON.stringify(migration, null, 2);
+    const logs = JSON.stringify(migration, null, 2);
 </script>
 
 <Modal

@@ -33,6 +33,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { flags } from '$lib/flags';
+
     export let data: PageData;
 
     const databaseId = page.params.database;
@@ -253,12 +254,13 @@
                     {:else}
                         {@const formatted = formatColumn(document[id])}
                         {@const isDatetimeAttribute = attr.type === 'datetime'}
+                        {@const isEncryptedAttribute = isString(attr) && attr.encrypt}
                         {#if isDatetimeAttribute}
                             <DualTimeView time={formatted.whole}>
                                 <span slot="title">Timestamp</span>
                                 {toLocaleDateTime(formatted.whole, true, 'UTC')}
                             </DualTimeView>
-                        {:else if isString(attr) && attr.encrypt && showEncrypt}
+                        {:else if isEncryptedAttribute && showEncrypt}
                             <button on:click={(e) => e.preventDefault()}>
                                 <InteractiveText
                                     copy={false}
