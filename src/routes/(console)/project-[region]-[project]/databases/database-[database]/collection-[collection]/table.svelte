@@ -251,12 +251,13 @@
                             </Button.Button>
                         {/if}
                     {:else}
+                        {@const datetime = document[id]}
                         {@const formatted = formatColumn(document[id])}
                         {@const isDatetimeAttribute = attr.type === 'datetime'}
                         {#if isDatetimeAttribute}
-                            <DualTimeView time={formatted.whole}>
+                            <DualTimeView time={datetime}>
                                 <span slot="title">Timestamp</span>
-                                {toLocaleDateTime(formatted.whole, true, 'UTC')}
+                                {toLocaleDateTime(datetime, true)}
                             </DualTimeView>
                         {:else if isString(attr) && attr.encrypt && showEncrypt}
                             <button on:click={(e) => e.preventDefault()}>
