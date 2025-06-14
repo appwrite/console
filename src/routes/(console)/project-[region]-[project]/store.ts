@@ -4,14 +4,11 @@ import { derived, get, writable } from 'svelte/store';
 import { regions } from '$lib/stores/organization';
 import { page } from '$app/stores';
 
-export const project = derived(
-    page,
-    ($page) => $page.data.project as Models.Project & { region?: string }
-);
+export const project = derived(page, ($page) => $page.data.project as Models.Project);
 
 export const projectRegion = derived(project, ($project) => {
     const availableRegions = get(regions);
-    // region is marked as nullable above.
+    // region could be null or undefined in project.
     if (!availableRegions || !availableRegions.regions || !$project || !$project.region)
         return null;
 

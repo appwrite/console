@@ -5,9 +5,19 @@ import type { PageLoad } from './$types';
 import { selectedTab } from './store';
 
 export const load: PageLoad = async ({ params }) => {
-    if (get(selectedTab) === 'keys') {
-        redirect(302, `${base}/project-${params.region}-${params.project}/overview/keys`);
-    } else {
-        redirect(302, `${base}/project-${params.region}-${params.project}/overview/platforms`);
+    const tab = get(selectedTab);
+
+    switch (tab) {
+        case 'keys':
+        case 'dev-keys':
+            return redirect(
+                302,
+                `${base}/project-${params.region}-${params.project}/overview/${tab}`
+            );
+        default:
+            return redirect(
+                302,
+                `${base}/project-${params.region}-${params.project}/overview/platforms`
+            );
     }
 };

@@ -1,13 +1,12 @@
-import type { Invoice } from '$lib/sdk/billing';
-import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
-import { Query, type Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
+import { Query } from '@appwrite.io/console';
+import type { UsageProjectInfo } from '../../store';
+import type { Invoice, OrganizationUsage } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice } = params;
-    const parentData = await parent();
-    const org = parentData.organization as Organization;
+    const { organization: org, currentPlan: plan } = await parent();
 
     /**
      * Temporary fix during migration to billing system
@@ -49,43 +48,48 @@ export const load: PageLoad = async ({ params, parent }) => {
         startDate = currentInvoice.from;
         endDate = currentInvoice.to;
     }
-    const [invoices, usage, organizationMembers, plan] = await Promise.all([
-        sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
-        sdk.forConsole.billing.listUsage(params.organization, startDate, endDate),
-        sdk.forConsole.teams.listMemberships(params.organization, [Query.limit(100)]),
-        sdk.forConsole.billing.getOrganizationPlan(org.$id)
+
+    const [usage, organizationMembers] = await Promise.all([
+        sdk.forConsole.billing.listUsage(org.$id, startDate, endDate),
+        // this section is cloud only,
+        // so it is fine to use this check and fetch memberships conditionally!
+        !plan?.addons?.seats?.supported
+            ? null
+            : sdk.forConsole.teams.listMemberships(org.$id, [Query.limit(100)])
     ]);
 
-    const projects: { [key: string]: Models.Project } = {};
-    if (usage?.projects?.length > 0) {
-        // in batches of 100 (the max number of values in a query)
+    return {
+        plan,
+        currentInvoice,
+        organizationMembers,
+        organizationUsage: usage,
+        projects: getUsageProjects(usage)
+    };
+};
+
+// all this to get the project's name and region!
+function getUsageProjects(usage: OrganizationUsage) {
+    return (async () => {
+        const projects: Record<string, UsageProjectInfo> = {};
+        const limit = 100;
         const requests = [];
-        const chunk = 100;
-        for (let i = 0; i < usage.projects.length; i += chunk) {
-            const queries = [
-                Query.limit(chunk),
-                Query.equal(
-                    '$id',
-                    usage.projects.slice(i, i + chunk).map((p) => p.projectId)
-                )
-            ];
-            requests.push(sdk.forConsole.projects.list(queries));
+        for (let index = 0; index < usage.projects.length; index += limit) {
+            const chunkIds = usage.projects.slice(index, index + limit).map((p) => p.projectId);
+            requests.push(
+                sdk.forConsole.projects.list([Query.limit(limit), Query.equal('$id', chunkIds)])
+            );
         }
 
         const responses = await Promise.all(requests);
         for (const response of responses) {
             for (const project of response.projects) {
-                projects[project.$id] = project;
+                projects[project.$id] = {
+                    name: project.name,
+                    region: project.region
+                };
             }
         }
-    }
 
-    return {
-        plan,
-        invoices,
-        projects,
-        currentInvoice,
-        organizationMembers,
-        organizationUsage: usage
-    };
-};
+        return projects;
+    })();
+}

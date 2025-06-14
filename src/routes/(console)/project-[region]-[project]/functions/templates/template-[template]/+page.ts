@@ -8,7 +8,6 @@ export const load: PageLoad = async ({ params, depends }) => {
     return {
         template: await sdk
             .forProject(params.region, params.project)
-            .functions.getTemplate(params.template),
-        functions: await sdk.forProject(params.region, params.project).functions.list()
+            .functions.getTemplate(params.template)
     };
 };

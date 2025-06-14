@@ -9,8 +9,9 @@
     import { openMigrationWizard } from '../(migration-wizard)';
     import { base } from '$app/paths';
     import { isOwner } from '$lib/stores/roles';
+    import type { PageData } from './$types';
 
-    export let data;
+    export let data: PageData;
 
     $: if ($requestedMigration) {
         openMigrationWizard();

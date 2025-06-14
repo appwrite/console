@@ -151,6 +151,10 @@ export type CreditList = {
     total: number;
 };
 
+export type AvailableCredit = {
+    available: number;
+};
+
 export type Aggregation = {
     $id: string;
     /**
@@ -851,6 +855,20 @@ export class Billing {
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async getAvailableCredit(organizationId: string): Promise<AvailableCredit> {
+        const path = `/organizations/${organizationId}/credits/available`;
+        const params = {};
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
             uri,
             {
                 'content-type': 'application/json'

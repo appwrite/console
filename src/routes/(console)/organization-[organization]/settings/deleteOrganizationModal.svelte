@@ -15,7 +15,6 @@
     import { tierToPlan } from '$lib/stores/billing';
     import { Table, Tabs, Alert } from '@appwrite.io/pink-svelte';
     import DeleteOrganizationEstimation from './deleteOrganizationEstimation.svelte';
-    import { onMount } from 'svelte';
     import type { EstimationDeleteOrganization, InvoiceList } from '$lib/sdk/billing';
 
     export let showDelete = false;
@@ -55,8 +54,6 @@
         }
     }
 
-    onMount(() => getEstimate());
-
     const tabs = [
         {
             name: 'projects',
@@ -75,6 +72,8 @@
     $: if (!showDelete) {
         // reset on close.
         organizationName = '';
+    } else {
+        getEstimate();
     }
 
     async function getEstimate() {

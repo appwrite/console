@@ -12,14 +12,13 @@ export const load = async ({ url, params }) => {
         .forProject(params.region, params.project)
         .sites.listTemplates(undefined, undefined, 100);
 
-    const [frameworksSet, useCasesSet] = siteTemplatesList.templates.reduce(
-        ([fr, uc], next) => {
-            next.useCases.forEach((useCase) => uc.add(useCase));
-            next.frameworks.forEach((framework) => fr.add(framework.name));
-            return [fr, uc];
-        },
-        [new Set<string>(), new Set<string>()]
-    );
+    const useCasesSet = new Set<string>();
+    const frameworksSet = new Set<string>();
+
+    for (const template of siteTemplatesList.templates) {
+        template.frameworks.forEach((f) => frameworksSet.add(f.name));
+        template.useCases.forEach((u) => useCasesSet.add(u));
+    }
 
     const frameworkOrder = [
         'Next.js',
@@ -37,44 +36,32 @@ export const load = async ({ url, params }) => {
         'Vite',
         'Other'
     ];
-    const frameworks = Array.from(frameworksSet)
-        .sort((a, b) => a.localeCompare(b))
-        .sort((a, b) => {
-            const aIndex = frameworkOrder.indexOf(a);
-            const bIndex = frameworkOrder.indexOf(b);
-            if (aIndex === -1 && bIndex === -1) {
-                return a.localeCompare(b);
-            } else if (aIndex === -1) {
-                return 1;
-            } else if (bIndex === -1) {
-                return -1;
-            }
-            return aIndex - bIndex;
-        });
 
-    const useCases = Array.from(useCasesSet).sort((a, b) => a.localeCompare(b));
+    const frameworks = Array.from(frameworksSet).sort((a, b) => {
+        const aIndex = frameworkOrder.indexOf(a);
+        const bIndex = frameworkOrder.indexOf(b);
+        if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
+        if (aIndex === -1) return 1;
+        if (bIndex === -1) return -1;
+        return aIndex - bIndex;
+    });
+
+    const useCases = Array.from(useCasesSet).sort();
 
     const templates = siteTemplatesList.templates.filter((template) => {
-        if (
-            filter.frameworks.length > 0 &&
-            !template.frameworks.some((n) => filter.frameworks.includes(n.name))
-        ) {
-            return false;
-        }
+        const matchesFramework =
+            filter.frameworks.length === 0 ||
+            template.frameworks.some((f) => filter.frameworks.includes(f.name));
 
-        const filterLowerCases = filter.useCases.map((n) => n.toLowerCase());
-        if (
-            filter.useCases.length > 0 &&
-            !template.useCases.some((n) => filterLowerCases.includes(n.toLowerCase()))
-        ) {
-            return false;
-        }
+        const matchesUseCase =
+            filter.useCases.length === 0 ||
+            template.useCases.some((u) =>
+                filter.useCases.map((s) => s.toLowerCase()).includes(u.toLowerCase())
+            );
 
-        if (search) {
-            return template.name.toLowerCase().includes(search.toLowerCase());
-        } else {
-            return true;
-        }
+        const matchesSearch = !search || template.name.toLowerCase().includes(search.toLowerCase());
+
+        return matchesFramework && matchesUseCase && matchesSearch;
     });
 
     return {

@@ -7,5 +7,6 @@ export const load: PageLoad = async ({ params }) => {
     if (hasOnboardingDismissed(params.project)) {
         redirect(302, `${base}/project-${params.region}-${params.project}/overview`);
     }
+
     redirect(302, `${base}/project-${params.region}-${params.project}/get-started`);
 };

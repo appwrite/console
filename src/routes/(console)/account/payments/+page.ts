@@ -6,12 +6,17 @@ export const load: PageLoad = async ({ depends }) => {
     depends(Dependencies.PAYMENT_METHODS);
     depends(Dependencies.ADDRESS);
 
-    const [paymentMethods, addressList] = await Promise.all([
+    const [paymentMethods, addressList, countryList, locale] = await Promise.all([
         sdk.forConsole.billing.listPaymentMethods(),
-        sdk.forConsole.billing.listAddresses()
+        sdk.forConsole.billing.listAddresses(),
+        sdk.forConsole.locale.listCountries(),
+        sdk.forConsole.locale.get()
     ]);
+
     return {
         paymentMethods,
-        addressList
+        addressList,
+        countryList,
+        locale
     };
 };
