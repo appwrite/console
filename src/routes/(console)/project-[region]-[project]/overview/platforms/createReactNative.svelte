@@ -35,8 +35,8 @@
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-react-native\ncd starter-for-react-native\n';
 
-    const updateConfigCode = `const APPWRITE_PROJECT_ID = "${projectId}";
-const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}";
+    const updateConfigCode = `const EXPO_PUBLIC_APPWRITE_PROJECT_ID = "${projectId}";
+const EXPO_PUBLIC_APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}";
         `;
 
     export let platform: PlatformType = PlatformType.Reactnativeandroid;
