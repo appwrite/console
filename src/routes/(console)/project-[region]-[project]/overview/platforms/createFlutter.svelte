@@ -250,8 +250,8 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
                                     <Typography.Text
                                         variant="m-400"
                                         color="--fgcolor-neutral-primary">
-                                        {$createPlatform.name} ({$createPlatform.key ??
-                                            $createPlatform.hostname})
+                                        {$createPlatform.name} ({$createPlatform.hostname ||
+                                            $createPlatform.key})
                                     </Typography.Text>
                                 </Layout.Stack>
                             </Layout.Stack>

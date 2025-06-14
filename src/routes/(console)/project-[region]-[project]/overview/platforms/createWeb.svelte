@@ -197,8 +197,6 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
             resetPlatformStore();
         };
     });
-
-    $: console.log('Reactivity triggered');
 </script>
 
 <Wizard title="Add web platform" bind:showExitModal confirmExit={!isPlatformCreated}>
