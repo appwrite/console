@@ -260,8 +260,8 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
                 <Fieldset legend="Clone starter">
                     <Layout.Stack gap="l">
                         <Typography.Text variant="m-500">
-                            1. Clone the starter kit from GitHub using the terminal, Android Studio
-                            or VSCode.
+                            1. If you're starting a new project, you can clone our starter kit from
+                            GitHub using the terminal, VSCode or Android Studio.
                         </Typography.Text>
 
                         <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->

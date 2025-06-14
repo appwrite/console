@@ -186,7 +186,8 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
                 <Fieldset legend="Clone starter">
                     <Layout.Stack gap="l">
                         <Typography.Text variant="m-500">
-                            1. Clone the starter kit from GitHub using the terminal or XCode.
+                            1. If you're starting a new project, you can clone our starter kit from
+                            GitHub using the terminal or XCode.
                         </Typography.Text>
 
                         <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
