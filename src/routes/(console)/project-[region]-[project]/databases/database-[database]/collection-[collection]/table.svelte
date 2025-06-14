@@ -12,7 +12,11 @@
     import type { Models } from '@appwrite.io/console';
     import { afterUpdate, onMount } from 'svelte';
     import type { PageData } from './$types';
-    import { isRelationship, isRelationshipToMany } from './document-[document]/attributes/store';
+    import {
+        isRelationship,
+        isRelationshipToMany,
+        isString
+    } from './document-[document]/attributes/store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
     import type { ColumnType } from '$lib/helpers/types';
@@ -23,11 +27,12 @@
         Link,
         Badge,
         FloatingActionBar,
+        InteractiveText,
         Typography
     } from '@appwrite.io/pink-svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-
+    import { flags } from '$lib/flags';
     export let data: PageData;
 
     const databaseId = page.params.database;
@@ -163,6 +168,8 @@
     ) as Models.AttributeRelationship[];
 
     let checked = false;
+
+    let showEncrypt = flags.showAttributeEncrypt(data);
 </script>
 
 <Table.Root
@@ -251,6 +258,14 @@
                                 <span slot="title">Timestamp</span>
                                 {toLocaleDateTime(formatted.whole, true, 'UTC')}
                             </DualTimeView>
+                        {:else if isString(attr) && attr.encrypt && showEncrypt}
+                            <button on:click={(e) => e.preventDefault()}>
+                                <InteractiveText
+                                    copy={false}
+                                    variant="secret"
+                                    isVisible={false}
+                                    text={formatted.value} />
+                            </button>
                         {:else if formatted.truncated}
                             <Tooltip placement="bottom" disabled={!formatted.truncated}>
                                 <Typography.Text truncate>{formatted.value}</Typography.Text>

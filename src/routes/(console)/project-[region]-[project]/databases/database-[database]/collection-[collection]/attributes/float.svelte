@@ -122,5 +122,4 @@
     label="Array"
     bind:checked={data.array}
     disabled={data.required || editing}
-    description="Indicate whether this attribute should act as an array, with the default value set as an empty
-    array." />
+    description="Indicate whether this attribute is an array. Defaults to an empty array." />
