@@ -273,7 +273,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
             <Fieldset legend="Clone starter">
                 <Layout.Stack gap="l">
                     <Typography.Text variant="m-500">
-                        1. Clone the starter kit from GitHub using the terminal or VSCode.
+                        1. If you're starting a new project, you can clone our starter kit from
+                        GitHub using the terminal or VSCode.
                     </Typography.Text>
 
                     <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
@@ -292,9 +293,11 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                             to reflect the values below:</Typography.Text>
                     {:else}
                         <Typography.Text variant="m-500"
-                            >2. Rename <InlineCode size="s" code=".env.example" /> into <InlineCode
+                            >2. Add your Appwrite credentials to <InlineCode
                                 size="s"
-                                code=".env" /> and update the values.</Typography.Text>
+                                code=".env.example" /> then rename it to <InlineCode
+                                size="s"
+                                code=".env" /> if needed.</Typography.Text>
                     {/if}
 
                     <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
