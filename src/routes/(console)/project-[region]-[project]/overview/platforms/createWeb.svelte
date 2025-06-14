@@ -201,7 +201,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     $: console.log('Reactivity triggered');
 </script>
 
-<Wizard title="Add web platform" bind:showExitModal>
+<Wizard title="Add web platform" bind:showExitModal confirmExit={!isPlatformCreated}>
     <Layout.Stack gap="xxl">
         <!-- Step One -->
         {#if !isPlatformCreated || isChangingFramework}

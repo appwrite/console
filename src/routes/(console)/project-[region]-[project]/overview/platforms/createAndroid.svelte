@@ -91,7 +91,7 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
     });
 </script>
 
-<Wizard title="Add Android platform" bind:showExitModal confirmExit>
+<Wizard title="Add Android platform" bind:showExitModal confirmExit={!isPlatformCreated}>
     <Layout.Stack gap="xxl">
         <!-- Step One -->
         {#if !isPlatformCreated}

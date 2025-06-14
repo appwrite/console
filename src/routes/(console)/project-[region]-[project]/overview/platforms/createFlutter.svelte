@@ -161,7 +161,7 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
     });
 </script>
 
-<Wizard title="Add Flutter platform" bind:showExitModal confirmExit>
+<Wizard title="Add Flutter platform" bind:showExitModal confirmExit={!isPlatformCreated}>
     <Layout.Stack gap="xxl">
         <Form onSubmit={createFlutterPlatform}>
             <Layout.Stack gap="xxl">

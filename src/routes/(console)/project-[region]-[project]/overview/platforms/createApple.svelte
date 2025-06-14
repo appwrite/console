@@ -102,7 +102,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
     });
 </script>
 
-<Wizard title="Add Apple platform" bind:showExitModal confirmExit>
+<Wizard title="Add Apple platform" bind:showExitModal confirmExit={!isPlatformCreated}>
     <Layout.Stack gap="xxl">
         <Form onSubmit={createApplePlatform}>
             <Layout.Stack gap="xxl">

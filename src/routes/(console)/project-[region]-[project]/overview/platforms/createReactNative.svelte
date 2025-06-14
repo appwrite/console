@@ -129,7 +129,7 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.para
     });
 </script>
 
-<Wizard title="Add React Native platform" bind:showExitModal confirmExit>
+<Wizard title="Add React Native platform" bind:showExitModal confirmExit={!isPlatformCreated}>
     <Layout.Stack gap="xxl">
         <Form onSubmit={createReactNativePlatform}>
             <Layout.Stack gap="xxl">
