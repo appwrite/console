@@ -62,7 +62,7 @@
                 .forProject(page.params.region, page.params.project)
                 .vcs.createRepositoryDetection(
                     $installation.$id,
-                    data.repository.id,
+                    page.params.repository,
                     VCSDetectionType.Framework,
                     rootDir
                 );
