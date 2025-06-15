@@ -328,6 +328,7 @@ export type Plan = {
     };
     addons: {
         seats: PlanAddon;
+        projects: PlanAddon;
     };
     trialDays: number;
     budgetCapEnabled: boolean;
@@ -350,7 +351,7 @@ export type PlanList = {
     total: number;
 };
 
-export type PlansMap = Map<Tier, Plan>;
+export type PlansMap = Map<string, Plan>;
 
 export type Roles = {
     scopes: string[];
@@ -485,6 +486,17 @@ export class Billing {
         return await this.client.call('get', uri, {
             'content-type': 'application/json'
         });
+    }
+
+    async listPlans(queries: string[] = []): Promise<PlanList> {
+        const path = `/console/plans`;
+        const uri = new URL(this.client.config.endpoint + path);
+        const params = {
+            queries,
+        }
+        return await this.client.call('get', uri, {
+            'content-type': 'application/json'
+        }, params);
     }
 
     async getPlan(planId: string): Promise<Plan> {
