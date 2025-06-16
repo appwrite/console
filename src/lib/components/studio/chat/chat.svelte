@@ -75,7 +75,7 @@
             controller = new AbortController();
             studio.streaming = true;
             const response = await fetch(
-                `${sdk.forProject.client.config.endpoint}/imagine/artifacts/${$conversation.data.artifactId}/conversations/${$conversation.data.$id}/messages`,
+                `${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}/imagine/artifacts/${$conversation.data.artifactId}/conversations/${$conversation.data.$id}/messages`,
                 {
                     method: 'POST',
                     headers: {
