@@ -91,8 +91,9 @@
         if ($currentPlan?.$id === BillingPlan.SCALE) {
             selectedPlan = BillingPlan.SCALE;
         } else {
-            selectedPlan = BillingPlan.PRO;
+            selectedPlan = $currentPlan?.$id as BillingPlan || BillingPlan.FREE;
         }
+        console.log('Selected plan:', selectedPlan);
     });
 
     async function handleSubmit() {
@@ -247,8 +248,8 @@
         }
     }
 
-    $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan?.order;
-    $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan?.order;
+    $: isUpgrade = $plansInfo.get(selectedPlan)?.order > $currentPlan?.order;
+    $: isDowngrade = $plansInfo.get(selectedPlan)?.order < $currentPlan?.order;
     $: isButtonDisabled = $organization?.billingPlan === selectedPlan;
 </script>
 

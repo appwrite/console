@@ -13,8 +13,8 @@
     export let isNewOrg = false;
     export let selfService = true;
 
-    $: isBasePlan = BASE_BILLING_PLANS.includes($currentPlan?.$id);
     $: plans = Object.values(page.data.plans.plans) as Plan[];
+    $: currentPlanInList = plans.filter((plan) => plan.$id === $currentPlan?.$id).length > 0;
 </script>
 
 <Layout.Stack>
@@ -41,7 +41,7 @@
             </Typography.Text>
         </LabelCard>
     {/each}
-    {#if $currentPlan && !isBasePlan}
+    {#if $currentPlan && !currentPlanInList}
         <LabelCard
             name="plan"
             bind:group={billingPlan}
