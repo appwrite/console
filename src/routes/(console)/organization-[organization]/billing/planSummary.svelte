@@ -5,7 +5,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { plansInfo, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { Aggregation, AggregationTeam, CreditList, Invoice, Plan } from '$lib/sdk/billing';
+    import type {AggregationTeam, CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -20,7 +20,6 @@
     } from '@appwrite.io/pink-svelte';
     import { IconInfo, IconTag } from '@appwrite.io/pink-icons-svelte';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
-    import { onMount } from 'svelte';
 
     export let currentPlan: Plan;
     export let creditList: CreditList;
@@ -28,11 +27,6 @@
     export let currentAggregation: AggregationTeam | undefined = undefined;
 
     let showCancel: boolean = false;
-
-    onMount(() => {
-        console.log(currentAggregation);
-        console.log(currentInvoice);
-    });
 
     const availableCredit = creditList.available;
     const today = new Date();
