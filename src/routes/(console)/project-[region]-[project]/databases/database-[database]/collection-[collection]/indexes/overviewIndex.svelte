@@ -9,7 +9,7 @@
     export let showOverview = false;
     export let selectedIndex: Models.Index = null;
 
-    let showLengths = flags.showIndexLengths(page.data);
+    const showLengths = flags.showIndexLengths(page.data);
 </script>
 
 <Modal title="Overview" bind:show={showOverview}>

@@ -39,7 +39,7 @@
 
     let attributeList = [{ value: '', order: '', length: null }];
 
-    let showLengths = flags.showIndexLengths(page.data);
+    const showLengths = flags.showIndexLengths(page.data);
 
     function generateIndexKey() {
         let indexKeys = $indexes.map((index) => index.key);
