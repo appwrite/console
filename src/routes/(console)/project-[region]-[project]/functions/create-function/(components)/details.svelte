@@ -7,7 +7,7 @@
     import { organization } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
-    import { Fieldset, Icon, Input, Layout, Tag } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Icon, Input, Layout, Skeleton, Tag } from '@appwrite.io/pink-svelte';
     import type { ComponentType } from 'svelte';
 
     export let name: string;
@@ -25,6 +25,7 @@
         value: string;
         label: string;
     }[] = [];
+    export let loading = false;
 
     let showCustomId = false;
 </script>
@@ -51,13 +52,20 @@
             {/if}
         </Layout.Stack>
         {#key runtime}
-            <InputSelect
-                id="runtime"
-                label="Runtime"
-                placeholder="Select runtime"
-                bind:value={runtime}
-                required
-                {options} />
+            {#if loading}
+                <Layout.Stack gap="xs">
+                    <Skeleton variant="line" width={100} height={20} />
+                    <Skeleton variant="line" width="100%" height={32} />
+                </Layout.Stack>
+            {:else}
+                <InputSelect
+                    id="runtime"
+                    label="Runtime"
+                    placeholder="Select runtime"
+                    bind:value={runtime}
+                    required
+                    {options} />
+            {/if}
         {/key}
 
         {#if isCloud}
@@ -79,12 +87,19 @@
             </Layout.Stack>
         {/if}
         {#if showEntrypoint}
-            <InputText
-                label="Entrypoint"
-                id="entrypoint"
-                bind:value={entrypoint}
-                required
-                placeholder="Enter entrypoint" />
+            {#if loading}
+                <Layout.Stack gap="xs">
+                    <Skeleton variant="line" width={100} height={20} />
+                    <Skeleton variant="line" width="100%" height={32} />
+                </Layout.Stack>
+            {:else}
+                <InputText
+                    label="Entrypoint"
+                    id="entrypoint"
+                    bind:value={entrypoint}
+                    required
+                    placeholder="Enter entrypoint" />
+            {/if}
         {/if}
     </Layout.Stack>
 </Fieldset>

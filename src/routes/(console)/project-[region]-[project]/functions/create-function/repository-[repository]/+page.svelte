@@ -10,7 +10,7 @@
     import { installation, repository } from '$lib/stores/vcs';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
-    import { ID, Runtime, VCSDeploymentType } from '@appwrite.io/console';
+    import { ID, Runtime, VCSDeploymentType, VCSDetectionType } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Details from '../(components)/details.svelte';
@@ -57,11 +57,39 @@
     let silentMode = false;
     let specification = specificationOptions[0].value;
 
+    let detectingRuntime = true;
+
     onMount(async () => {
         installation.set(data.installation);
         repository.set(data.repository);
         name = data.repository.name;
+
+        await detectRuntime();
     });
+
+    async function detectRuntime() {
+        try {
+            detectingRuntime = true;
+
+            const detections = (await sdk
+                .forProject(page.params.regionn, page.params.project)
+                .vcs.createRepositoryDetection(
+                    data.installation.$id,
+                    page.params.repository,
+                    VCSDetectionType.Runtime
+                )) as unknown as Models.DetectionRuntime; /* SDK return type is wrong atm */
+
+            entrypoint = detections.entrypoint;
+            buildCommand = detections.commands;
+            runtime = detections.runtime as Runtime;
+
+            trackEvent(Submit.FrameworkDetect, { runtime, source: 'repository' });
+        } catch (error) {
+            trackError(error, Submit.FrameworkDetect);
+        } finally {
+            detectingRuntime = false;
+        }
+    }
 
     async function create() {
         try {
@@ -154,7 +182,8 @@
                 bind:specification
                 {specificationOptions}
                 options={runtimeOptions}
-                showEntrypoint />
+                showEntrypoint
+                loading={detectingRuntime} />
 
             <ProductionBranchFieldset
                 bind:branch
@@ -173,7 +202,8 @@
             runtimes={data.runtimesList}
             repositoryName={data.repository.name}
             {branch}
-            {rootDir} />
+            {rootDir}
+            loading={detectingRuntime} />
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
