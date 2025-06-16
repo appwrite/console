@@ -23,7 +23,7 @@
     import { page } from '$app/state';
     import Card from '../card.svelte';
     import SkeletonRepoList from './skeletonRepoList.svelte';
-    import { untrack } from 'svelte';
+    import { onMount, untrack } from 'svelte';
 
     let {
         action = $bindable('select'),
@@ -46,6 +46,11 @@
     let search = $state('');
     let selectedInstallation = $state(null);
     let isLoadingRepositories = $state(null);
+    let installationsMap = $state(null);
+
+    onMount(() => {
+        loadInstallations();
+    });
 
     async function loadInstallations() {
         if (installationList) {
@@ -59,7 +64,7 @@
                     )
                 );
             }
-            return installationList.installations;
+            installationsMap = installationList.installations;
         } else {
             const { installations } = await sdk
                 .forProject(page.params.region, page.params.project)
@@ -70,7 +75,7 @@
                 }
                 installation.set(installations.find((entry) => entry.$id === selectedInstallation));
             }
-            return installations;
+            installationsMap = installations;
         }
     }
 
@@ -123,7 +128,7 @@
 {#if hasInstallations}
     <Layout.Stack>
         <Layout.Stack gap="s">
-            {#await loadInstallations()}
+            {#if !installationsMap}
                 <Layout.Stack direction="row">
                     <InputSelect
                         disabled
@@ -137,12 +142,12 @@
                         value={null} />
                     <InputSearch placeholder="Search repositories" disabled />
                 </Layout.Stack>
-            {:then installations}
+            {:else}
                 <Layout.Stack direction={$isSmallViewport ? 'column' : 'row'}>
                     <InputSelect
                         id="installation"
                         options={[
-                            ...installations.map((entry) => {
+                            ...installationsMap.map((entry) => {
                                 return {
                                     label: entry.organization,
                                     value: entry.$id
@@ -160,7 +165,7 @@
                             }
                             search = '';
                             installation.set(
-                                installations.find((entry) => entry.$id === selectedInstallation)
+                                installationsMap.find((entry) => entry.$id === selectedInstallation)
                             );
 
                             isLoadingRepositories = true;
@@ -174,7 +179,7 @@
                         bind:value={search}
                         disabled={!search && !$repositories?.repositories?.length} />
                 </Layout.Stack>
-            {/await}
+            {/if}
         </Layout.Stack>
         {#if selectedInstallation}
             <!-- manual installation change -->
@@ -310,3 +315,4 @@
 {:else}
     <ConnectGit {callbackState} />
 {/if}
+hai hoi
