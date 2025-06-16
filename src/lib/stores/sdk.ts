@@ -35,6 +35,7 @@ import {
     SUBDOMAIN_SYD
 } from '$lib/constants';
 import { building } from '$app/environment';
+import { Imagine } from '$lib/sdk/imagine';
 import { getProjectId } from '$lib/helpers/project';
 
 export function getApiEndpoint(region?: string): string {
@@ -121,7 +122,8 @@ const sdkForProject = {
     vcs: new Vcs(clientProject),
     proxy: new Proxy(clientProject),
     migrations: new Migrations(clientProject),
-    sites: new Sites(clientProject)
+    sites: new Sites(clientProject),
+    imagine: new Imagine(clientProject)
 };
 
 export const realtime = {

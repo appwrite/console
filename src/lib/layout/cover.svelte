@@ -1,24 +1,55 @@
 <script lang="ts">
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Button, Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { isStudio } from '$lib/system';
+    import { page } from '$app/state';
+    import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
 
-    export let size: 'small' | 'medium' | 'large' | 'xl' = null;
-    export let blocksize = '152px';
+    let {
+        size = null,
+        blocksize = '152px'
+    }: { size?: 'small' | 'medium' | 'large' | 'xl'; blocksize?: string } = $props();
 
-    $: style = size
-        ? `--p-container-max-size: var(--container-max-size, var(--container-size-${size}))`
-        : '';
+    let style = $derived.by(() => {
+        return size
+            ? `--p-container-max-size: var(--container-max-size, var(--container-size-${size}))`
+            : '';
+    });
+
+    let nestedLevel = $derived.by(() => {
+        return page.url.pathname.split('/').length;
+    });
+    let paramCount = $derived.by(() => {
+        return Object.keys(page.params).length;
+    });
 </script>
 
-<div class="top-cover-console" style:block-size={blocksize}>
-    <div class="cover-container" {style}>
-        <Layout.Stack direction="row" alignItems="baseline">
-            <slot name="header" />
-        </Layout.Stack>
-        <slot />
-    </div>
-</div>
+{#if isStudio}
+    <Layout.Stack direction="row" alignItems="center">
+        {#if nestedLevel > 4}
+            {#if (nestedLevel === 6 && paramCount === 2) || nestedLevel === 7}
+                <a href="../" style:display="flex" style:margin-inline-end="-8px"
+                    ><Icon icon={IconChevronLeft} /></a>
+            {:else if paramCount >= 2}
+                <a href="./" style:display="flex" style:margin-inline-end="-8px"
+                    ><Icon icon={IconChevronLeft} /></a>
+            {/if}
+        {/if}
 
-<style>
+        <slot name="header" />
+    </Layout.Stack>
+    <slot />
+{:else}
+    <div class="top-cover-console" style:block-size={blocksize}>
+        <div class="cover-container" {style}>
+            <Layout.Stack direction="row" alignItems="baseline">
+                <slot name="header" />
+            </Layout.Stack>
+            <slot />
+        </div>
+    </div>
+{/if}
+
+<style lang="scss">
     .top-cover-console {
         container-type: inline-size;
         padding-block-start: var(--base-32);
@@ -27,6 +58,11 @@
         background: var(--bgcolor-neutral-primary, #1d1d21);
         margin-left: -190px;
         padding-left: 190px;
+
+        &.no-padding {
+            margin-left: 0;
+            padding-left: 0;
+        }
     }
     .cover-container {
         position: relative;

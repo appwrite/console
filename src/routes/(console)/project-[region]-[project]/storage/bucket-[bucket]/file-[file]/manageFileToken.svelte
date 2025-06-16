@@ -14,6 +14,7 @@
     import { Link } from '@appwrite.io/pink-svelte';
     import { type Models } from '@appwrite.io/console';
     import { Confirm, ExpirationInput, Modal } from '$lib/components';
+    import { Permissions } from '$lib/components/permissions';
 
     export let show = false;
     export let isDelete = false;

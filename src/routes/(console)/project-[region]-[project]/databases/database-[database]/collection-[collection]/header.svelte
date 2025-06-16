@@ -59,27 +59,25 @@
     });
 </script>
 
-<div style:margin-top={$isTabletViewport ? '48px' : 0}>
-    <Cover>
-        <svelte:fragment slot="header">
-            <CoverTitle
-                href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`}>
-                {$collection?.name}
-            </CoverTitle>
-            {#key $collection?.$id}
-                <Id value={$collection?.$id}>{$collection?.$id}</Id>
-            {/key}
-        </svelte:fragment>
+<Cover>
+    <svelte:fragment slot="header">
+        <CoverTitle
+            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`}>
+            {$collection?.name}
+        </CoverTitle>
+        {#key $collection?.$id}
+            <Id value={$collection?.$id}>{$collection?.$id}</Id>
+        {/key}
+    </svelte:fragment>
 
-        <Tabs>
-            {#each tabs as tab}
-                <Tab
-                    href={tab.href}
-                    selected={isTabSelected(tab, page.url.pathname, path, tabs)}
-                    event={tab.event}>
-                    {tab.title}
-                </Tab>
-            {/each}
-        </Tabs>
-    </Cover>
-</div>
+    <Tabs>
+        {#each tabs as tab}
+            <Tab
+                href={tab.href}
+                selected={isTabSelected(tab, page.url.pathname, path, tabs)}
+                event={tab.event}>
+                {tab.title}
+            </Tab>
+        {/each}
+    </Tabs>
+</Cover>

@@ -5,6 +5,7 @@
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { isStudio } from '$lib/system';
 
     $: projectId = page.params.project;
     $: path = `${base}/project-${page.params.region}-${projectId}/functions`;
@@ -30,7 +31,8 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <Typography.Title color="--fgcolor-neutral-primary" size="xl">Functions</Typography.Title>
+        <Typography.Title color="--fgcolor-neutral-primary" size={isStudio ? 's' : 'xl'}
+            >Functions</Typography.Title>
     </svelte:fragment>
 
     <Tabs>

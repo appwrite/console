@@ -18,6 +18,7 @@
     import { Card, Layout, Empty, Icon } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { consoleProfile, isStudio } from '$lib/system';
 
     export let data;
 </script>
@@ -67,14 +68,18 @@
         <Card.Base padding="none">
             <Empty
                 title="Create your first provider"
-                description="Need a hand? Learn more in our documentation.">
+                description={!consoleProfile.hasAppwriteDocumentation
+                    ? ''
+                    : 'Need a hand? Learn more in our documentation.'}>
                 <slot name="actions" slot="actions">
-                    <Button
-                        external
-                        href="https://appwrite.io/docs/products/messaging/providers"
-                        text
-                        event="empty_documentation"
-                        size="s">Documentation</Button>
+                    {#if consoleProfile.hasAppwriteDocumentation}
+                        <Button
+                            external
+                            href="https://appwrite.io/docs/products/messaging/providers"
+                            text
+                            event="empty_documentation"
+                            size="s">Documentation</Button>
+                    {/if}
                     {#if $canWriteProviders}
                         <CreateProviderDropdown let:toggle>
                             <Button on:click={toggle} event="create_provider" secondary>

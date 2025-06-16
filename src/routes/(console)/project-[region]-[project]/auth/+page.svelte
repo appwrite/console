@@ -27,6 +27,7 @@
     import type { Column } from '$lib/helpers/types';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { View } from '$lib/helpers/load';
+    import { consoleProfile } from '$lib/system';
 
     export let data;
 
@@ -172,6 +173,9 @@
             single
             href="https://appwrite.io/docs/references/cloud/server-nodejs/users"
             target="user"
+            description={consoleProfile.hasChat
+                ? 'Auth handles the accounts of your users.'
+                : 'Need a hand? Learn more in our documentation.'}
             allowCreate={$canWriteUsers}
             on:mousedown={() => showCreateUser.set(true)} />
     {/if}
