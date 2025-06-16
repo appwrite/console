@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { BASE_BILLING_PLANS, BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '$lib/constants';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { type Tier } from '$lib/stores/billing';
     import { currentPlan, organization } from '$lib/stores/organization';

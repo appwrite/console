@@ -5,7 +5,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { plansInfo, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type {AggregationTeam, CreditList, Invoice, Plan } from '$lib/sdk/billing';
+    import type { AggregationTeam, CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';

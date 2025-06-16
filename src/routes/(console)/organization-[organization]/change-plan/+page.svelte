@@ -91,7 +91,7 @@
         if ($currentPlan?.$id === BillingPlan.SCALE) {
             selectedPlan = BillingPlan.SCALE;
         } else {
-            selectedPlan = $currentPlan?.$id as BillingPlan || BillingPlan.FREE;
+            selectedPlan = ($currentPlan?.$id as BillingPlan) || BillingPlan.FREE;
         }
         console.log('Selected plan:', selectedPlan);
     });
