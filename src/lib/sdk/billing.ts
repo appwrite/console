@@ -151,6 +151,70 @@ export type CreditList = {
     total: number;
 };
 
+export type AggregationTeam = {
+    $id: string;
+    /**
+     * Aggregation creation time in ISO 8601 format.
+     */
+    $createdAt: string;
+    /**
+     * Aggregation update date in ISO 8601 format.
+     */
+    $updatedAt: string;
+    /**
+     * Beginning date of the invoice.
+     */
+    from: string;
+    /**
+     * End date of the invoice.
+     */
+    to: string;
+    /**
+     * Total amount of the invoice.
+     */
+    amount: number;
+    additionalMembers: number;
+
+    /**
+     * Price for additional members
+     */
+    additionalMemberAmount: number;
+    /**
+     * Total storage usage.
+     */
+    usageStorage: number;
+    /**
+     * Total active users for the billing period.
+     */
+    usageUsers: number;
+    /**
+     * Total number of executions for the billing period.
+     */
+    usageExecutions: number;
+    /**
+     * Total bandwidth usage for the billing period.
+     */
+    usageBandwidth: number;
+    /**
+     * Total realtime usage for the billing period.
+     */
+    usageRealtime: number;
+    /**
+     * Usage logs for the billing period.
+     */
+    resources: InvoiceUsage[];
+    /**
+     * Aggregation billing plan
+     */
+    plan: string;
+};
+
+export type InvoiceUsage = {
+    resourceId: string;
+    value: number;
+    amount: number;
+};
+
 export type Aggregation = {
     $id: string;
     /**
@@ -492,11 +556,16 @@ export class Billing {
         const path = `/console/plans`;
         const uri = new URL(this.client.config.endpoint + path);
         const params = {
-            queries,
-        }
-        return await this.client.call('get', uri, {
-            'content-type': 'application/json'
-        }, params);
+            queries
+        };
+        return await this.client.call(
+            'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
     }
 
     async getPlan(planId: string): Promise<Plan> {
@@ -823,7 +892,7 @@ export class Billing {
         );
     }
 
-    async getAggregation(organizationId: string, aggregationId: string): Promise<Aggregation> {
+    async getAggregation(organizationId: string, aggregationId: string): Promise<AggregationTeam> {
         const path = `/organizations/${organizationId}/aggregations/${aggregationId}`;
         const params = {
             organizationId,

@@ -5,7 +5,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { plansInfo, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { Aggregation, CreditList, Invoice, Plan } from '$lib/sdk/billing';
+    import type { Aggregation, AggregationTeam, CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -20,13 +20,19 @@
     } from '@appwrite.io/pink-svelte';
     import { IconInfo, IconTag } from '@appwrite.io/pink-icons-svelte';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
+    import { onMount } from 'svelte';
 
     export let currentPlan: Plan;
     export let creditList: CreditList;
     export let currentInvoice: Invoice | undefined = undefined;
-    export let currentAggregation: Aggregation | undefined = undefined;
+    export let currentAggregation: AggregationTeam | undefined = undefined;
 
     let showCancel: boolean = false;
+
+    onMount(() => {
+        console.log(currentAggregation);
+        console.log(currentInvoice);
+    });
 
     const availableCredit = creditList.available;
     const today = new Date();
@@ -64,63 +70,41 @@
                         <Accordion
                             hideDivider
                             title="Add-ons"
-                            badge={(currentAggregation.additionalMembers > 0
-                                ? currentInvoice.usage.length + 1
-                                : currentInvoice.usage.length
-                            ).toString()}>
+                            badge={currentAggregation.resources
+                                .filter((r) => r.amount && r.amount > 0)
+                                .length.toString()}>
                             <svelte:fragment slot="end">
                                 {formatCurrency(extraUsage >= 0 ? extraUsage : 0)}
                             </svelte:fragment>
                             <Layout.Stack gap="xs">
-                                {#if currentAggregation.additionalMembers}
+                                {#each currentAggregation.resources.filter((r) => r.amount && r.amount > 0) as excess, i}
+                                    {#if i > 0}
+                                        <Divider />
+                                    {/if}
+
                                     <Layout.Stack gap="xxxs">
                                         <Layout.Stack
                                             direction="row"
                                             justifyContent="space-between">
-                                            <Typography.Text color="--fgcolor-neutral-primary"
-                                                >Additional members</Typography.Text>
+                                            <Typography.Text color="--fgcolor-neutral-primary">
+                                                {excess.resourceId}
+                                            </Typography.Text>
                                             <Typography.Text>
-                                                {formatCurrency(
-                                                    currentAggregation.additionalMemberAmount
-                                                )}
+                                                {formatCurrency(excess.amount)}
                                             </Typography.Text>
                                         </Layout.Stack>
                                         <Layout.Stack direction="row">
-                                            <Typography.Text
-                                                >{currentAggregation.additionalMembers}</Typography.Text>
+                                            <Tooltip
+                                                placement="bottom"
+                                                disabled={excess.value <= 1000}>
+                                                <svelte:fragment slot="tooltip">
+                                                    {formatNumberWithCommas(excess.value)}
+                                                </svelte:fragment>
+                                                <span>{abbreviateNumber(excess.value)}</span>
+                                            </Tooltip>
                                         </Layout.Stack>
                                     </Layout.Stack>
-                                {/if}
-                                {#if currentInvoice?.usage}
-                                    {#each currentInvoice.usage as excess, i}
-                                        {#if i > 0 || currentAggregation.additionalMembers}
-                                            <Divider />
-                                        {/if}
-
-                                        <Layout.Stack gap="xxxs">
-                                            <Layout.Stack
-                                                direction="row"
-                                                justifyContent="space-between">
-                                                <Typography.Text color="--fgcolor-neutral-primary">
-                                                    {excess.name}
-                                                </Typography.Text>
-                                                <Typography.Text>
-                                                    {formatCurrency(excess.amount)}
-                                                </Typography.Text>
-                                            </Layout.Stack>
-                                            <Layout.Stack direction="row">
-                                                <Tooltip
-                                                    placement="bottom"
-                                                    disabled={excess.value <= 1000}>
-                                                    <svelte:fragment slot="tooltip">
-                                                        {formatNumberWithCommas(excess.value)}
-                                                    </svelte:fragment>
-                                                    <span>{abbreviateNumber(excess.value)}</span>
-                                                </Tooltip>
-                                            </Layout.Stack>
-                                        </Layout.Stack>
-                                    {/each}
-                                {/if}
+                                {/each}
                             </Layout.Stack>
                         </Accordion>
                     {/if}
