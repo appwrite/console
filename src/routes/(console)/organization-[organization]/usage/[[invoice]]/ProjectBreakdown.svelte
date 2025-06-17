@@ -7,6 +7,7 @@
     import { Accordion, Table } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import type { PageData } from './$types';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     type Metric =
         | 'users'
@@ -39,7 +40,7 @@
 
     function getProjectUsageLink(projectId: string): string {
         const region = data.projects[projectId]?.region ?? 'fra';
-        return `${base}/project-${region}-${projectId}/settings/usage`;
+        return getProjectRoute({ region, $id: projectId }, '/settings/usage');
     }
 
     // function getProjectName(projectId: string): string {
