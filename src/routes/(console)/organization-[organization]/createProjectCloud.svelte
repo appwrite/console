@@ -11,6 +11,7 @@
     import { base } from '$app/paths';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { Modal } from '$lib/components';
+    import { currentPlan } from '$lib/stores/organization';
 
     const teamId = page.params.organization;
     export let regions: Array<Models.ConsoleRegion> = [];
@@ -70,6 +71,10 @@
         {regions}>
     </CreateProject>
     <svelte:fragment slot="footer">
-        <Button.Button type="submit" variant="primary" size="s">Create</Button.Button>
+        <Button.Button
+            disabled={projects && projects >= $currentPlan?.projects}
+            type="submit"
+            variant="primary"
+            size="s">Create</Button.Button>
     </svelte:fragment>
 </Modal>
