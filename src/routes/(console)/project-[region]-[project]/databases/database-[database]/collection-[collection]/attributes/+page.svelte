@@ -158,9 +158,8 @@
                                     <span>
                                         with <a
                                             href={getProjectRoute(
-                                            `/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`
-                                        )}
-                                            ><b data-private>{attribute?.key}</b></a>
+                                                `/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`
+                                            )}><b data-private>{attribute?.key}</b></a>
                                     </span>
                                 {/if}
                             </p>

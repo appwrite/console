@@ -221,10 +221,10 @@
                                             e.preventDefault();
                                             e.stopPropagation();
                                             goto(
-                                            getProjectRoute(
-                                                `/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
-                                            )
-                                        );
+                                                getProjectRoute(
+                                                    `/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
+                                                )
+                                            );
                                         }}>
                                         {#each args as arg, i}
                                             {#if arg !== undefined}
