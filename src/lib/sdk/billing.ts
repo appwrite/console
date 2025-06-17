@@ -311,6 +311,7 @@ export type Plan = {
     teams: number;
     projects: number;
     databases: number;
+    databasesAllowEncrypt: boolean;
     buckets: number;
     fileSize: number;
     functions: number;

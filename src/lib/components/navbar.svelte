@@ -211,6 +211,7 @@
             <Popover let:toggle let:showing>
                 <button
                     type="button"
+                    style:cursor="pointer"
                     on:click|preventDefault={(e) => {
                         toggle(e);
                         shouldAnimateThemeToggle = false;
@@ -221,7 +222,7 @@
                     style:user-select="none">
                     <Avatar size="s" src={avatar} />
                 </button>
-                <svelte:fragment slot="tooltip" let:toggle>
+                <svelte:fragment slot="tooltip">
                     <ActionMenu.Root noPadding>
                         <Layout.Stack gap="xxs">
                             <div
@@ -229,12 +230,11 @@
                                 style:padding-inline-end="8px"
                                 style:padding-block="4px">
                                 <Typography.Text variant="m-500">
-                                    {$user.email}
+                                    {$user?.email}
                                 </Typography.Text>
                             </div>
                             <ActionMenu.Item.Anchor
                                 trailingIcon={IconUser}
-                                on:click={toggle}
                                 size="l"
                                 href={`${base}/account`}>
                                 Account</ActionMenu.Item.Anchor>

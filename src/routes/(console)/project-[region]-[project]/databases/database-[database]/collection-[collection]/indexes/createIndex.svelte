@@ -5,7 +5,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, InputSelect, InputText } from '$lib/elements/forms';
+    import { Button, InputNumber, InputSelect, InputText } from '$lib/elements/forms';
     import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -14,6 +14,7 @@
     import { type Attributes, collection, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { flags } from '$lib/flags';
 
     export let showCreateIndex = false;
     export let externalAttribute: Attributes = null;
@@ -36,7 +37,9 @@
             label: attribute.key
         }));
 
-    let attributeList = [{ value: '', order: '' }];
+    let attributeList = [{ value: '', order: '', length: null }];
+
+    const showLengths = flags.showIndexLengths(page.data);
 
     function generateIndexKey() {
         let indexKeys = $indexes.map((index) => index.key);
@@ -51,8 +54,8 @@
 
     function initialize() {
         attributeList = externalAttribute
-            ? [{ value: externalAttribute.key, order: 'ASC' }]
-            : [{ value: '', order: 'ASC' }];
+            ? [{ value: externalAttribute.key, order: 'ASC', length: null }]
+            : [{ value: '', order: 'ASC', length: null }];
         selectedType = IndexType.Key;
         key = `index_${$indexes.length + 1}`;
     }
@@ -78,8 +81,10 @@
                 key,
                 selectedType,
                 attributeList.map((a) => a.value),
-                attributeList.map((a) => a.order)
+                attributeList.map((a) => a.order),
+                attributeList.map((a) => (a.length ? Number(a.length) : null))
             );
+
             await Promise.allSettled([
                 invalidate(Dependencies.COLLECTION),
                 invalidate(Dependencies.DATABASE)
@@ -105,7 +110,7 @@
         if (addAttributeDisabled) return;
 
         // We assign instead of pushing to trigger Svelte's reactivity
-        attributeList = [...attributeList, { value: '', order: '' }];
+        attributeList = [...attributeList, { value: '', order: '', length: null }];
     }
 </script>
 
@@ -134,17 +139,26 @@
                     label={i === 0 ? 'Attribute' : undefined}
                     placeholder="Select Attribute"
                     bind:value={attribute.value} />
+
+                <InputSelect
+                    options={[
+                        { value: 'ASC', label: 'ASC' },
+                        { value: 'DESC', label: 'DESC' }
+                    ]}
+                    required
+                    id={`order-${i}`}
+                    label={i === 0 ? 'Order' : undefined}
+                    bind:value={attribute.order}
+                    placeholder="Select Order" />
+
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
-                    <InputSelect
-                        options={[
-                            { value: 'ASC', label: 'ASC' },
-                            { value: 'DESC', label: 'DESC' }
-                        ]}
-                        required
-                        id={`order-${i}`}
-                        label={i === 0 ? 'Order' : undefined}
-                        bind:value={attribute.order}
-                        placeholder="Select Order" />
+                    {#if selectedType === IndexType.Key && showLengths}
+                        <InputNumber
+                            id={`length-${i}`}
+                            label={i === 0 ? 'Length' : undefined}
+                            placeholder="Enter Length"
+                            bind:value={attribute.length} />
+                    {/if}
                     <Button
                         icon
                         compact
