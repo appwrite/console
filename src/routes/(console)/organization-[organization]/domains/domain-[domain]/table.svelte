@@ -1,3 +1,12 @@
+<script lang="ts" context="module">
+    import type { RecordType } from '$lib/stores/domains';
+
+    export function showPriority(record: Models.DnsRecord | RecordType): boolean {
+        const type = typeof record === 'string' ? record : record.type;
+        return type.toLowerCase() === 'mx' || type.toLowerCase() === 'srv';
+    }
+</script>
+
 <script lang="ts">
     import { PaginationWithLimit } from '$lib/components';
     import {
@@ -29,6 +38,14 @@
     let showEdit = false;
     let showDelete = false;
     let selectedRecord: Models.DnsRecord = null;
+
+    function formatName(name: string, limit: number = 30) {
+        return {
+            value: name ? (name.length > limit ? `${name.slice(0, limit)}...` : name) : '-',
+            truncated: name ? name.length > limit : undefined,
+            whole: name ?? '-'
+        };
+    }
 </script>
 
 <Layout.Stack>
@@ -47,9 +64,16 @@
                 {#each $columns as column}
                     <Table.Cell column={column.id} {root}>
                         {#if column.id === 'name'}
-                            <Typography.Code>
-                                {record.name}
-                            </Typography.Code>
+                            {@const formatted = formatName(record.name)}
+                            <Tooltip placement="bottom" disabled={!formatted.truncated}>
+                                <Typography.Text truncate>{formatted.value}</Typography.Text>
+                                <span
+                                    slot="tooltip"
+                                    style:white-space="pre-wrap"
+                                    style:word-break="break-all">
+                                    {formatted.whole}
+                                </span>
+                            </Tooltip>
                         {:else if column.id === 'type'}
                             <Typography.Text>
                                 {record.type}
@@ -70,11 +94,26 @@
                             </Typography.Text>
                         {:else if column.id === 'priority'}
                             <Typography.Text>
-                                {record?.priority ?? '-'}
+                                {showPriority(record) ? (record?.priority ?? '0') : '-'}
                             </Typography.Text>
                         {:else if column.id === 'comment'}
                             <Typography.Text truncate>
-                                {record?.comment ?? '-'}
+                                {@const formatted = formatName(record?.comment)}
+                                <Tooltip
+                                    placement="bottom"
+                                    maxWidth="fit-content"
+                                    disabled={!formatted.truncated}>
+                                    <Typography.Text truncate>{formatted.value}</Typography.Text>
+                                    <span
+                                        slot="tooltip"
+                                        let:showing
+                                        style:white-space="pre-wrap"
+                                        style:word-break="break-all">
+                                        {#if showing}
+                                            {formatted.whole}
+                                        {/if}
+                                    </span>
+                                </Tooltip>
                             </Typography.Text>
                         {:else if column.id === '$createdAt'}
                             <DualTimeView time={record.$createdAt} />
@@ -82,7 +121,7 @@
                     </Table.Cell>
                 {/each}
                 <Table.Cell column="actions" {root}>
-                    <Layout.Stack direction="row" justifyContent="flex-end">
+                    <Layout.Stack direction="row" justifyContent="center">
                         {#if record.lock}
                             <Tooltip>
                                 <Icon icon={IconLockClosed} size="s" />

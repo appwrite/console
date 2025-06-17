@@ -2,7 +2,7 @@
     import { beforeNavigate } from '$app/navigation';
     import { Navbar, Sidebar } from '$lib/components';
     import type { NavbarProject } from '$lib/components/navbar.svelte';
-    import { wizard } from '$lib/stores/wizard';
+    import { isNewWizardStatusOpen, wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
     import { setContext } from 'svelte';
     import { writable } from 'svelte/store';
@@ -112,6 +112,9 @@
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = $isSidebarOpen ? 'open' : 'closed';
 
+    let isProjectPage;
+    $: isProjectPage = $page.route?.id?.includes('project-');
+
     function handleResize() {
         $isSidebarOpen = false;
         showAccountMenu = false;
@@ -131,7 +134,7 @@
 
 <svelte:window on:resize={handleResize} />
 <svelte:body use:style={$bodyStyle} />
-{#if $activeHeaderAlert?.show}
+{#if $activeHeaderAlert?.show && !$isNewWizardStatusOpen}
     <svelte:component this={$activeHeaderAlert.component} />
 {/if}
 <main
@@ -156,7 +159,7 @@
     <div
         class="content"
         class:has-transition={showContentTransition}
-        class:icons-content={state === 'icons'}
+        class:icons-content={state === 'icons' && isProjectPage}
         class:no-sidebar={!showSideNavigation}>
         <section class="main-content" data-test={showSideNavigation}>
             {#if $page.data?.header}
@@ -169,14 +172,14 @@
         </section>
     </div>
 
-    <button
-        type="button"
-        class="overlay-button"
-        aria-label="Close sidebar"
-        class:overlay={$isSidebarOpen}
-        on:click={() => {
-            $isSidebarOpen = false;
-        }}></button>
+    {#if $isSidebarOpen}
+        <button
+            type="button"
+            class="overlay-button"
+            aria-label="Close sidebar"
+            class:overlay={$isSidebarOpen}
+            on:click={() => ($isSidebarOpen = false)}></button>
+    {/if}
 </main>
 
 <style lang="scss">

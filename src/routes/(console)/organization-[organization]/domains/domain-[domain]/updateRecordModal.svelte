@@ -13,12 +13,14 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { symmetricDifference } from '$lib/helpers/array';
     import { deepClone } from '$lib/helpers/object';
-    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
     import { recordTypes } from './store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
+    import type { RecordType } from '$lib/stores/domains';
+    import { updateRecord } from '$lib/helpers/domains';
+    import { showPriority } from './table.svelte';
 
     export let show = false;
     export let selectedRecord: Models.DnsRecord;
@@ -26,114 +28,23 @@
     let record = deepClone(selectedRecord);
     let error = '';
 
+    const placeholders: Record<RecordType, string> = {
+        A: '76.75.21.21',
+        AAAA: '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
+        CNAME: 'stage.example.com',
+        MX: 'mail.example.com',
+        TXT: 'v=spf1 include:_spf.example.com ~all',
+        NS: 'ns1.example.com',
+        SRV: '10 5 8080 example.com',
+        CAA: '0 issue "letsencrypt.org"',
+        HTTPS: 'https://example.com',
+        ALIAS: 'www.example.com'
+    };
+    $: placeholder = placeholders[record.type] ?? 'Enter value';
+
     async function handleSubmit() {
         try {
-            switch (record.type) {
-                case 'A':
-                    await sdk.forConsole.domains.updateRecordA(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-                case 'AAAA':
-                    await sdk.forConsole.domains.updateRecordAAAA(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-                case 'CNAME':
-                    await sdk.forConsole.domains.updateRecordCNAME(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-                case 'MX':
-                    await sdk.forConsole.domains.updateRecordMX(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.priority,
-                        record.comment
-                    );
-
-                    break;
-                case 'TXT':
-                    await sdk.forConsole.domains.updateRecordTXT(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-                case 'NS':
-                    await sdk.forConsole.domains.updateRecordNS(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-
-                case 'CAA':
-                    await sdk.forConsole.domains.updateRecordCAA(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-                case 'HTTPS':
-                    await sdk.forConsole.domains.updateRecordHTTPS(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-                case 'ALIAS':
-                    await sdk.forConsole.domains.updateRecordAlias(
-                        page.params.domain,
-                        record.$id,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.comment
-                    );
-
-                    break;
-
-                default:
-                    break;
-            }
+            await updateRecord(record, page.params.domain);
             show = false;
             invalidate(Dependencies.DOMAINS);
             addNotification({
@@ -173,7 +84,7 @@
             </Input.Helper>
         </Layout.Stack>
 
-        <InputText id="value" label="Value" placeholder="76.75.21.21" bind:value={record.value}>
+        <InputText id="value" label="Value" {placeholder} bind:value={record.value}>
             <Tooltip slot="info">
                 <Icon icon={IconInfo} size="s" />
                 <span slot="tooltip">
@@ -191,19 +102,21 @@
                     </span>
                 </Tooltip>
             </InputNumber>
-            <InputNumber
-                id="priority"
-                label="Priority"
-                placeholder="Enter number"
-                bind:value={record.priority}>
-                <Tooltip slot="info">
-                    <Icon icon={IconInfo} size="s" />
-                    <span slot="tooltip">
-                        Sets the priority for this DNS record. Lower numbers indicate higher
-                        priority (e.g., 10 is higher than 20).
-                    </span>
-                </Tooltip>
-            </InputNumber>
+            {#if showPriority(record)}
+                <InputNumber
+                    id="priority"
+                    label="Priority"
+                    placeholder="Enter number"
+                    bind:value={record.priority}>
+                    <Tooltip slot="info">
+                        <Icon icon={IconInfo} size="s" />
+                        <span slot="tooltip">
+                            Sets the priority for this DNS record. Lower numbers indicate higher
+                            priority (e.g., 10 is higher than 20).
+                        </span>
+                    </Tooltip>
+                </InputNumber>
+            {/if}
         </Layout.Stack>
 
         <InputTextarea

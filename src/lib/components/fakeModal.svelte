@@ -30,7 +30,7 @@
         }
     }
 
-    function closeModal() {
+    export function closeModal() {
         document.documentElement.classList.remove('u-overflow-hidden');
         show = false;
     }

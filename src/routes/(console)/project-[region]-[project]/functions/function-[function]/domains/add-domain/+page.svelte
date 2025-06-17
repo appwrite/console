@@ -8,10 +8,9 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
-    import { protocol } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
-    import { Runtime, StatusCode, type Models } from '@appwrite.io/console';
+    import { type Models, ProxyResourceType, Runtime, StatusCode } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
@@ -49,18 +48,21 @@
 
     async function addDomain() {
         const apexDomain = getApexDomain(domainName);
-        let domain = data.domains?.domains.find((d) => d.domain === apexDomain);
+        let domain = data.domains?.domains.find((d: Models.Domain) => d.domain === apexDomain);
 
         if (apexDomain && !domain && isCloud) {
             try {
                 domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
             } catch (error) {
-                addNotification({
-                    type: 'error',
-                    message: error.message
-                });
-
-                return;
+                // apex might already be added on organization level, skip.
+                const alreadyAdded = error?.type === 'domain_already_exists';
+                if (!alreadyAdded) {
+                    addNotification({
+                        type: 'error',
+                        message: error.message
+                    });
+                    return;
+                }
             }
         }
 
@@ -73,7 +75,13 @@
             } else if (behaviour === 'REDIRECT') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(domainName, $protocol + redirect, statusCode);
+                    .proxy.createRedirectRule(
+                        domainName,
+                        redirect,
+                        statusCode,
+                        page.params.function,
+                        ProxyResourceType.Function
+                    );
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
@@ -83,7 +91,9 @@
                 await goto(routeBase);
                 await invalidate(Dependencies.FUNCTION_DOMAINS);
             } else {
-                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
+                await goto(
+                    `${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}&domain=${domain.$id}`
+                );
                 await invalidate(Dependencies.FUNCTION_DOMAINS);
             }
         } catch (error) {

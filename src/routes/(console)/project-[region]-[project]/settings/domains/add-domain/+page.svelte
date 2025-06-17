@@ -12,6 +12,7 @@
     import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { getApexDomain } from '$lib/helpers/tlds';
     import { getProjectRoute } from '$lib/helpers/project';
+    import type { Models } from '@appwrite.io/console';
 
     const routeBase = getProjectRoute('/settings/domains');
 
@@ -29,18 +30,21 @@
 
     async function addDomain() {
         const apexDomain = getApexDomain(domainName);
-        let domain = data.domains?.domains.find((d) => d.domain === apexDomain);
+        let domain = data.domains?.domains.find((d: Models.Domain) => d.domain === apexDomain);
 
         if (apexDomain && !domain && isCloud) {
             try {
                 domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
             } catch (error) {
-                addNotification({
-                    type: 'error',
-                    message: error.message
-                });
-
-                return;
+                // apex might already be added on organization level, skip.
+                const alreadyAdded = error?.type === 'domain_already_exists';
+                if (!alreadyAdded) {
+                    addNotification({
+                        type: 'error',
+                        message: error.message
+                    });
+                    return;
+                }
             }
         }
 
@@ -52,7 +56,9 @@
                 await goto(routeBase);
                 await invalidate(Dependencies.DOMAINS);
             } else {
-                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
+                await goto(
+                    `${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}&domain=${domain.$id}`
+                );
                 await invalidate(Dependencies.DOMAINS);
             }
         } catch (error) {

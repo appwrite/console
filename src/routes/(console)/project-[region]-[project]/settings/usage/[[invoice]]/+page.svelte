@@ -33,8 +33,14 @@
     $: dbWrites = data.usage.databasesWrites;
 
     $: legendData = [
-        { name: 'Reads', value: data.usage.databasesReadsTotal },
-        { name: 'Writes', value: data.usage.databasesWritesTotal }
+        {
+            name: 'Reads',
+            value: data.usage.databasesReads.reduce((sum, item) => sum + item.value, 0)
+        },
+        {
+            name: 'Writes',
+            value: data.usage.databasesWrites.reduce((sum, item) => sum + item.value, 0)
+        }
     ];
 
     const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;

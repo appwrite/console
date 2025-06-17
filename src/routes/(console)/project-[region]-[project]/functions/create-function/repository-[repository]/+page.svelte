@@ -9,10 +9,9 @@
     import { installation, repository } from '$lib/stores/vcs';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
-    import { ID, Runtime, VCSDeploymentType } from '@appwrite.io/console';
+    import { ID, Runtime, VCSDeploymentType, VCSDetectionType } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { consoleVariables } from '$routes/(console)/store';
     import Details from '../(components)/details.svelte';
     import ProductionBranchFieldset from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
@@ -21,6 +20,7 @@
     import { Dependencies } from '$lib/constants';
     import RepoCard from './repoCard.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
@@ -57,11 +57,39 @@
     let silentMode = false;
     let specification = specificationOptions[0].value;
 
+    let detectingRuntime = true;
+
     onMount(async () => {
         installation.set(data.installation);
         repository.set(data.repository);
         name = data.repository.name;
+
+        await detectRuntime();
     });
+
+    async function detectRuntime() {
+        try {
+            detectingRuntime = true;
+
+            const detections = (await sdk
+                .forProject(page.params.regionn, page.params.project)
+                .vcs.createRepositoryDetection(
+                    data.installation.$id,
+                    page.params.repository,
+                    VCSDetectionType.Runtime
+                )) as unknown as Models.DetectionRuntime; /* SDK return type is wrong atm */
+
+            entrypoint = detections.entrypoint;
+            buildCommand = detections.commands;
+            runtime = detections.runtime as Runtime;
+
+            trackEvent(Submit.FrameworkDetect, { runtime, source: 'repository' });
+        } catch (error) {
+            trackError(error, Submit.FrameworkDetect);
+        } finally {
+            detectingRuntime = false;
+        }
+    }
 
     async function create() {
         try {
@@ -92,7 +120,7 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.createFunctionRule(
-                    `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
+                    `${ID.unique()}.${$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS}`,
                     func.$id
                 );
 
@@ -148,7 +176,8 @@
                 bind:specification
                 {specificationOptions}
                 options={runtimeOptions}
-                showEntrypoint />
+                showEntrypoint
+                loading={detectingRuntime} />
 
             <ProductionBranchFieldset
                 bind:branch
@@ -167,7 +196,8 @@
             runtimes={data.runtimesList}
             repositoryName={data.repository.name}
             {branch}
-            {rootDir} />
+            {rootDir}
+            loading={detectingRuntime} />
     </svelte:fragment>
 
     <svelte:fragment slot="footer">

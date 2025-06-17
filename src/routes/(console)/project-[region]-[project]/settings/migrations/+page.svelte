@@ -245,7 +245,7 @@
             Export data from your project to a self-hosted instance.
             <Link.Anchor
                 class="link"
-                href="https://appwrite.io/docs/advanced/migrations/self-hosted"
+                href="https://appwrite.io/docs/advanced/migrations/cloud"
                 target="_blank"
                 rel="noopener noreferrer">
                 Learn more</Link.Anchor>

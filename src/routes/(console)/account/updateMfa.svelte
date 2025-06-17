@@ -13,7 +13,6 @@
     import MfaRecoveryCodes from './mfaRecoveryCodes.svelte';
     import type { Models } from '@appwrite.io/console';
     import MfaRegenerateCodes from './mfaRegenerateCodes.svelte';
-    import { Pill } from '$lib/elements';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
     import { Badge, Divider, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
@@ -160,11 +159,11 @@
                                 <span class="icon-device-mobile" aria-hidden="true"></span>
                             </div>
                             <Layout.Stack gap="xxxs">
-                                <Layout.Stack gap="s">
+                                <Layout.Stack gap="s" direction="row">
                                     <Typography.Text variant="m-600"
                                         >Authenticator app</Typography.Text>
                                     {#if $factors.totp}
-                                        <Pill>connected</Pill>
+                                        <Badge variant="secondary" content="connected" size="s" />
                                     {/if}
                                 </Layout.Stack>
                                 <Typography.Text variant="m-400">

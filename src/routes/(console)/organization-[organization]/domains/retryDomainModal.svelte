@@ -23,7 +23,7 @@
         try {
             const domain = await sdk.forConsole.domains.updateNameservers(selectedDomain.$id);
             show = false;
-            if (domain.nameservers === 'Appwrite') {
+            if (domain.nameservers.toLowerCase() === 'appwrite') {
                 addNotification({
                     type: 'success',
                     message: `${selectedDomain.domain} has been verified`
@@ -31,13 +31,14 @@
             } else {
                 addNotification({
                     type: 'error',
-                    message: `Domain verification failed. Please check your domain settings or try again later`
+                    message:
+                        'Domain verification failed. Please check your domain settings or try again later'
                 });
             }
             await invalidate(Dependencies.DOMAINS);
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
-            error = e;
+            error = e.message;
             trackError(e, Submit.DomainUpdateVerification);
         }
     }

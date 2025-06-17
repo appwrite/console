@@ -32,22 +32,18 @@
             await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
             await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
 
-            if ($redirectTo) {
-                window.location.href = $redirectTo;
-                return;
-            }
-
-            await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
+
             if (data?.couponData?.code) {
                 await goto(`${base}/apply-credit?code=${data?.couponData?.code}`);
                 return;
-            }
-            if (data?.campaign) {
+            } else if (data?.campaign?.$id) {
                 await goto(`${base}/apply-credit?campaign=${data.campaign.$id}`);
                 return;
-            }
-            if (page.url.searchParams) {
+            } else if ($redirectTo) {
+                window.location.href = $redirectTo;
+                return;
+            } else if (page.url.searchParams) {
                 const redirect = page.url.searchParams.get('redirect');
                 page.url.searchParams.delete('redirect');
                 if (redirect) {
@@ -60,6 +56,8 @@
             } else {
                 await goto(base);
             }
+
+            await invalidate(Dependencies.ACCOUNT);
         } catch (error) {
             disabled = false;
             addNotification({
@@ -109,7 +107,7 @@
                     helper="Password must be at least 8 characters long"
                     required
                     bind:value={pass} />
-                <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
+                <InputChoice required bind:value={terms} id="terms" label="terms" showLabel={false}>
                     By registering, you agree that you have read, understand, and acknowledge our <Link.Anchor
                         href="https://appwrite.io/privacy"
                         target="_blank"
@@ -121,10 +119,16 @@
                         target="_blank"
                         rel="noopener noreferrer">General Terms of Use</Link.Anchor
                     >.</InputChoice>
-                <Button fullWidth submit {disabled}>Sign up</Button>
+
+                <Button fullWidth submit disabled={disabled || !terms}>Sign up</Button>
+
                 {#if isCloud}
                     <span class="with-separators eyebrow-heading-3">or</span>
-                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                    <Button
+                        secondary
+                        fullWidth
+                        on:click={onGithubLogin}
+                        disabled={disabled || !terms}>
                         <span class="icon-github" aria-hidden="true"></span>
                         <span class="text">Sign up with GitHub</span>
                     </Button>

@@ -5,6 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { repositories } from '$routes/(console)/project-[region]-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '$lib/stores/vcs';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import {
         Layout,
         Table,
@@ -22,7 +23,7 @@
     import { page } from '$app/state';
     import Card from '../card.svelte';
     import SkeletonRepoList from './skeletonRepoList.svelte';
-    import { untrack } from 'svelte';
+    import { onMount, untrack } from 'svelte';
 
     let {
         action = $bindable('select'),
@@ -45,27 +46,36 @@
     let search = $state('');
     let selectedInstallation = $state(null);
     let isLoadingRepositories = $state(null);
+    let installationsMap = $state(null);
+
+    onMount(() => {
+        loadInstallations();
+    });
 
     async function loadInstallations() {
         if (installationList) {
             if (installationList.installations.length) {
-                untrack(() => (selectedInstallation = installationList.installations[0].$id));
+                if (!selectedInstallation) {
+                    untrack(() => (selectedInstallation = installationList.installations[0].$id));
+                }
                 installation.set(
                     installationList.installations.find(
                         (entry) => entry.$id === selectedInstallation
                     )
                 );
             }
-            return installationList.installations;
+            installationsMap = installationList.installations;
         } else {
             const { installations } = await sdk
                 .forProject(page.params.region, page.params.project)
                 .vcs.listInstallations();
             if (installations.length) {
-                untrack(() => (selectedInstallation = installations[0].$id));
+                if (!selectedInstallation) {
+                    untrack(() => (selectedInstallation = installationList.installations[0].$id));
+                }
                 installation.set(installations.find((entry) => entry.$id === selectedInstallation));
             }
-            return installations;
+            installationsMap = installations;
         }
     }
 
@@ -118,7 +128,7 @@
 {#if hasInstallations}
     <Layout.Stack>
         <Layout.Stack gap="s">
-            {#await loadInstallations()}
+            {#if !installationsMap}
                 <Layout.Stack direction="row">
                     <InputSelect
                         disabled
@@ -132,12 +142,12 @@
                         value={null} />
                     <InputSearch placeholder="Search repositories" disabled />
                 </Layout.Stack>
-            {:then installations}
-                <Layout.Stack direction="row">
+            {:else}
+                <Layout.Stack direction={$isSmallViewport ? 'column' : 'row'}>
                     <InputSelect
                         id="installation"
                         options={[
-                            ...installations.map((entry) => {
+                            ...installationsMap.map((entry) => {
                                 return {
                                     label: entry.organization,
                                     value: entry.$id
@@ -155,7 +165,7 @@
                             }
                             search = '';
                             installation.set(
-                                installations.find((entry) => entry.$id === selectedInstallation)
+                                installationsMap.find((entry) => entry.$id === selectedInstallation)
                             );
 
                             isLoadingRepositories = true;
@@ -169,7 +179,7 @@
                         bind:value={search}
                         disabled={!search && !$repositories?.repositories?.length} />
                 </Layout.Stack>
-            {/await}
+            {/if}
         </Layout.Stack>
         {#if selectedInstallation}
             <!-- manual installation change -->
@@ -233,39 +243,43 @@
                                                     <Layout.Stack
                                                         gap="s"
                                                         direction="row"
-                                                        alignItems="center">
-                                                        <Typography.Text
-                                                            truncate
-                                                            color="--fgcolor-neutral-secondary">
-                                                            {repo.name}
-                                                        </Typography.Text>
-                                                        {#if repo.private}
-                                                            <Icon
-                                                                size="s"
-                                                                icon={IconLockClosed}
-                                                                color="--fgcolor-neutral-tertiary" />
-                                                        {/if}
-                                                        <time datetime={repo.pushedAt}>
-                                                            <Typography.Caption
-                                                                variant="400"
-                                                                truncate
-                                                                color="--fgcolor-neutral-tertiary">
-                                                                {timeFromNow(repo.pushedAt)}
-                                                            </Typography.Caption>
-                                                        </time>
-                                                    </Layout.Stack>
-                                                    {#if action === 'button'}
+                                                        alignItems="center"
+                                                        justifyContent="space-between">
                                                         <Layout.Stack
                                                             direction="row"
-                                                            justifyContent="flex-end">
+                                                            gap="s"
+                                                            alignItems="center">
+                                                            <Typography.Text
+                                                                truncate
+                                                                color="--fgcolor-neutral-secondary">
+                                                                {repo.name}
+                                                            </Typography.Text>
+                                                            {#if repo.private}
+                                                                <Icon
+                                                                    size="s"
+                                                                    icon={IconLockClosed}
+                                                                    color="--fgcolor-neutral-tertiary" />
+                                                            {/if}
+                                                            {#if !$isSmallViewport}
+                                                                <time datetime={repo.pushedAt}>
+                                                                    <Typography.Caption
+                                                                        variant="400"
+                                                                        truncate
+                                                                        color="--fgcolor-neutral-tertiary">
+                                                                        {timeFromNow(repo.pushedAt)}
+                                                                    </Typography.Caption>
+                                                                </time>
+                                                            {/if}
+                                                        </Layout.Stack>
+                                                        {#if action === 'button'}
                                                             <PinkButton.Button
                                                                 size="xs"
                                                                 variant="secondary"
                                                                 on:click={() => connect(repo)}>
                                                                 Connect
                                                             </PinkButton.Button>
-                                                        </Layout.Stack>
-                                                    {/if}
+                                                        {/if}
+                                                    </Layout.Stack>
                                                 </Layout.Stack>
                                             </Table.Cell>
                                         </Table.Row.Base>

@@ -20,7 +20,6 @@
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
     const documentId = page.params.document;
-    const editing = true;
 
     function initWork() {
         const prohibitedKeys = [
@@ -124,7 +123,7 @@
                 <svelte:fragment slot="title">{label}</svelte:fragment>
 
                 <svelte:fragment slot="aside">
-                    <AttributeItem {attribute} bind:formValues={$work} {label} {editing} />
+                    <AttributeItem {attribute} bind:formValues={$work} {label} editing />
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">

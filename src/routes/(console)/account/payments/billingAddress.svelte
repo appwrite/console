@@ -28,7 +28,6 @@
         Tag,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import { page } from '$app/state';
 
     let show = false;
     let showEdit = false;
@@ -38,9 +37,7 @@
     let countryList: Models.CountryList;
 
     onMount(async () => {
-        countryList = await sdk
-            .forProject(page.params.region, page.params.project)
-            .locale.listCountries();
+        countryList = await sdk.forConsole.locale.listCountries();
     });
 
     $: orgList = $organizationList.teams as unknown as Organization[];

@@ -32,12 +32,12 @@
         Repositories,
         RepositoryBehaviour
     } from '$lib/components/git';
-    import { app, iconPath } from '$lib/stores/app';
-    import { consoleVariables } from '$routes/(console)/store';
-    import { connectGitHub } from '$lib/stores/git';
     import Domain from '../../domain.svelte';
+    import { app, iconPath } from '$lib/stores/app';
+    import { connectGitHub } from '$lib/stores/git';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { getProjectRoute } from '$lib/helpers/project';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let data;
 
@@ -138,7 +138,7 @@
                 await sdk
                     .forProject(page.params.region, page.params.project)
                     .proxy.createSiteRule(
-                        `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
+                        `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
                         site.$id
                     );
 

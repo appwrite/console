@@ -16,8 +16,8 @@
 
     let deployment = $state(data.deployment);
 
-    onMount(async () => {
-        sdk.forConsole.client.subscribe(
+    onMount(() => {
+        return sdk.forConsole.client.subscribe(
             'console',
             async (response: RealtimeResponseEvent<Models.Deployment>) => {
                 if (

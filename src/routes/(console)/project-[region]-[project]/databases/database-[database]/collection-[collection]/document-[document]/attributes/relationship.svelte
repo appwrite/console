@@ -1,24 +1,22 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { PaginationInline } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { Button, InputSelect } from '$lib/elements/forms';
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { doc } from '../store';
     import { isRelationshipToMany } from './store';
+    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
 
     export let id: string;
     export let label: string;
 
+    export let editing = false;
     export let value: string | string[];
     export let attribute: Models.AttributeRelationship;
     export let optionalText: string | undefined = undefined;
-    export let editing = false;
 
     const databaseId = page.params.database;
 
@@ -28,6 +26,7 @@
     let relatedList: string[] = [];
     let singleRel: string;
     let showInput = false;
+    let newItemValue: string = '';
     let limit = 10;
     let offset = 0;
 
@@ -39,6 +38,7 @@
                 singleRel = value as string;
             }
         }
+
         documentList = await getDocuments();
 
         if (editing && $doc?.[attribute.key]) {
@@ -59,20 +59,48 @@
     });
 
     async function getDocuments(search: string = null) {
-        if (search) {
-            const documents = await sdk
-                .forProject(page.params.region, page.params.project)
-                .databases.listDocuments(databaseId, attribute.relatedCollection, [
-                    Query.startsWith('$id', search),
-                    Query.orderDesc('')
-                ]);
-            return documents;
+        const queries = search ? [Query.startsWith('$id', search), Query.orderDesc('')] : [];
+        return await sdk
+            .forProject(page.params.region, page.params.project)
+            .databases.listDocuments(databaseId, attribute.relatedCollection, queries);
+    }
+
+    function getAvailableOptions(excludeIndex?: number) {
+        return options?.filter((option) => {
+            const otherItems =
+                excludeIndex !== undefined
+                    ? relatedList.filter((_, idx) => idx !== excludeIndex)
+                    : relatedList;
+            return !otherItems.includes(option.value);
+        });
+    }
+
+    function updateRelatedList() {
+        relatedList = relatedList;
+        value = relatedList;
+    }
+
+    function removeItem(index: number) {
+        if (relatedList.length === 1) {
+            relatedList[index] = '';
         } else {
-            const documents = await sdk
-                .forProject(page.params.region, page.params.project)
-                .databases.listDocuments(databaseId, attribute.relatedCollection);
-            return documents;
+            relatedList.splice(index, 1);
         }
+        updateRelatedList();
+    }
+
+    function addNewItem() {
+        if (newItemValue) {
+            relatedList = [...relatedList, newItemValue];
+            value = relatedList;
+            newItemValue = '';
+            showInput = false;
+        }
+    }
+
+    function cancelAddItem() {
+        newItemValue = '';
+        showInput = false;
     }
 
     //Reactive statements
@@ -84,106 +112,140 @@
               .reverse()
               .slice(offset, offset + limit)
         : [];
-    $: total = relatedList?.length ?? 0;
+
+    $: totalCount = relatedList?.length ?? 0;
+
     $: options =
         documentList?.documents?.map((n) => {
             const data = displayNames.filter((name) => name !== '$id').map((name) => n?.[name]);
-            return {
-                value: n.$id,
-                label: n.$id,
-                data
-            };
+            return { value: n.$id, label: n.$id, data };
         }) ?? [];
+
+    $: hasItems = totalCount > 0;
+    $: showTopAddButton = !editing && totalCount === 0 && !showInput;
+    $: showBottomAddButton =
+        (!editing && hasItems && !showInput) ||
+        (editing && hasItems && relatedList.every((item) => item) && !showInput);
+    $: showEmptyInput = editing && totalCount === 0 && !showInput;
 </script>
 
 {#if isRelationshipToMany(attribute)}
-    <div class="u-width-full-line">
-        <Layout.Stack direction="row" alignContent="space-between">
-            <Layout.Stack gap="xxs" direction="row" alignItems="center">
-                <Typography.Text variant="m-500">{label}</Typography.Text>
-                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                    {optionalText}
-                </Typography.Text>
+    <Layout.Stack gap="xxl">
+        <Layout.Stack gap="m">
+            <Layout.Stack direction="row" alignContent="space-between">
+                <Layout.Stack gap="xxs" direction="row" alignItems="center">
+                    <Typography.Text variant="m-500">{label}</Typography.Text>
+                    <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                        {optionalText}
+                    </Typography.Text>
+                </Layout.Stack>
+
+                {#if showTopAddButton}
+                    <Button secondary on:click={() => (showInput = true)}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add item
+                    </Button>
+                {/if}
             </Layout.Stack>
-            {#if editing || total === 0}
-                <Button
-                    secondary
-                    on:click={() => {
-                        showInput = true;
-                    }}>
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Add item
-                </Button>
+
+            <Layout.Stack gap="m">
+                <!-- Empty input for editing mode when no items exist -->
+                {#if showEmptyInput}
+                    <Layout.Stack direction="row">
+                        <InputSelect
+                            {id}
+                            required
+                            {options}
+                            bind:value={relatedList[0]}
+                            placeholder={`Select ${attribute.key}`}
+                            on:change={() => {
+                                if (!relatedList[0]) relatedList = [''];
+                                updateRelatedList();
+                            }} />
+                    </Layout.Stack>
+                {/if}
+
+                <!-- Existing items in editing mode -->
+                {#if editing && hasItems}
+                    {#each paginatedItems as _, paginatedIndex}
+                        {@const actualIndex = offset + paginatedIndex}
+                        <Layout.Stack direction="row">
+                            <InputSelect
+                                {id}
+                                required
+                                options={getAvailableOptions(actualIndex)}
+                                bind:value={relatedList[actualIndex]}
+                                placeholder={`Select ${attribute.key}`}
+                                on:change={updateRelatedList} />
+                            {#if relatedList[actualIndex]}
+                                <div style:padding-block-start="0.5rem">
+                                    <Button
+                                        icon
+                                        extraCompact
+                                        on:click={() => removeItem(actualIndex)}>
+                                        <Icon icon={IconX} size="s" />
+                                    </Button>
+                                </div>
+                            {/if}
+                        </Layout.Stack>
+                    {/each}
+                {/if}
+
+                <!-- Existing items in creation mode -->
+                {#if !editing && hasItems}
+                    {#each relatedList as item, i}
+                        <Layout.Stack direction="row">
+                            <InputSelect
+                                {id}
+                                required
+                                options={getAvailableOptions(i)}
+                                bind:value={item}
+                                on:change={updateRelatedList} />
+                            <div style:padding-block-start="0.5rem">
+                                <Button
+                                    icon
+                                    extraCompact
+                                    ariaLabel={`Delete item ${i}`}
+                                    on:click={() => {
+                                        relatedList.splice(i, 1);
+                                        updateRelatedList();
+                                    }}>
+                                    <Icon icon={IconX} size="s" />
+                                </Button>
+                            </div>
+                        </Layout.Stack>
+                    {/each}
+                {/if}
+
+                <!-- Input for adding new items -->
+                {#if showInput}
+                    <Layout.Stack direction="row">
+                        <InputSelect
+                            {id}
+                            required
+                            placeholder={`Select ${attribute.key}`}
+                            bind:value={newItemValue}
+                            options={getAvailableOptions()}
+                            on:change={addNewItem} />
+                        <div style:padding-block-start="0.5rem">
+                            <Button icon extraCompact on:click={cancelAddItem}>
+                                <Icon icon={IconX} size="s" />
+                            </Button>
+                        </div>
+                    </Layout.Stack>
+                {/if}
+            </Layout.Stack>
+
+            {#if showBottomAddButton}
+                <Layout.Stack direction="row" alignContent="flex-start">
+                    <Button extraCompact on:click={() => (showInput = true)}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add item
+                    </Button>
+                </Layout.Stack>
             {/if}
         </Layout.Stack>
-        <ul class="u-flex-vertical u-gap-4 u-margin-block-start-4">
-            {#if !editing && relatedList?.length}
-                {#each relatedList as item, i}
-                    <InputSelect {id} required bind:value={item} {options} />
-                    <Button
-                        extraCompact
-                        ariaLabel={`Delete item ${i}`}
-                        on:click={() => {
-                            relatedList.splice(i, 1);
-                            relatedList = relatedList;
-                            value = relatedList;
-                        }}>
-                        <span class="icon-x" aria-hidden="true"></span>
-                    </Button>
-                {/each}
-            {/if}
-
-            {#if showInput}
-                <InputSelect
-                    {id}
-                    label="Rel"
-                    required
-                    placeholder={`Select ${attribute.key}`}
-                    bind:value={relatedList[total]}
-                    options={options?.filter((n) => !relatedList.includes(n.value))}
-                    on:change={() => {
-                        value = relatedList;
-                        showInput = false;
-                    }} />
-                <Button extraCompact ariaLabel={`Hide input`} on:click={() => (showInput = false)}>
-                    <span class="icon-x" aria-hidden="true"></span>
-                </Button>
-            {/if}
-            {#if paginatedItems && editing}
-                {#each paginatedItems as item, i}
-                    <InputSelect {id} label="Rel" required bind:value={item} {options} />
-                    <Button
-                        extraCompact
-                        ariaLabel={`Delete item ${i}`}
-                        on:click={() => {
-                            relatedList.splice(i, 1);
-                            relatedList = relatedList;
-                            value = relatedList;
-                        }}>
-                        <span class="icon-x" aria-hidden="true"></span>
-                    </Button>
-                {/each}
-            {/if}
-        </ul>
-        {#if editing}
-            <div class="u-flex u-margin-block-start-32 u-main-space-between">
-                <p class="text">Total results: {total}</p>
-                <PaginationInline {limit} bind:offset {total} hidePages />
-            </div>
-        {/if}
-
-        {#if total > 0 && !editing}
-            <Button
-                extraCompact
-                disabled={showInput}
-                on:click={() => {
-                    showInput = true;
-                }}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Add item
-            </Button>
-        {/if}
-    </div>
+    </Layout.Stack>
 {:else}
     <InputSelect
         {id}

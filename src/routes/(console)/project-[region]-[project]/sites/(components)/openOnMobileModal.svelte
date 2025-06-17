@@ -5,10 +5,10 @@
     import { Button, InputSelect } from '$lib/elements/forms';
     import { copy } from '$lib/helpers/copy';
     import { sdk } from '$lib/stores/sdk';
-    import { protocol } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Image, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
     let {
         show = $bindable(),
@@ -24,12 +24,12 @@
         ? proxyRuleList.rules.map((rule) => {
               return {
                   label: rule.domain,
-                  value: $protocol + rule.domain
+                  value: $regionalProtocol + rule.domain
               };
           })
         : [];
 
-    let url = $state(selectedUrl ? $protocol + selectedUrl : (options[0]?.value ?? ''));
+    let url = $state(selectedUrl ? $regionalProtocol + selectedUrl : (options[0]?.value ?? ''));
     let tooltipMessage = $state('Copy');
 
     function getImage(url: string) {

@@ -1,37 +1,31 @@
 <script lang="ts">
-    import { Empty, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
+    import { Empty, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { columns, showCreate } from './store';
     import Table from './table.svelte';
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
     import { canWriteCollections } from '$lib/stores/roles';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 </script>
 
 <Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search by name or ID" />
-        </Layout.Stack>
-        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <ViewSelector
-                {columns}
-                view={data.view}
-                hideColumns={!data.collections.total}
-                hideView={!data.collections.total} />
-            {#if $canWriteCollections}
-                <Button on:click={() => ($showCreate = true)} event="create_collection">
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create collection
-                </Button>
-            {/if}
-        </Layout.Stack>
-    </Layout.Stack>
+    <ResponsiveContainerHeader
+        bind:view={data.view}
+        {columns}
+        hasSearch
+        searchPlaceholder="Search by name or ID">
+        {#if $canWriteCollections}
+            <Button on:click={() => ($showCreate = true)} event="create_collection">
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create collection
+            </Button>
+        {/if}
+    </ResponsiveContainerHeader>
 
     {#if data.collections.total}
         {#if data.view === 'grid'}

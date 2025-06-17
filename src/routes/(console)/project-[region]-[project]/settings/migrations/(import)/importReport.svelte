@@ -9,11 +9,14 @@
     } from '@appwrite.io/pink-svelte';
     import type { MigrationFormData } from '$lib/stores/migration';
     import { Button } from '$lib/elements/forms';
+    import { createEventDispatcher } from 'svelte';
 
     export let error: boolean = false;
     export let groupKey: keyof MigrationFormData;
     export let formGroup: MigrationFormData[typeof groupKey];
     export let reportValue: string | number | undefined = undefined;
+
+    const dispatch = createEventDispatcher();
 
     const labelMap = {
         users: { root: 'Users', teams: 'Include teams' },
@@ -61,9 +64,12 @@
 
     function onParentChange(event: CustomEvent<boolean | 'indeterminate'>) {
         if (event.detail === 'indeterminate') return;
+        const updated = { ...formGroup };
         for (const key of Object.keys(formGroup)) {
-            formGroup[key] = event.detail;
+            updated[key] = event.detail;
         }
+
+        dispatch('updateFormGroup', updated);
     }
 
     $: isLoading = !error;
@@ -74,7 +80,13 @@
         <Button extraCompact on:click={() => (formGroup.root = !formGroup.root)}>
             <Layout.Stack direction="row" gap="s" alignItems="center">
                 <Layout.Stack inline direction="row" gap="l" alignItems="flex-start">
-                    <Selector.Checkbox size="s" bind:checked={formGroup.root} />
+                    <Selector.Checkbox
+                        size="s"
+                        bind:checked={formGroup.root}
+                        on:change={(event) => {
+                            const updated = { ...formGroup, root: event.detail };
+                            dispatch('updateFormGroup', updated);
+                        }} />
 
                     <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                         {labelMap[groupKey]?.root ?? groupKey}

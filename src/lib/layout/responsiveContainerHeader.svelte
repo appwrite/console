@@ -17,7 +17,7 @@
 
     let {
         columns,
-        view = View.Table,
+        view = $bindable(View.Table),
         hideView = false,
         hideColumns = false,
         hasSearch = false,

@@ -39,6 +39,7 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=cloud"
+                      "PUBLIC_CONSOLE_FEATURE_FLAGS="
                       "PUBLIC_APPWRITE_MULTI_REGION=true"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY }}"
@@ -78,6 +79,7 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=cloud"
+                      "PUBLIC_CONSOLE_FEATURE_FLAGS=sites,csv-import,attribute-encrypt,index-lengths"
                       "PUBLIC_APPWRITE_MULTI_REGION=true"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY_STAGE }}"
@@ -116,6 +118,7 @@ jobs:
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=self-hosted"
                       "PUBLIC_APPWRITE_MULTI_REGION=false"
+                      "PUBLIC_CONSOLE_FEATURE_FLAGS=sites,csv-import,attribute-encrypt,index-lengths"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
 
     publish-cloud-no-regions:
@@ -153,5 +156,6 @@ jobs:
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=cloud"
                       "PUBLIC_APPWRITE_MULTI_REGION=false"
+                      "PUBLIC_CONSOLE_FEATURE_FLAGS=sites,csv-import,attribute-encrypt,index-lengths"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY_STAGE }}"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"

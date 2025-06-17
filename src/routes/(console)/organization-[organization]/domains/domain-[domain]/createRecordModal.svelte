@@ -17,6 +17,7 @@
     import { invalidate } from '$app/navigation';
     import type { RecordType } from '$lib/stores/domains';
     import { createRecord } from '$lib/helpers/domains';
+    import { showPriority } from './table.svelte';
 
     export let show = false;
 
@@ -29,6 +30,20 @@
     let error = '';
     let weight: number;
     let port: number;
+
+    const placeholders: Record<RecordType, string> = {
+        A: '76.75.21.21',
+        AAAA: '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
+        CNAME: 'stage.example.com',
+        MX: 'mail.example.com',
+        TXT: 'v=spf1 include:_spf.example.com ~all',
+        NS: 'ns1.example.com',
+        SRV: '10 5 8080 example.com',
+        CAA: '0 issue "letsencrypt.org"',
+        HTTPS: 'https://example.com',
+        ALIAS: 'www.example.com'
+    };
+    $: placeholder = placeholders[type] ?? 'Enter value';
 
     async function handleSubmit() {
         const record = {
@@ -77,7 +92,7 @@
             </Input.Helper>
         </Layout.Stack>
 
-        <InputText id="value" label="Value" placeholder="76.75.21.21" bind:value>
+        <InputText id="value" label="Value" {placeholder} bind:value>
             <Tooltip slot="info">
                 <Icon icon={IconInfo} size="s" />
                 <span slot="tooltip">
@@ -96,7 +111,7 @@
                     </span>
                 </Tooltip>
             </InputNumber>
-            {#if type === 'MX'}
+            {#if showPriority(type)}
                 <InputNumber
                     id="priority"
                     label="Priority"

@@ -9,7 +9,6 @@
     import SiteCard from '../../(components)/siteCard.svelte';
     import { onMount } from 'svelte';
     import AddCollaboratorModal from '../../(components)/addCollaboratorModal.svelte';
-    import { protocol } from '$routes/(console)/store';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
     import { sdk } from '$lib/stores/sdk';
@@ -17,11 +16,12 @@
     import { Dependencies } from '$lib/constants';
     import { ConnectRepoModal } from '$lib/components/git';
     import { getProjectRoute } from '$lib/helpers/project';
+    import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
     export let data;
 
-    let showConnectRepositry = false;
     let showOpenOnMobile = false;
+    let showConnectRepository = false;
     let showInviteCollaborator = false;
 
     const siteURL = data.proxyRuleList.rules[0].domain;
@@ -31,7 +31,7 @@
             page.url.searchParams.has('connectRepo') &&
             page.url.searchParams.get('connectRepo') === 'true'
         ) {
-            showConnectRepositry = true;
+            showConnectRepository = true;
         }
     });
 
@@ -87,7 +87,7 @@
                     proxyRuleList={data.proxyRuleList}
                     hideQRCode>
                     <svelte:fragment slot="footer">
-                        <Button href={`${$protocol}${siteURL}`} external>Visit site</Button>
+                        <Button href={`${$regionalProtocol}${siteURL}`} external>Visit site</Button>
                     </svelte:fragment>
                 </SiteCard>
             </Layout.Stack>
@@ -104,7 +104,7 @@
                             <Card.Button
                                 radius="s"
                                 padding="s"
-                                on:click={() => (showConnectRepositry = true)}>
+                                on:click={() => (showConnectRepository = true)}>
                                 <Layout.Stack gap="s" style="height: 100%">
                                     <Layout.Stack
                                         direction="row"
@@ -204,11 +204,11 @@
     </svelte:fragment>
 </Wizard>
 
-{#if showConnectRepositry}
+{#if showConnectRepository}
     <ConnectRepoModal
         {connect}
         product="sites"
-        bind:show={showConnectRepositry}
+        bind:show={showConnectRepository}
         callbackState={{ connectRepo: 'true' }} />
 {/if}
 

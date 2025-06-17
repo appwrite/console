@@ -17,7 +17,8 @@
     export let showCreateProjectCloud: boolean;
 
     let id: string = null;
-    let name: string = 'Appwrite project';
+    let error: string = null;
+    let name: string = 'New project';
     let region: ConsoleRegion = Region.Fra;
 
     async function onFinish() {
@@ -40,22 +41,20 @@
             await onFinish();
             await goto(getProjectRoute());
         } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
             trackError(e, Submit.ProjectCreate);
+            error = e.message;
         }
     }
 
     onDestroy(() => {
         id = null;
         name = null;
+        error = null;
         region = ConsoleRegion.Fra;
     });
 </script>
 
-<Modal bind:show={showCreateProjectCloud} title={'Create project'} onSubmit={create}>
+<Modal bind:show={showCreateProjectCloud} title={'Create project'} onSubmit={create} bind:error>
     <CreateProject showTitle={false} bind:id bind:projectName={name} bind:region {regions}>
     </CreateProject>
     <svelte:fragment slot="footer">

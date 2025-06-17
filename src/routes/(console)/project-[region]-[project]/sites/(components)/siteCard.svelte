@@ -20,7 +20,7 @@
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
     import { isCloud } from '$lib/system';
-    import { getApiEndpoint } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { capitalize } from '$lib/helpers/string';
 
     export let deployment: Models.Deployment;
@@ -45,9 +45,7 @@
     }
 
     function getFilePreview(fileId: string) {
-        // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
-        const endpoint = getApiEndpoint();
-        return endpoint + `/storage/buckets/screenshots/files/${fileId}/view?project=console`;
+        return sdk.forConsole.storage.getFileView('screenshots', fileId);
     }
 </script>
 
