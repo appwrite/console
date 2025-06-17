@@ -1,13 +1,14 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { CardContainer, GridItem1, Id } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { canWriteCollections } from '$lib/stores/roles';
     import type { PageData } from './$types';
+    import { getProjectRoute } from '$lib/helpers/project';
+
     export let data: PageData;
     export let showCreate = false;
-    const projectId = page.params.project;
+
     const databaseId = page.params.database;
 </script>
 
@@ -18,7 +19,9 @@
     event="collection">
     {#each data.collections.collections as collection}
         <GridItem1
-            href={`${base}/project-${page.params.region}-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
+            href={getProjectRoute(
+                `/databases/database-${databaseId}/collection-${collection.$id}`
+            )}>
             <svelte:fragment slot="title">{collection.name}</svelte:fragment>
             <svelte:fragment slot="status">
                 {#if !collection.enabled}

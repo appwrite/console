@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { Id } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { PageData } from './$types';
     import { columns } from './store';
     import { Table } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: PageData;
 </script>
@@ -17,9 +16,7 @@
         {/each}
     </svelte:fragment>
     {#each data.buckets.buckets as bucket (bucket.$id)}
-        <Table.Row.Link
-            {root}
-            href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${bucket.$id}`}>
+        <Table.Row.Link {root} href={getProjectRoute(`/storage/bucket-${bucket.$id}`)}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

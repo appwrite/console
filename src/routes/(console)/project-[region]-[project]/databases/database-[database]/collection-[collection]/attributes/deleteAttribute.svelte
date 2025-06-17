@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -11,6 +10,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isRelationship } from '../document-[document]/attributes/store';
     import Confirm from '$lib/components/confirm.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let showDelete = false;
     export let selectedAttribute: Attributes;
@@ -30,7 +30,9 @@
             });
             trackEvent(Submit.AttributeDelete);
             await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${page.params.collection}/attributes`
+                getProjectRoute(
+                    `/databases/database-${databaseId}/collection-${page.params.collection}/attributes`
+                )
             );
         } catch (e) {
             error = e.message;

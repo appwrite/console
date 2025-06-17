@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Badge, Empty, Layout, Status, Table, Typography } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { type Models } from '@appwrite.io/console';
     import { DeploymentSource, DeploymentCreatedBy } from '$lib/components/git';
@@ -14,6 +13,7 @@
     import DeleteDeploymentModal from './deployments/deleteDeploymentModal.svelte';
     import DeploymentActionMenu from '../(components)/deploymentActionMenu.svelte';
     import { deploymentStatusConverter } from '$lib/stores/git';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let site: Models.Site;
     export let activeDeployment: Models.Deployment;
@@ -36,9 +36,7 @@
                 content={deploymentList?.total.toString()}
                 size="s" />
         </Layout.Stack>
-        <Button
-            secondary
-            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments`}>
+        <Button secondary href={getProjectRoute(`/sites/site-${page.params.site}/deployments`)}>
             View all
         </Button>
     </Layout.Stack>
@@ -66,7 +64,9 @@
             {#each deploymentList?.deployments as deployment (deployment.$id)}
                 <Table.Row.Link
                     {root}
-                    href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`}>
+                    href={getProjectRoute(
+                        `/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`
+                    )}>
                     <Table.Cell {root}>
                         <Id value={deployment.$id}>{deployment.$id}</Id>
                     </Table.Cell>

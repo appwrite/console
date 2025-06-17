@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { Avatar, Icon, Layout, Popover, Table, Typography } from '@appwrite.io/pink-svelte';
     import { columns } from './store';
@@ -14,6 +12,7 @@
     import { timer } from '$lib/helpers/timeConversion';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { getFrameworkIcon } from '$lib/stores/sites';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let siteList: Models.SiteList;
 
@@ -31,9 +30,7 @@
         <Table.Header.Cell column="actions" {root} />
     </svelte:fragment>
     {#each siteList.sites as site}
-        <Table.Row.Link
-            {root}
-            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${site.$id}`}>
+        <Table.Row.Link {root} href={getProjectRoute(`/sites/site-${site.$id}`)}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === 'name'}
@@ -69,7 +66,9 @@
                                         Last deployment failed {timeFromNow(
                                             site.latestDeploymentCreatedAt
                                         )}. <Link
-                                            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`}>
+                                            href={getProjectRoute(
+                                                `/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`
+                                            )}>
                                             View logs
                                         </Link>
                                     </Typography.Text>

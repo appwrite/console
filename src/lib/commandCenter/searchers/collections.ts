@@ -3,8 +3,8 @@ import { database } from '$routes/(console)/project-[region]-[project]/databases
 import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
-import { base } from '$app/paths';
 import { page } from '$app/state';
+import { getProjectRoute } from '$lib/helpers/project';
 
 export const collectionsSearcher = (async (query: string) => {
     const databaseId = get(database).$id;
@@ -19,11 +19,12 @@ export const collectionsSearcher = (async (query: string) => {
                 ({
                     group: 'collections',
                     label: col.name,
-                    callback: () => {
+                    callback: () =>
                         goto(
-                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${col.$id}`
-                        );
-                    }
+                            getProjectRoute(
+                                `/databases/database-${databaseId}/collection-${col.$id}`
+                            )
+                        )
                 }) as const
         );
 }) satisfies Searcher;

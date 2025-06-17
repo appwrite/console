@@ -7,8 +7,8 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let show = false;
     export let selectedDeploymentId: string;
@@ -32,7 +32,9 @@
             });
             if (redirect) {
                 await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/sites/site-${site.$id}/deployments/deployment-${deployment.$id}`
+                    getProjectRoute(
+                        `/sites/site-${site.$id}/deployments/deployment-${deployment.$id}`
+                    )
                 );
             }
         } catch (e) {

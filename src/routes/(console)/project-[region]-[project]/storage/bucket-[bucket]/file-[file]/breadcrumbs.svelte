@@ -1,24 +1,23 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
-    import { Breadcrumbs } from '$lib/layout';
-    import { bucket } from '../store';
     import { file } from './store';
+    import { bucket } from '../store';
+    import { Breadcrumbs } from '$lib/layout';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     $: breadcrumbs = [
         {
             title: '...'
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/storage`,
+            href: getProjectRoute('/storage'),
             title: 'Storage'
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${$bucket?.$id}`,
+            href: getProjectRoute(`/storage/bucket-${$bucket?.$id}`),
             title: $bucket?.name
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${$bucket?.$id}/file-${$file?.$id}`,
+            href: getProjectRoute(`/storage/bucket-${$bucket?.$id}/file-${$file?.$id}`),
             title: $file?.name
         }
     ];

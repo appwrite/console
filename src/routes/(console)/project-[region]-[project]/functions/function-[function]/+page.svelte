@@ -24,6 +24,7 @@
     import CreateActionMenu from './(components)/createActionMenu.svelte';
     import { Menu } from '$lib/components/menu';
     import DownloadActionMenuItem from './(components)/downloadActionMenuItem.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -115,7 +116,9 @@
                                             {toggle} />
                                         <ActionMenu.Item.Anchor
                                             trailingIcon={IconTerminal}
-                                            href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/deployment-${activeDeployment.$id}`}>
+                                            href={getProjectRoute(
+                                                `/functions/function-${page.params.function}/deployment-${activeDeployment.$id}`
+                                            )}>
                                             Build logs
                                         </ActionMenu.Item.Anchor>
                                     </ActionMenu.Root>
@@ -123,7 +126,9 @@
                             </Menu>
                             <Button
                                 secondary
-                                href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/executions/execute-function`}
+                                href={getProjectRoute(
+                                    `/functions/function-${$func.$id}/executions/execute-function`
+                                )}
                                 disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
                                 Execute
                             </Button>
@@ -150,7 +155,9 @@
                                 ariaLabel={`create deployment`}>Documentation</Button>
                             <Button
                                 secondary
-                                href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/deployments/deplyoment-${activeDeployment?.$id}`}>
+                                href={getProjectRoute(
+                                    `/functions/function-${page.params.function}/deployments/deplyoment-${activeDeployment?.$id}`
+                                )}>
                                 View logs</Button>
                         </span>
                     </Empty>

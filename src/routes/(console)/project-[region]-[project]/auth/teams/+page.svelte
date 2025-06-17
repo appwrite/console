@@ -3,7 +3,6 @@
 </script>
 
 <script lang="ts">
-    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
@@ -15,20 +14,18 @@
     import Create from '../createTeam.svelte';
     import { goto } from '$app/navigation';
     import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import { canWriteTeams } from '$lib/stores/roles';
     import { Icon, Layout, Table } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
-    const region = page.params.region;
-    const project = page.params.project;
     const teamCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
-        await goto(`${base}/project-${region}-${project}/auth/teams/team-${event.detail.$id}`);
+        await goto(getProjectRoute(`/auth/teams/team-${event.detail.$id}`));
     };
 </script>
 
@@ -53,9 +50,7 @@
                 <Table.Header.Cell {root}>Created</Table.Header.Cell>
             </svelte:fragment>
             {#each data.teams.teams as team}
-                <Table.Row.Link
-                    {root}
-                    href={`${base}/project-${region}-${project}/auth/teams/team-${team.$id}`}>
+                <Table.Row.Link {root} href={getProjectRoute(`/auth/teams/team-${team.$id}`)}>
                     <Table.Cell {root}>
                         <Layout.Stack direction="row" alignItems="center">
                             <AvatarInitials size="xs" name={team.name} />
@@ -79,9 +74,7 @@
             total={data.teams.total} />
     {:else if data.search}
         <EmptySearch target="teams" search={data.search} hidePagination={data.teams.total === 0}>
-            <Button secondary size="s" href={`${base}/project-${region}-${project}/auth/teams`}>
-                Clear Search
-            </Button>
+            <Button secondary size="s" href={getProjectRoute('/auth/teams')}>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty

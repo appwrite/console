@@ -1,18 +1,16 @@
 <script lang="ts">
-    import { base } from '$app/paths';
+    import { file } from './store';
     import { page } from '$app/state';
     import { Id } from '$lib/components';
     import { Cover, CoverTitle } from '$lib/layout';
-    import { file } from './store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
-    const projectId = page.params.project;
     const bucketId = page.params.bucket;
 </script>
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle
-            href={`${base}/project-${page.params.region}-${projectId}/storage/bucket-${bucketId}`}>
+        <CoverTitle href={getProjectRoute(`/storage/bucket-${bucketId}`)}>
             {$file?.name}
         </CoverTitle>
         <Id value={$file?.$id} event="file">{$file?.$id}</Id>

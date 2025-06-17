@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { InputText, Button } from '$lib/elements/forms';
@@ -10,6 +9,7 @@
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let show = false;
     export let teamId: string;
@@ -36,7 +36,7 @@
                 type: 'success',
                 message: `${name} has been created`
             });
-            await goto(`${base}/project-${project.region ?? 'default'}-${project.$id}`);
+            await goto(getProjectRoute(project));
         } catch (e) {
             error = e.message;
             trackError(e, Submit.ProjectCreate);

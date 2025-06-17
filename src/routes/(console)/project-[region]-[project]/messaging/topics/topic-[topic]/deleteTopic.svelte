@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -8,6 +7,7 @@
     import { project } from '../../../store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let showDelete = false;
     let error: string;
@@ -23,9 +23,7 @@
                 message: `${$topic.name} has been deleted`
             });
             trackEvent(Submit.MessagingTopicDelete);
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/messaging/topics`
-            );
+            await goto(getProjectRoute('/messaging/topics'));
         } catch (e) {
             error = e.message;
             trackError(e, Submit.MessagingTopicDelete);

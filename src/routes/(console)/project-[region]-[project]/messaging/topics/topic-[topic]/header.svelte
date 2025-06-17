@@ -1,15 +1,14 @@
 <script lang="ts">
-    import { base } from '$app/paths';
+    import { topic } from './store';
     import { page } from '$app/state';
     import { Id, Tab, Tabs } from '$lib/components';
-    import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import { isTabSelected } from '$lib/helpers/load';
     import { canWriteTopics } from '$lib/stores/roles';
-    import { topic } from './store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
-    const projectId = page.params.project;
     const topicId = page.params.topic;
-    const path = `${base}/project-${page.params.region}-${projectId}/messaging/topics/topic-${topicId}`;
+    const path = getProjectRoute(`/messaging/topics/topic-${topicId}`);
     const tabs = [
         {
             href: path,
@@ -32,7 +31,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/messaging/topics`}>
+        <CoverTitle href={getProjectRoute('/messaging/topics')}>
             {$topic.name}
         </CoverTitle>
         <Id value={$topic.$id} event="topic">{$topic.$id}</Id>

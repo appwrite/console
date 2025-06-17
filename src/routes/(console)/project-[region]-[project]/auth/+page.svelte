@@ -4,8 +4,6 @@
 
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import {
         AvatarInitials,
         Copy,
@@ -27,6 +25,7 @@
     import type { Column } from '$lib/helpers/types';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { View } from '$lib/helpers/load';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -47,9 +46,7 @@
     ]);
 
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
-        await goto(
-            `${base}/project-${page.params.region}-${page.params.project}/auth/user-${event.detail.$id}`
-        );
+        await goto(getProjectRoute(`/auth/user-${event.detail.$id}`));
     }
 </script>
 
@@ -75,9 +72,7 @@
                 {/each}
             </svelte:fragment>
             {#each data.users.users as user}
-                <Table.Row.Link
-                    href={`${base}/project-${page.params.region}-${page.params.project}/auth/user-${user.$id}`}
-                    {root}>
+                <Table.Row.Link href={getProjectRoute(`/auth/user-${user.$id}`)} {root}>
                     {#each $columns as { id } (id)}
                         <Table.Cell column={id} {root}>
                             {#if id === '$id'}
@@ -162,10 +157,7 @@
             total={data.users.total} />
     {:else if data.search}
         <EmptySearch target="users" hidePagination>
-            <Button
-                href={`${base}/project-${page.params.region}-${page.params.project}/auth`}
-                size="s"
-                secondary>Clear Search</Button>
+            <Button href={getProjectRoute('/auth')} size="s" secondary>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty

@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { Fieldset, Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
@@ -17,6 +16,7 @@
     import Targets from './(components)/targets.svelte';
     import Schedule from './(components)/schedule.svelte';
     import SmsPhone from '../../smsPhone.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let showExitModal = false;
     let formComponent: Form;
@@ -65,9 +65,7 @@
                 providerType: 'email',
                 status: response.status
             });
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/messaging/message-${response.$id}`
-            );
+            await goto(getProjectRoute(`/messaging/message-${response.$id}`));
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -85,7 +83,7 @@
 
 <Wizard
     title="Create SMS message"
-    href={`${base}/project-${page.params.region}-${page.params.project}/messaging/`}
+    href={getProjectRoute('/messaging/')}
     bind:showExitModal
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>

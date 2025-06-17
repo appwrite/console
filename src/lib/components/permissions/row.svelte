@@ -14,8 +14,8 @@
     } from '@appwrite.io/pink-svelte';
     import Avatar from '../avatar.svelte';
     import { IconAnonymous, IconExternalLink, IconMinusSm } from '@appwrite.io/pink-icons-svelte';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let role: string;
 
@@ -88,7 +88,7 @@
                             {/if}
                             <div>
                                 <Button.Anchor
-                                    href={`${base}/project-${page.params.region}-${page.params.project}/auth/user-${data?.$id}`}
+                                    href={getProjectRoute(`/auth/user-${data?.$id}`)}
                                     size="xs"
                                     target="_blank"
                                     variant="secondary">
@@ -100,7 +100,7 @@
                             <Typography.Text>Members: {data?.total}</Typography.Text>
                             <div>
                                 <Button.Anchor
-                                    href={`${base}/project-${page.params.region}-${page.params.project}/auth/teams/team-${data?.$id}`}
+                                    href={getProjectRoute(`/auth/teams/team-${data?.$id}`)}
                                     size="s"
                                     target="_blank"
                                     variant="secondary">

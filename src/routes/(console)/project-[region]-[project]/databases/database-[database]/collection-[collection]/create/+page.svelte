@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { Alert, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -15,6 +14,7 @@
     import type { PageData } from './$types';
     import type { Attributes } from '../store';
     import { ID } from '@appwrite.io/console';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: PageData;
 
@@ -71,7 +71,9 @@
                 customId: !!$createDocument.id
             });
             goto(
-                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/document-${$id}`
+                getProjectRoute(
+                    `/databases/database-${page.params.database}/collection-${page.params.collection}/document-${$id}`
+                )
             );
         } catch (error) {
             addNotification({
@@ -85,7 +87,9 @@
 
 <Wizard
     title="Create document"
-    href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/`}
+    href={getProjectRoute(
+        `/databases/database-${page.params.database}/collection-${page.params.collection}/`
+    )}
     bind:showExitModal
     column
     columnSize="s"

@@ -5,12 +5,12 @@
     import { project } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { Layout, Button, Typography } from '@appwrite.io/pink-svelte';
     import { user } from '$lib/stores/user';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { getProjectRoute } from '$lib/helpers/project';
 </script>
 
 {#if !page.url.pathname.includes('get-started')}
@@ -52,7 +52,7 @@
                                 trackEvent('onboarding_hub_platform_dismiss');
                                 await setHasOnboardingDismissed($project.$id);
                                 await invalidate(Dependencies.ORGANIZATION);
-                                goto(`${base}/project-${$project.region}-${$project.$id}/overview`);
+                                goto(getProjectRoute('/overview'));
                             }}>Dismiss this page</Button.Button>
                     {/if}
                 </div>

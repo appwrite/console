@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import {
         addSubPanel,
@@ -19,15 +18,15 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { currentPlan } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
+    import { getProjectRoute } from '$lib/helpers/project';
 
-    const project = page.params.project;
     const databaseId = page.params.database;
 
     async function handleCreate(event: CustomEvent<Models.Collection>) {
         $showCreate = false;
         await invalidate(Dependencies.DATABASE);
         await goto(
-            `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/collection-${event.detail.$id}`
+            getProjectRoute(`/databases/database-${databaseId}/collection-${event.detail.$id}`)
         );
     }
 
@@ -37,9 +36,7 @@
             callback() {
                 $showCreate = true;
                 if (!page.url.pathname.endsWith(databaseId)) {
-                    goto(
-                        `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}`
-                    );
+                    goto(getProjectRoute(`/databases/database-${databaseId}`));
                 }
             },
             keys: page.url.pathname.endsWith(databaseId) ? ['c'] : ['c', 'c'],
@@ -51,9 +48,7 @@
             label: 'Create backup policy',
             callback: async () => {
                 if (!page.url.pathname.endsWith('backups')) {
-                    goto(
-                        `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/backups`
-                    );
+                    goto(getProjectRoute(`/databases/database-${databaseId}/backups`));
                 }
                 showCreatePolicy.set(true);
             },
@@ -67,9 +62,7 @@
             label: 'Create manual backup',
             callback: async () => {
                 if (!page.url.pathname.endsWith('backups')) {
-                    goto(
-                        `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/backups`
-                    );
+                    goto(getProjectRoute(`/databases/database-${databaseId}/backups`));
                 }
                 showCreateBackup.set(true);
             },
@@ -82,9 +75,7 @@
         {
             label: 'Go to collections',
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}`
-                );
+                goto(getProjectRoute(`/databases/database-${databaseId}`));
             },
             disabled:
                 page.url.pathname.endsWith(databaseId) || page.url.pathname.includes('collection-'),
@@ -94,9 +85,7 @@
         {
             label: 'Go to usage',
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/usage`
-                );
+                goto(getProjectRoute(`/databases/database-${databaseId}/usage`));
             },
             disabled:
                 page.url.pathname.includes('/usage') || page.url.pathname.includes('collection-'),
@@ -106,9 +95,7 @@
         {
             label: 'Go to backups',
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/backups`
-                );
+                goto(getProjectRoute(`/databases/database-${databaseId}/backups`));
             },
             disabled:
                 page.url.pathname.includes('/backups') || page.url.pathname.includes('collection-'),
@@ -118,9 +105,7 @@
         {
             label: 'Go to settings',
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/settings`
-                );
+                goto(getProjectRoute(`/databases/database-${databaseId}/settings`));
             },
             disabled:
                 page.url.pathname.includes('/settings') ||

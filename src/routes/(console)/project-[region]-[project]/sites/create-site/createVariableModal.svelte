@@ -3,11 +3,10 @@
     import { Modal } from '$lib/components';
     import { InputText } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { base } from '$app/paths';
     import { Icon, Layout, Selector, Button as PinkButton } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
-    import { page } from '$app/state';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let show = false;
     export let variables: Partial<Models.Variable>[];
@@ -66,9 +65,7 @@
 <Modal bind:show onSubmit={handleVariable} title="Create variables" bind:error>
     <span slot="description">
         Set the environment variables or secret that will be passed to your site. Global variables
-        can be set in <Link
-            variant="muted"
-            href={`${base}/project-${page.params.region}-${page.params.project}/settings`}
+        can be set in <Link variant="muted" href={getProjectRoute('/settings')}
             >project settings</Link
         >.
     </span>

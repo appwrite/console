@@ -1,6 +1,5 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
@@ -38,8 +37,11 @@
     import { IconInfo, IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import Wizard from '$lib/layout/wizard.svelte';
     import Aside from './aside.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
-    let previousPage: string = `${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/executions`;
+    let previousPage: string = getProjectRoute(
+        `/functions/function-${page.params.function}/executions`
+    );
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
@@ -104,9 +106,7 @@
                     headersObject,
                     isScheduled ? dateTime.toISOString() : undefined
                 );
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/functions/function-${func.$id}/executions`
-            );
+            await goto(getProjectRoute(`/functions/function-${func.$id}/executions`));
             invalidate(Dependencies.EXECUTIONS);
             addNotification({
                 type: 'success',

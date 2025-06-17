@@ -2,9 +2,9 @@ import { goto } from '$app/navigation';
 import { type Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
 import { MessagingProviderType, type Models } from '@appwrite.io/console';
-import { base } from '$app/paths';
 import { IconAnnotation, IconDeviceMobile, IconMail } from '@appwrite.io/pink-icons-svelte';
 import { page } from '$app/state';
+import { getProjectRoute } from '$lib/helpers/project';
 
 const getLabel = (message: Models.Message) => {
     switch (message.providerType) {
@@ -44,11 +44,7 @@ export const messagesSearcher = (async (query: string) => {
                 ({
                     group: 'messages',
                     label: getLabel(message),
-                    callback: () => {
-                        goto(
-                            `${base}/project-${page.params.region}-${page.params.project}/messaging/message-${message.$id}`
-                        );
-                    },
+                    callback: () => goto(getProjectRoute(`/messaging/message-${message.$id}`)),
                     icon: getIcon(message)
                 }) as const
         );

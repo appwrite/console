@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import {
         addSubPanel,
@@ -13,8 +12,8 @@
     import { providersSearcher } from '$lib/commandCenter/searchers/providers';
     import { topicsSearcher } from '$lib/commandCenter/searchers/topics';
     import { canWriteMessages } from '$lib/stores/roles';
-    import { project } from '../store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     // TODO: finalize the commands
     $: $registerCommands([
@@ -32,7 +31,7 @@
             label: 'Go to Topics',
             keys: ['g', 't'],
             callback() {
-                goto(`${base}/project-${$project.region}-${$project.$id}/messaging/topics`);
+                goto(getProjectRoute('/messaging/topics'));
             },
             disabled:
                 page.url.pathname.endsWith('topics') || page.url.pathname.includes('message-'),
@@ -43,7 +42,7 @@
             label: 'Go to Providers',
             keys: ['g', 'p'],
             callback() {
-                goto(`${base}/project-${$project.region}-${$project.$id}/messaging/providers`);
+                goto(getProjectRoute('/messaging/providers'));
             },
             disabled:
                 page.url.pathname.endsWith('providers') || page.url.pathname.includes('message-'),

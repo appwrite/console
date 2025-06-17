@@ -1,12 +1,12 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { type Models } from '@appwrite.io/console';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let site: Models.Site;
     export let showDelete = false;
@@ -20,7 +20,7 @@
                 type: 'success',
                 message: `Site has been deleted`
             });
-            await goto(`${base}/project-${page.params.region}-${page.params.project}/sites`);
+            await goto(getProjectRoute('/sites'));
             trackEvent(Submit.SiteDelete);
         } catch (e) {
             error = e.message;

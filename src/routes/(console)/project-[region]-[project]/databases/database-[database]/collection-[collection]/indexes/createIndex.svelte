@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
@@ -15,6 +14,7 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { flags } from '$lib/flags';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let showCreateIndex = false;
     export let externalAttribute: Attributes = null;
@@ -91,7 +91,9 @@
             ]);
 
             goto(
-                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${$collection.$id}/indexes`
+                getProjectRoute(
+                    `/databases/database-${databaseId}/collection-${$collection.$id}/indexes`
+                )
             );
 
             addNotification({

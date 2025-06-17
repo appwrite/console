@@ -1,16 +1,15 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { DatabasesPanel } from '$lib/commandCenter/panels';
-    import { project } from '../store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     $: $registerCommands([
         {
             label: 'Go to usage',
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/databases/usage`);
+                goto(getProjectRoute('/databases/usage'));
             },
             keys: ['g', 'u'],
             disabled:

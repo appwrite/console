@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { Container, Usage } from '$lib/layout';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
     $: total = data.bucketsTotal;
@@ -10,7 +9,7 @@
 
 <Container>
     <Usage
-        path={`${base}/project-${page.params.region}-${page.params.project}/storage/usage`}
+        path={getProjectRoute('/storage/usage')}
         {total}
         {count}
         countMetadata={{

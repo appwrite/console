@@ -21,12 +21,12 @@
                     {#if $app.themeInUse === 'dark'}
                         <img
                             src={EmailMobileDark}
-                            class="u-image-object-fit-cover u-only-dark u-width-full-line u-height-100-percent"
+                            class="u-image-object-fit-cover u-only-dark u-width-full-line"
                             alt="Email Signature Example" />
                     {:else}
                         <img
                             src={EmailMobileLight}
-                            class="u-image-object-fit-cover u-only-light u-width-full-line u-height-100-percent"
+                            class="u-image-object-fit-cover u-only-light u-width-full-line"
                             alt="Email Signature Example" />
                     {/if}
                 </div>

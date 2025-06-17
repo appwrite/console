@@ -1,7 +1,5 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { SvgIcon } from '$lib/components';
-    import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import { isSelfHosted } from '$lib/system';
@@ -21,12 +19,13 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
+    import { getProjectRoute } from '$lib/helpers/project';
     import { regionalConsoleVariables } from '../../store';
 
     export let data;
 
+    const wizardBase = getProjectRoute('/functions');
     const isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
-    const wizardBase = `${base}/project-${page.params.region}-${page.params.project}/functions`;
     let previousPage: string = wizardBase;
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Avatar, Empty, EmptySearch, PaginationWithLimit, SearchQuery } from '$lib/components';
@@ -23,6 +22,7 @@
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -95,7 +95,7 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button
-                href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`}
+                href={getProjectRoute(`/storage/bucket-${page.params.bucket}/create`)}
                 event="create_file"
                 size="s">
                 <Icon icon={IconPlus} slot="start" size="s" />
@@ -152,7 +152,7 @@
                         </Table.Cell>
                     </Table.Row.Base>
                 {:else}
-                    {@const href = `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${bucketId}/file-${file.$id}`}
+                    {@const href = getProjectRoute(`/storage/bucket-${bucketId}/file-${file.$id}`)}
                     <Table.Row.Link {href} {root}>
                         <Table.Cell column="filename" {root}>
                             <div class="u-flex u-gap-12 u-cross-center">
@@ -210,9 +210,7 @@
                     text>
                     Documentation
                 </Button>
-                <Button
-                    secondary
-                    href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}`}>
+                <Button secondary href={getProjectRoute(`/storage/bucket-${page.params.bucket}`)}>
                     Clear Search
                 </Button>
             </div>
@@ -223,9 +221,7 @@
             target="file"
             href="https://appwrite.io/docs/products/storage/upload-download"
             on:click={() =>
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`
-                )} />
+                goto(getProjectRoute(`/storage/bucket-${page.params.bucket}/create`))} />
     {/if}
 </Container>
 

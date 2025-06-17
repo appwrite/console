@@ -1,15 +1,14 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { canWriteFunctions } from '$lib/stores/roles';
     import { func } from './store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
-    const projectId = page.params.project;
     const functionId = page.params.function;
-    const path = `${base}/project-${page.params.region}-${projectId}/functions/function-${functionId}`;
+    const path = getProjectRoute(`/functions/function-${functionId}`);
     const tabs = [
         {
             href: path,
@@ -45,7 +44,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/functions`}>
+        <CoverTitle href={getProjectRoute('/functions')}>
             {$func?.name}
         </CoverTitle>
         {#if $func?.$id}

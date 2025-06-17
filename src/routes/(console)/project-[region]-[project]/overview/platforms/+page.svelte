@@ -59,8 +59,6 @@
 </script>
 
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { canWritePlatforms } from '$lib/stores/roles';
     import { setOverviewAction } from '../context';
@@ -83,6 +81,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentType } from 'svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -102,7 +101,7 @@
         'react-native-ios' = 'iOS',
         'web' = 'Web'
     }
-    const path = `${base}/project-${page.params.region}-${page.params.project}/overview/platforms`;
+    const path = getProjectRoute('/overview/platforms');
 
     function getPlatformInfo(platform: string): ComponentType {
         if (platform.includes('flutter')) {

@@ -3,13 +3,11 @@
     import { canWriteKeys } from '$lib/stores/roles';
     import { Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
+    import { getProjectRoute } from '$lib/helpers/project.js';
 </script>
 
 {#if $canWriteKeys}
-    <Button
-        href={`${base}/project-${page.params.region}-${page.params.project}/overview/keys/create`}>
+    <Button href={getProjectRoute('/overview/keys/create')}>
         <Icon icon={IconPlus} slot="start" size="s" />
         Create API key
     </Button>

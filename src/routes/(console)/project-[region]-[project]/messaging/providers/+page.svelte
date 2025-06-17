@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import {
         EmptySearch,
@@ -13,11 +12,11 @@
     import { Filters, hasPageQueries } from '$lib/components/filters';
     import CreateProviderDropdown from './createProviderDropdown.svelte';
     import Table from './table.svelte';
-    import { base } from '$app/paths';
     import { canWriteProviders } from '$lib/stores/roles';
     import { Card, Layout, Empty, Icon } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 </script>
@@ -57,11 +56,7 @@
                 <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no providers that match your search.</p>
             </div>
-            <Button
-                secondary
-                href={`${base}/project-${page.params.region}-${page.params.project}/messaging/providers`}>
-                Clear search
-            </Button>
+            <Button secondary href={getProjectRoute('/messaging/providers')}>Clear search</Button>
         </EmptySearch>
     {:else}
         <Card.Base padding="none">
