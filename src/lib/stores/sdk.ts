@@ -81,7 +81,8 @@ function createConsoleSdk(client: Client) {
         billing: new Billing(client),
         sources: new Sources(client),
         sites: new Sites(client),
-        domains: new Domains(client)
+        domains: new Domains(client),
+        storage: new Storage(client)
     };
 }
 
