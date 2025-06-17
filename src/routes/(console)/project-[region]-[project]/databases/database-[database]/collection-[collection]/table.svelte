@@ -257,7 +257,7 @@
                             {@const formatted = formatColumn(document[id])}
                             {@const isDatetimeAttribute = attr.type === 'datetime'}
                             {@const isEncryptedAttribute = isString(attr) && attr.encrypt}
-                        {#if isDatetimeAttribute}
+                            {#if isDatetimeAttribute}
                                 <DualTimeView time={datetime}>
                                     <span slot="title">Timestamp</span>
                                     {toLocaleDateTime(datetime, true)}
