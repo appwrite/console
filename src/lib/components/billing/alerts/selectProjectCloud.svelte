@@ -8,6 +8,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/stores';
+    import { billingProjectsLimitDate } from '$lib/stores/billing';
 
     export let showSelectProject: boolean;
     export let selectedProjects: Array<string> = [];
@@ -74,7 +75,7 @@
     {#if selectedProjects.length === 2}
         <Alert.Inline
             status="warning"
-            title={`${projects.length - selectedProjects.length} projects will be archived on [date]`}>
+            title={`${projects.length - selectedProjects.length} projects will be archived on ${billingProjectsLimitDate}`}>
             {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
                 {@html text}{index == projectsToArchive.length - 2
                     ? ', and '

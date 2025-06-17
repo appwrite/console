@@ -21,7 +21,7 @@
     import { loading } from '$routes/store';
     import { ID, Region, type Models } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[region]-[project]/settings/migrations/(import)';
-    import { readOnly } from '$lib/stores/billing';
+    import { billingProjectsLimitDate, readOnly } from '$lib/stores/billing';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
@@ -161,7 +161,7 @@
 
     {#if isCloud && data.organization.projects.length > 0 && $canWriteProjects}
         <Alert.Inline
-            title={`${data.projects.total - data.organization.projects.length} projects will be archived on [date]`}>
+            title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${billingProjectsLimitDate}`}>
             <Typography.Text>
                 {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
                     {@html text}{index == projectsToArchive.length - 2
