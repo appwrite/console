@@ -5,7 +5,6 @@
     import { canSeeProjects } from '$lib/stores/roles';
     import { onMount } from 'svelte';
     import { Accordion, Table } from '@appwrite.io/pink-svelte';
-    import { base } from '$app/paths';
     import type { PageData } from './$types';
     import { getProjectRoute } from '$lib/helpers/project';
 

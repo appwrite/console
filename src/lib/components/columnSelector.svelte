@@ -19,7 +19,7 @@
     } = $props();
 
     let maxHeight = $state('none');
-    let containerRef;
+    let containerRef = $state(null);
 
     const calcMaxHeight = () => {
         if (containerRef) {

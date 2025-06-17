@@ -4,7 +4,6 @@
     import Create from './create.svelte';
     import { goto } from '$app/navigation';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
-    import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { showCreate } from './store';
