@@ -20,9 +20,9 @@
         hasSearch
         searchPlaceholder="Search by name or ID">
         {#if $canWriteCollections}
-            <Button on:click={() => ($showCreate = true)} event="create_collection">
+            <Button on:click={() => ($showCreate = true)} event="create_table">
                 <Icon icon={IconPlus} slot="start" size="s" />
-                Create collection
+                Create table
             </Button>
         {/if}
     </ResponsiveContainerHeader>
@@ -35,16 +35,17 @@
         {/if}
 
         <PaginationWithLimit
-            name="Collections"
+            name="Tables"
             limit={data.limit}
             offset={data.offset}
             total={data.collections.total} />
     {:else}
+        <!-- TODO: update collections docs url and content later -->
         <Empty
             single
             allowCreate={$canWriteCollections}
             href="https://appwrite.io/docs/products/databases/collections"
-            target="collection"
+            target="table"
             on:click={() => ($showCreate = true)} />
     {/if}
 </Container>

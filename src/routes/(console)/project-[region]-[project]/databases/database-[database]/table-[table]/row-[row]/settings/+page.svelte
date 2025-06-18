@@ -1,0 +1,143 @@
+<script lang="ts">
+    import { CardGrid, BoxAvatar, Alert } from '$lib/components';
+    import { Container } from '$lib/layout';
+    import { Button } from '$lib/elements/forms';
+    import { sdk } from '$lib/stores/sdk';
+    import { doc } from '../store';
+    import { addNotification } from '$lib/stores/notifications';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import Delete from '../delete.svelte';
+    import { symmetricDifference } from '$lib/helpers/array';
+    import { Permissions } from '$lib/components/permissions';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { collection } from '../../store';
+    import { page } from '$app/stores';
+
+    let showDelete = false;
+    let permissions = $doc?.$permissions;
+    let arePermsDisabled = true;
+    let showPermissionAlert = true;
+
+    async function updatePermissions() {
+        try {
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .databases.updateDocument(
+                    $doc.$databaseId,
+                    $doc.$collectionId,
+                    $doc.$id,
+                    $doc.data,
+                    permissions
+                );
+            await invalidate(Dependencies.ROW);
+            arePermsDisabled = true;
+            addNotification({
+                message: 'Permissions have been updated',
+                type: 'success'
+            });
+            trackEvent(Submit.DocumentUpdatePermissions);
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+            trackError(error, Submit.DocumentUpdatePermissions);
+        }
+    }
+
+    $: if (permissions) {
+        arePermsDisabled = !symmetricDifference(permissions, $doc.$permissions).length;
+    }
+</script>
+
+<svelte:head>
+    <title>Row - Appwrite</title>
+</svelte:head>
+
+<Container>
+    <CardGrid>
+        <svelte:fragment slot="title">Metadata</svelte:fragment>
+
+        <svelte:fragment slot="aside">
+            <div>
+                <p>Created: {toLocaleDateTime($doc.$createdAt)}</p>
+                <p>Last updated: {toLocaleDateTime($doc.$updatedAt)}</p>
+            </div>
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <svelte:fragment slot="title">Permissions</svelte:fragment>
+
+        <p>
+            A user requires appropriate permissions at either the <b>table level</b> or
+            <b>row level</b> to access a row. If no permissions are configured, no user can access
+            the row
+            <a
+                href="https://appwrite.io/docs/products/databases/permissions"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">Learn more about database permissions</a
+            >.
+        </p>
+
+        <svelte:fragment slot="aside">
+            {#if $collection.documentSecurity}
+                {#if showPermissionAlert}
+                    <Alert type="info" dismissible on:dismiss={() => (showPermissionAlert = false)}>
+                        <svelte:fragment slot="title">Row security is enabled</svelte:fragment>
+                        <p class="text">
+                            Users will be able to access this row if they have been granted <b
+                                >either row or table permissions.
+                            </b>
+                        </p>
+                    </Alert>
+                {/if}
+                {#if permissions}
+                    <Permissions bind:permissions />
+                {/if}
+            {:else}
+                <Alert type="info">
+                    <svelte:fragment slot="title">Row security is disabled</svelte:fragment>
+                    <p class="text">
+                        If you want to assign row permissions. Go to Table settings and enable row
+                        security. Otherwise, only table permissions will be used.
+                    </p>
+                </Alert>
+            {/if}
+        </svelte:fragment>
+
+        <svelte:fragment slot="actions">
+            <Button
+                disabled={arePermsDisabled}
+                on:click={() => {
+                    updatePermissions();
+                }}>Update</Button>
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
+        <svelte:fragment slot="title">Delete row</svelte:fragment>
+        <p>
+            The row will be permanently deleted, including all the data within it. This action is
+            irreversible.
+        </p>
+        <svelte:fragment slot="aside">
+            <BoxAvatar>
+                <svelte:fragment slot="title">
+                    <h6 class="u-bold u-trim-1">{$doc.$id}</h6>
+                </svelte:fragment>
+                <p>
+                    Last updated: {toLocaleDateTime($doc.$updatedAt)}
+                </p>
+            </BoxAvatar>
+        </svelte:fragment>
+
+        <svelte:fragment slot="actions">
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        </svelte:fragment>
+    </CardGrid>
+</Container>
+
+<Delete bind:showDelete />

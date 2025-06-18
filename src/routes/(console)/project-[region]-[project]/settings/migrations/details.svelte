@@ -24,6 +24,7 @@
     export let show = false;
 
     type StatusCounters = {
+        // todo: does this need a change for tables api? i doubt
         [resource in 'Database' | 'Collection' | 'Function' | 'Users']?: StatusCounter;
     };
     type StatusCounter = {

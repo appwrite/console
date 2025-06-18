@@ -17,11 +17,11 @@ export const collectionsSearcher = (async (query: string) => {
         .map(
             (col) =>
                 ({
-                    group: 'collections',
+                    group: 'tables',
                     label: col.name,
                     callback: () => {
                         goto(
-                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${col.$id}`
+                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${col.$id}`
                         );
                     }
                 }) as const

@@ -269,6 +269,8 @@ export enum Submit {
     SessionsLimitUpdate = 'submit_sessions_limit_update',
     SessionDelete = 'submit_session_delete',
     SessionDeleteAll = 'submit_session_delete_all',
+
+    // TODO: change events
     DatabaseCreate = 'submit_database_create',
     DatabaseDelete = 'submit_database_delete',
     DatabaseUpdateName = 'submit_database_update_name',
@@ -289,6 +291,7 @@ export enum Submit {
     CollectionUpdateSecurity = 'submit_collection_update_security',
     CollectionUpdateEnabled = 'submit_collection_update_enabled',
     CollectionUpdateDisplayNames = 'submit_collection_update_display_names',
+
     FunctionCreate = 'submit_function_create',
     FunctionDelete = 'submit_function_delete',
     FunctionUpdateName = 'submit_function_update_name',

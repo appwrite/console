@@ -35,7 +35,7 @@
             trackEvent(Submit.CollectionDelete);
             addNotification({
                 type: 'success',
-                message: `${selectedRows.length} collection${selectedRows.length > 1 ? 's' : ''} deleted`
+                message: `${selectedRows.length} table${selectedRows.length > 1 ? 's' : ''} deleted`
             });
             invalidate(Dependencies.COLLECTIONS);
         } catch (error) {
@@ -61,7 +61,7 @@
         <Table.Row.Link
             {root}
             id={collection.$id}
-            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collection.$id}`}>
+            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${collection.$id}`}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
@@ -84,7 +84,7 @@
         <svelte:fragment slot="start">
             <Badge content={selectedRows.length.toString()} />
             <span>
-                {selectedRows.length > 1 ? 'collections' : 'collection'}
+                {selectedRows.length > 1 ? 'tables' : 'table'}
                 selected
             </span>
         </svelte:fragment>
@@ -95,13 +95,9 @@
     </FloatingActionBar>
 {/if}
 
-<Confirm
-    title="Delete collections"
-    bind:open={showDelete}
-    onSubmit={handleDelete}
-    disabled={deleting}>
+<Confirm title="Delete tables" bind:open={showDelete} onSubmit={handleDelete} disabled={deleting}>
     <Typography.Text>
         Are you sure you want to delete <b>{selectedRows.length}</b>
-        {selectedRows.length > 1 ? 'collections' : 'collection'}?
+        {selectedRows.length > 1 ? 'tables' : 'table'}?
     </Typography.Text>
 </Confirm>

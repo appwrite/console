@@ -35,8 +35,8 @@
             teams: 'Import all teams and the team memberships of your users'
         },
         databases: {
-            root: 'Import all databases, including collections, indexes and attributes',
-            documents: 'Import all documents inside collections'
+            root: 'Import all databases, including tables, indexes and columns',
+            documents: 'Import all rows inside tables'
         },
         functions: {
             root: 'Import all functions and their active deployment',

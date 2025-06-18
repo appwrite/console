@@ -31,7 +31,7 @@
         collectionId: string,
         importData: Payload
     ) {
-        await invalidate(Dependencies.DOCUMENTS);
+        await invalidate(Dependencies.ROWS);
         const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}`;
 
         // extract clean message from nested backend error.
@@ -49,7 +49,7 @@
             message,
             isHtml: true,
             buttons:
-                collectionId === page.params.collection || type === 'error'
+                collectionId === page.params.table || type === 'error'
                     ? undefined
                     : [
                           {
