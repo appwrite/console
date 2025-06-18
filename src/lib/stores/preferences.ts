@@ -108,7 +108,7 @@ function createPreferences() {
             );
         },
         getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
-            return preferences?.collections?.[collectionId] ?? [];
+            return preferences?.collections?.[collectionId] ?? null;
         },
         setLimit: (limit: Preferences['limit']) =>
             updateAndSync((n) => {

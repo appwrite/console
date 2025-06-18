@@ -10,7 +10,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { afterUpdate, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import type { PageData } from './$types';
     import {
         isRelationship,
@@ -18,8 +18,7 @@
         isString
     } from './document-[document]/attributes/store';
     import RelationshipsModal from './relationshipsModal.svelte';
-    import { attributes, collection, columns } from './store';
-    import type { ColumnType } from '$lib/helpers/types';
+    import { attributes, collection } from './store';
     import {
         Tooltip,
         Table,
@@ -33,8 +32,11 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { flags } from '$lib/flags';
+    import type { Writable } from 'svelte/store';
+    import type { Column } from '$lib/helpers/types';
 
     export let data: PageData;
+    export let columns: Writable<Column[]>;
 
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
@@ -45,22 +47,7 @@
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
-        updateMaxWidth();
     });
-
-    afterUpdate(() => updateMaxWidth());
-
-    function updateMaxWidth() {
-        const tableCells = Array.from(document.querySelectorAll('.less-width-truncated'));
-
-        const visibleColumnsCount = $columns.filter((col) => !col.hide).length;
-        const newMaxWidth = Math.max(50 - (visibleColumnsCount - 1) * 5, 25);
-
-        tableCells.forEach((cell) => {
-            const cellItem = cell as HTMLElement;
-            cellItem.style.maxWidth = `${newMaxWidth}vw`;
-        });
-    }
 
     function formatArray(array: unknown[]) {
         if (array.length === 0) return '[ ]';
@@ -98,24 +85,6 @@
             truncated: formattedColumn.length > 20,
             whole: `${formattedColumn.slice(0, 100)}...`
         };
-    }
-
-    $: selected = preferences.getCustomCollectionColumns(page.params.collection);
-
-    $: {
-        columns.set(
-            $collection.attributes.map((attribute) => ({
-                id: attribute.key,
-                title: attribute.key,
-                type: attribute.type as ColumnType,
-                show: selected?.includes(attribute.key) ?? true,
-                array: attribute?.array,
-                width: { min: 168 },
-                format:
-                    'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
-                elements: 'elements' in attribute ? attribute.elements : null
-            }))
-        );
     }
 
     let selectedRows: string[] = [];
@@ -173,41 +142,42 @@
     const showEncrypt = flags.showAttributeEncrypt(data);
 </script>
 
-<Table.Root
-    let:root
-    allowSelection
-    bind:selectedRows
-    columns={[
-        { id: '$id', width: 200 },
-        ...$columns,
-        { id: '$created', width: 200 },
-        { id: '$updated', width: 200 }
-    ]}>
-    <svelte:fragment slot="header" let:root>
-        <Table.Header.Cell column="$id" {root}>Document ID</Table.Header.Cell>
-        {#each $columns as column}
-            <Table.Header.Cell column={column.id} {root}>{column.title}</Table.Header.Cell>
+<Table.VirtualRoot let:root let:virtualizer allowSelection bind:selectedRows columns={$columns}>
+    <svelte:fragment slot="header" let:root let:virtualizer>
+        {#each virtualizer.getVirtualItems() as item (item.index)}
+            {@const column = $columns[item.index]}
+            <Table.VirtualCell column={column.id} {root} virtualItem={item}>
+                {column.title}
+            </Table.VirtualCell>
         {/each}
-        <Table.Header.Cell column="$created" {root}>Created</Table.Header.Cell>
-        <Table.Header.Cell column="$updated" {root}>Updated</Table.Header.Cell>
     </svelte:fragment>
     {#each data.documents.documents as document (document.$id)}
         <Table.Row.Link
             {root}
             id={document.$id}
             href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
-            <Table.Cell column="$id" {root}>
-                {#key document.$id}
-                    <Id value={document.$id}>
-                        {document.$id}
-                    </Id>
-                {/key}
-            </Table.Cell>
-
-            {#each $columns as { id } (id)}
-                {@const attr = $attributes.find((n) => n.key === id)}
-                {#if attr}
-                    <Table.Cell column={id} {root}>
+            {#each virtualizer.getVirtualItems() as item (item.index)}
+                {@const column = $columns[item.index]}
+                {#if column.id === '$id'}
+                    <Table.VirtualCell column="$id" {root} virtualItem={item}>
+                        {#key document.$id}
+                            <Id value={document.$id}>
+                                {document.$id}
+                            </Id>
+                        {/key}
+                    </Table.VirtualCell>
+                {:else if column.id === '$created'}
+                    <Table.VirtualCell column="$created" {root} virtualItem={item}>
+                        <DualTimeView time={document.$createdAt} />
+                    </Table.VirtualCell>
+                {:else if column.id === '$updated'}
+                    <Table.VirtualCell column="$updated" {root} virtualItem={item}>
+                        <DualTimeView time={document.$updatedAt} />
+                    </Table.VirtualCell>
+                {:else}
+                    {@const id = column.id}
+                    {@const attr = $attributes.find((n) => n.key === id)}
+                    <Table.VirtualCell column={id} {root} virtualItem={item}>
                         {#if isRelationship(attr)}
                             {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
                             {#if !isRelationshipToMany(attr)}
@@ -253,23 +223,20 @@
                                 </Button.Button>
                             {/if}
                         {:else}
-                            {@const datetime = document[id]}
                             {@const formatted = formatColumn(document[id])}
                             {@const isDatetimeAttribute = attr.type === 'datetime'}
                             {@const isEncryptedAttribute = isString(attr) && attr.encrypt}
                             {#if isDatetimeAttribute}
-                                <DualTimeView time={datetime}>
+                                <DualTimeView time={document[id]}>
                                     <span slot="title">Timestamp</span>
-                                    {toLocaleDateTime(datetime, true)}
+                                    {toLocaleDateTime(document[id], true)}
                                 </DualTimeView>
                             {:else if isEncryptedAttribute && showEncrypt}
-                                <button on:click={(e) => e.preventDefault()}>
-                                    <InteractiveText
-                                        copy={false}
-                                        variant="secret"
-                                        isVisible={false}
-                                        text={formatted.value} />
-                                </button>
+                                <InteractiveText
+                                    copy={false}
+                                    variant="secret"
+                                    isVisible={false}
+                                    text={formatted.value} />
                             {:else if formatted.truncated}
                                 <Tooltip placement="bottom" disabled={!formatted.truncated}>
                                     <Typography.Text truncate>{formatted.value}</Typography.Text>
@@ -287,18 +254,12 @@
                                 <Typography.Text truncate>{formatted.value}</Typography.Text>
                             {/if}
                         {/if}
-                    </Table.Cell>
+                    </Table.VirtualCell>
                 {/if}
             {/each}
-            <Table.Cell column="$created" {root}>
-                <DualTimeView time={document.$createdAt} />
-            </Table.Cell>
-            <Table.Cell column="$updated" {root}>
-                <DualTimeView time={document.$updatedAt} />
-            </Table.Cell>
         </Table.Row.Link>
     {/each}
-</Table.Root>
+</Table.VirtualRoot>
 
 <RelationshipsModal bind:show={showRelationships} {selectedRelationship} data={relationshipData} />
 

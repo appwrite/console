@@ -14,7 +14,6 @@
     import CreateAttribute from './createAttribute.svelte';
     import { collection, columns, isCsvImportInProgress } from './store';
     import Table from './table.svelte';
-    import { writable } from 'svelte/store';
     import FilePicker from '$lib/components/filePicker.svelte';
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
@@ -32,28 +31,22 @@
     let showCreateAttribute = false;
     let selectedAttribute: Option['name'] = null;
 
-    const filterColumns = writable<Column[]>([]);
-
     $: selected = preferences.getCustomCollectionColumns(page.params.collection);
-    $: columns.set(
-        $collection.attributes.map((attribute) => ({
+
+    $: columns.set([
+        { id: '$id', width: 200, title: 'Document ID', type: 'string' },
+        ...$collection.attributes.map<Column>((attribute) => ({
             id: attribute.key,
             title: attribute.key,
             type: attribute.type as ColumnType,
-            show: selected?.includes(attribute.key) ?? true,
+            hide: !(selected?.includes(attribute.key) ?? true),
             array: attribute?.array,
+            width: { min: 168 },
             format: 'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
             elements: 'elements' in attribute ? attribute.elements : null
-        }))
-    );
-    $: filterColumns.set([
-        ...$columns,
-        ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
-            id,
-            title: id,
-            show: true,
-            type: (id === '$id' ? 'string' : 'datetime') as ColumnType
-        }))
+        })),
+        { id: '$created', width: 200, title: 'Created', type: 'datetime' },
+        { id: '$updated', width: 200, title: 'Updated', type: 'datetime' }
     ]);
 
     $: hasAttributes = !!$collection.attributes.length;
@@ -99,7 +92,7 @@
                     disabled={!(hasAttributes && hasValidAttributes)}
                     analyticsSource="database_documents" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    <ViewSelector view={data.view} {columns} hideView />
+                    <ViewSelector view={data.view} {columns} hideView isCustomCollection />
                     {#if flags.showCsvImport(data)}
                         <Button
                             secondary
@@ -133,7 +126,7 @@
 
         {#if hasAttributes && hasValidAttributes}
             {#if data.documents.total}
-                <Table {data} />
+                <Table {data} {columns} />
 
                 <PaginationWithLimit
                     name="Documents"

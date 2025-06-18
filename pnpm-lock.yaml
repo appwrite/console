@@ -24,8 +24,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3
       '@appwrite.io/pink-svelte':
-        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@ee1b778
-        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@ee1b778(svelte@5.25.3)
+        specifier: https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@3228c15
+        version: https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@3228c15(svelte@5.25.3)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -260,9 +260,8 @@ packages:
   '@appwrite.io/console@1.9.0':
     resolution: {integrity: sha512-g8+zfdBF8mz7tRUER4CGVe5FHWQVLp8TlY/UOGCZ2TgUF1qnpNu/DhiQgph8uF+QZ9jDKCLAAZlP5//9t7ckWA==}
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@ee1b7788cd3f877c9aa1b6487976bd63a6196870':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@ee1b7788cd3f877c9aa1b6487976bd63a6196870}
-    version: 2.0.0-RC.1
+  '@appwrite.io/pink-icons-svelte@2.0.0-RC.1':
+    resolution: {integrity: sha512-iLFlV55hj8mGuAbmxJGenxN5RaZMmVT4GJb9dv/MP1xBAtYibFq7JvBcxm18qV2KU8c31Rntf+Ub4GL7HwqTYg==}
     peerDependencies:
       svelte: ^4.0.0
 
@@ -281,8 +280,8 @@ packages:
   '@appwrite.io/pink-legacy@1.0.3':
     resolution: {integrity: sha512-GGde5fmPhs+s6/3aFeMPc/kKADG/gTFkYQSy6oBN8pK0y0XNCLrZZgBv+EBbdhwdtqVEWXa0X85Mv9w7jcIlwQ==}
 
-  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@ee1b778':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@ee1b778}
+  '@appwrite.io/pink-svelte@https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@3228c15':
+    resolution: {tarball: https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@3228c15}
     version: 2.0.0-RC.2
     peerDependencies:
       svelte: ^4.0.0
@@ -1264,6 +1263,14 @@ packages:
 
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
+
+  '@tanstack/svelte-virtual@3.13.10':
+    resolution: {integrity: sha512-MVpi/yJpliu6ab7ScrYWk3VYhRh2gwyXZxEV12G5TYZqu/hNEqvw6GUTYBcAg6xzRq4VKtxt89rQSqlGyG4OMA==}
+    peerDependencies:
+      svelte: ^3.48.0 || ^4.0.0 || ^5.0.0
+
+  '@tanstack/virtual-core@3.13.10':
+    resolution: {integrity: sha512-sPEDhXREou5HyZYqSWIqdU580rsF6FGeN7vpzijmP3KTiOGjOMZASz4Y6+QKjiFQwhWrR58OP8izYaNGVxvViA==}
 
   '@testing-library/dom@10.4.0':
     resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
@@ -3637,7 +3644,7 @@ snapshots:
 
   '@appwrite.io/console@1.9.0': {}
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@ee1b7788cd3f877c9aa1b6487976bd63a6196870(svelte@5.25.3)':
+  '@appwrite.io/pink-icons-svelte@2.0.0-RC.1(svelte@5.25.3)':
     dependencies:
       svelte: 5.25.3
 
@@ -3654,12 +3661,13 @@ snapshots:
       '@appwrite.io/pink-icons': 1.0.0
       the-new-css-reset: 1.11.3
 
-  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@ee1b778(svelte@5.25.3)':
+  '@appwrite.io/pink-svelte@https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@3228c15(svelte@5.25.3)':
     dependencies:
-      '@appwrite.io/pink-icons-svelte': https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@ee1b7788cd3f877c9aa1b6487976bd63a6196870(svelte@5.25.3)
+      '@appwrite.io/pink-icons-svelte': 2.0.0-RC.1(svelte@5.25.3)
       '@floating-ui/dom': 1.6.13
       '@melt-ui/pp': 0.3.2(@melt-ui/svelte@0.86.6(svelte@5.25.3))(svelte@5.25.3)
       '@melt-ui/svelte': 0.86.6(svelte@5.25.3)
+      '@tanstack/svelte-virtual': 3.13.10(svelte@5.25.3)
       ansicolor: 2.0.3
       d3: 7.9.0
       fuse.js: 7.1.0
@@ -4709,6 +4717,13 @@ snapshots:
   '@swc/helpers@0.5.15':
     dependencies:
       tslib: 2.8.1
+
+  '@tanstack/svelte-virtual@3.13.10(svelte@5.25.3)':
+    dependencies:
+      '@tanstack/virtual-core': 3.13.10
+      svelte: 5.25.3
+
+  '@tanstack/virtual-core@3.13.10': {}
 
   '@testing-library/dom@10.4.0':
     dependencies:
