@@ -98,7 +98,7 @@
                 <div class="u-flex u-gap-16">
                     <div class="u-cross-child-center u-line-height-1-5">
                         <h6 class="u-bold">{$platform.name}</h6>
-                        <p>{$platform.hostname}</p>
+                        <p>{$platform.hostname || $platform.key}</p>
                     </div>
                 </div>
             </Box>

@@ -33,6 +33,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { flags } from '$lib/flags';
+
     export let data: PageData;
 
     const databaseId = page.params.database;
@@ -169,7 +170,7 @@
 
     let checked = false;
 
-    let showEncrypt = flags.showAttributeEncrypt(data);
+    const showEncrypt = flags.showAttributeEncrypt(data);
 </script>
 
 <Table.Root
@@ -205,85 +206,89 @@
 
             {#each $columns as { id } (id)}
                 {@const attr = $attributes.find((n) => n.key === id)}
-                <Table.Cell column={id} {root}>
-                    {#if isRelationship(attr)}
-                        {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
-                        {#if !isRelationshipToMany(attr)}
-                            {#if document[id]}
-                                {@const related = document[id]}
-                                <Link.Button
-                                    variant="muted"
-                                    on:click={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        goto(
-                                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
-                                        );
-                                    }}>
-                                    {#each args as arg, i}
-                                        {#if arg !== undefined}
-                                            {#if i}
-                                                &nbsp;|
+                {#if attr}
+                    <Table.Cell column={id} {root}>
+                        {#if isRelationship(attr)}
+                            {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
+                            {#if !isRelationshipToMany(attr)}
+                                {#if document[id]}
+                                    {@const related = document[id]}
+                                    <Link.Button
+                                        variant="muted"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            goto(
+                                                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
+                                            );
+                                        }}>
+                                        {#each args as arg, i}
+                                            {#if arg !== undefined}
+                                                {#if i}
+                                                    &nbsp;|
+                                                {/if}
+                                                <span class="text" data-private>
+                                                    {related?.[arg]}
+                                                </span>
                                             {/if}
-                                            <span class="text" data-private>
-                                                {related?.[arg]}
-                                            </span>
-                                        {/if}
-                                    {/each}
-                                </Link.Button>
+                                        {/each}
+                                    </Link.Button>
+                                {:else}
+                                    <span class="text">n/a</span>
+                                {/if}
                             {:else}
-                                <span class="text">n/a</span>
+                                {@const itemsNum = document[id]?.length}
+                                <Button.Button
+                                    variant="extra-compact"
+                                    disabled={!itemsNum}
+                                    badge={itemsNum ?? 0}
+                                    on:click={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        relationshipData = document[id];
+                                        showRelationships = true;
+                                        selectedRelationship = attr;
+                                    }}>
+                                    Items
+                                </Button.Button>
                             {/if}
                         {:else}
-                            {@const itemsNum = document[id]?.length}
-                            <Button.Button
-                                variant="extra-compact"
-                                disabled={!itemsNum}
-                                badge={itemsNum ?? 0}
-                                on:click={(e) => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    relationshipData = document[id];
-                                    showRelationships = true;
-                                    selectedRelationship = attr;
-                                }}>
-                                Items
-                            </Button.Button>
-                        {/if}
-                    {:else}
-                        {@const formatted = formatColumn(document[id])}
-                        {@const isDatetimeAttribute = attr.type === 'datetime'}
-                        {#if isDatetimeAttribute}
-                            <DualTimeView time={formatted.whole}>
-                                <span slot="title">Timestamp</span>
-                                {toLocaleDateTime(formatted.whole, true, 'UTC')}
-                            </DualTimeView>
-                        {:else if isString(attr) && attr.encrypt && showEncrypt}
-                            <button on:click={(e) => e.preventDefault()}>
-                                <InteractiveText
-                                    copy={false}
-                                    variant="secret"
-                                    isVisible={false}
-                                    text={formatted.value} />
-                            </button>
-                        {:else if formatted.truncated}
-                            <Tooltip placement="bottom" disabled={!formatted.truncated}>
+                            {@const datetime = document[id]}
+                            {@const formatted = formatColumn(document[id])}
+                            {@const isDatetimeAttribute = attr.type === 'datetime'}
+                            {@const isEncryptedAttribute = isString(attr) && attr.encrypt}
+                            {#if isDatetimeAttribute}
+                                <DualTimeView time={datetime}>
+                                    <span slot="title">Timestamp</span>
+                                    {toLocaleDateTime(datetime, true)}
+                                </DualTimeView>
+                            {:else if isEncryptedAttribute && showEncrypt}
+                                <button on:click={(e) => e.preventDefault()}>
+                                    <InteractiveText
+                                        copy={false}
+                                        variant="secret"
+                                        isVisible={false}
+                                        text={formatted.value} />
+                                </button>
+                            {:else if formatted.truncated}
+                                <Tooltip placement="bottom" disabled={!formatted.truncated}>
+                                    <Typography.Text truncate>{formatted.value}</Typography.Text>
+                                    <span
+                                        let:showing
+                                        slot="tooltip"
+                                        style:white-space="pre-wrap"
+                                        style:word-break="break-all">
+                                        {#if showing}
+                                            {formatted.whole}
+                                        {/if}
+                                    </span>
+                                </Tooltip>
+                            {:else}
                                 <Typography.Text truncate>{formatted.value}</Typography.Text>
-                                <span
-                                    let:showing
-                                    slot="tooltip"
-                                    style:white-space="pre-wrap"
-                                    style:word-break="break-all">
-                                    {#if showing}
-                                        {formatted.whole}
-                                    {/if}
-                                </span>
-                            </Tooltip>
-                        {:else}
-                            <Typography.Text truncate>{formatted.value}</Typography.Text>
+                            {/if}
                         {/if}
-                    {/if}
-                </Table.Cell>
+                    </Table.Cell>
+                {/if}
             {/each}
             <Table.Cell column="$created" {root}>
                 <DualTimeView time={document.$createdAt} />

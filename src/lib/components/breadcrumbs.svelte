@@ -190,83 +190,107 @@
         $currentPlan?.name.toLocaleLowerCase() !== selectedOrg?.tierName.toLocaleLowerCase()
             ? $currentPlan.name
             : selectedOrg?.tierName; // fallback
+
+    $: derivedKey = `${selectedOrg?.$id}-${selectedProject?.$id}`;
 </script>
 
 <svelte:window on:resize={onResize} />
-<div use:melt={$menubar}>
-    {#if !$isSmallViewport}
-        <span class="breadcrumb-separator">/</span>
-        <button
-            type="button"
-            class="trigger"
-            use:melt={$triggerOrganizations}
-            aria-label="Open organizations tab">
-            <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
-            <span class="not-mobile"
-                >{#if correctPlanName}<Badge
-                        variant="secondary"
-                        content={correctPlanName} />{/if}</span>
-            <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
-        </button>
-    {:else}
-        <button
-            type="button"
-            class="trigger"
-            on:click={() => {
-                organisationBottomSheetOpen = true;
-            }}
-            aria-label="Open organizations tab">
-            <span class="orgName" class:noProjects={!currentProject}
-                >{selectedOrg?.name ?? 'Organization'}</span>
-            <span class="not-mobile"
-                ><Badge variant="secondary" content={correctPlanName ?? ''} /></span>
-            <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
-        </button>
-    {/if}
 
-    <div class="menu" use:melt={$menuOrganizations}>
-        <Card.Base padding="xxxs" shadow={true}>
-            {#if selectedOrg}
-                <div use:melt={$itemOrganizations}>
-                    <ActionMenu.Root>
-                        <ActionMenu.Item.Anchor href={`${base}/organization-${selectedOrg?.$id}`}
-                            >Organization overview</ActionMenu.Item.Anchor
-                        ></ActionMenu.Root>
-                </div>
-                {#if organizations.length > 1}
-                    <div class="separator" use:melt={$separatorOrganizations}></div>
+{#key derivedKey}
+    <div use:melt={$menubar}>
+        {#if !$isSmallViewport}
+            <span class="breadcrumb-separator">/</span>
+            <button
+                type="button"
+                class="trigger"
+                use:melt={$triggerOrganizations}
+                aria-label="Open organizations tab">
+                <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
+                <span class="not-mobile"
+                    >{#if correctPlanName}<Badge
+                            variant="secondary"
+                            content={correctPlanName} />{/if}</span>
+                <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
+            </button>
+        {:else}
+            <button
+                type="button"
+                class="trigger"
+                on:click={() => {
+                    organisationBottomSheetOpen = true;
+                }}
+                aria-label="Open organizations tab">
+                <span class="orgName" class:noProjects={!currentProject}
+                    >{selectedOrg?.name ?? 'Organization'}</span>
+                <span class="not-mobile"
+                    ><Badge variant="secondary" content={correctPlanName ?? ''} /></span>
+                <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
+            </button>
+        {/if}
 
-                    <div use:melt={$subTriggerOrganizations}>
+        <div class="menu" use:melt={$menuOrganizations}>
+            <Card.Base padding="xxxs" shadow={true}>
+                {#if selectedOrg}
+                    <div use:melt={$itemOrganizations}>
                         <ActionMenu.Root>
-                            <ActionMenu.Item.Button trailingIcon={IconChevronRight}
-                                >Switch organization</ActionMenu.Item.Button>
-                        </ActionMenu.Root>
+                            <ActionMenu.Item.Anchor
+                                href={`${base}/organization-${selectedOrg?.$id}`}
+                                >Organization overview</ActionMenu.Item.Anchor
+                            ></ActionMenu.Root>
                     </div>
-                    <div class="menu subMenu" use:melt={$subMenuOrganizations}>
-                        <Card.Base padding="xxxs" shadow={true}>
-                            <div use:melt={$radioGroupOrganizations}>
-                                {#each organizations as organization}
+                    {#if organizations.length > 1}
+                        <div class="separator" use:melt={$separatorOrganizations}></div>
+
+                        <div use:melt={$subTriggerOrganizations}>
+                            <ActionMenu.Root>
+                                <ActionMenu.Item.Button trailingIcon={IconChevronRight}
+                                    >Switch organization</ActionMenu.Item.Button>
+                            </ActionMenu.Root>
+                        </div>
+                        <div class="menu subMenu" use:melt={$subMenuOrganizations}>
+                            <Card.Base padding="xxxs" shadow={true}>
+                                <div use:melt={$radioGroupOrganizations}>
+                                    {#each organizations as organization}
+                                        <div use:melt={$itemOrganizations}>
+                                            <ActionMenu.Root>
+                                                <ActionMenu.Item.Anchor
+                                                    href={`${base}/organization-${organization?.$id}`}
+                                                    >{organization.name}</ActionMenu.Item.Anchor>
+                                            </ActionMenu.Root>
+                                        </div>
+                                    {/each}
+                                    <div class="separator" use:melt={$separatorOrganizations}></div>
                                     <div use:melt={$itemOrganizations}>
                                         <ActionMenu.Root>
-                                            <ActionMenu.Item.Anchor
-                                                href={`${base}/organization-${organization?.$id}`}
-                                                >{organization.name}</ActionMenu.Item.Anchor>
-                                        </ActionMenu.Root>
+                                            <ActionMenu.Item.Button
+                                                leadingIcon={IconPlusSm}
+                                                on:click={createOrg}
+                                                >Create organization</ActionMenu.Item.Button
+                                            ></ActionMenu.Root>
                                     </div>
-                                {/each}
-                                <div class="separator" use:melt={$separatorOrganizations}></div>
-                                <div use:melt={$itemOrganizations}>
-                                    <ActionMenu.Root>
-                                        <ActionMenu.Item.Button
-                                            leadingIcon={IconPlusSm}
-                                            on:click={createOrg}
-                                            >Create organization</ActionMenu.Item.Button
-                                        ></ActionMenu.Root>
                                 </div>
-                            </div>
-                        </Card.Base>
-                    </div>
+                            </Card.Base>
+                        </div>
+                    {:else}
+                        <div class="separator" use:melt={$separatorOrganizations}></div>
+                        <div use:melt={$itemOrganizations}>
+                            <ActionMenu.Root>
+                                <ActionMenu.Item.Button
+                                    leadingIcon={IconPlusSm}
+                                    on:click={createOrg}>Create organization</ActionMenu.Item.Button
+                                ></ActionMenu.Root>
+                        </div>
+                    {/if}
                 {:else}
+                    {#each organizations as organization}
+                        <div use:melt={$itemOrganizations}>
+                            <ActionMenu.Root>
+                                <ActionMenu.Item.Anchor
+                                    href={`${base}/organization-${organization?.$id}`}
+                                    >{organization.name}</ActionMenu.Item.Anchor
+                                ></ActionMenu.Root>
+                        </div>
+                    {/each}
                     <div class="separator" use:melt={$separatorOrganizations}></div>
                     <div use:melt={$itemOrganizations}>
                         <ActionMenu.Root>
@@ -275,48 +299,30 @@
                             ></ActionMenu.Root>
                     </div>
                 {/if}
-            {:else}
-                {#each organizations as organization}
-                    <div use:melt={$itemOrganizations}>
-                        <ActionMenu.Root>
-                            <ActionMenu.Item.Anchor
-                                href={`${base}/organization-${organization?.$id}`}
-                                >{organization.name}</ActionMenu.Item.Anchor
-                            ></ActionMenu.Root>
-                    </div>
-                {/each}
-                <div class="separator" use:melt={$separatorOrganizations}></div>
-                <div use:melt={$itemOrganizations}>
-                    <ActionMenu.Root>
-                        <ActionMenu.Item.Button leadingIcon={IconPlusSm} on:click={createOrg}
-                            >Create organization</ActionMenu.Item.Button
-                        ></ActionMenu.Root>
-                </div>
-            {/if}
-        </Card.Base>
-    </div>
+            </Card.Base>
+        </div>
 
-    {#if selectedOrg && currentProject}
-        <span class="breadcrumb-separator">/</span>
-        {#if !$isSmallViewport}
-            <button
-                type="button"
-                class="trigger"
-                use:melt={$triggerProjects}
-                aria-label="Open projects tab">
-                <span class="projectName">{currentProject.name}</span>
-                <Icon icon={IconChevronDown} size="s" />
-            </button>
-        {:else}
-            <button
-                type="button"
-                class="trigger"
-                on:click={() => (projectsBottomSheetOpen = true)}
-                aria-label="Open projects tab">
-                <span class="projectName">{currentProject.name}</span>
-                <Icon icon={IconChevronDown} size="s" />
-            </button>
-        {/if}
+        {#if selectedOrg && currentProject}
+            <span class="breadcrumb-separator">/</span>
+            {#if !$isSmallViewport}
+                <button
+                    type="button"
+                    class="trigger"
+                    use:melt={$triggerProjects}
+                    aria-label="Open projects tab">
+                    <span class="projectName">{currentProject.name}</span>
+                    <Icon icon={IconChevronDown} size="s" />
+                </button>
+            {:else}
+                <button
+                    type="button"
+                    class="trigger"
+                    on:click={() => (projectsBottomSheetOpen = true)}
+                    aria-label="Open projects tab">
+                    <span class="projectName">{currentProject.name}</span>
+                    <Icon icon={IconChevronDown} size="s" />
+                </button>
+            {/if}
 
         <div class="menu" use:melt={$menuProjects}>
             <Card.Base padding="xxxs" shadow={true}>

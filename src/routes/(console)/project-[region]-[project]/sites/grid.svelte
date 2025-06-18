@@ -7,7 +7,7 @@
     import { generateSiteDeploymentDesc } from './store';
     import { SvgIcon } from '$lib/components';
     import { app } from '$lib/stores/app';
-    import { getApiEndpoint } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import AddCollaboratorModal from './(components)/addCollaboratorModal.svelte';
     import SitesActionMenu from './sitesActionMenu.svelte';
     import { capitalize } from '$lib/helpers/string';
@@ -33,9 +33,7 @@
     }
 
     function getFilePreview(fileId: string) {
-        // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
-        const endpoint = getApiEndpoint(page.params.region);
-        return endpoint + `/storage/buckets/screenshots/files/${fileId}/view?project=console`;
+        return sdk.forConsole.storage.getFileView('screenshots', fileId);
     }
 </script>
 
