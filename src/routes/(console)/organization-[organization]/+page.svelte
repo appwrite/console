@@ -25,7 +25,7 @@
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Badge, Icon, Typography, Alert, Tag } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Typography, Alert, Tag, Tooltip } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
         IconApple,
@@ -127,6 +127,10 @@
         return !data.organization.projects.includes(project.$id);
     }
 
+    function formatName(name: string, limit: number = 19) {
+        return name ? (name.length > limit ? `${name.slice(0, limit)}...` : name) : '-';
+    }
+
     $: projectsToArchive = data.projects.projects.filter(
         (project) => !data.organization.projects.includes(project.$id)
     );
@@ -190,12 +194,23 @@
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
+                {@const formatted = isSetToArchive(project)
+                    ? formatName(project.name)
+                    : project.name}
                 <GridItem1 href={`${base}/project-${project.region}-${project.$id}`}>
                     <svelte:fragment slot="eyebrow">
                         {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
                     </svelte:fragment>
                     <svelte:fragment slot="title">
-                        {project.name}
+                        <Tooltip
+                            maxWidth={project.name.length.toString()}
+                            placement="top"
+                            disabled={!isSetToArchive(project)}>
+                            {formatted}
+                            <span slot="tooltip">
+                                {project.name}
+                            </span>
+                        </Tooltip>
                     </svelte:fragment>
 
                     <svelte:fragment slot="status">
