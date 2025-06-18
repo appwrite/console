@@ -191,7 +191,7 @@
             ? $currentPlan.name
             : selectedOrg?.tierName; // fallback
 
-    $: derivedKey = `${selectedOrg?.$id}-${selectedProject?.$id}`;
+    $: derivedKey = `${selectedOrg?.$id}-${currentProject?.$id}`;
 </script>
 
 <svelte:window on:resize={onResize} />
@@ -324,58 +324,59 @@
                 </button>
             {/if}
 
-        <div class="menu" use:melt={$menuProjects}>
-            <Card.Base padding="xxxs" shadow={true}>
-                {#if isLoadingProjects}
-                    <div style:margin-inline="0.25rem" style:margin-block="0.25rem">
-                        <Layout.Stack gap="s">
-                            <!-- 2 should be enough -->
-                            <Skeleton width="100%" height={30} variant="line" />
-                            <Skeleton width="100%" height={30} variant="line" />
-                        </Layout.Stack>
+            <div class="menu" use:melt={$menuProjects}>
+                <Card.Base padding="xxxs" shadow={true}>
+                    {#if isLoadingProjects}
+                        <div style:margin-inline="0.25rem" style:margin-block="0.25rem">
+                            <Layout.Stack gap="s">
+                                <!-- 2 should be enough -->
+                                <Skeleton width="100%" height={30} variant="line" />
+                                <Skeleton width="100%" height={30} variant="line" />
+                            </Layout.Stack>
+                        </div>
+                    {:else if loadedProjects.total > 1}
+                        {#each loadedProjects.projects as project, index}
+                            {#if index < 4}
+                                <div use:melt={$itemProjects}>
+                                    <ActionMenu.Root>
+                                        <ActionMenu.Item.Anchor
+                                            href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
+                                            {project.name}
+                                        </ActionMenu.Item.Anchor>
+                                    </ActionMenu.Root>
+                                </div>
+                            {:else if index === 4}
+                                <div use:melt={$itemProjects}>
+                                    <ActionMenu.Root>
+                                        <ActionMenu.Item.Anchor
+                                            href={`${base}/organization-${selectedOrg.$id}`}>
+                                            All projects
+                                        </ActionMenu.Item.Anchor>
+                                    </ActionMenu.Root>
+                                </div>
+                            {/if}
+                        {/each}
+                        <div class="separator" use:melt={$separatorProjects}></div>
+                    {/if}
+                    <div use:melt={$itemProjects}>
+                        <ActionMenu.Root>
+                            <ActionMenu.Item.Anchor
+                                leadingIcon={IconPlusSm}
+                                href={`${base}/organization-${selectedOrg?.$id}?create-project`}>
+                                Create project
+                            </ActionMenu.Item.Anchor></ActionMenu.Root>
                     </div>
-                {:else if loadedProjects.total > 1}
-                    {#each loadedProjects.projects as project, index}
-                        {#if index < 4}
-                            <div use:melt={$itemProjects}>
-                                <ActionMenu.Root>
-                                    <ActionMenu.Item.Anchor
-                                        href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
-                                        {project.name}
-                                    </ActionMenu.Item.Anchor>
-                                </ActionMenu.Root>
-                            </div>
-                        {:else if index === 4}
-                            <div use:melt={$itemProjects}>
-                                <ActionMenu.Root>
-                                    <ActionMenu.Item.Anchor
-                                        href={`${base}/organization-${selectedOrg.$id}`}>
-                                        All projects
-                                    </ActionMenu.Item.Anchor>
-                                </ActionMenu.Root>
-                            </div>
-                        {/if}
-                    {/each}
-                    <div class="separator" use:melt={$separatorProjects}></div>
-                {/if}
-                <div use:melt={$itemProjects}>
-                    <ActionMenu.Root>
-                        <ActionMenu.Item.Anchor
-                            leadingIcon={IconPlusSm}
-                            href={`${base}/organization-${selectedOrg?.$id}?create-project`}>
-                            Create project
-                        </ActionMenu.Item.Anchor></ActionMenu.Root>
-                </div>
-            </Card.Base>
-        </div>
-    {/if}
-</div>
+                </Card.Base>
+            </div>
+        {/if}
+    </div>
 
-<BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet} />
+    <BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet} />
 
-{#await projectsBottomSheet then menu}
-    <BottomSheet.Menu bind:isOpen={projectsBottomSheetOpen} {menu} />
-{/await}
+    {#await projectsBottomSheet then menu}
+        <BottomSheet.Menu bind:isOpen={projectsBottomSheetOpen} {menu} />
+    {/await}
+{/key}
 
 <style lang="scss">
     .menu {
