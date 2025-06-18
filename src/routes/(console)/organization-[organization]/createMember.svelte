@@ -41,7 +41,7 @@
             await Promise.all([
                 invalidate(Dependencies.ACCOUNT),
                 invalidate(Dependencies.ORGANIZATION),
-                invalidate(Dependencies.MEMBERS),
+                invalidate(Dependencies.MEMBERS)
             ]);
 
             showCreate = false;
