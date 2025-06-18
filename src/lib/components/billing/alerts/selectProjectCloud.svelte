@@ -34,7 +34,7 @@
             invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',
-                message: `Updated selected projects to keep`
+                message: `Projects updated for archiving`
             });
         } catch (e) {
             error = e.message;
@@ -44,7 +44,7 @@
 
 <Modal bind:show={showSelectProject} title={'Manage projects'} onSubmit={updateSelected}>
     <svelte:fragment slot="description">
-        Choose which two projects over will be blocked after this date.
+        Choose which two projects to keep. Projects over the limit will be blocked after this date.
     </svelte:fragment>
     {#if error}
         <Alert.Inline status="error" title="Error">{error}</Alert.Inline>
@@ -76,18 +76,18 @@
         <Alert.Inline
             status="warning"
             title={`${projects.length - selectedProjects.length} projects will be archived on ${billingProjectsLimitDate}`}>
-            {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
-                {@html text}{index == projectsToArchive.length - 2
-                    ? ', and '
-                    : index < projectsToArchive.length - 1
-                      ? ', '
-                      : ''}
-            {/each} will be archived.
+            <span>
+                {#each projectsToArchive as project, index}
+                    {@const text = `${index === 0 ? '' : ' '}<b>${project.name}</b> `}
+                    {@html text}{#if index < projectsToArchive.length - 1}{#if index == projectsToArchive.length - 2} and {/if}{#if index < projectsToArchive.length - 2}, {/if}{/if}
+                {/each}
+                will be archived.
+            </span>
         </Alert.Inline>
     {/if}
     <svelte:fragment slot="footer">
-        <Button.Button variant="secondary" on:click={() => (showSelectProject = false)}
+        <Button.Button size="s" variant="secondary" on:click={() => (showSelectProject = false)}
             >Cancel</Button.Button>
-        <Button.Button disabled={selectedProjects.length !== 2}>Save</Button.Button>
+        <Button.Button size="s" disabled={selectedProjects.length !== 2}>Save</Button.Button>
     </svelte:fragment>
 </Modal>
