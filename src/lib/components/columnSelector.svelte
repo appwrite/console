@@ -19,7 +19,7 @@
     } = $props();
 
     let maxHeight = $state('none');
-    let containerRef;
+    let containerRef: HTMLDivElement = $state();
 
     const calcMaxHeight = () => {
         if (containerRef) {
@@ -67,7 +67,7 @@
         calcMaxHeight();
     });
 
-    let selectedColumnsNumber = $derived(
+    const selectedColumnsNumber = $derived(
         $columns.reduce((acc, column) => {
             if (column.hide === true) return acc;
 
