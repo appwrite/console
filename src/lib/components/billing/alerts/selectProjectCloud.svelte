@@ -7,8 +7,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { page } from '$app/stores';
     import { billingProjectsLimitDate } from '$lib/stores/billing';
+    import { page } from '$app/state';
+    import { toLocaleDateTime } from '$lib/helpers/date';
 
     export let showSelectProject: boolean;
     export let selectedProjects: Array<string> = [];
@@ -17,7 +18,7 @@
     let error: string | null = null;
 
     onMount(() => {
-        projects = $page.data.projects?.projects || [];
+        projects = page.data.projects?.projects || [];
     });
 
     let projectsToArchive: Array<Models.Project> = [];
@@ -62,8 +63,7 @@
             <Table.Row.Base {root} id={project.$id}>
                 <Table.Cell column="name" {root}>{project.name}</Table.Cell>
                 <Table.Cell column="created" {root}
-                    >{new Date(project.$createdAt).toLocaleDateString()}
-                    {new Date(project.$createdAt).toLocaleTimeString()}</Table.Cell>
+                    >{toLocaleDateTime(project.$createdAt)}</Table.Cell>
             </Table.Row.Base>
         {/each}
     </Table.Root>
@@ -79,7 +79,10 @@
             <span>
                 {#each projectsToArchive as project, index}
                     {@const text = `${index === 0 ? '' : ' '}<b>${project.name}</b> `}
-                    {@html text}{#if index < projectsToArchive.length - 1}{#if index == projectsToArchive.length - 2} and {/if}{#if index < projectsToArchive.length - 2}, {/if}{/if}
+                    {@html text}{#if index < projectsToArchive.length - 1}{#if index == projectsToArchive.length - 2}
+                            and
+                        {/if}{#if index < projectsToArchive.length - 2},
+                        {/if}{/if}
                 {/each}
                 will be archived.
             </span>
