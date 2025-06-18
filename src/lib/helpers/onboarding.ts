@@ -1,11 +1,8 @@
-import { get } from 'svelte/store';
-import { user } from '$lib/stores/user';
 import { sdk } from '$lib/stores/sdk';
+import type { Account } from '$lib/stores/user';
 
-const userPreferences = () => get(user)?.prefs;
-
-export function hasOnboardingDismissed(projectId: string) {
-    const currentPrefs = userPreferences();
+export function hasOnboardingDismissed(projectId: string, account?: Account) {
+    const currentPrefs = account?.prefs;
     const onboardingDismissed = currentPrefs?.onboardingDismissed;
     return (
         onboardingDismissed &&
@@ -14,8 +11,8 @@ export function hasOnboardingDismissed(projectId: string) {
     );
 }
 
-export async function setHasOnboardingDismissed(projectId: string) {
-    const currentPrefs = userPreferences();
+export async function setHasOnboardingDismissed(projectId: string, account?: Account) {
+    const currentPrefs = account?.prefs;
     const onboardingDismissed = Array.isArray(currentPrefs?.onboardingDismissed)
         ? currentPrefs.onboardingDismissed
         : [];

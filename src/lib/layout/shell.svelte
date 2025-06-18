@@ -123,7 +123,7 @@
     }
 
     const progressCard = function getProgressCard() {
-        if (selectedProject && !hasOnboardingDismissed(selectedProject.$id)) {
+        if (selectedProject && !hasOnboardingDismissed(selectedProject.$id, $user)) {
             return {
                 title: 'Get started',
                 percentage: selectedProject && selectedProject.platforms.length ? 100 : 33

@@ -12,7 +12,7 @@
     import { trackEvent } from '$lib/actions/analytics';
 
     function dismissOnboarding() {
-        setHasOnboardingDismissed($project.$id);
+        setHasOnboardingDismissed($project.$id, $user);
         trackEvent('onboarding_hub_platform_dismiss');
         goto(`${base}/project-${$project.region}-${$project.$id}/overview`);
     }
@@ -51,7 +51,7 @@
                         >Follow a few quick steps to get started with Appwrite</Typography.Text>
                 </Layout.Stack>
                 <div class="dashboard-header-button">
-                    {#if !hasOnboardingDismissed($project.$id)}
+                    {#if !hasOnboardingDismissed($project.$id, $user)}
                         <Button.Button size="s" variant="secondary" on:click={dismissOnboarding}>
                             Dismiss this page
                         </Button.Button>
