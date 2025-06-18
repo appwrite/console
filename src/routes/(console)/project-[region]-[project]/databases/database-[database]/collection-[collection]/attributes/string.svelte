@@ -63,7 +63,7 @@
 
     let savedDefault = data.default;
 
-    let showEncrypt = flags.showAttributeEncrypt(page.data);
+    const showEncrypt = flags.showAttributeEncrypt(page.data);
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
