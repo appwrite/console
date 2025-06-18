@@ -20,7 +20,7 @@
     import { onMount, setContext, type Component } from 'svelte';
     import Bandwidth from './bandwidth.svelte';
     import Requests from './requests.svelte';
-    import { selectedTab, usage } from './store';
+    import { usage } from './store';
     import { formatNum } from '$lib/helpers/string';
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
@@ -52,7 +52,7 @@
     }
 
     function isTabSelected(key: string) {
-        return $selectedTab === key;
+        return page.url.pathname.endsWith(`/${key}`);
     }
 
     $: $registerCommands([
