@@ -38,9 +38,11 @@
                 `${page.url.origin}${base}/invite`,
                 name || undefined
             );
-            await invalidate(Dependencies.ACCOUNT);
-            await invalidate(Dependencies.ORGANIZATION);
-            await invalidate(Dependencies.MEMBERS);
+            await Promise.all([
+                invalidate(Dependencies.ACCOUNT),
+                invalidate(Dependencies.ORGANIZATION),
+                invalidate(Dependencies.MEMBERS),
+            ]);
 
             showCreate = false;
             addNotification({

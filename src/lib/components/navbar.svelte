@@ -242,8 +242,7 @@
                                 size="l"
                                 trailingIcon={IconUser}
                                 href={`${base}/account`}
-                                on:click={() => toggle()}
-                            >
+                                on:click={() => toggle()}>
                                 Account</ActionMenu.Item.Anchor>
 
                             <ActionMenu.Item.Button
