@@ -72,7 +72,7 @@
     </CreateProject>
     <svelte:fragment slot="footer">
         <Button.Button
-            disabled={projects && projects >= $currentPlan?.projects}
+            disabled={$currentPlan.projects > 0 && projects && projects >= $currentPlan?.projects}
             type="submit"
             variant="primary"
             size="s">Create</Button.Button>

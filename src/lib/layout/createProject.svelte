@@ -19,6 +19,7 @@
     export let projects: number = undefined;
 
     let showCustomId = false;
+    $: projectsLimited = $currentPlan.projects > 0 && projects && projects >= $currentPlan?.projects;
 </script>
 
 <svelte:head>
@@ -32,11 +33,13 @@
         {#if showTitle}
             <Typography.Title size="l">Create your project</Typography.Title>
         {/if}
-        {#if projects && projects >= $currentPlan?.projects}
+        {#if projectsLimited}
             <Alert.Inline status="warning" title="You’ve reached your limit of 2 projects">
                 Extra projects are available on paid plans for an additional fee
                 <svelte:fragment slot="actions">
                     <Button
+                        compact
+                        size="s"
                         href={`${base}/organization-${page.params.organization}/billing`}
                         external
                         text>Upgrade</Button>
@@ -47,6 +50,7 @@
             <Layout.Stack direction="column" gap="xxl">
                 <Layout.Stack direction="column" gap="s">
                     <Input.Text
+                        disabled={projectsLimited}
                         label="Name"
                         placeholder="Project name"
                         required
@@ -65,6 +69,7 @@
                 {#if isCloud && regions.length > 0}
                     <Layout.Stack gap="xs">
                         <Input.Select
+                            disabled={projectsLimited}
                             required
                             bind:value={region}
                             placeholder="Select a region"
