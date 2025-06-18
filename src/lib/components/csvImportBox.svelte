@@ -27,37 +27,42 @@
     const importItems: Writable<ImportItemsMap> = writable(new Map());
 
     async function showCompletionNotification(
-        databaseId: string,
-        collectionId: string,
-        importData: Payload
+        database: string,
+        collection: string,
+        payload: Payload
     ) {
-        await invalidate(Dependencies.ROWS);
-        const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}`;
+        const isSuccess = payload.status === 'completed';
+        const isError = !isSuccess && !!payload.errors;
 
-        // extract clean message from nested backend error.
-        const match = importData.errors.join('').match(/message: '(.*)' Message:/i);
-        const errorMessage = match?.[1];
+        if (!isSuccess && !isError) return;
 
-        const type = importData.status === 'completed' ? 'success' : 'error';
-        const message =
-            importData.status === 'completed'
-                ? 'CSV import finished successfully.'
-                : `${errorMessage}`;
+        let errorMessage = 'Import failed. Check your CSV for correct fields and required values.';
+        if (isError && Array.isArray(payload.errors)) {
+            try {
+                // the `errors` is a list of json encoded string.
+                errorMessage = JSON.parse(payload.errors[0]).message;
+            } catch {
+                // do nothing, fallback to default message.
+            }
+        }
+
+        const type = isSuccess ? 'success' : 'error';
+        const message = isError ? errorMessage : 'CSV import finished successfully.';
+        const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${database}/table-${collection}`;
 
         addNotification({
             type,
             message,
             isHtml: true,
             buttons:
-                collectionId === page.params.table || type === 'error'
-                    ? undefined
-                    : [
-                          {
-                              name: 'View documents',
-                              method: () => goto(url)
-                          }
-                      ]
+                isSuccess && collection !== page.params.collection
+                    ? [{ name: 'View documents', method: () => goto(url) }]
+                    : undefined
         });
+
+        if (isSuccess) {
+            await invalidate(Dependencies.ROWS);
+        }
     }
 
     async function updateOrAddItem(importData: Payload | Models.Migration) {

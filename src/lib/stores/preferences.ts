@@ -107,7 +107,6 @@ function createPreferences() {
                 }
             );
         },
-
         getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
             return preferences?.collections?.[collectionId] ?? [];
         },
