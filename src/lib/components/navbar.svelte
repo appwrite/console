@@ -227,7 +227,7 @@
                     style:user-select="none">
                     <Avatar size="s" src={avatar} />
                 </button>
-                <svelte:fragment slot="tooltip">
+                <svelte:fragment slot="tooltip" let:toggle>
                     <ActionMenu.Root noPadding>
                         <Layout.Stack gap="xxs">
                             <div
@@ -239,9 +239,11 @@
                                 </Typography.Text>
                             </div>
                             <ActionMenu.Item.Anchor
-                                trailingIcon={IconUser}
                                 size="l"
-                                href={`${base}/account`}>
+                                trailingIcon={IconUser}
+                                href={`${base}/account`}
+                                on:click={() => toggle()}
+                            >
                                 Account</ActionMenu.Item.Anchor>
 
                             <ActionMenu.Item.Button
