@@ -9,6 +9,7 @@
     import UpdateSessionsLimit from './updateSessionsLimit.svelte';
     import UpdateMembershipPrivacy from './updateMembershipPrivacy.svelte';
     import UpdateUsersLimit from './updateUsersLimit.svelte';
+    import UpdateSessionInvalidation from './updateSessionInvalidation.svelte';
 </script>
 
 <Container>
@@ -19,6 +20,7 @@
     <UpdatePasswordDictionary />
     <UpdatePersonalDataCheck />
     <UpdateSessionAlerts />
+    <UpdateSessionInvalidation/>
     <UpdateMockNumbers />
     <UpdateMembershipPrivacy />
 </Container>
