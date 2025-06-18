@@ -35,13 +35,13 @@
                 message: 'Security has been updated',
                 type: 'success'
             });
-            trackEvent(Submit.CollectionUpdateSecurity);
+            trackEvent(Submit.TableUpdateSecurity);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.CollectionUpdateSecurity);
+            trackError(error, Submit.TableUpdateSecurity);
         }
     }
 </script>

@@ -26,7 +26,7 @@
                 type: 'success',
                 message: `Row has been deleted`
             });
-            trackEvent(Submit.DocumentDelete);
+            trackEvent(Submit.RowDelete);
             await goto(
                 `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}`
             );
@@ -35,7 +35,7 @@
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.DocumentDelete);
+            trackError(error, Submit.RowDelete);
         }
     };
 

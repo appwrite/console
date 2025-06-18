@@ -215,7 +215,7 @@
                                                 showDelete = true;
                                                 showDropdown[index] = false;
                                                 selectedAttribute = attribute;
-                                                trackEvent(Click.DatabaseAttributeDelete);
+                                                trackEvent(Click.DatabaseColumnDelete);
                                             }}>
                                             Delete
                                         </ActionMenu.Item.Button>

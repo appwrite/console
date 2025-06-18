@@ -40,13 +40,13 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
-            trackEvent(Submit.CollectionUpdatePermissions);
+            trackEvent(Submit.TableUpdatePermissions);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.CollectionUpdatePermissions);
+            trackError(error, Submit.TableUpdatePermissions);
         }
     }
 

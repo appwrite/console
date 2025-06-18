@@ -26,13 +26,13 @@
                 type: 'success',
                 message: `${$collection.name} has been deleted`
             });
-            trackEvent(Submit.CollectionDelete);
+            trackEvent(Submit.TableDelete);
             await goto(
                 `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}`
             );
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.CollectionDelete);
+            trackError(e, Submit.TableDelete);
         }
     }
 </script>

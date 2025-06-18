@@ -45,10 +45,10 @@
                 message: `Column ${selectedAttribute.key} has been updated`
             });
             showEdit = false;
-            trackEvent(Submit.AttributeUpdate);
+            trackEvent(Submit.ColumnUpdate);
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.AttributeUpdate);
+            trackError(e, Submit.ColumnUpdate);
         }
     }
 

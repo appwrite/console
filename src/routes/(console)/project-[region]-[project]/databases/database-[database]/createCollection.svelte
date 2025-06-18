@@ -34,12 +34,12 @@
                 message: `${name} has been created`
             });
             name = id = null;
-            trackEvent(Submit.CollectionCreate, {
+            trackEvent(Submit.TableCreate, {
                 customId: !!id
             });
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.CollectionCreate);
+            trackError(e, Submit.TableCreate);
         }
     };
 

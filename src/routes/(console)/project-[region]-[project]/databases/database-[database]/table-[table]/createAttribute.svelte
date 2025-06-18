@@ -47,10 +47,10 @@
                 message: `Column ${key ?? data?.key} has been created`
             });
             showCreate = false;
-            trackEvent(Submit.AttributeCreate);
+            trackEvent(Submit.ColumnCreate);
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.AttributeCreate);
+            trackError(e, Submit.ColumnCreate);
         }
     }
 

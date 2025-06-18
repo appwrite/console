@@ -58,7 +58,7 @@
                 );
 
             invalidate(Dependencies.ROW);
-            trackEvent(Submit.DocumentUpdate);
+            trackEvent(Submit.RowUpdate);
             addNotification({
                 message: 'Row has been updated',
                 type: 'success'
@@ -68,7 +68,7 @@
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.DocumentUpdate);
+            trackError(error, Submit.RowUpdate);
         }
     }
 

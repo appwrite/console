@@ -32,7 +32,7 @@
         );
         try {
             await Promise.all(promises);
-            trackEvent(Submit.CollectionDelete);
+            trackEvent(Submit.TableDelete);
             addNotification({
                 type: 'success',
                 message: `${selectedRows.length} table${selectedRows.length > 1 ? 's' : ''} deleted`
@@ -43,7 +43,7 @@
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.CollectionDelete);
+            trackError(error, Submit.TableDelete);
         } finally {
             selectedRows = [];
             showDelete = false;

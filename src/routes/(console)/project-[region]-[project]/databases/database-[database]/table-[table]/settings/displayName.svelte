@@ -25,13 +25,13 @@
                 message: 'Display names have been updated',
                 type: 'success'
             });
-            trackEvent(Submit.CollectionUpdateDisplayNames);
+            trackEvent(Submit.TableUpdateDisplayNames);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.CollectionUpdateDisplayNames);
+            trackError(error, Submit.TableUpdateDisplayNames);
         }
     }
 

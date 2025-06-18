@@ -64,10 +64,10 @@
             await invalidate(Dependencies.ROW);
 
             currentDoc = JSON.stringify($work);
-            trackEvent(Submit.DocumentUpdate);
+            trackEvent(Submit.RowUpdate);
             disableUpdate = true;
             addNotification({
-                message: 'Document has been updated',
+                message: 'Row has been updated',
                 type: 'success'
             });
         } catch (error) {
@@ -75,7 +75,7 @@
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.DocumentUpdate);
+            trackError(error, Submit.RowUpdate);
         }
     }
 </script>

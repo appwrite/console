@@ -26,15 +26,15 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `Attribute has been deleted`
+                message: `Column has been deleted`
             });
-            trackEvent(Submit.AttributeDelete);
+            trackEvent(Submit.ColumnDelete);
             await goto(
                 `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${page.params.table}/attributes`
             );
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.AttributeDelete);
+            trackError(e, Submit.ColumnDelete);
         }
     }
 

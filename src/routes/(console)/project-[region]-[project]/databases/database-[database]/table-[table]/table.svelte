@@ -126,10 +126,10 @@
         );
         try {
             await Promise.all(promises);
-            trackEvent(Submit.DocumentDelete);
+            trackEvent(Submit.RowDelete);
             addNotification({
                 type: 'success',
-                message: `${selectedRows.length} document${selectedRows.length > 1 ? 's' : ''} deleted`
+                message: `${selectedRows.length} row${selectedRows.length > 1 ? 's' : ''} deleted`
             });
             invalidate(Dependencies.ROWS);
         } catch (error) {
@@ -137,7 +137,7 @@
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.DocumentDelete);
+            trackError(error, Submit.RowDelete);
         } finally {
             selectedRows = [];
             showDelete = false;

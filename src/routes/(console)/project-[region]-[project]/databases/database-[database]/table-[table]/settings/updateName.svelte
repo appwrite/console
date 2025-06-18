@@ -35,13 +35,13 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
-            trackEvent(Submit.CollectionUpdateName);
+            trackEvent(Submit.TableUpdateName);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.CollectionUpdateName);
+            trackError(error, Submit.TableUpdateName);
         }
     }
 </script>

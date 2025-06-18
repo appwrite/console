@@ -37,13 +37,13 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
-            trackEvent(Submit.DocumentUpdatePermissions);
+            trackEvent(Submit.RowUpdatePermissions);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.DocumentUpdatePermissions);
+            trackError(error, Submit.RowUpdatePermissions);
         }
     }
 

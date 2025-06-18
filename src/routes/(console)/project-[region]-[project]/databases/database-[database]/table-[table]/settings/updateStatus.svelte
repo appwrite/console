@@ -36,13 +36,13 @@
                 message: `${$collection.name} has been updated`,
                 type: 'success'
             });
-            trackEvent(Submit.CollectionUpdateEnabled);
+            trackEvent(Submit.TableUpdateEnabled);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.CollectionUpdateEnabled);
+            trackError(error, Submit.TableUpdateEnabled);
         }
     }
 </script>

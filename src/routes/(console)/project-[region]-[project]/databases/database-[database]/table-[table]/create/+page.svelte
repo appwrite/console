@@ -65,7 +65,7 @@
                 message: 'Row has been created',
                 type: 'success'
             });
-            trackEvent(Submit.DocumentCreate, {
+            trackEvent(Submit.RowCreate, {
                 customId: !!$createDocument.id
             });
             goto(
@@ -76,7 +76,7 @@
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.DocumentCreate);
+            trackError(error, Submit.RowCreate);
         }
     }
 </script>
