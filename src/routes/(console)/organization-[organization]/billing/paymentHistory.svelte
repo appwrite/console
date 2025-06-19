@@ -61,6 +61,8 @@
     $: if (offset !== null) {
         request();
     }
+
+    $: hasPaymentError = invoiceList?.invoices.some((invoice) => invoice?.lastError);
 </script>
 
 <CardGrid>
@@ -71,8 +73,8 @@
             <Table.Root
                 let:root
                 columns={[
-                    { id: 'dueDate' },
-                    { id: 'status', width: { min: 200 } },
+                    { id: 'dueDate', width: { min: 120 } },
+                    { id: 'status', width: { min: hasPaymentError ? 200 : 100 } },
                     { id: 'amount', width: { min: 120 } },
                     { id: 'action', width: 40 }
                 ]}>
@@ -162,10 +164,10 @@
                 {/each}
             </Table.Root>
             {#if invoiceList.total > limit}
-                <div class="u-flex u-main-space-between">
+                <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                     <p class="text">Total results: {invoiceList.total}</p>
                     <PaginationInline {limit} bind:offset total={invoiceList.total} hidePages />
-                </div>
+                </Layout.Stack>
             {/if}
         {:else}
             <Card.Base>
