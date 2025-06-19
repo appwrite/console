@@ -30,7 +30,6 @@
             await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',
-                isHtml: true,
                 message: `Budget cap enabled for ${$organization.name}`
             });
             trackEvent(Submit.BudgetCapUpdate, {
