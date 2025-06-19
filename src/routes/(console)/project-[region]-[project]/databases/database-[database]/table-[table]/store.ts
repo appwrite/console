@@ -19,12 +19,12 @@ type Collection = Omit<Models.Collection, 'attributes'> & {
 };
 
 export const collection = derived(page, ($page) => $page.data.collection as Collection);
-export const attributes = derived(
+export const columns = derived(
     page,
     ($page) => $page.data.collection.attributes as Attributes[]
 );
 export const indexes = derived(page, ($page) => $page.data.collection.indexes as Models.Index[]);
 
-export const columns = writable<Column[]>([]);
+export const tableColumns = writable<Column[]>([]);
 
 export const isCsvImportInProgress = writable(false);

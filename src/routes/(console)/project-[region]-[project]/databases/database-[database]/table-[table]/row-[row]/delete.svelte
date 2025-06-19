@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Layout, Selector, Table } from '@appwrite.io/pink-svelte';
-    import { attributes, collection } from '../store';
+    import { columns, collection } from '../store';
     import { isRelationship, isRelationshipToMany } from './columns/store';
     import type { Models } from '@appwrite.io/console';
 
@@ -45,7 +45,7 @@
         'restrict' = 'Row cannot be deleted'
     }
 
-    $: relAttributes = $attributes?.filter(
+    $: relAttributes = $columns?.filter(
         (attribute) =>
             isRelationship(attribute) &&
             // One-to-One are always included

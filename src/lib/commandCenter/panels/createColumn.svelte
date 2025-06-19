@@ -1,11 +1,11 @@
 <script lang="ts">
     import { initCreateColumn } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/+layout.svelte';
-    import { attributeOptions } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/columns/store';
+    import { columnOptions } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/columns/store';
     import Template from './template.svelte';
 
     let search = '';
 
-    let options = attributeOptions.map((option) => {
+    let options = columnOptions.map((option) => {
         return {
             label: option.name,
             icon: option.icon,

@@ -7,7 +7,7 @@
     import { last, symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
-    import { attributes } from '../store';
+    import { columns } from '../store';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
@@ -35,7 +35,7 @@
         }
     }
 
-    $: options = ($attributes as Models.AttributeString[])
+    $: options = ($columns as Models.AttributeString[])
         .filter(
             (attr) =>
                 attr.type === 'string' && !attr?.array && !names?.some((name) => name === attr.key)

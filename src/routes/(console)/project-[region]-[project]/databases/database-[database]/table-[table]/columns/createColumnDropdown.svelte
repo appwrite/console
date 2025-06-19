@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
-    import { attributeOptions, type Option } from './store';
+    import { columnOptions, type Option } from './store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import CsvDisabled from '../csvDisabled.svelte';
     import { isCsvImportInProgress } from '../store';
@@ -26,7 +26,7 @@
             </Button>
         </slot>
         <ActionMenu.Root slot="tooltip">
-            {#each attributeOptions as attribute}
+            {#each columnOptions as attribute}
                 <ActionMenu.Item.Button
                     leadingIcon={attribute.icon}
                     on:click={() => {

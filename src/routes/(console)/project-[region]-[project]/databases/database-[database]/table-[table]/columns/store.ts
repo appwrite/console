@@ -55,7 +55,7 @@ export type Option = {
     icon: ComponentType;
 };
 
-export const attributeOptions: Option[] = [
+export const columnOptions: Option[] = [
     {
         name: 'String',
         sentenceName: 'string',

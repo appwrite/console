@@ -20,11 +20,11 @@
     import { isRelationship, isString } from '../row-[row]/columns/store';
     import FailedModal from '../failedModal.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
-    import { attributes, type Attributes, isCsvImportInProgress } from '../store';
+    import { columns, type Attributes, isCsvImportInProgress } from '../store';
     import CreateColumnDropdown from './createColumnDropdown.svelte';
     import Delete from './deleteColumn.svelte';
     import Edit from './edit.svelte';
-    import { attributeOptions, type Option } from './store';
+    import { columnOptions, type Option } from './store';
     import {
         IconArrowSmRight,
         IconDotsHorizontal,
@@ -82,7 +82,7 @@
         {/if}
     </Layout.Stack>
 
-    {#if $attributes.length}
+    {#if $columns.length}
         <Table.Root
             let:root
             columns={[
@@ -97,8 +97,8 @@
                 <Table.Header.Cell column="default" {root}>Default value</Table.Header.Cell>
                 <Table.Header.Cell column="actions" {root} />
             </svelte:fragment>
-            {#each $attributes as attribute, index}
-                {@const option = attributeOptions.find((option) => option.type === attribute.type)}
+            {#each $columns as attribute, index}
+                {@const option = columnOptions.find((option) => option.type === attribute.type)}
                 <Table.Row.Base {root}>
                     <Table.Cell column="key" {root}>
                         <Layout.Stack direction="row" alignItems="center">

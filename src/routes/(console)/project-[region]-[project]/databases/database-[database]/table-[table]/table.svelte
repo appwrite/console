@@ -14,7 +14,7 @@
     import type { PageData } from './$types';
     import { isRelationship, isRelationshipToMany, isString } from './row-[row]/columns/store';
     import RelationshipsModal from './relationshipsModal.svelte';
-    import { attributes, collection, columns } from './store';
+    import { columns, collection, tableColumns } from './store';
     import type { ColumnType } from '$lib/helpers/types';
     import {
         Tooltip,
@@ -49,7 +49,7 @@
     function updateMaxWidth() {
         const tableCells = Array.from(document.querySelectorAll('.less-width-truncated'));
 
-        const visibleColumnsCount = $columns.filter((col) => !col.hide).length;
+        const visibleColumnsCount = $tableColumns.filter((col) => !col.hide).length;
         const newMaxWidth = Math.max(50 - (visibleColumnsCount - 1) * 5, 25);
 
         tableCells.forEach((cell) => {
@@ -99,7 +99,7 @@
     $: selected = preferences.getCustomCollectionColumns(page.params.table);
 
     $: {
-        columns.set(
+        tableColumns.set(
             $collection.attributes.map((attribute) => ({
                 id: attribute.key,
                 title: attribute.key,
@@ -151,7 +151,7 @@
         'restrict' = 'Row cannot be deleted'
     }
 
-    $: relAttributes = $attributes?.filter(
+    $: relAttributes = $columns?.filter(
         (attribute) =>
             isRelationship(attribute) &&
             // One-to-One are always included
@@ -175,13 +175,13 @@
     bind:selectedRows
     columns={[
         { id: '$id', width: 200 },
-        ...$columns,
+        ...$tableColumns,
         { id: '$created', width: 200 },
         { id: '$updated', width: 200 }
     ]}>
     <svelte:fragment slot="header" let:root>
         <Table.Header.Cell column="$id" {root}>Document ID</Table.Header.Cell>
-        {#each $columns as column}
+        {#each $tableColumns as column}
             <Table.Header.Cell column={column.id} {root}>{column.title}</Table.Header.Cell>
         {/each}
         <Table.Header.Cell column="$created" {root}>Created</Table.Header.Cell>
@@ -200,8 +200,8 @@
                 {/key}
             </Table.Cell>
 
-            {#each $columns as { id } (id)}
-                {@const attr = $attributes.find((n) => n.key === id)}
+            {#each $tableColumns as { id } (id)}
+                {@const attr = $columns.find((n) => n.key === id)}
                 {#if attr}
                     <Table.Cell column={id} {root}>
                         {#if isRelationship(attr)}

@@ -12,7 +12,7 @@
     import CreateColumnDropdown from './columns/createColumnDropdown.svelte';
     import type { Option } from './columns/store';
     import CreateColumn from './createColumn.svelte';
-    import { collection, columns, isCsvImportInProgress } from './store';
+    import { collection, tableColumns, isCsvImportInProgress } from './store';
     import Table from './table.svelte';
     import { writable } from 'svelte/store';
     import FilePicker from '$lib/components/filePicker.svelte';
@@ -35,7 +35,7 @@
     const filterColumns = writable<Column[]>([]);
 
     $: selected = preferences.getCustomCollectionColumns(page.params.table);
-    $: columns.set(
+    $: tableColumns.set(
         $collection.attributes.map((attribute) => ({
             id: attribute.key,
             title: attribute.key,
@@ -47,7 +47,7 @@
         }))
     );
     $: filterColumns.set([
-        ...$columns,
+        ...$tableColumns,
         ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
             id,
             title: id,
@@ -95,11 +95,11 @@
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Filters
                     query={data.query}
-                    {columns}
+                    columns={tableColumns}
                     disabled={!(hasAttributes && hasValidAttributes)}
                     analyticsSource="database_rows" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    <ViewSelector view={data.view} {columns} hideView />
+                    <ViewSelector view={data.view} columns={tableColumns} hideView />
                     {#if flags.showCsvImport(data)}
                         <Button
                             secondary

@@ -2,7 +2,7 @@
     import { Modal } from '$lib/components';
     import {
         option,
-        attributeOptions,
+        columnOptions,
         type Option
     } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/columns/store';
     import { Button, InputText } from '$lib/elements/forms';
@@ -55,7 +55,7 @@
     }
 
     $: if (selectedOption) {
-        $option = attributeOptions.find((option) => option.name === selectedOption);
+        $option = columnOptions.find((option) => option.name === selectedOption);
     }
 
     $: if (!showCreate) {
@@ -70,7 +70,7 @@
         };
     }
 
-    $: title = `Create ${attributeOptions.find((option) => option.name === selectedOption)?.sentenceName ?? ''} column`;
+    $: title = `Create ${columnOptions.find((option) => option.name === selectedOption)?.sentenceName ?? ''} column`;
 </script>
 
 <Modal {error} bind:show={showCreate} onSubmit={submit} {title}>

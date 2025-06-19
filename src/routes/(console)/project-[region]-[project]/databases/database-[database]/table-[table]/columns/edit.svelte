@@ -9,7 +9,7 @@
     import deepEqual from 'deep-equal';
     import { addNotification } from '$lib/stores/notifications';
     import type { Attributes } from '../store';
-    import { attributeOptions, type Option } from './store';
+    import { columnOptions, type Option } from './store';
 
     export let showEdit = false;
     export let selectedAttribute: Attributes;
@@ -21,7 +21,7 @@
     let error: string;
     let currentAttr: Attributes;
 
-    $: option = attributeOptions.find((option) => {
+    $: option = columnOptions.find((option) => {
         if (selectedAttribute) {
             if ('format' in selectedAttribute && selectedAttribute.format) {
                 return option?.format === selectedAttribute?.format;
@@ -53,7 +53,7 @@
     }
 
     $: onShow(showEdit);
-    $: title = `Update ${attributeOptions.find((v) => v.name === option.name)?.sentenceName ?? ''} attribute`;
+    $: title = `Update ${columnOptions.find((v) => v.name === option.name)?.sentenceName ?? ''} attribute`;
 
     function onShow(show: boolean) {
         if (show) {
