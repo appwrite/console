@@ -13,7 +13,7 @@
 
     async function updateSessionInvalidation() {
         try {
-            await sdk.forConsole.projects.updateAuthPasswordDictionary(
+            await sdk.forConsole.projects.updateSessionInvalidation(
                 $project.$id,
                 sessionInvalidation
             );
@@ -39,10 +39,11 @@
         <svelte:fragment slot="aside">
             <InputSwitch
                 bind:value={sessionInvalidation}
-                id="passwordDictionary"
-                label="Password dictionary" />
+                id="invalidateSessions"
+                label="Invalidate sessions" />
             <Typography.Text>
-                Enabling this option will clear all existing sessions when the user changes their password.
+                Enabling this option will clear all existing sessions when the user changes their
+                password.
             </Typography.Text>
         </svelte:fragment>
 

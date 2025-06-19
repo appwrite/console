@@ -20,7 +20,7 @@
     <UpdatePasswordDictionary />
     <UpdatePersonalDataCheck />
     <UpdateSessionAlerts />
-    <UpdateSessionInvalidation/>
+    <UpdateSessionInvalidation />
     <UpdateMockNumbers />
     <UpdateMembershipPrivacy />
 </Container>
