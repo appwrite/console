@@ -1,5 +1,7 @@
 <script lang="ts">
     import Helper from '$lib/elements/forms/helper.svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconChevronDown } from '@appwrite.io/pink-icons-svelte';
 
     export let value: string;
     export let id: string;
@@ -30,7 +32,7 @@
     <select bind:this={element} {id} bind:value {required} on:invalid={handleInvalid}>
         <slot />
     </select>
-    <span class="icon-cheveron-down" aria-hidden="true"></span>
+    <Icon icon={IconChevronDown} size="s" />
 </div>
 {#if error}
     <Helper type="warning">{error}</Helper>

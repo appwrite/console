@@ -3,7 +3,7 @@
     import { capitalize } from '$lib/helpers/string';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import Attribute from './attribute.svelte';
+    import Column from './column.svelte';
     import type { Attributes } from '../store';
 
     export let attribute: Attributes;
@@ -25,7 +25,7 @@
         };
     }
 
-    function getAttributeType(attribute: Attributes) {
+    function getColumnType(attribute: Attributes) {
         if ('format' in attribute) {
             switch (attribute.format) {
                 case 'ip':
@@ -51,7 +51,7 @@
             <Layout.Stack gap="xxs" direction="row" alignItems="center">
                 <Typography.Text variant="m-500">{label}</Typography.Text>
                 <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                    {getAttributeType(attribute)}
+                    {getColumnType(attribute)}
                 </Typography.Text>
             </Layout.Stack>
             <Button secondary on:click={() => addArrayItem(attribute.key)}>
@@ -63,10 +63,10 @@
         <Layout.Stack>
             {#each [...formValues[attribute.key].keys()] as index}
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
-                    <Attribute
+                    <Column
                         {attribute}
                         id={`${attribute.key}-${index}`}
-                        optionalText={index === 0 ? getAttributeType(attribute) : undefined}
+                        optionalText={index === 0 ? getColumnType(attribute) : undefined}
                         label={index === 0 ? label : ''}
                         bind:value={formValues[attribute.key][index]} />
                     <Button text icon on:click={() => removeArrayItem(attribute.key, index)}>
@@ -83,11 +83,11 @@
         </Layout.Stack>
     {/if}
 {:else}
-    <Attribute
+    <Column
+        {label}
         {editing}
         {attribute}
-        {label}
-        optionalText={getAttributeType(attribute)}
         id={attribute.key}
+        optionalText={getColumnType(attribute)}
         bind:value={formValues[attribute.key]} />
 {/if}

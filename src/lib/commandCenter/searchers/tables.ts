@@ -6,7 +6,7 @@ import { sdk } from '$lib/stores/sdk';
 import { base } from '$app/paths';
 import { page } from '$app/state';
 
-export const collectionsSearcher = (async (query: string) => {
+export const tablesSearcher = (async (query: string) => {
     const databaseId = get(database).$id;
     const { collections } = await sdk
         .forProject(page.params.region, page.params.project)

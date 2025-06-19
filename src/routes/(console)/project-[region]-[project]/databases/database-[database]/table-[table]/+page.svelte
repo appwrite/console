@@ -9,9 +9,9 @@
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
     import { Card, Icon, Layout, Empty as PinkEmpty } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
-    import CreateAttributeDropdown from './columns/createAttributeDropdown.svelte';
+    import CreateColumnDropdown from './columns/createColumnDropdown.svelte';
     import type { Option } from './columns/store';
-    import CreateAttribute from './createAttribute.svelte';
+    import CreateColumn from './createColumn.svelte';
     import { collection, columns, isCsvImportInProgress } from './store';
     import Table from './table.svelte';
     import { writable } from 'svelte/store';
@@ -199,14 +199,14 @@
                             event="empty_documentation"
                             size="s">Documentation</Button>
                         {#if $canWriteCollections}
-                            <CreateAttributeDropdown
+                            <CreateColumnDropdown
                                 bind:selectedOption={selectedAttribute}
                                 bind:showCreate={showCreateAttribute}
                                 let:toggle>
                                 <Button secondary event="create_column" on:click={toggle}>
                                     Create column
                                 </Button>
-                            </CreateAttributeDropdown>
+                            </CreateColumnDropdown>
                         {/if}
                     </slot>
                 </PinkEmpty>
@@ -215,8 +215,9 @@
     </Container>
 {/key}
 
+<!-- TODO: @itznotabug - change variable name -->
 {#if showCreateAttribute}
-    <CreateAttribute
+    <CreateColumn
         bind:showCreate={showCreateAttribute}
         bind:selectedOption={selectedAttribute} />
 {/if}

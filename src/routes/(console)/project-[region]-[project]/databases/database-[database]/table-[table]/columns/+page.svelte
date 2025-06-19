@@ -16,13 +16,13 @@
         Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import Create from '../createAttribute.svelte';
+    import Create from '../createColumn.svelte';
     import { isRelationship, isString } from '../row-[row]/columns/store';
     import FailedModal from '../failedModal.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
     import { attributes, type Attributes, isCsvImportInProgress } from '../store';
-    import CreateAttributeDropdown from './createAttributeDropdown.svelte';
-    import Delete from './deleteAttribute.svelte';
+    import CreateColumnDropdown from './createColumnDropdown.svelte';
+    import Delete from './deleteColumn.svelte';
     import Edit from './edit.svelte';
     import { attributeOptions, type Option } from './store';
     import {
@@ -78,7 +78,7 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <Typography.Title>Columns</Typography.Title>
         {#if $canWriteCollections}
-            <CreateAttributeDropdown bind:selectedOption bind:showCreate />
+            <CreateColumnDropdown bind:selectedOption bind:showCreate />
         {/if}
     </Layout.Stack>
 
@@ -237,11 +237,11 @@
                     event="empty_documentation"
                     ariaLabel={'create column'}>Documentation</Button>
                 {#if $canWriteCollections}
-                    <CreateAttributeDropdown bind:selectedOption bind:showCreate let:toggle>
+                    <CreateColumnDropdown bind:selectedOption bind:showCreate let:toggle>
                         <Button secondary event="create_column" on:click={toggle}>
                             Create column
                         </Button>
-                    </CreateAttributeDropdown>
+                    </CreateColumnDropdown>
                 {/if}
             </svelte:fragment>
         </Empty>

@@ -2,7 +2,7 @@
     import CustomId from '$lib/components/customId.svelte';
     import { Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
     import type { Attributes } from '../store';
-    import AttributeItem from './attributeItem.svelte';
+    import ColumnItem from './columnItem.svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
 
     export let attributes: Attributes[] = [];
@@ -16,7 +16,7 @@
     <Layout.Stack>
         {#each attributes as attribute}
             {@const label = attribute.key}
-            <AttributeItem {attribute} bind:formValues {label} />
+            <ColumnItem {attribute} bind:formValues {label} />
         {/each}
 
         {#if customId !== undefined}

@@ -3,7 +3,7 @@
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { collection } from '../store';
-    import Delete from './deleteCollection.svelte';
+    import Delete from './deleteTable.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
     let showDelete = false;

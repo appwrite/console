@@ -137,7 +137,7 @@
                     ]}
                     id={`column-${i}`}
                     label={i === 0 ? 'Column' : undefined}
-                    placeholder="Select Column"
+                    placeholder="Select column"
                     bind:value={attribute.value} />
 
                 <InputSelect
@@ -149,14 +149,14 @@
                     id={`order-${i}`}
                     label={i === 0 ? 'Order' : undefined}
                     bind:value={attribute.order}
-                    placeholder="Select Order" />
+                    placeholder="Select order" />
 
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                     {#if selectedType === IndexType.Key && showLengths}
                         <InputNumber
                             id={`length-${i}`}
                             label={i === 0 ? 'Length' : undefined}
-                            placeholder="Enter Length"
+                            placeholder="Enter length"
                             bind:value={attribute.length} />
                     {/if}
                     <Button
@@ -174,7 +174,7 @@
         <div>
             <Button compact on:click={addAttribute} disabled={addAttributeDisabled}>
                 <Icon icon={IconPlus} slot="start" size="s" />
-                Add attribute
+                Add column
             </Button>
         </div>
     </Layout.Stack>

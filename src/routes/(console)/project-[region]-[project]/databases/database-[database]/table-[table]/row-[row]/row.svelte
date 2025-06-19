@@ -12,7 +12,7 @@
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import AttributeForm from './attributeForm.svelte';
+    import ColumnForm from './columnForm.svelte';
 
     let disableUpdate = true;
     let currentDoc: string;
@@ -84,7 +84,7 @@
     <svelte:fragment slot="title">Data</svelte:fragment>
     Update document data based on the attributes created earlier.
     <svelte:fragment slot="aside">
-        <AttributeForm attributes={$collection.attributes} bind:formValues={$work} />
+        <ColumnForm attributes={$collection.attributes} bind:formValues={$work} />
     </svelte:fragment>
 
     <svelte:fragment slot="actions">

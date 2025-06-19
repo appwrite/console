@@ -5,10 +5,10 @@
     import Delete from './deleteIndex.svelte';
     import Create from './createIndex.svelte';
     import Overview from './overviewIndex.svelte';
-    import CreateAttribute from '../createAttribute.svelte';
+    import CreateColumn from '../createColumn.svelte';
     import type { Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
-    import CreateAttributeDropdown from '../columns/createAttributeDropdown.svelte';
+    import CreateColumnDropdown from '../columns/createColumnDropdown.svelte';
     import type { Option } from '../columns/store';
     import FailedModal from '../failedModal.svelte';
     import { canWriteCollections } from '$lib/stores/roles';
@@ -166,14 +166,14 @@
                     event="empty_documentation"
                     ariaLabel="create index">Documentation</Button>
                 {#if $canWriteCollections}
-                    <CreateAttributeDropdown
+                    <CreateColumnDropdown
                         bind:selectedOption={selectedAttribute}
                         bind:showCreate={showCreateAttribute}
                         let:toggle>
                         <Button secondary event="create_attribute" on:click={toggle}>
                             Create column
                         </Button>
-                    </CreateAttributeDropdown>
+                    </CreateColumnDropdown>
                 {/if}
             </svelte:fragment>
         </Empty>
@@ -187,8 +187,9 @@
     <Overview bind:showOverview {selectedIndex} />
 {/if}
 
+<!--todo: @itznotabug - var name -->
 {#if showCreateAttribute}
-    <CreateAttribute
+    <CreateColumn
         bind:showCreate={showCreateAttribute}
         bind:selectedOption={selectedAttribute} />
 {/if}

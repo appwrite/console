@@ -13,7 +13,7 @@
     import { invalidate } from '$app/navigation';
     import { doc } from './store';
     import { collection, type Attributes } from '../store';
-    import AttributeItem from './attributeItem.svelte';
+    import ColumnItem from './columnItem.svelte';
     import { isRelationship, isRelationshipToMany } from './columns/store';
     import { deepClone } from '$lib/helpers/object';
 
@@ -123,7 +123,7 @@
                 <svelte:fragment slot="title">{label}</svelte:fragment>
 
                 <svelte:fragment slot="aside">
-                    <AttributeItem {attribute} bind:formValues={$work} {label} editing />
+                    <ColumnItem {attribute} bind:formValues={$work} {label} editing />
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">

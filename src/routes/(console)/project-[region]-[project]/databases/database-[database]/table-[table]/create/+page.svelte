@@ -10,7 +10,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
-    import AttributeForm from '../row-[row]/attributeForm.svelte';
+    import ColumnForm from '../row-[row]/columnForm.svelte';
     import { Permissions } from '$lib/components/permissions';
     import type { PageData } from './$types';
     import type { Attributes } from '../store';
@@ -91,7 +91,7 @@
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Data">
-                <AttributeForm
+                <ColumnForm
                     bind:formValues={$createDocument.document}
                     attributes={$createDocument.attributes}
                     bind:customId={$createDocument.id} />

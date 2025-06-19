@@ -8,12 +8,12 @@
         registerSearchers,
         updateCommandGroupRanks
     } from '$lib/commandCenter';
-    import { collectionsSearcher } from '$lib/commandCenter/searchers';
+    import { tablesSearcher } from '$lib/commandCenter/searchers';
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
-    import CreateCollection from './createCollection.svelte';
+    import CreateCollection from './createTable.svelte';
     import { showCreate } from './store';
-    import { CollectionsPanel } from '$lib/commandCenter/panels';
+    import { TablesPanel } from '$lib/commandCenter/panels';
     import { canWriteCollections, canWriteDatabases } from '$lib/stores/roles';
     import { showCreateBackup, showCreatePolicy } from './backups/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -131,14 +131,14 @@
         {
             label: 'Find tables',
             callback: () => {
-                addSubPanel(CollectionsPanel);
+                addSubPanel(TablesPanel);
             },
             group: 'databases',
             rank: -1
         }
     ]);
 
-    $registerSearchers(collectionsSearcher);
+    $registerSearchers(tablesSearcher);
 
     $: $updateCommandGroupRanks({ tables: 10 });
 </script>

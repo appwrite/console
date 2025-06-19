@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { initCreateAttribute } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/+layout.svelte';
+    import { initCreateColumn } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/+layout.svelte';
     import { attributeOptions } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/columns/store';
     import Template from './template.svelte';
 
@@ -10,7 +10,7 @@
             label: option.name,
             icon: option.icon,
             callback() {
-                initCreateAttribute(option.name);
+                initCreateColumn(option.name);
             }
         };
     });

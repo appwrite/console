@@ -16,8 +16,8 @@
     <InputText
         required
         id="key"
-        label="Index Key"
-        placeholder="Enter Key"
+        label="Index key"
+        placeholder="Enter key"
         value={selectedIndex.key}
         readonly />
     <InputText
@@ -33,7 +33,7 @@
             <Layout.Stack direction="row">
                 <InputText
                     required
-                    label={i === 0 ? 'Attribute' : ''}
+                    label={i === 0 ? 'Column' : ''}
                     id={`value-${attribute}`}
                     value={attribute}
                     readonly />

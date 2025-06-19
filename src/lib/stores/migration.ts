@@ -45,10 +45,10 @@ export const ResourcesFriendly = {
     'environment-variable': { singular: 'Environment Variable', plural: 'Environment Variables' },
     deployment: { singular: 'Deployment', plural: 'Deployments' },
     database: { singular: 'Database', plural: 'Databases' },
-    collection: { singular: 'Collection', plural: 'Collections' },
+    collection: { singular: 'Table', plural: 'Tables' },
     index: { singular: 'Index', plural: 'Indexes' },
-    attribute: { singular: 'Attribute', plural: 'Attributes' },
-    document: { singular: 'Document', plural: 'Documents' }
+    attribute: { singular: 'Column', plural: 'Columns' },
+    document: { singular: 'Row', plural: 'Rows' }
 };
 
 const resources = Object.keys(ResourcesFriendly);

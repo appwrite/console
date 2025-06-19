@@ -7,7 +7,7 @@
         selectedOption: null as Option['name'] | null
     });
 
-    export const initCreateAttribute = (option: Option['name']) => {
+    export const initCreateColumn = (option: Option['name']) => {
         createAttributeArgs.set({ showCreate: true, selectedOption: option });
     };
 
@@ -24,8 +24,8 @@
     import { onMount } from 'svelte';
     import { collection } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import CreateAttribute from './createAttribute.svelte';
-    import { CreateAttributePanel } from '$lib/commandCenter/panels';
+    import CreateAttribute from './createColumn.svelte';
+    import { CreateColumnPanel } from '$lib/commandCenter/panels';
     import { database } from '../store';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { page } from '$app/state';
@@ -64,7 +64,7 @@
             label: 'Create column',
             keys: page.url.pathname.endsWith('attributes') ? ['c'] : ['c', 'a'],
             callback() {
-                addSubPanel(CreateAttributePanel);
+                addSubPanel(CreateColumnPanel);
             },
             icon: IconPlus,
             group: 'columns',

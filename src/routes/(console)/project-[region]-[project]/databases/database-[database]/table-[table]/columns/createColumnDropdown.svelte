@@ -6,8 +6,8 @@
     import CsvDisabled from '../csvDisabled.svelte';
     import { isCsvImportInProgress } from '../store';
 
-    export let selectedOption: Option['name'] = null;
     export let showCreate = false;
+    export let selectedOption: Option['name'] = null;
 </script>
 
 {#if $isCsvImportInProgress}
