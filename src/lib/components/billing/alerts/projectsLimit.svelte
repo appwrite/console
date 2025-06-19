@@ -24,7 +24,6 @@
         <svelte:fragment slot="buttons">
             <Button
                 compact
-                text
                 on:click={() => {
                     showSelectProject = true;
                 }}>Manage projects</Button>
