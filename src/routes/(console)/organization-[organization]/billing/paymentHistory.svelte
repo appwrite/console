@@ -7,7 +7,6 @@
     import type { Invoice, InvoiceList } from '$lib/sdk/billing';
     import { getApiEndpoint, sdk } from '$lib/stores/sdk';
     import { Query } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { selectedInvoice, showRetryModal } from './store';
     import {
@@ -28,19 +27,16 @@
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
 
-    let offset = 0;
-    let invoiceList: InvoiceList = {
+    let offset = $state(0);
+    let invoiceList: InvoiceList = $state({
         invoices: [],
         total: 0
-    };
+    });
 
     const limit = 5;
     const endpoint = getApiEndpoint();
 
-    onMount(request);
-
     async function request() {
-        // isLoadingInvoices = true;
         invoiceList = await sdk.forConsole.billing.listInvoices(page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
@@ -48,21 +44,25 @@
         ]);
     }
 
-    $: if (page.url.searchParams.get('type') === 'validate-invoice') {
-        window.history.replaceState({}, '', page.url.pathname);
-        request();
-    }
-
     function retryPayment(invoice: Invoice) {
         $selectedInvoice = invoice;
         $showRetryModal = true;
     }
 
-    $: if (offset !== null) {
-        request();
-    }
+    const hasPaymentError = $derived(invoiceList?.invoices.some((invoice) => invoice?.lastError));
 
-    $: hasPaymentError = invoiceList?.invoices.some((invoice) => invoice?.lastError);
+    $effect(() => {
+        if (page.url.searchParams.get('type') === 'validate-invoice') {
+            window.history.replaceState({}, '', page.url.pathname);
+            request();
+        }
+    });
+
+    $effect(() => {
+        if (offset !== null) {
+            request();
+        }
+    });
 </script>
 
 <CardGrid>
