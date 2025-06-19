@@ -16,9 +16,11 @@
                     </Typography.Text>
                 {/if}
             </Layout.Stack>
-            <Layout.Stack {gap}>
-                <slot name="aside" />
-            </Layout.Stack>
+            <div style:overflow="hidden">
+                <Layout.Stack {gap}>
+                    <slot name="aside" />
+                </Layout.Stack>
+            </div>
         </Layout.GridFraction>
         {#if $$slots.actions && !hideFooter}
             <span

@@ -115,16 +115,16 @@
             <Table.Root
                 let:root
                 columns={[
-                    { id: 'cc', width: 140 },
+                    { id: 'cc', width: { min: 155 } },
                     { id: 'name', width: { min: 140 } },
-                    { id: 'expiry', width: 100 },
-                    { id: 'status', width: 110, hide: !hasPaymentError },
+                    { id: 'expiry', width: { min: 75 } },
+                    { id: 'status', width: { min: 110 }, hide: !hasPaymentError },
                     { id: 'actions', width: 40 }
                 ]}>
                 <svelte:fragment slot="header" let:root>
                     <Table.Header.Cell column="cc" {root}>Credit card</Table.Header.Cell>
                     <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
-                    <Table.Header.Cell column="expiry" {root}>Expiration date</Table.Header.Cell>
+                    <Table.Header.Cell column="expiry" {root}>Expiration</Table.Header.Cell>
                     <Table.Header.Cell column="status" {root} />
                     <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
