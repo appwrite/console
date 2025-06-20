@@ -8,9 +8,10 @@ export const load: PageLoad = async ({ depends, parent, url }) => {
     const { members, organization, currentPlan, organizations } = await parent();
     depends(Dependencies.UPGRADE_PLAN);
 
-    const [coupon, paymentMethods] = await Promise.all([
+    const [coupon, paymentMethods, plans] = await Promise.all([
         getCoupon(url),
-        sdk.forConsole.billing.listPaymentMethods()
+        sdk.forConsole.billing.listPaymentMethods(),
+        sdk.forConsole.billing.listPlans()
     ]);
 
     let plan = getPlanFromUrl(url);
@@ -29,6 +30,7 @@ export const load: PageLoad = async ({ depends, parent, url }) => {
     return {
         members,
         plan,
+        plans,
         coupon,
         selfService,
         hasFreeOrgs,

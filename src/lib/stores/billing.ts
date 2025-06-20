@@ -161,7 +161,7 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
     // plan > addons > seats/others
     if (serviceId === 'members') {
         // some don't include `limit`, so we fallback!
-        return plan?.['addons']['seats']['limit'] ?? 1;
+        return (plan?.['addons']['seats'] || [])['limit'] ?? 1;
     }
 
     return plan?.[serviceId] ?? 0;
@@ -357,7 +357,7 @@ export async function checkForUsageLimit(org: Organization) {
     const members = org.total;
     const plan = get(currentPlan);
     const membersOverflow =
-        members > plan.addons.seats.limit ? members - (plan.addons.seats.limit || members) : 0;
+        members > plan.addons.seats?.limit ? members - (plan.addons.seats.limit || members) : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);

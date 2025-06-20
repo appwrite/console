@@ -7,9 +7,10 @@ import type { Organization } from '$lib/stores/organization';
 export const load: PageLoad = async ({ url, parent, depends }) => {
     depends(Dependencies.CREATE_ORGANIZATION);
     const { organizations } = await parent();
-    const [coupon, paymentMethods] = await Promise.all([
+    const [coupon, paymentMethods, plans] = await Promise.all([
         getCoupon(url),
-        sdk.forConsole.billing.listPaymentMethods()
+        sdk.forConsole.billing.listPaymentMethods(),
+        sdk.forConsole.billing.listPlans()
     ]);
     let plan = getPlanFromUrl(url);
     const hasFreeOrganizations = organizations.teams?.some(
@@ -22,6 +23,7 @@ export const load: PageLoad = async ({ url, parent, depends }) => {
     return {
         plan,
         coupon,
+        plans,
         hasFreeOrganizations,
         paymentMethods,
         name: url.searchParams.get('name') ?? ''
