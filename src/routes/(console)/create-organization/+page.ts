@@ -15,6 +15,7 @@ export const load: PageLoad = async ({ url, parent, depends }) => {
     const hasFreeOrganizations = organizations.teams?.some(
         (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
     );
+
     if (plan === BillingPlan.FREE && hasFreeOrganizations) {
         plan = BillingPlan.PRO;
     }
