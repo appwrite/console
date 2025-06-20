@@ -68,14 +68,12 @@
         }
     });
 
-    const columns = $derived.by(() => {
-        return [
-            { id: 'dueDate', width: { min: 120 } },
-            { id: 'status', width: { min: hasPaymentError ? 200 : 100 } },
-            { id: 'amount', width: { min: 120 } },
-            { id: 'action', width: 40 }
-        ];
-    });
+    const columns = $derived([
+        { id: 'dueDate', width: { min: 120 } },
+        { id: 'status', width: { min: hasPaymentError ? 200 : 100 } },
+        { id: 'amount', width: { min: 120 } },
+        { id: 'action', width: 40 }
+    ]);
 </script>
 
 <CardGrid>

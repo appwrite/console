@@ -10,7 +10,7 @@
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
-    import { type Coupon, type PaymentList } from '$lib/sdk/billing';
+    import { type Coupon, type PaymentMethodData } from '$lib/sdk/billing';
     import { isOrganization, plansInfo, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
@@ -36,7 +36,6 @@
 
     export let data;
 
-    let paymentMethods: PaymentList = null;
     let selectedCoupon: Partial<Coupon> = null;
 
     let selectedPlan: BillingPlan = data.plan as BillingPlan;
@@ -44,9 +43,6 @@
     let showExitModal = false;
     let formComponent: Form;
     let isSubmitting = writable(false);
-    let paymentMethodId: string =
-        data.organization.paymentMethodId ??
-        paymentMethods?.paymentMethods?.find((method) => !!method?.last4)?.$id;
     let collaborators: string[] =
         data?.members?.memberships
             ?.map((m) => {
@@ -58,6 +54,12 @@
     let showCreditModal = false;
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
+
+    $: paymentMethods = null;
+
+    $: paymentMethodId =
+        data.organization.paymentMethodId ??
+        paymentMethods?.paymentMethods?.find((method: PaymentMethodData) => !!method?.last4)?.$id;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;

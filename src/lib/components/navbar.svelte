@@ -139,7 +139,7 @@
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} {projects} {currentProject} />
-        {#if page.route?.id?.includes('project-') && currentProject && currentProject.pingCount === 0}
+        {#if page.route?.id?.includes('/project-[region]-[project]') && currentProject && currentProject.pingCount === 0}
             <div class="only-desktop" style:margin-inline-start="-16px">
                 <Button.Anchor
                     size="xs"
