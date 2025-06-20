@@ -265,6 +265,7 @@ export enum Submit {
     AuthSessionAlertsUpdate = 'submit_auth_session_alerts_update',
     AuthMembershipPrivacyUpdate = 'submit_auth_membership_privacy_update',
     AuthMockNumbersUpdate = 'submit_auth_mock_numbers_update',
+    AuthInvalidateSesssion = 'submit_auth_invalidate_session',
     SessionsLengthUpdate = 'submit_sessions_length_update',
     SessionsLimitUpdate = 'submit_sessions_limit_update',
     SessionDelete = 'submit_session_delete',
