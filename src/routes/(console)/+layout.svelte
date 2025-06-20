@@ -319,7 +319,8 @@
     $: projects = sdk.forConsole.projects.list([
         Query.equal(
             'teamId',
-            data.currentOrgId ?? currentOrganizationId ?? page.params.organization
+            // id from page params ?? id from store ?? id from preferences
+            page.params.organization ?? currentOrganizationId ?? data.currentOrgId
         ),
         Query.limit(5),
         Query.orderDesc('$updatedAt')
