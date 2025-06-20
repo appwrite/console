@@ -7,7 +7,6 @@
     import type { Invoice, InvoiceList } from '$lib/sdk/billing';
     import { getApiEndpoint, sdk } from '$lib/stores/sdk';
     import { Query } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { selectedInvoice, showRetryModal } from './store';
     import {
@@ -29,18 +28,16 @@
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
 
-    let offset = 0;
-    let invoiceList: InvoiceList = {
+    let offset = $state(0);
+    let isLoadingInvoices = $state(false);
+    let invoiceList: InvoiceList = $state({
         invoices: [],
         total: 0
-    };
+    });
 
     const limit = 5;
     const endpoint = getApiEndpoint();
-
-    onMount(request);
-
-    let isLoadingInvoices = false;
+    const hasPaymentError = $derived(invoiceList?.invoices.some((invoice) => invoice?.lastError));
 
     async function request() {
         isLoadingInvoices = true;
@@ -53,26 +50,30 @@
         isLoadingInvoices = false;
     }
 
-    $: if (page.url.searchParams.get('type') === 'validate-invoice') {
-        window.history.replaceState({}, '', page.url.pathname);
-        request();
-    }
-
     function retryPayment(invoice: Invoice) {
         $selectedInvoice = invoice;
         $showRetryModal = true;
     }
 
-    $: if (offset !== null) {
-        request();
-    }
+    $effect(() => {
+        if (page.url.searchParams.get('type') === 'validate-invoice') {
+            window.history.replaceState({}, '', page.url.pathname);
+            request();
+        }
+    });
+
+    $effect(() => {
+        if (offset !== null) {
+            request();
+        }
+    });
 
     const columns = [
-        { id: 'dueDate' },
-        { id: 'status', width: { min: 200 } },
+        { id: 'dueDate', width: { min: 120 } },
+        { id: 'status', width: { min: hasPaymentError ? 200 : 100 } },
         { id: 'amount', width: { min: 120 } },
         { id: 'action', width: 40 }
-    ];
+    ]
 </script>
 
 <CardGrid>
@@ -180,10 +181,10 @@
                 {/each}
             </Table.Root>
             {#if invoiceList.total > limit}
-                <div class="u-flex u-main-space-between">
+                <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                     <p class="text">Total results: {invoiceList.total}</p>
                     <PaginationInline {limit} bind:offset total={invoiceList.total} hidePages />
-                </div>
+                </Layout.Stack>
             {/if}
         {:else}
             <Card.Base>
