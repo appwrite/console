@@ -5,7 +5,6 @@ import { preferences } from '$lib/stores/preferences';
 import { failedInvoice } from '$lib/stores/billing';
 import { isCloud } from '$lib/system';
 import { defaultRoles, defaultScopes } from '$lib/constants';
-import type { Plan } from '$lib/sdk/billing';
 import { get } from 'svelte/store';
 import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
@@ -13,29 +12,27 @@ import { loadAvailableRegions } from '$routes/(console)/regions';
 import type { Organization, OrganizationList } from '$lib/stores/organization';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
-    const { organizations } = await parent();
+    const { plansInfo, organizations, preferences: prefs } = await parent();
     depends(Dependencies.PROJECT);
 
     const project = await sdk.forConsole.projects.get(params.project);
+
     // fast path without a network call!
     let organization = (organizations as OrganizationList)?.teams?.find(
         (org) => org.$id === project.teamId
     );
 
-    const [org, prefs, regionalConsoleVariables, rolesResult, planResult] = await Promise.all([
+    const [org, regionalConsoleVariables, rolesResult] = await Promise.all([
         !organization
             ? (sdk.forConsole.teams.get(project.teamId) as Promise<Organization>)
             : organization,
-        sdk.forConsole.account.getPrefs(),
         sdk.forConsoleIn(project.region).console.variables(),
         isCloud ? sdk.forConsole.billing.getRoles(project.teamId) : null,
-        isCloud ? sdk.forConsole.billing.getOrganizationPlan(project.teamId) : null,
         loadAvailableRegions(project.teamId)
     ]);
 
     if (!organization) organization = org;
 
-    const currentPlan: Plan = planResult;
     const roles = rolesResult?.roles ?? defaultRoles;
     const scopes = rolesResult?.scopes ?? defaultScopes;
 
@@ -58,7 +55,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         regionalConsoleVariables,
         roles,
         scopes,
-        currentPlan
+        currentPlan: plansInfo.get(organization.billingPlan)
     };
 };
 
