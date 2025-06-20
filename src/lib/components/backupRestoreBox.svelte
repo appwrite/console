@@ -117,9 +117,9 @@
     }
 
     function backupName(item: BackupArchive | BackupRestoration, key: string) {
-        const attribute = key === 'archives' ? '$createdAt' : 'startedAt';
+        const column = key === 'archives' ? '$createdAt' : 'startedAt';
 
-        return toLocaleDate(item[attribute]);
+        return toLocaleDate(item[column]);
     }
 
     onMount(() => {

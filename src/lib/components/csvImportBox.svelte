@@ -48,7 +48,7 @@
 
         const type = isSuccess ? 'success' : 'error';
         const message = isError ? errorMessage : 'CSV import finished successfully.';
-        const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${database}/collection-${collection}`;
+        const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${database}/table-${collection}`;
 
         addNotification({
             type,
@@ -61,7 +61,7 @@
         });
 
         if (isSuccess) {
-            await invalidate(Dependencies.DOCUMENTS);
+            await invalidate(Dependencies.ROWS);
         }
     }
 

@@ -212,6 +212,7 @@
             if (selected.service) {
                 fields.push(selected.service.name, '*');
             }
+            // TODO: change collections and documents terminology later
             if (selected.resource?.name === 'documents') {
                 fields.push('collections', '*');
             }
