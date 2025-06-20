@@ -1,4 +1,6 @@
 <script lang="ts" context="module">
+    import type { HTMLAttributes } from 'svelte/elements';
+
     export type NavbarProject = {
         name: string;
         $id: string;
@@ -53,8 +55,9 @@
     import { isCloud } from '$lib/system.js';
     import { user } from '$lib/stores/user';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import type { HTMLAttributes } from 'svelte/elements';
     import { beforeNavigate } from '$app/navigation';
+    import { page } from '$app/state';
+    import type { Models } from '@appwrite.io/console';
 
     let showSupport = false;
 
@@ -66,7 +69,6 @@
             isSelected: boolean;
             showUpgrade: boolean;
             tierName: string;
-            projects: Array<NavbarProject>;
         }>;
         showAccountMenu: boolean;
     };
@@ -103,6 +105,8 @@
     export let avatar: $$Props['avatar'];
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
     export let showAccountMenu = false;
+    export let currentProject: Models.Project = undefined;
+    export let projects: Promise<Models.ProjectList> = undefined;
 
     let activeTheme = $app.theme;
     let shouldAnimateThemeToggle = false;
@@ -114,7 +118,7 @@
     }
 
     $: currentOrg = organizations.find((org) => org.isSelected);
-    $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
+
     beforeNavigate(() => (showAccountMenu = false));
 </script>
 
@@ -134,13 +138,14 @@
             class="only-desktop">
             <img src={logo.src} alt={logo.alt} />
         </a>
-        <Breadcrumbs {organizations} />
-        {#if selectedProject && selectedProject.pingCount === 0}
+        <Breadcrumbs {organizations} {projects} {currentProject} />
+        {#if page.route?.id?.includes('/project-[region]-[project]') && currentProject && currentProject.pingCount === 0}
             <div class="only-desktop" style:margin-inline-start="-16px">
                 <Button.Anchor
-                    href={`${base}/project-${selectedProject.region}-${selectedProject.$id}/get-started`}
+                    size="xs"
                     variant="secondary"
-                    size="xs">Connect</Button.Anchor>
+                    href={`${base}/project-${currentProject.region}-${currentProject.$id}/get-started`}
+                    >Connect</Button.Anchor>
             </div>
         {/if}
     </div>
@@ -222,7 +227,7 @@
                     style:user-select="none">
                     <Avatar size="s" src={avatar} />
                 </button>
-                <svelte:fragment slot="tooltip">
+                <svelte:fragment slot="tooltip" let:toggle>
                     <ActionMenu.Root noPadding>
                         <Layout.Stack gap="xxs">
                             <div
@@ -234,9 +239,10 @@
                                 </Typography.Text>
                             </div>
                             <ActionMenu.Item.Anchor
-                                trailingIcon={IconUser}
                                 size="l"
-                                href={`${base}/account`}>
+                                trailingIcon={IconUser}
+                                href={`${base}/account`}
+                                on:click={() => toggle()}>
                                 Account</ActionMenu.Item.Anchor>
 
                             <ActionMenu.Item.Button

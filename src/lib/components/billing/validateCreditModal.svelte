@@ -48,7 +48,7 @@
     }
 </script>
 
-<Modal bind:show title="Add credits" onSubmit={addCoupon} bind:error>
+<Modal size="s" bind:show title="Add credits" onSubmit={addCoupon} bind:error>
     <svelte:fragment slot="description">
         Credits will be applied automatically to your next invoice.
     </svelte:fragment>
@@ -62,6 +62,6 @@
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button submit disabled={coupon === ''}>Add</Button>
+        <Button submissionLoader submit disabled={coupon === ''}>Add</Button>
     </svelte:fragment>
 </Modal>

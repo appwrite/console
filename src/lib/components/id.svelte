@@ -50,15 +50,17 @@
     export let event: string = null;
 </script>
 
-<Copy {value} {event}>
-    <Tag size="xs" variant="code">
-        <Icon icon={IconDuplicate} size="s" slot="start" />
-        <span
-            style:white-space="nowrap"
-            style:overflow="hidden"
-            style:word-break="break-all"
-            use:truncateText>
-            <slot />
-        </span>
-    </Tag>
-</Copy>
+{#key value}
+    <Copy {value} {event}>
+        <Tag size="xs" variant="code">
+            <Icon icon={IconDuplicate} size="s" slot="start" />
+            <span
+                style:white-space="nowrap"
+                style:overflow="hidden"
+                style:word-break="break-all"
+                use:truncateText>
+                <slot />
+            </span>
+        </Tag>
+    </Copy>
+{/key}

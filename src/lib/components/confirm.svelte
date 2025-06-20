@@ -8,6 +8,7 @@
     export let action: string = 'Delete';
     export let canDelete: boolean = true;
     export let disabled: boolean = false;
+    export let submissionLoader = false;
     export let confirmDeletion: boolean = false;
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
@@ -58,6 +59,7 @@
                         <Button
                             danger
                             submit
+                            {submissionLoader}
                             disabled={disabled || (confirmDeletion ? !confirm : false)}
                             >{action}</Button>
                     {/if}

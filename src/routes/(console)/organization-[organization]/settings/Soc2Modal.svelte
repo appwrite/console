@@ -5,11 +5,15 @@
     import Button from '$lib/elements/forms/button.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
-    import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
     import { onMount } from 'svelte';
+    import type { Models } from '@appwrite.io/console';
+
     export let show = false;
+    export let locale: Models.Locale;
+    export let countryList: Models.CountryList;
+
     let email = '';
     let employees: string = null;
     let employeesOptions = [
@@ -40,10 +44,6 @@
     let error: string;
 
     onMount(async () => {
-        /* use console sdk as project is not always available here. */
-        const locale = await sdk.forConsole.locale.get();
-        const countryList = await sdk.forConsole.locale.listCountries();
-
         if (locale.countryCode) {
             country = locale.countryCode;
         }
