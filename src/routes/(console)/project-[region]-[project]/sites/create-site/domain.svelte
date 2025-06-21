@@ -5,7 +5,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { ConsoleResourceType } from '@appwrite.io/console';
     import { Fieldset, Layout, Status, Typography } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let domain: string;
@@ -14,8 +13,6 @@
     let newDomain = domain;
 
     let domainStatus: 'complete' | 'failed' | 'pending' = 'complete';
-
-    onMount(async () => {});
 
     function setDomainLabel(status: typeof domainStatus) {
         switch (status) {

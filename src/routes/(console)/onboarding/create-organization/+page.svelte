@@ -44,11 +44,11 @@
                 message: e.message
             });
         } finally {
-            isLoading = false;
             if (organization) {
                 loadAvailableRegions(organization?.$id).then();
                 await goto(`${base}/organization-${organization.$id}`);
             }
+            isLoading = false;
         }
     }
 </script>

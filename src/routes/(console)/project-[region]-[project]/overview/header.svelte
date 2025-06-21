@@ -23,7 +23,9 @@
         <svelte:fragment slot="header">
             <Layout.Stack alignItems="baseline" direction={$isSmallViewport ? 'column' : 'row'}>
                 <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
-                    {$project?.name}
+                    <span class="project-title">
+                        {$project?.name}
+                    </span>
                 </Typography.Title>
                 <Layout.Stack direction="row" inline>
                     <Id value={$project.$id}>{$project.$id}</Id>
@@ -61,3 +63,13 @@
         </svelte:fragment>
     </Cover>
 {/if}
+
+<style>
+    .project-title {
+        max-width: 375px;
+        overflow: hidden;
+        display: inline-block;
+        vertical-align: middle;
+        text-overflow: ellipsis;
+    }
+</style>

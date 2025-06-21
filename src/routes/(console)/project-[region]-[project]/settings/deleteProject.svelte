@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { BoxAvatar, Confirm, CardGrid } from '$lib/components';
@@ -10,24 +10,30 @@
     import { isCloud } from '$lib/system';
     import { project, projectRegion } from '../store';
     import { organization } from '$lib/stores/organization';
+    import { Dependencies } from '$lib/constants';
 
     let error: string;
     let showDelete = false;
     let name: string = null;
 
+    async function finishAndRedirect() {
+        showDelete = false;
+
+        trackEvent(Submit.ProjectDelete);
+        addNotification({ type: 'success', message: `${$project.name} has been deleted` });
+        await goto(`${base}/organization-${$organization.$id}`, {
+            replaceState: true
+        });
+
+        // reload projects for nav breadcrumb!
+        await invalidate(Dependencies.ORGANIZATION);
+    }
+
     const handleDelete = async () => {
         try {
             // send the project to correct region pool for deletion!
             await sdk.forConsoleIn($project.region).projects.delete($project.$id);
-            showDelete = false;
-            addNotification({
-                type: 'success',
-                message: `${$project.name} has been deleted`
-            });
-            trackEvent(Submit.ProjectDelete);
-            await goto(`${base}/organization-${$organization.$id}`, {
-                replaceState: true
-            });
+            await finishAndRedirect();
         } catch (e) {
             error = e.message;
             trackError(e, Submit.ProjectDelete);

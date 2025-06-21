@@ -341,7 +341,7 @@
                                     <ActionMenu.Root>
                                         <ActionMenu.Item.Anchor
                                             href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
-                                            {project.name}
+                                            <span class="projectName dropdown">{project.name}</span>
                                         </ActionMenu.Item.Anchor>
                                     </ActionMenu.Root>
                                 </div>
@@ -420,6 +420,15 @@
 
         @media (min-width: 1024px) {
             max-width: 150px;
+        }
+
+        &.dropdown {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            vertical-align: middle;
         }
     }
 
