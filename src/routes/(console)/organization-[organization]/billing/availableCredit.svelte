@@ -18,6 +18,8 @@
     import { Alert, Badge, Icon, Link, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
+    export let areCreditsSupported: boolean;
+
     let offset = 0;
     let creditList: CreditList = {
         available: 0,
@@ -42,10 +44,21 @@
 
     async function request() {
         if (!$organization?.$id) return;
+
+        // fast path return!
+        if (!areCreditsSupported) return;
+
+        /**
+         * The initial `creditList` from `+page.ts` can include up to 25 items by default.
+         *
+         * Technically, we could reuse that for offsets < 25 (i.e., the first 5 pages with limit = 5)
+         * to avoid an extra request. But for now, we always fetch fresh data.
+         */
         creditList = await sdk.forConsole.billing.listCredits($organization.$id, [
             Query.limit(limit),
             Query.offset(offset)
         ]);
+
         creditList = {
             ...creditList,
             credits: creditList.credits
@@ -70,10 +83,6 @@
         };
     }
 
-    $: if (offset !== null) {
-        request();
-    }
-
     $: {
         if (reloadOnWizardClose && !$wizard.show) {
             request();
@@ -84,11 +93,11 @@
 
 <CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
     <svelte:fragment slot="title">
-        {$organization?.billingPlan === BillingPlan.FREE ? 'Credits' : 'Available credit'}
+        {!areCreditsSupported ? 'Credits' : 'Available credit'}
     </svelte:fragment>
     Appwrite credit will automatically be applied to your next invoice.
     <svelte:fragment slot="aside">
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if !areCreditsSupported}
             <Alert.Inline status="info" title="Upgrade to Pro to add credits">
                 Upgrade to a Pro plan to add credits to your organization. For more information on
                 what you can do with a Pro plan,
@@ -158,7 +167,12 @@
                 {#if creditList?.total > limit}
                     <div class="u-flex u-main-space-between">
                         <p class="text">Total credits: {creditList?.total}</p>
-                        <PaginationInline {limit} bind:offset total={creditList?.total} hidePages />
+                        <PaginationInline
+                            {limit}
+                            hidePages
+                            bind:offset
+                            on:change={request}
+                            total={creditList?.total} />
                     </div>
                 {/if}
             {:else}

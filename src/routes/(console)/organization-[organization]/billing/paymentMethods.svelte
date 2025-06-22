@@ -8,8 +8,7 @@
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { hasStripePublicKey, isCloud } from '$lib/system';
-    import { paymentMethods } from '$lib/stores/billing';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
+    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
     import ReplaceCard from './replaceCard.svelte';
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
@@ -35,13 +34,15 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
 
+    export let methods: PaymentList;
+
     let showPayment = false;
     let showEdit = false;
     let showDelete = false;
     let showReplace = false;
     let isSelectedBackup = false;
-    let defaultPaymentMethod: PaymentMethodData;
     let backupPaymentMethod: PaymentMethodData;
+    let defaultPaymentMethod: PaymentMethodData;
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
@@ -115,16 +116,16 @@
             <Table.Root
                 let:root
                 columns={[
-                    { id: 'cc', width: 140 },
+                    { id: 'cc', width: { min: 155 } },
                     { id: 'name', width: { min: 140 } },
-                    { id: 'expiry', width: 100 },
-                    { id: 'status', width: 110, hide: !hasPaymentError },
+                    { id: 'expiry', width: { min: 75 } },
+                    { id: 'status', width: { min: 110 }, hide: !hasPaymentError },
                     { id: 'actions', width: 40 }
                 ]}>
                 <svelte:fragment slot="header" let:root>
                     <Table.Header.Cell column="cc" {root}>Credit card</Table.Header.Cell>
                     <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
-                    <Table.Header.Cell column="expiry" {root}>Expiration date</Table.Header.Cell>
+                    <Table.Header.Cell column="expiry" {root}>Expiration</Table.Header.Cell>
                     <Table.Header.Cell column="status" {root} />
                     <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
@@ -209,7 +210,7 @@
                 {/if}
             </Table.Root>
             {#if !$organization?.backupPaymentMethodId}
-                {@const filteredPaymentMethods = $paymentMethods.paymentMethods.filter(
+                {@const filteredPaymentMethods = methods.paymentMethods.filter(
                     (o) => !!o.last4 && o.$id !== $organization?.paymentMethodId
                 )}
                 <div>
@@ -237,7 +238,7 @@
                             </Tooltip>
                         </Layout.Stack>
                         <ActionMenu.Root slot="tooltip" let:toggle>
-                            {#if $paymentMethods.total}
+                            {#if methods.total}
                                 {#each filteredPaymentMethods as paymentMethod}
                                     <ActionMenu.Item.Button
                                         on:click={() => addBackupPaymentMethod(paymentMethod?.$id)}>
@@ -262,7 +263,7 @@
                 </div>
             {/if}
         {:else}
-            {@const filteredPaymentMethods = $paymentMethods.paymentMethods.filter(
+            {@const filteredPaymentMethods = methods.paymentMethods.filter(
                 (o) => !!o.last4 && o.$id !== $organization?.backupPaymentMethodId
             )}
             <Card.Base>
@@ -272,7 +273,7 @@
                             <Icon icon={IconPlus} size="s" />
                         </Button>
                         <ActionMenu.Root slot="tooltip" let:toggle>
-                            {#if $paymentMethods.total}
+                            {#if methods.total}
                                 {#each filteredPaymentMethods as paymentMethod}
                                     <ActionMenu.Item.Button
                                         on:click={() => addPaymentMethod(paymentMethod?.$id)}>
@@ -318,7 +319,7 @@
         bind:show={showEdit} />
 {/if}
 {#if isCloud && hasStripePublicKey}
-    <ReplaceCard bind:show={showReplace} isBackup={isSelectedBackup} />
+    <ReplaceCard {methods} bind:show={showReplace} isBackup={isSelectedBackup} />
 {/if}
 {#if showDelete && isCloud && hasStripePublicKey}
     {@const hasOtherMethod = isSelectedBackup

@@ -66,9 +66,7 @@
         searchText = '';
         const target = new URL(page.url);
         target.search = '';
-        goto(target.toString(), {
-            noScroll: true
-        });
+        goto(target.toString(), { noScroll: true });
     }
 
     const isChecked = (useCase: string) => {

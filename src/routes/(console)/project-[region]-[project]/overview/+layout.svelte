@@ -52,7 +52,7 @@
     }
 
     function isTabSelected(key: string) {
-        return page.url.pathname === `${path}/${key}`;
+        return page.url.pathname.endsWith(`/${key}`);
     }
 
     $: $registerCommands([

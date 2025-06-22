@@ -4,7 +4,8 @@ import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import { isCloud } from '$lib/system';
 
-export const load: PageLoad = async ({ depends, params }) => {
+export const load: PageLoad = async ({ depends, params, parent }) => {
+    const { countryList, locale } = await parent();
     depends(Dependencies.ORGANIZATION);
 
     const [projects, invoices] = await Promise.all([
@@ -14,6 +15,8 @@ export const load: PageLoad = async ({ depends, params }) => {
 
     return {
         projects,
-        invoices
+        invoices,
+        countryList,
+        locale
     };
 };

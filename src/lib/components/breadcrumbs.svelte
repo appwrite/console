@@ -1,6 +1,14 @@
 <script lang="ts">
     import { createMenubar, melt } from '@melt-ui/svelte';
-    import { Badge, Icon, type SheetMenu, ActionMenu, Card } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Icon,
+        type SheetMenu,
+        Layout,
+        ActionMenu,
+        Card,
+        Skeleton
+    } from '@appwrite.io/pink-svelte';
     import {
         IconChevronDown,
         IconChevronRight,
@@ -14,20 +22,13 @@
     import { base } from '$app/paths';
     import { currentPlan, newOrgModal } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { page } from '$app/stores';
+    import type { Models } from '@appwrite.io/console';
 
-    type Project = {
-        name: string;
-        $id: string;
-        isSelected: boolean;
-        region: string;
-    };
     type Organization = {
         name: string;
         $id: string;
         tierName: string;
         isSelected: boolean;
-        projects: Array<Project>;
     };
 
     const {
@@ -62,13 +63,15 @@
         }
     } = createMenu();
 
+    let isLoadingProjects = true;
+    let loadedProjects: Models.ProjectList = { total: 0, projects: [] };
+
     export let organizations: Organization[] = [];
+    export let currentProject: Models.Project | null = null;
+    export let projects: Promise<Models.ProjectList> = Promise.resolve(loadedProjects);
 
-    $: selectedOrg = organizations.find((organization) => organization.isSelected);
-    $: selectedProject = $page.data.project;
-
-    let organisationBottomSheetOpen = false;
     let projectsBottomSheetOpen = false;
+    let organisationBottomSheetOpen = false;
 
     function createOrg() {
         trackEvent(Click.OrganizationClickCreate, { source: 'breadcrumbs' });
@@ -96,85 +99,76 @@
         }
     };
 
-    $: organizationsBottomSheet = !selectedOrg
-        ? switchOrganization
-        : ({
-              top: {
-                  items: [
-                      {
-                          name: 'Organization overview',
-                          href: `${base}/organization-${selectedOrg?.$id}`
-                      }
-                  ]
-              },
-              bottom:
-                  organizations.length > 1
-                      ? {
-                            items: [
-                                {
-                                    name: 'Switch organization',
-                                    trailingIcon: IconChevronRight,
-                                    subMenu: switchOrganization
-                                }
-                            ]
-                        }
-                      : {
-                            items: [
-                                {
-                                    name: 'Create organization',
-                                    leadingIcon: IconPlus,
-                                    onClick: createOrg
-                                }
-                            ]
-                        }
-          } satisfies SheetMenu);
+    async function createProjectsBottomSheet(organization: Organization): Promise<SheetMenu> {
+        isLoadingProjects = true;
+        loadedProjects = await projects;
+        isLoadingProjects = false;
 
-    $: projectsBottomSheet = {
-        top:
-            selectedOrg?.projects.length > 1
-                ? {
-                      title: 'Switch project',
-                      items: !selectedOrg
-                          ? []
-                          : selectedOrg?.projects
-                                .map((project, index) => {
-                                    if (index < 4) {
-                                        return {
-                                            name: project.name,
-                                            href: `${base}/project-${project.region}-${project.$id}/overview`
-                                        };
-                                    } else if (index === 4) {
-                                        return {
-                                            name: 'All projects',
-                                            href: `${base}/organization-${selectedOrg?.$id}`
-                                        };
-                                    }
-                                    return null;
-                                })
-                                .filter((project) => project !== null)
-                  }
-                : {
+        const createProjectItem = {
+            name: 'Create project',
+            trailingIcon: IconPlus,
+            href: `${base}/organization-${organization?.$id}?create-project`
+        };
+
+        if (loadedProjects.total > 1 && selectedOrg) {
+            const projectLinks = loadedProjects.projects.slice(0, 4).map((project) => ({
+                name: project.name,
+                href: `${base}/project-${project.region}-${project.$id}/overview/platforms`
+            }));
+
+            if (loadedProjects.projects.length > 4) {
+                projectLinks.push({
+                    name: 'All projects',
+                    href: `${base}/organization-${selectedOrg.$id}`
+                });
+            }
+
+            return {
+                top: { title: 'Switch project', items: projectLinks },
+                bottom: { items: [createProjectItem] }
+            };
+        }
+
+        return {
+            top: { items: [createProjectItem] },
+            bottom: { items: [createProjectItem] }
+        };
+    }
+
+    function createOrganizationBottomSheet(organization: Organization) {
+        return !organization
+            ? switchOrganization
+            : ({
+                  top: {
                       items: [
                           {
-                              name: 'Create project',
-                              trailingIcon: IconPlus,
-                              href: `${base}/organization-${selectedOrg?.$id}?create-project`
+                              name: 'Organization overview',
+                              href: `${base}/organization-${organization?.$id}`
                           }
                       ]
                   },
-        bottom:
-            selectedOrg?.projects.length > 1
-                ? {
-                      items: [
-                          {
-                              name: 'Create project',
-                              trailingIcon: IconPlus,
-                              href: `${base}/organization-${selectedOrg?.$id}?create-project`
-                          }
-                      ]
-                  }
-                : undefined
-    } satisfies SheetMenu;
+                  bottom:
+                      organizations.length > 1
+                          ? {
+                                items: [
+                                    {
+                                        name: 'Switch organization',
+                                        trailingIcon: IconChevronRight,
+                                        subMenu: switchOrganization
+                                    }
+                                ]
+                            }
+                          : {
+                                items: [
+                                    {
+                                        name: 'Create organization',
+                                        leadingIcon: IconPlus,
+                                        onClick: createOrg
+                                    }
+                                ]
+                            }
+              } satisfies SheetMenu);
+    }
 
     function onResize() {
         if ((organisationBottomSheetOpen || projectsBottomSheetOpen) && !$isSmallViewport) {
@@ -182,6 +176,12 @@
             projectsBottomSheetOpen = false;
         }
     }
+
+    $: selectedOrg = organizations.find((org) => org.isSelected);
+
+    $: projectsBottomSheet = createProjectsBottomSheet(selectedOrg);
+
+    $: organizationsBottomSheet = createOrganizationBottomSheet(selectedOrg);
 
     $: correctPlanName =
         // the plan names are hardcoded in some cases and are not available locally,
@@ -191,7 +191,7 @@
             ? $currentPlan.name
             : selectedOrg?.tierName; // fallback
 
-    $: derivedKey = `${selectedOrg?.$id}-${selectedProject?.$id}`;
+    $: derivedKey = `${selectedOrg?.$id}-${currentProject?.$id}`;
 </script>
 
 <svelte:window on:resize={onResize} />
@@ -220,7 +220,7 @@
                     organisationBottomSheetOpen = true;
                 }}
                 aria-label="Open organizations tab">
-                <span class="orgName" class:noProjects={!selectedProject}
+                <span class="orgName" class:noProjects={!currentProject}
                     >{selectedOrg?.name ?? 'Organization'}</span>
                 <span class="not-mobile"
                     ><Badge variant="secondary" content={correctPlanName ?? ''} /></span>
@@ -302,7 +302,7 @@
             </Card.Base>
         </div>
 
-        {#if selectedOrg && selectedProject}
+        {#if selectedOrg && currentProject}
             <span class="breadcrumb-separator">/</span>
             {#if !$isSmallViewport}
                 <button
@@ -310,7 +310,7 @@
                     class="trigger"
                     use:melt={$triggerProjects}
                     aria-label="Open projects tab">
-                    <span class="projectName">{selectedProject.name}</span>
+                    <span class="projectName">{currentProject.name}</span>
                     <Icon icon={IconChevronDown} size="s" />
                 </button>
             {:else}
@@ -319,20 +319,28 @@
                     class="trigger"
                     on:click={() => (projectsBottomSheetOpen = true)}
                     aria-label="Open projects tab">
-                    <span class="projectName">{selectedProject.name}</span>
+                    <span class="projectName">{currentProject.name}</span>
                     <Icon icon={IconChevronDown} size="s" />
                 </button>
             {/if}
 
             <div class="menu" use:melt={$menuProjects}>
                 <Card.Base padding="xxxs" shadow={true}>
-                    {#if selectedOrg.projects.length > 1}
-                        {#each selectedOrg.projects as project, index}
+                    {#if isLoadingProjects}
+                        <div style:margin-inline="0.25rem" style:margin-block="0.25rem">
+                            <Layout.Stack gap="s">
+                                <!-- 2 should be enough -->
+                                <Skeleton width="100%" height={30} variant="line" />
+                                <Skeleton width="100%" height={30} variant="line" />
+                            </Layout.Stack>
+                        </div>
+                    {:else if loadedProjects.total > 1}
+                        {#each loadedProjects.projects as project, index}
                             {#if index < 4}
                                 <div use:melt={$itemProjects}>
                                     <ActionMenu.Root>
                                         <ActionMenu.Item.Anchor
-                                            href={`${base}/project-${project.region}-${project.$id}`}>
+                                            href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
                                             {project.name}
                                         </ActionMenu.Item.Anchor>
                                     </ActionMenu.Root>
@@ -365,7 +373,9 @@
 
     <BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet} />
 
-    <BottomSheet.Menu bind:isOpen={projectsBottomSheetOpen} menu={projectsBottomSheet} />
+    {#await projectsBottomSheet then menu}
+        <BottomSheet.Menu bind:isOpen={projectsBottomSheetOpen} {menu} />
+    {/await}
 {/key}
 
 <style lang="scss">

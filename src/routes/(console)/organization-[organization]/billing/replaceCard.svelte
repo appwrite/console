@@ -14,14 +14,13 @@
 
     export let show = false;
     export let isBackup = false;
-    let methods: PaymentList;
-    let selectedPaymentMethodId: string;
+    export let methods: PaymentList;
+
     let name: string;
     let error: string;
+    let selectedPaymentMethodId: string;
 
     onMount(async () => {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
-
         if (!$organization.paymentMethodId && !$organization.backupPaymentMethodId) {
             selectedPaymentMethodId = methods?.total ? methods.paymentMethods[0].$id : null;
         } else {

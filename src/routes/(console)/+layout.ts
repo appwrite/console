@@ -1,48 +1,36 @@
 import { Dependencies } from '$lib/constants';
-import type { Plan } from '$lib/sdk/billing';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
-import { Query, type Models } from '@appwrite.io/console';
+import type { Tier } from '$lib/stores/billing';
+import type { Plan, PlanList } from '$lib/sdk/billing';
+import { Query } from '@appwrite.io/console';
 
-export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
-    await parent();
+export const load: LayoutLoad = async ({ depends, parent }) => {
+    const { organizations } = await parent();
+
     depends(Dependencies.RUNTIMES);
     depends(Dependencies.CONSOLE_VARIABLES);
     depends(Dependencies.ORGANIZATION);
 
-    const prefs = await sdk.forConsole.account.getPrefs();
-
     const { endpoint, project } = sdk.forConsole.client.config;
-    const versionPromise = fetch(`${endpoint}/health/version`, {
-        headers: {
-            'X-Appwrite-Project': project
-        }
-    }).then((response) => response.json() as { version?: string });
+    const [preferences, plansArray, versionData, consoleVariables] = await Promise.all([
+        sdk.forConsole.account.getPrefs(),
+        isCloud ? sdk.forConsole.billing.getPlansInfo() : null,
+        fetch(`${endpoint}/health/version`, {
+            headers: { 'X-Appwrite-Project': project }
+        }).then((response) => response.json() as { version?: string }),
+        sdk.forConsole.console.variables()
+    ]);
 
-    const variablesPromise = sdk.forConsole.console.variables();
+    const plansInfo = toPlanMap(plansArray);
 
-    const [data, variables] = await Promise.all([versionPromise, variablesPromise]);
-
-    let plansInfo = new Map<string, Plan>();
-    if (isCloud) {
-        const plansArray = await sdk.forConsole.billing.listPlans();
-        plansInfo = Object.values(plansArray.plans).reduce((map, plan) => {
-            map.set(plan.$id, plan);
-            return map;
-        }, new Map<string, Plan>());
-    }
-
-    const organizations = !isCloud
-        ? await sdk.forConsole.teams.list()
-        : await sdk.forConsole.billing.listOrganization();
+    const currentOrgId =
+        preferences.organization ??
+        (organizations.teams.length > 0 ? organizations.teams[0].$id : undefined);
 
     let projects: Models.Project[] = [];
-    let currentOrgId = params.organization ? params.organization : prefs.organization;
-
-    if (!currentOrgId && organizations.teams.length > 0) {
-        currentOrgId = organizations.teams[0].$id;
-    }
+    
     if (currentOrgId) {
         const orgProjects = await sdk.forConsole.projects.list([
             Query.equal('teamId', currentOrgId),
@@ -52,19 +40,28 @@ export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
         projects = orgProjects.projects.length > 0 ? orgProjects.projects : [];
     }
 
-    // set `default` if no region!
-    for (const project of projects) {
-        project.region ??= 'default';
-    }
-
     return {
-        consoleVariables: variables,
-        version: data?.version ?? null,
         plansInfo,
         roles: [],
         scopes: [],
-        projects: projects,
-        currentProjectId: params.project ?? '',
-        organizations: organizations
+        projects,
+        preferences,
+        currentOrgId,
+        organizations,
+        consoleVariables,
+        version: versionData?.version ?? null
     };
 };
+
+function toPlanMap(plansArray: PlanList | null): Map<Tier, Plan> {
+    const map = new Map<Tier, Plan>();
+    if (!plansArray?.plans.length) return map;
+
+    const plans = plansArray.plans;
+    for (let i = 0; i < plans.length; i++) {
+        const plan = plans[i];
+        map.set(plan.$id as Tier, plan);
+    }
+
+    return map;
+}
