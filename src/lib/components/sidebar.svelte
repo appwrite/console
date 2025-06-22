@@ -143,7 +143,7 @@
                 <Layout.Stack direction="column" gap="s">
                     <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.region}-${project.$id}/overview`}
+                            href={`/console/project-${project.region}-${project.$id}/overview/platforms`}
                             class="link"
                             class:active={page.url.pathname.includes('overview')}
                             on:click={() => {

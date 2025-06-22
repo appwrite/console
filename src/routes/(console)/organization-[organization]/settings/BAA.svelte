@@ -2,8 +2,12 @@
     import { Box, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import BaaModal from './BAAModal.svelte';
+    import type { Models } from '@appwrite.io/console';
 
     let show = false;
+
+    export let locale: Models.Locale;
+    export let countryList: Models.CountryList;
 </script>
 
 <CardGrid>
@@ -31,4 +35,4 @@
     </svelte:fragment>
 </CardGrid>
 
-<BaaModal bind:show />
+<BaaModal {locale} {countryList} bind:show />

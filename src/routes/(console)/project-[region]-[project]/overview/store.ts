@@ -21,8 +21,6 @@ export const usage = cachedStore<
     };
 });
 
-export const selectedTab: Writable<'platforms' | 'keys' | 'dev-keys'> = writable('platforms');
-
 export const showDevKeysCreateModal: Writable<boolean> = writable(false);
 
 export const devKeyColumns = readable<Column[]>([

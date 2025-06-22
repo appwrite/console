@@ -43,8 +43,12 @@
         style:cursor="pointer"
         on:click|preventDefault|stopPropagation={handleClick}
         on:keyup={clickOnEnter}
-        on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}>
+        on:mouseenter={() => setTimeout(() => (content = copyText))}>
         <slot />
     </span>
-    <p slot="tooltip">{content}</p>
+    <p slot="tooltip" let:showing>
+        {#if showing}
+            {content}
+        {/if}
+    </p>
 </Tooltip>
