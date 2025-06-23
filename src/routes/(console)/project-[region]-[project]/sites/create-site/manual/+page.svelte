@@ -14,7 +14,7 @@
     import { BuildRuntime, Framework, ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import Configuration from '../configuration.svelte';
-    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { regionalConsoleVariables } from '../../../store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { InvalidFileType, removeFile } from '$lib/helpers/files';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
