@@ -16,7 +16,7 @@
         selectedDomain
     }: {
         show: boolean;
-        selectedDomain: Models.ProxyRule;
+        selectedDomain: Models.Domain;
     } = $props();
 
     const nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',') ?? [
