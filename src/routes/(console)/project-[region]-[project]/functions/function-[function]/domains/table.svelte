@@ -61,15 +61,11 @@
                                 </Typography.Text>
                             </Link>
                             {#if proxyRule.status === 'verifying'}
-                                <Badge
-                                    variant="secondary"
-                                    type="warning"
-                                    content="Verifying"
-                                    size="s" />
+                                <Badge variant="secondary" content="Verifying" size="s" />
                             {:else if proxyRule.status !== 'verified'}
                                 <Badge
                                     variant="secondary"
-                                    type="error"
+                                    type="warning"
                                     content="Verification failed"
                                     size="s" />
                             {/if}

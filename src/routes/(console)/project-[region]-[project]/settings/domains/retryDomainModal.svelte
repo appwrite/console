@@ -17,8 +17,8 @@
         show: boolean;
         selectedDomain: Models.ProxyRule;
     } = $props();
-    let error = $state(null);
 
+    let error = $state(null);
     async function retryDomain() {
         try {
             await sdk
