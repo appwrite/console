@@ -108,7 +108,8 @@
 
     async function trackDowngradeFeedback() {
         const paidInvoices = await sdk.forConsole.billing.listInvoices(data.organization.$id, [
-            Query.equal('status', 'succeeded')
+            Query.equal('status', 'succeeded'),
+            Query.greaterThan('grossAmount', 0)
         ]);
 
         await fetch(`${VARS.GROWTH_ENDPOINT}/feedback/billing`, {
