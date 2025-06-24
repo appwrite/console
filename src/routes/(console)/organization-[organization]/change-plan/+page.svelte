@@ -34,6 +34,7 @@
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
     import { Query } from '@appwrite.io/console';
+
     export let data;
 
     let selectedCoupon: Partial<Coupon> = null;
