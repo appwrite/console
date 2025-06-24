@@ -448,11 +448,11 @@ export const eventServices: Array<EventService> = [
         name: 'databases',
         resources: [
             {
-                name: 'collections',
+                name: 'tables',
                 actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
             },
             {
-                name: 'documents',
+                name: 'rows',
                 actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
             }
         ],
