@@ -19,7 +19,7 @@
     export let projects: number = undefined;
 
     let showCustomId = false;
-    $: projectsLimited = $currentPlan.projects > 0 && projects && projects >= $currentPlan?.projects;
+    $: projectsLimited = $currentPlan?.projects > 0 && projects && projects >= $currentPlan?.projects;
 </script>
 
 <svelte:head>

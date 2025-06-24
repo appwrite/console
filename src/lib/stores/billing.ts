@@ -322,6 +322,7 @@ export function checkForProjectsLimit(org: Organization, projects: number) {
     const plan = get(plansInfo)?.get(org.billingPlan);
     if (!plan) return;
     if (plan.$id !== BillingPlan.FREE) return;
+    if (!org.projects) return;
     if (org.projects.length > 0) return;
 
     if (projects > plan.projects) {
