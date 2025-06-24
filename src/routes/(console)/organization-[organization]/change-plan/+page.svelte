@@ -33,7 +33,7 @@
     import { onMount } from 'svelte';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
-
+    import { Query } from '@appwrite.io/console';
     export let data;
 
     let selectedCoupon: Partial<Coupon> = null;
@@ -114,6 +114,10 @@
                 null
             );
 
+            const paidInvoices = await sdk.forConsole.billing.listInvoices(data.organization.$id, [
+                Query.equal('status', 'succeeded')
+            ]);
+
             await fetch(`${VARS.GROWTH_ENDPOINT}/feedback/billing`, {
                 method: 'POST',
                 headers: {
@@ -128,6 +132,9 @@
                     )?.label,
                     orgId: data.organization.$id,
                     userId: data.account.$id,
+                    orgAge: data.organization.$createdAt,
+                    userAge: data.account.$createdAt,
+                    paidInvoices: paidInvoices.total,
                     message: feedbackMessage ?? ''
                 })
             });
