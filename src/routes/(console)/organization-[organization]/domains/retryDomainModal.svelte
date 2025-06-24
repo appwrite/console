@@ -39,7 +39,7 @@
                 error =
                     'Domain verification failed. Please check your domain settings or try again later';
             }
-            await invalidate(Dependencies.DOMAINS);
+            await Promise.all([invalidate(Dependencies.DOMAIN), invalidate(Dependencies.DOMAINS)]);
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
             error = e.message;
