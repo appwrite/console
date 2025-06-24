@@ -37,7 +37,7 @@
     }
 
     function handleInvalid(e: CustomEvent) {
-        const reason = e.detail.reason;
+        const reason = e.detail?.reason ?? '';
         if (reason === InvalidFileType.EXTENSION) {
             error = 'Only .txt files allowed';
         } else if (reason === InvalidFileType.SIZE) {

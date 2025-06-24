@@ -130,7 +130,7 @@
     }
 
     function handleInvalid(e: CustomEvent) {
-        const reason = e.detail.reason;
+        const reason = e.detail?.reason ?? '';
         if (reason === InvalidFileType.EXTENSION) {
             addNotification({
                 type: 'error',

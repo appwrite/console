@@ -28,10 +28,15 @@ export async function buildVerboseDomain(
         : '';
     const safeUnique = unique ? toURLSafe(unique).toLowerCase() : ID.unique();
     let domain = `${safeName}`;
-    if (await checkDomain(domain, apex)) {
+    if (domain && (await checkDomain(domain, apex))) {
         return domain;
     }
-    domain += '-' + safeSpecifier;
+
+    if (domain) {
+        domain += '-';
+    }
+
+    domain += safeSpecifier;
     if (await checkDomain(domain, apex)) {
         return domain;
     }
