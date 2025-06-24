@@ -106,6 +106,33 @@
         }
     }
 
+    async function trackDowngradeFeedback() {
+        const paidInvoices = await sdk.forConsole.billing.listInvoices(data.organization.$id, [
+            Query.equal('status', 'succeeded')
+        ]);
+
+        await fetch(`${VARS.GROWTH_ENDPOINT}/feedback/billing`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                from: tierToPlan(data.organization.billingPlan).name,
+                to: tierToPlan(selectedPlan).name,
+                email: data.account.email,
+                reason: feedbackDowngradeOptions.find(
+                    (option) => option.value === feedbackDowngradeReason
+                )?.label,
+                orgId: data.organization.$id,
+                userId: data.account.$id,
+                orgAge: data.organization.$createdAt,
+                userAge: data.account.$createdAt,
+                paidInvoices: paidInvoices.total,
+                message: feedbackMessage ?? ''
+            })
+        });
+    }
+
     async function downgrade() {
         try {
             await sdk.forConsole.billing.updatePlan(
@@ -115,30 +142,7 @@
                 null
             );
 
-            const paidInvoices = await sdk.forConsole.billing.listInvoices(data.organization.$id, [
-                Query.equal('status', 'succeeded')
-            ]);
-
-            await fetch(`${VARS.GROWTH_ENDPOINT}/feedback/billing`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    from: tierToPlan(data.organization.billingPlan).name,
-                    to: tierToPlan(selectedPlan).name,
-                    email: data.account.email,
-                    reason: feedbackDowngradeOptions.find(
-                        (option) => option.value === feedbackDowngradeReason
-                    )?.label,
-                    orgId: data.organization.$id,
-                    userId: data.account.$id,
-                    orgAge: data.organization.$createdAt,
-                    userAge: data.account.$createdAt,
-                    paidInvoices: paidInvoices.total,
-                    message: feedbackMessage ?? ''
-                })
-            });
+            trackDowngradeFeedback();
 
             await invalidate(Dependencies.ORGANIZATION);
 
