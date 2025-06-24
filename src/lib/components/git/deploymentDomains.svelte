@@ -3,8 +3,16 @@
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { IconExternalLink, IconQrcode } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Icon, Layout, Popover, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import { IconExclamation, IconExternalLink, IconQrcode } from '@appwrite.io/pink-icons-svelte';
+    import {
+        ActionMenu,
+        Icon,
+        Layout,
+        Popover,
+        Tag,
+        Tooltip,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
     let {
@@ -34,9 +42,19 @@
         <Link external href={`${$regionalProtocol}${sortedDomains[0]?.domain}`} variant="muted">
             <Layout.Stack gap="xxs" direction="row" alignItems="center">
                 <Trim alternativeTrim>
-                    <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                        {sortedDomains[0]?.domain}
-                    </Typography.Text>
+                    <Layout.Stack gap="xxs" direction="row" alignItems="flex-end">
+                        <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
+                            {sortedDomains[0]?.domain}
+                        </Typography.Text>
+
+                        {#if sortedDomains[0]?.status !== 'verified'}
+                            <Tooltip>
+                                <Icon icon={IconExclamation} size="s" color="--bgcolor-warning" />
+
+                                <div slot="tooltip">Not verified</div>
+                            </Tooltip>
+                        {/if}
+                    </Layout.Stack>
                 </Trim>
             </Layout.Stack>
         </Link>
