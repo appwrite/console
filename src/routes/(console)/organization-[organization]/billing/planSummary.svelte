@@ -15,6 +15,7 @@
         Divider,
         Icon,
         Layout,
+        Table,
         Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
@@ -36,159 +37,250 @@
 </script>
 
 {#if $organization}
-    <CardGrid>
-        <svelte:fragment slot="title">Payment estimates</svelte:fragment>
-        A breakdown of your estimated upcoming payment for the current billing period. Totals displayed
-        exclude accumulated credits and applicable taxes.
-        <svelte:fragment slot="aside">
-            <p class="text u-bold">
-                Due at: {toLocaleDate($organization?.billingNextInvoiceDate)}
-            </p>
-            <Card.Base variant="secondary" padding="s">
-                <Layout.Stack>
-                    <Layout.Stack direction="row" justifyContent="space-between">
-                        <Typography.Text color="--fgcolor-neutral-primary">
-                            {currentPlan.name} plan
-                        </Typography.Text>
-                        <Typography.Text>
-                            {isTrial || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
-                                ? formatCurrency(0)
-                                : currentPlan
-                                  ? formatCurrency(currentPlan?.price)
-                                  : ''}
-                        </Typography.Text>
-                    </Layout.Stack>
-
-                    {#if currentPlan.budgeting && extraUsage > 0}
-                        <Accordion
-                            hideDivider
-                            title="Add-ons"
-                            badge={currentAggregation.resources
-                                .filter((r) => r.amount && r.amount > 0)
-                                .length.toString()}>
-                            <svelte:fragment slot="end">
-                                {formatCurrency(extraUsage >= 0 ? extraUsage : 0)}
-                            </svelte:fragment>
-                            <Layout.Stack gap="xs">
-                                {#each currentAggregation.resources.filter((r) => r.amount && r.amount > 0) as excess, i}
-                                    {#if i > 0}
-                                        <Divider />
-                                    {/if}
-
-                                    <Layout.Stack gap="xxxs">
-                                        <Layout.Stack
-                                            direction="row"
-                                            justifyContent="space-between">
-                                            <Typography.Text color="--fgcolor-neutral-primary">
-                                                {excess.resourceId}
-                                            </Typography.Text>
-                                            <Typography.Text>
-                                                {formatCurrency(excess.amount)}
-                                            </Typography.Text>
-                                        </Layout.Stack>
-                                        <Layout.Stack direction="row">
-                                            <Tooltip
-                                                placement="bottom"
-                                                disabled={excess.value <= 1000}>
-                                                <svelte:fragment slot="tooltip">
-                                                    {formatNumberWithCommas(excess.value)}
-                                                </svelte:fragment>
-                                                <span>{abbreviateNumber(excess.value)}</span>
-                                            </Tooltip>
-                                        </Layout.Stack>
-                                    </Layout.Stack>
-                                {/each}
-                            </Layout.Stack>
-                        </Accordion>
-                    {/if}
-
-                    {#if currentPlan.supportsCredits && availableCredit > 0}
+    {#if currentPlan.usagePerProject}
+        <Card.Base variant="primary" padding="s" radius="s">
+            <Layout.Stack>
+                <Typography.Text color="--fgcolor-neutral-primary">
+                    {currentPlan.name} plan
+                </Typography.Text>
+                <Typography.Text color="--fgcolor-neutral-primary">
+                    Next payment of <span class="text u-bold">${currentAggregation.amount}</span>
+                    will occur on
+                    <span class="text u-bold"
+                        >{toLocaleDate($organization?.billingNextInvoiceDate)}</span>
+                </Typography.Text>
+            </Layout.Stack>
+            <Divider />
+            <Table.Root let:root columns={[{ id: 'project' }]}>
+                <Table.Row.Base {root}>
+                    <Table.Cell column="project" {root}>
                         <Layout.Stack direction="row" justifyContent="space-between">
-                            <Layout.Stack direction="row" alignItems="center" gap="xxs">
-                                <Icon size="s" icon={IconTag} color="--fgcolor-success" />
-                                <Typography.Text color="--fgcolor-neutral-primary"
-                                    >Credits to be applied</Typography.Text>
-                            </Layout.Stack>
-                            <Typography.Text color="--fgcolor-success">
-                                -{formatCurrency(
-                                    Math.min(availableCredit, currentInvoice?.amount ?? 0)
-                                )}
+                            <Typography.Text color="--fgcolor-neutral-primary"
+                                >Base plan</Typography.Text>
+                            <Typography.Text>
+                                {isTrial ||
+                                $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
+                                    ? formatCurrency(0)
+                                    : currentPlan
+                                      ? formatCurrency(currentPlan?.price)
+                                      : ''}
                             </Typography.Text>
                         </Layout.Stack>
-                    {/if}
-
-                    {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
+                    </Table.Cell>
+                </Table.Row.Base>
+                {#each currentAggregation.resources.filter((r) => r.amount && r.amount > 0 && Object.keys(currentPlan.addons).includes(r.resourceId) && currentPlan.addons[r.resourceId].price > 0) as excess, i}
+                    {#if i > 0}
                         <Divider />
-                        <Layout.Stack direction="row" justifyContent="space-between">
-                            <Typography.Text color="--fgcolor-neutral-primary" variant="m-500">
-                                <Layout.Stack direction="row" alignItems="center" gap="s">
-                                    Current total (USD)
-                                    <Tooltip>
-                                        <Icon icon={IconInfo} />
-                                        <svelte:fragment slot="tooltip">
-                                            Estimates are updated daily and may differ from your
-                                            final invoice.
-                                        </svelte:fragment>
-                                    </Tooltip>
+                    {/if}
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="project" {root}>
+                            <Layout.Stack direction="row" justifyContent="space-between">
+                                <Typography.Text color="--fgcolor-neutral-primary"
+                                    >{excess.resourceId}</Typography.Text>
+                                <Typography.Text>
+                                    {formatCurrency(excess.amount)}
+                                </Typography.Text>
+                            </Layout.Stack>
+                        </Table.Cell>
+                    </Table.Row.Base>
+                {/each}
+                {#each currentAggregation.projectBreakdown as projectBreakdown}
+                    <Accordion hideDivider title="Project 1">
+                        <svelte:fragment slot="end">
+                            {formatCurrency(projectBreakdown.amount)}
+                        </svelte:fragment>
+                        <Layout.Stack gap="xs">
+                            <!-- {#each projectBreakdown.resources as resource, i}
+                                {#if i > 0}
+                                    <Divider />
+                                {/if}
+
+                                <Layout.Stack gap="xxxs">
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between">
+                                        <Typography.Text color="--fgcolor-neutral-primary">
+                                            {resource.resourceId}
+                                        </Typography.Text>
+                                        <Typography.Text>
+                                            {formatCurrency(resource.amount)}
+                                        </Typography.Text>
+                                    </Layout.Stack>
+                                    <Layout.Stack direction="row">
+                                        <Tooltip
+                                            placement="bottom"
+                                            disabled={resource.value <= 1000}>
+                                            <svelte:fragment slot="tooltip">
+                                                {formatNumberWithCommas(resource.value)}
+                                            </svelte:fragment>
+                                            <span>{abbreviateNumber(resource.value)}</span>
+                                        </Tooltip>
+                                    </Layout.Stack>
                                 </Layout.Stack>
+                            {/each} -->
+                        </Layout.Stack>
+                    </Accordion>
+                {/each}
+            </Table.Root>
+        </Card.Base>
+    {:else}
+        <CardGrid>
+            <svelte:fragment slot="title">Payment estimates</svelte:fragment>
+            A breakdown of your estimated upcoming payment for the current billing period. Totals displayed
+            exclude accumulated credits and applicable taxes.
+            <svelte:fragment slot="aside">
+                <p class="text u-bold">
+                    Due at: {toLocaleDate($organization?.billingNextInvoiceDate)}
+                </p>
+                <Card.Base variant="secondary" padding="s">
+                    <Layout.Stack>
+                        <Layout.Stack direction="row" justifyContent="space-between">
+                            <Typography.Text color="--fgcolor-neutral-primary">
+                                {currentPlan.name} plan
                             </Typography.Text>
-                            <Typography.Text color="--fgcolor-neutral-primary" variant="m-500">
-                                {formatCurrency(
-                                    Math.max(
-                                        (currentInvoice?.amount ?? 0) -
-                                            Math.min(availableCredit, currentInvoice?.amount ?? 0),
-                                        0
-                                    )
-                                )}
+                            <Typography.Text>
+                                {isTrial ||
+                                $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
+                                    ? formatCurrency(0)
+                                    : currentPlan
+                                      ? formatCurrency(currentPlan?.price)
+                                      : ''}
                             </Typography.Text>
                         </Layout.Stack>
-                    {/if}
-                </Layout.Stack>
-            </Card.Base>
-        </svelte:fragment>
-        <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
-                <div
-                    class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
-                    <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
-                        View estimated usage
-                    </Button>
-                    <Button
-                        disabled={$organization?.markedForDeletion}
-                        href={$upgradeURL}
-                        on:click={() =>
-                            trackEvent(Click.OrganizationClickUpgrade, {
-                                from: 'button',
-                                source: 'billing_tab'
-                            })}>
-                        Upgrade
-                    </Button>
-                </div>
-            {:else}
-                <div
-                    class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
-                    {#if $organization?.billingPlanDowngrade !== null}
-                        <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
-                    {:else}
+
+                        {#if currentPlan.budgeting && extraUsage > 0}
+                            <Accordion
+                                title="Add-ons"
+                                badge={currentAggregation.resources
+                                    .filter((r) => r.amount && r.amount > 0)
+                                    .length.toString()}>
+                                <svelte:fragment slot="end">
+                                    {formatCurrency(extraUsage >= 0 ? extraUsage : 0)}
+                                </svelte:fragment>
+                                <Layout.Stack gap="xs">
+                                    {#each currentAggregation.resources.filter((r) => r.amount && r.amount > 0) as excess, i}
+                                        {#if i > 0}
+                                            <Divider />
+                                        {/if}
+
+                                        <Layout.Stack gap="xxxs">
+                                            <Layout.Stack
+                                                direction="row"
+                                                justifyContent="space-between">
+                                                <Typography.Text color="--fgcolor-neutral-primary">
+                                                    {excess.resourceId}
+                                                </Typography.Text>
+                                                <Typography.Text>
+                                                    {formatCurrency(excess.amount)}
+                                                </Typography.Text>
+                                            </Layout.Stack>
+                                            <Layout.Stack direction="row">
+                                                <Tooltip
+                                                    placement="bottom"
+                                                    disabled={excess.value <= 1000}>
+                                                    <svelte:fragment slot="tooltip">
+                                                        {formatNumberWithCommas(excess.value)}
+                                                    </svelte:fragment>
+                                                    <span>{abbreviateNumber(excess.value)}</span>
+                                                </Tooltip>
+                                            </Layout.Stack>
+                                        </Layout.Stack>
+                                    {/each}
+                                </Layout.Stack>
+                            </Accordion>
+                        {/if}
+
+                        {#if currentPlan.supportsCredits && availableCredit > 0}
+                            <Layout.Stack direction="row" justifyContent="space-between">
+                                <Layout.Stack direction="row" alignItems="center" gap="xxs">
+                                    <Icon size="s" icon={IconTag} color="--fgcolor-success" />
+                                    <Typography.Text color="--fgcolor-neutral-primary"
+                                        >Credits to be applied</Typography.Text>
+                                </Layout.Stack>
+                                <Typography.Text color="--fgcolor-success">
+                                    -{formatCurrency(
+                                        Math.min(availableCredit, currentInvoice?.amount ?? 0)
+                                    )}
+                                </Typography.Text>
+                            </Layout.Stack>
+                        {/if}
+
+                        {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
+                            <Divider />
+                            <Layout.Stack direction="row" justifyContent="space-between">
+                                <Typography.Text color="--fgcolor-neutral-primary" variant="m-500">
+                                    <Layout.Stack direction="row" alignItems="center" gap="s">
+                                        Current total (USD)
+                                        <Tooltip>
+                                            <Icon icon={IconInfo} />
+                                            <svelte:fragment slot="tooltip">
+                                                Estimates are updated daily and may differ from your
+                                                final invoice.
+                                            </svelte:fragment>
+                                        </Tooltip>
+                                    </Layout.Stack>
+                                </Typography.Text>
+                                <Typography.Text color="--fgcolor-neutral-primary" variant="m-500">
+                                    {formatCurrency(
+                                        Math.max(
+                                            (currentInvoice?.amount ?? 0) -
+                                                Math.min(
+                                                    availableCredit,
+                                                    currentInvoice?.amount ?? 0
+                                                ),
+                                            0
+                                        )
+                                    )}
+                                </Typography.Text>
+                            </Layout.Stack>
+                        {/if}
+                    </Layout.Stack>
+                </Card.Base>
+            </svelte:fragment>
+            <svelte:fragment slot="actions">
+                {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                    <div
+                        class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
+                        <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
+                            View estimated usage
+                        </Button>
                         <Button
-                            text
                             disabled={$organization?.markedForDeletion}
                             href={$upgradeURL}
                             on:click={() =>
-                                trackEvent('click_organization_plan_update', {
+                                trackEvent(Click.OrganizationClickUpgrade, {
                                     from: 'button',
                                     source: 'billing_tab'
                                 })}>
-                            Change plan
+                            Upgrade
                         </Button>
-                    {/if}
-                    <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
-                        View estimated usage
-                    </Button>
-                </div>
-            {/if}
-        </svelte:fragment>
-    </CardGrid>
+                    </div>
+                {:else}
+                    <div
+                        class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
+                        {#if $organization?.billingPlanDowngrade !== null}
+                            <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
+                        {:else}
+                            <Button
+                                text
+                                disabled={$organization?.markedForDeletion}
+                                href={$upgradeURL}
+                                on:click={() =>
+                                    trackEvent('click_organization_plan_update', {
+                                        from: 'button',
+                                        source: 'billing_tab'
+                                    })}>
+                                Change plan
+                            </Button>
+                        {/if}
+                        <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
+                            View estimated usage
+                        </Button>
+                    </div>
+                {/if}
+            </svelte:fragment>
+        </CardGrid>
+    {/if}
 {/if}
 
 <CancelDowngradeModel bind:showCancel />

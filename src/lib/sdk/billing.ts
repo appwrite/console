@@ -207,7 +207,14 @@ export type AggregationTeam = {
      * Aggregation billing plan
      */
     plan: string;
+    projectBreakdown: ProjectBreakdown[]
 };
+
+export type ProjectBreakdown = {
+    $id: string;
+    name: string;
+    amount: number;
+}
 
 export type InvoiceUsage = {
     resourceId: string;
@@ -413,6 +420,7 @@ export type Plan = {
     supportsOrganizationRoles: boolean;
     buildSize: number; // in MB
     deploymentSize: number; // in MB
+    usagePerProject: boolean;
 };
 
 export type PlanList = {
