@@ -35,9 +35,10 @@
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-react-native\ncd starter-for-react-native\n';
 
-    const updateConfigCode = `const EXPO_PUBLIC_APPWRITE_PROJECT_ID = "${projectId}";
-const EXPO_PUBLIC_APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}";
-        `;
+    const updateConfigCode = (
+        prefix: string
+    ) => `${prefix}EXPO_PUBLIC_APPWRITE_PROJECT_ID=${projectId}
+${prefix}EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}`;
 
     export let platform: PlatformType = PlatformType.Reactnativeandroid;
 
@@ -232,7 +233,7 @@ const EXPO_PUBLIC_APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page
 
                     <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                     <div class="pink2-code-margin-fix">
-                        <Code lang="javascript" lineNumbers code={updateConfigCode} />
+                        <Code lang="bash" lineNumbers code={updateConfigCode('')} />
                     </div>
 
                     <Typography.Text variant="m-500"
