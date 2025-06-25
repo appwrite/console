@@ -39,6 +39,7 @@
         }
     });
 
+    let error = $state(null);
     let verified = $state(false);
 
     async function retryDomain() {
@@ -46,26 +47,31 @@
             const domain = await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.updateRuleVerification(selectedProxyRule.$id);
-            await invalidate(Dependencies.SITES_DOMAINS);
-            verified = domain.status === 'verified';
+
             show = false;
+            verified = domain.status === 'verified';
+            await invalidate(Dependencies.SITES_DOMAINS);
+
             addNotification({
                 type: 'success',
                 message: `${selectedProxyRule.domain} has been verified`
             });
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
-            addNotification({
-                type: 'error',
-                message:
-                    'Domain verification failed. Please check your domain settings or try again later'
-            });
+            error =
+                'Domain verification failed. Please check your domain settings or try again later';
             trackError(e, Submit.DomainUpdateVerification);
         }
     }
+
+    $effect(() => {
+        if (!show) {
+            error = null;
+        }
+    });
 </script>
 
-<Modal title="Retry verification" bind:show onSubmit={retryDomain}>
+<Modal title="Retry verification" bind:show onSubmit={retryDomain} bind:error>
     <div>
         <Tabs.Root variant="secondary" let:root>
             {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
