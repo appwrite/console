@@ -1,7 +1,17 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { Tag } from '@appwrite.io/pink-svelte';
 
     export let value: number = null;
+
+    onMount(() => {
+        setTimeout(() => {
+            const firstButton = document.querySelector('[data-rating="0"]') as HTMLElement;
+            if (firstButton) {
+                firstButton.focus();
+            }
+        }, 150);
+    });
 </script>
 
 <fieldset class="u-margin-block-start-8 u-min-width-0">
@@ -10,7 +20,12 @@
         style="padding-block: 0.13rem">
         {#each Array(11) as _, i}
             <li>
-                <Tag size="m" selected={value === i} on:click={() => (value = i)}>
+                <Tag
+                    size="m"
+                    selected={value === i}
+                    autofocus={i === 0}
+                    data-rating={i}
+                    on:click={() => (value = i)}>
                     {i}
                 </Tag>
             </li>

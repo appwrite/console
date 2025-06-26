@@ -14,6 +14,7 @@
     };
     export let title = '';
     export let hideFooter = false;
+    export let autoFocus = true;
 
     let alert: HTMLElement;
 
@@ -25,6 +26,44 @@
 
     $: if (error) {
         alert?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+    }
+
+    $: if (show && autoFocus) {
+        setTimeout(() => {
+            focusFirstElement();
+        }, 100);
+    }
+
+    function focusFirstElement() {
+        const modalDialog = document.querySelector('dialog[open]') as HTMLElement;
+        if (!modalDialog) return;
+
+        const autofocusElement = modalDialog.querySelector('[autofocus]') as HTMLElement;
+        if (autofocusElement) {
+            autofocusElement.focus();
+            return;
+        }
+        const activeElement = document.activeElement;
+        if (activeElement && modalDialog.contains(activeElement)) {
+            return;
+        }
+        const focusableSelectors = [
+            'input:not([disabled]):not([readonly]):not([type="hidden"])',
+            'textarea:not([disabled]):not([readonly])',
+            'select:not([disabled])',
+            'button:not([disabled])',
+            'a[href]:not([disabled])',
+            '[tabindex]:not([tabindex="-1"]):not([disabled])',
+            '.card-selector:not([disabled])',
+            '[role="button"]:not([disabled])',
+            '[role="link"]:not([disabled])',
+            '[contenteditable="true"]:not([disabled])'
+        ].join(', ');
+
+        const firstFocusable = modalDialog.querySelector(focusableSelectors) as HTMLElement;
+        if (firstFocusable) {
+            firstFocusable.focus();
+        }
     }
 </script>
 

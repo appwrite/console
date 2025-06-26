@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { Layout, Typography, Input, Tag, Icon } from '@appwrite.io/pink-svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { CustomId } from '$lib/components/index.js';
@@ -14,6 +15,30 @@
     export let showTitle = true;
 
     let showCustomId = false;
+
+    onMount(() => {
+        setTimeout(() => {
+            let nameInput = document.querySelector(
+                'input[placeholder="Project name"]'
+            ) as HTMLInputElement;
+            if (!nameInput) {
+                nameInput = document.querySelector(
+                    'input[type="text"]:first-of-type'
+                ) as HTMLInputElement;
+            }
+            if (!nameInput) {
+                nameInput = document.querySelector('input:first-of-type') as HTMLInputElement;
+            }
+
+            console.log('CreateProject - Found input:', nameInput);
+            if (nameInput) {
+                nameInput.focus();
+                console.log('CreateProject - Focused project name input');
+            } else {
+                console.log('CreateProject - Could not find project name input');
+            }
+        }, 150);
+    });
 </script>
 
 <svelte:head>
@@ -34,6 +59,7 @@
                         label="Name"
                         placeholder="Project name"
                         required
+                        autofocus
                         bind:value={projectName} />
                     {#if !showCustomId}
                         <div>
