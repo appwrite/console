@@ -10,14 +10,7 @@
 </script>
 
 <Layout.Stack direction="row" alignItems="center" inline>
-    {#if ['processing'].includes(status)}
-        <Typography.Code color="--fgcolor-neutral-secondary">
-            <Layout.Stack direction="row" alignItems="center" inline>
-                0s
-                <Spinner size="s" />
-            </Layout.Stack>
-        </Typography.Code>
-    {:else if ['building'].includes(status)}
+    {#if ['processing, building'].includes(status)}
         <Typography.Code color="--fgcolor-neutral-secondary">
             <Layout.Stack direction="row" alignItems="center" inline>
                 <p use:timer={{ start: deployment.$createdAt }}></p>
