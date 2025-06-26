@@ -13,7 +13,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import LoginLight from '$lib/images/login/login-light-mode.svg';
@@ -77,7 +77,7 @@
                 await sdk.forConsole.account.updatePrefs(newPrefs);
                 await invalidate(Dependencies.ACCOUNT);
                 await goto(base);
-                trackEvent('submit_account_create', {
+                trackEvent(Submit.AccountCreate, {
                     email: mail,
                     name: name,
                     code: code
