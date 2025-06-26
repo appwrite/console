@@ -11,15 +11,17 @@
     import type { Models } from '@appwrite.io/console';
     import { filterRegions } from '$lib/helpers/regions';
 
-    export let projectName: string;
-    export let id: string;
-    export let regions: Array<Models.ConsoleRegion> = [];
-    export let region: string;
-    export let showTitle = true;
-    export let projects: number = undefined;
+    let projectName = $state('');
+    let id = $state('');
+    let regions = $state<Array<Models.ConsoleRegion>>([]);
+    let region = $state('');
+    let showTitle = $state(true);
+    let projects = $state<number | undefined>(undefined);
 
-    let showCustomId = false;
-    $: projectsLimited = $currentPlan.projects > 0 && projects && projects >= $currentPlan?.projects;
+    let showCustomId = $state(false);
+    let projectsLimited = $derived(
+        $currentPlan.projects > 0 && projects && projects >= $currentPlan?.projects
+    );
 </script>
 
 <svelte:head>
@@ -28,13 +30,16 @@
     {/each}
 </svelte:head>
 
-<form on:submit|preventDefault>
+<form
+    onsubmit={(e) => {
+        e.preventDefault();
+    }}>
     <Layout.Stack direction="column" gap="xxl">
         {#if showTitle}
             <Typography.Title size="l">Create your project</Typography.Title>
         {/if}
         {#if projectsLimited}
-            <Alert.Inline status="warning" title="You’ve reached your limit of 2 projects">
+            <Alert.Inline status="warning" title="You've reached your limit of 2 projects">
                 Extra projects are available on paid plans for an additional fee
                 <svelte:fragment slot="actions">
                     <Button
@@ -80,6 +85,6 @@
                 {/if}
             </Layout.Stack>
         </Layout.Stack>
-        <slot name="submit"></slot>
+        {@render globalThis.$slots.submit?.()}
     </Layout.Stack>
 </form>

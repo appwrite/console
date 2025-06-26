@@ -9,8 +9,8 @@
         upgradeURL
     } from '$lib/stores/billing';
     import { currentPlan } from '$lib/stores/organization';
-    import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
-    let showSelectProject = false;
+    import SelectProjectCloud from './selectProjectCloud.svelte';
+    let showSelectProject = $state(false);
 </script>
 
 <SelectProjectCloud bind:showSelectProject />
