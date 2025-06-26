@@ -22,12 +22,20 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         (org) => org.$id === project.teamId
     );
 
-    const [org, regionalConsoleVariables, rolesResult] = await Promise.all([
+    const includedInBasePlans = plansInfo.has(organization.billingPlan);
+
+    const [org, regionalConsoleVariables, rolesResult, organizationPlan] = await Promise.all([
         !organization
             ? (sdk.forConsole.teams.get(project.teamId) as Promise<Organization>)
             : organization,
         sdk.forConsoleIn(project.region).console.variables(),
         isCloud ? sdk.forConsole.billing.getRoles(project.teamId) : null,
+
+        // fetch if not available in `plansInfo`
+        includedInBasePlans
+            ? plansInfo.get(organization.billingPlan)
+            : sdk.forConsole.billing.getOrganizationPlan(organization.$id),
+
         loadAvailableRegions(project.teamId)
     ]);
 
@@ -49,13 +57,18 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         loadFailedInvoices(project.teamId);
     }
 
+    if (!includedInBasePlans) {
+        // save the custom plan to `plansInfo` cache.
+        plansInfo.set(organization.billingPlan, organizationPlan);
+    }
+
     return {
         project,
         organization,
         regionalConsoleVariables,
         roles,
         scopes,
-        currentPlan: plansInfo.get(organization.billingPlan)
+        currentPlan: organizationPlan
     };
 };
 

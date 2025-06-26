@@ -4,7 +4,8 @@
     import { Id } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { columns } from './store';
-    import { Tooltip, Table } from '@appwrite.io/pink-svelte';
+    import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
+    import { Layout, Tooltip, Table, Icon } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -51,7 +52,13 @@
                             maxWidth="fit-content">
                             <span class="u-trim">
                                 {#if !policies}
-                                    <span class="icon-exclamation"></span> No backup policies
+                                    <Layout.Stack direction="row" gap="xxs" alignItems="center">
+                                        <Icon
+                                            icon={IconExclamation}
+                                            size="s"
+                                            color="--bgcolor-warning" />
+                                        No backup policies
+                                    </Layout.Stack>
                                 {:else}
                                     {description}
                                 {/if}
