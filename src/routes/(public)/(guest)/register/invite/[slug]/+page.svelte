@@ -77,7 +77,11 @@
                 await sdk.forConsole.account.updatePrefs(newPrefs);
                 await invalidate(Dependencies.ACCOUNT);
                 await goto(base);
-                trackEvent('submit_account_create', { code: code });
+                trackEvent('submit_account_create', {
+                    email: mail,
+                    name: name,
+                    code: code
+                });
             }
         } catch (error) {
             addNotification({
