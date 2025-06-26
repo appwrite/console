@@ -16,7 +16,9 @@
 <SelectProjectCloud bind:showSelectProject />
 
 {#if $currentPlan && $currentPlan.projects > 0 && !hideBillingHeaderRoutes.includes(page.url.pathname)}
-    <HeaderAlert type="warning" title="Action required: You have more than {$currentPlan.projects} projects.">
+    <HeaderAlert
+        type="warning"
+        title="Action required: You have more than {$currentPlan.projects} projects.">
         <svelte:fragment>
             Choose which projects to keep before {billingProjectsLimitDate} or upgrade to Pro. Projects
             over the limit will be blocked after this date.

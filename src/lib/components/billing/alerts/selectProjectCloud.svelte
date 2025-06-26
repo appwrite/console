@@ -11,8 +11,8 @@
     import { page } from '$app/state';
     import { toLocaleDateTime } from '$lib/helpers/date';
 
-    const showSelectProject = $props.showSelectProject;
-    const selectedProjects = $state([]);
+    let { showSelectProject = $bindable(false) } = $props();
+    let selectedProjects = $state([]);
 
     let projects = $state<Array<Models.Project>>([]);
     let error = $state<string | null>(null);
@@ -31,7 +31,7 @@
                 projects[0].teamId,
                 selectedProjects
             );
-            showSelectProject.set(false);
+            showSelectProject = false;
             invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',
@@ -41,14 +41,14 @@
             error = e.message;
         }
     }
-    
-    function formatProjectsToArchive(projects: Array<Models.Project>) {
+
+    function formatProjectsToArchive() {
         let result = '';
-        
+
         projectsToArchive.forEach((project, index) => {
             const text = `${index === 0 ? '' : ' '}<b>${project.name}</b> `;
             result += text;
-            
+
             if (index < projectsToArchive.length - 1) {
                 if (index == projectsToArchive.length - 2) {
                     result += 'and ';
@@ -58,12 +58,12 @@
                 }
             }
         });
-        
+
         return result;
     }
 </script>
 
-<Modal bind:show={$showSelectProject} title={'Manage projects'} onSubmit={updateSelected}></Modal>
+<Modal bind:show={showSelectProject} title={'Manage projects'} onSubmit={updateSelected}>
     <svelte:fragment slot="description">
         Choose which two projects to keep. Projects over the limit will be blocked after this date.
     </svelte:fragment>
@@ -73,7 +73,7 @@
     <Table.Root
         let:root
         allowSelection
-        bind:selectedRows={$selectedProjects}
+        bind:selectedRows={selectedProjects}
         columns={[{ id: 'name' }, { id: 'created' }]}>
         <svelte:fragment slot="header" let:root>
             <Table.Header.Cell column="name" {root}>Project Name</Table.Header.Cell>
@@ -87,24 +87,24 @@
             </Table.Row.Base>
         {/each}
     </Table.Root>
-    {#if $selectedProjects.length > 2}
+    {#if selectedProjects.length > 2}
         <div class="u-text-warning u-mb-4">
             You can only select two projects. Please deselect others to continue.
         </div>
     {/if}
-    {#if $selectedProjects.length === 2}
+    {#if selectedProjects.length === 2}
         <Alert.Inline
             status="warning"
-            title={`${projects.length - $selectedProjects.length} projects will be archived on ${billingProjectsLimitDate}`}>
+            title={`${projects.length - selectedProjects.length} projects will be archived on ${billingProjectsLimitDate}`}>
             <span>
-                {@html formatProjectsToArchive(projectsToArchive)}
+                {@html formatProjectsToArchive()}
                 will be archived.
             </span>
         </Alert.Inline>
     {/if}
     <svelte:fragment slot="footer">
-        <Button.Button size="s" variant="secondary" on:click={() => ($showSelectProject = false)}
+        <Button.Button size="s" variant="secondary" on:click={() => (showSelectProject = false)}
             >Cancel</Button.Button>
-        <Button.Button size="s" disabled={$selectedProjects.length !== 2}>Save</Button.Button>
+        <Button.Button size="s" disabled={selectedProjects.length !== 2}>Save</Button.Button>
     </svelte:fragment>
 </Modal>
