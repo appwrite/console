@@ -32,7 +32,11 @@
             }
 
             if (data?.couponData?.code) {
-                trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
+                trackEvent(Submit.AccountCreate, {
+                    campaign_name: data?.couponData?.code,
+                    email: mail,
+                    name: $user?.name
+                });
                 await goto(`${base}/apply-credit?code=${data?.couponData?.code}`);
                 return;
             }
