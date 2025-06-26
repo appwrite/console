@@ -12,7 +12,7 @@
     import CreateColumnDropdown from './columns/createColumnDropdown.svelte';
     import type { Option } from './columns/store';
     import CreateColumn from './createColumn.svelte';
-    import { collection, tableColumns, isCsvImportInProgress } from './store';
+    import { table, tableColumns, isCsvImportInProgress } from './store';
     import Table from './table.svelte';
     import { writable } from 'svelte/store';
     import FilePicker from '$lib/components/filePicker.svelte';
@@ -29,21 +29,21 @@
     export let data: PageData;
 
     let showImportCSV = false;
-    let showCreateAttribute = false;
-    let selectedAttribute: Option['name'] = null;
+    let showCreateColumn = false;
+    let selectedColumn: Option['name'] = null;
 
     const filterColumns = writable<Column[]>([]);
 
-    $: selected = preferences.getCustomCollectionColumns(page.params.table);
+    $: selected = preferences.getCustomTableColumns(page.params.table);
     $: tableColumns.set(
-        $collection.attributes.map((attribute) => ({
-            id: attribute.key,
-            title: attribute.key,
-            type: attribute.type as ColumnType,
-            show: selected?.includes(attribute.key) ?? true,
-            array: attribute?.array,
-            format: 'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
-            elements: 'elements' in attribute ? attribute.elements : null
+        $table.columns.map((column) => ({
+            id: column.key,
+            title: column.key,
+            type: column.type as ColumnType,
+            show: selected?.includes(column.key) ?? true,
+            array: column?.array,
+            format: 'format' in column && column?.format === 'enum' ? column.format : null,
+            elements: 'elements' in column ? column.elements : null
         }))
     );
     $: filterColumns.set([
@@ -56,8 +56,8 @@
         }))
     ]);
 
-    $: hasAttributes = !!$collection.attributes.length;
-    $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
+    $: hasColumns = !!$table.columns.length;
+    $: hasValidColumns = $table?.columns?.some((attr) => attr.status === 'available');
 
     async function onSelect(file: Models.File) {
         $isCsvImportInProgress = true;
@@ -96,7 +96,7 @@
                 <Filters
                     query={data.query}
                     columns={tableColumns}
-                    disabled={!(hasAttributes && hasValidAttributes)}
+                    disabled={!(hasColumns && hasValidColumns)}
                     analyticsSource="database_rows" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     <ViewSelector view={data.view} columns={tableColumns} hideView />
@@ -104,14 +104,14 @@
                         <Button
                             secondary
                             event={Click.DatabaseImportCsv}
-                            disabled={!(hasAttributes && hasValidAttributes)}
+                            disabled={!(hasColumns && hasValidColumns)}
                             on:click={() => (showImportCSV = true)}>
                             Import CSV
                         </Button>
                     {/if}
                     {#if !$isSmallViewport}
                         <Button
-                            disabled={!(hasAttributes && hasValidAttributes)}
+                            disabled={!(hasColumns && hasValidColumns)}
                             href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/create`}
                             event="create_row">
                             <Icon icon={IconPlus} slot="start" size="s" />
@@ -122,7 +122,7 @@
             </Layout.Stack>
             {#if $isSmallViewport}
                 <Button
-                    disabled={!(hasAttributes && hasValidAttributes)}
+                    disabled={!(hasColumns && hasValidColumns)}
                     href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/create`}
                     event="create_row">
                     <Icon icon={IconPlus} slot="start" size="s" />
@@ -131,15 +131,15 @@
             {/if}
         </Layout.Stack>
 
-        {#if hasAttributes && hasValidAttributes}
-            {#if data.documents.total}
+        {#if hasColumns && hasValidColumns}
+            {#if data.rows.total}
                 <Table {data} />
 
                 <PaginationWithLimit
                     name="Rows"
                     limit={data.limit}
                     offset={data.offset}
-                    total={data.documents.total} />
+                    total={data.rows.total} />
             {:else if $hasPageQueries}
                 <EmptySearch hidePages>
                     <div class="common-section">
@@ -166,12 +166,12 @@
                 <Empty
                     allowCreate={$canWriteDocuments}
                     single
-                    href="https://appwrite.io/docs/products/databases/documents"
+                    href="https://appwrite.io/docs/products/databases/rows"
                     target="row">
                     <svelte:fragment slot="actions">
                         <Button
                             external
-                            href="https://appwrite.io/docs/products/databases/documents"
+                            href="https://appwrite.io/docs/products/databases/rows"
                             text
                             event="empty_documentation"
                             size="s"
@@ -194,14 +194,14 @@
                     <slot name="actions" slot="actions">
                         <Button
                             external
-                            href="https://appwrite.io/docs/products/databases/collections#attributes"
+                            href="https://appwrite.io/docs/products/databases/tables#columns"
                             text
                             event="empty_documentation"
                             size="s">Documentation</Button>
                         {#if $canWriteCollections}
                             <CreateColumnDropdown
-                                bind:selectedOption={selectedAttribute}
-                                bind:showCreate={showCreateAttribute}
+                                bind:selectedOption={selectedColumn}
+                                bind:showCreate={showCreateColumn}
                                 let:toggle>
                                 <Button secondary event="create_column" on:click={toggle}>
                                     Create column
@@ -215,11 +215,8 @@
     </Container>
 {/key}
 
-<!-- TODO: @itznotabug - change variable name -->
-{#if showCreateAttribute}
-    <CreateColumn
-        bind:showCreate={showCreateAttribute}
-        bind:selectedOption={selectedAttribute} />
+{#if showCreateColumn}
+    <CreateColumn bind:showCreate={showCreateColumn} bind:selectedOption={selectedColumn} />
 {/if}
 
 {#if showImportCSV}

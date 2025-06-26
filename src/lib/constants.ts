@@ -64,7 +64,7 @@ export enum Dependencies {
     WEBHOOK = 'dependency:webhook',
     WEBHOOKS = 'dependency:webhooks',
     MIGRATIONS = 'dependency:migrations',
-    COLLECTIONS = 'dependency:collections',
+    TABLES = 'dependency:tables',
     BACKUPS = 'dependency:backups',
     RUNTIMES = 'dependency:runtimes',
     CONSOLE_VARIABLES = 'dependency:console_variables',
@@ -92,6 +92,8 @@ export const defaultScopes: string[] = [
     'teams.write',
     'documents.read',
     'documents.write',
+    'rows.read',
+    'rows.write',
     'files.read',
     'files.write',
     'projects.read',
@@ -111,6 +113,8 @@ export const defaultScopes: string[] = [
     'databases.write',
     'collections.read',
     'collections.write',
+    'tables.read',
+    'tables.write',
     'buckets.read',
     'buckets.write',
     'functions.read',
@@ -141,6 +145,9 @@ export const defaultScopes: string[] = [
 
 export const defaultRoles: string[] = ['owner'];
 
+// TODO: remove old terminology scopes.
+// these are kept for backwards compatibility with keys and events that already exists.
+// for the new ones, we use the new terminology.
 export const scopes: {
     scope: string;
     description: string;
@@ -202,6 +209,18 @@ export const scopes: {
         icon: 'database'
     },
     {
+        scope: 'tables.read',
+        description: "Access to read your project's database tables",
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'tables.write',
+        description: "Access to create, update, and delete your project's database tables",
+        category: 'Database',
+        icon: 'database'
+    },
+    {
         scope: 'attributes.read',
         description: "Access to read your project's database collection's attributes",
         category: 'Database',
@@ -211,6 +230,18 @@ export const scopes: {
         scope: 'attributes.write',
         description:
             "Access to create, update, and delete your project's database collection's attributes",
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'columns.read',
+        description: "Access to read your project's database table's columns",
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'columns.write',
+        description: "Access to create, update, and delete your project's database table's columns",
         category: 'Database',
         icon: 'database'
     },
@@ -236,6 +267,18 @@ export const scopes: {
     {
         scope: 'documents.write',
         description: "Access to create, update, and delete your project's database documents",
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'rows.read',
+        description: "Access to read your project's database rows",
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'rows.write',
+        description: "Access to create, update, and delete your project's database rows",
         category: 'Database',
         icon: 'database'
     },
@@ -430,7 +473,7 @@ export type EventResource = {
 
 export type EventAction = {
     name: string;
-    attributes?: string[];
+    columns?: string[];
 };
 
 export const eventServices: Array<EventService> = [
@@ -479,7 +522,7 @@ export const eventServices: Array<EventService> = [
                 name: 'memberships',
                 actions: [
                     { name: 'create' },
-                    { name: 'update', attributes: ['status'] },
+                    { name: 'update', columns: ['status'] },
                     { name: 'delete' }
                 ]
             }
@@ -495,7 +538,7 @@ export const eventServices: Array<EventService> = [
         ],
         actions: [
             { name: 'create' },
-            { name: 'update', attributes: ['email', 'name', 'password', 'status', 'prefs'] },
+            { name: 'update', columns: ['email', 'name', 'password', 'status', 'prefs'] },
             { name: 'delete' }
         ]
     },

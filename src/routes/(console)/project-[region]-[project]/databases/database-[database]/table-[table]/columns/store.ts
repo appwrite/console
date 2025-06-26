@@ -9,7 +9,7 @@ import Ip, { submitIp, updateIp } from './ip.svelte';
 import String, { submitString, updateString } from './string.svelte';
 import Url, { submitUrl, updateUrl } from './url.svelte';
 import Datetime, { submitDatetime, updateDatetime } from './datetime.svelte';
-import type { Attributes } from '../store';
+import type { Columns } from '../store';
 import Relationship, { submitRelationship, updateRelationship } from './relationship.svelte';
 import {
     IconCalendar,
@@ -41,14 +41,14 @@ export type Option = {
     type: 'string' | 'integer' | 'double' | 'boolean' | 'datetime' | 'relationship';
     create: (
         databaseId: string,
-        collectionId: string,
+        tableId: string,
         key: string,
-        data: Partial<Attributes>
+        data: Partial<Columns>
     ) => Promise<void>;
     update: (
         databaseId: string,
-        collectionId: string,
-        data: Partial<Attributes>,
+        tableId: string,
+        data: Partial<Columns>,
         originalKey: string
     ) => Promise<void>;
     format?: 'email' | 'ip' | 'url' | 'enum';

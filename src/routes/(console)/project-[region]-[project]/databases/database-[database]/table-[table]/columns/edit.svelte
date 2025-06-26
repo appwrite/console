@@ -8,41 +8,41 @@
     import { Button, InputText } from '$lib/elements/forms';
     import deepEqual from 'deep-equal';
     import { addNotification } from '$lib/stores/notifications';
-    import type { Attributes } from '../store';
+    import type { Columns } from '../store';
     import { columnOptions, type Option } from './store';
 
     export let showEdit = false;
-    export let selectedAttribute: Attributes;
+    export let selectedColumn: Columns;
 
     const databaseId = page.params.database;
-    const collectionId = page.params.table;
+    const tableId = page.params.table;
     let originalKey = '';
 
     let error: string;
-    let currentAttr: Attributes;
+    let currentColumn: Columns;
 
     $: option = columnOptions.find((option) => {
-        if (selectedAttribute) {
-            if ('format' in selectedAttribute && selectedAttribute.format) {
-                return option?.format === selectedAttribute?.format;
+        if (selectedColumn) {
+            if ('format' in selectedColumn && selectedColumn.format) {
+                return option?.format === selectedColumn?.format;
             } else {
-                return option?.type === selectedAttribute?.type;
+                return option?.type === selectedColumn?.type;
             }
         }
     }) as Option;
 
     async function submit() {
         try {
-            await option.update(databaseId, collectionId, selectedAttribute, originalKey);
+            await option.update(databaseId, tableId, selectedColumn, originalKey);
             await invalidate(Dependencies.TABLE);
-            if (!page.url.pathname.includes('attributes')) {
+            if (!page.url.pathname.includes('columns')) {
                 await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${collectionId}/attributes`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${tableId}/columns`
                 );
             }
             addNotification({
                 type: 'success',
-                message: `Column ${selectedAttribute.key} has been updated`
+                message: `Column ${selectedColumn.key} has been updated`
             });
             showEdit = false;
             trackEvent(Submit.ColumnUpdate);
@@ -57,11 +57,11 @@
 
     function onShow(show: boolean) {
         if (show) {
-            currentAttr ??= { ...selectedAttribute };
-            originalKey = currentAttr.key;
+            currentColumn ??= { ...selectedColumn };
+            originalKey = currentColumn.key;
             error = null;
         } else {
-            currentAttr = null;
+            currentColumn = null;
         }
     }
 </script>
@@ -78,26 +78,26 @@
         </div>
     </svelte:fragment>
 
-    {#if selectedAttribute}
-        {#if selectedAttribute?.type !== 'relationship'}
+    {#if selectedColumn}
+        {#if selectedColumn?.type !== 'relationship'}
             <InputText
                 id="key"
                 label="Column Key"
                 placeholder="Enter Key"
-                bind:value={selectedAttribute.key}
+                bind:value={selectedColumn.key}
                 autofocus />
         {/if}
         {#if option}
             <svelte:component
                 this={option.component}
                 editing
-                bind:data={selectedAttribute}
+                bind:data={selectedColumn}
                 onclose={() => (option = null)} />
         {/if}
     {/if}
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
-        <Button submit disabled={deepEqual(currentAttr, selectedAttribute)}>Update</Button>
+        <Button submit disabled={deepEqual(currentColumn, selectedColumn)}>Update</Button>
     </svelte:fragment>
 </Modal>

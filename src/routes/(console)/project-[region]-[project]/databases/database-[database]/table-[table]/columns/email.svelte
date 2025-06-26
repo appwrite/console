@@ -5,15 +5,15 @@
 
     export async function submitEmail(
         databaseId: string,
-        collectionId: string,
+        tableId: string,
         key: string,
-        data: Partial<Models.AttributeEmail>
+        data: Partial<Models.ColumnEmail>
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.createEmailAttribute(
+            .tables.createEmailColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 key,
                 data.required,
                 data.default,
@@ -23,15 +23,15 @@
 
     export async function updateEmail(
         databaseId: string,
-        collectionId: string,
-        data: Partial<Models.AttributeEmail>,
+        tableId: string,
+        data: Partial<Models.ColumnEmail>,
         originalKey?: string
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.updateEmailAttribute(
+            .tables.updateEmailColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 originalKey,
                 data.required,
                 data.default,
@@ -44,7 +44,7 @@
     import { InputEmail } from '$lib/elements/forms';
 
     export let editing = false;
-    export let data: Partial<Models.AttributeEmail>;
+    export let data: Partial<Models.ColumnEmail>;
 
     import { createConservative } from '$lib/helpers/stores';
     import { Selector } from '@appwrite.io/pink-svelte';
@@ -63,7 +63,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.AttributeEmail>>({
+    } = createConservative<Partial<Models.ColumnEmail>>({
         required: false,
         array: false,
         ...data

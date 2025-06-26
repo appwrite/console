@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Layout, Selector, Table } from '@appwrite.io/pink-svelte';
-    import { columns, collection } from '../store';
+    import { columns, table } from '../store';
     import { isRelationship, isRelationshipToMany } from './columns/store';
     import type { Models } from '@appwrite.io/console';
 
@@ -20,7 +20,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.deleteDocument(databaseId, page.params.table, page.params.row);
+                .tables.deleteRow(databaseId, page.params.table, page.params.row);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -45,7 +45,7 @@
         'restrict' = 'Row cannot be deleted'
     }
 
-    $: relAttributes = $columns?.filter(
+    $: relColumns = $columns?.filter(
         (attribute) =>
             isRelationship(attribute) &&
             // One-to-One are always included
@@ -56,17 +56,15 @@
                 (attribute.relationType === 'manyToOne' && attribute.side === 'child') ||
                 // Many-to-Many: Only include if the parent is being deleted
                 (isRelationshipToMany(attribute) && attribute.side === 'parent'))
-    ) as Models.AttributeRelationship[];
+    ) as Models.ColumnRelationship[];
 </script>
 
 <Confirm title="Delete row" onSubmit={handleDelete} bind:open={showDelete}>
     <p data-private>
-        Are you sure you want to delete <b
-            >the row from <span data-private>{$collection.name}</span></b
-        >?
+        Are you sure you want to delete <b>the row from <span data-private>{$table.name}</span></b>?
     </p>
 
-    {#if relAttributes?.length}
+    {#if relColumns?.length}
         <p class="text">This row contains the following relationships:</p>
         <Table.Root
             let:root
@@ -80,7 +78,7 @@
                 <Table.Header.Cell column="setting" {root}>Setting</Table.Header.Cell>
                 <Table.Header.Cell column="desc" {root} />
             </svelte:fragment>
-            {#each relAttributes as attr}
+            {#each relColumns as attr}
                 <Table.Row.Base {root}>
                     <Table.Cell column="relations" {root}>
                         <span class="u-flex u-cross-center u-gap-8">
@@ -105,15 +103,12 @@
             <Alert.Inline
                 title="To change these deletion behaviors edit the relationship settings." />
 
-            <Selector.Checkbox
-                id="delete"
-                label={`Delete document from ${$collection.name}`}
-                bind:checked />
+            <Selector.Checkbox id="delete" label="Delete row from ${$table.name}" bind:checked />
         </Layout.Stack>
     {/if}
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button danger submit disabled={relAttributes?.length && !checked}>Delete</Button>
+        <Button danger submit disabled={relColumns?.length && !checked}>Delete</Button>
     </svelte:fragment>
 </Confirm>

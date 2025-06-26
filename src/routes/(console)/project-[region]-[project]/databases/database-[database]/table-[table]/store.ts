@@ -1,30 +1,27 @@
 import { page } from '$app/stores';
-import type { Column } from '$lib/helpers/types';
+import type { Column as TableColumn } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 
-export type Attributes =
-    | Models.AttributeBoolean
-    | Models.AttributeEmail
-    | Models.AttributeEnum
-    | Models.AttributeFloat
-    | Models.AttributeInteger
-    | Models.AttributeIp
-    | Models.AttributeString
-    | Models.AttributeUrl
-    | (Models.AttributeRelationship & { default?: never });
+export type Columns =
+    | Models.ColumnBoolean
+    | Models.ColumnEmail
+    | Models.ColumnEnum
+    | Models.ColumnFloat
+    | Models.ColumnInteger
+    | Models.ColumnIp
+    | Models.ColumnString
+    | Models.ColumnUrl
+    | (Models.ColumnRelationship & { default?: never });
 
-type Collection = Omit<Models.Collection, 'attributes'> & {
-    attributes: Array<Attributes>;
+type Table = Omit<Models.Table, 'columns'> & {
+    columns: Array<Columns>;
 };
 
-export const collection = derived(page, ($page) => $page.data.collection as Collection);
-export const columns = derived(
-    page,
-    ($page) => $page.data.collection.attributes as Attributes[]
-);
-export const indexes = derived(page, ($page) => $page.data.collection.indexes as Models.Index[]);
+export const table = derived(page, ($page) => $page.data.table as Table);
+export const columns = derived(page, ($page) => $page.data.table.columns as Columns[]);
+export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.ColumnIndex[]);
 
-export const tableColumns = writable<Column[]>([]);
+export const tableColumns = writable<TableColumn[]>([]);
 
 export const isCsvImportInProgress = writable(false);

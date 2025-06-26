@@ -26,10 +26,10 @@
         ...services.flatMap((s) => s.actions.map((a) => a.name)),
         ...services.flatMap((s) => s.resources.flatMap((r) => r.actions.map((a) => a.name)))
     ];
-    const attributeNames = [
-        ...services.flatMap((s) => s.actions.flatMap((a) => a.attributes ?? [])),
+    const columnNames = [
+        ...services.flatMap((s) => s.actions.flatMap((a) => a.columns ?? [])),
         ...services.flatMap((s) =>
-            s.resources.flatMap((r) => r.actions.flatMap((a) => a.attributes ?? []))
+            s.resources.flatMap((r) => r.actions.flatMap((a) => a.columns ?? []))
         )
     ];
 
@@ -37,7 +37,7 @@
     const isService = (s: string) => serviceNames.includes(s);
     const isResource = (s: string) => resourceNames.includes(s);
     const isAction = (s: string) => actionNames.includes(s);
-    const isAttribute = (s: string) => attributeNames.includes(s);
+    const isColumn = (s: string) => columnNames.includes(s);
 
     const dispatch = createEventDispatcher();
 
@@ -69,7 +69,7 @@
             case 'service': {
                 selected.resource = null;
                 selected.action = null;
-                selected.attribute = null;
+                selected.column = null;
                 break;
             }
             case 'resource': {
@@ -79,25 +79,25 @@
 
                 // We need to check if the selected action name is still
                 // on the available list, and if so, change the action to the
-                // appropriate one, as it may contain different attributes
+                // appropriate one, as it may contain different attributes/columns.
                 const availableAction = availableActions.find(
                     (a) => a.name === selected.action?.name
                 );
 
                 if (!availableAction) {
                     selected.action = null;
-                    selected.attribute = null;
+                    selected.column = null;
                 } else {
                     selected.action = availableAction;
 
-                    if (!selected?.action?.attributes?.includes(selected.attribute)) {
-                        selected.attribute = null;
+                    if (!selected?.action?.columns?.includes(selected.column)) {
+                        selected.column = null;
                     }
                 }
                 break;
             }
             case 'action': {
-                selected.attribute = null;
+                selected.column = null;
                 break;
             }
         }
@@ -113,16 +113,13 @@
             if (isService(field)) {
                 selected.service = services.find((s) => s.name === field);
             } else if (isResource(field)) {
-                const resource = selected.service?.resources.find((r) => r.name === field);
-                selected.resource = resource;
+                selected.resource = selected.service?.resources.find((r) => r.name === field);
             } else if (isAction(field)) {
-                const action =
+                selected.action =
                     selected.resource?.actions.find((a) => a.name === field) ||
                     selected.service?.actions.find((a) => a.name === field);
-                selected.action = action;
-            } else if (isAttribute(field)) {
-                const attribute = selected.action?.attributes?.find((a) => a === field);
-                selected.attribute = attribute;
+            } else if (isColumn(field)) {
+                selected.column = selected.action?.columns?.find((a) => a === field);
             }
         }
     }
@@ -143,7 +140,7 @@
         const secondToLastField = at(fields, index - 2);
 
         if (index === 0 || isService(currField)) return 'service';
-        if (isAttribute(currField) || isAction(prevField)) return 'attribute';
+        if (isColumn(currField) || isAction(prevField)) return 'attribute';
         if (isAction(currField)) return 'action';
         if (isResource(currField)) return 'resource';
         if (isService(prevField) || isResource(prevField) || index === 1) {
@@ -182,7 +179,7 @@
         service: null as EventService | null,
         resource: null as EventResource | null,
         action: null as EventAction | null,
-        attribute: null as string | null
+        column: null as string | null
     };
     let helper: string = null;
     let customInput: string = null;
@@ -198,7 +195,7 @@
         services: services,
         resources: selected.service?.resources || [],
         actions: (selected.resource ? selected.resource?.actions : selected.service?.actions) || [],
-        attributes: selected.action?.attributes || []
+        columns: selected.action?.columns || []
     };
 
     $: eventString = (function createEventString(): Array<{ value: string; description: string }> {
@@ -212,9 +209,8 @@
             if (selected.service) {
                 fields.push(selected.service.name, '*');
             }
-            // TODO: change collections and documents terminology later
-            if (selected.resource?.name === 'documents') {
-                fields.push('collections', '*');
+            if (selected.resource?.name === 'rows') {
+                fields.push('tables', '*');
             }
             if (selected.resource) {
                 fields.push(selected.resource.name, '*');
@@ -222,8 +218,8 @@
             if (selected.action) {
                 fields.push(selected.action.name);
             }
-            if (selected.attribute) {
-                fields.push(selected.attribute);
+            if (selected.column) {
+                fields.push(selected.column);
             }
         }
 
@@ -291,14 +287,14 @@
         </Layout.Stack>
     {/if}
 
-    {#if !empty(available.attributes)}
+    {#if !empty(available.columns)}
         <Layout.Stack gap="s">
             <Typography.Text variant="m-500">Choose an attribute (optional)</Typography.Text>
             <Layout.Stack gap="s" wrap="wrap" direction="row">
-                {#each available.attributes as attribute}
+                {#each available.columns as attribute}
                     <Pill
                         disabled={showInput}
-                        selected={selected.attribute === attribute}
+                        selected={selected.column === attribute}
                         button
                         on:click={() => select('attribute', attribute)}>
                         {attribute}

@@ -13,18 +13,18 @@
     export let optionalText: string | undefined = undefined;
     export let value: string | number | boolean | null | string[];
     export let editing = false;
-    export let attribute:
-        | Models.AttributeBoolean
-        | Models.AttributeEmail
-        | Models.AttributeEnum
-        | Models.AttributeFloat
-        | Models.AttributeInteger
-        | Models.AttributeIp
-        | Models.AttributeString
-        | Models.AttributeDatetime
-        | Models.AttributeUrl;
+    export let column:
+        | Models.ColumnBoolean
+        | Models.ColumnEmail
+        | Models.ColumnEnum
+        | Models.ColumnFloat
+        | Models.ColumnInteger
+        | Models.ColumnIp
+        | Models.ColumnString
+        | Models.ColumnDatetime
+        | Models.ColumnUrl;
 
-    const attributesTypeMap = {
+    const columnsTypeMap = {
         string: String,
         integer: Integer,
         double: Integer,
@@ -33,7 +33,7 @@
         relationship: Relationship
     };
 
-    const attributesFormatMap = {
+    const columnsFormatMap = {
         ip: String,
         url: Url,
         email: String,
@@ -41,22 +41,22 @@
     };
 </script>
 
-{#if attribute.type in attributesTypeMap}
-    {#if 'format' in attribute && attribute.format}
+{#if column.type in columnsTypeMap}
+    {#if 'format' in column && column.format}
         <svelte:component
-            this={attributesFormatMap[attribute.format]}
+            this={columnsFormatMap[column.format]}
             {id}
             {label}
-            {attribute}
+            {column}
             {optionalText}
             bind:value />
     {:else}
         <svelte:component
-            this={attributesTypeMap[attribute.type]}
+            this={columnsTypeMap[column.type]}
             {id}
             {editing}
             {label}
-            {attribute}
+            {column}
             {optionalText}
             bind:value />
     {/if}

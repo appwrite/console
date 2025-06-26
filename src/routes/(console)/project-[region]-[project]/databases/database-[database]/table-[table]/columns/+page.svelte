@@ -20,7 +20,7 @@
     import { isRelationship, isString } from '../row-[row]/columns/store';
     import FailedModal from '../failedModal.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
-    import { columns, type Attributes, isCsvImportInProgress } from '../store';
+    import { columns, type Columns, isCsvImportInProgress } from '../store';
     import CreateColumnDropdown from './createColumnDropdown.svelte';
     import Delete from './deleteColumn.svelte';
     import Edit from './edit.svelte';
@@ -45,7 +45,7 @@
 
     let showDropdown = [];
     let selectedOption: Option['name'] = null;
-    let selectedAttribute: Attributes = null;
+    let selectedColumn: Columns = null;
     let showCreate = false;
     let showDelete = false;
     let showEdit = false;
@@ -53,14 +53,14 @@
     let showFailed = false;
     let error = '';
 
-    const attributeFormatIcon = {
+    const columnFormatIcon = {
         ip: IconLocationMarker,
         url: IconLink,
         email: IconLink,
         enum: IconViewList
     };
 
-    function getAttributeStatusBadge(status: string): ComponentProps<Badge>['type'] {
+    function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {
         switch (status) {
             case 'processing':
                 return 'warning';
@@ -97,27 +97,27 @@
                 <Table.Header.Cell column="default" {root}>Default value</Table.Header.Cell>
                 <Table.Header.Cell column="actions" {root} />
             </svelte:fragment>
-            {#each $columns as attribute, index}
-                {@const option = columnOptions.find((option) => option.type === attribute.type)}
+            {#each $columns as column, index}
+                {@const option = columnOptions.find((option) => option.type === column.type)}
                 <Table.Row.Base {root}>
                     <Table.Cell column="key" {root}>
                         <Layout.Stack direction="row" alignItems="center">
-                            {#if isRelationship(attribute)}
+                            {#if isRelationship(column)}
                                 <Icon
                                     size="s"
-                                    icon={attribute?.twoWay
+                                    icon={column?.twoWay
                                         ? IconSwitchHorizontal
                                         : IconArrowSmRight} />
-                            {:else if 'format' in attribute && attribute.format}
-                                {@const icon = attributeFormatIcon[attribute?.format]}
+                            {:else if 'format' in column && column.format}
+                                {@const icon = columnFormatIcon[column?.format]}
                                 <Icon {icon} size="s" />
                             {:else}
                                 <Icon icon={option.icon} size="s" />
                             {/if}
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Layout.Stack inline direction="row" alignItems="center" gap="xxs">
-                                    <span class="text u-trim-1" data-private>{attribute.key}</span>
-                                    {#if isString(attribute) && attribute.encrypt}
+                                    <span class="text u-trim-1" data-private>{column.key}</span>
+                                    {#if isString(column) && column.encrypt}
                                         <Tooltip>
                                             <Icon
                                                 size="s"
@@ -127,49 +127,49 @@
                                         </Tooltip>
                                     {/if}
                                 </Layout.Stack>
-                                {#if attribute.status !== 'available'}
+                                {#if column.status !== 'available'}
                                     <Badge
                                         size="s"
                                         variant="secondary"
-                                        content={attribute.status}
-                                        type={getAttributeStatusBadge(attribute.status)} />
-                                    {#if attribute.error}
+                                        content={column.status}
+                                        type={getColumnStatusBadge(column.status)} />
+                                    {#if column.error}
                                         <Link.Button
                                             variant="muted"
                                             on:click={(e) => {
                                                 e.preventDefault();
-                                                error = attribute.error;
+                                                error = column.error;
                                                 showFailed = true;
                                             }}>Details</Link.Button>
                                     {/if}
-                                {:else if attribute.required}
+                                {:else if column.required}
                                     <Badge size="xs" variant="secondary" content="required" />
                                 {/if}
                             </Layout.Stack>
                         </Layout.Stack>
                     </Table.Cell>
                     <Table.Cell column="type" {root}>
-                        {#if 'format' in attribute && attribute.format}
-                            <span class="u-capitalize">{attribute.format}</span>
+                        {#if 'format' in column && column.format}
+                            <span class="u-capitalize">{column.format}</span>
                         {:else}
                             <p>
-                                <span class="u-capitalize">{attribute.type}</span>
-                                {#if isRelationship(attribute)}
+                                <span class="u-capitalize">{column.type}</span>
+                                {#if isRelationship(column)}
                                     <span>
                                         with <a
-                                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${attribute?.relatedCollection}`}
-                                            ><b data-private>{attribute?.key}</b></a>
+                                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${column?.relatedTable}`}
+                                            ><b data-private>{column?.key}</b></a>
                                     </span>
                                 {/if}
                             </p>
                         {/if}
                         <span>
-                            {attribute.array ? '[]' : ''}
+                            {column.array ? '[]' : ''}
                         </span>
                     </Table.Cell>
                     <Table.Cell column="default" {root}>
-                        {attribute?.default !== null && attribute?.default !== undefined
-                            ? attribute?.default
+                        {column?.default !== null && column?.default !== undefined
+                            ? column?.default
                             : '-'}
                     </Table.Cell>
                     <Table.Cell column="actions" {root}>
@@ -190,31 +190,31 @@
                                         on:click={(event) => {
                                             toggle(event);
                                             showEdit = true;
-                                            selectedAttribute = attribute;
+                                            selectedColumn = column;
                                             showDropdown[index] = false;
                                         }}>
                                         Update
                                     </ActionMenu.Item.Button>
-                                    {#if !isRelationship(attribute)}
+                                    {#if !isRelationship(column)}
                                         <ActionMenu.Item.Button
                                             leadingIcon={IconPlus}
                                             on:click={(event) => {
                                                 toggle(event);
-                                                selectedAttribute = attribute;
+                                                selectedColumn = column;
                                                 showCreateIndex = true;
                                                 showDropdown[index] = false;
                                             }}>
                                             Create index
                                         </ActionMenu.Item.Button>
                                     {/if}
-                                    {#if attribute.status !== 'processing'}
+                                    {#if column.status !== 'processing'}
                                         <ActionMenu.Item.Button
                                             leadingIcon={IconTrash}
                                             on:click={(event) => {
                                                 toggle(event);
                                                 showDelete = true;
                                                 showDropdown[index] = false;
-                                                selectedAttribute = attribute;
+                                                selectedColumn = column;
                                                 trackEvent(Click.DatabaseColumnDelete);
                                             }}>
                                             Delete
@@ -232,7 +232,7 @@
             <svelte:fragment slot="actions">
                 <Button
                     external
-                    href="https://appwrite.io/docs/products/databases/collections#attributes"
+                    href="https://appwrite.io/docs/products/databases/tables#columns"
                     text
                     event="empty_documentation"
                     ariaLabel={'create column'}>Documentation</Button>
@@ -252,13 +252,13 @@
     <Create bind:showCreate bind:selectedOption />
 {/if}
 {#if showDelete}
-    <Delete bind:showDelete {selectedAttribute} />
+    <Delete bind:showDelete {selectedColumn} />
 {/if}
 {#if showEdit}
-    <Edit bind:showEdit {selectedAttribute} />
+    <Edit bind:showEdit {selectedColumn} />
 {/if}
 {#if showCreateIndex}
-    <CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} />
+    <CreateIndex bind:showCreateIndex externalColumn={selectedColumn} />
 {/if}
 {#if showFailed}
     <FailedModal bind:show={showFailed} title="Create column" header="Creation failed" {error} />

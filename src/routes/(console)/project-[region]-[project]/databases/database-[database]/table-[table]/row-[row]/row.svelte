@@ -1,8 +1,8 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { CardGrid } from '$lib/components';
-    import { collection } from '../store';
-    import { doc } from './store';
+    import { table } from '../store';
+    import { row } from './store';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
@@ -15,55 +15,45 @@
     import ColumnForm from './columnForm.svelte';
 
     let disableUpdate = true;
-    let currentDoc: string;
+    let currentRow: string;
     const databaseId = page.params.database;
-    const collectionId = page.params.table;
-    const documentId = page.params.row;
+    const tableId = page.params.table;
+    const rowId = page.params.row;
 
     const work = writable(
-        Object.keys($doc)
+        Object.keys($row)
             .filter((key) => {
                 return ![
                     '$id',
                     '$collection',
-                    '$collectionId',
+                    '$tableId',
                     '$databaseId',
                     '$createdAt',
                     '$updatedAt'
                 ].includes(key);
             })
             .reduce((obj, key) => {
-                obj[key] = $doc[key];
+                obj[key] = $row[key];
                 return obj;
-            }, {}) as Models.Document
+            }, {}) as Models.Row
     );
 
     onMount(async () => {
-        currentDoc = JSON.stringify($work);
+        currentRow = JSON.stringify($work);
     });
 
     $: {
-        if (currentDoc !== JSON.stringify($work)) {
-            disableUpdate = false;
-        } else {
-            disableUpdate = true;
-        }
+        disableUpdate = currentRow === JSON.stringify($work);
     }
 
     async function updateData() {
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.updateDocument(
-                    databaseId,
-                    collectionId,
-                    documentId,
-                    $work,
-                    $work.$permissions
-                );
+                .tables.updateRow(databaseId, tableId, rowId, $work, $work.$permissions);
             await invalidate(Dependencies.ROW);
 
-            currentDoc = JSON.stringify($work);
+            currentRow = JSON.stringify($work);
             trackEvent(Submit.RowUpdate);
             disableUpdate = true;
             addNotification({
@@ -82,9 +72,9 @@
 
 <CardGrid>
     <svelte:fragment slot="title">Data</svelte:fragment>
-    Update document data based on the attributes created earlier.
+    Update row data based on the columns created earlier.
     <svelte:fragment slot="aside">
-        <ColumnForm attributes={$collection.attributes} bind:formValues={$work} />
+        <ColumnForm columns={$table.columns} bind:formValues={$work} />
     </svelte:fragment>
 
     <svelte:fragment slot="actions">

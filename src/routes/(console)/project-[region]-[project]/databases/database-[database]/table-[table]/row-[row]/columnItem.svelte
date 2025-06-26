@@ -4,9 +4,9 @@
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import Column from './column.svelte';
-    import type { Attributes } from '../store';
+    import type { Columns } from '../store';
 
-    export let attribute: Attributes;
+    export let column: Columns;
     export let formValues: object = {};
     export let label: string;
     export let editing = false;
@@ -25,9 +25,9 @@
         };
     }
 
-    function getColumnType(attribute: Attributes) {
-        if ('format' in attribute) {
-            switch (attribute.format) {
+    function getColumnType(column: Columns) {
+        if ('format' in column) {
+            switch (column.format) {
                 case 'ip':
                     return 'IP';
                 case 'email':
@@ -41,41 +41,41 @@
                     break;
             }
         }
-        return `${capitalize(attribute.type)}${attribute.array ? '[]' : ''}`;
+        return `${capitalize(column.type)}${column.array ? '[]' : ''}`;
     }
 </script>
 
-{#if attribute.array}
-    {#if formValues[attribute.key]?.length === 0}
+{#if column.array}
+    {#if formValues[column.key]?.length === 0}
         <Layout.Stack direction="row" alignContent="space-between">
             <Layout.Stack gap="xxs" direction="row" alignItems="center">
                 <Typography.Text variant="m-500">{label}</Typography.Text>
                 <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                    {getColumnType(attribute)}
+                    {getColumnType(column)}
                 </Typography.Text>
             </Layout.Stack>
-            <Button secondary on:click={() => addArrayItem(attribute.key)}>
+            <Button secondary on:click={() => addArrayItem(column.key)}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Add item
             </Button>
         </Layout.Stack>
     {:else}
         <Layout.Stack>
-            {#each [...formValues[attribute.key].keys()] as index}
+            {#each [...formValues[column.key].keys()] as index}
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                     <Column
-                        {attribute}
-                        id={`${attribute.key}-${index}`}
-                        optionalText={index === 0 ? getColumnType(attribute) : undefined}
+                        {column}
+                        id={`${column.key}-${index}`}
+                        optionalText={index === 0 ? getColumnType(column) : undefined}
                         label={index === 0 ? label : ''}
-                        bind:value={formValues[attribute.key][index]} />
-                    <Button text icon on:click={() => removeArrayItem(attribute.key, index)}>
+                        bind:value={formValues[column.key][index]} />
+                    <Button text icon on:click={() => removeArrayItem(column.key, index)}>
                         <span class="icon-x" aria-hidden="true"></span>
                     </Button>
                 </Layout.Stack>
             {/each}
             <div>
-                <Button secondary on:click={() => addArrayItem(attribute.key)}>
+                <Button secondary on:click={() => addArrayItem(column.key)}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Add item
                 </Button>
@@ -86,8 +86,8 @@
     <Column
         {label}
         {editing}
-        {attribute}
-        id={attribute.key}
-        optionalText={getColumnType(attribute)}
-        bind:value={formValues[attribute.key]} />
+        {column}
+        id={column.key}
+        optionalText={getColumnType(column)}
+        bind:value={formValues[column.key]} />
 {/if}

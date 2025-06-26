@@ -18,14 +18,14 @@
     let region = $derived(page.params.region);
     let project = $derived(page.params.project);
     let databaseId = $derived(page.params.database);
-    let collectionId = $derived(page.params.table);
+    let tableId = $derived(page.params.table);
 
-    const sortedCollections = $derived.by(() =>
-        data?.allCollections?.collections?.slice().sort((a, b) => a.name.localeCompare(b.name))
+    const sortedTables = $derived.by(() =>
+        data?.allTables?.tables?.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
 
-    const selectedCollection = $derived.by(() =>
-        sortedCollections?.find((collection) => collection.$id === collectionId)
+    const selectedTable = $derived.by(() =>
+        sortedTables?.find((collection) => collection.$id === tableId)
     );
 
     let openBottomSheet = $state(false);
@@ -48,11 +48,11 @@
                 {data.database?.name}
             </a>
             <div class="collection-content">
-                {#if data?.allCollections?.total}
+                {#if data?.allTables?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-8">
-                        {#each sortedCollections as collection}
-                            {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/table-${collection.$id}`}
-                            {@const isSelected = collectionId === collection.$id}
+                        {#each sortedTables as table}
+                            {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/table-${table.$id}`}
+                            {@const isSelected = tableId === table.$id}
                             <li class:is-selected={isSelected}>
                                 <a
                                     class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
@@ -64,7 +64,7 @@
                                             ? '--fgcolor-neutral-tertiary'
                                             : '--fgcolor-neutral-weak'} />
                                     <span class="text collection-name" data-private
-                                        >{collection.name}</span>
+                                        >{table.name}</span>
                                 </a>
                             </li>
                         {/each}
@@ -99,7 +99,7 @@
                     onclick={() => {
                         openBottomSheet = !openBottomSheet;
                     }}>
-                    <span class="orgName">{selectedCollection.name}</span>
+                    <span class="orgName">{selectedTable.name}</span>
                     <Icon icon={IconChevronDown} size="s" />
                 </button>
             </Layout.Stack>
@@ -111,7 +111,7 @@
         bind:isOpen={openBottomSheet}
         menu={{
             top: {
-                items: sortedCollections.slice(0, 10).map((collection) => {
+                items: sortedTables.slice(0, 10).map((collection) => {
                     return {
                         name: collection.name,
                         leadingIcon: IconTable,
@@ -120,7 +120,7 @@
                 })
             },
             bottom:
-                sortedCollections.length > 10
+                sortedTables.length > 10
                     ? {
                           items: [
                               {

@@ -5,19 +5,19 @@
     export let id: string;
     export let label: string;
     export let value: string;
-    export let attribute: Models.AttributeString;
+    export let column: Models.ColumnString;
 
-    $: nullable = attribute.required ? false : !value;
+    $: nullable = column.required ? false : !value;
 </script>
 
-{#if attribute.size >= 50}
+{#if column.size >= 50}
     <InputTextarea
         {id}
         {label}
         {nullable}
         placeholder="Enter string"
-        required={attribute.required}
-        maxlength={attribute.size}
+        required={column.required}
+        maxlength={column.size}
         bind:value />
 {:else}
     <InputText
@@ -25,7 +25,7 @@
         {label}
         {nullable}
         placeholder="Enter string"
-        required={attribute.required}
-        maxlength={attribute.size}
+        required={column.required}
+        maxlength={column.size}
         bind:value />
 {/if}

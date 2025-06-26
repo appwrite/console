@@ -33,7 +33,7 @@
 
     onMount(async () => {
         if (isCustomCollection) {
-            const prefs = preferences.getCustomCollectionColumns(page.params.table);
+            const prefs = preferences.getCustomTableColumns(page.params.table);
             columns.set(
                 $columns.map((column) => {
                     column.hide = prefs?.includes(column.id) ?? false;

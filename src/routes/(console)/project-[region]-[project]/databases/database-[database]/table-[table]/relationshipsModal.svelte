@@ -9,14 +9,14 @@
 
     export let show = false;
     export let data: Partial<Models.Document>[];
-    export let selectedRelationship: Models.AttributeRelationship = null;
+    export let selectedRelationship: Models.ColumnRelationship = null;
     const databaseId = page.params.database;
     const limit = 10;
 
     $: args =
         preferences
             .getDisplayNames()
-            ?.[selectedRelationship?.relatedCollection]?.filter((p) => p !== '$id') ?? [];
+            ?.[selectedRelationship?.relatedTable]?.filter((p) => p !== '$id') ?? [];
 
     $: if (!show) {
         data = null;
@@ -42,7 +42,7 @@
                     {#each paginatedItems as doc}
                         <Table.Row.Link
                             {root}
-                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${selectedRelationship.relatedCollection}/row-${doc.$id}`}
+                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${selectedRelationship.relatedTable}/row-${doc.$id}`}
                             on:click={() => (show = false)}>
                             <Table.Cell column="$id" {root}>
                                 <Id value={doc.$id}>{doc.$id}</Id>

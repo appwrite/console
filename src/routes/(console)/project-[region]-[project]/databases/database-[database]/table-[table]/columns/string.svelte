@@ -5,15 +5,15 @@
 
     export async function submitString(
         databaseId: string,
-        collectionId: string,
+        tableId: string,
         key: string,
-        data: Partial<Models.AttributeString>
+        data: Partial<Models.ColumnString>
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.createStringAttribute(
+            .tables.createStringColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 key,
                 data.size,
                 data.required,
@@ -24,15 +24,15 @@
     }
     export async function updateString(
         databaseId: string,
-        collectionId: string,
-        data: Partial<Models.AttributeString>,
+        tableId: string,
+        data: Partial<Models.ColumnString>,
         originalKey?: string
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.updateStringAttribute(
+            .tables.updateStringColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 originalKey,
                 data.required,
                 data.default,
@@ -52,7 +52,7 @@
     import { Popover, Layout, Tag, Typography, Link } from '@appwrite.io/pink-svelte';
     import { flags } from '$lib/flags';
 
-    export let data: Partial<Models.AttributeString> = {
+    export let data: Partial<Models.ColumnString> = {
         required: false,
         size: 0,
         array: false,
@@ -77,7 +77,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.AttributeString>>({
+    } = createConservative<Partial<Models.ColumnString>>({
         required: false,
         array: false,
         ...data

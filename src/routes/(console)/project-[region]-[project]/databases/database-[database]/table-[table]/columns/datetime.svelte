@@ -5,15 +5,15 @@
 
     export async function submitDatetime(
         databaseId: string,
-        collectionId: string,
+        tableId: string,
         key: string,
-        data: Partial<Models.AttributeDatetime>
+        data: Partial<Models.ColumnDatetime>
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.createDatetimeAttribute(
+            .tables.createDatetimeColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 key,
                 data.required,
                 data.default,
@@ -23,15 +23,15 @@
 
     export async function updateDatetime(
         databaseId: string,
-        collectionId: string,
-        data: Partial<Models.AttributeDatetime>,
+        tableId: string,
+        data: Partial<Models.ColumnDatetime>,
         originalKey?: string
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.updateDatetimeAttribute(
+            .tables.updateDatetimeColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 originalKey,
                 data.required,
                 data.default,
@@ -44,7 +44,7 @@
     import { InputDateTime } from '$lib/elements/forms';
 
     export let editing = false;
-    export let data: Partial<Models.AttributeDatetime>;
+    export let data: Partial<Models.ColumnDatetime>;
 
     import { createConservative } from '$lib/helpers/stores';
     import { Selector } from '@appwrite.io/pink-svelte';
@@ -63,7 +63,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.AttributeDatetime>>({
+    } = createConservative<Partial<Models.ColumnDatetime>>({
         required: false,
         array: false,
         ...data

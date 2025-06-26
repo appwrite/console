@@ -22,7 +22,7 @@
     import { Dependencies } from '$lib/constants';
     import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { collection } from './store';
+    import { table } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateAttribute from './createColumn.svelte';
     import { CreateColumnPanel } from '$lib/commandCenter/panels';
@@ -35,26 +35,26 @@
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
 
     onMount(() => {
-        // TODO: change the events once terminologies are changed on the backend
         return realtime
             .forProject(page.params.region, page.params.project)
             .subscribe(['project', 'console'], (response) => {
                 if (
-                    response.events.includes('databases.*.collections.*.attributes.*') ||
-                    response.events.includes('databases.*.collections.*.indexes.*')
+                    response.events.includes('databases.*.tables.*.columns.*') ||
+                    response.events.includes('databases.*.tables.*.indexes.*')
                 ) {
                     invalidate(Dependencies.TABLE);
                 }
             });
     });
 
+    // TODO: use route ids instead of pathname
     $: $registerCommands([
         {
             label: 'Create row',
-            keys: page.url.pathname.endsWith($collection.$id) ? ['c'] : ['c', 'd'],
+            keys: page.url.pathname.endsWith($table.$id) ? ['t'] : ['t', 'd'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$collection?.$id}/create`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/create`
                 );
             },
             icon: IconPlus,
@@ -62,7 +62,7 @@
         },
         {
             label: 'Create column',
-            keys: page.url.pathname.endsWith('attributes') ? ['c'] : ['c', 'a'],
+            keys: page.url.pathname.endsWith('columns') ? ['t'] : ['t', 'a'],
             callback() {
                 addSubPanel(CreateColumnPanel);
             },
@@ -75,10 +75,10 @@
             keys: ['g', 'd'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$collection?.$id}`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}`
                 );
             },
-            disabled: page.url.pathname.endsWith($collection.$id),
+            disabled: page.url.pathname.endsWith($table.$id),
             group: 'tables'
         },
         {
@@ -86,7 +86,7 @@
             keys: ['g', 'a'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$collection?.$id}/attributes`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/columns`
                 );
             },
             disabled: page.url.pathname.endsWith('columns'),
@@ -97,7 +97,7 @@
             keys: ['g', 'i'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$collection?.$id}/indexes`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/indexes`
                 );
             },
             disabled: page.url.pathname.endsWith('indexes'),
@@ -108,7 +108,7 @@
             keys: ['g', 'c'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$collection?.$id}/activity`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/activity`
                 );
             },
             disabled: page.url.pathname.endsWith('activity'),
@@ -119,7 +119,7 @@
             keys: ['g', 'u'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$collection?.$id}/usage`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/usage`
                 );
             },
             disabled: page.url.pathname.endsWith('usage'),
@@ -130,7 +130,7 @@
             keys: ['g', 's'],
             callback() {
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$collection?.$id}/settings`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/settings`
                 );
             },
             disabled: page.url.pathname.endsWith('settings') || !$canWriteCollections,
@@ -140,7 +140,7 @@
             label: 'Display Name',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$collection.$id}/settings#display-name`
+                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$table.$id}/settings#display-name`
                 );
             },
             group: 'tables',
@@ -154,7 +154,7 @@
             label: 'Permissions',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$collection.$id}/settings#permissions`
+                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$table.$id}/settings#permissions`
                 );
             },
             group: 'tables',
@@ -168,7 +168,7 @@
             label: 'Row security',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$collection.$id}/settings#row-security`
+                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$table.$id}/settings#row-security`
                 );
             },
             group: 'tables',
@@ -199,7 +199,7 @@
 </script>
 
 <svelte:head>
-    <title>{$collection?.name ?? 'Table'} - Appwrite</title>
+    <title>{$table?.name ?? 'Table'} - Appwrite</title>
 </svelte:head>
 
 <slot />

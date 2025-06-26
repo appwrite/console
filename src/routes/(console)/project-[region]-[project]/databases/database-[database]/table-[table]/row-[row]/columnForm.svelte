@@ -1,22 +1,22 @@
 <script lang="ts">
     import CustomId from '$lib/components/customId.svelte';
     import { Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
-    import type { Attributes } from '../store';
+    import type { Columns } from '../store';
     import ColumnItem from './columnItem.svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
 
-    export let attributes: Attributes[] = [];
+    export let columns: Columns[] = [];
     export let formValues: object = {};
     export let customId: string | null | undefined = undefined;
 
     let showCustomId = false;
 </script>
 
-{#if attributes.length}
+{#if columns.length}
     <Layout.Stack>
-        {#each attributes as attribute}
-            {@const label = attribute.key}
-            <ColumnItem {attribute} bind:formValues {label} />
+        {#each columns as column}
+            {@const label = column.key}
+            <ColumnItem {column} bind:formValues {label} />
         {/each}
 
         {#if customId !== undefined}

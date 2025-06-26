@@ -5,17 +5,17 @@
     export let id: string;
     export let label: string;
     export let value: number;
-    export let attribute: Models.AttributeInteger;
+    export let column: Models.ColumnInteger;
 
-    $: nullable = attribute.required ? false : !value;
+    $: nullable = column.required ? false : !value;
 </script>
 
 <InputNumber
     {id}
     {label}
     {nullable}
-    required={attribute.required}
-    min={attribute.min}
-    max={attribute.max}
-    step={attribute.type === 'double' ? 'any' : 1}
+    required={column.required}
+    min={column.min}
+    max={column.max}
+    step={column.type === 'double' ? 'any' : 1}
     bind:value />

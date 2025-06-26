@@ -2,7 +2,7 @@
     import { BoxAvatar, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { collection } from '../store';
+    import { table } from '../store';
     import Delete from './deleteTable.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
@@ -15,9 +15,9 @@
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">
-                <h6 class="u-bold u-trim-1">{$collection.name}</h6>
+                <h6 class="u-bold u-trim-1">{$table.name}</h6>
             </svelte:fragment>
-            <p>Last updated: {toLocaleDateTime($collection.$updatedAt)}</p>
+            <p>Last updated: {toLocaleDateTime($table.$updatedAt)}</p>
         </BoxAvatar>
     </svelte:fragment>
 

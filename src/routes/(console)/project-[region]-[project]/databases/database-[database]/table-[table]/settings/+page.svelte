@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { collection } from '../store';
+    import { table } from '../store';
     import DangerZone from './dangerZone.svelte';
     import DisplayName from './displayName.svelte';
     import UpdateName from './updateName.svelte';
@@ -10,7 +10,7 @@
 </script>
 
 <Container>
-    {#if $collection}
+    {#if $table}
         <UpdateStatus />
         <UpdateName />
         <DisplayName />

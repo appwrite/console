@@ -5,15 +5,15 @@
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { canWriteCollections } from '$lib/stores/roles';
-    import { collection } from './store';
+    import { table } from './store';
     import { isTabletViewport } from '$lib/stores/viewport';
 
     const databaseId = $derived(page.params.database);
 
-    const collectionId = $derived(page.params.table);
+    const tableId = $derived(page.params.table);
 
     const path = $derived(
-        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${collectionId}`
+        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${tableId}`
     );
 
     const tabs = $derived(
@@ -61,10 +61,10 @@
         <svelte:fragment slot="header">
             <CoverTitle
                 href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`}>
-                {$collection?.name}
+                {$table?.name}
             </CoverTitle>
-            {#key $collection?.$id}
-                <Id value={$collection?.$id}>{$collection?.$id}</Id>
+            {#key $table?.$id}
+                <Id value={$table?.$id}>{$table?.$id}</Id>
             {/key}
         </svelte:fragment>
 

@@ -3,7 +3,7 @@
     import { page } from '$app/state';
     import { Breadcrumbs } from '$lib/layout';
     import { database } from '../store';
-    import { collection } from './store';
+    import { table } from './store';
 
     $: breadcrumbs = [
         {
@@ -18,8 +18,8 @@
             title: $database?.name
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$collection?.$id}`,
-            title: $collection?.name
+            href: `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}`,
+            title: $table?.name
         }
     ];
 </script>

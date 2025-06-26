@@ -1,6 +1,6 @@
 <script lang="ts">
     import { addNotification } from '$lib/stores/notifications';
-    import { collection } from '../store';
+    import { table } from '../store';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/state';
@@ -11,16 +11,16 @@
     import { Typography } from '@appwrite.io/pink-svelte';
 
     export let showDelete = false;
-    export let selectedIndex: Models.Index;
+    export let selectedIndex: Models.ColumnIndex;
 
-    const databaseId = page.params.database;
     let error: string;
+    const databaseId = page.params.database;
 
     async function handleDelete() {
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.deleteIndex(databaseId, $collection.$id, selectedIndex.key);
+                .tables.deleteIndex(databaseId, $table.$id, selectedIndex.key);
             await invalidate(Dependencies.TABLE);
             showDelete = false;
             addNotification({
@@ -37,6 +37,6 @@
 
 <Confirm onSubmit={handleDelete} title="Delete index" bind:open={showDelete} bind:error>
     <Typography.Text>
-        Are you sure you want to delete <b>{selectedIndex.key}</b> from <b>{$collection.name}</b>?
+        Are you sure you want to delete <b>{selectedIndex.key}</b> from <b>{$table.name}</b>?
     </Typography.Text>
 </Confirm>

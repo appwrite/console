@@ -11,36 +11,36 @@
     import type { Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { doc } from './store';
-    import { collection, type Attributes } from '../store';
+    import { row } from './store';
+    import { table, type Columns } from '../store';
     import ColumnItem from './columnItem.svelte';
     import { isRelationship, isRelationshipToMany } from './columns/store';
     import { deepClone } from '$lib/helpers/object';
 
     const databaseId = page.params.database;
-    const collectionId = page.params.table;
-    const documentId = page.params.row;
+    const tableId = page.params.table;
+    const rowId = page.params.row;
 
     function initWork() {
         const prohibitedKeys = [
             '$id',
             '$collection',
-            '$collectionId',
+            '$tableId',
             '$databaseId',
             '$createdAt',
             '$updatedAt'
         ];
 
-        const filteredKeys = Object.keys($doc).filter((key) => {
+        const filteredKeys = Object.keys($row).filter((key) => {
             return !prohibitedKeys.includes(key);
         });
 
         const result = filteredKeys.reduce((obj, key) => {
-            obj[key] = $doc[key];
+            obj[key] = $row[key];
             return obj;
         }, {});
 
-        return writable(deepClone(result as Models.Document));
+        return writable(deepClone(result as Models.Row));
     }
 
     const work = initWork();
@@ -49,13 +49,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.updateDocument(
-                    databaseId,
-                    collectionId,
-                    documentId,
-                    $work,
-                    $work.$permissions
-                );
+                .tables.updateRow(databaseId, tableId, rowId, $work, $work.$permissions);
 
             invalidate(Dependencies.ROW);
             trackEvent(Submit.RowUpdate);
@@ -72,42 +66,36 @@
         }
     }
 
-    function compareAttributes(
-        attribute: Attributes,
-        $work: Models.Document,
-        $doc: Models.Document
-    ) {
-        if (!attribute) {
+    function compareColumns(column: Columns, $work: Models.Row, $row: Models.Row) {
+        if (!column) {
             return false;
         }
 
-        const workAttribute = $work?.[attribute.key];
-        const docAttribute = $doc?.[attribute.key];
+        const workColumn = $work?.[column.key];
+        const docColumn = $row?.[column.key];
 
-        if (attribute.array) {
-            return !symmetricDifference(Array.from(workAttribute), Array.from(docAttribute)).length;
+        if (column.array) {
+            return !symmetricDifference(Array.from(workColumn), Array.from(docColumn)).length;
         }
 
-        if (isRelationship(attribute)) {
-            if (isRelationshipToMany(attribute as Models.AttributeRelationship)) {
-                const workIds = workAttribute.map((doc: string | Record<string, unknown>) =>
+        if (isRelationship(column)) {
+            if (isRelationshipToMany(column as Models.ColumnRelationship)) {
+                const workIds = workColumn.map((doc: string | Record<string, unknown>) =>
                     typeof doc === 'string' ? doc : doc.$id
                 );
 
-                const relatedIds = docAttribute.map((doc: string | Record<string, unknown>) =>
+                const relatedIds = docColumn.map((doc: string | Record<string, unknown>) =>
                     typeof doc === 'string' ? doc : doc.$id
                 );
                 return !symmetricDifference(workIds, relatedIds).length;
             } else {
-                const workId =
-                    typeof workAttribute === 'string' ? workAttribute : workAttribute?.$id;
-                const relatedId =
-                    typeof docAttribute === 'string' ? docAttribute : docAttribute?.$id;
+                const workId = typeof workColumn === 'string' ? workColumn : workColumn?.$id;
+                const relatedId = typeof docColumn === 'string' ? docColumn : docColumn?.$id;
 
                 return workId === relatedId;
             }
         }
-        return workAttribute === docAttribute;
+        return workColumn === docColumn;
     }
 </script>
 
@@ -116,19 +104,19 @@
 </svelte:head>
 
 <Container>
-    {#if $collection?.attributes?.length}
-        {#each $collection.attributes as attribute}
-            {@const label = attribute.key}
+    {#if $table?.columns?.length}
+        {#each $table.columns as column}
+            {@const label = column.key}
             <CardGrid>
                 <svelte:fragment slot="title">{label}</svelte:fragment>
 
                 <svelte:fragment slot="aside">
-                    <ColumnItem {attribute} bind:formValues={$work} {label} editing />
+                    <ColumnItem {column} bind:formValues={$work} {label} editing />
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
                     <Button
-                        disabled={compareAttributes(attribute, $work, $doc)}
+                        disabled={compareColumns(column, $work, $row)}
                         on:click={() => updateData()}>Update</Button>
                 </svelte:fragment>
             </CardGrid>

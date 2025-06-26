@@ -5,15 +5,15 @@
 
     export async function submitEnum(
         databaseId: string,
-        collectionId: string,
+        tableId: string,
         key: string,
-        data: Partial<Models.AttributeEnum>
+        data: Partial<Models.ColumnEnum>
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.createEnumAttribute(
+            .tables.createEnumColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 key,
                 data.elements,
                 data.required,
@@ -24,15 +24,15 @@
 
     export async function updateEnum(
         databaseId: string,
-        collectionId: string,
-        data: Partial<Models.AttributeEnum>,
+        tableId: string,
+        data: Partial<Models.ColumnEnum>,
         originalKey?: string
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.updateEnumAttribute(
+            .tables.updateEnumColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 originalKey,
                 data.elements,
                 data.required,
@@ -46,7 +46,7 @@
     import { InputSelect, InputTags } from '$lib/elements/forms';
 
     export let editing = false;
-    export let data: Partial<Models.AttributeEnum>;
+    export let data: Partial<Models.ColumnEnum>;
 
     import { createConservative } from '$lib/helpers/stores';
     import { Icon, Selector, Tooltip, Typography } from '@appwrite.io/pink-svelte';
@@ -66,7 +66,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.AttributeEnum>>({
+    } = createConservative<Partial<Models.ColumnEnum>>({
         required: false,
         array: false,
         ...data

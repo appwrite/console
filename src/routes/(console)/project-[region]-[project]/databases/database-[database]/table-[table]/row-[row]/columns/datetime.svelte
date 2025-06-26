@@ -5,7 +5,7 @@
     export let id: string;
     export let label: string;
     export let value: string;
-    export let attribute: Models.AttributeDatetime;
+    export let column: Models.ColumnDatetime;
     export let type: 'date' | 'time' | 'datetime-local' = 'datetime-local';
 </script>
 
@@ -14,5 +14,5 @@
     {label}
     {type}
     bind:value
-    required={attribute.required}
-    nullable={!attribute.required} />
+    required={column.required}
+    nullable={!column.required} />

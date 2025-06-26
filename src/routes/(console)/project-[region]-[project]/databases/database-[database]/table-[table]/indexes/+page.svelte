@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Empty } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { collection } from '../store';
+    import { table } from '../store';
     import Delete from './deleteIndex.svelte';
     import Create from './createIndex.svelte';
     import Overview from './overviewIndex.svelte';
@@ -33,16 +33,16 @@
 
     export let data;
 
-    let selectedIndex: Models.Index = null;
-    let showCreateIndex = false;
-    let showOverview = false;
-    let showDelete = false;
-    let showCreateAttribute = false;
-    let selectedAttribute: Option['name'] = null;
-    let showFailed = false;
     let error = '';
+    let showFailed = false;
+    let showDelete = false;
+    let showOverview = false;
+    let showCreateIndex = false;
+    let showCreateColumn = false;
+    let selectedColumn: Option['name'] = null;
+    let selectedIndex: Models.ColumnIndex = null;
 
-    function getAttributeStatusBadge(status: string): ComponentProps<Badge>['type'] {
+    function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {
         switch (status) {
             case 'processing':
                 return 'warning';
@@ -62,7 +62,7 @@
         {#if $canWriteCollections}
             <Button
                 event="create_index"
-                disabled={!$collection?.attributes?.length}
+                disabled={!$table?.columns?.length}
                 on:click={() => (showCreateIndex = true)}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create index
@@ -70,8 +70,8 @@
         {/if}
     </Layout.Stack>
 
-    {#if data.collection?.attributes?.length}
-        {#if data.collection.indexes.length}
+    {#if data.table?.columns?.length}
+        {#if data.table.indexes.length}
             <Table.Root
                 let:root
                 columns={[
@@ -90,7 +90,7 @@
                     <Table.Header.Cell column="lengths" {root}>Lengths</Table.Header.Cell>
                     <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
-                {#each data.collection.indexes as index}
+                {#each data.table.indexes as index}
                     <Table.Row.Base {root}>
                         <Table.Cell column="key" {root}>
                             <Layout.Stack direction="row" alignItems="center">
@@ -100,7 +100,7 @@
                                         size="s"
                                         variant="secondary"
                                         content={index.status}
-                                        type={getAttributeStatusBadge(index.status)} />
+                                        type={getColumnStatusBadge(index.status)} />
                                     {#if index.error}
                                         <Link.Button
                                             variant="muted"
@@ -115,7 +115,7 @@
                         </Table.Cell>
                         <Table.Cell column="type" {root}>{index.type}</Table.Cell>
                         <Table.Cell column="columns" {root}>
-                            {index.attributes}
+                            {index.columns}
                         </Table.Cell>
                         <Table.Cell column="orders" {root}>
                             {index.orders}
@@ -152,7 +152,7 @@
             <Empty
                 allowCreate={$canWriteCollections}
                 single
-                href="https://appwrite.io/docs/products/databases/collections#indexes"
+                href="https://appwrite.io/docs/products/databases/tables#indexes"
                 target="index"
                 on:click={() => (showCreateIndex = true)} />
         {/if}
@@ -161,16 +161,16 @@
             <svelte:fragment slot="actions">
                 <Button
                     external
-                    href="https://appwrite.io/docs/products/databases/collections#attributes"
+                    href="https://appwrite.io/docs/products/databases/tables#columns"
                     text
                     event="empty_documentation"
                     ariaLabel="create index">Documentation</Button>
                 {#if $canWriteCollections}
                     <CreateColumnDropdown
-                        bind:selectedOption={selectedAttribute}
-                        bind:showCreate={showCreateAttribute}
+                        bind:selectedOption={selectedColumn}
+                        bind:showCreate={showCreateColumn}
                         let:toggle>
-                        <Button secondary event="create_attribute" on:click={toggle}>
+                        <Button secondary event="create_column" on:click={toggle}>
                             Create column
                         </Button>
                     </CreateColumnDropdown>
@@ -187,11 +187,8 @@
     <Overview bind:showOverview {selectedIndex} />
 {/if}
 
-<!--todo: @itznotabug - var name -->
-{#if showCreateAttribute}
-    <CreateColumn
-        bind:showCreate={showCreateAttribute}
-        bind:selectedOption={selectedAttribute} />
+{#if showCreateColumn}
+    <CreateColumn bind:showCreate={showCreateColumn} bind:selectedOption={selectedColumn} />
 {/if}
 
 <FailedModal bind:show={showFailed} title="Create index" header="Creation failed" {error} />

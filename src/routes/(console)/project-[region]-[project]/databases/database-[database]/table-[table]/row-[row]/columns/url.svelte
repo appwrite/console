@@ -5,15 +5,9 @@
     export let id: string;
     export let label: string;
     export let value: string | null;
-    export let attribute: Models.AttributeUrl;
+    export let column: Models.ColumnUrl;
 
-    $: nullable = attribute.required ? false : !value;
+    $: nullable = column.required ? false : !value;
 </script>
 
-<InputURL
-    {id}
-    {label}
-    {nullable}
-    placeholder="Enter URL"
-    required={attribute.required}
-    bind:value />
+<InputURL {id} {label} {nullable} placeholder="Enter URL" required={column.required} bind:value />

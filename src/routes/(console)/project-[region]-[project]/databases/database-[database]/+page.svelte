@@ -2,7 +2,7 @@
     import { Empty, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
-    import { columns, showCreate } from './store';
+    import { tableViewColumns, showCreate } from './store';
     import Table from './table.svelte';
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
@@ -16,7 +16,7 @@
 <Container>
     <ResponsiveContainerHeader
         bind:view={data.view}
-        {columns}
+        columns={tableViewColumns}
         hasSearch
         searchPlaceholder="Search by name or ID">
         {#if $canWriteCollections}
@@ -27,7 +27,7 @@
         {/if}
     </ResponsiveContainerHeader>
 
-    {#if data.collections.total}
+    {#if data.tables.total}
         {#if data.view === 'grid'}
             <Grid {data} bind:showCreate={$showCreate} />
         {:else}
@@ -38,13 +38,12 @@
             name="Tables"
             limit={data.limit}
             offset={data.offset}
-            total={data.collections.total} />
+            total={data.tables.total} />
     {:else}
-        <!-- TODO: update collections docs url and content later -->
         <Empty
             single
             allowCreate={$canWriteCollections}
-            href="https://appwrite.io/docs/products/databases/collections"
+            href="https://appwrite.io/docs/products/databases/tables"
             target="table"
             on:click={() => ($showCreate = true)} />
     {/if}

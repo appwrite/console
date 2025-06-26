@@ -9,31 +9,31 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { collection } from '../store';
+    import { table } from '../store';
 
     const databaseId = page.params.database;
 
     let enabled: boolean = null;
 
     onMount(() => {
-        enabled ??= $collection.enabled;
+        enabled ??= $table.enabled;
     });
 
     async function toggleCollection() {
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.updateCollection(
+                .tables.update(
                     databaseId,
-                    $collection.$id,
-                    $collection.name,
-                    $collection.$permissions,
-                    $collection.documentSecurity,
+                    $table.$id,
+                    $table.name,
+                    $table.$permissions,
+                    $table.rowSecurity,
                     enabled
                 );
             await invalidate(Dependencies.TABLE);
             addNotification({
-                message: `${$collection.name} has been updated`,
+                message: `${$table.name} has been updated`,
                 type: 'success'
             });
             trackEvent(Submit.TableUpdateEnabled);
@@ -48,7 +48,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">{$collection.name}</svelte:fragment>
+    <svelte:fragment slot="title">{$table.name}</svelte:fragment>
     <svelte:fragment slot="aside">
         <ul>
             <InputSwitch
@@ -57,14 +57,12 @@
                 bind:value={enabled} />
         </ul>
         <div>
-            <p>Created: {toLocaleDateTime($collection.$createdAt)}</p>
-            <p>Last updated: {toLocaleDateTime($collection.$updatedAt)}</p>
+            <p>Created: {toLocaleDateTime($table.$createdAt)}</p>
+            <p>Last updated: {toLocaleDateTime($table.$updatedAt)}</p>
         </div>
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button disabled={enabled === $collection.enabled} on:click={toggleCollection}>
-            Update
-        </Button>
+        <Button disabled={enabled === $table.enabled} on:click={toggleCollection}>Update</Button>
     </svelte:fragment>
 </CardGrid>

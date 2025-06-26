@@ -5,15 +5,15 @@
 
     export async function submitBoolean(
         databaseId: string,
-        collectionId: string,
+        tableId: string,
         key: string,
-        data: Partial<Models.AttributeBoolean>
+        data: Partial<Models.ColumnBoolean>
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.createBooleanAttribute(
+            .tables.createBooleanColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 key,
                 data.required,
                 data.default,
@@ -22,15 +22,15 @@
     }
     export async function updateBoolean(
         databaseId: string,
-        collectionId: string,
-        data: Partial<Models.AttributeBoolean>,
+        tableId: string,
+        data: Partial<Models.ColumnBoolean>,
         originalKey?: string
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.updateBooleanAttribute(
+            .tables.updateBooleanColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 originalKey,
                 data.required,
                 data.default,
@@ -43,7 +43,7 @@
     import { InputSelect } from '$lib/elements/forms';
 
     export let editing = false;
-    export let data: Partial<Models.AttributeBoolean> = {
+    export let data: Partial<Models.ColumnBoolean> = {
         required: false,
         array: false,
         default: null
@@ -66,7 +66,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.AttributeBoolean>>({
+    } = createConservative<Partial<Models.ColumnBoolean>>({
         required: false,
         array: false,
         ...data

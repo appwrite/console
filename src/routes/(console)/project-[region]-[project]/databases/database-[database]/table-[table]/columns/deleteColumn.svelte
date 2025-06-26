@@ -4,8 +4,8 @@
     import { page } from '$app/state';
     import { InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { collection } from '../store';
-    import type { Attributes } from '../store';
+    import { table } from '../store';
+    import type { Columns } from '../store';
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -13,7 +13,8 @@
     import Confirm from '$lib/components/confirm.svelte';
 
     export let showDelete = false;
-    export let selectedAttribute: Attributes;
+    export let selectedColumn: Columns;
+
     const databaseId = page.params.database;
     let checked = false;
     let error: string;
@@ -21,7 +22,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.deleteAttribute(databaseId, $collection.$id, selectedAttribute.key);
+                .tables.deleteColumn(databaseId, $table.$id, selectedColumn.key);
             await invalidate(Dependencies.TABLE);
             showDelete = false;
             addNotification({
@@ -30,7 +31,7 @@
             });
             trackEvent(Submit.ColumnDelete);
             await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${page.params.table}/attributes`
+                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${page.params.table}/columns`
             );
         } catch (e) {
             error = e.message;
@@ -38,8 +39,7 @@
         }
     }
 
-    $: isDeleteBtnDisabled =
-        isRelationship(selectedAttribute) && selectedAttribute?.twoWay && !checked;
+    $: isDeleteBtnDisabled = isRelationship(selectedColumn) && selectedColumn?.twoWay && !checked;
 </script>
 
 <Confirm
@@ -49,10 +49,10 @@
     bind:error
     disabled={isDeleteBtnDisabled}>
     <p>
-        Are you sure you want to delete <b data-private>{selectedAttribute?.key}</b> from
-        <b data-private>{$collection?.name}</b>?
+        Are you sure you want to delete <b data-private>{selectedColumn?.key}</b> from
+        <b data-private>{$table?.name}</b>?
     </p>
-    {#if isRelationship(selectedAttribute) && selectedAttribute?.twoWay}
+    {#if isRelationship(selectedColumn) && selectedColumn?.twoWay}
         <div class="u-flex u-flex-vertical u-gap-24">
             <p>
                 This is a two way relationship and the corresponding relationship will also be
@@ -61,8 +61,8 @@
             <p><b>This action is irreversible.</b></p>
             <ul>
                 <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
-                    Delete relationship between <b data-private>{selectedAttribute.key}</b> to
-                    <b data-private>{selectedAttribute.twoWayKey}</b>
+                    Delete relationship between <b data-private>{selectedColumn.key}</b> to
+                    <b data-private>{selectedColumn.twoWayKey}</b>
                 </InputChoice>
             </ul>
         </div>

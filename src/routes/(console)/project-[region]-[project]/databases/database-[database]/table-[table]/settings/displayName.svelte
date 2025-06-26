@@ -12,14 +12,15 @@
     import { page } from '$app/state';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { organization } from '$lib/stores/organization';
 
-    const collectionId = page.params.table;
-    let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
+    const tableId = page.params.table;
+    let names: string[] = [...(preferences.getDisplayNames()?.[tableId] ?? [])];
 
     async function updateDisplayName() {
         try {
-            await preferences.setDisplayNames(collectionId, names);
-            names = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
+            await preferences.setDisplayNames($organization.$id, tableId, names);
+            names = [...(preferences.getDisplayNames()?.[tableId] ?? [])];
             await invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Display names have been updated',
@@ -35,7 +36,7 @@
         }
     }
 
-    $: options = ($columns as Models.AttributeString[])
+    $: options = ($columns as Models.ColumnString[])
         .filter(
             (attr) =>
                 attr.type === 'string' && !attr?.array && !names?.some((name) => name === attr.key)
@@ -50,7 +51,7 @@
     $: addAttributeDisabled = names?.length >= 5 || (names?.length && !names[names?.length - 1]);
 
     $: updateBtnDisabled =
-        !symmetricDifference(names, preferences.getDisplayNames()?.[collectionId] ?? [])?.length ||
+        !symmetricDifference(names, preferences.getDisplayNames()?.[tableId] ?? [])?.length ||
         (names?.length && !last(names));
 </script>
 

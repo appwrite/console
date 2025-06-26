@@ -11,7 +11,7 @@
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
-    import type { Attributes } from './store';
+    import type { Columns } from './store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { preferences } from '$lib/stores/preferences';
 
@@ -22,7 +22,7 @@
     const databaseId = page.params.database;
 
     let key: string = null;
-    let data: Partial<Attributes> = {
+    let data: Partial<Columns> = {
         required: false,
         array: false,
         default: null
@@ -33,7 +33,7 @@
         try {
             await $option.create(databaseId, tableId, key, data);
 
-            let selectedColumns = preferences.getCustomCollectionColumns(tableId);
+            let selectedColumns = preferences.getCustomTableColumns(tableId);
             selectedColumns.push(key ?? data?.key);
             preferences.setCustomCollectionColumns(selectedColumns);
             await invalidate(Dependencies.TABLE);

@@ -5,17 +5,17 @@
     export let id: string;
     export let label: string;
     export let value: string;
-    export let attribute: Models.AttributeEnum;
+    export let column: Models.ColumnEnum;
     export let optionalText: string | undefined = undefined;
 
     $: options = [
-        ...attribute.elements.map((element) => {
+        ...column.elements.map((element) => {
             return {
                 label: element,
                 value: element
             };
         }),
-        !attribute.required && {
+        !column.required && {
             label: 'NULL',
             value: null
         }
@@ -28,5 +28,5 @@
     {id}
     {label}
     {optionalText}
-    required={attribute.required}
+    required={column.required}
     placeholder="Select a value" />

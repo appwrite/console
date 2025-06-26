@@ -3,7 +3,7 @@
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { doc } from '../store';
+    import { row } from '../store';
     import { addNotification } from '$lib/stores/notifications';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Delete from '../delete.svelte';
@@ -12,23 +12,24 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { collection } from '../../store';
-    import { page } from '$app/stores';
+    import { table } from '../../store';
+    import { page } from '$app/state';
 
     let showDelete = false;
-    let permissions = $doc?.$permissions;
+    let permissions = $row?.$permissions;
+
     let arePermsDisabled = true;
     let showPermissionAlert = true;
 
     async function updatePermissions() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
-                .databases.updateDocument(
-                    $doc.$databaseId,
-                    $doc.$collectionId,
-                    $doc.$id,
-                    $doc.data,
+                .forProject(page.params.region, page.params.project)
+                .tables.updateRow(
+                    $row.$databaseId,
+                    $row.$tableId,
+                    $row.$id,
+                    $row.data,
                     permissions
                 );
             await invalidate(Dependencies.ROW);
@@ -48,7 +49,7 @@
     }
 
     $: if (permissions) {
-        arePermsDisabled = !symmetricDifference(permissions, $doc.$permissions).length;
+        arePermsDisabled = !symmetricDifference(permissions, $row.$permissions).length;
     }
 </script>
 
@@ -62,8 +63,8 @@
 
         <svelte:fragment slot="aside">
             <div>
-                <p>Created: {toLocaleDateTime($doc.$createdAt)}</p>
-                <p>Last updated: {toLocaleDateTime($doc.$updatedAt)}</p>
+                <p>Created: {toLocaleDateTime($row.$createdAt)}</p>
+                <p>Last updated: {toLocaleDateTime($row.$updatedAt)}</p>
             </div>
         </svelte:fragment>
     </CardGrid>
@@ -83,7 +84,7 @@
         </p>
 
         <svelte:fragment slot="aside">
-            {#if $collection.documentSecurity}
+            {#if $table.rowSecurity}
                 {#if showPermissionAlert}
                     <Alert type="info" dismissible on:dismiss={() => (showPermissionAlert = false)}>
                         <svelte:fragment slot="title">Row security is enabled</svelte:fragment>
@@ -109,11 +110,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button
-                disabled={arePermsDisabled}
-                on:click={() => {
-                    updatePermissions();
-                }}>Update</Button>
+            <Button disabled={arePermsDisabled} on:click={updatePermissions}>Update</Button>
         </svelte:fragment>
     </CardGrid>
 
@@ -126,10 +123,10 @@
         <svelte:fragment slot="aside">
             <BoxAvatar>
                 <svelte:fragment slot="title">
-                    <h6 class="u-bold u-trim-1">{$doc.$id}</h6>
+                    <h6 class="u-bold u-trim-1">{$row.$id}</h6>
                 </svelte:fragment>
                 <p>
-                    Last updated: {toLocaleDateTime($doc.$updatedAt)}
+                    Last updated: {toLocaleDateTime($row.$updatedAt)}
                 </p>
             </BoxAvatar>
         </svelte:fragment>

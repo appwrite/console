@@ -77,8 +77,9 @@
                 Edit the expiry of the file token created on <b>{formattedDate}</b>.
             {:else}
                 Create a file token to grant access to a file.
-                <!-- TODO: @itznotabug, @adityaoberai need documentations link -->
-                <Link.Anchor href="https://appwrite.com/docs/">Learn more</Link.Anchor>.
+                <Link.Anchor href="https://appwrite.io/docs/products/storage/file-tokens"
+                    >Learn more</Link.Anchor
+                >.
             {/if}
         </svelte:fragment>
 

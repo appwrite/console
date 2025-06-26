@@ -5,15 +5,15 @@
 
     export async function submitInteger(
         databaseId: string,
-        collectionId: string,
+        tableId: string,
         key: string,
-        data: Partial<Models.AttributeInteger>
+        data: Partial<Models.ColumnInteger>
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.createIntegerAttribute(
+            .tables.createIntegerColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 key,
                 data.required,
                 data.min,
@@ -25,15 +25,15 @@
 
     export async function updateInteger(
         databaseId: string,
-        collectionId: string,
-        data: Partial<Models.AttributeInteger>,
+        tableId: string,
+        data: Partial<Models.ColumnInteger>,
         originalKey?: string
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.updateIntegerAttribute(
+            .tables.updateIntegerColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 originalKey,
                 data.required,
                 data.default,
@@ -49,7 +49,7 @@
 
     export let editing = false;
 
-    export let data: Partial<Models.AttributeInteger> = {
+    export let data: Partial<Models.ColumnInteger> = {
         required: false,
         min: 0,
         max: 0,
@@ -74,7 +74,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.AttributeInteger>>({
+    } = createConservative<Partial<Models.ColumnInteger>>({
         required: false,
         array: false,
         ...data

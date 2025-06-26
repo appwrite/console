@@ -5,15 +5,15 @@
 
     export async function submitUrl(
         databaseId: string,
-        collectionId: string,
+        tableId: string,
         key: string,
-        data: Partial<Models.AttributeUrl>
+        data: Partial<Models.ColumnUrl>
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.createUrlAttribute(
+            .tables.createUrlColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 key,
                 data.required,
                 data.default,
@@ -23,15 +23,15 @@
 
     export async function updateUrl(
         databaseId: string,
-        collectionId: string,
-        data: Partial<Models.AttributeUrl>,
+        tableId: string,
+        data: Partial<Models.ColumnUrl>,
         originalKey?: string
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.updateUrlAttribute(
+            .tables.updateUrlColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 originalKey,
                 data.required,
                 data.default,
@@ -43,7 +43,7 @@
 <script lang="ts">
     import { InputURL } from '$lib/elements/forms';
 
-    export let data: Partial<Models.AttributeUrl>;
+    export let data: Partial<Models.ColumnUrl>;
     export let editing = false;
 
     import { createConservative } from '$lib/helpers/stores';
@@ -63,7 +63,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.AttributeUrl>>({
+    } = createConservative<Partial<Models.ColumnUrl>>({
         required: false,
         array: false,
         ...data

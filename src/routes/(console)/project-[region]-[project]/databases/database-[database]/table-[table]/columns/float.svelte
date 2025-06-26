@@ -5,15 +5,15 @@
 
     export async function submitFloat(
         databaseId: string,
-        collectionId: string,
+        tableId: string,
         key: string,
-        data: Partial<Models.AttributeFloat>
+        data: Partial<Models.ColumnFloat>
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.createFloatAttribute(
+            .tables.createFloatColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 key,
                 data.required,
                 data.min,
@@ -25,15 +25,15 @@
 
     export async function updateFloat(
         databaseId: string,
-        collectionId: string,
-        data: Partial<Models.AttributeFloat>,
+        tableId: string,
+        data: Partial<Models.ColumnFloat>,
         originalKey?: string
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.updateFloatAttribute(
+            .tables.updateFloatColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 originalKey,
                 data.required,
                 data.default,
@@ -48,7 +48,7 @@
     import { InputNumber } from '$lib/elements/forms';
 
     export let editing = false;
-    export let data: Partial<Models.AttributeFloat> = {
+    export let data: Partial<Models.ColumnFloat> = {
         required: false,
         min: 0,
         max: 0,
@@ -73,7 +73,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.AttributeFloat>>({
+    } = createConservative<Partial<Models.ColumnFloat>>({
         required: false,
         array: false,
         ...data

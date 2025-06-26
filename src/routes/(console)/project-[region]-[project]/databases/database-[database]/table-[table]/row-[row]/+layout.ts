@@ -3,34 +3,34 @@ import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
-import type { Attributes } from '../store';
+import type { Columns } from '../store';
 
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
     depends(Dependencies.ROW);
-    const { collection } = await parent();
+    const { table } = await parent();
 
-    const document = await sdk
+    const row = await sdk
         .forProject(params.region, params.project)
-        .databases.getDocument(params.database, params.table, params.row);
+        .tables.getRow(params.database, params.table, params.row);
 
     /**
      * Sanitize DateTime to remove UTC Timezone section.
      */
-    collection.attributes.forEach((attribute) => {
-        const { type, key, array } = attribute as unknown as Attributes;
+    table.columns.forEach((column) => {
+        const { type, key, array } = column as unknown as Columns;
         if (type === 'datetime') {
             if (array) {
-                document[key] = document[key].map((n: string) => {
+                row[key] = row[key].map((n: string) => {
                     if (!n) {
                         return null;
                     }
                     return new Date(n).toISOString().slice(0, 23);
                 });
             } else {
-                if (document[key]) {
-                    document[key] = new Date(document[key]).toISOString().slice(0, 23);
+                if (row[key]) {
+                    row[key] = new Date(row[key]).toISOString().slice(0, 23);
                 } else {
-                    document[key] = null;
+                    row[key] = null;
                 }
             }
         }
@@ -39,6 +39,6 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
     return {
         header: Header,
         breadcrumbs: Breadcrumbs,
-        document
+        row
     };
 };

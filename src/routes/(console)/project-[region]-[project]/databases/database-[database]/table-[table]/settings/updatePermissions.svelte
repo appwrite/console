@@ -10,30 +10,30 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { collection } from '../store';
+    import { table } from '../store';
     import { Link } from '@appwrite.io/pink-svelte';
 
     const databaseId = page.params.database;
 
     let arePermsDisabled = true;
 
-    let collectionPermissions: string[] = null;
+    let tablePermissions: string[] = null;
 
     onMount(() => {
-        collectionPermissions ??= $collection.$permissions;
+        tablePermissions ??= $table.$permissions;
     });
 
     async function updatePermissions() {
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.updateCollection(
+                .tables.update(
                     databaseId,
-                    $collection.$id,
-                    $collection.name,
-                    collectionPermissions,
-                    $collection.documentSecurity,
-                    $collection.enabled
+                    $table.$id,
+                    $table.name,
+                    tablePermissions,
+                    $table.rowSecurity,
+                    $table.enabled
                 );
             await invalidate(Dependencies.TABLE);
             addNotification({
@@ -51,8 +51,7 @@
     }
 
     $: arePermsDisabled = !(
-        collectionPermissions &&
-        symmetricDifference(collectionPermissions, $collection.$permissions).length
+        tablePermissions && symmetricDifference(tablePermissions, $table.$permissions).length
     );
 </script>
 
@@ -65,8 +64,8 @@
         Learn more
     </Link.Anchor>.
     <svelte:fragment slot="aside">
-        {#if collectionPermissions}
-            <Permissions bind:permissions={collectionPermissions} withCreate />
+        {#if tablePermissions}
+            <Permissions bind:permissions={tablePermissions} withCreate />
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="actions">

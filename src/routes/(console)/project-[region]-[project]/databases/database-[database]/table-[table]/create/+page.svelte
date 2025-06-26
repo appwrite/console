@@ -13,7 +13,7 @@
     import ColumnForm from '../row-[row]/columnForm.svelte';
     import { Permissions } from '$lib/components/permissions';
     import type { PageData } from './$types';
-    import type { Attributes } from '../store';
+    import type { Columns } from '../store';
     import { ID } from '@appwrite.io/console';
 
     export let data: PageData;
@@ -24,41 +24,41 @@
 
     type CreateDocument = {
         id?: string;
-        document: object;
+        row: object;
         permissions: string[];
-        attributes: Attributes[];
+        columns: Columns[];
     };
 
-    function createDocumentWritable() {
-        const availableAttributes = (data.collection.attributes as unknown as Attributes[]).filter(
+    function createRowWritable() {
+        const availableColumns = (data.table.columns as unknown as Columns[]).filter(
             (a) => a.status === 'available'
         );
         const initial = {
             id: null,
-            document: availableAttributes.reduce((acc, attr) => {
+            row: availableColumns.reduce((acc, attr) => {
                 acc[attr.key] = attr.array ? [] : null;
 
                 return acc;
             }, {}),
             permissions: [],
-            attributes: availableAttributes
+            columns: availableColumns
         };
 
         return writable<CreateDocument>({ ...initial });
     }
 
-    const createDocument = createDocumentWritable();
+    const createRow = createRowWritable();
 
     async function create() {
         try {
             const { $id } = await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.createDocument(
+                .tables.createRow(
                     page.params.database,
                     page.params.table,
-                    $createDocument.id ?? ID.unique(),
-                    $createDocument.document,
-                    $createDocument.permissions
+                    $createRow.id ?? ID.unique(),
+                    $createRow.row,
+                    $createRow.permissions
                 );
 
             addNotification({
@@ -66,7 +66,7 @@
                 type: 'success'
             });
             trackEvent(Submit.RowCreate, {
-                customId: !!$createDocument.id
+                customId: !!$createRow.id // todo: @itznotabug - change store name
             });
             goto(
                 `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/row-${$id}`
@@ -92,9 +92,9 @@
         <Layout.Stack gap="xxl">
             <Fieldset legend="Data">
                 <ColumnForm
-                    bind:formValues={$createDocument.document}
-                    attributes={$createDocument.attributes}
-                    bind:customId={$createDocument.id} />
+                    bind:formValues={$createRow.row}
+                    columns={$createRow.columns}
+                    bind:customId={$createRow.id} />
             </Fieldset>
 
             <Fieldset legend="Permissions">
@@ -103,13 +103,13 @@
                         Choose which permission scopes to grant your application. It is best
                         practice to allow only the permissions you need to meet your project goals.
                     </Typography.Text>
-                    {#if data.collection.documentSecurity}
+                    {#if data.table.rowSecurity}
                         <Alert.Inline status="info">
                             <svelte:fragment slot="title">Row security is enabled</svelte:fragment>
                             Users will be able to access this row if they have been granted
                             <b>either row or table permissions</b>.
                         </Alert.Inline>
-                        <Permissions bind:permissions={$createDocument.permissions} />
+                        <Permissions bind:permissions={$createRow.permissions} />
                     {:else}
                         <Alert.Inline status="info">
                             <svelte:fragment slot="title">Row security is disabled</svelte:fragment>

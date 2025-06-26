@@ -14,7 +14,7 @@
     import type { PageData } from './$types';
     import { isRelationship, isRelationshipToMany, isString } from './row-[row]/columns/store';
     import RelationshipsModal from './relationshipsModal.svelte';
-    import { columns, collection, tableColumns } from './store';
+    import { columns, table, tableColumns } from './store';
     import type { ColumnType } from '$lib/helpers/types';
     import {
         Tooltip,
@@ -33,9 +33,9 @@
     export let data: PageData;
 
     const databaseId = page.params.database;
-    const collectionId = page.params.table;
+    const tableId = page.params.table;
     let showRelationships = false;
-    let selectedRelationship: Models.AttributeRelationship = null;
+    let selectedRelationship: Models.ColumnRelationship = null;
     let relationshipData: Partial<Models.Document>[];
     let displayNames = {};
 
@@ -96,20 +96,19 @@
         };
     }
 
-    $: selected = preferences.getCustomCollectionColumns(page.params.table);
+    $: selected = preferences.getCustomTableColumns(page.params.table);
 
     $: {
         tableColumns.set(
-            $collection.attributes.map((attribute) => ({
-                id: attribute.key,
-                title: attribute.key,
-                type: attribute.type as ColumnType,
-                show: selected?.includes(attribute.key) ?? true,
-                array: attribute?.array,
+            $table.columns.map((column) => ({
+                id: column.key,
+                title: column.key,
+                type: column.type as ColumnType,
+                show: selected?.includes(column.key) ?? true,
+                array: column?.array,
                 width: { min: 168 },
-                format:
-                    'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
-                elements: 'elements' in attribute ? attribute.elements : null
+                format: 'format' in column && column?.format === 'enum' ? column.format : null,
+                elements: 'elements' in column ? column.elements : null
             }))
         );
     }
@@ -120,10 +119,10 @@
     async function handleDelete() {
         showDelete = false;
 
-        const promises = selectedRows.map((documentId) =>
+        const promises = selectedRows.map((rowId) =>
             sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.deleteDocument(databaseId, collectionId, documentId)
+                .tables.deleteRow(databaseId, tableId, rowId)
         );
         try {
             await Promise.all(promises);
@@ -162,7 +161,7 @@
                 (attribute.relationType === 'manyToOne' && attribute.side === 'child') ||
                 // Many-to-Many: Only include if the parent is being deleted
                 (isRelationshipToMany(attribute) && attribute.side === 'parent'))
-    ) as Models.AttributeRelationship[];
+    ) as Models.ColumnRelationship[];
 
     let checked = false;
 
@@ -187,35 +186,35 @@
         <Table.Header.Cell column="$created" {root}>Created</Table.Header.Cell>
         <Table.Header.Cell column="$updated" {root}>Updated</Table.Header.Cell>
     </svelte:fragment>
-    {#each data.documents.documents as document (document.$id)}
+    {#each data.rows.rows as row (row.$id)}
         <Table.Row.Link
             {root}
-            id={document.$id}
-            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$collection.$id}/row-${document.$id}`}>
+            id={row.$id}
+            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$table.$id}/row-${row.$id}`}>
             <Table.Cell column="$id" {root}>
-                {#key document.$id}
-                    <Id value={document.$id}>
-                        {document.$id}
+                {#key row.$id}
+                    <Id value={row.$id}>
+                        {row.$id}
                     </Id>
                 {/key}
             </Table.Cell>
 
             {#each $tableColumns as { id } (id)}
-                {@const attr = $columns.find((n) => n.key === id)}
-                {#if attr}
+                {@const column = $columns.find((n) => n.key === id)}
+                {#if column}
                     <Table.Cell column={id} {root}>
-                        {#if isRelationship(attr)}
-                            {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
-                            {#if !isRelationshipToMany(attr)}
-                                {#if document[id]}
-                                    {@const related = document[id]}
+                        {#if isRelationship(column)}
+                            {@const args = displayNames?.[column.relatedTable] ?? ['$id']}
+                            {#if !isRelationshipToMany(column)}
+                                {#if row[id]}
+                                    {@const related = row[id]}
                                     <Link.Button
                                         variant="muted"
                                         on:click={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
                                             goto(
-                                                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${attr.relatedCollection}/row-${related.$id}`
+                                                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${column.relatedTable}/row-${related.$id}`
                                             );
                                         }}>
                                         {#each args as arg, i}
@@ -233,7 +232,7 @@
                                     <span class="text">n/a</span>
                                 {/if}
                             {:else}
-                                {@const itemsNum = document[id]?.length}
+                                {@const itemsNum = row[id]?.length}
                                 <Button.Button
                                     variant="extra-compact"
                                     disabled={!itemsNum}
@@ -241,18 +240,18 @@
                                     on:click={(e) => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        relationshipData = document[id];
+                                        relationshipData = row[id];
                                         showRelationships = true;
-                                        selectedRelationship = attr;
+                                        selectedRelationship = column;
                                     }}>
                                     Items
                                 </Button.Button>
                             {/if}
                         {:else}
-                            {@const datetime = document[id]}
-                            {@const formatted = formatColumn(document[id])}
-                            {@const isDatetimeAttribute = attr.type === 'datetime'}
-                            {@const isEncryptedAttribute = isString(attr) && attr.encrypt}
+                            {@const datetime = row[id]}
+                            {@const formatted = formatColumn(row[id])}
+                            {@const isDatetimeAttribute = column.type === 'datetime'}
+                            {@const isEncryptedAttribute = isString(column) && column.encrypt}
                             {#if isDatetimeAttribute}
                                 <DualTimeView time={datetime}>
                                     <span slot="title">Timestamp</span>
@@ -287,10 +286,10 @@
                 {/if}
             {/each}
             <Table.Cell column="$created" {root}>
-                <DualTimeView time={document.$createdAt} />
+                <DualTimeView time={row.$createdAt} />
             </Table.Cell>
             <Table.Cell column="$updated" {root}>
-                <DualTimeView time={document.$updatedAt} />
+                <DualTimeView time={row.$updatedAt} />
             </Table.Cell>
         </Table.Row.Link>
     {/each}
@@ -360,7 +359,7 @@
 
                 <ul>
                     <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
-                        Delete row from <span data-private>{$collection.name}</span>
+                        Delete row from <span data-private>{$table.name}</span>
                     </InputChoice>
                 </ul>
             </div>

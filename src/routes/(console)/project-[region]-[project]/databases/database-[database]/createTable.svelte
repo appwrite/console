@@ -24,11 +24,13 @@
     const create = async () => {
         error = null;
         try {
-            const collection = await sdk
+            const table = await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.createCollection(databaseId, id ? id : ID.unique(), name);
+                .tables.create(databaseId, id ? id : ID.unique(), name);
+
             showCreate = false;
-            dispatch('created', collection);
+
+            dispatch('created', table);
             addNotification({
                 type: 'success',
                 message: `${name} has been created`

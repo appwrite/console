@@ -11,13 +11,13 @@
     import { sdk } from '$lib/stores/sdk';
     import { IndexType } from '@appwrite.io/console';
     import { isRelationship } from '../row-[row]/columns/store';
-    import { type Attributes, collection, indexes } from '../store';
+    import { type Columns, table, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { flags } from '$lib/flags';
 
     export let showCreateIndex = false;
-    export let externalAttribute: Attributes = null;
+    export let externalColumn: Columns = null;
 
     const databaseId = page.params.database;
 
@@ -30,14 +30,14 @@
     ];
     let selectedType = IndexType.Key;
 
-    let attributeOptions = $collection.attributes
-        .filter((attribute) => !isRelationship(attribute))
-        .map((attribute) => ({
-            value: attribute.key,
-            label: attribute.key
+    let columnOptions = $table.columns
+        .filter((column) => !isRelationship(column))
+        .map((column) => ({
+            value: column.key,
+            label: column.key
         }));
 
-    let attributeList = [{ value: '', order: '', length: null }];
+    let columnList = [{ value: '', order: '', length: null }];
 
     const showLengths = flags.showIndexLengths(page.data);
 
@@ -53,8 +53,8 @@
     }
 
     function initialize() {
-        attributeList = externalAttribute
-            ? [{ value: externalAttribute.key, order: 'ASC', length: null }]
+        columnList = externalColumn
+            ? [{ value: externalColumn.key, order: 'ASC', length: null }]
             : [{ value: '', order: 'ASC', length: null }];
         selectedType = IndexType.Key;
         key = `index_${$indexes.length + 1}`;
@@ -66,23 +66,23 @@
         key = generateIndexKey();
     }
 
-    $: addAttributeDisabled = !attributeList.at(-1)?.value || !attributeList.at(-1)?.order;
+    $: addColumnDisabled = !columnList.at(-1)?.value || !columnList.at(-1)?.order;
 
     async function create() {
-        if (!(key && selectedType && !addAttributeDisabled)) {
+        if (!(key && selectedType && !addColumnDisabled)) {
             error = 'All fields are required';
             return;
         }
 
         try {
-            await sdk.forProject(page.params.region, page.params.project).databases.createIndex(
+            await sdk.forProject(page.params.region, page.params.project).tables.createIndex(
                 databaseId,
-                $collection.$id,
+                $table.$id,
                 key,
                 selectedType,
-                attributeList.map((a) => a.value),
-                attributeList.map((a) => a.order),
-                attributeList.map((a) => (a.length ? Number(a.length) : null))
+                columnList.map((a) => a.value),
+                columnList.map((a) => a.order),
+                columnList.map((a) => (a.length ? Number(a.length) : null))
             );
 
             await Promise.allSettled([
@@ -91,7 +91,7 @@
             ]);
 
             goto(
-                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$collection.$id}/indexes`
+                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$table.$id}/indexes`
             );
 
             addNotification({
@@ -106,11 +106,11 @@
         }
     }
 
-    function addAttribute() {
-        if (addAttributeDisabled) return;
+    function addColumn() {
+        if (addColumnDisabled) return;
 
         // We assign instead of pushing to trigger Svelte's reactivity
-        attributeList = [...attributeList, { value: '', order: '', length: null }];
+        columnList = [...columnList, { value: '', order: '', length: null }];
     }
 </script>
 
@@ -125,7 +125,7 @@
     <InputSelect required options={types} id="type" label="Index type" bind:value={selectedType} />
 
     <Layout.Stack gap="s">
-        {#each attributeList as attribute, i}
+        {#each columnList as column, index}
             <Layout.Stack direction="row">
                 <InputSelect
                     required
@@ -133,12 +133,12 @@
                         { value: '$id', label: '$id' },
                         { value: '$createdAt', label: '$createdAt' },
                         { value: '$updatedAt', label: '$updatedAt' },
-                        ...attributeOptions
+                        ...columnOptions
                     ]}
-                    id={`column-${i}`}
-                    label={i === 0 ? 'Column' : undefined}
+                    id={`column-${index}`}
+                    label={index === 0 ? 'Column' : undefined}
                     placeholder="Select column"
-                    bind:value={attribute.value} />
+                    bind:value={column.value} />
 
                 <InputSelect
                     options={[
@@ -146,25 +146,25 @@
                         { value: 'DESC', label: 'DESC' }
                     ]}
                     required
-                    id={`order-${i}`}
-                    label={i === 0 ? 'Order' : undefined}
-                    bind:value={attribute.order}
+                    id={`order-${index}`}
+                    label={index === 0 ? 'Order' : undefined}
+                    bind:value={column.order}
                     placeholder="Select order" />
 
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                     {#if selectedType === IndexType.Key && showLengths}
                         <InputNumber
-                            id={`length-${i}`}
-                            label={i === 0 ? 'Length' : undefined}
+                            id={`length-${index}`}
+                            label={index === 0 ? 'Length' : undefined}
                             placeholder="Enter length"
-                            bind:value={attribute.length} />
+                            bind:value={column.length} />
                     {/if}
                     <Button
                         icon
                         compact
-                        disabled={attributeList.length <= 1}
+                        disabled={columnList.length <= 1}
                         on:click={() => {
-                            attributeList = remove(attributeList, i);
+                            columnList = remove(columnList, index);
                         }}>
                         <span class="icon-x" aria-hidden="true"></span>
                     </Button>
@@ -172,7 +172,7 @@
             </Layout.Stack>
         {/each}
         <div>
-            <Button compact on:click={addAttribute} disabled={addAttributeDisabled}>
+            <Button compact on:click={addColumn} disabled={addColumnDisabled}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Add column
             </Button>

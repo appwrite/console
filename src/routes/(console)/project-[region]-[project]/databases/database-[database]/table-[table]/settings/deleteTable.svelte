@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Typography } from '@appwrite.io/pink-svelte';
-    import { collection } from '../store';
+    import { table } from '../store';
 
     export let showDelete = false;
 
@@ -19,12 +19,12 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.deleteCollection(databaseId, $collection.$id);
+                .tables.delete(databaseId, $table.$id);
             await invalidate(Dependencies.DATABASE);
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${$collection.name} has been deleted`
+                message: `${$table.name} has been deleted`
             });
             trackEvent(Submit.TableDelete);
             await goto(
@@ -39,6 +39,6 @@
 
 <Confirm onSubmit={handleDelete} title="Delete table" bind:open={showDelete} bind:error>
     <Typography.Text>
-        Are you sure you want to delete <b>{$collection.name}</b>?
+        Are you sure you want to delete <b>{$table.name}</b>?
     </Typography.Text>
 </Confirm>

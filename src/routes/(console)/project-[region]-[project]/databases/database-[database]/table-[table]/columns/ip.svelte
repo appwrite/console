@@ -5,15 +5,15 @@
 
     export async function submitIp(
         databaseId: string,
-        collectionId: string,
+        tableId: string,
         key: string,
-        data: Partial<Models.AttributeIp>
+        data: Partial<Models.ColumnIp>
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.createIpAttribute(
+            .tables.createIpColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 key,
                 data.required,
                 data.default,
@@ -22,15 +22,15 @@
     }
     export async function updateIp(
         databaseId: string,
-        collectionId: string,
-        data: Partial<Models.AttributeIp>,
+        tableId: string,
+        data: Partial<Models.ColumnIp>,
         originalKey?: string
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.updateIpAttribute(
+            .tables.updateIpColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 originalKey,
                 data.required,
                 data.default,
@@ -43,7 +43,7 @@
     import { InputText } from '$lib/elements/forms';
 
     export let editing = false;
-    export let data: Partial<Models.AttributeIp>;
+    export let data: Partial<Models.ColumnIp>;
 
     import { createConservative } from '$lib/helpers/stores';
     import { Selector } from '@appwrite.io/pink-svelte';
@@ -62,7 +62,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.AttributeIp>>({
+    } = createConservative<Partial<Models.ColumnIp>>({
         required: false,
         array: false,
         ...data

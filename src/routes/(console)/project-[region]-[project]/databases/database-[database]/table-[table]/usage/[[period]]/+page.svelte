@@ -5,8 +5,9 @@
     import Container from '$lib/layout/container.svelte';
 
     export let data;
-    $: total = data.documentsTotal;
-    $: count = data.documents;
+
+    $: count = data.rows;
+    $: total = data.rowsTotal;
 </script>
 
 <Container>

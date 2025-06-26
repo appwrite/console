@@ -8,27 +8,27 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { collection } from '../store';
+    import { table } from '../store';
 
     const databaseId = page.params.database;
 
-    let collectionName: string = null;
+    let tableName: string = null;
 
     onMount(() => {
-        collectionName ??= $collection.name;
+        tableName ??= $table.name;
     });
 
     async function updateName() {
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.updateCollection(
+                .tables.update(
                     databaseId,
-                    $collection.$id,
-                    collectionName,
-                    $collection.$permissions,
-                    $collection.documentSecurity,
-                    $collection.enabled
+                    $table.$id,
+                    tableName,
+                    $table.$permissions,
+                    $table.rowSecurity,
+                    $table.enabled
                 );
             await invalidate(Dependencies.TABLE);
             addNotification({
@@ -56,12 +56,11 @@
                 label="Name"
                 placeholder="Enter name"
                 autocomplete={false}
-                bind:value={collectionName} />
+                bind:value={tableName} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={collectionName === $collection.name || !collectionName} submit
-                >Update</Button>
+            <Button disabled={tableName === $table.name || !tableName} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

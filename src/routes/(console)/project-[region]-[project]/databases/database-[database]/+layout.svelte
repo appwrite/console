@@ -11,7 +11,7 @@
     import { tablesSearcher } from '$lib/commandCenter/searchers';
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
-    import CreateCollection from './createTable.svelte';
+    import CreateTable from './createTable.svelte';
     import { showCreate } from './store';
     import { TablesPanel } from '$lib/commandCenter/panels';
     import { canWriteCollections, canWriteDatabases } from '$lib/stores/roles';
@@ -23,7 +23,7 @@
     const project = page.params.project;
     const databaseId = page.params.database;
 
-    async function handleCreate(event: CustomEvent<Models.Collection>) {
+    async function handleCreate(event: CustomEvent<Models.Table>) {
         $showCreate = false;
         await invalidate(Dependencies.DATABASE);
         await goto(
@@ -149,4 +149,4 @@
 
 <slot />
 
-<CreateCollection bind:showCreate={$showCreate} on:created={handleCreate} />
+<CreateTable bind:showCreate={$showCreate} on:created={handleCreate} />

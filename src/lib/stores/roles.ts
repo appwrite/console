@@ -25,6 +25,7 @@ export const canWriteCollections = derived(scopes, ($scopes) =>
 export const canWriteSites = derived(scopes, ($scopes) => $scopes.includes('sites.write'));
 export const canWriteDomains = derived(scopes, ($scopes) => $scopes.includes('domains.write')); //TODO: check if correct
 
+// TODO: @itznotabug - add new scopes as well, don't replace completely!
 export const canWriteDocuments = derived(scopes, ($scopes) => $scopes.includes('documents.write'));
 export const canWriteExecutions = derived(scopes, ($scopes) =>
     $scopes.includes('executions.write')

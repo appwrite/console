@@ -9,21 +9,19 @@ import { Query } from '@appwrite.io/console';
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.TABLE);
 
-    const [collection, allCollections] = await Promise.all([
-        sdk
-            .forProject(params.region, params.project)
-            .databases.getCollection(params.database, params.table),
+    const [table, allTables] = await Promise.all([
+        sdk.forProject(params.region, params.project).tables.get(params.database, params.table),
 
         sdk
             .forProject(params.region, params.project)
-            .databases.listCollections(params.database, [Query.orderDesc(''), Query.limit(100)])
+            .tables.list(params.database, [Query.orderDesc(''), Query.limit(100)])
     ]);
 
     return {
         header: Header,
         breadcrumbs: Breadcrumbs,
         subNavigation: SubNavigation,
-        collection,
-        allCollections
+        table,
+        allTables
     };
 };

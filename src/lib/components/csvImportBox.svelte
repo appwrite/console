@@ -13,7 +13,7 @@
 
     type ImportItem = {
         status: string;
-        collection?: string;
+        table?: string;
     };
 
     type ImportItemsMap = Map<string, ImportItem>;
@@ -22,15 +22,11 @@
      * Keeps a track of the active and ongoing csv migrations.
      *
      * The structure is as follows -
-     * `{ migrationId: { status: status, collection: collection } }`
+     * `{ migrationId: { status: status, table: table } }`
      */
     const importItems: Writable<ImportItemsMap> = writable(new Map());
 
-    async function showCompletionNotification(
-        database: string,
-        collection: string,
-        payload: Payload
-    ) {
+    async function showCompletionNotification(database: string, table: string, payload: Payload) {
         const isSuccess = payload.status === 'completed';
         const isError = !isSuccess && !!payload.errors;
 
@@ -48,15 +44,15 @@
 
         const type = isSuccess ? 'success' : 'error';
         const message = isError ? errorMessage : 'CSV import finished successfully.';
-        const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${database}/table-${collection}`;
+        const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${database}/table-${table}`;
 
         addNotification({
             type,
             message,
             isHtml: true,
             buttons:
-                isSuccess && collection !== page.params.collection
-                    ? [{ name: 'View documents', method: () => goto(url) }]
+                isSuccess && table !== page.params.table
+                    ? [{ name: 'View rows', method: () => goto(url) }]
                     : undefined
         });
 
@@ -70,19 +66,19 @@
 
         const status = importData.status;
         const resourceId = importData.resourceId ?? '';
-        const [databaseId, collectionId] = resourceId.split(':') ?? [];
+        const [databaseId, tableId] = resourceId.split(':') ?? [];
 
         const current = $importItems.get(importData.$id);
-        let collectionName = current?.collection ?? null;
+        let tableName = current?.table ?? null;
 
-        if (!collectionName && collectionId) {
+        if (!tableName && tableId) {
             try {
-                const collection = await sdk
+                const table = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .databases.getCollection(databaseId, collectionId);
-                collectionName = collection.name;
+                    .tables.get(databaseId, tableId);
+                tableName = table.name;
             } catch {
-                collectionName = null;
+                tableName = null;
             }
         }
 
@@ -99,12 +95,12 @@
             if (shouldSkip) return items;
 
             const next = new Map(items);
-            next.set(importData.$id, { status, collection: collectionName ?? undefined });
+            next.set(importData.$id, { status, table: tableName ?? undefined });
             return next;
         });
 
         if (status === 'completed' || status === 'failed') {
-            await showCompletionNotification(databaseId, collectionId, importData);
+            await showCompletionNotification(databaseId, tableId, importData);
         }
     }
 
@@ -172,7 +168,7 @@
             <header class="upload-box-header">
                 <h4 class="upload-box-title">
                     <Typography.Text variant="m-500">
-                        Importing documents ({$importItems.size})
+                        Importing rows ({$importItems.size})
                     </Typography.Text>
                 </h4>
                 <button
@@ -198,7 +194,7 @@
                                 <div
                                     class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                     <Typography.Text>
-                                        {@html text(value.status, value.collection)}
+                                        {@html text(value.status, value.table)}
                                     </Typography.Text>
                                 </div>
                                 <div

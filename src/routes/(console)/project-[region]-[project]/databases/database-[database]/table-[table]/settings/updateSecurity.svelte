@@ -8,27 +8,27 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { collection } from '../store';
+    import { table } from '../store';
 
     const databaseId = page.params.database;
 
-    let collectionDocumentSecurity: boolean = null;
+    let tableRowSecurity: boolean = null;
 
     onMount(() => {
-        collectionDocumentSecurity ??= $collection.documentSecurity;
+        tableRowSecurity ??= $table.rowSecurity;
     });
 
     async function updateSecurity() {
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.updateCollection(
+                .tables.update(
                     databaseId,
-                    $collection.$id,
-                    $collection.name,
-                    $collection.$permissions,
-                    collectionDocumentSecurity,
-                    $collection.enabled
+                    $table.$id,
+                    $table.name,
+                    $table.$permissions,
+                    tableRowSecurity,
+                    $table.enabled
                 );
             await invalidate(Dependencies.TABLE);
             addNotification({
@@ -49,7 +49,7 @@
 <CardGrid>
     <svelte:fragment slot="title">Row security</svelte:fragment>
     <svelte:fragment slot="aside">
-        <InputSwitch bind:value={collectionDocumentSecurity} id="security" label="Row security" />
+        <InputSwitch bind:value={tableRowSecurity} id="security" label="Row security" />
 
         <p class="text">
             When row security is enabled, users will be able to access rows for which they have been
@@ -62,8 +62,7 @@
         </p>
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        <Button
-            disabled={collectionDocumentSecurity === $collection.documentSecurity}
-            on:click={updateSecurity}>Update</Button>
+        <Button disabled={tableRowSecurity === $table.rowSecurity} on:click={updateSecurity}
+            >Update</Button>
     </svelte:fragment>
 </CardGrid>

@@ -6,9 +6,9 @@
 
     export async function submitRelationship(
         databaseId: string,
-        collectionId: string,
+        tableId: string,
         _key: string,
-        data: Partial<Models.AttributeRelationship>
+        data: Partial<Models.ColumnRelationship>
     ) {
         if (!isValueOfStringEnum(RelationshipType, data.relationType)) {
             throw new Error(
@@ -21,10 +21,10 @@
 
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.createRelationshipAttribute(
+            .tables.createRelationshipColumn(
                 databaseId,
-                collectionId,
-                data.relatedCollection,
+                tableId,
+                data.relatedTable,
                 data.relationType,
                 data.twoWay,
                 data.key,
@@ -35,8 +35,8 @@
 
     export async function updateRelationship(
         databaseId: string,
-        collectionId: string,
-        data: Partial<Models.AttributeRelationship>,
+        tableId: string,
+        data: Partial<Models.ColumnRelationship>,
         originalKey?: string
     ) {
         if (!isValueOfStringEnum(RelationMutate, data.onDelete)) {
@@ -45,9 +45,9 @@
 
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.updateRelationshipAttribute(
+            .tables.updateRelationshipColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 originalKey,
                 data.onDelete,
                 data.key !== originalKey ? data.key : undefined
@@ -59,7 +59,7 @@
     import { InputText, InputSelect } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { Box } from '$lib/components';
-    import { collection } from '../store';
+    import { table } from '../store';
     import arrowOne from './arrow-one.svg';
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
@@ -69,7 +69,7 @@
 
     // Props
     export let editing = false;
-    export let data: Models.AttributeRelationship;
+    export let data: Models.ColumnRelationship;
 
     // Constants
     const databaseId = page.params.database;
@@ -89,39 +89,37 @@
     // Variables
     let way = 'one';
     let search = undefined;
-    let collectionList: Models.CollectionList;
-    let originalCollectionList: Models.CollectionList;
+    let tableList: Models.TableList;
+    let originalTableList: Models.TableList;
 
     // Lifecycle hooks
-    async function getCollections() {
+    async function getTables() {
         const queries = [Query.limit(100)];
         return sdk
             .forProject(page.params.region, page.params.project)
-            .databases.listCollections(databaseId, queries, search);
+            .tables.list(databaseId, queries, search);
     }
 
-    const debouncedFetchCollections = debounce(async () => {
-        collectionList = await getCollections();
+    const debouncedFetchTables = debounce(async () => {
+        tableList = await getTables();
         // reset search
         search = undefined;
     }, 500);
 
     function updateKeyName() {
         if (!editing) {
-            const collection = collectionList.collections.find(
-                (n) => n.$id === data.relatedCollection
-            );
+            const collection = tableList.tables.find((n) => n.$id === data.relatedTable);
             data.key = camelize(collection.name);
         }
     }
 
     onMount(async () => {
-        collectionList = await getCollections();
-        originalCollectionList = collectionList;
+        tableList = await getTables();
+        originalTableList = tableList;
     });
 
     // Reactive statements
-    $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
+    $: collections = tableList?.tables?.filter((n) => n.$id !== $table.$id) ?? [];
 
     $: if (editing) {
         way = data.twoWay ? 'two' : 'one';
@@ -129,26 +127,26 @@
         if (way === 'two') {
             data.twoWay = true;
             if (!data.twoWayKey) {
-                data.twoWayKey = camelize($collection.name);
+                data.twoWayKey = camelize($table.name);
             }
         } else {
             data.twoWay = false;
         }
     }
 
-    $: search = data.relatedCollection || undefined;
+    $: search = data.relatedTable || undefined;
 
     $: if (search) {
-        const exists = collectionList?.collections?.some((c) =>
+        const exists = tableList?.tables?.some((c) =>
             c.$id.toLocaleLowerCase().includes(search.toLocaleLowerCase())
         );
 
         if (!exists) {
-            debouncedFetchCollections();
+            debouncedFetchTables();
         }
-    } else if (!collectionList?.total) {
+    } else if (!tableList?.total) {
         // reset to original list!
-        collectionList = originalCollectionList;
+        tableList = originalTableList;
     }
 </script>
 
@@ -176,11 +174,11 @@
     id="related"
     label="Related table"
     placeholder="Select a table"
-    bind:value={data.relatedCollection}
+    bind:value={data.relatedTable}
     on:change={updateKeyName}
     options={collections?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
 
-{#if data?.relatedCollection}
+{#if data?.relatedTable}
     <InputText
         id="key"
         label="Column key"
@@ -212,7 +210,7 @@
     <div class="u-flex u-flex-vertical u-gap-16">
         <Box>
             <div class="u-flex u-align u-cross-center u-main-center u-gap-32">
-                <span data-private>{camelize($collection.name)}</span>
+                <span data-private>{camelize($table.name)}</span>
                 {#if data.twoWay}
                     <img src={arrowTwo} alt={'Two way relationship'} />
                 {:else}
@@ -224,7 +222,7 @@
         {#if data.relationType}
             <div>
                 <p class="u-text-center">
-                    <b data-private>{camelize($collection.name)}</b> can contain {[
+                    <b data-private>{camelize($table.name)}</b> can contain {[
                         'oneToOne',
                         'manyToOne'
                     ].includes(data.relationType)
@@ -237,7 +235,7 @@
                     can belong to {['oneToOne', 'oneToMany'].includes(data.relationType)
                         ? 'one'
                         : 'many'}
-                    <b data-private>{camelize($collection.name)}</b>
+                    <b data-private>{camelize($table.name)}</b>
                 </p>
             </div>
         {/if}

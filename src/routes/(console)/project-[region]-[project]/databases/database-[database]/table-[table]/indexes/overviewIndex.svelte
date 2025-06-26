@@ -7,7 +7,7 @@
     import { flags } from '$lib/flags';
 
     export let showOverview = false;
-    export let selectedIndex: Models.Index = null;
+    export let selectedIndex: Models.ColumnIndex = null;
 
     const showLengths = flags.showIndexLengths(page.data);
 </script>
@@ -28,14 +28,14 @@
         value={selectedIndex.type}
         readonly />
 
-    {#if selectedIndex?.attributes?.length}
-        {#each selectedIndex.attributes as attribute, i}
+    {#if selectedIndex?.columns?.length}
+        {#each selectedIndex.columns as column, i}
             <Layout.Stack direction="row">
                 <InputText
                     required
                     label={i === 0 ? 'Column' : ''}
-                    id={`value-${attribute}`}
-                    value={attribute}
+                    id={`value-${column}`}
+                    value={column}
                     readonly />
                 <InputText
                     required

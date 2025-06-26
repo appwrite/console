@@ -5,7 +5,7 @@
     export let id: string;
     export let label: string;
     export let value: boolean;
-    export let attribute: Models.AttributeBoolean;
+    export let column: Models.ColumnBoolean;
     export let optionalText: string | undefined = undefined;
 </script>
 
@@ -14,9 +14,9 @@
     {label}
     {optionalText}
     placeholder="Select a value"
-    required={attribute.required}
+    required={column.required}
     options={[
-        !attribute.required && { label: 'NULL', value: null },
+        !column.required && { label: 'NULL', value: null },
         { label: 'True', value: true },
         { label: 'False', value: false }
     ].filter(Boolean)}

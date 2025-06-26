@@ -22,9 +22,9 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
         limit,
         view,
         query,
-        documents: await sdk
+        rows: await sdk
             .forProject(params.region, params.project)
-            .databases.listDocuments(params.database, params.table, [
+            .tables.listRows(params.database, params.table, [
                 Query.limit(limit),
                 Query.offset(offset),
                 Query.orderDesc(''),

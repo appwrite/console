@@ -1,27 +1,25 @@
 import { goto } from '$app/navigation';
-import { database } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/store';
-import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
 import { base } from '$app/paths';
 import { page } from '$app/state';
 
 export const tablesSearcher = (async (query: string) => {
-    const databaseId = get(database).$id;
-    const { collections } = await sdk
+    const databaseId = page.params.database;
+    const { tables } = await sdk
         .forProject(page.params.region, page.params.project)
-        .databases.listCollections(databaseId);
+        .tables.list(databaseId);
 
-    return collections
-        .filter((col) => col.name.toLowerCase().includes(query.toLowerCase()))
+    return tables
+        .filter((table) => table.name.toLowerCase().includes(query.toLowerCase()))
         .map(
-            (col) =>
+            (table) =>
                 ({
                     group: 'tables',
-                    label: col.name,
+                    label: table.name,
                     callback: () => {
                         goto(
-                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${col.$id}`
+                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${table.$id}`
                         );
                     }
                 }) as const

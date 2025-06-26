@@ -5,7 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { doc } from '../store';
+    import { row } from '../store';
     import { isRelationshipToMany } from './store';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -15,12 +15,12 @@
 
     export let editing = false;
     export let value: string | string[];
-    export let attribute: Models.AttributeRelationship;
+    export let column: Models.ColumnRelationship;
     export let optionalText: string | undefined = undefined;
 
     const databaseId = page.params.database;
 
-    let documentList: Models.DocumentList<Models.Document>;
+    let rowList: Models.RowList<Models.Row>;
     let search: string = null;
     let displayNames = ['$id'];
     let relatedList: string[] = [];
@@ -32,37 +32,37 @@
 
     onMount(async () => {
         if (value) {
-            if (isRelationshipToMany(attribute)) {
+            if (isRelationshipToMany(column)) {
                 relatedList = (value as string[]).slice();
             } else {
                 singleRel = value as string;
             }
         }
 
-        documentList = await getDocuments();
+        rowList = await getRows();
 
-        if (editing && $doc?.[attribute.key]) {
-            if ($doc[attribute.key]?.length) {
+        if (editing && $row?.[column.key]) {
+            if ($row[column.key]?.length) {
                 relatedList =
-                    $doc[attribute.key]?.map((d: Record<string, unknown>) => {
+                    $row[column.key]?.map((d: Record<string, unknown>) => {
                         return d?.$id;
                     }) ?? [];
             } else {
-                singleRel = $doc[attribute.key]?.$id;
+                singleRel = $row[column.key]?.$id;
             }
         }
 
-        displayNames = preferences.getDisplayNames()?.[attribute?.relatedCollection] ?? ['$id'];
+        displayNames = preferences.getDisplayNames()?.[column?.relatedTable] ?? ['$id'];
         if (!displayNames?.includes('$id')) {
             displayNames.unshift('$id');
         }
     });
 
-    async function getDocuments(search: string = null) {
+    async function getRows(search: string = null) {
         const queries = search ? [Query.startsWith('$id', search), Query.orderDesc('')] : [];
         return await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.listDocuments(databaseId, attribute.relatedCollection, queries);
+            .tables.listRows(databaseId, column.relatedTable, queries);
     }
 
     function getAvailableOptions(excludeIndex?: number) {
@@ -104,7 +104,7 @@
     }
 
     //Reactive statements
-    $: getDocuments(search).then((res) => (documentList = res));
+    $: getRows(search).then((res) => (rowList = res));
 
     $: paginatedItems = editing
         ? relatedList
@@ -116,7 +116,7 @@
     $: totalCount = relatedList?.length ?? 0;
 
     $: options =
-        documentList?.documents?.map((n) => {
+        rowList?.rows?.map((n) => {
             const data = displayNames.filter((name) => name !== '$id').map((name) => n?.[name]);
             return { value: n.$id, label: n.$id, data };
         }) ?? [];
@@ -129,7 +129,7 @@
     $: showEmptyInput = editing && totalCount === 0 && !showInput;
 </script>
 
-{#if isRelationshipToMany(attribute)}
+{#if isRelationshipToMany(column)}
     <Layout.Stack gap="xxl">
         <Layout.Stack gap="m">
             <Layout.Stack direction="row" alignContent="space-between">
@@ -157,7 +157,7 @@
                             required
                             {options}
                             bind:value={relatedList[0]}
-                            placeholder={`Select ${attribute.key}`}
+                            placeholder={`Select ${column.key}`}
                             on:change={() => {
                                 if (!relatedList[0]) relatedList = [''];
                                 updateRelatedList();
@@ -175,7 +175,7 @@
                                 required
                                 options={getAvailableOptions(actualIndex)}
                                 bind:value={relatedList[actualIndex]}
-                                placeholder={`Select ${attribute.key}`}
+                                placeholder={`Select ${column.key}`}
                                 on:change={updateRelatedList} />
                             {#if relatedList[actualIndex]}
                                 <div style:padding-block-start="0.5rem">
@@ -223,7 +223,7 @@
                         <InputSelect
                             {id}
                             required
-                            placeholder={`Select ${attribute.key}`}
+                            placeholder={`Select ${column.key}`}
                             bind:value={newItemValue}
                             options={getAvailableOptions()}
                             on:change={addNewItem} />
@@ -251,8 +251,8 @@
         {id}
         {label}
         {options}
-        required={attribute.required}
-        placeholder={`Select ${attribute.key}`}
+        required={column.required}
+        placeholder={`Select ${column.key}`}
         bind:value={singleRel}
         on:change={() => (value = singleRel)} />
 {/if}

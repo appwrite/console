@@ -4,14 +4,14 @@
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
-    import { doc } from './store';
+    import { row } from './store';
 
     const projectId = page.params.project;
     const databaseId = page.params.database;
-    const collectionId = page.params.table;
-    const documentId = page.params.row;
+    const tableId = page.params.table;
+    const rowId = page.params.row;
 
-    const path = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${collectionId}/row-${documentId}`;
+    const path = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${tableId}/row-${rowId}`;
     const tabs = [
         {
             href: path,
@@ -36,10 +36,10 @@
 <Cover>
     <svelte:fragment slot="header">
         <CoverTitle
-            href={`${base}/project-${page.params.region}-${projectId}/databases/database-${databaseId}/table-${collectionId}`}>
-            {$doc?.$id}
+            href={`${base}/project-${page.params.region}-${projectId}/databases/database-${databaseId}/table-${tableId}`}>
+            {$row?.$id}
         </CoverTitle>
-        <Id value={$doc?.$id} event="document">Document ID</Id>
+        <Id value={$row?.$id} event="row">Row ID</Id>
     </svelte:fragment>
 
     <Tabs>

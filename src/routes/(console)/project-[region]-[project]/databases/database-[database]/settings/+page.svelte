@@ -25,10 +25,10 @@
         databaseName ??= $database.name;
     });
 
-    async function loadCollectionCount() {
+    async function loadTableCount() {
         const { total } = await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.listCollections($database.$id, [Query.limit(1)]);
+            .tables.list($database.$id, [Query.limit(1)]);
         return total;
     }
 
@@ -104,7 +104,7 @@
                         <Layout.Stack direction="column" gap="xxs">
                             <h6 class="u-bold u-trim-1">{$database.name}</h6>
                             <Layout.Stack direction="row" gap="s">
-                                {#await loadCollectionCount()}
+                                {#await loadTableCount()}
                                     <Skeleton variant="line" width="100%" height={19.5} />
                                 {:then count}
                                     {count} {count === 1 ? 'Table' : 'Tables'}

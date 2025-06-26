@@ -4,7 +4,6 @@ import type { Page } from '@sveltejs/kit';
 import { get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import type { Models } from '@appwrite.io/console';
-import { organization } from './organization';
 import { page } from '$app/state';
 import { user } from '$lib/stores/user';
 import deepEqual from 'deep-equal';
@@ -21,7 +20,7 @@ type TeamPreferences = {
 
 type PreferencesStore = {
     [key: string]: Preferences;
-    collections?: {
+    tables?: {
         [key: string]: Preferences['columns'];
     };
     displayNames?: {
@@ -107,8 +106,8 @@ function createPreferences() {
                 }
             );
         },
-        getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
-            return preferences?.collections?.[collectionId] ?? [];
+        getCustomTableColumns: (tableId: string): Preferences['columns'] => {
+            return preferences?.tables?.[tableId] ?? [];
         },
         setLimit: (limit: Preferences['limit']) =>
             updateAndSync((n) => {
@@ -151,13 +150,13 @@ function createPreferences() {
             }),
         setCustomCollectionColumns: (columns: Preferences['columns']) =>
             updateAndSync((n) => {
-                const collection = page.params.table;
-                if (!n?.collections?.[collection]) {
+                const table = page.params.table;
+                if (!n?.tables?.[table]) {
                     n ??= {};
-                    n.collections ??= {};
+                    n.tables ??= {};
                 }
 
-                n.collections[collection] = columns;
+                n.tables[table] = columns;
 
                 return n;
             }),
@@ -173,8 +172,11 @@ function createPreferences() {
         getDisplayNames: () => {
             return preferences?.displayNames ?? {};
         },
-        setDisplayNames: async (collectionId: string, names: TeamPreferences['names']) => {
-            const id = get(organization).$id;
+        setDisplayNames: async (
+            orgId: string,
+            tableId: string,
+            names: TeamPreferences['names']
+        ) => {
             let teamPrefs: Models.Preferences;
             update((n) => {
                 if (!n?.displayNames) {
@@ -183,11 +185,11 @@ function createPreferences() {
                 }
 
                 teamPrefs = n;
-                n.displayNames[collectionId] = names;
+                n.displayNames[tableId] = names;
 
                 return n;
             });
-            await sdk.forConsole.teams.updatePrefs(id, teamPrefs);
+            await sdk.forConsole.teams.updatePrefs(orgId, teamPrefs);
         }
     };
 }
