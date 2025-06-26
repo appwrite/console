@@ -1,9 +1,10 @@
+import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
-import { Dependencies } from '$lib/constants';
 import type { Tier } from '$lib/stores/billing';
 import type { Plan, PlanList } from '$lib/sdk/billing';
+import { Query } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ depends, parent }) => {
     const { organizations } = await parent();
@@ -28,10 +29,22 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         preferences.organization ??
         (organizations.teams.length > 0 ? organizations.teams[0].$id : undefined);
 
+    let projects: Models.Project[] = [];
+    
+    if (currentOrgId) {
+        const orgProjects = await sdk.forConsole.projects.list([
+            Query.equal('teamId', currentOrgId),
+            Query.limit(5),
+            Query.orderDesc('$updatedAt')
+        ]);
+        projects = orgProjects.projects.length > 0 ? orgProjects.projects : [];
+    }
+
     return {
         plansInfo,
         roles: [],
         scopes: [],
+        projects,
         preferences,
         currentOrgId,
         organizations,
