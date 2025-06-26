@@ -3,6 +3,7 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import type { Models } from '@appwrite.io/console';
+    import { page } from '$app/state';
     import {
         Badge,
         Divider,
@@ -45,7 +46,7 @@
     }
 
     function getFilePreview(fileId: string) {
-        return sdk.forConsole.storage.getFileView('screenshots', fileId);
+        return sdk.forConsoleIn(page.params.region).storage.getFileView('screenshots', fileId);
     }
 </script>
 
