@@ -5,49 +5,61 @@ import { preferences } from '$lib/stores/preferences';
 import { failedInvoice } from '$lib/stores/billing';
 import { isCloud } from '$lib/system';
 import { defaultRoles, defaultScopes } from '$lib/constants';
-import type { Plan } from '$lib/sdk/billing';
 import { get } from 'svelte/store';
 import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 import { loadAvailableRegions } from '$routes/(console)/regions';
-import type { Organization } from '$lib/stores/organization';
+import type { Organization, OrganizationList } from '$lib/stores/organization';
 
-export const load: LayoutLoad = async ({ params, depends }) => {
+export const load: LayoutLoad = async ({ params, depends, parent }) => {
+    const { plansInfo, organizations, preferences: prefs } = await parent();
     depends(Dependencies.PROJECT);
-    let currentPlan: Plan = null;
 
     const project = await sdk.forConsole.projects.get(params.project);
-    const [organization, prefs, regionalConsoleVariables, _] = await Promise.all([
-        sdk.forConsole.teams.get(project.teamId) as Promise<Organization>,
-        sdk.forConsole.account.getPrefs(),
+
+    // fast path without a network call!
+    let organization = (organizations as OrganizationList)?.teams?.find(
+        (org) => org.$id === project.teamId
+    );
+
+    const includedInBasePlans = plansInfo.has(organization.billingPlan);
+
+    const [org, regionalConsoleVariables, rolesResult, organizationPlan] = await Promise.all([
+        !organization
+            ? (sdk.forConsole.teams.get(project.teamId) as Promise<Organization>)
+            : organization,
         sdk.forConsoleIn(project.region).console.variables(),
+        isCloud ? sdk.forConsole.billing.getRoles(project.teamId) : null,
+
+        // fetch if not available in `plansInfo`
+        includedInBasePlans
+            ? plansInfo.get(organization.billingPlan)
+            : sdk.forConsole.billing.getOrganizationPlan(organization.$id),
+
         loadAvailableRegions(project.teamId)
     ]);
+
+    if (!organization) organization = org;
+
+    const roles = rolesResult?.roles ?? defaultRoles;
+    const scopes = rolesResult?.scopes ?? defaultScopes;
+
     if (prefs?.organization !== project.teamId) {
         sdk.forConsole.account.updatePrefs({
             ...prefs,
             organization: project.teamId
         });
     }
-    await preferences.loadTeamPrefs(project.teamId);
-    let roles = isCloud ? [] : defaultRoles;
-    let scopes = isCloud ? [] : defaultScopes;
-    if (isCloud) {
-        currentPlan = await sdk.forConsole.billing.getOrganizationPlan(project.teamId);
-        const res = await sdk.forConsole.billing.getRoles(project.teamId);
-        roles = res.roles;
-        scopes = res.scopes;
-        if (scopes.includes('billing.read')) {
-            await failedInvoice.load(project.teamId);
-            if (get(failedInvoice)) {
-                headerAlert.add({
-                    show: true,
-                    component: PaymentFailed,
-                    id: 'paymentFailed',
-                    importance: 1
-                });
-            }
-        }
+
+    preferences.loadTeamPrefs(project.teamId);
+
+    if (isCloud && scopes.includes('billing.read')) {
+        loadFailedInvoices(project.teamId);
+    }
+
+    if (!includedInBasePlans) {
+        // save the custom plan to `plansInfo` cache.
+        plansInfo.set(organization.billingPlan, organizationPlan);
     }
 
     return {
@@ -56,6 +68,20 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         regionalConsoleVariables,
         roles,
         scopes,
-        currentPlan
+        currentPlan: organizationPlan
     };
 };
+
+// load the invoice and add a banner in bg
+function loadFailedInvoices(teamId: string) {
+    failedInvoice.load(teamId).then(() => {
+        if (get(failedInvoice)) {
+            headerAlert.add({
+                show: true,
+                component: PaymentFailed,
+                id: 'paymentFailed',
+                importance: 1
+            });
+        }
+    });
+}

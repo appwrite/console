@@ -29,8 +29,9 @@
             } else {
                 dispatch('deleted');
             }
-            invalidate(Dependencies.ACCOUNT);
-            invalidate(Dependencies.MEMBERS);
+
+            await Promise.all([invalidate(Dependencies.ACCOUNT), invalidate(Dependencies.MEMBERS)]);
+
             if (isCloud && $organization) {
                 await checkForUsageLimit($organization);
             }
@@ -51,6 +52,7 @@
 
 <Confirm
     onSubmit={deleteMembership}
+    submissionLoader
     title={isUser ? 'Leave organization' : 'Delete member'}
     bind:open={showDelete}
     action={isUser ? 'Leave' : 'Delete'}

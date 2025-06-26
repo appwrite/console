@@ -19,12 +19,12 @@
     } = $props();
 
     let maxHeight = $state('none');
-    let containerRef = $state(null);
+    let containerRef = $state<HTMLElement>(null);
 
     const calcMaxHeight = () => {
         if (containerRef) {
             // get parent row element for correct top position
-            const parent = containerRef.parentElement.parentElement;
+            const parent = containerRef?.parentElement?.parentElement;
             const { top } = parent.getBoundingClientRect();
 
             maxHeight = `${window.innerHeight - top - 48}px`;

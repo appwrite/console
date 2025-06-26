@@ -2,15 +2,21 @@
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { sdk } from '$lib/stores/sdk';
     import { CreditCard } from '@appwrite.io/console';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconCreditCard } from '@appwrite.io/pink-icons-svelte';
 
     export let brand: string;
     export let width = 23;
     export let height = 16;
 
-    function getCreditCardImage(brand: string, width = 46, height = 32) {
-        if (!isValueOfStringEnum(CreditCard, brand)) return '';
-        return sdk.forConsole.avatars.getCreditCard(brand, width, height);
-    }
+    $: ccImage = isValueOfStringEnum(CreditCard, brand)
+        ? sdk.forConsole.avatars.getCreditCard(brand, width, height)
+        : '';
 </script>
 
-<img style="border-radius: 2.5px" {width} {height} src={getCreditCardImage(brand)} alt={brand} />
+{#if ccImage}
+    <img alt={brand} src={ccImage} {width} {height} style:border-radius="2.5px" />
+{:else}
+    <!-- fallback: unionpay image not in Avatars API -->
+    <Icon icon={IconCreditCard} color="--fgcolor-neutral-tertiary" />
+{/if}

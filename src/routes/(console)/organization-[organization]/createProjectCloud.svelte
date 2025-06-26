@@ -1,68 +1,71 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
-    import { addNotification } from '$lib/stores/notifications';
     import { goto, invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import { page } from '$app/state';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID, Region as ConsoleRegion, type Models, Region } from '@appwrite.io/console';
-    import { Button } from '@appwrite.io/pink-svelte';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { ID, type Models, Region as ConsoleRegion, Region } from '@appwrite.io/console';
     import { base } from '$app/paths';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { Modal } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { Dependencies } from '$lib/constants';
 
-    const teamId = page.params.organization;
-    export let regions: Array<Models.ConsoleRegion> = [];
     export let showCreateProjectCloud: boolean;
+    export let regions: Array<Models.ConsoleRegion> = [];
 
     let id: string = null;
-    let name: string = 'New project';
-    let region: string = Region.Fra;
     let error: string = null;
+    let name: string = 'New project';
+    let region: ConsoleRegion = Region.Fra;
 
-    async function onFinish() {
-        await invalidate(Dependencies.FUNCTIONS);
-    }
+    let showSubmissionLoader = false;
+    const teamId = page.params.organization;
 
     async function create() {
+        let project: Models.Project;
+
+        showSubmissionLoader = true;
+
         try {
-            // TODO: fix typing once SDK is updated
-            const project = await sdk.forConsole.projects.create(
-                id ?? ID.unique(),
-                name,
-                teamId,
-                region as ConsoleRegion
-            );
-            trackEvent(Submit.ProjectCreate, {
-                customId: !!id,
-                teamId,
-                region: region
-            });
-            addNotification({
-                type: 'success',
-                message: `${name} has been created`
-            });
-            await onFinish();
+            project = await sdk.forConsole.projects.create(id ?? ID.unique(), name, teamId, region);
+
             await goto(`${base}/project-${project.region}-${project.$id}`);
+            trackEvent(Submit.ProjectCreate, { customId: !!id, teamId, region: region });
         } catch (e) {
-            trackError(e, Submit.ProjectCreate);
             error = e.message;
+            trackError(e, Submit.ProjectCreate);
+        } finally {
+            showSubmissionLoader = false;
+
+            if (project) {
+                // reload projects for nav breadcrumb!
+                await invalidate(Dependencies.ORGANIZATION);
+            }
         }
     }
 
     onDestroy(() => {
         id = null;
         name = null;
-        region = 'fra';
         error = null;
+        region = Region.Fra;
+        showCreateProjectCloud = false;
     });
 </script>
 
-<Modal bind:show={showCreateProjectCloud} title={'Create project'} onSubmit={create} bind:error>
-    <CreateProject showTitle={false} bind:id bind:projectName={name} bind:region {regions}>
-    </CreateProject>
+<Modal
+    bind:show={showCreateProjectCloud}
+    autoClose={false}
+    title={'Create project'}
+    onSubmit={create}
+    bind:error>
+    <CreateProject showTitle={false} bind:id bind:projectName={name} bind:region {regions} />
     <svelte:fragment slot="footer">
-        <Button.Button type="submit" variant="primary" size="s">Create</Button.Button>
+        <Button
+            submit
+            size="s"
+            forceShowLoader={showSubmissionLoader}
+            submissionLoader={showSubmissionLoader}>Create</Button>
     </svelte:fragment>
 </Modal>

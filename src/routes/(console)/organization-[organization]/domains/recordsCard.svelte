@@ -76,7 +76,7 @@
                 {#if verified === false}
                     <Badge
                         variant="secondary"
-                        type="error"
+                        type="warning"
                         size="xs"
                         content="Verification failed" />
                 {:else if verified === true}

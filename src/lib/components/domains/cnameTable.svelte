@@ -26,7 +26,7 @@
             {#if verified === true}
                 <Badge variant="secondary" type="success" size="xs" content="Verified" />
             {:else if verified === false}
-                <Badge variant="secondary" type="error" size="xs" content="Verification failed" />
+                <Badge variant="secondary" type="warning" size="xs" content="Verification failed" />
             {/if}
         </Layout.Stack>
         <Typography.Text variant="m-400">
