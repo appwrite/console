@@ -84,7 +84,7 @@
 
     const isSelected = (service: string): boolean => {
         return page.route.id?.includes(service);
-    }
+    };
 </script>
 
 <div
