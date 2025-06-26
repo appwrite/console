@@ -74,8 +74,10 @@
                 await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
                 const prefs = await sdk.forConsole.account.getPrefs();
                 const newPrefs = { ...prefs, code };
-                await sdk.forConsole.account.updatePrefs(newPrefs);
-                invalidate(Dependencies.ACCOUNT);
+                await Promise.all([
+                    sdk.forConsole.account.updatePrefs(newPrefs),
+                    invalidate(Dependencies.ACCOUNT)
+                ]);
                 await goto(base);
                 trackEvent(Submit.AccountCreate, {
                     email: mail,
