@@ -33,7 +33,10 @@
     }
 
     function getFilePreview(fileId: string) {
-        return sdk.forConsole.storage.getFileView('screenshots', fileId);
+        // Project SDK with `console` project ID = Console SDK with region prefix
+        return sdk
+            .forProject(page.params.region, 'console')
+            .storage.getFileView('screenshots', fileId);
     }
 </script>
 
