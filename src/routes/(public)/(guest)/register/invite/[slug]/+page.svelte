@@ -75,7 +75,7 @@
                 const prefs = await sdk.forConsole.account.getPrefs();
                 const newPrefs = { ...prefs, code };
                 await sdk.forConsole.account.updatePrefs(newPrefs);
-                await invalidate(Dependencies.ACCOUNT);
+                invalidate(Dependencies.ACCOUNT);
                 await goto(base);
                 trackEvent(Submit.AccountCreate, {
                     email: mail,
