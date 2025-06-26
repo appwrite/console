@@ -24,9 +24,10 @@
         bind:group={billingPlan}
         disabled={anyOrgFree || !selfService}
         value={BillingPlan.FREE}
-        tooltipShow={anyOrgFree}
         title={tierFree.name}
-        tooltipText="You are limited to 1 Free organization per account.">
+        tooltipShow={anyOrgFree}
+        tooltipText="You are limited to 1 Free organization per account."
+        tooltipWidth="100%">
         <svelte:fragment slot="action">
             {#if $organization?.billingPlan === BillingPlan.FREE && !isNewOrg}
                 <Badge variant="secondary" size="xs" content="Current plan" />
