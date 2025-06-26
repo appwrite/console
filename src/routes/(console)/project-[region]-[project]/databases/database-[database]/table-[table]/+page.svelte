@@ -6,7 +6,7 @@
     import type { Column, ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
-    import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
+    import { canWriteTables, canWriteRows } from '$lib/stores/roles';
     import { Card, Icon, Layout, Empty as PinkEmpty } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import CreateColumnDropdown from './columns/createColumnDropdown.svelte';
@@ -164,7 +164,7 @@
                 </EmptySearch>
             {:else}
                 <Empty
-                    allowCreate={$canWriteDocuments}
+                    allowCreate={$canWriteRows}
                     single
                     href="https://appwrite.io/docs/products/databases/rows"
                     target="row">
@@ -179,7 +179,7 @@
                         <Button
                             href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/create`}
                             secondary
-                            disabled={!$canWriteDocuments}
+                            disabled={!$canWriteRows}
                             size="s">
                             Create row
                         </Button>
@@ -198,7 +198,7 @@
                             text
                             event="empty_documentation"
                             size="s">Documentation</Button>
-                        {#if $canWriteCollections}
+                        {#if $canWriteTables}
                             <CreateColumnDropdown
                                 bind:selectedOption={selectedColumn}
                                 bind:showCreate={showCreateColumn}

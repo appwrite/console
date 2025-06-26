@@ -6,7 +6,7 @@
     import Table from './table.svelte';
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
-    import { canWriteCollections } from '$lib/stores/roles';
+    import { canWriteTables } from '$lib/stores/roles';
     import { Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
@@ -19,7 +19,7 @@
         columns={tableViewColumns}
         hasSearch
         searchPlaceholder="Search by name or ID">
-        {#if $canWriteCollections}
+        {#if $canWriteTables}
             <Button on:click={() => ($showCreate = true)} event="create_table">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create table
@@ -42,7 +42,7 @@
     {:else}
         <Empty
             single
-            allowCreate={$canWriteCollections}
+            allowCreate={$canWriteTables}
             href="https://appwrite.io/docs/products/databases/tables"
             target="table"
             on:click={() => ($showCreate = true)} />

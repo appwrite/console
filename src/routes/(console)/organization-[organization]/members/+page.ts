@@ -7,6 +7,7 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ url, params, route, depends }) => {
     depends(Dependencies.ORGANIZATION);
     depends(Dependencies.MEMBERS);
+
     const page = getPage(url);
     const search = getSearch(url);
     const limit = getLimit(url, route, PAGE_LIMIT);

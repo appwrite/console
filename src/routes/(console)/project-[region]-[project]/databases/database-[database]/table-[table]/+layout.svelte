@@ -31,7 +31,7 @@
     import { page } from '$app/state';
     import CreateIndex from './indexes/createIndex.svelte';
     import { base } from '$app/paths';
-    import { canWriteCollections } from '$lib/stores/roles';
+    import { canWriteTables } from '$lib/stores/roles';
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
 
     onMount(() => {
@@ -68,7 +68,7 @@
             },
             icon: IconPlus,
             group: 'columns',
-            disabled: !$canWriteCollections
+            disabled: !$canWriteTables
         },
         {
             label: 'Go to rows',
@@ -133,7 +133,7 @@
                     `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/settings`
                 );
             },
-            disabled: page.url.pathname.endsWith('settings') || !$canWriteCollections,
+            disabled: page.url.pathname.endsWith('settings') || !$canWriteTables,
             group: 'tables'
         },
         {
@@ -147,7 +147,7 @@
             disabled:
                 page.url.pathname.endsWith('display-name') ||
                 page.url.pathname.endsWith('settings') ||
-                !$canWriteCollections,
+                !$canWriteTables,
             icon: IconEye
         },
         {
@@ -161,7 +161,7 @@
             disabled:
                 page.url.pathname.endsWith('permissions') ||
                 page.url.pathname.endsWith('settings') ||
-                !$canWriteCollections,
+                !$canWriteTables,
             icon: IconPuzzle
         },
         {
@@ -175,7 +175,7 @@
             disabled:
                 page.url.pathname.endsWith('row-security') ||
                 page.url.pathname.endsWith('settings') ||
-                !$canWriteCollections,
+                !$canWriteTables,
             icon: IconLockClosed
         },
         {
@@ -186,7 +186,7 @@
             },
             icon: IconPlus,
             group: 'indexes',
-            disabled: !$canWriteCollections
+            disabled: !$canWriteTables
         }
     ]);
 

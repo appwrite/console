@@ -11,7 +11,7 @@
     import CreateColumnDropdown from '../columns/createColumnDropdown.svelte';
     import type { Option } from '../columns/store';
     import FailedModal from '../failedModal.svelte';
-    import { canWriteCollections } from '$lib/stores/roles';
+    import { canWriteTables } from '$lib/stores/roles';
     import {
         ActionMenu,
         Badge,
@@ -59,7 +59,7 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Typography.Title>Indexes</Typography.Title>
-        {#if $canWriteCollections}
+        {#if $canWriteTables}
             <Button
                 event="create_index"
                 disabled={!$table?.columns?.length}
@@ -150,7 +150,7 @@
             </Table.Root>
         {:else}
             <Empty
-                allowCreate={$canWriteCollections}
+                allowCreate={$canWriteTables}
                 single
                 href="https://appwrite.io/docs/products/databases/tables#indexes"
                 target="index"
@@ -165,7 +165,7 @@
                     text
                     event="empty_documentation"
                     ariaLabel="create index">Documentation</Button>
-                {#if $canWriteCollections}
+                {#if $canWriteTables}
                     <CreateColumnDropdown
                         bind:selectedOption={selectedColumn}
                         bind:showCreate={showCreateColumn}

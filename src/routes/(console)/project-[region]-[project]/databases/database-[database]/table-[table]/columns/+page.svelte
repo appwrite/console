@@ -4,7 +4,7 @@
     import { Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { canWriteCollections } from '$lib/stores/roles';
+    import { canWriteTables } from '$lib/stores/roles';
     import {
         ActionMenu,
         Badge,
@@ -77,7 +77,7 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Typography.Title>Columns</Typography.Title>
-        {#if $canWriteCollections}
+        {#if $canWriteTables}
             <CreateColumnDropdown bind:selectedOption bind:showCreate />
         {/if}
     </Layout.Stack>
@@ -236,7 +236,7 @@
                     text
                     event="empty_documentation"
                     ariaLabel={'create column'}>Documentation</Button>
-                {#if $canWriteCollections}
+                {#if $canWriteTables}
                     <CreateColumnDropdown bind:selectedOption bind:showCreate let:toggle>
                         <Button secondary event="create_column" on:click={toggle}>
                             Create column

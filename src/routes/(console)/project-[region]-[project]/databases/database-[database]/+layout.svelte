@@ -14,7 +14,7 @@
     import CreateTable from './createTable.svelte';
     import { showCreate } from './store';
     import { TablesPanel } from '$lib/commandCenter/panels';
-    import { canWriteCollections, canWriteDatabases } from '$lib/stores/roles';
+    import { canWriteTables, canWriteDatabases } from '$lib/stores/roles';
     import { showCreateBackup, showCreatePolicy } from './backups/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { currentPlan } from '$lib/stores/organization';
@@ -43,7 +43,7 @@
                 }
             },
             keys: page.url.pathname.endsWith(databaseId) ? ['c'] : ['c', 'c'],
-            disabled: page.url.pathname.includes('table-') || !$canWriteCollections,
+            disabled: page.url.pathname.includes('table-') || !$canWriteTables,
             group: 'databases',
             icon: IconPlus
         },

@@ -4,7 +4,7 @@
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
-    import { canWriteCollections } from '$lib/stores/roles';
+    import { canWriteTables } from '$lib/stores/roles';
     import { table } from './store';
     import { isTabletViewport } from '$lib/stores/viewport';
 
@@ -50,7 +50,7 @@
                 href: `${path}/settings`,
                 title: 'Settings',
                 event: 'settings',
-                disabled: !$canWriteCollections
+                disabled: !$canWriteTables
             }
         ].filter((tab) => !tab.disabled)
     );

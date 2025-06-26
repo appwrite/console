@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { CardContainer, GridItem1, Id } from '$lib/components';
-    import { canWriteCollections } from '$lib/stores/roles';
+    import { canWriteTables } from '$lib/stores/roles';
     import type { PageData } from './$types';
     import { Badge } from '@appwrite.io/pink-svelte';
     export let data: PageData;
@@ -12,7 +12,7 @@
 </script>
 
 <CardContainer
-    disableEmpty={!$canWriteCollections}
+    disableEmpty={!$canWriteTables}
     total={data.tables.total}
     on:click={() => (showCreate = true)}
     event="table">

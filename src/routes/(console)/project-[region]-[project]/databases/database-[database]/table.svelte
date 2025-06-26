@@ -8,7 +8,7 @@
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
-    import { canWriteCollections } from '$lib/stores/roles';
+    import { canWriteTables } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
     import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
@@ -53,7 +53,7 @@
 
 <Table.Root
     columns={$tableViewColumns}
-    allowSelection={$canWriteCollections}
+    allowSelection={$canWriteTables}
     bind:selectedRows={selectedTables}
     let:root>
     <svelte:fragment slot="header" let:root>
