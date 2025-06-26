@@ -14,6 +14,7 @@
     export let show = false;
     export let selectedDeployment: Models.Deployment = null;
     export let redirect = false;
+
     let error: string;
 
     async function redeploy() {
@@ -26,15 +27,18 @@
                     selectedDeployment?.buildId || undefined
                 );
 
-            trackEvent(Submit.FunctionRedeploy);
+            await Promise.all([
+                invalidate(Dependencies.FUNCTION),
+                invalidate(Dependencies.DEPLOYMENTS)
+            ]);
 
-            invalidate(Dependencies.FUNCTION);
-            invalidate(Dependencies.DEPLOYMENTS);
             show = false;
             addNotification({
                 type: 'success',
                 message: `Redeploying ${$func.name}`
             });
+
+            trackEvent(Submit.FunctionRedeploy);
             if (redirect) {
                 goto(
                     `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/deployments/deployment-${deployment.$id}`

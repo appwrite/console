@@ -53,15 +53,11 @@
                                 </Typography.Text>
                             </Link>
                             {#if domain.status === 'verifying'}
-                                <Badge
-                                    variant="secondary"
-                                    type="warning"
-                                    content="Verifying"
-                                    size="s" />
+                                <Badge variant="secondary" content="Verifying" size="s" />
                             {:else if domain.status !== 'verified'}
                                 <Badge
                                     variant="secondary"
-                                    type="error"
+                                    type="warning"
                                     content="Verification failed"
                                     size="s" />
                             {/if}

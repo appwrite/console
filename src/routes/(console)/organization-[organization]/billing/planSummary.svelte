@@ -85,12 +85,12 @@
                     </Table.Row.Base>
                 {/each}
                 {#each currentAggregation.projectBreakdown as projectBreakdown}
-                    <Accordion hideDivider title="Project 1">
+                    <Accordion title="{projectBreakdown.name}">
                         <svelte:fragment slot="end">
                             {formatCurrency(projectBreakdown.amount)}
                         </svelte:fragment>
                         <Layout.Stack gap="xs">
-                            <!-- {#each projectBreakdown.resources as resource, i}
+                            {#each projectBreakdown.resources as resource, i}
                                 {#if i > 0}
                                     <Divider />
                                 {/if}
@@ -117,7 +117,7 @@
                                         </Tooltip>
                                     </Layout.Stack>
                                 </Layout.Stack>
-                            {/each} -->
+                            {/each}
                         </Layout.Stack>
                     </Accordion>
                 {/each}

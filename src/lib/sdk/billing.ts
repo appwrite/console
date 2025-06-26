@@ -214,6 +214,7 @@ export type ProjectBreakdown = {
     $id: string;
     name: string;
     amount: number;
+    resources: InvoiceUsage[];
 }
 
 export type InvoiceUsage = {

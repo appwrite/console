@@ -1,8 +1,7 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
-    import { addNotification } from '$lib/stores/notifications';
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { ID, type Models, Region as ConsoleRegion, Region } from '@appwrite.io/console';
@@ -11,6 +10,7 @@
     import { Modal } from '$lib/components';
     import { currentPlan } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
+    import { Dependencies } from '$lib/constants';
 
     export let showCreateProjectCloud: boolean;
     export let projects: number;
@@ -24,30 +24,26 @@
     let showSubmissionLoader = false;
     const teamId = page.params.organization;
 
-    function onFinish() {
-        addNotification({ type: 'success', message: `${name} has been created` });
-        trackEvent(Submit.ProjectCreate, { customId: !!id, teamId, region: region });
-    }
-
     async function create() {
+        let project: Models.Project;
+
         showSubmissionLoader = true;
 
         try {
-            // TODO: fix typing once SDK is updated
-            const project = await sdk.forConsole.projects.create(
-                id ?? ID.unique(),
-                name,
-                teamId,
-                region
-            );
+            project = await sdk.forConsole.projects.create(id ?? ID.unique(), name, teamId, region);
 
-            onFinish();
             await goto(`${base}/project-${project.region}-${project.$id}`);
+            trackEvent(Submit.ProjectCreate, { customId: !!id, teamId, region: region });
         } catch (e) {
             error = e.message;
             trackError(e, Submit.ProjectCreate);
         } finally {
             showSubmissionLoader = false;
+
+            if (project) {
+                // reload projects for nav breadcrumb!
+                await invalidate(Dependencies.ORGANIZATION);
+            }
         }
     }
 
