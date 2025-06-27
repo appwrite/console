@@ -11,18 +11,34 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isRelationship } from '../document-[document]/attributes/store';
     import Confirm from '$lib/components/confirm.svelte';
+    import { preferences } from '$lib/stores/preferences';
 
     export let showDelete = false;
     export let selectedAttribute: Attributes;
     const databaseId = page.params.database;
-    let checked = false;
+
     let error: string;
+    let checked = false;
+
+    async function updateCollectionColumns() {
+        let selectedColumns = preferences
+            .getCustomCollectionColumns($collection.$id)
+            .filter((attribute) => attribute != selectedAttribute.key);
+
+        await Promise.all([
+            preferences.setCustomCollectionColumns($collection.$id, selectedColumns),
+            invalidate(Dependencies.COLLECTION)
+        ]);
+    }
+
     async function handleDelete() {
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .databases.deleteAttribute(databaseId, $collection.$id, selectedAttribute.key);
-            await invalidate(Dependencies.COLLECTION);
+
+            await updateCollectionColumns();
+
             showDelete = false;
             addNotification({
                 type: 'success',

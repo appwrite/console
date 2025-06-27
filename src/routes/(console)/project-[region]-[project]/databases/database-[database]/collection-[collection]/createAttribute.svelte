@@ -24,14 +24,20 @@
     };
     let error: string;
 
+    async function updateCollectionColumns() {
+        let selectedColumns = preferences.getCustomCollectionColumns(collectionId);
+        selectedColumns.push(key ?? data?.key);
+        await Promise.all([
+            preferences.setCustomCollectionColumns(collectionId, selectedColumns),
+            invalidate(Dependencies.COLLECTION)
+        ]);
+    }
+
     async function submit() {
         try {
             await $option.create(databaseId, collectionId, key, data);
+            await updateCollectionColumns();
 
-            let selectedColumns = preferences.getCustomCollectionColumns(collectionId);
-            selectedColumns.push(key ?? data?.key);
-            preferences.setCustomCollectionColumns(selectedColumns);
-            await invalidate(Dependencies.COLLECTION);
             if (!page.url.pathname.includes('attributes')) {
                 await goto(
                     `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
