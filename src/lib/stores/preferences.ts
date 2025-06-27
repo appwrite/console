@@ -4,7 +4,6 @@ import type { Page } from '@sveltejs/kit';
 import { get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import type { Models } from '@appwrite.io/console';
-import { organization } from './organization';
 import { page } from '$app/state';
 import { user } from '$lib/stores/user';
 import deepEqual from 'deep-equal';
@@ -30,7 +29,7 @@ type PreferencesStore = {
 } & { hideAiDisclaimer?: boolean };
 
 async function updateConsolePreferences(store: PreferencesStore): Promise<void> {
-    const currentPreferences = get(user).prefs ?? (await sdk.forConsole.account.getPrefs());
+    const currentPreferences = get(user)?.prefs ?? (await sdk.forConsole.account.getPrefs());
     if (!currentPreferences?.console || Array.isArray(currentPreferences.console)) {
         currentPreferences.console = {};
     }
@@ -79,9 +78,9 @@ function createPreferences() {
         let newPrefsSnapshot: PreferencesStore;
 
         update((currentPrefs) => {
-            oldPrefsSnapshot = currentPrefs;
+            oldPrefsSnapshot = structuredClone(currentPrefs);
             callback(currentPrefs);
-            newPrefsSnapshot = currentPrefs;
+            newPrefsSnapshot = structuredClone(currentPrefs);
             return currentPrefs;
         });
 
@@ -149,16 +148,14 @@ function createPreferences() {
 
                 return n;
             }),
-        setCustomCollectionColumns: (columns: Preferences['columns']) =>
+        setCustomCollectionColumns: (collectionId: string, columns: Preferences['columns']) =>
             updateAndSync((n) => {
-                const collection = page.params.collection;
-                if (!n?.collections?.[collection]) {
+                if (!n?.collections?.[collectionId]) {
                     n ??= {};
                     n.collections ??= {};
                 }
 
-                n.collections[collection] = columns;
-
+                n.collections[collectionId] = Array.from(new Set(columns));
                 return n;
             }),
         loadTeamPrefs: async (id: string) => {
@@ -173,8 +170,11 @@ function createPreferences() {
         getDisplayNames: () => {
             return preferences?.displayNames ?? {};
         },
-        setDisplayNames: async (collectionId: string, names: TeamPreferences['names']) => {
-            const id = get(organization).$id;
+        setDisplayNames: async (
+            orgId: string,
+            collectionId: string,
+            names: TeamPreferences['names']
+        ) => {
             let teamPrefs: Models.Preferences;
             update((n) => {
                 if (!n?.displayNames) {
@@ -187,7 +187,8 @@ function createPreferences() {
 
                 return n;
             });
-            await sdk.forConsole.teams.updatePrefs(id, teamPrefs);
+
+            await sdk.forConsole.teams.updatePrefs(orgId, teamPrefs);
         }
     };
 }

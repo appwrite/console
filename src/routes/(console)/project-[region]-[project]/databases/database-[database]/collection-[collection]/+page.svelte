@@ -40,7 +40,7 @@
             id: attribute.key,
             title: attribute.key,
             type: attribute.type as ColumnType,
-            show: selected?.includes(attribute.key) ?? true,
+            hide: !selected?.includes(attribute.key),
             array: attribute?.array,
             format: 'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
             elements: 'elements' in attribute ? attribute.elements : null
@@ -51,7 +51,7 @@
         ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
             id,
             title: id,
-            show: true,
+            hide: false,
             type: (id === '$id' ? 'string' : 'datetime') as ColumnType
         }))
     ]);
@@ -99,7 +99,7 @@
                     disabled={!(hasAttributes && hasValidAttributes)}
                     analyticsSource="database_documents" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    <ViewSelector view={data.view} {columns} hideView />
+                    <ViewSelector view={data.view} {columns} hideView isCustomCollection />
                     {#if flags.showCsvImport(data)}
                         <Button
                             secondary
