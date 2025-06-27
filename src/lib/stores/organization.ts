@@ -41,6 +41,7 @@ export type OrganizationList = {
     total: number;
 };
 
+// TODO: @itznotabug - check with @abnegate, what do we do here? this is billing!
 export type BillingLimits = {
     bandwidth: number;
     documents: number;
