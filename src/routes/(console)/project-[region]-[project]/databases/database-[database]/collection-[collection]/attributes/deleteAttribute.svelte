@@ -21,7 +21,7 @@
     let checked = false;
 
     async function updateCollectionColumns() {
-        let selectedColumns = preferences
+        const selectedColumns = preferences
             .getCustomCollectionColumns($collection.$id)
             .filter((attribute) => attribute != selectedAttribute.key);
 
