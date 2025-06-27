@@ -12,13 +12,14 @@
     import { page } from '$app/state';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { organization } from '$lib/stores/organization';
 
     const collectionId = page.params.collection;
     let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
 
     async function updateDisplayName() {
         try {
-            await preferences.setDisplayNames(collectionId, names);
+            await preferences.setDisplayNames($organization.$id, collectionId, names);
             names = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
             await invalidate(Dependencies.TEAM);
             addNotification({
