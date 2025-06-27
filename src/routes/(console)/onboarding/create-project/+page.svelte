@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { Card, Layout, Button } from '@appwrite.io/pink-svelte';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
@@ -22,29 +21,6 @@
     let region = Region.Fra;
 
     export let data;
-
-    onMount(() => {
-        setTimeout(() => {
-            let nameInput = document.querySelector(
-                'input[placeholder="Project name"]'
-            ) as HTMLInputElement;
-            if (!nameInput) {
-                nameInput = document.querySelector('input[type="text"]') as HTMLInputElement;
-            }
-            if (!nameInput) {
-                nameInput = document.querySelector('input') as HTMLInputElement;
-            }
-
-            console.log('Found input:', nameInput);
-            if (nameInput) {
-                nameInput.focus();
-                nameInput.select();
-                console.log('Focused project name input');
-            } else {
-                console.log('Could not find project name input');
-            }
-        }, 100);
-    });
 
     function markOnboardingComplete() {
         const currentPrefs = data.accountPrefs ?? $user.prefs;

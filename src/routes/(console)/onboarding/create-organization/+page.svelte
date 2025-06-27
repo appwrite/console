@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
@@ -15,29 +14,6 @@
 
     let isLoading = false;
     let organizationName = 'Personal Projects';
-
-    onMount(() => {
-        setTimeout(() => {
-            let nameInput = document.querySelector(
-                'input[placeholder="Personal Projects"]'
-            ) as HTMLInputElement;
-            if (!nameInput) {
-                nameInput = document.querySelector('input[type="text"]') as HTMLInputElement;
-            }
-            if (!nameInput) {
-                nameInput = document.querySelector('input') as HTMLInputElement;
-            }
-
-            console.log('Found input:', nameInput);
-            if (nameInput) {
-                nameInput.focus();
-                nameInput.select();
-                console.log('Focused organization name input');
-            } else {
-                console.log('Could not find organization name input');
-            }
-        }, 100);
-    });
 
     async function createOrganization() {
         isLoading = true;

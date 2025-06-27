@@ -1,17 +1,7 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { Tag } from '@appwrite.io/pink-svelte';
 
     export let value: number = null;
-
-    onMount(() => {
-        setTimeout(() => {
-            const firstButton = document.querySelector('[data-rating="0"]') as HTMLElement;
-            if (firstButton) {
-                firstButton.focus();
-            }
-        }, 150);
-    });
 </script>
 
 <fieldset class="u-margin-block-start-8 u-min-width-0">
