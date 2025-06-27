@@ -11,6 +11,7 @@
     import { project, projectRegion } from '../store';
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
+    import { onDestroy, onMount } from 'svelte';
 
     let error: string;
     let showDelete = false;
@@ -39,6 +40,21 @@
             trackError(e, Submit.ProjectDelete);
         }
     };
+
+    const handleKeydown = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            if (name !== $project.name) e.preventDefault();
+            else handleDelete();
+        }
+    };
+
+    onMount(() => {
+        window.addEventListener('keydown', handleKeydown);
+    });
+
+    onDestroy(() => {
+        window.removeEventListener('keydown', handleKeydown);
+    });
 </script>
 
 <CardGrid>
