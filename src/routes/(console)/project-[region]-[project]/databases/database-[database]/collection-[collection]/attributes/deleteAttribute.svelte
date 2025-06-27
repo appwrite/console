@@ -25,10 +25,8 @@
             .getCustomCollectionColumns($collection.$id)
             .filter((attribute) => attribute != selectedAttribute.key);
 
-        await Promise.all([
-            preferences.setCustomCollectionColumns($collection.$id, selectedColumns),
-            invalidate(Dependencies.COLLECTION)
-        ]);
+        await preferences.setCustomCollectionColumns($collection.$id, selectedColumns);
+        await invalidate(Dependencies.COLLECTION);
     }
 
     async function handleDelete() {

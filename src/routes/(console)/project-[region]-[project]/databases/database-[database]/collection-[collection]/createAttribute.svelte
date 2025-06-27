@@ -27,10 +27,8 @@
     async function updateCollectionColumns() {
         const selectedColumns = preferences.getCustomCollectionColumns(collectionId);
         selectedColumns.push(key ?? data?.key);
-        await Promise.all([
-            preferences.setCustomCollectionColumns(collectionId, selectedColumns),
-            invalidate(Dependencies.COLLECTION)
-        ]);
+        await preferences.setCustomCollectionColumns(collectionId, selectedColumns);
+        await invalidate(Dependencies.COLLECTION);
     }
 
     async function submit() {
