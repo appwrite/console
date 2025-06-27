@@ -25,7 +25,7 @@
     let error: string;
 
     async function updateCollectionColumns() {
-        let selectedColumns = preferences.getCustomCollectionColumns(collectionId);
+        const selectedColumns = preferences.getCustomCollectionColumns(collectionId);
         selectedColumns.push(key ?? data?.key);
         await Promise.all([
             preferences.setCustomCollectionColumns(collectionId, selectedColumns),
