@@ -95,7 +95,7 @@
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Filters
                     query={data.query}
-                    {columns}
+                    columns={filterColumns}
                     disabled={!(hasAttributes && hasValidAttributes)}
                     analyticsSource="database_documents" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
