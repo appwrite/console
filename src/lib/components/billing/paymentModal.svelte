@@ -21,7 +21,7 @@
         try {
             const card = await submitStripeCard(name, page?.params?.organization ?? null);
             modal.closeModal();
-            invalidate(Dependencies.PAYMENT_METHODS);
+            await invalidate(Dependencies.PAYMENT_METHODS);
             dispatch('submit', card);
             addNotification({
                 type: 'success',
