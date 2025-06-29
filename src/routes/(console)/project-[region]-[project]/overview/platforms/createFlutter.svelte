@@ -37,9 +37,9 @@
         '\ngit clone https://github.com/appwrite/starter-for-flutter\ncd starter-for-flutter\n';
 
     const updateConfigCode = isCloud
-        ? `static const String APPWRITE_PROJECT_ID = "${projectId}"`
-        : `static const String APPWRITE_PROJECT_ID = "${projectId}"
-static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
+        ? `APPWRITE_PROJECT_ID="${projectId}"`
+        : `APPWRITE_PROJECT_ID="${projectId}"
+    APPWRITE_PUBLIC_ENDPOINT="${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
 
     export let platform: PlatformType = PlatformType.Flutterandroid;
