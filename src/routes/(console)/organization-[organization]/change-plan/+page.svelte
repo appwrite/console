@@ -338,7 +338,7 @@
                             </Layout.Stack>
                         </Layout.Stack>
                     </Fieldset>
-                {:then _}
+                {:then}
                     <Fieldset legend="Payment">
                         <SelectPaymentMethod
                             bind:taxId
