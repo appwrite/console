@@ -33,6 +33,7 @@
 </script>
 
 <Input.Textarea
+    class="resize-y min-h-[120px] max-h-[400px] w-full"
     {id}
     {name}
     {placeholder}
