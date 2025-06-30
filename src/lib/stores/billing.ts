@@ -39,6 +39,7 @@ import { sdk } from './sdk';
 import { user } from './user';
 import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budgetLimitAlert.svelte';
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
+import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
 import EnterpriseTrial from '$routes/(console)/organization-[organization]/enterpriseTrial.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
@@ -68,6 +69,7 @@ export const roles = [
 
 export const teamStatusReadonly = 'readonly';
 export const billingLimitOutstandingInvoice = 'outstanding_invoice';
+export const billingProjectsLimitDate = '[date]'
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
@@ -312,6 +314,24 @@ export function calculateTrialDay(org: Organization) {
 
     daysLeftInTrial.set(days);
     return days;
+}
+
+export function checkForProjectsLimit(org: Organization, projects: number) {
+    if (!isCloud) return;
+    if (!org || !projects) return;
+    const plan = get(plansInfo)?.get(org.billingPlan);
+    if (!plan) return;
+    if (plan.$id !== BillingPlan.FREE) return;
+    if (org.projects.length > 0) return;
+
+    if (projects > plan.projects) {
+        headerAlert.add({
+            id: 'projectsLimitReached',
+            component: ProjectsLimit,
+            show: true,
+            importance: 12
+        });
+    }
 }
 
 export async function checkForUsageLimit(org: Organization) {
