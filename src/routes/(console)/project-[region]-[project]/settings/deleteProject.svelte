@@ -76,8 +76,8 @@
         bind:value={name} />
 
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button submissionLoader danger submit disabled={name !== $project.name}
+        <Button submissionLoader={true} text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button submissionLoader={true} danger submit disabled={name !== $project.name}
             >Delete</Button>
     </svelte:fragment>
 </Modal>
