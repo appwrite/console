@@ -271,11 +271,7 @@
     <title>Change plan - Appwrite</title>
 </svelte:head>
 
-<Wizard
-    title="Change plan"
-    href={`${base}/organization-${page.params.organization}`}
-    bind:showExitModal
-    confirmExit>
+<Wizard title="Change plan" href={previousPage} bind:showExitModal confirmExit>
     <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Select plan">
@@ -338,12 +334,12 @@
                             </Layout.Stack>
                         </Layout.Stack>
                     </Fieldset>
-                {:then paymentMethods}
+                {:then}
                     <Fieldset legend="Payment">
                         <SelectPaymentMethod
-                            methods={paymentMethods}
+                            bind:taxId
                             bind:value={paymentMethodId}
-                            bind:taxId>
+                            bind:methods={paymentMethods}>
                             <svelte:fragment slot="actions">
                                 {#if !selectedCoupon?.code}
                                     {#if paymentMethodId}
