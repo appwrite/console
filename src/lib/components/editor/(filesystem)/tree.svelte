@@ -1,11 +1,15 @@
 <script lang="ts">
-    import { melt, type TreeView } from '@melt-ui/svelte';
+    import { melt, createContextMenu, type TreeView } from '@melt-ui/svelte';
     import { getContext } from 'svelte';
     import { Icon } from '@appwrite.io/pink-svelte';
     import { icons, type TreeItem } from '.';
 
     export let items: TreeItem[];
     export let level = 1;
+
+    const {
+        elements: { trigger: cmTrigger, menu: cmMenu, item: cmItem, separator }
+    } = createContextMenu();
 
     const {
         elements: { item, group },
@@ -17,7 +21,7 @@
     {@const isFolder = children !== undefined}
     {@const isRoot = level === 1}
 
-    <li style:margin-inline-start={isRoot ? '' : '1rem'}>
+    <li use:melt={$cmTrigger} style:margin-inline-start={isRoot ? '' : '1rem'}>
         <button
             data-file={!isFolder}
             class:selected={$isSelected(path)}
@@ -43,6 +47,31 @@
                 <svelte:self items={children} level={level + 1} />
             </ul>
         {/if}
+
+        <div class=" menu" use:melt={$cmMenu}>
+            <button
+                class="item"
+                use:melt={$cmItem}
+                onclick={(e) => {
+                    e.preventDefault();
+                    alert('Create clicked');
+                }}>Create</button>
+            <button
+                class="item"
+                use:melt={$cmItem}
+                onclick={(e) => {
+                    e.preventDefault();
+                    alert('Rename clicked');
+                }}>Rename</button>
+            <div use:melt={$separator}></div>
+            <button
+                class="item"
+                use:melt={$cmItem}
+                onclick={(e) => {
+                    e.preventDefault();
+                    alert('Delete clicked');
+                }}>Delete</button>
+        </div>
     </li>
 {/each}
 
