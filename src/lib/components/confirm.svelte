@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Form, InputCheckbox } from '$lib/elements/forms';
-    import { Alert, Dialog, Layout, Modal } from '@appwrite.io/pink-svelte';
+    import { Alert, Layout, Modal } from '@appwrite.io/pink-svelte';
 
     export let open: boolean;
     export let title: string;
@@ -24,7 +24,7 @@
 </script>
 
 <Form isModal {onSubmit}>
-    <Dialog {title} bind:open>
+    <Modal bind:open {title} size="s">
         <Layout.Stack gap="xl">
             {#if error}
                 <Alert.Inline
@@ -66,5 +66,5 @@
                 </slot>
             </Layout.Stack>
         </svelte:fragment>
-    </Dialog>
+    </Modal>
 </Form>

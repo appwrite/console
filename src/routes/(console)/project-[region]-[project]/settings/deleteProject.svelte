@@ -39,7 +39,6 @@
             trackError(e, Submit.ProjectDelete);
         }
     };
-
 </script>
 
 <CardGrid>
