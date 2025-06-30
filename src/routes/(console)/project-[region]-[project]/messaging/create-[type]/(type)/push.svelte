@@ -116,6 +116,7 @@
                         id="title"
                         label="Title"
                         required
+                        autofocus={true}
                         placeholder="Enter title"
                         bind:value={title}>
                     </InputText>

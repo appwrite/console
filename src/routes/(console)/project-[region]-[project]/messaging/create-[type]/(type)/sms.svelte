@@ -96,6 +96,7 @@
                         id="message"
                         label="Message"
                         required
+                        autofocus={true}
                         maxlength={900}
                         placeholder="Type here..."
                         bind:value={content}>

@@ -16,7 +16,7 @@
 <InputTextarea
     required
     id="feedback"
-    autofocus
+    autofocus={true}
     bind:value={$feedbackData.message}
     label="Tell us more about your experience"
     placeholder="Share your suggestions and feature requests..." />
