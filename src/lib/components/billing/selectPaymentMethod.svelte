@@ -31,7 +31,7 @@
 
         await Promise.all([
             invalidate(Dependencies.UPGRADE_PLAN),
-            invalidate(Dependencies.CREATE_ORGANIZATION)
+            invalidate(Dependencies.ORGANIZATION)
         ]);
     }
 

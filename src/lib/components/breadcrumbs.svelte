@@ -101,7 +101,8 @@
 
     async function createProjectsBottomSheet(organization: Organization): Promise<SheetMenu> {
         isLoadingProjects = true;
-        loadedProjects = await projects;
+        // null on non-org/project path like `onboarding`.
+        loadedProjects = (await projects) ?? loadedProjects;
         isLoadingProjects = false;
 
         const createProjectItem = {
