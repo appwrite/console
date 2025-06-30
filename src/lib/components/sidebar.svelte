@@ -255,8 +255,7 @@
                         </Tooltip>
                     </div>
                 </Layout.Stack>
-            {/if}
-            {#if $isSmallViewport}
+            {:else if $isSmallViewport}
                 <div class="action-buttons">
                     <Layout.Stack direction="column" gap="s">
                         <DropList show={$feedback.show} scrollable>
@@ -269,6 +268,9 @@
                                 }}
                                 >Feedback
                             </Button.Button>
+                            <svelte:fragment slot="other">
+                                <MobileFeedbackModal />
+                            </svelte:fragment>
                         </DropList>
 
                         <DropList show={$showSupportModal} scrollable>
@@ -280,6 +282,10 @@
                                     trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
                                 }}>
                                 <span>Support</span>
+                                <svelte:fragment slot="other">
+                                    <MobileSupportModal bind:show={$showSupportModal}
+                                    ></MobileSupportModal>
+                                </svelte:fragment>
                             </Button.Button>
                         </DropList>
                     </Layout.Stack>
@@ -339,11 +345,6 @@
         </div>
     </Sidebar.Base>
 </div>
-
-{#if $isSmallViewport}
-    <MobileFeedbackModal />
-    <MobileSupportModal bind:show={$showSupportModal} />
-{/if}
 
 {#if subNavigation}
     <div class="sub-navigation" class:icons={state === 'icons'}>
