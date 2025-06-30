@@ -81,6 +81,10 @@
         { name: 'Storage', icon: IconFolder, slug: 'storage', category: 'build' },
         { name: 'Sites', icon: IconGlobeAlt, slug: 'sites', category: 'deploy', badge: 'New' }
     ];
+
+    const isSelected = (service: string): boolean => {
+        return page.route.id?.includes(service);
+    };
 </script>
 
 <div
@@ -145,7 +149,7 @@
                         <a
                             href={`/console/project-${project.region}-${project.$id}/overview/platforms`}
                             class="link"
-                            class:active={page.url.pathname.includes('overview')}
+                            class:active={isSelected('overview')}
                             on:click={() => {
                                 trackEvent(Click.MenuOverviewClick);
                                 sideBarIsOpen = false;
@@ -175,7 +179,7 @@
                             <a
                                 href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
-                                class:active={page.url.pathname.includes(projectOption.slug)}
+                                class:active={isSelected(projectOption.slug)}
                                 on:click={() => {
                                     trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;
@@ -206,7 +210,7 @@
                             <a
                                 href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
-                                class:active={page.url.pathname.includes(projectOption.slug)}
+                                class:active={isSelected(projectOption.slug)}
                                 on:click={() => {
                                     trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;
@@ -299,8 +303,7 @@
                             on:click={() => {
                                 trackEvent('click_menu_settings');
                             }}
-                            class:active={page.url.pathname.includes('/settings') &&
-                                !page.url.pathname.includes('sites')}
+                            class:active={isSelected('/settings') && !isSelected('sites')}
                             ><span class="link-icon"><Icon icon={IconCog} size="s" /></span><span
                                 class:no-text={state === 'icons'}
                                 class:has-text={state === 'open'}
