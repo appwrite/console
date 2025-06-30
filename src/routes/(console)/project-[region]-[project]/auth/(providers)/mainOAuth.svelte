@@ -52,21 +52,21 @@
     <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
     <InputText
         id="appID"
-        label="App ID"
+        label={oAuthProvider?.copy?.id ?? 'App ID'}
+        placeholder={'Enter ' + (oAuthProvider?.copy?.id ?? 'App ID')}
         autofocus={true}
-        placeholder="Enter ID"
         bind:value={appId} />
     <InputPassword
         id="secret"
-        label="App Secret"
-        placeholder="Enter App Secret"
+        label={oAuthProvider?.copy?.secret ?? 'App secret'}
+        placeholder={'Enter ' + (oAuthProvider?.copy?.secret ?? 'App secret')}
         minlength={0}
         bind:value={secret} />
     <Alert.Inline status="info">
         To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
     </Alert.Inline>
     <div>
-        <p>URI</p>
+        <p>{oAuthProvider?.copy?.url ?? 'Redirect URI'}</p>
         <CopyInput
             value={`${getApiEndpoint(page.params.region)}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
     </div>
