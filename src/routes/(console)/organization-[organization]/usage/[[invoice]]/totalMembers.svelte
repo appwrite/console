@@ -52,7 +52,7 @@
                     </Button>
                 </Layout.Stack>
             </div>
-            <Paginator items={members.memberships} hideFooter={members?.total <= 5}>
+            <Paginator items={members?.memberships} hideFooter={members?.total <= 5}>
                 {#snippet children(paginatedItems: typeof members.memberships)}
                     <Table.Root columns={2} let:root>
                         <svelte:fragment slot="header" let:root>

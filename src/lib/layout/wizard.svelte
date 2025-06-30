@@ -50,13 +50,15 @@
             if (confirmExit) {
                 showExitModal = true;
             } else {
-                goto(href);
+                goBack();
                 trackEvent('wizard_exit', {
                     from: 'escape'
                 });
             }
         }
     }
+
+    const goBack = () => goto(href);
 
     onMount(() => ($isNewWizardStatusOpen = true));
 
@@ -77,7 +79,7 @@
         if (confirmExit) {
             showExitModal = true;
         } else {
-            goto(href);
+            goBack();
             trackEvent('wizard_exit', {
                 from: 'button'
             });
