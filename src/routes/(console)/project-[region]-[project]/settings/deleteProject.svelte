@@ -1,9 +1,8 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { Layout } from '@appwrite.io/pink-svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { BoxAvatar, CardGrid } from '$lib/components';
+    import { BoxAvatar, CardGrid, Modal } from '$lib/components';
     import { Button, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
@@ -12,7 +11,6 @@
     import { project, projectRegion } from '../store';
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
-    import Modal from '$lib/components/modal.svelte';
     let error: string;
     let showDelete = false;
     let name: string = null;
@@ -69,18 +67,17 @@
         <b>This action is irreversible.</b>
     </svelte:fragment>
 
-    <Layout.Stack gap="l">
-        <InputText
-            label={`Enter "${$project.name}" to continue`}
-            placeholder="Enter name"
-            id="project-name"
-            autofocus
-            required
-            bind:value={name} />
-    </Layout.Stack>
+    <InputText
+        label={`Enter "${$project.name}" to continue`}
+        placeholder="Enter name"
+        id="project-name"
+        autofocus
+        required
+        bind:value={name} />
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button danger submit disabled={name !== $project.name}>Delete</Button>
+        <Button submissionLoader={true} danger submit disabled={name !== $project.name}
+            >Delete</Button>
     </svelte:fragment>
 </Modal>
