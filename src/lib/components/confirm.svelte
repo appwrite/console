@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Form, InputCheckbox } from '$lib/elements/forms';
-    import { Alert, Dialog, Layout } from '@appwrite.io/pink-svelte';
+    import { Alert, Dialog, Layout, Modal } from '@appwrite.io/pink-svelte';
 
     export let open: boolean;
     export let title: string;
