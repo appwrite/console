@@ -5,8 +5,9 @@ import type { Coupon } from '$lib/sdk/billing';
 import type { Organization } from '$lib/stores/organization';
 
 export const load: PageLoad = async ({ url, parent, depends }) => {
-    depends(Dependencies.CREATE_ORGANIZATION);
     const { organizations } = await parent();
+    depends(Dependencies.CREATE_ORGANIZATION);
+
     const [coupon, paymentMethods] = await Promise.all([
         getCoupon(url),
         sdk.forConsole.billing.listPaymentMethods()
