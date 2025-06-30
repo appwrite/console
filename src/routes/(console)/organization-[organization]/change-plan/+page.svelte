@@ -334,12 +334,12 @@
                             </Layout.Stack>
                         </Layout.Stack>
                     </Fieldset>
-                {:then paymentMethods}
+                {:then}
                     <Fieldset legend="Payment">
                         <SelectPaymentMethod
-                            methods={paymentMethods}
+                            bind:taxId
                             bind:value={paymentMethodId}
-                            bind:taxId>
+                            bind:methods={paymentMethods}>
                             <svelte:fragment slot="actions">
                                 {#if !selectedCoupon?.code}
                                     {#if paymentMethodId}
