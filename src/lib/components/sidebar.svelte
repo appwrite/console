@@ -268,11 +268,6 @@
                                 }}
                                 >Feedback
                             </Button.Button>
-                            <svelte:fragment slot="other">
-                                {#if $isSmallViewport}
-                                    <MobileFeedbackModal />
-                                {/if}
-                            </svelte:fragment>
                         </DropList>
 
                         <DropList show={$showSupportModal} scrollable>
@@ -284,11 +279,6 @@
                                     trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
                                 }}>
                                 <span>Support</span>
-
-                                <svelte:fragment slot="other">
-                                    <MobileSupportModal bind:show={$showSupportModal}
-                                    ></MobileSupportModal>
-                                </svelte:fragment>
                             </Button.Button>
                         </DropList>
                     </Layout.Stack>
@@ -330,11 +320,6 @@
                                     }}
                                     ><span>Feedback</span>
                                 </Button.Button>
-                                <svelte:fragment slot="other">
-                                    {#if $isSmallViewport}
-                                        <MobileFeedbackModal />
-                                    {/if}
-                                </svelte:fragment>
                             </DropList>
 
                             <DropList show={$showSupportModal} scrollable>
@@ -346,11 +331,6 @@
                                         trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
                                     }}>
                                     <span>Support</span>
-
-                                    <svelte:fragment slot="other">
-                                        <MobileSupportModal bind:show={$showSupportModal}
-                                        ></MobileSupportModal>
-                                    </svelte:fragment>
                                 </Button.Button>
                             </DropList>
                         </Layout.Stack>
@@ -360,6 +340,11 @@
         </div>
     </Sidebar.Base>
 </div>
+
+{#if $isSmallViewport}
+    <MobileFeedbackModal />
+    <MobileSupportModal bind:show={$showSupportModal} />
+{/if}
 
 {#if subNavigation}
     <div class="sub-navigation" class:icons={state === 'icons'}>

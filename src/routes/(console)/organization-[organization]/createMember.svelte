@@ -26,7 +26,6 @@
         name: string,
         error: string,
         role: string = isSelfHosted ? 'owner' : 'developer';
-    emailInput: HTMLInputElement;
 
     async function create() {
         try {
