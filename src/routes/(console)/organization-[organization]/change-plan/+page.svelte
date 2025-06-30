@@ -271,11 +271,7 @@
     <title>Change plan - Appwrite</title>
 </svelte:head>
 
-<Wizard
-    title="Change plan"
-    href={`${base}/organization-${page.params.organization}`}
-    bind:showExitModal
-    confirmExit>
+<Wizard title="Change plan" href={previousPage} bind:showExitModal confirmExit>
     <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Select plan">
