@@ -35,7 +35,7 @@
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
     import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
-    import { isTabletViewport } from '$lib/stores/viewport';
+    import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
     import type { HTMLAttributes } from 'svelte/elements';
@@ -269,7 +269,9 @@
                                 >Feedback
                             </Button.Button>
                             <svelte:fragment slot="other">
-                                <MobileFeedbackModal />
+                                {#if $isSmallViewport}
+                                    <MobileFeedbackModal />
+                                {/if}
                             </svelte:fragment>
                         </DropList>
 
@@ -329,7 +331,9 @@
                                     ><span>Feedback</span>
                                 </Button.Button>
                                 <svelte:fragment slot="other">
-                                    <MobileFeedbackModal />
+                                    {#if $isSmallViewport}
+                                        <MobileFeedbackModal />
+                                    {/if}
                                 </svelte:fragment>
                             </DropList>
 

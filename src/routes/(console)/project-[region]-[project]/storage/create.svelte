@@ -55,7 +55,7 @@
         label="Name"
         placeholder="New bucket"
         bind:value={name}
-        autofocus={true}
+        autofocus
         required />
 
     {#if !showCustomId}
