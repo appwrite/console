@@ -255,7 +255,8 @@
                         </Tooltip>
                     </div>
                 </Layout.Stack>
-            {:else}
+            {/if}
+            {#if $isSmallViewport}
                 <div class="action-buttons">
                     <Layout.Stack direction="column" gap="s">
                         <DropList show={$feedback.show} scrollable>
@@ -306,35 +307,33 @@
                 </div>
             {/if}
 
-            {#if project}
-                <div class="only-mobile">
-                    <div class="action-buttons">
-                        <Layout.Stack direction="column" gap="s">
-                            <DropList show={$feedback.show} scrollable>
-                                <Button.Button
-                                    variant="secondary"
-                                    size="s"
-                                    on:click={() => {
-                                        toggleFeedback();
-                                        trackEvent('click_menu_feedback', { source: 'side_nav' });
-                                    }}
-                                    ><span>Feedback</span>
-                                </Button.Button>
-                            </DropList>
+            {#if project && $isSmallViewport}
+                <div class="action-buttons">
+                    <Layout.Stack direction="column" gap="s">
+                        <DropList show={$feedback.show} scrollable>
+                            <Button.Button
+                                variant="secondary"
+                                size="s"
+                                on:click={() => {
+                                    toggleFeedback();
+                                    trackEvent('click_menu_feedback', { source: 'side_nav' });
+                                }}
+                                ><span>Feedback</span>
+                            </Button.Button>
+                        </DropList>
 
-                            <DropList show={$showSupportModal} scrollable>
-                                <Button.Button
-                                    variant="secondary"
-                                    size="s"
-                                    on:click={() => {
-                                        $showSupportModal = true;
-                                        trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
-                                    }}>
-                                    <span>Support</span>
-                                </Button.Button>
-                            </DropList>
-                        </Layout.Stack>
-                    </div>
+                        <DropList show={$showSupportModal} scrollable>
+                            <Button.Button
+                                variant="secondary"
+                                size="s"
+                                on:click={() => {
+                                    $showSupportModal = true;
+                                    trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
+                                }}>
+                                <span>Support</span>
+                            </Button.Button>
+                        </DropList>
+                    </Layout.Stack>
                 </div>
             {/if}
         </div>
