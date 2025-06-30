@@ -88,7 +88,7 @@
 
     <Layout.Stack>
         <Layout.Stack gap="s">
-            <InputText id="domain" placeholder="my-domain" bind:value={domain}>
+            <InputText id="domain" placeholder="my-domain" bind:value={domain} autofocus>
                 <svelte:fragment slot="end">
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                         .{$regionalConsoleVariables._APP_DOMAIN_SITES}

@@ -26,6 +26,7 @@
         name: string,
         error: string,
         role: string = isSelfHosted ? 'owner' : 'developer';
+        emailInput: HTMLInputElement;
 
     async function create() {
         try {
@@ -70,7 +71,7 @@
         id="email"
         label="Email"
         placeholder="Enter email"
-        autofocus={true}
+        autofocus
         bind:value={email} />
     <InputText id="member-name" label="Name" placeholder="Enter name" bind:value={name} />
     {#if isCloud}

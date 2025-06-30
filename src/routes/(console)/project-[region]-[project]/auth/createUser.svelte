@@ -56,7 +56,7 @@
 </script>
 
 <Modal title="Create user" {error} bind:show={showCreate} onSubmit={create}>
-    <InputText id="name" label="Name" placeholder="Enter name" autofocus={true} bind:value={name} />
+    <InputText autofocus id="name" label="Name" placeholder="Enter name" bind:value={name} />
     <InputEmail id="email" label="Email" placeholder="Enter email" bind:value={mail} />
     <InputPhone id="phone" label="Phone" placeholder="Enter phone" bind:value={phone} />
     <InputPassword id="password" label="Password" placeholder="Enter password" bind:value={pass} />

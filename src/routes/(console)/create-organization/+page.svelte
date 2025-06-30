@@ -186,6 +186,7 @@
                     bind:value={name}
                     label="Organization name"
                     placeholder="Enter organization name"
+                    autofocus
                     id="name"
                     required />
             </Fieldset>

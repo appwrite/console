@@ -84,7 +84,13 @@
         DNS records map domain names to IP addresses or other resources.
     </span>
     <Layout.Stack gap="l">
-        <InputText id="name" label="Name" placeholder="subdomain" bind:value={name} required />
+        <InputText
+            id="name"
+            label="Name"
+            placeholder="subdomain"
+            bind:value={name}
+            required
+            autofocus />
         <Layout.Stack gap="xs">
             <InputSelect options={recordTypes} bind:value={type} id="type" label="Type" required />
             <Input.Helper state="default">

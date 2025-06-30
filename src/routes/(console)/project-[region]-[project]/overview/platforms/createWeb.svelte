@@ -235,6 +235,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                                 id="hostname"
                                 label="Hostname"
                                 placeholder="localhost"
+                                autofocus
                                 error={hostnameError && 'Please enter a valid hostname'}
                                 bind:value={hostname}>
                                 <Tooltip slot="info">

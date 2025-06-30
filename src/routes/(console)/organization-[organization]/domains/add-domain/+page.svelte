@@ -50,6 +50,7 @@
                         name="domain"
                         bind:value={domainName}
                         required
+                        autofocus
                         placeholder="example.com" />
 
                     <Divider />

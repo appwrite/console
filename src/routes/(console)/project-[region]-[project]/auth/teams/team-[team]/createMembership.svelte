@@ -52,7 +52,7 @@
         label="Email"
         placeholder="Enter email"
         required={true}
-        autofocus={true}
+        autofocus
         bind:value={email} />
     <InputText id="name" label="Name" placeholder="Enter name" bind:value={name} />
     <Alert.Inline status="info">

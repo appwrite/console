@@ -66,6 +66,7 @@
 
                     <Input.Text
                         required
+                        autofocus
                         disabled={isLoading}
                         label="Organization name"
                         bind:value={organizationName}
