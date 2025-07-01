@@ -32,9 +32,11 @@
     }
     const editor: Action = (node) => {
         studio.initEditor(node);
+
         studio.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
             onsave(studio.editor.getValue());
         });
+
         const resizer = throttle(() => {
             if (!node) return;
             studio.editor.layout({
@@ -55,7 +57,7 @@
     };
 
     $effect(() => {
-        monaco.editor.setTheme($app.themeInUse === 'light' ? 'vs-light' : 'vs-dark');
+        monaco.editor.setTheme($app.themeInUse === 'light' ? 'imagine-light' : 'imagine-dark');
     });
     $effect(() => {
         const readOnly = studio.streaming;
