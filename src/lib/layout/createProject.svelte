@@ -20,7 +20,7 @@
 
     let showCustomId = $state(false);
     let projectsLimited = $derived(
-        $currentPlan.projects > 0 && projects && projects >= $currentPlan?.projects
+        $currentPlan?.projects > 0 && projects && projects >= $currentPlan?.projects
     );
 </script>
 
