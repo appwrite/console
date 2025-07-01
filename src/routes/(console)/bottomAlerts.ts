@@ -32,9 +32,9 @@ if (isCloud) {
         },
         show: true
     };
-    
+
     listOfPromotions.push(csvImportPromo);
-    
+
     setMobileSingleAlertLayout({
         title: csvImportPromo.title,
         message: csvImportPromo.message,
