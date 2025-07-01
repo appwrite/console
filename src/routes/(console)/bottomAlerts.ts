@@ -2,10 +2,34 @@ import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
 
+import CSVImportDark from '$lib/images/promos/csv-import-placeholder-dark.png';
+import CSVImportLight from '$lib/images/promos/csv-import-placeholder-light.png';
+
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    /* add promos here */
+    const csvImportPromo: BottomModalAlertItem = {
+        id: 'modal:csv_import_announcement',
+        src: {
+            dark: CSVImportDark,
+            light: CSVImportLight
+        },
+        title: 'Introducing CSV import',
+        message:
+            "We're introducing a new way to populate your Appwrite databases: document imports from CSV files.",
+        plan: 'free',
+        importance: 8,
+        scope: 'project',
+        cta: {
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-csv-imports',
+            external: true
+        },
+        show: true // For testing, will be: isPromoLive('2025-07-01', '15:00', 'Europe/Paris')
+    };
+    if (csvImportPromo.show) {
+        listOfPromotions.push(csvImportPromo);
+    }
 }
 
 export function addBottomModalAlerts() {
