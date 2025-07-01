@@ -108,7 +108,7 @@
                 id: attribute.key,
                 title: attribute.key,
                 type: attribute.type as ColumnType,
-                show: selected?.includes(attribute.key) ?? true,
+                hide: !selected?.includes(attribute.key),
                 array: attribute?.array,
                 width: { min: 168 },
                 format:

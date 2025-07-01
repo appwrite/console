@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Card, Tooltip } from '@appwrite.io/pink-svelte';
-    import type { HTMLAttributes } from 'svelte/elements';
-    import type { BaseCardProps } from './card.svelte';
     import type { ComponentType } from 'svelte';
+    import type { BaseCardProps } from './card.svelte';
+    import type { HTMLAttributes } from 'svelte/elements';
+    import { Card, Tooltip } from '@appwrite.io/pink-svelte';
 
     type Props = BaseCardProps &
         HTMLAttributes<HTMLInputElement> & {
@@ -22,8 +22,10 @@
 
     export let group: string;
     export let value: string;
-    export let tooltipText: string = null;
+
     export let tooltipShow = false;
+    export let tooltipText: string = null;
+    export let tooltipWidth: string = undefined;
 
     // Pink v2
     export let icon: Props['icon'] = undefined;
@@ -42,25 +44,27 @@
     let slotTitle: HTMLSpanElement;
 </script>
 
-<Tooltip disabled={!tooltipText || !tooltipShow}>
-    <Card.Selector
-        {name}
-        {src}
-        {alt}
-        {icon}
-        {padding}
-        {imageRadius}
-        {variant}
-        {value}
-        {radius}
-        {disabled}
-        title={title ?? slotTitle?.innerText}
-        bind:group>
-        {#if $$slots.default}
-            <slot />
-        {/if}
-        <slot name="action" slot="action" />
-    </Card.Selector>
+<Tooltip maxWidth={tooltipWidth} disabled={!tooltipText || !tooltipShow}>
+    <div style:cursor={disabled ? 'pointer' : ''}>
+        <Card.Selector
+            {name}
+            {src}
+            {alt}
+            {icon}
+            {padding}
+            {imageRadius}
+            {variant}
+            {value}
+            {radius}
+            {disabled}
+            title={title ?? slotTitle?.innerText}
+            bind:group>
+            {#if $$slots.default}
+                <slot />
+            {/if}
+            <slot name="action" slot="action" />
+        </Card.Selector>
+    </div>
     <span slot="tooltip">{tooltipText}</span>
 </Tooltip>
 
