@@ -32,19 +32,19 @@ if (isCloud) {
         },
         show: true
     };
-    if (csvImportPromo.show) {
-        listOfPromotions.push(csvImportPromo);
-        setMobileSingleAlertLayout({
-            title: csvImportPromo.title,
-            message: csvImportPromo.message,
-            enabled: true,
-            cta: {
-                link: csvImportPromo.cta.link,
-                external: csvImportPromo.cta.external,
-                hideOnClick: csvImportPromo.cta.hideOnClick
-            }
-        });
-    }
+    
+    listOfPromotions.push(csvImportPromo);
+    
+    setMobileSingleAlertLayout({
+        title: csvImportPromo.title,
+        message: csvImportPromo.message,
+        enabled: true,
+        cta: {
+            link: csvImportPromo.cta.link,
+            external: csvImportPromo.cta.external,
+            hideOnClick: csvImportPromo.cta.hideOnClick
+        }
+    });
 }
 
 export function addBottomModalAlerts() {
