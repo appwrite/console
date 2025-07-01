@@ -148,7 +148,7 @@ function createPreferences() {
 
                 return n;
             }),
-        setCustomCollectionColumns: (tableId: string, columns: Preferences['columns']) =>
+        setCustomTableColumns: (tableId: string, columns: Preferences['columns']) =>
             updateAndSync((n) => {
                 if (!n?.tables?.[tableId]) {
                     n ??= {};

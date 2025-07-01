@@ -103,7 +103,7 @@
                         view={data.view}
                         columns={tableColumns}
                         hideView
-                        isCustomCollection />
+                        isCustomTable />
                     {#if flags.showCsvImport(data)}
                         <Button
                             secondary

@@ -8,12 +8,12 @@
 
     let {
         columns,
-        isCustomCollection = false,
+        isCustomTable = false,
         allowNoColumns = false,
         children
     }: {
         columns: Writable<Column[]>;
-        isCustomCollection?: boolean;
+        isCustomTable?: boolean;
         allowNoColumns?: boolean;
         children: Snippet<[toggle: () => void, selectedColumnsNumber: number]>;
     } = $props();
@@ -34,16 +34,16 @@
     const saveColumnPreferences = () => {
         const shownColumns = $columns.filter((n) => n.hide !== true).map((n) => n.id);
 
-        if (isCustomCollection) {
-            preferences.setCustomCollectionColumns(page.params.collection, shownColumns);
+        if (isCustomTable) {
+            preferences.setCustomTableColumns(page.params.table, shownColumns);
         } else {
             preferences.setColumns(shownColumns);
         }
     };
 
     onMount(() => {
-        if (isCustomCollection) {
-            const shownColumns = preferences.getCustomCollectionColumns(page.params.collection);
+        if (isCustomTable) {
+            const shownColumns = preferences.getCustomTableColumns(page.params.table);
 
             columns.update((columns) => {
                 return columns.map((column) => {

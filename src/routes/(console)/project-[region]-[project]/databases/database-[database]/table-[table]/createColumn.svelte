@@ -32,8 +32,8 @@
     async function updateTableColumns() {
         const selectedColumns = preferences.getCustomTableColumns(tableId);
         selectedColumns.push(key ?? data?.key);
-        await preferences.setCustomCollectionColumns(tableId, selectedColumns);
-        await invalidate(Dependencies.COLLECTION);
+        await preferences.setCustomTableColumns(tableId, selectedColumns);
+        await invalidate(Dependencies.TABLE);
     }
 
     async function submit() {

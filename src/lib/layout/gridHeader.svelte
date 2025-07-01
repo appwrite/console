@@ -8,7 +8,7 @@
     export let title: string;
     export let columns: Writable<Column[]>;
     export let view: View;
-    export let isCustomCollection = false;
+    export let isCustomTable = false;
     export let hideView = false;
     export let hideColumns = false;
     export let allowNoColumns = false;
@@ -20,7 +20,7 @@
         <ViewSelector
             {view}
             {columns}
-            {isCustomCollection}
+            {isCustomTable}
             {hideView}
             {hideColumns}
             {allowNoColumns} />

@@ -27,7 +27,7 @@
             .filter((column) => column != selectedColumn.key);
 
         // todo: change method name to table
-        await preferences.setCustomCollectionColumns($table.$id, selectedColumns);
+        await preferences.setCustomTableColumns($table.$id, selectedColumns);
         await invalidate(Dependencies.TABLE);
     }
 
