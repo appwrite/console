@@ -99,11 +99,7 @@
                     disabled={!(hasColumns && hasValidColumns)}
                     analyticsSource="database_rows" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    <ViewSelector
-                        view={data.view}
-                        columns={tableColumns}
-                        hideView
-                        isCustomTable />
+                    <ViewSelector view={data.view} columns={tableColumns} hideView isCustomTable />
                     {#if flags.showCsvImport(data)}
                         <Button
                             secondary

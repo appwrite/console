@@ -57,6 +57,7 @@
     }
 
     function updateOrAddItem(payload: Payload) {
+        // todo: @itznotabug - might need a change to $table?
         const { $id, status, $collection, policyId } = payload;
         if ($collection === 'archives' && policyId !== null) {
             return;
