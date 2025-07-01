@@ -40,7 +40,8 @@ if (isCloud) {
             enabled: true,
             cta: {
                 link: csvImportPromo.cta.link,
-                external: csvImportPromo.cta.external
+                external: csvImportPromo.cta.external,
+                hideOnClick: csvImportPromo.cta.hideOnClick
             }
         });
     }
