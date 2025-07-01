@@ -24,7 +24,6 @@
     import { base } from '$app/paths';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
-    import { flags } from '$lib/flags';
 
     export let data: PageData;
 
@@ -100,15 +99,13 @@
                     analyticsSource="database_documents" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     <ViewSelector view={data.view} {columns} hideView isCustomCollection />
-                    {#if flags.showCsvImport(data)}
-                        <Button
-                            secondary
-                            event={Click.DatabaseImportCsv}
-                            disabled={!(hasAttributes && hasValidAttributes)}
-                            on:click={() => (showImportCSV = true)}>
-                            Import CSV
-                        </Button>
-                    {/if}
+                    <Button
+                        secondary
+                        event={Click.DatabaseImportCsv}
+                        disabled={!(hasAttributes && hasValidAttributes)}
+                        on:click={() => (showImportCSV = true)}>
+                        Import CSV
+                    </Button>
                     {#if !$isSmallViewport}
                         <Button
                             disabled={!(hasAttributes && hasValidAttributes)}
