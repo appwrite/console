@@ -10,6 +10,7 @@
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
     import { filterRegions } from '$lib/helpers/regions';
+    import type { Snippet } from 'svelte';
 
     let projectName = $state('');
     let id = $state('');
@@ -17,6 +18,7 @@
     let region = $state('');
     let showTitle = $state(true);
     let projects = $state<number | undefined>(undefined);
+    let { submit }: { submit?: Snippet } = $props();
 
     let showCustomId = $state(false);
     let projectsLimited = $derived(
@@ -86,6 +88,6 @@
                 {/if}
             </Layout.Stack>
         </Layout.Stack>
-        {@render globalThis.$slots.submit?.()}
+        {@render submit?.()}
     </Layout.Stack>
 </form>
