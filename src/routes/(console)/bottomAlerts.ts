@@ -19,7 +19,7 @@ if (isCloud) {
             "We're introducing a new way to populate your Appwrite databases: document imports from CSV files.",
         plan: 'free',
         importance: 8,
-        scope: 'project',
+        scope: 'everywhere',
         cta: {
             text: 'Read announcement',
             link: () => 'https://appwrite.io/blog/post/announcing-csv-imports',
