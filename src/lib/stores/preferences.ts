@@ -20,7 +20,7 @@ type TeamPreferences = {
 
 type PreferencesStore = {
     [key: string]: Preferences;
-    collections?: {
+    tables?: {
         [key: string]: Preferences['columns'];
     };
     displayNames?: {
@@ -106,8 +106,8 @@ function createPreferences() {
                 }
             );
         },
-        getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
-            return preferences?.collections?.[collectionId] ?? [];
+        getCustomTableColumns: (tableId: string): Preferences['columns'] => {
+            return preferences?.tables?.[tableId] ?? [];
         },
         setLimit: (limit: Preferences['limit']) =>
             updateAndSync((n) => {
@@ -148,14 +148,14 @@ function createPreferences() {
 
                 return n;
             }),
-        setCustomCollectionColumns: (collectionId: string, columns: Preferences['columns']) =>
+        setCustomTableColumns: (tableId: string, columns: Preferences['columns']) =>
             updateAndSync((n) => {
-                if (!n?.collections?.[collectionId]) {
+                if (!n?.tables?.[tableId]) {
                     n ??= {};
-                    n.collections ??= {};
+                    n.tables ??= {};
                 }
 
-                n.collections[collectionId] = Array.from(new Set(columns));
+                n.tables[tableId] = Array.from(new Set(columns));
                 return n;
             }),
         loadTeamPrefs: async (id: string) => {
@@ -172,7 +172,7 @@ function createPreferences() {
         },
         setDisplayNames: async (
             orgId: string,
-            collectionId: string,
+            tableId: string,
             names: TeamPreferences['names']
         ) => {
             let teamPrefs: Models.Preferences;
@@ -183,7 +183,7 @@ function createPreferences() {
                 }
 
                 teamPrefs = n;
-                n.displayNames[collectionId] = names;
+                n.displayNames[tableId] = names;
 
                 return n;
             });

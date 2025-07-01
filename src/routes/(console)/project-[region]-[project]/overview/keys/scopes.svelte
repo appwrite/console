@@ -7,6 +7,33 @@
 
     export let scopes: string[];
 
+    const newScopes = ['tables.', 'columns.', 'rows.'];
+    const legacyScopes = ['attributes.', 'collections.', 'documents.'];
+
+    const isCreateMode = scopes.length === 0;
+
+    const hasLegacyScopes = !isCreateMode
+        ? scopes.some((scope) => legacyScopes.some((prefix) => scope?.startsWith(prefix)))
+        : false;
+
+    const filteredScopes = allScopes.filter((scope) => {
+        const val = scope.scope;
+
+        if (!val) return false;
+
+        if (isCreateMode) {
+            return !legacyScopes.some((prefix) => val.startsWith(prefix));
+        }
+
+        if (hasLegacyScopes) {
+            // In edit mode, if legacy scopes exist, exclude new ones
+            return !newScopes.some((prefix) => val.startsWith(prefix));
+        } else {
+            // In edit mode, if new scopes exist, exclude new ones
+            return !legacyScopes.some((prefix) => val.startsWith(prefix));
+        }
+    });
+
     enum Category {
         Auth = 'Auth',
         Database = 'Database',
@@ -50,7 +77,7 @@
     }
 
     function categoryState(category: string, s: string[]): boolean | 'indeterminate' {
-        const scopesByCategory = allScopes.filter((n) => n.category === category);
+        const scopesByCategory = filteredScopes.filter((n) => n.category === category);
         const filtered = scopesByCategory.filter((n) => s.includes(n.scope));
         if (filtered.length === 0) {
             return false;
@@ -63,14 +90,14 @@
 
     function onCategoryChange(event: CustomEvent<boolean | 'indeterminate'>, category: Category) {
         if (event.detail === 'indeterminate') return;
-        allScopes.forEach((s) => {
+        filteredScopes.forEach((s) => {
             if (s.category === category) {
                 activeScopes[s.scope] = event.detail;
             }
         });
     }
 
-    const activeScopes = allScopes.reduce((prev, next) => {
+    const activeScopes = filteredScopes.reduce((prev, next) => {
         prev[next.scope] = false;
 
         return prev;
@@ -78,12 +105,12 @@
 
     $: {
         if (mounted) {
-            const newScopes = allScopes
+            const newScopeSet = filteredScopes
                 .filter((scope) => activeScopes[scope.scope])
                 .map(({ scope }) => scope);
 
-            if (symmetricDifference(scopes, newScopes).length) {
-                scopes = newScopes;
+            if (symmetricDifference(scopes, newScopeSet).length) {
+                scopes = newScopeSet;
             }
         }
     }
@@ -103,7 +130,7 @@
         {#each categories as category, index}
             {@const checked = categoryState(category, scopes)}
             {@const isLastItem = index === categories.length - 1}
-            {@const scopesLength = allScopes.filter(
+            {@const scopesLength = filteredScopes.filter(
                 (n) => n.category === category && scopes.includes(n.scope)
             ).length}
             <Accordion
@@ -114,7 +141,7 @@
                 {checked}
                 on:change={(event) => onCategoryChange(event, category)}>
                 <Layout.Stack>
-                    {#each allScopes.filter((s) => s.category === category) as scope}
+                    {#each filteredScopes.filter((s) => s.category === category) as scope}
                         <Selector.Checkbox
                             size="s"
                             id={scope.scope}

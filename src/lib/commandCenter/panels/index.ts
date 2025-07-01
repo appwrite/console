@@ -37,16 +37,16 @@ export const DatabasesPanel: SubPanel = {
     component: Databases
 };
 
-import Collections from './collections.svelte';
-export const CollectionsPanel: SubPanel = {
-    name: 'Collections',
-    component: Collections
+import Tables from './tables.svelte';
+export const TablesPanel: SubPanel = {
+    name: 'Tables',
+    component: Tables
 };
 
-import CreateAttribute from './createAttribute.svelte';
-export const CreateAttributePanel: SubPanel = {
-    name: 'Create Attribute',
-    component: CreateAttribute
+import CreateColumn from './createColumn.svelte';
+export const CreateColumnPanel: SubPanel = {
+    name: 'Create Column',
+    component: CreateColumn
 };
 
 import Users from './users.svelte';
