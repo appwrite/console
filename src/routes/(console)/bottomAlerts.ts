@@ -1,6 +1,10 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
-import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
+import {
+    type BottomModalAlertItem,
+    showBottomModalAlert,
+    setMobileSingleAlertLayout
+} from '$lib/stores/bottom-alerts';
 
 import CSVImportDark from '$lib/images/promos/csv-import-placeholder-dark.png';
 import CSVImportLight from '$lib/images/promos/csv-import-placeholder-light.png';
@@ -23,12 +27,22 @@ if (isCloud) {
         cta: {
             text: 'Read announcement',
             link: () => 'https://appwrite.io/blog/post/announcing-csv-imports',
-            external: true
+            external: true,
+            hideOnClick: true
         },
-        show: true // For testing, will be: isPromoLive('2025-07-01', '15:00', 'Europe/Paris')
+        show: true
     };
     if (csvImportPromo.show) {
         listOfPromotions.push(csvImportPromo);
+        setMobileSingleAlertLayout({
+            title: csvImportPromo.title,
+            message: csvImportPromo.message,
+            enabled: true,
+            cta: {
+                link: csvImportPromo.cta.link,
+                external: csvImportPromo.cta.external
+            }
+        });
     }
 }
 
