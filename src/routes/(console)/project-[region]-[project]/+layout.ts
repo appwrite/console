@@ -34,7 +34,9 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         // fetch if not available in `plansInfo`
         includedInBasePlans
             ? plansInfo.get(organization.billingPlan)
-            : sdk.forConsole.billing.getOrganizationPlan(organization.$id),
+            : isCloud
+              ? sdk.forConsole.billing.getOrganizationPlan(organization.$id)
+              : null,
 
         loadAvailableRegions(project.teamId)
     ]);

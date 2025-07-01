@@ -73,7 +73,7 @@
         <ConsoleButton
             size="s"
             event="create_user"
-            on:mousedown={() => newMemberModal.set(true)}
+            on:click={() => newMemberModal.set(true)}
             disabled={isCloud ? !$currentPlan?.addons?.seats?.supported : false}>
             <Icon size="s" icon={IconPlus} slot="start" />
             <span class="text">Invite</span>

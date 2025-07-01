@@ -29,7 +29,7 @@ type PreferencesStore = {
 } & { hideAiDisclaimer?: boolean };
 
 async function updateConsolePreferences(store: PreferencesStore): Promise<void> {
-    const currentPreferences = get(user).prefs ?? (await sdk.forConsole.account.getPrefs());
+    const currentPreferences = get(user)?.prefs ?? (await sdk.forConsole.account.getPrefs());
     if (!currentPreferences?.console || Array.isArray(currentPreferences.console)) {
         currentPreferences.console = {};
     }
@@ -78,9 +78,9 @@ function createPreferences() {
         let newPrefsSnapshot: PreferencesStore;
 
         update((currentPrefs) => {
-            oldPrefsSnapshot = currentPrefs;
+            oldPrefsSnapshot = structuredClone(currentPrefs);
             callback(currentPrefs);
-            newPrefsSnapshot = currentPrefs;
+            newPrefsSnapshot = structuredClone(currentPrefs);
             return currentPrefs;
         });
 
@@ -148,16 +148,14 @@ function createPreferences() {
 
                 return n;
             }),
-        setCustomCollectionColumns: (columns: Preferences['columns']) =>
+        setCustomCollectionColumns: (tableId: string, columns: Preferences['columns']) =>
             updateAndSync((n) => {
-                const table = page.params.table;
-                if (!n?.tables?.[table]) {
+                if (!n?.tables?.[tableId]) {
                     n ??= {};
                     n.tables ??= {};
                 }
 
-                n.tables[table] = columns;
-
+                n.tables[tableId] = Array.from(new Set(columns));
                 return n;
             }),
         loadTeamPrefs: async (id: string) => {
@@ -189,6 +187,7 @@ function createPreferences() {
 
                 return n;
             });
+
             await sdk.forConsole.teams.updatePrefs(orgId, teamPrefs);
         }
     };

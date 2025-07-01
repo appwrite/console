@@ -2,7 +2,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { BoxAvatar, Confirm, CardGrid } from '$lib/components';
+    import { BoxAvatar, CardGrid, Modal } from '$lib/components';
     import { Button, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
@@ -11,7 +11,6 @@
     import { project, projectRegion } from '../store';
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
-
     let error: string;
     let showDelete = false;
     let name: string = null;
@@ -62,16 +61,12 @@
     </svelte:fragment>
 </CardGrid>
 
-<Confirm
-    disabled={name !== $project.name}
-    onSubmit={handleDelete}
-    title="Delete project"
-    bind:open={showDelete}
-    bind:error>
-    <p>
-        <b>This project will be deleted</b>, along with all of its metadata, stats, and other
-        resources. <b>This action is irreversible</b>.
-    </p>
+<Modal size="s" bind:show={showDelete} title="Delete project" onSubmit={handleDelete} bind:error>
+    <svelte:fragment slot="description">
+        This project will be deleted along with all of its metadata, stats, and other resources.
+        <b>This action is irreversible.</b>
+    </svelte:fragment>
+
     <InputText
         label={`Enter "${$project.name}" to continue`}
         placeholder="Enter name"
@@ -79,4 +74,9 @@
         autofocus
         required
         bind:value={name} />
-</Confirm>
+
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button submissionLoader submit disabled={name !== $project.name}>Delete</Button>
+    </svelte:fragment>
+</Modal>

@@ -70,7 +70,7 @@
         id="email"
         label="Email"
         placeholder="Enter email"
-        autofocus={true}
+        autofocus
         bind:value={email} />
     <InputText id="member-name" label="Name" placeholder="Enter name" bind:value={name} />
     {#if isCloud}

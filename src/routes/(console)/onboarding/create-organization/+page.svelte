@@ -2,14 +2,14 @@
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Button, Card, Layout, Input, Typography, Spinner } from '@appwrite.io/pink-svelte';
     import { Form } from '$lib/elements/forms/index.js';
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
 
     let isLoading = false;
@@ -47,6 +47,10 @@
             if (organization) {
                 loadAvailableRegions(organization?.$id).then();
                 await goto(`${base}/organization-${organization.$id}`);
+
+                // fixes an edge case where
+                // the org is not available for some reason!
+                await invalidate(Dependencies.CREATE_ORGANIZATION);
             }
             isLoading = false;
         }
@@ -66,6 +70,7 @@
 
                     <Input.Text
                         required
+                        autofocus
                         disabled={isLoading}
                         label="Organization name"
                         bind:value={organizationName}

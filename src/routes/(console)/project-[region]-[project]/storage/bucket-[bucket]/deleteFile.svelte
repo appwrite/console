@@ -32,5 +32,5 @@
 </script>
 
 <Confirm {onSubmit} title="Delete file" bind:open={showDelete} bind:error>
-    Are you sure you want to delete <b>{file.name}</b>?
+    <p>Are you sure you want to delete <b>{file.name}</b>?</p>
 </Confirm>

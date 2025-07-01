@@ -31,49 +31,62 @@
         }
     };
 
-    onMount(async () => {
+    const saveColumnPreferences = () => {
+        const shownColumns = $columns.filter((n) => n.hide !== true).map((n) => n.id);
+
         if (isCustomCollection) {
-            const prefs = preferences.getCustomTableColumns(page.params.table);
-            columns.set(
-                $columns.map((column) => {
-                    column.hide = prefs?.includes(column.id) ?? false;
+            preferences.setCustomCollectionColumns(page.params.collection, shownColumns);
+        } else {
+            preferences.setColumns(shownColumns);
+        }
+    };
+
+    onMount(() => {
+        if (isCustomCollection) {
+            const shownColumns = preferences.getCustomCollectionColumns(page.params.collection);
+
+            columns.update((columns) => {
+                return columns.map((column) => {
+                    column.hide = !shownColumns.includes(column.id);
                     return column;
-                })
-            );
+                });
+            });
         } else {
             const prefs = preferences.get(page.route);
 
-            // Override the shown columns only if a preference was set
-            if (prefs?.columns) {
-                columns.set(
-                    $columns.map((column) => {
-                        column.hide = prefs.columns?.includes(column.id) ?? false;
+            if (prefs?.columns && prefs.columns.length > 0) {
+                columns.update((cols) => {
+                    return cols.map((column) => {
+                        column.hide = !prefs.columns.includes(column.id);
                         return column;
-                    })
-                );
+                    });
+                });
             }
         }
-
-        columns.subscribe((ctx) => {
-            const columns = ctx.filter((n) => n.hide === true).map((n) => n.id);
-
-            if (isCustomCollection) {
-                preferences.setCustomCollectionColumns(columns);
-            } else {
-                preferences.setColumns(columns);
-            }
-        });
 
         calcMaxHeight();
     });
 
     let selectedColumnsNumber = $derived(
         $columns.reduce((acc, column) => {
-            if (column.hide === true) return acc;
+            if (column.hide) return acc;
 
             return ++acc;
         }, 0)
     );
+
+    function toggleColumn(column: Column) {
+        columns.update((cols) =>
+            cols.map((col) => {
+                if (col.id === column.id) {
+                    col.hide = !column.hide;
+                }
+                return col;
+            })
+        );
+
+        saveColumnPreferences();
+    }
 </script>
 
 <svelte:window on:resize={calcMaxHeight} />
@@ -86,7 +99,7 @@
                     {#each $columns as column}
                         {#if !column?.exclude}
                             <ActionMenu.Item.Button
-                                on:click={() => (column.hide = !column.hide)}
+                                on:click={() => toggleColumn(column)}
                                 disabled={allowNoColumns
                                     ? false
                                     : selectedColumnsNumber <= 1 && column.hide !== true}>
@@ -94,7 +107,7 @@
                                     <Selector.Checkbox
                                         checked={!column.hide}
                                         size="s"
-                                        on:click={() => (column.hide = !column.hide)} />
+                                        on:click={() => toggleColumn(column)} />
                                     {column.title}
                                 </Layout.Stack>
                             </ActionMenu.Item.Button>

@@ -32,7 +32,11 @@
             await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
             await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
 
-            trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
+            trackEvent(Submit.AccountCreate, {
+                campaign_name: data?.couponData?.code,
+                email: mail,
+                name: name
+            });
 
             if (data?.couponData?.code) {
                 await goto(`${base}/apply-credit?code=${data?.couponData?.code}`);

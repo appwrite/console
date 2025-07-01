@@ -104,7 +104,7 @@
                 id: column.key,
                 title: column.key,
                 type: column.type as ColumnType,
-                show: selected?.includes(column.key) ?? true,
+                hide: !selected?.includes(column.key),
                 array: column?.array,
                 width: { min: 168 },
                 format: 'format' in column && column?.format === 'enum' ? column.format : null,

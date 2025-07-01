@@ -40,7 +40,7 @@
             id: column.key,
             title: column.key,
             type: column.type as ColumnType,
-            show: selected?.includes(column.key) ?? true,
+            hide: !selected?.includes(column.key),
             array: column?.array,
             format: 'format' in column && column?.format === 'enum' ? column.format : null,
             elements: 'elements' in column ? column.elements : null
@@ -51,7 +51,7 @@
         ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
             id,
             title: id,
-            show: true,
+            hide: false,
             type: (id === '$id' ? 'string' : 'datetime') as ColumnType
         }))
     ]);
@@ -95,11 +95,11 @@
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Filters
                     query={data.query}
-                    columns={tableColumns}
+                    columns={filterColumns}
                     disabled={!(hasColumns && hasValidColumns)}
                     analyticsSource="database_rows" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    <ViewSelector view={data.view} columns={tableColumns} hideView />
+                    <ViewSelector view={data.view} columns={tableColumns} hideView isCustomCollection />
                     {#if flags.showCsvImport(data)}
                         <Button
                             secondary

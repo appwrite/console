@@ -235,6 +235,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                                 id="hostname"
                                 label="Hostname"
                                 placeholder="localhost"
+                                autofocus
                                 error={hostnameError && 'Please enter a valid hostname'}
                                 bind:value={hostname}>
                                 <Tooltip slot="info">
@@ -302,7 +303,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 
                     <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                     <div class="pink2-code-margin-fix">
-                        <Code lang="bash" lineNumbers code={selectedFramework.updateConfigCode} />
+                        <Code lang="dotenv" lineNumbers code={selectedFramework.updateConfigCode} />
                     </div>
 
                     <Typography.Text variant="m-500"
