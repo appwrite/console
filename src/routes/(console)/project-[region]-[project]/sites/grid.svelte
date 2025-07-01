@@ -33,7 +33,7 @@
     }
 
     function getFilePreview(fileId: string) {
-        return sdk.forConsole.storage.getFileView('screenshots', fileId);
+        return sdk.forConsoleIn(page.params.region).storage.getFileView('screenshots', fileId);
     }
 </script>
 

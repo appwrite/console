@@ -58,6 +58,7 @@
         placeholder="Promo code"
         id="code"
         label="Add promo code"
+        autofocus
         bind:value={coupon} />
 
     <svelte:fragment slot="footer">

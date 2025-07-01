@@ -10,7 +10,12 @@
         style="padding-block: 0.13rem">
         {#each Array(11) as _, i}
             <li>
-                <Tag size="m" selected={value === i} on:click={() => (value = i)}>
+                <Tag
+                    size="m"
+                    selected={value === i}
+                    autofocus={i === 0}
+                    data-rating={i}
+                    on:click={() => (value = i)}>
                     {i}
                 </Tag>
             </li>

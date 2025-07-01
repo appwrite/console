@@ -115,7 +115,7 @@
                 { id: 'reads', hide: !databaseOperationMetric },
                 { id: 'writes', hide: !databaseOperationMetric },
                 { id: 'metric', hide: !!databaseOperationMetric },
-                { id: 'costs' }
+                { id: 'costs', hide: true }
             ]}
             let:root>
             <svelte:fragment slot="header" let:root>

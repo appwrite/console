@@ -59,6 +59,7 @@
                         label="Name"
                         placeholder="Project name"
                         required
+                        autofocus
                         bind:value={projectName} />
                     {#if !showCustomId}
                         <div>

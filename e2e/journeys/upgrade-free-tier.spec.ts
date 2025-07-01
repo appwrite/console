@@ -11,7 +11,12 @@ test('upgrade - free tier', async ({ page }) => {
         await page.waitForURL(/\/organization-[^/]+\/change-plan/);
         await page.locator('input[value="tier-1"]').click();
         await page.getByRole('button', { name: 'add' }).first().click();
+
         await enterCreditCard(page);
+
+        // wait for a second after adding a card to update the UI.
+        await page.waitForSelector('button#method[role="combobox"]');
+
         // skip members
         await page.getByRole('button', { name: 'change plan' }).click();
         await page.waitForURL(/\/console\/project-(?:[a-z0-9]+-)?([^/]+)\/get-started/);

@@ -20,8 +20,19 @@
 
     async function cardSaved(event: CustomEvent<PaymentMethodData>) {
         value = event.detail.$id;
-        invalidate(Dependencies.UPGRADE_PLAN);
-        invalidate(Dependencies.CREATE_ORGANIZATION);
+
+        if (value) {
+            methods = {
+                ...methods,
+                total: methods.total + 1,
+                paymentMethods: [...methods.paymentMethods, event.detail]
+            };
+        }
+
+        await Promise.all([
+            invalidate(Dependencies.UPGRADE_PLAN),
+            invalidate(Dependencies.ORGANIZATION)
+        ]);
     }
 
     onMount(() => {
