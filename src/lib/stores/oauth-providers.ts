@@ -14,6 +14,11 @@ export type Provider = {
     icon: string;
     docs?: string;
     component: Component;
+    copy?: {
+        id?: string;
+        secret?: string;
+        url?: string;
+    };
 };
 
 export const oAuthProviders: Record<string, Provider> = {
@@ -111,7 +116,12 @@ export const oAuthProviders: Record<string, Provider> = {
         name: 'GitHub',
         icon: 'github',
         docs: 'https://developer.github.com',
-        component: Main
+        component: Main,
+        copy: {
+            id: 'Client ID',
+            secret: 'Client secrets',
+            url: 'Authorization callback URL'
+        }
     },
     gitlab: {
         name: 'GitLab',
