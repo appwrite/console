@@ -9,6 +9,8 @@ import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import markdownWorker from 'monaco-editor/esm/vs/basic-languages/markdown/markdown?worker';
 import { app } from '$lib/stores/app';
 import { get } from 'svelte/store';
+import { imagineLight } from './(assets)/imagine-light';
+import { imagineDark } from './(assets)/imagine-dark';
 
 class Studio {
     #host: string;
@@ -48,6 +50,16 @@ class Studio {
         this.activeTerminal = symbol;
     }
 
+    removeTerminal(terminalSymbol: symbol) {
+        this.terminals.delete(terminalSymbol);
+        if (this.activeTerminal === terminalSymbol) {
+            this.activeTerminal =
+                this.terminals.size > 0
+                    ? Array.from(this.terminals.keys())[0]
+                    : this.mainTerminalId;
+        }
+    }
+
     #resetTerminals() {
         this.activeTerminal = this.mainTerminalId;
         this.terminals.clear();
@@ -78,6 +90,8 @@ class Studio {
         };
 
         monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
+        monaco.editor.defineTheme('imagine-light', imagineLight);
+        monaco.editor.defineTheme('imagine-dark', imagineDark);
 
         this.editor = monaco.editor.create(node, {
             theme: get(app).themeInUse === 'light' ? 'imagine-light' : 'imagine-dark',
