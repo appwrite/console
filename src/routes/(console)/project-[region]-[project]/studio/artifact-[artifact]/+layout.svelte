@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Layout, Divider, Icon, Button, Status } from '@appwrite.io/pink-svelte';
+    import { Layout, Divider, Icon, Button } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
     import { ActionDropdown, Tab, Tabs, Terminal } from '$lib/components';
     import { base } from '$app/paths';
@@ -9,7 +9,8 @@
         IconChevronDoubleUp,
         IconPlusSm,
         IconTerminal,
-        IconPlus
+        IconPlus,
+        IconX
     } from '@appwrite.io/pink-icons-svelte';
     import { previewFrameRef } from '$routes/(console)/project-[region]-[project]/store';
     import {
@@ -120,6 +121,13 @@
         studio.createTerminal();
         if (studio.terminals.size > 1) {
             terminalOpen = true;
+        }
+    }
+
+    function removeTerminal(symbol: symbol) {
+        studio.removeTerminal(symbol);
+        if (studio.terminals.size === 0) {
+            terminalOpen = false;
         }
     }
 
@@ -265,26 +273,40 @@
                                             Imagine
                                         </Tab>
                                         {#each studio.terminals as [symbol] (symbol)}
-                                            <Tab
-                                                {root}
-                                                on:click={() => (studio.activeTerminal = symbol)}
-                                                selected={studio.activeTerminal === symbol}>
-                                                <Icon icon={IconTerminal} />
-                                                Terminal
-                                            </Tab>
+                                            <div class="terminal-group">
+                                                <Tab
+                                                    {root}
+                                                    on:click={() =>
+                                                        (studio.activeTerminal = symbol)}
+                                                    selected={studio.activeTerminal === symbol}>
+                                                    <Icon icon={IconTerminal} />
+                                                    <span class="label">Terminal</span>
+                                                </Tab>
+                                                <button
+                                                    class="terminal-close"
+                                                    onclick={(event) => {
+                                                        event.preventDefault();
+                                                        removeTerminal(symbol);
+                                                    }}>
+                                                    <Icon
+                                                        icon={IconX}
+                                                        size="s"
+                                                        color="--fgcolor-neutral-tertiary" />
+                                                </button>
+                                            </div>
                                         {/each}
                                     </Tabs>
                                     <Button.Button
                                         variant="text"
                                         size="s"
-                                        on:click={(event) => {
+                                        onclick={(event) => {
                                             event.preventDefault();
                                             createTerminal();
                                         }}
                                         icon>
                                         <Icon
                                             icon={IconPlusSm}
-                                            size="m"
+                                            size="s"
                                             color="--fgcolor-neutral-tertiary" />
                                     </Button.Button>
                                 </Layout.Stack>
@@ -396,6 +418,27 @@
         width: calc(100%);
     }
 
+    .terminal-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .terminal-close {
+        position: absolute;
+        right: 0;
+        opacity: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+    }
+
+    .terminal-group:hover > .terminal-close {
+        opacity: 1;
+    }
+
     .divider-wrapper-artifacts {
         margin-block-start: 8px;
         margin-block-end: 8px;
@@ -422,10 +465,10 @@
         }
     }
 
-    .hide-mobile {
-        display: none;
-        @media (min-width: 768px) {
-            display: block;
-        }
-    }
+    // .hide-mobile {
+    //     display: none;
+    //     @media (min-width: 768px) {
+    //         display: block;
+    //     }
+    // }
 </style>
