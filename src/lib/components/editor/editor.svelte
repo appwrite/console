@@ -57,7 +57,7 @@
     };
 
     $effect(() => {
-        monaco.editor.setTheme($app.themeInUse === 'light' ? 'imagine-light' : 'imagine-dark');
+        monaco.editor.setTheme($app.themeInUse === 'light' ? 'vs' : 'vs-dark');
     });
     $effect(() => {
         const readOnly = studio.streaming;

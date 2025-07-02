@@ -57,8 +57,6 @@
             }
         });
     }
-
-    $inspect('items', items);
 </script>
 
 <ul {...$tree}>
