@@ -16,6 +16,9 @@ type Preferences = {
 
 type TeamPreferences = {
     names?: string[];
+    displayNames?: {
+        [key: string]: string[];
+    };
 };
 
 type PreferencesStore = {
@@ -162,6 +165,13 @@ function createPreferences() {
             const teamPrefs = await sdk.forConsole.teams.getPrefs(id);
             update((n) => {
                 n[id] = teamPrefs;
+                // Merge team display names with local preferences
+                if (teamPrefs?.displayNames) {
+                    if (!n.displayNames) {
+                        n.displayNames = {};
+                    }
+                    n.displayNames = { ...n.displayNames, ...teamPrefs.displayNames };
+                }
                 return n;
             });
 
@@ -175,19 +185,33 @@ function createPreferences() {
             collectionId: string,
             names: TeamPreferences['names']
         ) => {
-            let teamPrefs: Models.Preferences;
+            // Update local preferences to track display names
             update((n) => {
                 if (!n?.displayNames) {
                     n ??= {};
                     n.displayNames ??= {};
                 }
 
-                teamPrefs = n;
                 n.displayNames[collectionId] = names;
-
                 return n;
             });
 
+            // Get existing team preferences or create new one
+            let teamPrefs: Models.Preferences;
+            try {
+                teamPrefs = await sdk.forConsole.teams.getPrefs(orgId);
+            } catch (error) {
+                // If no team preferences exist yet, create empty object
+                teamPrefs = {};
+            }
+
+            // Update only the display names in team preferences
+            if (!teamPrefs.displayNames) {
+                teamPrefs.displayNames = {};
+            }
+            teamPrefs.displayNames[collectionId] = names;
+
+            // Send only team preferences to the team API
             await sdk.forConsole.teams.updatePrefs(orgId, teamPrefs);
         }
     };
