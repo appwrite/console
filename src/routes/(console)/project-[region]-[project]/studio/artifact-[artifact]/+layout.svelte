@@ -174,7 +174,7 @@
     {/if}
 {/snippet}
 
-<svelte:window on:resize={onViewportResize} />
+<svelte:window onresize={onViewportResize} />
 <div bind:this={layoutElement} class="layout">
     <Layout.Stack
         direction="column"
@@ -282,17 +282,20 @@
                                                     <Icon icon={IconTerminal} />
                                                     <span class="label">Terminal</span>
                                                 </Tab>
-                                                <button
+                                                <Button.Button
+                                                    variant="text"
+                                                    size="xs"
                                                     class="terminal-close"
                                                     onclick={(event) => {
                                                         event.preventDefault();
                                                         removeTerminal(symbol);
-                                                    }}>
+                                                    }}
+                                                    icon>
                                                     <Icon
                                                         icon={IconX}
                                                         size="s"
                                                         color="--fgcolor-neutral-tertiary" />
-                                                </button>
+                                                </Button.Button>
                                             </div>
                                         {/each}
                                     </Tabs>
@@ -425,18 +428,15 @@
         justify-content: center;
     }
 
-    .terminal-close {
+    :global(.terminal-close) {
         position: absolute;
-        right: 0;
-        opacity: 0;
-        width: 24px;
-        height: 24px;
+        right: 2px;
+        width: 32px;
+        height: 23px;
         display: flex;
         align-items: center;
-    }
-
-    .terminal-group:hover > .terminal-close {
-        opacity: 1;
+        justify-content: center;
+        background-color: var(--bgcolor-neutral-primary) !important;
     }
 
     .divider-wrapper-artifacts {
