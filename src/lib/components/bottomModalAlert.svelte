@@ -208,6 +208,7 @@
                                     <button
                                         aria-label="Previous"
                                         class="icon-cheveron-left"
+                                        style:cursor={currentIndex !== 0 ? 'pointer' : undefined}
                                         on:click={showPrevious}
                                         disabled={currentIndex === 0}
                                         class:active={currentIndex > 0}></button>
@@ -216,6 +217,10 @@
                                         aria-label="Next"
                                         class="icon-cheveron-right"
                                         on:click={showNext}
+                                        style:cursor={currentIndex !==
+                                        filteredModalAlerts.length - 1
+                                            ? 'pointer'
+                                            : undefined}
                                         disabled={currentIndex === filteredModalAlerts.length - 1}
                                         class:active={currentIndex !==
                                             filteredModalAlerts.length - 1}></button>
@@ -314,6 +319,9 @@
                                         <button
                                             aria-label="Previous"
                                             class="icon-cheveron-left"
+                                            style:cursor={currentIndex !== 0
+                                                ? 'pointer'
+                                                : undefined}
                                             on:click={showPrevious}
                                             disabled={currentIndex === 0}
                                             class:active={currentIndex > 0}></button>
@@ -322,6 +330,10 @@
                                             aria-label="Next"
                                             class="icon-cheveron-right"
                                             on:click={showNext}
+                                            style:cursor={currentIndex !==
+                                            filteredModalAlerts.length - 1
+                                                ? 'pointer'
+                                                : undefined}
                                             disabled={currentIndex ===
                                                 filteredModalAlerts.length - 1}
                                             class:active={currentIndex !==
