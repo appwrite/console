@@ -319,7 +319,9 @@
                                         <button
                                             aria-label="Previous"
                                             class="icon-cheveron-left"
-                                            style:cursor={currentIndex !== 0 ? 'pointer' : undefined}
+                                            style:cursor={currentIndex !== 0
+                                                ? 'pointer'
+                                                : undefined}
                                             on:click={showPrevious}
                                             disabled={currentIndex === 0}
                                             class:active={currentIndex > 0}></button>
