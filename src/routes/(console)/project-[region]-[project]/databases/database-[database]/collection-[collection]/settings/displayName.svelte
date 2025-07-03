@@ -16,15 +16,23 @@
 
     const collectionId = page.params.collection;
 
-    let names: string[] = $state(
-        // edge case with `$id`? probably got saved during local tests...
-        [...(preferences.getDisplayNames()?.[collectionId] ?? [])].filter((name) => name !== '$id')
-    );
+    function getDisplayNames() {
+        return [...(preferences.getDisplayNames()?.[collectionId] ?? [])].filter(
+            (name) => name !== '$id'
+        ); // edge case with `$id`? got saved during tests!
+    }
+
+    let names: string[] = $state(getDisplayNames());
 
     async function updateDisplayName() {
         try {
-            await preferences.setDisplayNames($organization.$id, collectionId, names);
-            names = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
+            // $state makes proxy,
+            // structuredClone doesn't work
+            const regularArray = [...names];
+
+            await preferences.setDisplayNames($organization.$id, collectionId, regularArray);
+            names = getDisplayNames();
+
             await invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Display names has been updated',

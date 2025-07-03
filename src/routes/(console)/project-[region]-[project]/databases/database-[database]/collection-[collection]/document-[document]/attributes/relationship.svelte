@@ -123,11 +123,16 @@
                 // always supposed to be a string but just being a bit safe here
                 .filter((value) => value != null && typeof value === 'string' && value !== '');
 
+            const displayValues = !editing
+                ? values
+                : // on non edit routes like create, there's enough space!
+                  values.map((value) => (value.length > 5 ? value.slice(0, 5) + '...' : value));
+
             const label = !values.length
                 ? document.$id
                 : // values are in `$id (a | b)` format
                   // previously used to have a `$id a | b`.
-                  `${document.$id} (${values.join(' | ')})`;
+                  `${document.$id} (${displayValues.join(' | ')})`;
 
             return {
                 label,
