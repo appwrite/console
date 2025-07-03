@@ -1,17 +1,37 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
-import {
-    type BottomModalAlertItem,
-    showBottomModalAlert,
-    setMobileSingleAlertLayout
-} from '$lib/stores/bottom-alerts';
+import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
 
 import BulkApiDark from '$lib/images/promos/bulk-api-dark.png';
 import BulkApiLight from '$lib/images/promos/bulk-api-light.png';
 
+import CSVImportDark from '$lib/images/promos/csv-import-placeholder-dark.png';
+import CSVImportLight from '$lib/images/promos/csv-import-placeholder-light.png';
+
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
+    const csvImportPromo: BottomModalAlertItem = {
+        id: 'modal:csv_import_announcement',
+        src: {
+            dark: CSVImportDark,
+            light: CSVImportLight
+        },
+        title: 'Introducing CSV import',
+        message:
+            "We're introducing a new way to populate your Appwrite databases: document imports from CSV files.",
+        plan: 'free',
+        importance: 8,
+        scope: 'everywhere',
+        cta: {
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-csv-imports',
+            external: true,
+            hideOnClick: true
+        },
+        show: true
+    };
+
     const bulkApiPromo: BottomModalAlertItem = {
         id: 'modal:bulk_api_announcement',
         src: {
@@ -33,18 +53,7 @@ if (isCloud) {
         show: true
     };
 
-    listOfPromotions.push(bulkApiPromo);
-
-    setMobileSingleAlertLayout({
-        title: bulkApiPromo.title,
-        message: bulkApiPromo.message,
-        enabled: true,
-        cta: {
-            link: bulkApiPromo.cta.link,
-            external: bulkApiPromo.cta.external,
-            hideOnClick: bulkApiPromo.cta.hideOnClick
-        }
-    });
+    listOfPromotions.push(bulkApiPromo, csvImportPromo);
 }
 
 export function addBottomModalAlerts() {
