@@ -13,14 +13,42 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { organization } from '$lib/stores/organization';
+    import { onMount } from 'svelte';
 
     const collectionId = page.params.collection;
-    let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
+    let names: string[] = [];
+
+    onMount(async () => {
+        if ($organization?.$id) {
+            try {
+                await preferences.loadTeamPrefs($organization.$id);
+                const savedNames = $preferences?.displayNames?.[collectionId] ?? [];
+                names = [...savedNames];
+            } catch (error) {
+                names = [];
+            }
+        } else {
+            names = [];
+        }
+    });
 
     async function updateDisplayName() {
+        if (!$organization?.$id) {
+            addNotification({
+                message: 'Organization ID not found. Please refresh the page.',
+                type: 'error'
+            });
+            return;
+        }
+
         try {
             await preferences.setDisplayNames($organization.$id, collectionId, names);
-            names = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
+
+            await preferences.loadTeamPrefs($organization.$id);
+
+            const reloadedNames = [...($preferences?.displayNames?.[collectionId] ?? [])];
+            names = reloadedNames;
+
             await invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Display names has been updated',
@@ -51,7 +79,7 @@
     $: addAttributeDisabled = names?.length >= 5 || (names?.length && !names[names?.length - 1]);
 
     $: updateBtnDisabled =
-        !symmetricDifference(names, preferences.getDisplayNames()?.[collectionId] ?? [])?.length ||
+        !symmetricDifference(names, $preferences?.displayNames?.[collectionId] ?? [])?.length ||
         (names?.length && !last(names));
 </script>
 
@@ -72,12 +100,16 @@
                     </span>
                 </Layout.Stack>
                 {#if names?.length}
-                    {#each names as name, i}
+                    {#each names as _, i}
                         <Layout.Stack direction="row" gap="xxs">
                             <InputSelect
-                                id={name}
+                                id={`display-name-${i}`}
                                 placeholder="Select attribute"
-                                bind:value={names[i]}
+                                value={names[i]}
+                                on:change={(e) => {
+                                    names[i] = e.detail;
+                                    names = [...names];
+                                }}
                                 disabled={!!names[i] && names.length > i + 1}
                                 {options} />
                             <Button
@@ -85,7 +117,7 @@
                                 extraCompact
                                 on:click={() => {
                                     names.splice(i, 1);
-                                    names = names;
+                                    names = [...names];
                                 }}>
                                 <Icon icon={IconX} />
                             </Button>
@@ -97,8 +129,7 @@
                         compact
                         disabled={addAttributeDisabled}
                         on:click={() => {
-                            names[names.length] = null;
-                            names = names;
+                            names = [...names, null];
                         }}>
                         <Icon icon={IconPlus} slot="start" size="s" />
                         Add attribute

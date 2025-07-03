@@ -118,7 +118,13 @@
     $: options =
         documentList?.documents?.map((n) => {
             const data = displayNames.filter((name) => name !== '$id').map((name) => n?.[name]);
-            return { value: n.$id, label: n.$id, data };
+            const displayValues = displayNames
+                .map((name) => n?.[name])
+                .filter((value) => value !== null && value !== undefined && value !== '');
+
+            const label = displayValues.length > 0 ? displayValues.join(' | ') : n.$id;
+
+            return { value: n.$id, label, data };
         }) ?? [];
 
     $: hasItems = totalCount > 0;
