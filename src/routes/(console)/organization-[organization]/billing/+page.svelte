@@ -130,7 +130,7 @@
     <Typography.Title>Billing</Typography.Title>
     <PlanSummary
         availableCredit={data?.availableCredit}
-        currentPlan={data?.aggregationBillingPlan}
+        currentPlan={data?.currentPlan}
         currentAggregation={data?.billingAggregation}
         currentInvoice={data?.billingInvoice} />
     <PaymentHistory />
