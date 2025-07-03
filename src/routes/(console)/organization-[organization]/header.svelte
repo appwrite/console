@@ -7,7 +7,13 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
-    import { daysLeftInTrial, getServiceLimit, plansInfo, readOnly } from '$lib/stores/billing';
+    import {
+        daysLeftInTrial,
+        getServiceLimit,
+        plansInfo,
+        readOnly,
+        tierToPlan
+    } from '$lib/stores/billing';
     import { members, newMemberModal, type Organization } from '$lib/stores/organization';
     import {
         canSeeBilling,
@@ -114,14 +120,25 @@
                     {/if}
 
                     {#if $isOwner}
-                        <Button
-                            secondary
-                            size="s"
-                            on:click={() => newMemberModal.set(true)}
-                            disabled={areMembersLimited}>
-                            <Icon icon={IconPlus} size="s" slot="start" />
-                            Invite
-                        </Button>
+                        <Tooltip disabled={!areMembersLimited} placement="bottom-end">
+                            <div>
+                                <Button
+                                    secondary
+                                    size="s"
+                                    on:click={() => newMemberModal.set(true)}
+                                    disabled={areMembersLimited}>
+                                    <Icon icon={IconPlus} size="s" slot="start" />
+                                    Invite
+                                </Button>
+                            </div>
+                            <div slot="tooltip">
+                                {organization?.billingPlan === BillingPlan.FREE
+                                    ? 'Upgrade to add more members'
+                                    : `You've reached the members limit for the ${
+                                          tierToPlan(organization?.billingPlan)?.name
+                                      } plan`}
+                            </div>
+                        </Tooltip>
                     {/if}
                 </Layout.Stack>
             </div>
