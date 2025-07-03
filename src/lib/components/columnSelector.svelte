@@ -20,6 +20,7 @@
 
     let maxHeight = $state('none');
     let containerRef = $state<HTMLElement>(null);
+    const collectionId = $derived(page.params.collection);
 
     const calcMaxHeight = () => {
         if (containerRef) {
@@ -32,10 +33,10 @@
     };
 
     const saveColumnPreferences = () => {
-        const shownColumns = $columns.filter((n) => n.hide !== true).map((n) => n.id);
+        const shownColumns = $columns.filter((n) => n.hide === true).map((n) => n.id);
 
         if (isCustomCollection) {
-            preferences.setCustomCollectionColumns(page.params.collection, shownColumns);
+            preferences.setCustomCollectionColumns(collectionId, shownColumns);
         } else {
             preferences.setColumns(shownColumns);
         }
@@ -43,26 +44,35 @@
 
     onMount(() => {
         if (isCustomCollection) {
-            const shownColumns = preferences.getCustomCollectionColumns(page.params.collection);
+            const shownColumns = preferences.getCustomCollectionColumns(collectionId);
 
-            columns.update((columns) => {
-                return columns.map((column) => {
-                    column.hide = !shownColumns.includes(column.id);
+            columns.set(
+                $columns.map((column) => {
+                    column.hide = shownColumns?.includes(column.id) ?? false;
                     return column;
-                });
-            });
+                })
+            );
         } else {
             const prefs = preferences.get(page.route);
 
-            if (prefs?.columns && prefs.columns.length > 0) {
-                columns.update((cols) => {
-                    return cols.map((column) => {
-                        column.hide = !prefs.columns.includes(column.id);
+            if (prefs?.columns) {
+                columns.set(
+                    $columns.map((column) => {
+                        column.hide = prefs.columns?.includes(column.id) ?? false;
                         return column;
-                    });
-                });
+                    })
+                );
             }
         }
+
+        columns.subscribe((ctx) => {
+            const columns = ctx.filter((n) => n.hide === true).map((n) => n.id);
+            if (isCustomCollection) {
+                preferences.setCustomCollectionColumns(collectionId, columns);
+            } else {
+                preferences.setColumns(columns);
+            }
+        });
 
         calcMaxHeight();
     });
@@ -79,7 +89,7 @@
         columns.update((cols) =>
             cols.map((col) => {
                 if (col.id === column.id) {
-                    col.hide = !column.hide;
+                    column.hide = !column.hide;
                 }
                 return col;
             })

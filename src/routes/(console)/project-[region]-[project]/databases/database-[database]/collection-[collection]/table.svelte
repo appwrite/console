@@ -38,16 +38,18 @@
 
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
+
+    let displayNames = {};
     let showRelationships = false;
     let selectedRelationship: Models.AttributeRelationship = null;
     let relationshipData: Partial<Models.Document>[];
-    let displayNames = {};
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
         updateMaxWidth();
     });
 
+    // replace with `$effect` later!
     afterUpdate(() => updateMaxWidth());
 
     function updateMaxWidth() {
@@ -108,7 +110,7 @@
                 id: attribute.key,
                 title: attribute.key,
                 type: attribute.type as ColumnType,
-                hide: !selected?.includes(attribute.key),
+                show: selected?.includes(attribute.key) ?? true,
                 array: attribute?.array,
                 width: { min: 168 },
                 format:
