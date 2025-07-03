@@ -16,9 +16,6 @@ type Preferences = {
 
 type TeamPreferences = {
     names?: string[];
-    displayNames?: {
-        [key: string]: string[];
-    };
 };
 
 type PreferencesStore = {
