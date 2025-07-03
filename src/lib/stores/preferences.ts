@@ -20,6 +20,10 @@ type TeamPreferences = {
 
 type PreferencesStore = {
     [key: string]: Preferences;
+    // kept for backwards compatibility
+    collections?: {
+        [key: string]: Preferences['columns'];
+    };
     tables?: {
         [key: string]: Preferences['columns'];
     };
@@ -107,7 +111,7 @@ function createPreferences() {
             );
         },
         getCustomTableColumns: (tableId: string): Preferences['columns'] => {
-            return preferences?.tables?.[tableId] ?? [];
+            return preferences?.collections?.[tableId] ?? preferences?.tables?.[tableId] ?? [];
         },
         setLimit: (limit: Preferences['limit']) =>
             updateAndSync((n) => {
@@ -150,12 +154,12 @@ function createPreferences() {
             }),
         setCustomTableColumns: (tableId: string, columns: Preferences['columns']) =>
             updateAndSync((n) => {
-                if (!n?.tables?.[tableId]) {
-                    n ??= {};
-                    n.tables ??= {};
-                }
+                n ??= {};
+                n.collections ??= {};
+                n.tables ??= {};
 
                 n.tables[tableId] = Array.from(new Set(columns));
+                n.collections[tableId] = Array.from(new Set(columns));
                 return n;
             }),
         loadTeamPrefs: async (id: string) => {
