@@ -14,7 +14,7 @@
                     <slot name="subtitle" />
                 </div>
             </Layout.Stack>
-            <Layout.Stack direction="row" justifyContent="flex-end" alignItems="center">
+            <Layout.Stack direction="row" justifyContent="flex-end" alignItems="flex-start">
                 <slot name="status" />
             </Layout.Stack>
         </Layout.Stack>

@@ -8,10 +8,12 @@
     import { base } from '$app/paths';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { Modal } from '$lib/components';
+    import { currentPlan } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { Dependencies } from '$lib/constants';
 
     export let showCreateProjectCloud: boolean;
+    export let projects: number;
     export let regions: Array<Models.ConsoleRegion> = [];
 
     let id: string = null;
@@ -65,6 +67,7 @@
         <Button
             submit
             size="s"
+            disabled={$currentPlan.projects > 0 && projects && projects >= $currentPlan?.projects}
             forceShowLoader={showSubmissionLoader}
             submissionLoader={showSubmissionLoader}>Create</Button>
     </svelte:fragment>
