@@ -63,7 +63,6 @@
     onSubmit={create}
     bind:error>
     <CreateProject
-        {projects}
         showTitle={false}
         bind:id
         bind:projectName={name}

@@ -99,7 +99,8 @@
                 bind:projectName
                 bind:id
                 bind:region
-                on:submit={createProject}>
+                showTitle={true}
+                onsubmit={createProject}>
                 <svelte:fragment slot="submit">
                     <Layout.Stack direction="row" justifyContent="flex-end">
                         <Button.Button type="submit" variant="primary" size="s">

@@ -12,13 +12,25 @@
     import { filterRegions } from '$lib/helpers/regions';
     import type { Snippet } from 'svelte';
 
-    let projectName = $state('');
-    let id = $state('');
-    let regions = $state<Array<Models.ConsoleRegion>>([]);
-    let region = $state('');
-    let showTitle = $state(true);
-    let projects = $state<number | undefined>(undefined);
-    let { submit }: { submit?: Snippet } = $props();
+    let {
+        projectName = $bindable(''),
+        id = $bindable(''),
+        regions = [],
+        region = $bindable(''),
+        showTitle = true,
+        projects = undefined,
+        submit,
+        onsubmit
+    }: {
+        projectName: string;
+        id: string;
+        regions: Array<Models.ConsoleRegion>;
+        region: string;
+        showTitle: boolean;
+        projects?: number;
+        submit?: Snippet;
+        onsubmit?: (event: Event) => void;
+    } = $props();
 
     let showCustomId = $state(false);
     let projectsLimited = $derived(
@@ -35,6 +47,7 @@
 <form
     onsubmit={(e) => {
         e.preventDefault();
+        onsubmit?.(e);
     }}>
     <Layout.Stack direction="column" gap="xxl">
         {#if showTitle}
