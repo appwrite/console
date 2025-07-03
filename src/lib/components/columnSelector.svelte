@@ -91,6 +91,7 @@
 </script>
 
 <svelte:window on:resize={calcMaxHeight} />
+
 {#if $columns?.length}
     <Popover let:toggle placement="bottom-end" padding="none">
         {@render children(toggle, selectedColumnsNumber)}

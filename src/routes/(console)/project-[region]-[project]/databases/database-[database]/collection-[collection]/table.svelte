@@ -49,9 +49,6 @@
         updateMaxWidth();
     });
 
-    // replace with `$effect` later!
-    afterUpdate(() => updateMaxWidth());
-
     function updateMaxWidth() {
         const tableCells = Array.from(document.querySelectorAll('.less-width-truncated'));
 
