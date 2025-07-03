@@ -46,8 +46,8 @@
         if (isCustomCollection) {
             const shownColumns = preferences.getCustomCollectionColumns(collectionId);
 
-            columns.set(
-                $columns.map((column) => {
+            columns.update((n) =>
+                n.map((column) => {
                     column.hide = shownColumns?.includes(column.id) ?? false;
                     return column;
                 })
@@ -56,23 +56,14 @@
             const prefs = preferences.get(page.route);
 
             if (prefs?.columns) {
-                columns.set(
-                    $columns.map((column) => {
+                columns.update((n) =>
+                    n.map((column) => {
                         column.hide = prefs.columns?.includes(column.id) ?? false;
                         return column;
                     })
                 );
             }
         }
-
-        columns.subscribe((ctx) => {
-            const columns = ctx.filter((n) => n.hide === true).map((n) => n.id);
-            if (isCustomCollection) {
-                preferences.setCustomCollectionColumns(collectionId, columns);
-            } else {
-                preferences.setColumns(columns);
-            }
-        });
 
         calcMaxHeight();
     });

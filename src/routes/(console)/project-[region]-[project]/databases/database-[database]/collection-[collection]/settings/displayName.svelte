@@ -15,7 +15,11 @@
     import { organization } from '$lib/stores/organization';
 
     const collectionId = page.params.collection;
-    let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
+
+    let names: string[] = $state(
+        // edge case with `$id`? probably got saved during local tests...
+        [...(preferences.getDisplayNames()?.[collectionId] ?? [])].filter((name) => name !== '$id')
+    );
 
     async function updateDisplayName() {
         try {
@@ -36,23 +40,32 @@
         }
     }
 
-    $: options = ($attributes as Models.AttributeString[])
-        .filter(
-            (attr) =>
-                attr.type === 'string' && !attr?.array && !names?.some((name) => name === attr.key)
-        )
-        .map((attr) => {
-            return {
+    function getValidAttributes() {
+        return ($attributes as Models.AttributeString[]).filter(
+            (attr) => attr.type === 'string' && !attr?.array
+        );
+    }
+
+    function getOptions(index: number) {
+        const current = names?.[index];
+        return getValidAttributes()
+            .filter((attr) => !names?.includes(attr.key) || attr.key === current)
+            .map((attr) => ({
                 value: attr.key,
                 label: attr.key
-            };
-        });
+            }));
+    }
 
-    $: addAttributeDisabled = names?.length >= 5 || (names?.length && !names[names?.length - 1]);
+    const addAttributeDisabled = $derived(
+        names?.length >= 5 || (names?.length && !names[names?.length - 1])
+    );
 
-    $: updateBtnDisabled =
+    const updateBtnDisabled = $derived(
         !symmetricDifference(names, preferences.getDisplayNames()?.[collectionId] ?? [])?.length ||
-        (names?.length && !last(names));
+            (names?.length && !last(names))
+    );
+
+    const hasExhaustedOptions = $derived(getValidAttributes().length === names?.length);
 </script>
 
 <Form onSubmit={updateDisplayName}>
@@ -72,19 +85,22 @@
                     </span>
                 </Layout.Stack>
                 {#if names?.length}
-                    {#each names as name, i}
+                    {#each names as name, index}
                         <Layout.Stack direction="row" gap="xxs">
+                            {@const options = getOptions(index)}
+                            {@const disabled =
+                                (!!names[index] && names.length > index + 1) || hasExhaustedOptions}
                             <InputSelect
                                 id={name}
-                                placeholder="Select attribute"
-                                bind:value={names[i]}
-                                disabled={!!names[i] && names.length > i + 1}
-                                {options} />
+                                {options}
+                                {disabled}
+                                bind:value={names[index]}
+                                placeholder="Select attribute" />
                             <Button
                                 icon
                                 extraCompact
                                 on:click={() => {
-                                    names.splice(i, 1);
+                                    names.splice(index, 1);
                                     names = names;
                                 }}>
                                 <Icon icon={IconX} />
@@ -92,18 +108,22 @@
                         </Layout.Stack>
                     {/each}
                 {/if}
-                <div>
-                    <Button
-                        compact
-                        disabled={addAttributeDisabled}
-                        on:click={() => {
-                            names[names.length] = null;
-                            names = names;
-                        }}>
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Add attribute
-                    </Button>
-                </div>
+
+                <!-- show only when options don't have all the attributes -->
+                {#if !hasExhaustedOptions}
+                    <div>
+                        <Button
+                            compact
+                            disabled={addAttributeDisabled}
+                            on:click={() => {
+                                names[names.length] = null;
+                                names = names;
+                            }}>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add attribute
+                        </Button>
+                    </div>
+                {/if}
             </Layout.Stack>
         </svelte:fragment>
 
