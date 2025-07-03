@@ -15,7 +15,7 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
-    import { page } from '$app/state';
+    import { page } from '$app/stores';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
     import { Typography } from '@appwrite.io/pink-svelte';
@@ -51,7 +51,7 @@
             });
     }
 
-    $: filteredModalAlerts = filterModalAlerts($bottomModalAlertsConfig.alerts, page.route.id);
+    $: filteredModalAlerts = filterModalAlerts($bottomModalAlertsConfig.alerts, $page.route.id);
 
     $: currentModalAlert = filteredModalAlerts[currentIndex] as BottomModalAlertItem;
 
@@ -161,7 +161,7 @@
     });
 </script>
 
-{#if filteredModalAlerts.length > 0 && currentModalAlert && !page.url.pathname.includes('console/onboarding')}
+{#if filteredModalAlerts.length > 0 && currentModalAlert && !$page.url.pathname.includes('console/onboarding')}
     {@const shouldShowUpgrade = showUpgrade()}
     <div class="main-alert-wrapper is-not-mobile">
         <div class="alert-container">
