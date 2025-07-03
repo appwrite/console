@@ -20,22 +20,11 @@
     let error: string;
     let checked = false;
 
-    async function updateCollectionColumns() {
-        const selectedColumns = preferences
-            .getCustomCollectionColumns($collection.$id)
-            .filter((attribute) => attribute != selectedAttribute.key);
-
-        await preferences.setCustomCollectionColumns($collection.$id, selectedColumns);
-        await invalidate(Dependencies.COLLECTION);
-    }
-
     async function handleDelete() {
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .databases.deleteAttribute(databaseId, $collection.$id, selectedAttribute.key);
-
-            await updateCollectionColumns();
 
             showDelete = false;
             addNotification({
