@@ -297,7 +297,7 @@
         if (currentOrganizationId === org.$id) return;
         if (isCloud) {
             currentOrganizationId = org.$id;
-            checkForProjectsLimit(org, data.projects?.length || 0);
+            checkForProjectsLimit(org, data.projects?.projects?.length || 0);
             checkForEnterpriseTrial(org);
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);

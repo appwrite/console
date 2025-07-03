@@ -9,11 +9,16 @@
         upgradeURL
     } from '$lib/stores/billing';
     import { currentPlan } from '$lib/stores/organization';
+    import { onMount } from 'svelte';
     import SelectProjectCloud from './selectProjectCloud.svelte';
-    let showSelectProject = $state(false);
+    let showSelectProject: boolean = $state(false);
+    let selectedProjects: string[] = $state([]);
+    onMount(() => {
+        selectedProjects = page.data.organization?.projects || [];
+    });
 </script>
 
-<SelectProjectCloud bind:showSelectProject />
+<SelectProjectCloud bind:showSelectProject bind:selectedProjects />
 
 {#if $currentPlan && $currentPlan.projects > 0 && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     <HeaderAlert

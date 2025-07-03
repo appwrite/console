@@ -14,7 +14,7 @@
 
     let {
         showSelectProject = $bindable(false),
-        selectedProjects = []
+        selectedProjects = $bindable([])
     }: {
         showSelectProject: boolean;
         selectedProjects: string[];
