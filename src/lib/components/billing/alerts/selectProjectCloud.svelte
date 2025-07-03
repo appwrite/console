@@ -111,6 +111,7 @@
     <svelte:fragment slot="footer">
         <Button.Button size="s" variant="secondary" on:click={() => (showSelectProject = false)}
             >Cancel</Button.Button>
-        <Button.Button size="s" disabled={selectedProjects.length !== $currentPlan?.projects}>Save</Button.Button>
+        <Button.Button size="s" disabled={selectedProjects.length !== $currentPlan?.projects}
+            >Save</Button.Button>
     </svelte:fragment>
 </Modal>
