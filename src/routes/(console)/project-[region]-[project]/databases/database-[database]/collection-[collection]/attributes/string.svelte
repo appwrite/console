@@ -158,8 +158,8 @@
                             </Layout.Stack>
                         </button>
                         <Typography.Text color="--fgcolor-neutral-tertiary">
-                            Indicate whether this attribute is encrypted. Encrypted attributes
-                            cannot be queried.
+                            Protect attribute against data leaks for best privacy compliance.
+                            Encrypted attributes cannot be queried.
                         </Typography.Text>
                     </Layout.Stack>
 
