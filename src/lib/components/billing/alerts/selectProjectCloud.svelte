@@ -11,8 +11,13 @@
     import { page } from '$app/state';
     import { toLocaleDateTime } from '$lib/helpers/date';
 
-    let { showSelectProject = $bindable(false) } = $props();
-    let selectedProjects = $state([]);
+    let {
+        showSelectProject = $bindable(false),
+        selectedProjects = []
+    }: {
+        showSelectProject: boolean;
+        selectedProjects: string[];
+    } = $props();
 
     let projects = $state<Array<Models.Project>>([]);
     let error = $state<string | null>(null);
