@@ -23,7 +23,7 @@ if (isCloud) {
             'A new Appwrite Databases feature, explicitly designed to handle heavy write workloads.',
         plan: 'free',
         importance: 8,
-        scope: 'everywhere',
+        scope: 'project',
         cta: {
             text: 'Read announcement',
             link: () => 'https://appwrite.io/blog/post/announcing-bulk-api',
