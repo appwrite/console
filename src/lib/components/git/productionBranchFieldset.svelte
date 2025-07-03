@@ -90,5 +90,5 @@
 </Fieldset>
 
 {#if show}
-    <SelectRootModal bind:show bind:rootDir {product} />
+    <SelectRootModal bind:show bind:rootDir {product} {branch} />
 {/if}
