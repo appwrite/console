@@ -6,43 +6,43 @@ import {
     setMobileSingleAlertLayout
 } from '$lib/stores/bottom-alerts';
 
-import CSVImportDark from '$lib/images/promos/csv-import-placeholder-dark.png';
-import CSVImportLight from '$lib/images/promos/csv-import-placeholder-light.png';
+import BulkApiDark from '$lib/images/promos/bulk-api-dark.png';
+import BulkApiLight from '$lib/images/promos/bulk-api-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const csvImportPromo: BottomModalAlertItem = {
-        id: 'modal:csv_import_announcement',
+    const bulkApiPromo: BottomModalAlertItem = {
+        id: 'modal:bulk_api_announcement',
         src: {
-            dark: CSVImportDark,
-            light: CSVImportLight
+            dark: BulkApiDark,
+            light: BulkApiLight
         },
-        title: 'Introducing CSV import',
+        title: 'Introducing Bulk API',
         message:
-            "We're introducing a new way to populate your Appwrite databases: document imports from CSV files.",
+            'A new Appwrite Databases feature, explicitly designed to handle heavy write workloads.',
         plan: 'free',
         importance: 8,
         scope: 'everywhere',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-csv-imports',
+            link: () => 'https://appwrite.io/blog/post/announcing-bulk-api',
             external: true,
             hideOnClick: true
         },
         show: true
     };
 
-    listOfPromotions.push(csvImportPromo);
+    listOfPromotions.push(bulkApiPromo);
 
     setMobileSingleAlertLayout({
-        title: csvImportPromo.title,
-        message: csvImportPromo.message,
+        title: bulkApiPromo.title,
+        message: bulkApiPromo.message,
         enabled: true,
         cta: {
-            link: csvImportPromo.cta.link,
-            external: csvImportPromo.cta.external,
-            hideOnClick: csvImportPromo.cta.hideOnClick
+            link: bulkApiPromo.cta.link,
+            external: bulkApiPromo.cta.external,
+            hideOnClick: bulkApiPromo.cta.hideOnClick
         }
     });
 }
