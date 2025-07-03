@@ -31,8 +31,11 @@
         Icon,
         Typography,
         Popover,
-        ActionMenu
+        ActionMenu,
+        Tooltip
     } from '@appwrite.io/pink-svelte';
+    import { BillingPlan } from '$lib/constants';
+    import { tierToPlan } from '$lib/stores/billing';
 
     export let data;
 
@@ -40,6 +43,13 @@
     let showDelete = false;
     let showEdit = false;
     let showDropdown = [];
+
+    // Calculate if button should be disabled and tooltip should show
+    $: memberCount = data.organizationMembers?.total ?? 0;
+    $: isFreeWithMembers = $organization?.billingPlan === BillingPlan.FREE && memberCount >= 1;
+    $: isButtonDisabled = isCloud
+        ? isFreeWithMembers || !$currentPlan?.addons?.seats?.supported
+        : false;
 
     const resend = async (member: Models.Membership) => {
         try {
@@ -70,14 +80,25 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Typography.Title>Members</Typography.Title>
-        <ConsoleButton
-            size="s"
-            event="create_user"
-            on:click={() => newMemberModal.set(true)}
-            disabled={isCloud ? !$currentPlan?.addons?.seats?.supported : false}>
-            <Icon size="s" icon={IconPlus} slot="start" />
-            <span class="text">Invite</span>
-        </ConsoleButton>
+        <Tooltip disabled={!isButtonDisabled} placement="bottom-end">
+            <div>
+                <ConsoleButton
+                    size="s"
+                    event="create_user"
+                    on:click={() => newMemberModal.set(true)}
+                    disabled={isButtonDisabled}>
+                    <Icon size="s" icon={IconPlus} slot="start" />
+                    <span class="text">Invite</span>
+                </ConsoleButton>
+            </div>
+            <div slot="tooltip">
+                {$organization?.billingPlan === BillingPlan.FREE
+                    ? 'Upgrade to add more members'
+                    : `You've reached the members limit for the ${
+                          tierToPlan($organization?.billingPlan)?.name
+                      } plan`}
+            </div>
+        </Tooltip>
     </Layout.Stack>
 
     <Table.Root
