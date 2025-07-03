@@ -10,6 +10,7 @@
     import { billingProjectsLimitDate } from '$lib/stores/billing';
     import { page } from '$app/state';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { currentPlan } from '$lib/stores/organization';
 
     let {
         showSelectProject = $bindable(false),
@@ -92,12 +93,12 @@
             </Table.Row.Base>
         {/each}
     </Table.Root>
-    {#if selectedProjects.length > 2}
+    {#if selectedProjects.length > $currentPlan?.projects}
         <div class="u-text-warning u-mb-4">
-            You can only select two projects. Please deselect others to continue.
+            You can only select {$currentPlan?.projects} projects. Please deselect others to continue.
         </div>
     {/if}
-    {#if selectedProjects.length === 2}
+    {#if selectedProjects.length === $currentPlan?.projects}
         <Alert.Inline
             status="warning"
             title={`${projects.length - selectedProjects.length} projects will be archived on ${billingProjectsLimitDate}`}>
@@ -110,6 +111,6 @@
     <svelte:fragment slot="footer">
         <Button.Button size="s" variant="secondary" on:click={() => (showSelectProject = false)}
             >Cancel</Button.Button>
-        <Button.Button size="s" disabled={selectedProjects.length !== 2}>Save</Button.Button>
+        <Button.Button size="s" disabled={selectedProjects.length !== $currentPlan?.projects}>Save</Button.Button>
     </svelte:fragment>
 </Modal>
