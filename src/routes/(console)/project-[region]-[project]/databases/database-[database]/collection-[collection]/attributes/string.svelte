@@ -130,7 +130,10 @@
 
 {#if showEncrypt}
     <Layout.Stack gap="xs" direction="column">
-        <div class="popover-holder" class:disabled-checkbox={!supportsStringEncryption || editing}>
+        <div
+            class="popover-holder"
+            class:cursor-not-allowed={editing}
+            class:disabled-checkbox={!supportsStringEncryption || editing}>
             <Layout.Stack inline gap="s" alignItems="flex-start" direction="row">
                 <Popover let:toggle placement="bottom-start">
                     <Selector.Checkbox
@@ -142,7 +145,9 @@
                     <Layout.Stack gap="xxs" direction="column">
                         <button
                             type="button"
-                            class="u-cursor-pointer"
+                            disabled={editing}
+                            class:cursor-pointer={!editing}
+                            class:cursor-not-allowed={editing}
                             on:click={(e) => {
                                 if (!supportsStringEncryption) {
                                     toggle(e);
@@ -185,7 +190,16 @@
 
         // no cursor when disabled
         &.disabled-checkbox :global(button) {
-            cursor: unset !important;
+            cursor: unset;
         }
+    }
+
+    .cursor-pointer {
+        // !important is needed
+        cursor: pointer !important;
+    }
+
+    .cursor-not-allowed {
+        cursor: not-allowed;
     }
 </style>
