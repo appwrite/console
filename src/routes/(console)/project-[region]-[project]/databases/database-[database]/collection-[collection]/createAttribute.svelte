@@ -9,7 +9,6 @@
     import { base } from '$app/paths';
     import type { Attributes } from './store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { preferences } from '$lib/stores/preferences';
 
     export let showCreate = false;
     export let selectedOption: Option['name'] = null;
