@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { organization } from '$lib/stores/organization';
     import BudgetCap from './budgetCap.svelte';
     import PlanSummary from './planSummary.svelte';
     import BillingAddress from './billingAddress.svelte';
@@ -25,14 +24,15 @@
     import type { PageData } from './$types';
 
     export let data: PageData;
+    let organization = data.organization;
 
     // why are these reactive?
     $: defaultPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
+        (method: PaymentMethodData) => method.$id === organization?.paymentMethodId
     );
 
     $: backupPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === $organization?.backupPaymentMethodId
+        (method: PaymentMethodData) => method.$id === organization?.backupPaymentMethodId
     );
 
     onMount(async () => {
@@ -52,10 +52,10 @@
                 );
 
                 await confirmPayment(
-                    $organization.$id,
+                    organization.$id,
                     invoice.clientSecret,
-                    $organization.paymentMethodId,
-                    `${base}/organization-${$organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
+                    organization.paymentMethodId,
+                    `${base}/organization-${organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
                 );
             }
 
@@ -64,7 +64,7 @@
                 page.url.searchParams.get('type') === 'validate-invoice'
             ) {
                 const invoiceId = page.url.searchParams.get('invoice');
-                await sdk.forConsole.billing.updateInvoiceStatus($organization.$id, invoiceId);
+                await sdk.forConsole.billing.updateInvoiceStatus(organization.$id, invoiceId);
                 invalidate(Dependencies.INVOICES);
                 invalidate(Dependencies.ORGANIZATION);
             }
@@ -84,7 +84,7 @@
         }
         if (page.url.searchParams.has('clientSecret')) {
             const clientSecret = page.url.searchParams.get('clientSecret');
-            await confirmPayment($organization.$id, clientSecret, $organization.paymentMethodId);
+            await confirmPayment(organization.$id, clientSecret, organization.paymentMethodId);
         }
     });
 </script>
@@ -93,7 +93,7 @@
     {#if $failedInvoice}
         {#if $failedInvoice?.lastError}
             <Alert.Inline status="error">
-                The scheduled payment for {$organization.name} failed due to following error: {$failedInvoice.lastError}
+                The scheduled payment for {organization.name} failed due to following error: {$failedInvoice.lastError}
                 <svelte:fragment slot="actions">
                     <Button
                         text
@@ -106,7 +106,7 @@
         {:else}
             <Alert.Inline
                 status="error"
-                title={`The scheduled payment for ${$organization.name} failed`}>
+                title={`The scheduled payment for ${organization.name} failed`}>
                 To avoid service disruptions in organization's your projects, please verify your
                 payment details and update them if necessary.
             </Alert.Inline>
@@ -115,16 +115,16 @@
     {#if defaultPaymentMethod?.failed && !backupPaymentMethod}
         <Alert.Inline
             status="error"
-            title={`The default payment method for ${$organization.name} has expired`}>
+            title={`The default payment method for ${organization.name} has expired`}>
             To avoid service disruptions in your organization's projects, please update your payment
             details.
         </Alert.Inline>
     {/if}
-    {#if $organization?.billingPlanDowngrade}
+    {#if organization?.billingPlanDowngrade}
         <Alert.Inline status="info">
-            Your organization has changed to {tierToPlan($organization?.billingPlanDowngrade).name} plan.
-            You will continue to have access to {tierToPlan($organization?.billingPlan).name} plan features
-            until your billing period ends on {toLocaleDate($organization.billingNextInvoiceDate)}.
+            Your organization has changed to {tierToPlan(organization?.billingPlanDowngrade).name} plan.
+            You will continue to have access to {tierToPlan(organization?.billingPlan).name} plan features
+            until your billing period ends on {toLocaleDate(organization.billingNextInvoiceDate)}.
         </Alert.Inline>
     {/if}
     <Typography.Title>Billing</Typography.Title>
@@ -137,7 +137,7 @@
     <PaymentMethods methods={data?.paymentMethods} />
     <BillingAddress {data} />
     <TaxId />
-    <BudgetCap />
+    <BudgetCap organization={data?.organization} currentPlan={data?.currentPlan} />
     <AvailableCredit areCreditsSupported={data.areCreditsSupported} />
 </Container>
 
