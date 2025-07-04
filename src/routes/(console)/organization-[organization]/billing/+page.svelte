@@ -134,7 +134,7 @@
         currentAggregation={data?.billingAggregation}
         currentInvoice={data?.billingInvoice} />
     <PaymentHistory />
-    <PaymentMethods methods={data?.paymentMethods} />
+    <PaymentMethods organization={data?.organization} methods={data?.paymentMethods} />
     <BillingAddress {data} />
     <TaxId />
     <BudgetCap organization={data?.organization} currentPlan={data?.currentPlan} />
