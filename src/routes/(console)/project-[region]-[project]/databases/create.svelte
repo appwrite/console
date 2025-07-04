@@ -24,7 +24,6 @@
     let name = '';
     let id: string = null;
     let showCustomId = false;
-    let showPlanUpgradeAlert = true;
 
     const trackEvents = (policies) => {
         policies.forEach((policy) => {
@@ -103,10 +102,6 @@
             trackError(error, Submit.DatabaseCreate);
         }
     };
-
-    $: if (!showCreate) {
-        showPlanUpgradeAlert = true;
-    }
 </script>
 
 <Modal title="Create database" onSubmit={create} bind:show={showCreate}>
@@ -132,18 +127,12 @@
 
     {#if isCloud}
         {#if $organization?.billingPlan === BillingPlan.FREE}
-            {#if showPlanUpgradeAlert}
-                <Alert.Inline
-                    dismissible
-                    title="This database won't be backed up"
-                    status="warning"
-                    on:dismiss={() => (showPlanUpgradeAlert = false)}>
-                    Upgrade your plan to ensure your data stays safe and backed up.
-                    <svelte:fragment slot="actions">
-                        <Button compact href={$upgradeURL}>Upgrade plan</Button>
-                    </svelte:fragment>
-                </Alert.Inline>
-            {/if}
+            <Alert.Inline title="This database won't be backed up" status="warning">
+                Upgrade your plan to ensure your data stays safe and backed up.
+                <svelte:fragment slot="actions">
+                    <Button compact href={$upgradeURL}>Upgrade plan</Button>
+                </svelte:fragment>
+            </Alert.Inline>
         {:else}
             <CreatePolicy
                 bind:totalPolicies
