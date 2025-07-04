@@ -135,7 +135,11 @@
         currentInvoice={data?.billingInvoice} />
     <PaymentHistory />
     <PaymentMethods organization={data?.organization} methods={data?.paymentMethods} />
-    <BillingAddress {data} />
+    <BillingAddress
+        organization={data?.organization}
+        billingAddress={data?.billingAddress}
+        locale={data?.locale}
+        countryList={data?.countryList} />
     <TaxId />
     <BudgetCap organization={data?.organization} currentPlan={data?.currentPlan} />
     <AvailableCredit areCreditsSupported={data.areCreditsSupported} />

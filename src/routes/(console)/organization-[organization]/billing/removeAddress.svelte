@@ -21,6 +21,7 @@
             });
             trackEvent(Submit.OrganizationBillingAddressDelete);
             invalidate(Dependencies.ORGANIZATION);
+            invalidate(Dependencies.CREATE_ORGANIZATION);
             show = false;
         } catch (e) {
             error = e.message;
