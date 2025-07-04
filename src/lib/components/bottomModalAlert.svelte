@@ -3,7 +3,6 @@
     import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import { app } from '$lib/stores/app';
     import {
-        type BottomModalAlertAction,
         type BottomModalAlertItem,
         bottomModalAlertsConfig,
         dismissBottomModalAlert,
@@ -20,18 +19,18 @@
     import { goto } from '$app/navigation';
     import { Typography } from '@appwrite.io/pink-svelte';
 
-    let currentIndex = 0;
-    let openModalOnMobile = false;
+    let currentIndex = $state(0);
+    let openModalOnMobile = $state(false);
 
-    function getPageScope(pathname: string) {
-        const isProjectPage = pathname.includes('project-[region]-[project]');
-        const isOrganizationPage = pathname.includes('organization-[organization]');
+    function getPageScope(route: string) {
+        const isProjectPage = route.includes('project-[region]-[project]');
+        const isOrganizationPage = route.includes('organization-[organization]');
 
         return { isProjectPage, isOrganizationPage };
     }
 
-    function filterModalAlerts(alerts: BottomModalAlertItem[], pathname: string) {
-        const { isProjectPage, isOrganizationPage } = getPageScope(pathname);
+    function filterModalAlerts(alerts: BottomModalAlertItem[], route: string) {
+        const { isProjectPage, isOrganizationPage } = getPageScope(route);
 
         return alerts
             .sort((a, b) => b.importance - a.importance)
@@ -51,19 +50,32 @@
             });
     }
 
-    $: filteredModalAlerts = filterModalAlerts($bottomModalAlertsConfig.alerts, page.route.id);
+    const bottomModalAlerts = $derived($bottomModalAlertsConfig.alerts);
 
-    $: currentModalAlert = filteredModalAlerts[currentIndex] as BottomModalAlertItem;
+    const filteredModalAlerts = $derived(filterModalAlerts(bottomModalAlerts, page.route.id));
 
-    $: hasOnlyPrimaryCta = typeof currentModalAlert?.learnMore === 'undefined';
+    const currentModalAlert = $derived(filteredModalAlerts[currentIndex] as BottomModalAlertItem);
 
-    function handleClose() {
-        filteredModalAlerts.forEach((alert) => {
+    const hasOnlyPrimaryCta = $derived(typeof currentModalAlert?.learnMore === 'undefined');
+
+    const isOnOnboarding = $derived(page.route.id.includes('(console)/onboarding'));
+
+    function handleClose(id: string | null = null) {
+        const alerts = !id
+            ? filteredModalAlerts
+            : filteredModalAlerts.filter((alert) => alert.id === id);
+
+        alerts.forEach((alert) => {
             const modalAlert = alert;
             dismissBottomModalAlert(modalAlert.id);
             hideNotification(modalAlert.id, { coolOffPeriod: 24 * 365 });
             if (modalAlert.closed) modalAlert.closed();
         });
+
+        // reset `currentIndex` if we removed the last item
+        if (currentIndex >= filteredModalAlerts.length - 1) {
+            currentIndex = Math.max(0, filteredModalAlerts.length - 2);
+        }
     }
 
     function showNext() {
@@ -114,8 +126,13 @@
     }
 
     // the button component cannot have both href and on:click!
-    function triggerWindowLink(alertAction: BottomModalAlertAction, event?: string) {
+    function triggerWindowLink(alert: BottomModalAlertItem, event?: string) {
+        const alertAction = alert.cta;
         const shouldShowUpgrade = showUpgrade();
+
+        // for correct event tracking after removal
+        const currentModalId = currentModalAlert.id;
+
         const url = shouldShowUpgrade
             ? $upgradeURL
             : alertAction.link({
@@ -130,14 +147,12 @@
         }
 
         if (alertAction?.hideOnClick === true) {
-            // be careful of this one.
-            // once clicked, its gone!
-            handleClose();
+            handleClose(alert.id); // gone!
         }
 
         trackEvent(Click.PromoClick, {
-            promo: currentModalAlert.id,
-            type: shouldShowUpgrade ? 'upgrade' : (event ?? `cta_click_${currentModalAlert.id}`)
+            promo: currentModalId,
+            type: shouldShowUpgrade ? 'upgrade' : (event ?? `cta_click_${currentModalId}`)
         });
     }
 
@@ -156,12 +171,10 @@
         }
     }
 
-    onMount(() => {
-        addBottomModalAlerts();
-    });
+    onMount(addBottomModalAlerts);
 </script>
 
-{#if filteredModalAlerts.length > 0 && currentModalAlert && !page.url.pathname.includes('console/onboarding')}
+{#if !isOnOnboarding && filteredModalAlerts.length > 0 && currentModalAlert}
     {@const shouldShowUpgrade = showUpgrade()}
     <div class="main-alert-wrapper is-not-mobile">
         <div class="alert-container">
@@ -170,7 +183,7 @@
                     <button
                         aria-label="Close modal"
                         class="icon-inline-tag"
-                        on:click={() => handleClose()}>
+                        onclick={() => handleClose()}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
@@ -209,14 +222,14 @@
                                         aria-label="Previous"
                                         class="icon-cheveron-left"
                                         style:cursor={currentIndex !== 0 ? 'pointer' : undefined}
-                                        on:click={showPrevious}
+                                        onclick={showPrevious}
                                         disabled={currentIndex === 0}
                                         class:active={currentIndex > 0}></button>
 
                                     <button
                                         aria-label="Next"
                                         class="icon-cheveron-right"
-                                        on:click={showNext}
+                                        onclick={showNext}
                                         style:cursor={currentIndex !==
                                         filteredModalAlerts.length - 1
                                             ? 'pointer'
@@ -248,7 +261,7 @@
                                 fullWidthMobile
                                 secondary={!hasOnlyPrimaryCta}
                                 class={`${hasOnlyPrimaryCta ? 'only-primary-cta' : ''}`}
-                                on:click={() => triggerWindowLink(currentModalAlert.cta)}>
+                                on:click={() => triggerWindowLink(currentModalAlert)}>
                                 {currentModalAlert.cta.text}
                             </Button>
 
@@ -281,7 +294,7 @@
                         <button
                             aria-label="Close modal"
                             class="icon-inline-tag"
-                            on:click={() => handleClose()}>
+                            onclick={() => handleClose()}>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="20"
@@ -322,14 +335,14 @@
                                             style:cursor={currentIndex !== 0
                                                 ? 'pointer'
                                                 : undefined}
-                                            on:click={showPrevious}
+                                            onclick={showPrevious}
                                             disabled={currentIndex === 0}
                                             class:active={currentIndex > 0}></button>
 
                                         <button
                                             aria-label="Next"
                                             class="icon-cheveron-right"
-                                            on:click={showNext}
+                                            onclick={showNext}
                                             style:cursor={currentIndex !==
                                             filteredModalAlerts.length - 1
                                                 ? 'pointer'
@@ -364,7 +377,7 @@
                                     fullWidthMobile
                                     on:click={() => {
                                         openModalOnMobile = false;
-                                        triggerWindowLink(currentModalAlert.cta);
+                                        triggerWindowLink(currentModalAlert);
                                     }}>
                                     {shouldShowUpgrade
                                         ? 'Upgrade plan'
@@ -394,13 +407,13 @@
         {:else}
             {@const mobileConfig = getMobileWindowConfig()}
             <!-- we don't need keydown because we show this only on mobile -->
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
             <div
                 tabindex="0"
                 role="button"
                 class:showing={!openModalOnMobile}
                 class="card notification-card u-width-full-line"
-                on:click={() => {
+                onclick={() => {
                     if (mobileConfig.cta) {
                         // navigate manually!
                         triggerMobileWindowLink();
@@ -413,7 +426,7 @@
                         <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                             {currentModalAlert.title}
                         </Typography.Text>
-                        <button on:click={hideAllModalAlerts} aria-label="Close">
+                        <button onclick={hideAllModalAlerts} aria-label="Close">
                             <span class="icon-x"></span>
                         </button>
                     </div>
