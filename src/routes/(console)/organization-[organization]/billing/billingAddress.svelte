@@ -46,7 +46,7 @@
 
             invalidate(Dependencies.ADDRESS);
             invalidate(Dependencies.ORGANIZATION);
-            invalidate(Dependencies.CREATE_ORGANIZATION);
+            invalidate(Dependencies.ORGANIZATIONS);
         } catch (error) {
             addNotification({
                 type: 'error',

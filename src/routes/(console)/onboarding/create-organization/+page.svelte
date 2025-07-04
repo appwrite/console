@@ -50,7 +50,7 @@
 
                 // fixes an edge case where
                 // the org is not available for some reason!
-                await invalidate(Dependencies.CREATE_ORGANIZATION);
+                await invalidate(Dependencies.ORGANIZATIONS);
             }
             isLoading = false;
         }
