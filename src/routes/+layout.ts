@@ -16,7 +16,7 @@ export const ssr = false;
 
 export const load: LayoutLoad = async ({ depends, url, route }) => {
     depends(Dependencies.ACCOUNT);
-    depends(Dependencies.CREATE_ORGANIZATION);
+    depends(Dependencies.ORGANIZATIONS);
 
     const [account, error] = (await sdk.forConsole.account
         .get()

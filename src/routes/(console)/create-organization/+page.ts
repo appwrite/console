@@ -6,7 +6,7 @@ import type { Organization } from '$lib/stores/organization';
 
 export const load: PageLoad = async ({ url, parent, depends }) => {
     const { organizations } = await parent();
-    depends(Dependencies.CREATE_ORGANIZATION);
+    depends(Dependencies.ORGANIZATIONS);
 
     const [coupon, paymentMethods] = await Promise.all([
         getCoupon(url),

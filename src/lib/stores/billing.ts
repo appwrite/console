@@ -287,6 +287,7 @@ export function checkForEnterpriseTrial(org: Organization) {
 }
 
 export function calculateEnterpriseTrial(org: Organization) {
+    if (!org || !org.billingNextInvoiceDate) return 0;
     const endDate = new Date(org.billingNextInvoiceDate);
     const startDate = new Date(org.billingCurrentInvoiceDate);
     const today = new Date();

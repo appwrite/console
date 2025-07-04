@@ -7,7 +7,7 @@ import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
 
 export const load: PageLoad = async ({ parent, depends }) => {
-    const { organization, scopes, currentPlan, countryList, locale, plansInfo } = await parent();
+    const { organization, scopes, currentPlan, countryList, locale } = await parent();
 
     if (!scopes.includes('billing.read')) {
         return redirect(301, `/console/organization-${organization.$id}`);
@@ -64,10 +64,6 @@ export const load: PageLoad = async ({ parent, depends }) => {
         areCreditsSupported ? sdk.forConsole.billing.getAvailableCredit(organization.$id) : null
     ]);
 
-    const aggregationBillingPlan = plansInfo.get(
-        billingAggregation?.plan ?? organization.billingPlan
-    );
-
     // make number
     const credits = availableCredit ? availableCredit.available : null;
 
@@ -75,7 +71,6 @@ export const load: PageLoad = async ({ parent, depends }) => {
         paymentMethods,
         addressList,
         billingAddress,
-        aggregationBillingPlan,
         availableCredit: credits,
         billingAggregation,
         billingInvoice,

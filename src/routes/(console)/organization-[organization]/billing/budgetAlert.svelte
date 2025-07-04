@@ -7,18 +7,20 @@
     import { Button, Form } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { currentPlan, organization } from '$lib/stores/organization';
+    import { type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
     import { Alert, Icon, Table } from '@appwrite.io/pink-svelte';
     import { IconTrash } from '@appwrite.io/pink-icons-svelte';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import type { Plan } from '$lib/sdk/billing';
 
+    export let organization: Organization;
+    export let currentPlan: Plan;
     export let alertsEnabled = false;
 
     let search: string;
     let selectedAlert: number;
-    let alerts: number[] = [];
+    let alerts: number[] = organization?.budgetAlerts ?? [];
 
     $: options = [
         { value: 25, label: '25%', disabled: false },
@@ -31,10 +33,6 @@
             label: option.label,
             disabled: alerts.includes(option.value)
         };
-    });
-
-    onMount(() => {
-        alerts = $organization?.budgetAlerts ?? [];
     });
 
     function addAlert() {
@@ -50,8 +48,8 @@
     async function updateBudget() {
         try {
             await sdk.forConsole.billing.updateBudget(
-                $organization.$id,
-                $organization.billingBudget,
+                organization.$id,
+                organization.billingBudget,
                 alerts
             );
 
@@ -60,7 +58,7 @@
             addNotification({
                 type: 'success',
                 isHtml: true,
-                message: `<span> ${alerts.length === 0 ? 'Budget alerts removed from' : alerts.length > 1 ? `Budget alerts added to` : 'A budget alert has been added to'} <b>${$organization.name}</b> </span>`
+                message: `<span> ${alerts.length === 0 ? 'Budget alerts removed from' : alerts.length > 1 ? `Budget alerts added to` : 'A budget alert has been added to'} <b>${organization.name}</b> </span>`
             });
             trackEvent(Submit.BudgetAlertsUpdate, {
                 alerts
@@ -75,26 +73,26 @@
     }
 
     $: isButtonDisabled =
-        symmetricDifference(alerts, $organization.budgetAlerts).length === 0 || !alertsEnabled;
+        symmetricDifference(alerts, organization.budgetAlerts).length === 0 || !alertsEnabled;
 </script>
 
 <CardGrid>
     <svelte:fragment slot="title">Billing alerts</svelte:fragment>
-    {#if !$currentPlan.budgeting}
+    {#if !currentPlan.budgeting}
         Get notified by email when your organization meets a percentage of your budget cap. <b
-            >{tierToPlan($organization.billingPlan).name} organizations will receive one notification
+            >{tierToPlan(organization.billingPlan).name} organizations will receive one notification
             at 75% resource usage.</b>
     {:else}
         Get notified by email when your organization meets or exceeds a percentage of your specified
         billing alert(s).
     {/if}
     <svelte:fragment slot="aside">
-        {#if !$currentPlan.budgeting}
+        {#if !currentPlan.budgeting}
             <Alert.Inline status="info" title="Billing alerts are a Pro plan feature">
                 Upgrade to a Pro plan to manage when you receive billing alerts for your
                 organization.
             </Alert.Inline>
-        {:else if !$currentPlan.budgetCapEnabled}
+        {:else if !currentPlan.budgetCapEnabled}
             <Alert.Inline status="info" title="Budget cap disabled">
                 Budget caps are not supported on your current plan. For more information, please
                 reach out to your customer success manager.
@@ -150,7 +148,7 @@
 
     <svelte:fragment slot="actions">
         <Form onSubmit={updateBudget}>
-            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+            {#if organization?.billingPlan === BillingPlan.FREE || organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                 <Button
                     secondary
                     href={$upgradeURL}
