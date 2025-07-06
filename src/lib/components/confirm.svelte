@@ -68,3 +68,9 @@
         </svelte:fragment>
     </Dialog>
 </Form>
+
+<style>
+    :global(dialog section) {
+        overflow: visible !important;
+    }
+</style>
