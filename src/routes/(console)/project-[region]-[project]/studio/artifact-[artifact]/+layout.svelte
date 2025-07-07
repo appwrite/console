@@ -126,9 +126,9 @@
 
     function removeTerminal(symbol: symbol) {
         studio.removeTerminal(symbol);
-        if (studio.terminals.size === 0) {
-            terminalOpen = false;
-        }
+        // if (studio.terminals.size === 1) {
+        //     terminalOpen = false;
+        // }
     }
 
     const artifacts = $derived.by(() => {
@@ -282,6 +282,7 @@
                                                     <Icon icon={IconTerminal} />
                                                     <span class="label">Terminal</span>
                                                 </Tab>
+
                                                 <Button.Button
                                                     variant="text"
                                                     size="xs"
