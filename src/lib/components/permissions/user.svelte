@@ -53,20 +53,12 @@
         isLoading = false;
     }
 
-    function onSelection(role: string, value: boolean | null = null) {
+    function onSelection(role: string) {
         const checked = selected.has(role);
-        if (value === null) {
-            if (checked) {
-                selected.delete(role);
-            } else {
-                selected.add(role);
-            }
+        if (checked) {
+            selected.delete(role);
         } else {
-            if (value) {
-                selected.add(role);
-            } else {
-                selected.delete(role);
-            }
+            selected.add(role);
         }
         selected = selected;
 
