@@ -10,6 +10,7 @@
     import { goto } from '$app/navigation';
     import { Divider, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { consoleProfile } from '$lib/system';
+    import FullPageUnauthenticatedStudio from '$lib/layout/fullPageUnauthenticatedStudio.svelte';
 
     let email: string;
     let userId: string;
@@ -64,7 +65,7 @@
     <title>Recover - Appwrite</title>
 </svelte:head>
 {#if consoleProfile.hasFullPageSignup}
-    <UnauthenticatedStudio title="Password recovery">
+    <FullPageUnauthenticatedStudio title="Recover password">
         {#if userId && secret}
             <Form onSubmit={setPassword}>
                 <Layout.Stack>
@@ -112,7 +113,7 @@
                 </Layout.Stack>
             </Form>
         {/if}
-    </UnauthenticatedStudio>
+    </FullPageUnauthenticatedStudio>
 {:else}
     <Unauthenticated>
         <svelte:fragment slot="title">Password recovery</svelte:fragment>
