@@ -126,9 +126,9 @@
 
     function removeTerminal(symbol: symbol) {
         studio.removeTerminal(symbol);
-        // if (studio.terminals.size === 1) {
-        //     terminalOpen = false;
-        // }
+        if (studio.terminals.size > 1) {
+            terminalOpen = true;
+        }
     }
 
     const artifacts = $derived.by(() => {
@@ -272,7 +272,7 @@
                                             <Icon icon={IconImagine} />
                                             Imagine
                                         </Tab>
-                                        {#each studio.terminals as [symbol] (symbol)}
+                                        {#each studio.terminals as [symbol], i (symbol)}
                                             <div class="terminal-group">
                                                 <Tab
                                                     {root}
@@ -283,20 +283,22 @@
                                                     <span class="label">Terminal</span>
                                                 </Tab>
 
-                                                <Button.Button
-                                                    variant="text"
-                                                    size="xs"
-                                                    class="terminal-close"
-                                                    onclick={(event) => {
-                                                        event.preventDefault();
-                                                        removeTerminal(symbol);
-                                                    }}
-                                                    icon>
-                                                    <Icon
-                                                        icon={IconX}
-                                                        size="s"
-                                                        color="--fgcolor-neutral-tertiary" />
-                                                </Button.Button>
+                                                {#if i !== 0}
+                                                    <Button.Button
+                                                        variant="text"
+                                                        size="xs"
+                                                        class="terminal-close"
+                                                        onclick={(event) => {
+                                                            event.preventDefault();
+                                                            removeTerminal(symbol);
+                                                        }}
+                                                        icon>
+                                                        <Icon
+                                                            icon={IconX}
+                                                            --icon-size-m="12px"
+                                                            color="--fgcolor-neutral-tertiary" />
+                                                    </Button.Button>
+                                                {/if}
                                             </div>
                                         {/each}
                                     </Tabs>
@@ -438,6 +440,7 @@
         align-items: center;
         justify-content: center;
         background-color: var(--bgcolor-neutral-primary) !important;
+        border: 0 !important;
     }
 
     .divider-wrapper-artifacts {
