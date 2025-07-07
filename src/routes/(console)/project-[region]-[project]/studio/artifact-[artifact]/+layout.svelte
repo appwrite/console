@@ -431,16 +431,23 @@
         justify-content: center;
     }
 
+    .terminal-group:hover > :global(.terminal-close) {
+        opacity: 1;
+    }
+
     :global(.terminal-close) {
         position: absolute;
         right: 2px;
-        width: 32px;
-        height: 23px;
+        width: 18px;
+        height: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: var(--bgcolor-neutral-primary) !important;
+        background-color: hsla(var(--bgcolor-neutral-primary) / 95) !important;
         border: 0 !important;
+        backdrop-filter: blur(2px);
+        opacity: 0;
+        transition: opacity 150ms ease-in-out;
     }
 
     .divider-wrapper-artifacts {
