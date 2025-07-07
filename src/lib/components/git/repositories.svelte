@@ -23,7 +23,7 @@
     import { page } from '$app/state';
     import Card from '../card.svelte';
     import SkeletonRepoList from './skeletonRepoList.svelte';
-    import { onMount, untrack } from 'svelte';
+    import { onMount, untrack, onDestroy } from 'svelte';
 
     let {
         action = $bindable('select'),
@@ -48,8 +48,44 @@
     let isLoadingRepositories = $state(null);
     let installationsMap = $state(null);
 
+    // Debounce and race condition handling
+    let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+    let currentRequestId = 0;
+    let lastResolvedRequestId = 0;
+
     onMount(() => {
         loadInstallations();
+    });
+
+    $effect(() => {
+        if (selectedInstallation && search !== undefined) {
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+            searchTimeout = setTimeout(() => {
+                if (selectedInstallation) {
+                    isLoadingRepositories = true;
+                    const requestId = ++currentRequestId;
+                    loadRepositories(selectedInstallation, search)
+                        .then(() => {
+                            if (requestId > lastResolvedRequestId) {
+                                lastResolvedRequestId = requestId;
+                                isLoadingRepositories = false;
+                            }
+                        })
+                        .catch(() => {
+                            if (requestId > lastResolvedRequestId) {
+                                lastResolvedRequestId = requestId;
+                                isLoadingRepositories = false;
+                            }
+                        });
+                }
+            }, 300);
+        }
+    });
+
+    onDestroy(() => {
+        if (searchTimeout) clearTimeout(searchTimeout);
     });
 
     async function loadInstallations() {
@@ -71,7 +107,7 @@
                 .vcs.listInstallations();
             if (installations.length) {
                 if (!selectedInstallation) {
-                    untrack(() => (selectedInstallation = installationList.installations[0].$id));
+                    untrack(() => (selectedInstallation = installations[0].$id));
                 }
                 installation.set(installations.find((entry) => entry.$id === selectedInstallation));
             }
@@ -80,22 +116,6 @@
     }
 
     async function loadRepositories(installationId: string, search: string) {
-        if (
-            !$repositories ||
-            $repositories.installationId !== installationId ||
-            $repositories.search !== search
-        ) {
-            await fetchRepos(installationId, search);
-        }
-
-        if ($repositories.repositories.length && action === 'select') {
-            selectedRepository = $repositories.repositories[0].id;
-            $repository = $repositories.repositories[0];
-        }
-        return $repositories.repositories;
-    }
-
-    async function fetchRepos(installationId: string, search: string) {
         if (product === 'functions') {
             $repositories.repositories = (
                 (await sdk
@@ -117,9 +137,9 @@
                     )) as unknown as Models.ProviderRepositoryFrameworkList
             ).frameworkProviderRepositories;
         }
-
         $repositories.search = search;
         $repositories.installationId = installationId;
+        return $repositories.repositories;
     }
 
     selectedRepository;
@@ -168,10 +188,9 @@
                                 installationsMap.find((entry) => entry.$id === selectedInstallation)
                             );
 
-                            isLoadingRepositories = true;
-                            loadRepositories(selectedInstallation, search).then(() => {
-                                isLoadingRepositories = false;
-                            });
+                            if (searchTimeout) {
+                                clearTimeout(searchTimeout);
+                            }
                         }}
                         bind:value={selectedInstallation} />
                     <InputSearch
