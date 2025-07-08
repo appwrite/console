@@ -72,7 +72,7 @@
     });
 
     onDestroy(() => {
-        debouncedLoadRepositories.cancel?.();
+        debouncedLoadRepositories.cancel();
     });
 
     async function loadInstallations() {
@@ -175,7 +175,7 @@
                                 installationsMap.find((entry) => entry.$id === selectedInstallation)
                             );
 
-                            debouncedLoadRepositories.cancel?.();
+                            debouncedLoadRepositories.cancel();
                         }}
                         bind:value={selectedInstallation} />
                     <InputSearch
@@ -189,130 +189,110 @@
             <!-- manual installation change -->
             {#if isLoadingRepositories}
                 <SkeletonRepoList />
-            {:else}
-                {#await loadRepositories(selectedInstallation, search)}
-                    <SkeletonRepoList />
-                {:then response}
-                    {#if response?.length}
-                        <Paginator items={response} hideFooter={response?.length <= 6} limit={6}>
-                            {#snippet children(
-                                paginatedItems: Models.ProviderRepositoryRuntime[] &
-                                    Models.ProviderRepositoryFramework[]
-                            )}
-                                <Table.Root columns={1} let:root>
-                                    {#each paginatedItems as repo}
-                                        <Table.Row.Base {root}>
-                                            <Table.Cell {root}>
+            {:else if $repositories?.repositories?.length}
+                <Paginator
+                    items={$repositories.repositories}
+                    hideFooter={$repositories.repositories?.length <= 6}
+                    limit={6}>
+                    {#snippet children(
+                        paginatedItems: Models.ProviderRepositoryRuntime[] &
+                            Models.ProviderRepositoryFramework[]
+                    )}
+                        <Table.Root columns={1} let:root>
+                            {#each paginatedItems as repo}
+                                <Table.Row.Base {root}>
+                                    <Table.Cell {root}>
+                                        <Layout.Stack direction="row" alignItems="center" gap="s">
+                                            {#if action === 'select'}
+                                                <input
+                                                    class="is-small u-margin-inline-end-8"
+                                                    type="radio"
+                                                    name="repositories"
+                                                    bind:group={selectedRepository}
+                                                    onchange={() => repository.set(repo)}
+                                                    value={repo.id} />
+                                            {/if}
+                                            {#if product === 'sites'}
+                                                {#if repo?.framework && repo.framework !== 'other'}
+                                                    <Avatar size="xs" alt={repo.name}>
+                                                        <SvgIcon
+                                                            name={getFrameworkIcon(repo.framework)}
+                                                            iconSize="small" />
+                                                    </Avatar>
+                                                {:else}
+                                                    <Avatar size="xs" alt={repo.name} empty />
+                                                {/if}
+                                            {:else}
+                                                {@const iconName = repo?.runtime
+                                                    ? repo.runtime.split('-')[0]
+                                                    : undefined}
+                                                <Avatar size="xs" alt={repo.name} empty={!iconName}>
+                                                    <SvgIcon name={iconName} iconSize="small" />
+                                                </Avatar>
+                                            {/if}
+                                            <Layout.Stack
+                                                gap="s"
+                                                direction="row"
+                                                alignItems="center"
+                                                justifyContent="space-between">
                                                 <Layout.Stack
                                                     direction="row"
-                                                    alignItems="center"
-                                                    gap="s">
-                                                    {#if action === 'select'}
-                                                        <input
-                                                            class="is-small u-margin-inline-end-8"
-                                                            type="radio"
-                                                            name="repositories"
-                                                            bind:group={selectedRepository}
-                                                            onchange={() => repository.set(repo)}
-                                                            value={repo.id} />
+                                                    gap="s"
+                                                    alignItems="center">
+                                                    <Typography.Text
+                                                        truncate
+                                                        color="--fgcolor-neutral-secondary">
+                                                        {repo.name}
+                                                    </Typography.Text>
+                                                    {#if repo.private}
+                                                        <Icon
+                                                            size="s"
+                                                            icon={IconLockClosed}
+                                                            color="--fgcolor-neutral-tertiary" />
                                                     {/if}
-                                                    {#if product === 'sites'}
-                                                        {#if repo?.framework && repo.framework !== 'other'}
-                                                            <Avatar size="xs" alt={repo.name}>
-                                                                <SvgIcon
-                                                                    name={getFrameworkIcon(
-                                                                        repo.framework
-                                                                    )}
-                                                                    iconSize="small" />
-                                                            </Avatar>
-                                                        {:else}
-                                                            <Avatar
-                                                                size="xs"
-                                                                alt={repo.name}
-                                                                empty />
-                                                        {/if}
-                                                    {:else}
-                                                        {@const iconName = repo?.runtime
-                                                            ? repo.runtime.split('-')[0]
-                                                            : undefined}
-                                                        <Avatar
-                                                            size="xs"
-                                                            alt={repo.name}
-                                                            empty={!iconName}>
-                                                            <SvgIcon
-                                                                name={iconName}
-                                                                iconSize="small" />
-                                                        </Avatar>
-                                                    {/if}
-                                                    <Layout.Stack
-                                                        gap="s"
-                                                        direction="row"
-                                                        alignItems="center"
-                                                        justifyContent="space-between">
-                                                        <Layout.Stack
-                                                            direction="row"
-                                                            gap="s"
-                                                            alignItems="center">
-                                                            <Typography.Text
+                                                    {#if !$isSmallViewport}
+                                                        <time datetime={repo.pushedAt}>
+                                                            <Typography.Caption
+                                                                variant="400"
                                                                 truncate
-                                                                color="--fgcolor-neutral-secondary">
-                                                                {repo.name}
-                                                            </Typography.Text>
-                                                            {#if repo.private}
-                                                                <Icon
-                                                                    size="s"
-                                                                    icon={IconLockClosed}
-                                                                    color="--fgcolor-neutral-tertiary" />
-                                                            {/if}
-                                                            {#if !$isSmallViewport}
-                                                                <time datetime={repo.pushedAt}>
-                                                                    <Typography.Caption
-                                                                        variant="400"
-                                                                        truncate
-                                                                        color="--fgcolor-neutral-tertiary">
-                                                                        {timeFromNow(repo.pushedAt)}
-                                                                    </Typography.Caption>
-                                                                </time>
-                                                            {/if}
-                                                        </Layout.Stack>
-                                                        {#if action === 'button'}
-                                                            <PinkButton.Button
-                                                                size="xs"
-                                                                variant="secondary"
-                                                                on:click={() => connect(repo)}>
-                                                                Connect
-                                                            </PinkButton.Button>
-                                                        {/if}
-                                                    </Layout.Stack>
+                                                                color="--fgcolor-neutral-tertiary">
+                                                                {timeFromNow(repo.pushedAt)}
+                                                            </Typography.Caption>
+                                                        </time>
+                                                    {/if}
                                                 </Layout.Stack>
-                                            </Table.Cell>
-                                        </Table.Row.Base>
-                                    {/each}
-                                </Table.Root>
-                            {/snippet}
-                        </Paginator>
-                    {:else if search}
-                        <EmptySearch hidePages hidePagination bind:search target="repositories">
-                            <svelte:fragment slot="actions">
-                                {#if search}
-                                    <Button secondary on:click={() => (search = '')}>
-                                        Clear search
-                                    </Button>
-                                {/if}
-                            </svelte:fragment>
-                        </EmptySearch>
-                    {:else}
-                        <Card>
-                            <Layout.Stack alignItems="center" justifyContent="center">
-                                <Typography.Text
-                                    variation="m-500"
-                                    color="--fgcolor-neutral-tertiary">
-                                    No repositories available
-                                </Typography.Text>
-                            </Layout.Stack>
-                        </Card>
-                    {/if}
-                {/await}
+                                                {#if action === 'button'}
+                                                    <PinkButton.Button
+                                                        size="xs"
+                                                        variant="secondary"
+                                                        on:click={() => connect(repo)}>
+                                                        Connect
+                                                    </PinkButton.Button>
+                                                {/if}
+                                            </Layout.Stack>
+                                        </Layout.Stack>
+                                    </Table.Cell>
+                                </Table.Row.Base>
+                            {/each}
+                        </Table.Root>
+                    {/snippet}
+                </Paginator>
+            {:else if search}
+                <EmptySearch hidePages hidePagination bind:search target="repositories">
+                    <svelte:fragment slot="actions">
+                        {#if search}
+                            <Button secondary on:click={() => (search = '')}>Clear search</Button>
+                        {/if}
+                    </svelte:fragment>
+                </EmptySearch>
+            {:else}
+                <Card>
+                    <Layout.Stack alignItems="center" justifyContent="center">
+                        <Typography.Text variation="m-500" color="--fgcolor-neutral-tertiary">
+                            No repositories available
+                        </Typography.Text>
+                    </Layout.Stack>
+                </Card>
             {/if}
         {/if}
     </Layout.Stack>
