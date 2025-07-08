@@ -20,7 +20,7 @@
                 message: `The billing address has been removed from ${$organization.name}`
             });
             trackEvent(Submit.OrganizationBillingAddressDelete);
-            invalidate(Dependencies.ORGANIZATION);
+            invalidate(Dependencies.ORGANIZATIONS);
             show = false;
         } catch (e) {
             error = e.message;

@@ -22,15 +22,15 @@
         data = null;
         selectedRelationship = null;
     }
+
+    $: tableColumns = [{ id: '$id', width: 200 }, ...args.map((id) => ({ id }))];
 </script>
 
 <Modal bind:show title={selectedRelationship?.key} hideFooter>
     {#if data?.length}
         <Paginator items={data} {limit}>
             {#snippet children(paginatedItems: typeof data)}
-                <Table.Root
-                    let:root
-                    columns={[{ id: '$id', width: 150 }, ...args.map((id) => ({ id }))]}>
+                <Table.Root let:root columns={tableColumns}>
                     <svelte:fragment slot="header" let:root>
                         <Table.Header.Cell column="$id" {root}>Document ID</Table.Header.Cell>
                         {#if args?.length}

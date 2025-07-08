@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { InputChoice } from '$lib/elements/forms';
@@ -7,11 +7,9 @@
     import { collection } from '../store';
     import type { Attributes } from '../store';
     import { sdk } from '$lib/stores/sdk';
-    import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isRelationship } from '../document-[document]/attributes/store';
     import Confirm from '$lib/components/confirm.svelte';
-    import { preferences } from '$lib/stores/preferences';
 
     export let showDelete = false;
     export let selectedAttribute: Attributes;
@@ -20,22 +18,11 @@
     let error: string;
     let checked = false;
 
-    async function updateCollectionColumns() {
-        const selectedColumns = preferences
-            .getCustomCollectionColumns($collection.$id)
-            .filter((attribute) => attribute != selectedAttribute.key);
-
-        await preferences.setCustomCollectionColumns($collection.$id, selectedColumns);
-        await invalidate(Dependencies.COLLECTION);
-    }
-
     async function handleDelete() {
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .databases.deleteAttribute(databaseId, $collection.$id, selectedAttribute.key);
-
-            await updateCollectionColumns();
 
             showDelete = false;
             addNotification({

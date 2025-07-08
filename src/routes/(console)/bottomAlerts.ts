@@ -1,10 +1,9 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
-import {
-    type BottomModalAlertItem,
-    showBottomModalAlert,
-    setMobileSingleAlertLayout
-} from '$lib/stores/bottom-alerts';
+import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
+
+import BulkApiDark from '$lib/images/promos/bulk-api-dark.png';
+import BulkApiLight from '$lib/images/promos/bulk-api-light.png';
 
 import CSVImportDark from '$lib/images/promos/csv-import-placeholder-dark.png';
 import CSVImportLight from '$lib/images/promos/csv-import-placeholder-light.png';
@@ -33,18 +32,28 @@ if (isCloud) {
         show: true
     };
 
-    listOfPromotions.push(csvImportPromo);
-
-    setMobileSingleAlertLayout({
-        title: csvImportPromo.title,
-        message: csvImportPromo.message,
-        enabled: true,
+    const bulkApiPromo: BottomModalAlertItem = {
+        id: 'modal:bulk_api_announcement',
+        src: {
+            dark: BulkApiDark,
+            light: BulkApiLight
+        },
+        title: 'Introducing Bulk API',
+        message:
+            'A new Appwrite Databases feature, explicitly designed to handle heavy write workloads.',
+        plan: 'free',
+        importance: 8,
+        scope: 'project',
         cta: {
-            link: csvImportPromo.cta.link,
-            external: csvImportPromo.cta.external,
-            hideOnClick: csvImportPromo.cta.hideOnClick
-        }
-    });
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-bulk-api',
+            external: true,
+            hideOnClick: true
+        },
+        show: true
+    };
+
+    listOfPromotions.push(bulkApiPromo, csvImportPromo);
 }
 
 export function addBottomModalAlerts() {

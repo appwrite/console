@@ -34,12 +34,13 @@
     const filterColumns = writable<Column[]>([]);
 
     $: selected = preferences.getCustomCollectionColumns(page.params.collection);
+
     $: columns.set(
         $collection.attributes.map((attribute) => ({
             id: attribute.key,
             title: attribute.key,
             type: attribute.type as ColumnType,
-            hide: !selected?.includes(attribute.key),
+            hide: !!selected?.includes(attribute.key),
             array: attribute?.array,
             format: 'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
             elements: 'elements' in attribute ? attribute.elements : null
@@ -50,7 +51,7 @@
         ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
             id,
             title: id,
-            hide: false,
+            show: true,
             type: (id === '$id' ? 'string' : 'datetime') as ColumnType
         }))
     ]);

@@ -176,7 +176,7 @@ function createPreferences() {
             names: TeamPreferences['names']
         ) => {
             let teamPrefs: Models.Preferences;
-            update((n) => {
+            await updateAndSync((n) => {
                 if (!n?.displayNames) {
                     n ??= {};
                     n.displayNames ??= {};
