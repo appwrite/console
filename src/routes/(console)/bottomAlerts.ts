@@ -7,6 +7,8 @@ import BulkApiLight from '$lib/images/promos/bulk-api-light.png';
 
 import CSVImportDark from '$lib/images/promos/csv-import-placeholder-dark.png';
 import CSVImportLight from '$lib/images/promos/csv-import-placeholder-light.png';
+import DatabaseUpsertDark from '$lib/images/promos/database-upsert-dark.png';
+import DatabaseUpsertLight from '$lib/images/promos/database-upsert-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -52,8 +54,28 @@ if (isCloud) {
         },
         show: true
     };
+    const databaseUpsert: BottomModalAlertItem = {
+        id: 'modal:database_upsert_announcement',
+        src: {
+            dark: DatabaseUpsertDark,
+            light: DatabaseUpsertLight
+        },
+        title: 'Introducing Database Upsert',
+        message:
+            'A new Appwrite Database feature, built to simplify your database interactions.',
+        plan: 'free',
+        importance: 8,
+        scope: 'project',
+        cta: {
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-database-upsert',
+            external: true,
+            hideOnClick: true
+        },
+        show: true
+    }
 
-    listOfPromotions.push(bulkApiPromo, csvImportPromo);
+    listOfPromotions.push(bulkApiPromo, csvImportPromo, databaseUpsert);
 }
 
 export function addBottomModalAlerts() {
