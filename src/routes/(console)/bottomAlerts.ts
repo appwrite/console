@@ -61,8 +61,7 @@ if (isCloud) {
             light: DatabaseUpsertLight
         },
         title: 'Introducing Database Upsert',
-        message:
-            'A new Appwrite Database feature, built to simplify your database interactions.',
+        message: 'A new Appwrite Database feature, built to simplify your database interactions.',
         plan: 'free',
         importance: 8,
         scope: 'project',
@@ -73,7 +72,7 @@ if (isCloud) {
             hideOnClick: true
         },
         show: true
-    }
+    };
 
     listOfPromotions.push(bulkApiPromo, csvImportPromo, databaseUpsert);
 }
