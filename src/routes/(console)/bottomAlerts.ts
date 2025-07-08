@@ -74,7 +74,7 @@ if (isCloud) {
         show: true
     };
 
-    listOfPromotions.push(bulkApiPromo, csvImportPromo, databaseUpsert);
+    listOfPromotions.push(databaseUpsert, bulkApiPromo, csvImportPromo);
 }
 
 export function addBottomModalAlerts() {
