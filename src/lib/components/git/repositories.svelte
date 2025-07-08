@@ -24,6 +24,7 @@
     import Card from '../card.svelte';
     import SkeletonRepoList from './skeletonRepoList.svelte';
     import { onMount, untrack, onDestroy } from 'svelte';
+    import { debounce } from '$lib/helpers/debounce';
 
     let {
         action = $bindable('select'),
@@ -48,44 +49,30 @@
     let isLoadingRepositories = $state(null);
     let installationsMap = $state(null);
 
-    // Debounce and race condition handling
-    let searchTimeout: ReturnType<typeof setTimeout> | null = null;
-    let currentRequestId = 0;
-    let lastResolvedRequestId = 0;
-
     onMount(() => {
         loadInstallations();
     });
 
+    const debouncedLoadRepositories = debounce(
+        async (installationId: string, searchTerm: string) => {
+            isLoadingRepositories = true;
+            try {
+                await loadRepositories(installationId, searchTerm);
+            } finally {
+                isLoadingRepositories = false;
+            }
+        },
+        300
+    );
+
     $effect(() => {
         if (selectedInstallation && search !== undefined) {
-            if (searchTimeout) {
-                clearTimeout(searchTimeout);
-            }
-            searchTimeout = setTimeout(() => {
-                if (selectedInstallation) {
-                    isLoadingRepositories = true;
-                    const requestId = ++currentRequestId;
-                    loadRepositories(selectedInstallation, search)
-                        .then(() => {
-                            if (requestId > lastResolvedRequestId) {
-                                lastResolvedRequestId = requestId;
-                                isLoadingRepositories = false;
-                            }
-                        })
-                        .catch(() => {
-                            if (requestId > lastResolvedRequestId) {
-                                lastResolvedRequestId = requestId;
-                                isLoadingRepositories = false;
-                            }
-                        });
-                }
-            }, 300);
+            debouncedLoadRepositories(selectedInstallation, search);
         }
     });
 
     onDestroy(() => {
-        if (searchTimeout) clearTimeout(searchTimeout);
+        debouncedLoadRepositories.cancel?.();
     });
 
     async function loadInstallations() {
@@ -188,9 +175,7 @@
                                 installationsMap.find((entry) => entry.$id === selectedInstallation)
                             );
 
-                            if (searchTimeout) {
-                                clearTimeout(searchTimeout);
-                            }
+                            debouncedLoadRepositories.cancel?.();
                         }}
                         bind:value={selectedInstallation} />
                     <InputSearch
