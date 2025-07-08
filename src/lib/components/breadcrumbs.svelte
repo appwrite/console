@@ -15,7 +15,6 @@
     import { currentPlan, newOrgModal } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { page } from '$app/stores';
-    import type { Artifact } from '$lib/sdk/imagine';
 
     type Project = {
         name: string;

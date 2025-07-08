@@ -3,7 +3,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import type { Organization } from '$lib/stores/organization';
-    import ProductUpdatesContainer from './productUpdatesContainer.svelte';
 
     let { organization, isOpen = false }: { organization: Organization; isOpen: boolean } =
         $props();
@@ -53,8 +52,6 @@
             {/each}
         </Layout.Stack>
     </Layout.Stack>
-
-    <ProductUpdatesContainer />
 </nav>
 
 <style>
