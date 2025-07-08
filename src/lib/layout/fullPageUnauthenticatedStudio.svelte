@@ -2,17 +2,23 @@
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { default as IconImagine } from '$routes/(console)/project-[region]-[project]/studio/assets/icon-imagine.svelte';
     import ImagineBg from '../images/login/imagine-bg.webp';
+    import type { Snippet } from 'svelte';
 
-    let { title }: { title: string } = $props();
+    type Props = {
+        title: string;
+        children: Snippet;
+    };
+
+    let { title, children }: Props = $props();
 </script>
 
 <main class="full-page-signup">
     <div class="presentational not-mobile">
         <div class="icon-container">
-            <svelte:component this={IconImagine}></svelte:component>
+            <IconImagine />
         </div>
 
-        <img src={ImagineBg} class="background-image" alt="imagine background image" />
+        <img src={ImagineBg} class="background-image" alt="" />
     </div>
     <div class="form">
         <Card.Base padding="l" variant="secondary">
@@ -21,7 +27,7 @@
                     <Typography.Title size="m">{title}</Typography.Title>
                 </Layout.Stack>
 
-                <slot />
+                {@render children()}
             </Layout.Stack>
         </Card.Base>
     </div>
@@ -84,10 +90,6 @@
             padding: 0 var(--space-8);
             align-items: center;
             justify-content: center;
-
-            .slot {
-                max-width: 440px;
-            }
         }
     }
 </style>
