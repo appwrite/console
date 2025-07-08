@@ -7,7 +7,7 @@
     import type { Address } from '$lib/sdk/billing';
     import { addressList } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization } from '$lib/stores/organization';
+    import { type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import RemoveAddress from './removeAddress.svelte';
     import { user } from '$lib/stores/user';
@@ -23,14 +23,11 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
 
-    export let data: PageData;
-
-    const locale: Models.Locale = data.locale;
-    const countryList: Models.CountryList = data.countryList;
-
-    let billingAddress: Address = data?.billingAddress;
+    export let organization: Organization;
+    export let locale: Models.Locale;
+    export let countryList: Models.CountryList;
+    export let billingAddress: Address;
 
     let showCreate = false;
     let showEdit = false;
@@ -39,16 +36,16 @@
 
     async function addAddress(addressId: string) {
         try {
-            await sdk.forConsole.billing.setBillingAddress($organization.$id, addressId);
+            await sdk.forConsole.billing.setBillingAddress(organization.$id, addressId);
 
             addNotification({
                 type: 'success',
-                message: `A new billing address has been added to ${$organization.name}`
+                message: `A new billing address has been added to ${organization.name}`
             });
             trackEvent(Submit.OrganizationBillingAddressUpdate);
 
             invalidate(Dependencies.ADDRESS);
-            invalidate(Dependencies.ORGANIZATION);
+            invalidate(Dependencies.ORGANIZATIONS);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -63,7 +60,7 @@
     <svelte:fragment slot="title">Billing address</svelte:fragment>
     View or update your billing address. This address will be included in your invoices from Appwrite.
     <svelte:fragment slot="aside">
-        {#if $organization?.billingAddressId && billingAddress}
+        {#if organization?.billingAddressId && billingAddress}
             <Card.Base variant="secondary" padding="s">
                 <Layout.Stack direction="row" justifyContent="space-between">
                     <div>
@@ -140,7 +137,7 @@
 </CardGrid>
 
 {#if showCreate}
-    <AddressModal bind:show={showCreate} organization={$organization?.$id} {countryList} {locale} />
+    <AddressModal bind:show={showCreate} organization={organization?.$id} {countryList} {locale} />
 {/if}
 {#if showEdit}
     <EditAddressModal
