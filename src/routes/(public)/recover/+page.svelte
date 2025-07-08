@@ -3,7 +3,7 @@
     import { Button, Form, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Unauthenticated, UnauthenticatedStudio } from '$lib/layout';
+    import { Unauthenticated } from '$lib/layout';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
@@ -97,7 +97,7 @@
                         required={true}
                         bind:value={email} />
 
-                    <Button fullWidth submit>Recover</Button>
+                    <Button fullWidth submit secondary>Recover</Button>
                     <div></div>
                     <Layout.Stack direction="row" justifyContent="center">
                         <a href={`${base}/login`}

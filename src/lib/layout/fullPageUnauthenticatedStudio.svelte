@@ -20,17 +20,17 @@
 
         <img src={ImagineBg} class="background-image" alt="" />
     </div>
-    <div class="form">
-        <Card.Base padding="l" variant="primary">
-            <Layout.Stack direction="column" gap="xl">
-                <Layout.Stack direction="row" justifyContent="center">
-                    <Typography.Title size="m">{title}</Typography.Title>
-                </Layout.Stack>
-
-                {@render children()}
-            </Layout.Stack>
+    <Layout.Stack class="recovery-form theme-light" gap="xxl">
+        <Typography.Title size="xl" --font-color="#2D2D31">{title}</Typography.Title>
+        <Card.Base
+            padding="l"
+            variant="secondary"
+            --bgcolor-neutral-default="#fff"
+            --border-neutral="#EDEDF0"
+            shadow={false}>
+            {@render children()}
         </Card.Base>
-    </div>
+    </Layout.Stack>
 </main>
 
 <style lang="scss">
@@ -83,7 +83,7 @@
             }
         }
 
-        .form {
+        :global(.recovery-form) {
             background-color: var(--fgcolor-neutral-default, #fafafb);
             display: flex;
             height: 100vh;
