@@ -68,7 +68,7 @@
                 type="button"
                 href={previewUrl.toString()}
                 size="s"
-                external={true}
+                target="_blank"
                 ><Icon icon={IconExternalLink} color="--fgcolor-neutral-tertiary" />
             </Button.Anchor>
         </Layout.Stack>

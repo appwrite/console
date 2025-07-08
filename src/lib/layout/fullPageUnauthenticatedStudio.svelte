@@ -21,7 +21,7 @@
         <img src={ImagineBg} class="background-image" alt="" />
     </div>
     <div class="form">
-        <Card.Base padding="l" variant="secondary">
+        <Card.Base padding="l" variant="primary">
             <Layout.Stack direction="column" gap="xl">
                 <Layout.Stack direction="row" justifyContent="center">
                     <Typography.Title size="m">{title}</Typography.Title>
@@ -87,7 +87,7 @@
             background-color: var(--fgcolor-neutral-default, #fafafb);
             display: flex;
             height: 100vh;
-            padding: 0 var(--space-8);
+            padding: 0 128px;
             align-items: center;
             justify-content: center;
         }
