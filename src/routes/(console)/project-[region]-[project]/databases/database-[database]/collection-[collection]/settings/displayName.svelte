@@ -73,7 +73,9 @@
             (names?.length && !last(names))
     );
 
-    const hasExhaustedOptions = $derived(getValidAttributes().length === names?.length);
+    const hasExhaustedOptions = $derived(
+        getValidAttributes().length === names.filter(Boolean).length
+    );
 </script>
 
 <Form onSubmit={updateDisplayName}>
