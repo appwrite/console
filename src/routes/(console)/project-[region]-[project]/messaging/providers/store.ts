@@ -85,7 +85,7 @@ export const providers: ProvidersMap = {
                 ],
                 configure: [
                     {
-                        label: 'Service account JSON (.json file)',
+                        label: 'service account JSON (.json file)',
                         name: 'serviceAccountJSON',
                         type: 'file',
                         allowedFileExtensions: ['json'],
@@ -164,7 +164,7 @@ export const providers: ProvidersMap = {
                         }
                     },
                     {
-                        label: 'Auth key (.p8 file)',
+                        label: 'auth key (.p8 file)',
                         name: 'authKey',
                         type: 'file',
                         allowedFileExtensions: ['p8'],
