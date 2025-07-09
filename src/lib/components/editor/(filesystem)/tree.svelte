@@ -27,7 +27,8 @@
                 use:melt={$item({
                     id: path,
                     hasChildren: isFolder
-                })}>
+                })}
+                class="item-button">
                 {#if icon === 'folder' && isFolder && $isExpanded(path)}
                     <div class="menuitem" class:not-active={!$isSelected(path)}>
                         <Icon icon={icons['folderOpen']} />
@@ -38,7 +39,7 @@
                     </div>
                 {/if}
 
-                <span>{title}</span>
+                <span class="label">{title}</span>
             </button>
             <span class="menu">
                 <FileActionMenu />
@@ -61,7 +62,7 @@
             padding-block-end: var(--space-1);
         }
     }
-    button {
+    .item-button {
         display: flex;
         width: 100%;
         height: 2rem;
@@ -71,16 +72,12 @@
         user-select: none;
         padding: var(--space-3) var(--space-4);
         cursor: pointer;
-        border-radius: var(--border-radius-s);
         color: var(--fgcolor-neutral-secondary);
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
-        &.selected {
-            background: var(--bgcolor-neutral-tertiary);
-        }
-        &:hover:not(.selected) {
-            background: var(--bgcolor-neutral-secondary);
-        }
         &:focus-visible {
             outline: 2px solid #007aff;
             outline-offset: -2px;
@@ -96,14 +93,31 @@
     .file-button {
         display: flex;
         align-items: center;
+        border-radius: var(--border-radius-s);
+        overflow: hidden;
+
+        &:focus-within > .item-button {
+            background: var(--bgcolor-neutral-tertiary);
+        }
+
+        &:has(.selected),
+        &:focus-within {
+            background: var(--bgcolor-neutral-tertiary);
+        }
+
+        &:hover {
+            background-color: var(--bgcolor-neutral-tertiary);
+        }
         .menu {
+            opacity: 0;
             margin-right: 0;
             margin-left: auto;
-            opacity: 0;
         }
     }
 
-    .file-button:hover > .menu {
+    .file-button:hover > .menu,
+    .file-button:focus-within > .menu,
+    .file-button:has(.selected) > .menu {
         opacity: 1;
     }
 

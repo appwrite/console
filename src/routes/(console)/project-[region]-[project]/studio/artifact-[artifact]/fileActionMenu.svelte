@@ -1,16 +1,15 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { ActionMenu, Icon, Popover, Status } from '@appwrite.io/pink-svelte';
-    import { IconDotsHorizontal, IconTrash } from '@appwrite.io/pink-icons-svelte';
-    import { studio } from '$lib/components/studio/studio.svelte';
-    // Props can be added as needed
+    import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
+    import { IconDotsHorizontal } from '@appwrite.io/pink-icons-svelte';
 </script>
 
-<Popover padding="none" placement="bottom-end" let:toggle>
+<Popover padding="none" placement="bottom-end" let:toggle --action-menu-root-width="100px">
     <Button
         text
         icon
         size="s"
+        class="file-action-menu-button"
         on:click={(e) => {
             e.preventDefault();
             toggle(e);
@@ -19,13 +18,7 @@
     </Button>
     <svelte:fragment slot="tooltip" let:toggle>
         <ActionMenu.Root>
-            <div style="padding: 8px 16px 4px 16px;">
-                <Status
-                    label={studio.status}
-                    status={studio.status === 'connected' ? 'complete' : 'pending'} />
-            </div>
             <ActionMenu.Item.Button
-                leadingIcon={IconTrash}
                 on:click={(e) => {
                     e.preventDefault();
                     // Dummy handler
@@ -35,7 +28,6 @@
                 Rename
             </ActionMenu.Item.Button>
             <ActionMenu.Item.Button
-                leadingIcon={IconTrash}
                 on:click={(e) => {
                     e.preventDefault();
                     // Dummy handler
@@ -45,7 +37,6 @@
                 Duplicate
             </ActionMenu.Item.Button>
             <ActionMenu.Item.Button
-                leadingIcon={IconTrash}
                 on:click={(e) => {
                     e.preventDefault();
                     // Dummy handler
@@ -57,3 +48,12 @@
         </ActionMenu.Root>
     </svelte:fragment>
 </Popover>
+
+<style>
+    :global(.file-action-menu-button) {
+        background-color: transparent !important;
+        outline: none !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+    }
+</style>
