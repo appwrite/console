@@ -10,11 +10,13 @@
         columns,
         isCustomCollection = false,
         allowNoColumns = false,
+        portal = false,
         children
     }: {
         columns: Writable<Column[]>;
         isCustomCollection?: boolean;
         allowNoColumns?: boolean;
+        portal?: boolean;
         children: Snippet<[toggle: () => void, selectedColumnsNumber: number]>;
     } = $props();
 
@@ -91,7 +93,7 @@
 
 <svelte:window on:resize={calcMaxHeight} />
 {#if $columns?.length}
-    <Popover let:toggle placement="bottom-end" padding="none">
+    <Popover let:toggle placement="bottom-end" padding="none" {portal}>
         {@render children(toggle, selectedColumnsNumber)}
         <svelte:fragment slot="tooltip">
             <div style:max-height={maxHeight} style:overflow="scroll" bind:this={containerRef}>
