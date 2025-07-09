@@ -17,6 +17,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { studio } from '../studio.svelte';
+    import UpgradePrompt from '$routes/(console)/project-[region]-[project]/studio/artifact-[artifact]/upgradePrompt.svelte';
 
     type Props = {
         width: number;
@@ -40,6 +41,7 @@
     };
     const onsubmit: EventHandler<SubmitEvent, HTMLFormElement> = (event) => {
         event.preventDefault();
+        tokens = tokens - 1;
         if (studio.streaming) controller.abort();
         else createMessage();
     };
@@ -120,6 +122,16 @@
             studio.streaming = false;
         }
     }
+
+    let tokens = $state(2);
+
+    let isBlocked = $derived(tokens === 0);
+
+    const messaging = $derived({
+        callToAction: tokens > 0 ? 'Upgrade' : 'You are out of free messages.',
+        message: tokens > 0 ? 'to increase your message limits.' : 'Upgrade now.',
+        link: tokens > 0 ? '/#upgrade' : ''
+    });
 </script>
 
 <section
@@ -155,6 +167,10 @@
             </div>
 
             <Conversation {parser} thinking={!firstByteReceived} />
+
+            {#if tokens < 2}
+                <UpgradePrompt {...messaging} />
+            {/if}
         {/if}
         <form {onsubmit} class="input" class:minimize-chat={minimizeChat}>
             <Layout.Stack
@@ -166,6 +182,7 @@
                     bind:value={message}
                     name="conversation"
                     placeholder="Chat with Imagine..."
+                    disabled={isBlocked}
                     onfocus={() => {
                         minimizeChat = false;
                     }}></textarea>
@@ -288,11 +305,16 @@
         border: 1px solid var(--border-neutral);
         border-radius: var(--border-radius-m);
         padding: var(--space-6);
+        background-color: var(--bgcolor-neutral-primary);
+        position: relative;
+        z-index: 10;
 
         textarea {
             width: 100%;
             min-height: 100px;
             resize: none;
+            position: relative;
+            z-index: 10;
         }
 
         @media (min-width: 768px) {
