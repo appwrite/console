@@ -1,6 +1,8 @@
 <script lang="ts">
     import InputText from '../../../../../lib/elements/forms/inputText.svelte';
     import {
+        IconChevronLeft,
+        IconChevronRight,
         IconDeviceMobile,
         IconExternalLink,
         IconRefresh
@@ -47,6 +49,20 @@
 <Layout.Stack direction="column" gap="s">
     <form {onsubmit}>
         <Layout.Stack direction="row" alignItems="center">
+            <Button.Button
+                variant="extra-compact"
+                type="button"
+                size="s"
+                onclick={() => alert('back button clicked')}>
+                <Icon icon={IconChevronLeft} color="--fgcolor-neutral-tertiary" />
+            </Button.Button>
+            <Button.Button
+                variant="extra-compact"
+                type="button"
+                size="s"
+                onclick={() => alert('forward button clicked')}>
+                <Icon icon={IconChevronRight} color="--fgcolor-neutral-tertiary" />
+            </Button.Button>
             <Button.Button
                 variant="extra-compact"
                 type="button"
