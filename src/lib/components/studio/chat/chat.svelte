@@ -126,12 +126,6 @@
     let tokens = $state(2);
 
     let isBlocked = $derived(tokens === 0);
-
-    const messaging = $derived({
-        callToAction: tokens > 0 ? 'Upgrade' : 'You are out of free messages.',
-        message: tokens > 0 ? 'to increase your message limits.' : 'Upgrade now.',
-        link: tokens > 0 ? '/#upgrade' : ''
-    });
 </script>
 
 <section
@@ -169,7 +163,18 @@
             <Conversation {parser} thinking={!firstByteReceived} />
 
             {#if tokens < 2}
-                <UpgradePrompt {...messaging} />
+                <UpgradePrompt>
+                    {#if !isBlocked}
+                        <Typography.Text>
+                            <a href="#upgrade" class="callout">Upgrade</a>
+                            to increase your message limits.</Typography.Text>
+                    {:else}
+                        <Typography.Text>
+                            You're out of free messages.
+                            <a href="#upgrade" class="callout">Upgrade now.</a>
+                        </Typography.Text>
+                    {/if}
+                </UpgradePrompt>
             {/if}
         {/if}
         <form {onsubmit} class="input" class:minimize-chat={minimizeChat}>
@@ -323,6 +328,13 @@
             border-radius: var(--border-radius-xs);
             width: calc(100% + 2 * var(--space-4));
         }
+    }
+
+    .callout {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        color: var(--fgcolor-accent-neutral);
+        text-decoration-color: rgba(255, 255, 255, 0.4);
     }
 
     .input.minimize-chat {

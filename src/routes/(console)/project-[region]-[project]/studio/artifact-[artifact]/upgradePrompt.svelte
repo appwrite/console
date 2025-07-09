@@ -1,24 +1,16 @@
 <script lang="ts">
-    import { Typography } from '@appwrite.io/pink-svelte';
     import ImagineBg from '$lib/images/login/imagine-bg.webp';
+    import type { Snippet } from 'svelte';
 
     type Props = {
-        callToAction?: string;
-        message?: string;
-        link?: string;
+        children: Snippet;
     };
 
-    const {
-        callToAction = 'Upgrade',
-        message = 'to increase your message limits.',
-        link = '/#upgrade'
-    }: Props = $props();
+    const { children }: Props = $props();
 </script>
 
 <div class="upgrade-prompt">
-    <Typography.Text>
-        <a href={link} class="cta">{callToAction}</a>
-        {message}</Typography.Text>
+    {@render children()}
 
     <img src={ImagineBg} alt="Imagine background" class="background" />
 </div>
@@ -45,14 +37,8 @@
             position: absolute;
             object-fit: cover;
             right: 0;
+            z-index: -1;
             mask-image: linear-gradient(to right, transparent, black);
-        }
-
-        .cta {
-            text-decoration: underline;
-            text-underline-offset: 2px;
-            color: var(--fgcolor-accent-neutral);
-            text-decoration-color: rgba(255, 255, 255, 0.4);
         }
     }
 
