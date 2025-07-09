@@ -202,7 +202,8 @@
                                                 <Layout.Stack
                                                     direction="row"
                                                     alignItems="center"
-                                                    gap="s">
+                                                    gap="s"
+                                                    style="flex: 1;">
                                                     {#if action === 'select'}
                                                         <input
                                                             class="is-small u-margin-inline-end-8"
@@ -235,51 +236,50 @@
                                                             size="xs"
                                                             alt={repo.name}
                                                             empty={!iconName}>
-                                                            <SvgIcon
-                                                                name={iconName}
-                                                                iconSize="small" />
+                                                            {#if iconName}
+                                                                <SvgIcon
+                                                                    name={iconName}
+                                                                    iconSize="small" />
+                                                            {/if}
                                                         </Avatar>
                                                     {/if}
                                                     <Layout.Stack
-                                                        gap="s"
                                                         direction="row"
                                                         alignItems="center"
-                                                        justifyContent="space-between">
-                                                        <Layout.Stack
-                                                            direction="row"
-                                                            gap="s"
-                                                            alignItems="center">
-                                                            <Typography.Text
-                                                                truncate
-                                                                color="--fgcolor-neutral-secondary">
-                                                                {repo.name}
-                                                            </Typography.Text>
-                                                            {#if repo.private}
-                                                                <Icon
-                                                                    size="s"
-                                                                    icon={IconLockClosed}
-                                                                    color="--fgcolor-neutral-tertiary" />
-                                                            {/if}
-                                                            {#if !$isSmallViewport}
-                                                                <time datetime={repo.pushedAt}>
-                                                                    <Typography.Caption
-                                                                        variant="400"
-                                                                        truncate
-                                                                        color="--fgcolor-neutral-tertiary">
-                                                                        {timeFromNow(repo.pushedAt)}
-                                                                    </Typography.Caption>
-                                                                </time>
-                                                            {/if}
-                                                        </Layout.Stack>
-                                                        {#if action === 'button'}
-                                                            <PinkButton.Button
-                                                                size="xs"
-                                                                variant="secondary"
-                                                                on:click={() => connect(repo)}>
-                                                                Connect
-                                                            </PinkButton.Button>
+                                                        gap="s"
+                                                        style="flex: 1; min-width: 0;">
+                                                        <Typography.Text
+                                                            truncate
+                                                            color="--fgcolor-neutral-secondary"
+                                                            style="flex: 1; min-width: 0;">
+                                                            {repo.name}
+                                                        </Typography.Text>
+                                                        {#if repo.private}
+                                                            <Icon
+                                                                size="s"
+                                                                icon={IconLockClosed}
+                                                                color="--fgcolor-neutral-tertiary" />
+                                                        {/if}
+                                                        {#if !$isSmallViewport}
+                                                            <time datetime={repo.pushedAt}>
+                                                                <Typography.Caption
+                                                                    variant="400"
+                                                                    truncate
+                                                                    color="--fgcolor-neutral-tertiary">
+                                                                    {timeFromNow(repo.pushedAt)}
+                                                                </Typography.Caption>
+                                                            </time>
                                                         {/if}
                                                     </Layout.Stack>
+                                                    {#if action === 'button'}
+                                                        <PinkButton.Button
+                                                            size="xs"
+                                                            variant="secondary"
+                                                            style="flex-shrink: 0;"
+                                                            on:click={() => connect(repo)}>
+                                                            Connect
+                                                        </PinkButton.Button>
+                                                    {/if}
                                                 </Layout.Stack>
                                             </Table.Cell>
                                         </Table.Row.Base>
