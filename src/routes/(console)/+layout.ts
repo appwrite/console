@@ -4,6 +4,7 @@ import type { LayoutLoad } from './$types';
 import { Dependencies } from '$lib/constants';
 import type { Tier } from '$lib/stores/billing';
 import type { Plan, PlanList } from '$lib/sdk/billing';
+import { Query } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ depends, parent }) => {
     const { organizations } = await parent();
@@ -28,6 +29,20 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         preferences.organization ??
         (organizations.teams.length > 0 ? organizations.teams[0].$id : undefined);
 
+    // Load projects for the current organization if one is selected
+    let projects = null;
+    if (currentOrgId) {
+        try {
+            projects = await sdk.forConsole.projects.list([
+                Query.equal('teamId', currentOrgId),
+                Query.limit(1000) // Get all projects for organization
+            ]);
+        } catch (e) {
+            // Handle error silently - projects might not be accessible
+            projects = {};
+        }
+    }
+
     return {
         plansInfo,
         roles: [],
@@ -36,7 +51,8 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         currentOrgId,
         organizations,
         consoleVariables,
-        version: versionData?.version ?? null
+        version: versionData?.version ?? null,
+        projects
     };
 };
 
