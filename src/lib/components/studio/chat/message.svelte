@@ -129,7 +129,7 @@
     {#key message.content}
         {#if message.type === 'actions'}
             <Card.Base variant="primary" padding="none">
-                <Card.Base variant="secondary" padding="xs">
+                <Card.Base variant="secondary" padding="xs" class="title">
                     <Layout.Stack
                         direction="row"
                         alignItems="center"
@@ -223,6 +223,12 @@
         box-shadow:
             0px 1.022px 4.089px 0px rgba(55, 59, 77, 0.1),
             0px 1.022px 4.089px -1.022px rgba(55, 59, 77, 0.1);
+    }
+
+    :global(.title) {
+        margin-top: -2px;
+        margin-left: -1px;
+        width: calc(100% + 2px) !important;
     }
 
     .actions {
