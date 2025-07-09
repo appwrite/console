@@ -23,7 +23,11 @@
         selectedRelationship = null;
     }
 
-    $: tableColumns = [{ id: '$id', width: 200 }, ...args.map((id) => ({ id }))];
+    $: tableColumns = [
+        // take full width if no display names set
+        { id: '$id', width: args.length ? 200 : undefined },
+        ...args.map((id) => ({ id }))
+    ];
 </script>
 
 <Modal bind:show title={selectedRelationship?.key} hideFooter>
@@ -33,7 +37,7 @@
                 <Table.Root let:root columns={tableColumns}>
                     <svelte:fragment slot="header" let:root>
                         <Table.Header.Cell column="$id" {root}>Document ID</Table.Header.Cell>
-                        {#if args?.length}
+                        {#if args.length}
                             {#each args as arg}
                                 <Table.Header.Cell column={arg} {root}>{arg}</Table.Header.Cell>
                             {/each}
@@ -47,7 +51,7 @@
                             <Table.Cell column="$id" {root}>
                                 <Id value={doc.$id}>{doc.$id}</Id>
                             </Table.Cell>
-                            {#if args?.length}
+                            {#if args.length}
                                 {#each args as arg}
                                     <Table.Cell column={arg} {root}>{doc[arg]}</Table.Cell>
                                 {/each}
