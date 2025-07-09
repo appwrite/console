@@ -54,12 +54,13 @@
                 </Button.Anchor>
             </Layout.Stack>
         </Layout.Stack>
-        {#if isCloud && $isSmallViewport}
+        {#if $isSmallViewport}
             <div class="extra-margin">
                 <Layout.Stack direction="row" justifyContent={'flex-start'} alignItems="center">
                     {#if $version}
                         {#if isCloud}
                             <Icon size="s" icon={IconCloud} />
+                            <Badge size="xs" variant="secondary" content="BETA" />
                         {/if}
                         <Link.Anchor
                             size="s"
@@ -74,7 +75,6 @@
                             <Divider vertical />
                         </span>
                     {/if}
-                    <Badge size="xs" variant="secondary" content="BETA" />
                 </Layout.Stack>
             </div>
         {/if}
@@ -82,24 +82,25 @@
             direction="row"
             justifyContent={$isSmallViewport ? 'flex-start' : 'flex-end'}
             alignItems="center">
-            {#if isCloud}
-                {#if !$isSmallViewport}<Badge size="xs" variant="secondary" content="BETA" /><Icon
+            {#if !$isSmallViewport}
+                {#if isCloud}
+                    <Badge size="xs" variant="secondary" content="BETA" />
+                    <Icon size="s" icon={IconCloud} />
+                {/if}
+
+                {#if $version}
+                    <Link.Anchor
                         size="s"
-                        icon={IconCloud} />
-                    {#if $version}
-                        <Link.Anchor
-                            size="s"
-                            variant="quiet"
-                            href="https://github.com/appwrite/appwrite/releases"
-                            aria-label="Appwrite releases on Github"
-                            target="_blank"
-                            rel="noreferrer">
-                            Version {$version}
-                        </Link.Anchor>
-                        <span class="divider-wrapper">
-                            <Divider vertical />
-                        </span>
-                    {/if}
+                        variant="quiet"
+                        href="https://github.com/appwrite/appwrite/releases"
+                        aria-label="Appwrite releases on Github"
+                        target="_blank"
+                        rel="noreferrer">
+                        Version {$version}
+                    </Link.Anchor>
+                    <span class="divider-wrapper">
+                        <Divider vertical />
+                    </span>
                 {/if}
             {/if}
 
