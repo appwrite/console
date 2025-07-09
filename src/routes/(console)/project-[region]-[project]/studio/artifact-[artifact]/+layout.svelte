@@ -295,7 +295,8 @@
                                                         icon>
                                                         <Icon
                                                             icon={IconX}
-                                                            --icon-size-m="12px"
+                                                            --icon-size-s="12px"
+                                                            size="s"
                                                             color="--fgcolor-neutral-tertiary" />
                                                     </Button.Button>
                                                 {/if}
