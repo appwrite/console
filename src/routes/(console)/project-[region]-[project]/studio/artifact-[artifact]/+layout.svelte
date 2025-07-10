@@ -30,6 +30,7 @@
     import { untrack } from 'svelte';
     import Debug from './debug.svelte';
     import ArtifactActionMenu from './artifactActionMenu.svelte';
+    import RoleSurvey from '$lib/components/studio/roleSurvey.svelte';
 
     const { children, data } = $props();
 
@@ -174,6 +175,7 @@
     {/if}
 {/snippet}
 
+<RoleSurvey />
 <svelte:window onresize={onViewportResize} />
 <div bind:this={layoutElement} class="layout">
     <Layout.Stack

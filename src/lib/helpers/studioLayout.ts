@@ -17,6 +17,7 @@ type ImaginePrefs = {
 };
 
 const getProjectPrefs = (projectId: string): ProjectPrefs => {
+    console.log(get(user));
     const currentPrefs = userPreferences();
     const imaginePrefs = currentPrefs?.imagine;
     const projectPrefs = imaginePrefs?.[projectId] ?? ({} as ProjectPrefs);
@@ -63,6 +64,16 @@ export function getStudioView(projectId: string) {
     return projectPrefs?.studioView as 'editor' | 'preview' | null;
 }
 
+export const saveHasSurveyed = () => {
+    const currentPrefs = userPreferences();
+    const updatedPrefs = {
+        ...currentPrefs,
+        hasSurveyed: !currentPrefs?.hasSurveyed
+    };
+
+    sdk.forConsole.account.updatePrefs(updatedPrefs);
+};
+
 export function saveImagineProjectPrefs(
     projectId: string,
     key: string,
@@ -90,6 +101,11 @@ export function getTerminalOpenFromPrefs(projectId: string): boolean {
     const projectPrefs = getProjectPrefs(projectId);
     return projectPrefs?.studioTerminalOpen as unknown as boolean;
 }
+
+export const getHasSurveyedFromPrefs = () => {
+    const currentPrefs = userPreferences();
+    return !!currentPrefs?.hasSurveyed || false;
+};
 
 export function disableBodySelect(direction: 'row' | 'column' = 'column') {
     document.body.style.userSelect = 'none';
