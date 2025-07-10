@@ -6,7 +6,7 @@
         disableBodySelect,
         enabledBodySelect,
         getChatWidthFromPrefs,
-        saveProjectPrefs
+        saveImagineProjectPrefs
     } from '$lib/helpers/studioLayout.js';
     import { createStreamParser } from '$lib/components/studio/chat/parser.js';
     import { sdk } from '$lib/stores/sdk.js';
@@ -22,8 +22,6 @@
             showChat.set(false);
         }
     });
-
-    console.log(page.data);
 
     let resizer = $state(null);
     let resizerLeftPosition = $state(
@@ -82,7 +80,7 @@
             resizerLeftPosition = 500;
         }
         const saveWidth = page.data?.subNavigation ? resizerLeftPosition - 24 : resizerLeftPosition;
-        saveProjectPrefs(page.data?.project.$id, 'studioChatWidth', saveWidth);
+        saveImagineProjectPrefs(page.data?.project.$id, 'studioChatWidth', saveWidth);
 
         isResizing = false;
         window.removeEventListener('mousemove', resize);

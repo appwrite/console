@@ -16,19 +16,18 @@ type ImaginePrefs = {
     [projectId: string]: ProjectPrefs;
 };
 
-const getImaginePrefs = () => {
-    const currentPrefs = userPreferences();
-    return currentPrefs?.imagine as unknown as ImaginePrefs;
-};
-
 const getProjectPrefs = (projectId: string): ProjectPrefs => {
     const currentPrefs = userPreferences();
-    const projectPrefs = currentPrefs?.imagine;
-    return projectPrefs[projectId];
+    const imaginePrefs = currentPrefs?.imagine;
+    const projectPrefs = imaginePrefs?.[projectId] ?? ({} as ProjectPrefs);
+
+    return projectPrefs;
 };
 
 export function getChatWidthFromPrefs(projectId: string): number {
     const projectPrefs = getProjectPrefs(projectId);
+
+    console.log(projectPrefs);
     if (projectPrefs?.studioChatWidth) {
         if (window) {
             const maxSize = page.data?.subNavigation
@@ -64,20 +63,21 @@ export function getStudioView(projectId: string) {
     return projectPrefs?.studioView as 'editor' | 'preview' | null;
 }
 
-export function saveProjectPrefs(
+export function saveImagineProjectPrefs(
     projectId: string,
     key: string,
     value: string | number | boolean
 ): void {
     const currentPrefs = userPreferences();
-    const imaginePrefs = getImaginePrefs();
+    const imaginePrefs = currentPrefs?.imagine as unknown as ImaginePrefs;
+    const projectPrefs = getProjectPrefs(projectId);
 
     const newPrefs = {
         ...currentPrefs,
         imagine: {
             ...imaginePrefs,
             [projectId]: {
-                ...imaginePrefs[projectId],
+                ...projectPrefs,
                 [key]: value
             }
         }

@@ -19,7 +19,7 @@
         getStudioView,
         getTerminalHeightFromPrefs,
         getTerminalOpenFromPrefs,
-        saveProjectPrefs
+        saveImagineProjectPrefs
     } from '$lib/helpers/studioLayout';
     import { showChat } from '$lib/stores/chat';
     import { default as IconChatLayout } from '$routes/(console)/project-[region]-[project]/studio/assets/chat-layout.svelte';
@@ -39,7 +39,7 @@
 
     function changeView(newView: 'preview' | 'editor') {
         view = newView;
-        saveProjectPrefs(data.project.$id, 'studioView', newView);
+        saveImagineProjectPrefs(data.project.$id, 'studioView', newView);
     }
 
     $effect(() => {
@@ -62,7 +62,7 @@
 
     $effect(() => {
         if (terminalOpen !== undefined) {
-            //saveImaginePrefs('studioTerminalOpen', terminalOpen);
+            saveImagineProjectPrefs(data.project.$id, 'studioTerminalOpen', terminalOpen);
         }
     });
 
@@ -106,7 +106,7 @@
 
     function stopResize() {
         isResizing = false;
-        //saveImaginePrefs('studioTerminalHeight', resizerTopPosition);
+        saveImagineProjectPrefs(data.project.$id, 'studioTerminalHeight', resizerTopPosition);
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
         window.removeEventListener('touchmove', resize);
