@@ -83,7 +83,7 @@ if (isCloud) {
             light: EncryptedDatabasesLight
         },
         title: 'Introducing Encrypted string attribute support',
-        message: 'Encrypt string attributes at rest, directly from the Appwrite console.',
+        message: 'Encrypt string attributes at rest, directly from the Appwrite Console.',
         plan: 'free',
         importance: 8,
         scope: 'project',
