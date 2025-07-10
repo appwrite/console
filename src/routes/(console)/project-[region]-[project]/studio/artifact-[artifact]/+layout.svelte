@@ -19,7 +19,7 @@
         getStudioView,
         getTerminalHeightFromPrefs,
         getTerminalOpenFromPrefs,
-        saveImaginePrefs
+        saveProjectPrefs
     } from '$lib/helpers/studioLayout';
     import { showChat } from '$lib/stores/chat';
     import { default as IconChatLayout } from '$routes/(console)/project-[region]-[project]/studio/assets/chat-layout.svelte';
@@ -33,13 +33,13 @@
 
     const { children, data } = $props();
 
-    let view: 'preview' | 'editor' = $state(getStudioView() ?? 'preview');
+    let view: 'preview' | 'editor' = $state(getStudioView(data.project.$id) ?? 'preview');
 
     let debug = $state(false);
 
     function changeView(newView: 'preview' | 'editor') {
         view = newView;
-        saveImaginePrefs('studioView', newView);
+        saveProjectPrefs(data.project.$id, 'studioView', newView);
     }
 
     $effect(() => {
@@ -47,11 +47,11 @@
         untrack(() => studio.selectArtifact(artifact));
     });
 
-    let terminalOpen = $state(getTerminalOpenFromPrefs());
+    let terminalOpen = $state(getTerminalOpenFromPrefs(data.project.$id));
     let isResizing = false;
 
     const minHeight = 150;
-    let resizerTopPosition = $state(getTerminalHeightFromPrefs() ?? minHeight);
+    let resizerTopPosition = $state(getTerminalHeightFromPrefs(data.project.$id) ?? minHeight);
     const terminalTabsHeight = 50;
     let layoutElement = $state<HTMLDivElement | null>(null);
 
@@ -62,7 +62,7 @@
 
     $effect(() => {
         if (terminalOpen !== undefined) {
-            saveImaginePrefs('studioTerminalOpen', terminalOpen);
+            //saveImaginePrefs('studioTerminalOpen', terminalOpen);
         }
     });
 
@@ -106,7 +106,7 @@
 
     function stopResize() {
         isResizing = false;
-        saveImaginePrefs('studioTerminalHeight', resizerTopPosition);
+        //saveImaginePrefs('studioTerminalHeight', resizerTopPosition);
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
         window.removeEventListener('touchmove', resize);
