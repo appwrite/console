@@ -4,6 +4,7 @@
     import type { Column } from '$lib/helpers/types';
     import { Icon, Button } from '@appwrite.io/pink-svelte';
     import { IconViewBoards } from '@appwrite.io/pink-icons-svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import ViewToggle from './viewToggle.svelte';
     import ColumnSelector from './columnSelector.svelte';
 
@@ -16,7 +17,7 @@
 </script>
 
 {#if !hideColumns && view === View.Table}
-    <ColumnSelector {columns} {isCustomCollection} {allowNoColumns}>
+    <ColumnSelector {columns} {isCustomCollection} {allowNoColumns} portal={$isSmallViewport}>
         {#snippet children(toggle, selectedColumnsNumber)}
             <Button.Button
                 size="s"
