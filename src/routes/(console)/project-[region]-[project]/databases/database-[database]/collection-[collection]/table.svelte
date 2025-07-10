@@ -32,7 +32,6 @@
     } from '@appwrite.io/pink-svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-    import { flags } from '$lib/flags';
 
     export let data: PageData;
 
@@ -155,8 +154,6 @@
     ) as Models.AttributeRelationship[];
 
     let checked = false;
-
-    const showEncrypt = flags.showAttributeEncrypt(data);
 </script>
 
 <Table.Root
@@ -248,7 +245,7 @@
                                     <span slot="title">Timestamp</span>
                                     {toLocaleDateTime(datetime, true)}
                                 </DualTimeView>
-                            {:else if isEncryptedAttribute && showEncrypt}
+                            {:else if isEncryptedAttribute}
                                 <button on:click={(e) => e.preventDefault()}>
                                     <InteractiveText
                                         copy={false}
