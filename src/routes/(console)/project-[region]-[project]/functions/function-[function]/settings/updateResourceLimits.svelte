@@ -18,6 +18,8 @@
     export let func: Models.Function;
     export let specs: Models.SpecificationList;
     let specification = func.specification;
+    let originalSpecification = func.specification;
+    $: originalSpecification = func.specification;
 
     async function updateLogging() {
         try {
@@ -47,6 +49,9 @@
                     specification || undefined
                 );
             await invalidate(Dependencies.FUNCTION);
+
+            originalSpecification = specification;
+
             addNotification({
                 type: 'success',
                 message: 'Resource limits have been updated'
@@ -96,7 +101,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={func.specification === specification} submit>Update</Button>
+            <Button disabled={originalSpecification === specification} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

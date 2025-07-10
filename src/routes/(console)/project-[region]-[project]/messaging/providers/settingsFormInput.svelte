@@ -43,18 +43,6 @@
         | FCMProviderParams
         | APNSProviderParams
     >;
-    const popover = input.popover ? PopoverContent : null;
-    const popoverProps = getPopoverProps(input);
-
-    function getPopoverProps(input: ProviderInput) {
-        if (!input.popover) {
-            return {};
-        }
-        return {
-            lines: input.popover,
-            image: input.popoverImage
-        };
-    }
 
     function handleInvalid(e: CustomEvent) {
         const reason = e.detail?.reason ?? '';
@@ -71,6 +59,14 @@
             });
         }
     }
+
+    $: popover = input.popover ? PopoverContent : null;
+    $: popoverProps = !input.popover
+        ? {}
+        : {
+              lines: input.popover,
+              image: input.popoverImage
+          };
 </script>
 
 {#if input.type === 'text'}
