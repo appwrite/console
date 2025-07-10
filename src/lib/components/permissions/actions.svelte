@@ -25,7 +25,7 @@
             <ActionMenu.Item.Button
                 disabled={$groups.has('any')}
                 on:click={(e) => {
-                    if (hideOnClick) hide(e);
+                    hide(e);
                     dispatch('create', ['any']);
                 }}>
                 Any
@@ -33,7 +33,7 @@
             <ActionMenu.Item.Button
                 disabled={$groups.has('guests')}
                 on:click={(e) => {
-                    if (hideOnClick) hide(e);
+                    hide(e);
                     dispatch('create', ['guests']);
                 }}>
                 All guests
@@ -41,7 +41,7 @@
             <ActionMenu.Item.Button
                 disabled={$groups.has('users')}
                 on:click={(e) => {
-                    if (hideOnClick) hide(e);
+                    hide(e);
                     dispatch('create', ['users']);
                 }}>
                 All users
