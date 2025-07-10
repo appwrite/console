@@ -28,7 +28,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     });
 
     const accessedAt = new Date(account.accessedAt).getTime();
-    const accessedYesterday = new Date().getTime() - accessedAt > 24 * 60 * 60 * 1000;
+    const accessedYesterday = new Date().getTime() - accessedAt > 30 * 60 * 1000;
 
     if (lastUpdatedProject && accessedYesterday) {
         redirect(
