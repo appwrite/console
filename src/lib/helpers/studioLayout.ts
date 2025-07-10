@@ -68,7 +68,7 @@ export const saveHasSurveyed = () => {
     const currentPrefs = userPreferences();
     const updatedPrefs = {
         ...currentPrefs,
-        hasSurveyed: !currentPrefs?.hasSurveyed
+        hasSurveyed: true
     };
 
     sdk.forConsole.account.updatePrefs(updatedPrefs);
