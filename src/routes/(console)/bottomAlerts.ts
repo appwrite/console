@@ -82,7 +82,7 @@ if (isCloud) {
             dark: EncryptedDatabasesDark,
             light: EncryptedDatabasesLight
         },
-        title: 'Introducing Encrypted String Attributes',
+        title: 'Introducing Encrypted string attribute support',
         message: 'Encrypt string attributes at rest, directly from the Appwrite console',
         plan: 'free',
         importance: 8,
