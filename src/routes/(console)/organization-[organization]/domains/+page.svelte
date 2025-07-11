@@ -196,7 +196,7 @@
                 <svelte:fragment slot="actions">
                     <Button
                         external
-                        href="#/"
+                        href="https://appwrite.io/docs/advanced/platform/custom-domains"
                         text
                         event="empty_documentation"
                         size="s"
