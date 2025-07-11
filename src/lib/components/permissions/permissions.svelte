@@ -22,7 +22,6 @@
     import { Card } from '$lib/components';
 
     export let withCreate = false;
-    export let hideOnClick = false;
     export let permissions: string[] = [];
 
     let showUser = false;
@@ -197,7 +196,6 @@
             bind:showTeam
             bind:showUser
             {groups}
-            {hideOnClick}
             on:create={create}
             let:toggle>
             <Button secondary on:click={toggle}>
@@ -215,7 +213,6 @@
                 bind:showTeam
                 bind:showUser
                 {groups}
-                {hideOnClick}
                 on:create={create}
                 let:toggle>
                 <Button secondary icon on:click={toggle}>
