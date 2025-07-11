@@ -12,7 +12,6 @@
     export let showTeam: boolean;
     export let showLabel: boolean;
     export let showCustom: boolean;
-    export let hideOnClick: boolean = false;
     export let groups: Writable<Map<string, Permission>>;
 
     const dispatch = createEventDispatcher();
@@ -25,7 +24,7 @@
             <ActionMenu.Item.Button
                 disabled={$groups.has('any')}
                 on:click={(e) => {
-                    if (hideOnClick) hide(e);
+                    hide(e);
                     dispatch('create', ['any']);
                 }}>
                 Any
@@ -33,7 +32,7 @@
             <ActionMenu.Item.Button
                 disabled={$groups.has('guests')}
                 on:click={(e) => {
-                    if (hideOnClick) hide(e);
+                    hide(e);
                     dispatch('create', ['guests']);
                 }}>
                 All guests
@@ -41,7 +40,7 @@
             <ActionMenu.Item.Button
                 disabled={$groups.has('users')}
                 on:click={(e) => {
-                    if (hideOnClick) hide(e);
+                    hide(e);
                     dispatch('create', ['users']);
                 }}>
                 All users
@@ -49,22 +48,22 @@
             <ActionMenu.Item.Button
                 on:click={(e) => {
                     showUser = true;
-                    if (hideOnClick) hide(e);
+                    hide(e);
                 }}>Select users</ActionMenu.Item.Button>
             <ActionMenu.Item.Button
                 on:click={(e) => {
                     showTeam = true;
-                    if (hideOnClick) hide(e);
+                    hide(e);
                 }}>Select teams</ActionMenu.Item.Button>
             <ActionMenu.Item.Button
                 on:click={(e) => {
                     showLabel = true;
-                    if (hideOnClick) hide(e);
+                    hide(e);
                 }}>Label</ActionMenu.Item.Button>
             <ActionMenu.Item.Button
                 on:click={(e) => {
                     showCustom = true;
-                    if (hideOnClick) hide(e);
+                    hide(e);
                 }}>Custom permission</ActionMenu.Item.Button>
         </ActionMenu.Root>
     </svelte:fragment>
