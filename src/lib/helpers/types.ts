@@ -14,6 +14,25 @@ export type PinkColumn = {
     hide?: boolean;
 };
 
+export type PinkSheetColumn = {
+    id: string;
+    width?:
+        | {
+              min: number;
+              max: number;
+          }
+        | {
+              min: number;
+          }
+        | number;
+    hide?: boolean;
+    fixed?: boolean;
+    resizable?: boolean;
+    draggable?: boolean;
+    resizedWidth?: number;
+    isAction?: boolean;
+};
+
 export type WritableValue<T> = T extends Writable<infer U> ? U : never;
 
 export function isHTMLElement(el: unknown): el is HTMLElement {
@@ -35,10 +54,10 @@ const columnTypes = [
     'relationship',
     'enum'
 ] as const;
-export type ColumnType = (typeof columnTypes)[number];
-export type Column = PinkColumn & {
+export type SheetColumnType = (typeof columnTypes)[number];
+export type SheetColumn = PinkSheetColumn & {
     title: string;
-    type: ColumnType;
+    type: SheetColumnType;
     filter?: boolean;
     array?: boolean;
     format?: string;

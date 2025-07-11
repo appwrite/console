@@ -2,7 +2,7 @@
     import { beforeNavigate } from '$app/navigation';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import type { Column } from '$lib/helpers/types';
+    import type { PinkSheetColumn } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import Content from './content.svelte';
     import {
@@ -19,7 +19,7 @@
     import { Click, Submit, trackEvent } from '$lib/actions/analytics';
 
     export let query = '[]';
-    export let columns: Writable<Column[]>;
+    export let columns: Writable<PinkSheetColumn[]>;
     export let disabled = false;
     export let fullWidthMobile = false;
     export let singleCondition = false;

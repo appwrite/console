@@ -1,19 +1,19 @@
 <script lang="ts">
-    import { Empty, EmptySearch, PaginationWithLimit } from '$lib/components';
+    import { Empty, EmptySearch } from '$lib/components';
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
-    import type { Column, ColumnType } from '$lib/helpers/types';
+    import type { SheetColumn, SheetColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
-    import { Card, Icon, Layout, Empty as PinkEmpty } from '@appwrite.io/pink-svelte';
+    import { Card, Icon, Layout, Empty as PinkEmpty, Divider } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
     import CreateAttribute from './createAttribute.svelte';
     import { collection, columns, isCsvImportInProgress } from './store';
-    import Table from './table.svelte';
+    import SpreadSheet from './spreadsheet.svelte';
     import { writable } from 'svelte/store';
     import FilePicker from '$lib/components/filePicker.svelte';
     import { page } from '$app/state';
@@ -31,7 +31,7 @@
     let showCreateAttribute = false;
     let selectedAttribute: Option['name'] = null;
 
-    const filterColumns = writable<Column[]>([]);
+    const filterColumns = writable<SheetColumn[]>([]);
 
     $: selected = preferences.getCustomCollectionColumns(page.params.collection);
 
@@ -39,22 +39,15 @@
         $collection.attributes.map((attribute) => ({
             id: attribute.key,
             title: attribute.key,
-            type: attribute.type as ColumnType,
+            type: attribute.type as SheetColumnType,
             hide: !!selected?.includes(attribute.key),
             array: attribute?.array,
             format: 'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
             elements: 'elements' in attribute ? attribute.elements : null
         }))
     );
-    $: filterColumns.set([
-        ...$columns,
-        ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
-            id,
-            title: id,
-            show: true,
-            type: (id === '$id' ? 'string' : 'datetime') as ColumnType
-        }))
-    ]);
+
+    $: filterColumns.set([...$columns.filter((column) => !column.isAction)]);
 
     $: hasAttributes = !!$collection.attributes.length;
     $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
@@ -90,7 +83,7 @@
 </script>
 
 {#key page.params.collection}
-    <Container>
+    <Container expanded style="background: var(--bgcolor-neutral-primary)">
         <Layout.Stack direction="column" gap="xl">
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Filters
@@ -99,7 +92,11 @@
                     disabled={!(hasAttributes && hasValidAttributes)}
                     analyticsSource="database_documents" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    <ViewSelector view={data.view} {columns} hideView isCustomCollection />
+                    <ViewSelector
+                        view={data.view}
+                        columns={filterColumns}
+                        hideView
+                        isCustomCollection />
                     <Button
                         secondary
                         event={Click.DatabaseImportCsv}
@@ -109,6 +106,7 @@
                     </Button>
                     {#if !$isSmallViewport}
                         <Button
+                            secondary
                             disabled={!(hasAttributes && hasValidAttributes)}
                             href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
                             event="create_document">
@@ -120,6 +118,7 @@
             </Layout.Stack>
             {#if $isSmallViewport}
                 <Button
+                    secondary
                     disabled={!(hasAttributes && hasValidAttributes)}
                     href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
                     event="create_document">
@@ -131,13 +130,7 @@
 
         {#if hasAttributes && hasValidAttributes}
             {#if data.documents.total}
-                <Table {data} />
-
-                <PaginationWithLimit
-                    name="Documents"
-                    limit={data.limit}
-                    offset={data.offset}
-                    total={data.documents.total} />
+                <!-- nothing for now -->
             {:else if $hasPageQueries}
                 <EmptySearch hidePages>
                     <div class="common-section">
@@ -211,6 +204,13 @@
             </Card.Base>
         {/if}
     </Container>
+
+    {#if hasAttributes && hasValidAttributes && data.documents.total}
+        <Divider />
+        <div class="databases-spreadsheet">
+            <SpreadSheet {data} />
+        </div>
+    {/if}
 {/key}
 
 {#if showCreateAttribute}
