@@ -11,7 +11,7 @@
     import { func } from '../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
-    import Scopes from '$routes/(console)/project-[region]-[project]/overview/keys/scopes.svelte';
+    import Scopes from '$routes/(console)/project-[region]-[project]/overview/api-keys/scopes.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
     import { Link } from '$lib/elements';
 

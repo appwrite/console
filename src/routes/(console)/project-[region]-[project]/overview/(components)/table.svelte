@@ -20,7 +20,7 @@
 
     const isApiKey = keyType === 'api';
     const label = isApiKey ? 'API' : 'dev';
-    const slug = isApiKey ? 'keys' : 'dev-keys';
+    const slug = isApiKey ? 'api-keys' : 'dev-keys';
 
     function asApiKey(key: Models.Key | Models.DevKey) {
         return key as Models.Key;
