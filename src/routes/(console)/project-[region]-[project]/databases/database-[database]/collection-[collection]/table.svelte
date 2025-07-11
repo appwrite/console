@@ -358,8 +358,12 @@
 </Confirm>
 
 <style>
-    .floating-action-bar :global(div:first-of-type) {
-        /* 50% > 60% because we have sub-navigation */
-        left: calc(60% - var(--p-floating-action-bar-width) / 2);
+    .floating-action-bar {
+        position: fixed;
+
+        :global(div:first-of-type) {
+            /* 50% > 60% because we have sub-navigation */
+            left: calc(60% - var(--p-floating-action-bar-width) / 2);
+        }
     }
 </style>
