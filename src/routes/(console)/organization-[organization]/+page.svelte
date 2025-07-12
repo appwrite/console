@@ -210,4 +210,7 @@
 
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />
-<CreateProjectCloud bind:showCreateProjectCloud regions={$regionsStore.regions} />
+<CreateProjectCloud
+    bind:showCreateProjectCloud
+    regions={$regionsStore.regions}
+    teamId={page.params.organization} />

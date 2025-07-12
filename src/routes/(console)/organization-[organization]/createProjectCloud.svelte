@@ -2,7 +2,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
     import { goto, invalidate } from '$app/navigation';
-    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { ID, type Models, Region as ConsoleRegion, Region } from '@appwrite.io/console';
     import { base } from '$app/paths';
@@ -11,6 +10,7 @@
     import { Button } from '$lib/elements/forms';
     import { Dependencies } from '$lib/constants';
 
+    export let teamId: string;
     export let showCreateProjectCloud: boolean;
     export let regions: Array<Models.ConsoleRegion> = [];
 
@@ -20,7 +20,6 @@
     let region: ConsoleRegion = Region.Fra;
 
     let showSubmissionLoader = false;
-    const teamId = page.params.organization;
 
     async function create() {
         let project: Models.Project;
