@@ -14,7 +14,7 @@
     import UpdateExpirationDate from './updateExpirationDate.svelte';
     import type { Models } from '@appwrite.io/console';
     import { symmetricDifference } from '$lib/helpers/array';
-    import Scopes from '../keys/scopes.svelte';
+    import Scopes from '../api-keys/scopes.svelte';
     import { InteractiveText, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let key: Models.DevKey | Models.Key;
