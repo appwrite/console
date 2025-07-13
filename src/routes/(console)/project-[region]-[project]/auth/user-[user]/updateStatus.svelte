@@ -17,18 +17,12 @@
 
     async function updateVerificationEmail() {
         showVerificationDropdown = false;
-        let displayName: string;
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .users.updateEmailVerification($user.$id, !$user.emailVerification);
             await invalidate(Dependencies.USER);
 
-            if ($user.name) {
-                // name formatter
-                displayName = $user.name;
-                displayName = `${displayName}${displayName[displayName.length - 1].toLowerCase() === 's' ? "' email" : "'s email"}`;
-            }
             addNotification({
                 message: `${displayName || $user.email || $user.phone} has been ${
                     !$user.emailVerification ? 'unverified' : 'verified'
@@ -46,18 +40,12 @@
     }
     async function updateVerificationPhone() {
         showVerificationDropdown = false;
-        let displayName: string;
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .users.updatePhoneVerification($user.$id, !$user.phoneVerification);
             await invalidate(Dependencies.USER);
 
-            if ($user.name || $user.email) {
-                // name email formatter
-                displayName = $user[$user.name ? 'name' : 'email'];
-                displayName = `${displayName}${displayName[displayName.length - 1].toLowerCase() === 's' ? "' phone" : "'s phone"}`;
-            }
             addNotification({
                 message: `${displayName || $user.phone} has been ${
                     !$user.phoneVerification ? 'unverified' : 'verified'
