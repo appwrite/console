@@ -30,7 +30,7 @@
                 displayName = `${displayName}${displayName[displayName.length - 1].toLowerCase() === 's' ? "' email" : "'s email"}`;
             }
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
+                message: `${displayName || $user.email || $user.phone} has been ${
                     !$user.emailVerification ? 'unverified' : 'verified'
                 }`,
                 type: 'success'
@@ -59,7 +59,7 @@
                 displayName = `${displayName}${displayName[displayName.length - 1].toLowerCase() === 's' ? "' phone" : "'s phone"}`;
             }
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
+                message: `${displayName || $user.phone} has been ${
                     !$user.phoneVerification ? 'unverified' : 'verified'
                 }`,
                 type: 'success'
