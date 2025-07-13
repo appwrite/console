@@ -17,6 +17,7 @@
 
     async function updateVerificationEmail() {
         showVerificationDropdown = false;
+        let displayName: string;
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
@@ -39,6 +40,7 @@
     }
     async function updateVerificationPhone() {
         showVerificationDropdown = false;
+        let displayName: string;
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
