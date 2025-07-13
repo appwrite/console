@@ -23,6 +23,12 @@
                 .forProject(page.params.region, page.params.project)
                 .users.updateEmailVerification($user.$id, !$user.emailVerification);
             await invalidate(Dependencies.USER);
+
+            if ($user.name) {
+                // name formatter
+                displayName = $user.name;
+                displayName = `${displayName}${displayName[displayName.length - 1].toLowerCase() === 's' ? "' email" : "'s email"}`;
+            }
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
                     !$user.emailVerification ? 'unverified' : 'verified'
