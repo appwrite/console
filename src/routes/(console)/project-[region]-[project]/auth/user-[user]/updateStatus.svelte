@@ -24,8 +24,8 @@
             await invalidate(Dependencies.USER);
 
             addNotification({
-                message: `${displayName || $user.email || $user.phone} has been ${
-                    !$user.emailVerification ? 'unverified' : 'verified'
+                message: `The email${$user.name && ` for ${$user.name}`} ${
+                    !$user.emailVerification ? 'is no longer verified' : ' has been verified'
                 }`,
                 type: 'success'
             });
@@ -47,8 +47,8 @@
             await invalidate(Dependencies.USER);
 
             addNotification({
-                message: `${displayName || $user.phone} has been ${
-                    !$user.phoneVerification ? 'unverified' : 'verified'
+                message: `The phone ${$user[$user.name ? 'name' : 'email'] && `for ${$user[$user.name ? 'name' : 'email']}`}${
+                    !$user.phoneVerification ? ' is no longer verified' : ' has been verified'
                 }`,
                 type: 'success'
             });
