@@ -22,6 +22,10 @@
                 .forProject(page.params.region, page.params.project)
                 .users.updateEmailVerification($user.$id, !$user.emailVerification);
             await invalidate(Dependencies.USER);
+            let userLabel: string = ''
+
+            if ($user.name) 
+                userLabel = `for ${$user.name}`
 
             addNotification({
                 message: `The email${$user.name && ` for ${$user.name}`} ${
@@ -45,6 +49,11 @@
                 .forProject(page.params.region, page.params.project)
                 .users.updatePhoneVerification($user.$id, !$user.phoneVerification);
             await invalidate(Dependencies.USER);
+
+            let userLabel: string = '';
+
+            if ($user.name || $user.email)
+                userLabel = `for ${$user[$user.name ? 'name' : 'email']}`;
 
             addNotification({
                 message: `The phone ${$user[$user.name ? 'name' : 'email'] && `for ${$user[$user.name ? 'name' : 'email']}`}${
