@@ -37,7 +37,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
-    import { regions as regionsStore } from '$lib/stores/organization';
+    import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
 
     export let data;
@@ -163,7 +163,7 @@
         </DropList>
     </div>
 
-    {#if isCloud && data.organization.projects.length > 0 && $canWriteProjects}
+    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects}
         <Alert.Inline
             title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${billingProjectsLimitDate}`}>
             <Typography.Text>
