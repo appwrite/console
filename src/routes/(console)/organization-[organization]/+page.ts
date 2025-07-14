@@ -27,10 +27,12 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         return new Date(project.$updatedAt) > new Date(latest.$updatedAt) ? project : latest;
     });
 
+    const isInternalLink = url.pathname.startsWith('/console/organization-');
+
     const accessedAt = new Date(account.accessedAt).getTime();
     const accessedYesterday = new Date().getTime() - accessedAt > 30 * 60 * 1000;
 
-    if (lastUpdatedProject && accessedYesterday) {
+    if (lastUpdatedProject && accessedYesterday && !isInternalLink) {
         redirect(
             303,
             `${base}/project-${lastUpdatedProject.region}-${lastUpdatedProject.$id}/studio`

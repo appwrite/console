@@ -1,9 +1,17 @@
 <script lang="ts">
-    import DesktopLight from '../../routes/(public)/(guest)/login/assets/desktop-light.png';
-    import { Card, Divider, Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import DesktopLight from '../../routes/(public)/(guest)/login/assets/desktop-light.webp';
+    import DesktopDark from '../../routes/(public)/(guest)/login/assets/desktop-dark.webp';
+    import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { default as IconImagine } from '$routes/(console)/project-[region]-[project]/studio/assets/icon-imagine.svelte';
+    import type { Snippet } from 'svelte';
+    import { app } from '$lib/stores/app';
 
-    let { title }: { title: string } = $props();
+    let { title, children }: { title: string; children: Snippet } = $props();
+
+    const images = {
+        dark: DesktopDark,
+        light: DesktopLight
+    };
 </script>
 
 <main class="full-page-signup">
@@ -12,18 +20,18 @@
             <Layout.Stack direction="column" gap="xl">
                 <Layout.Stack direction="row" justifyContent="center">
                     <div class="icon-container">
-                        <svelte:component this={IconImagine}></svelte:component>
+                        <IconImagine />
                     </div>
                 </Layout.Stack>
                 <Layout.Stack direction="row" justifyContent="center">
                     <Typography.Title size="m">{title}</Typography.Title>
                 </Layout.Stack>
-                <slot />
+                {@render children()}
             </Layout.Stack>
         </Card.Base>
     </div>
 </main>
-<div class="overlay-image" style:background-image={`url('${DesktopLight}');`}></div>
+<div class="overlay-image" style:background-image={`url('${images[$app.themeInUse]}');`}></div>
 <div class="overlay-color"></div>
 
 <style lang="scss">
@@ -66,6 +74,6 @@
         position: fixed;
         top: 0;
         left: 0;
-        background: rgba(25, 25, 28, 0.8);
+        background: hsla(var(--bgcolor-neutral-primary) / 0.2);
     }
 </style>

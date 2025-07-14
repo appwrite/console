@@ -3,14 +3,13 @@
     import { Button, Form, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Unauthenticated } from '$lib/layout';
+    import { Unauthenticated, UnauthenticatedStudio } from '$lib/layout';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { Divider, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { consoleProfile } from '$lib/system';
-    import FullPageUnauthenticatedStudio from '$lib/layout/fullPageUnauthenticatedStudio.svelte';
 
     let email: string;
     let userId: string;
@@ -65,7 +64,7 @@
     <title>Recover - Appwrite</title>
 </svelte:head>
 {#if consoleProfile.hasFullPageSignup}
-    <FullPageUnauthenticatedStudio title="Recover password">
+    <UnauthenticatedStudio title="Recover password">
         {#if userId && secret}
             <Form onSubmit={setPassword}>
                 <Layout.Stack>
@@ -113,7 +112,7 @@
                 </Layout.Stack>
             </Form>
         {/if}
-    </FullPageUnauthenticatedStudio>
+    </UnauthenticatedStudio>
 {:else}
     <Unauthenticated>
         <svelte:fragment slot="title">Password recovery</svelte:fragment>
