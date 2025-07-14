@@ -1,6 +1,6 @@
 <script lang="ts">
     import { getHasSurveyedFromPrefs, saveHasSurveyed } from '$lib/helpers/studioLayout';
-    import { Button, Layout } from '@appwrite.io/pink-svelte';
+    import { Button, Layout, Tag } from '@appwrite.io/pink-svelte';
     import Modal from '../modal.svelte';
 
     let show = $derived(getHasSurveyedFromPrefs() ? true : false);
@@ -30,13 +30,19 @@
 <Modal bind:show title="What is your role?">
     <Layout.Stack direction="row" gap="m" wrap="wrap">
         {#each roles as r}
-            <Button.Button
+            {@const isActive = role === r}
+            <Tag
                 onclick={() => (role = r)}
-                variant={role === r ? 'primary' : 'secondary'}>
+                class={isActive ? 'active' : ''}
+                variant="default"
+                selected={isActive}>
                 {r}
-            </Button.Button>
+            </Tag>
         {/each}
     </Layout.Stack>
 
     <Button.Button onclick={handleSubmit}>Submit</Button.Button>
 </Modal>
+
+<style>
+</style>
