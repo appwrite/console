@@ -9,6 +9,8 @@
     import { onMount } from 'svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Layout, Link, Typography, Alert } from '@appwrite.io/pink-svelte';
+    import { consoleProfile } from '$lib/system';
+    import UnauthenticatedStudio from '$lib/layout/unauthenticatedStudio.svelte';
 
     let teamId: string, membershipId: string, userId: string, secret: string;
     let terms = false;
@@ -43,15 +45,8 @@
     <title>Accept invite - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated>
-    <svelte:fragment slot="title">
-        {#if !userId || !secret || !membershipId || !teamId}
-            Invalid invite
-        {:else}
-            Invite
-        {/if}
-    </svelte:fragment>
-    <svelte:fragment>
+{#if consoleProfile.hasFullPageSignup}
+    <UnauthenticatedStudio title="Invite members">
         {#if !userId || !secret || !membershipId || !teamId}
             <Layout.Stack>
                 <Alert.Inline status="warning" title="The invite link is not valid">
@@ -94,5 +89,59 @@
                 </Form>
             </Layout.Stack>
         {/if}
-    </svelte:fragment>
-</Unauthenticated>
+    </UnauthenticatedStudio>
+{:else}
+    <Unauthenticated>
+        <svelte:fragment slot="title">
+            {#if !userId || !secret || !membershipId || !teamId}
+                Invalid invite
+            {:else}
+                Invite
+            {/if}
+        </svelte:fragment>
+        <svelte:fragment>
+            {#if !userId || !secret || !membershipId || !teamId}
+                <Layout.Stack>
+                    <Alert.Inline status="warning" title="The invite link is not valid">
+                        Please ask the project owner to send you a new invite.
+                    </Alert.Inline>
+                    <div>
+                        <Button href={`${base}/register`}>Sign up to Appwrite</Button>
+                    </div>
+                </Layout.Stack>
+            {:else}
+                <Layout.Stack>
+                    <Typography.Text>
+                        You have been invited to join an organization on Appwrite
+                    </Typography.Text>
+                    <Form onSubmit={acceptInvite}>
+                        <Layout.Stack>
+                            <InputChoice
+                                required
+                                bind:value={terms}
+                                id="terms"
+                                label="terms"
+                                showLabel={false}>
+                                By accepting the invitation, you agree to the <Link.Anchor
+                                    href="https://appwrite.io/terms"
+                                    target="_blank"
+                                    rel="noopener noreferrer">Terms and Conditions</Link.Anchor>
+                                and
+                                <Link.Anchor
+                                    href="https://appwrite.io/privacy"
+                                    target="_blank"
+                                    rel="noopener noreferrer">
+                                    Privacy Policy</Link.Anchor
+                                >.</InputChoice>
+
+                            <Layout.Stack direction="row">
+                                <Button secondary href={`${base}/login`}>Cancel</Button>
+                                <Button submit disabled={!terms}>Accept</Button>
+                            </Layout.Stack>
+                        </Layout.Stack>
+                    </Form>
+                </Layout.Stack>
+            {/if}
+        </svelte:fragment>
+    </Unauthenticated>
+{/if}
