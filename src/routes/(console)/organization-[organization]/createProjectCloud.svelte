@@ -61,7 +61,13 @@
     title={'Create project'}
     onSubmit={create}
     bind:error>
-    <CreateProject {projects} showTitle={false} bind:id bind:projectName={name} bind:region {regions} />
+    <CreateProject
+        {projects}
+        showTitle={false}
+        bind:id
+        bind:projectName={name}
+        bind:region
+        {regions} />
     <svelte:fragment slot="footer">
         <Button
             submit
