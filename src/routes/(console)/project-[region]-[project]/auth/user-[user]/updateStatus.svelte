@@ -28,8 +28,8 @@
                 userLabel = `for ${$user.name}`
 
             addNotification({
-                message: `The email${$user.name && ` for ${$user.name}`} ${
-                    !$user.emailVerification ? 'is no longer verified' : ' has been verified'
+                message: `The email ${userLabel} ${
+                    !$user.emailVerification ? 'is no longer verified' : 'has been verified'
                 }`,
                 type: 'success'
             });
@@ -56,8 +56,8 @@
                 userLabel = `for ${$user[$user.name ? 'name' : 'email']}`;
 
             addNotification({
-                message: `The phone ${$user[$user.name ? 'name' : 'email'] && `for ${$user[$user.name ? 'name' : 'email']}`}${
-                    !$user.phoneVerification ? ' is no longer verified' : ' has been verified'
+                message: `The phone ${userLabel} ${
+                    !$user.phoneVerification ? 'is no longer verified' : 'has been verified'
                 }`,
                 type: 'success'
             });
