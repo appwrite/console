@@ -19,8 +19,7 @@
         region = $bindable(''),
         showTitle = true,
         projects = undefined,
-        submit,
-        onsubmit
+        submit
     }: {
         projectName: string;
         id: string;
@@ -29,7 +28,6 @@
         showTitle: boolean;
         projects?: number;
         submit?: Snippet;
-        onsubmit?: (event: Event) => void;
     } = $props();
 
     let showCustomId = $state(false);
@@ -44,63 +42,57 @@
     {/each}
 </svelte:head>
 
-<form
-    onsubmit={(e) => {
-        e.preventDefault();
-        onsubmit?.(e);
-    }}>
+<Layout.Stack direction="column" gap="xxl">
+    {#if showTitle}
+        <Typography.Title size="l">Create your project</Typography.Title>
+    {/if}
+    {#if projectsLimited}
+        <Alert.Inline status="warning" title="You've reached your limit of 2 projects">
+            Extra projects are available on paid plans for an additional fee
+            <svelte:fragment slot="actions">
+                <Button
+                    compact
+                    size="s"
+                    href={`${base}/organization-${page.params.organization}/billing`}
+                    external
+                    text>Upgrade</Button>
+            </svelte:fragment>
+        </Alert.Inline>
+    {/if}
     <Layout.Stack direction="column" gap="xxl">
-        {#if showTitle}
-            <Typography.Title size="l">Create your project</Typography.Title>
-        {/if}
-        {#if projectsLimited}
-            <Alert.Inline status="warning" title="You've reached your limit of 2 projects">
-                Extra projects are available on paid plans for an additional fee
-                <svelte:fragment slot="actions">
-                    <Button
-                        compact
-                        size="s"
-                        href={`${base}/organization-${page.params.organization}/billing`}
-                        external
-                        text>Upgrade</Button>
-                </svelte:fragment>
-            </Alert.Inline>
-        {/if}
         <Layout.Stack direction="column" gap="xxl">
-            <Layout.Stack direction="column" gap="xxl">
-                <Layout.Stack direction="column" gap="s">
-                    <Input.Text
-                        disabled={projectsLimited}
-                        label="Name"
-                        placeholder="Project name"
-                        required
-                        autofocus
-                        bind:value={projectName} />
-                    {#if !showCustomId}
-                        <div>
-                            <Tag
-                                size="s"
-                                on:click={() => {
-                                    showCustomId = true;
-                                }}><Icon slot="start" icon={IconPencil} size="s" /> Project ID</Tag>
-                        </div>
-                    {/if}
-                    <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
-                </Layout.Stack>
-                {#if isCloud && regions.length > 0}
-                    <Layout.Stack gap="xs">
-                        <Input.Select
-                            disabled={projectsLimited}
-                            required
-                            bind:value={region}
-                            placeholder="Select a region"
-                            options={filterRegions(regions)}
-                            label="Region" />
-                        <Typography.Text>Region cannot be changed after creation</Typography.Text>
-                    </Layout.Stack>
+            <Layout.Stack direction="column" gap="s">
+                <Input.Text
+                    disabled={projectsLimited}
+                    label="Name"
+                    placeholder="Project name"
+                    required
+                    autofocus
+                    bind:value={projectName} />
+                {#if !showCustomId}
+                    <div>
+                        <Tag
+                            size="s"
+                            on:click={() => {
+                                showCustomId = true;
+                            }}><Icon icon={IconPencil} slot="start" size="s" /> Project ID</Tag>
+                    </div>
                 {/if}
+                <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
             </Layout.Stack>
+            {#if isCloud && regions.length > 0}
+                <Layout.Stack gap="xs">
+                    <Input.Select
+                        disabled={projectsLimited}
+                        required
+                        bind:value={region}
+                        placeholder="Select a region"
+                        options={filterRegions(regions)}
+                        label="Region" />
+                    <Typography.Text>Region cannot be changed after creation</Typography.Text>
+                </Layout.Stack>
+            {/if}
         </Layout.Stack>
-        {@render submit?.()}
     </Layout.Stack>
-</form>
+    {@render submit?.()}
+</Layout.Stack>

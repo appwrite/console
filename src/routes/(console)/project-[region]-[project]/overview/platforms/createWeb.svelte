@@ -44,7 +44,7 @@
         AngularFrameworkIcon,
         JavascriptFrameworkIcon
     } from './components/index';
-    import { hostnameRegex } from '$lib/helpers/string';
+    import { extendedHostnameRegex } from '$lib/helpers/string';
 
     export let key;
 
@@ -143,7 +143,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     $: selectedFrameworkIcon = selectedFramework ? selectedFramework.icon : NoFrameworkIcon;
 
     async function createWebPlatform() {
-        hostnameError = hostname !== '' ? !new RegExp(hostnameRegex).test(hostname) : null;
+        hostnameError = hostname !== '' ? !new RegExp(extendedHostnameRegex).test(hostname) : null;
 
         if (hostnameError) {
             return;

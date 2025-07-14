@@ -20,6 +20,5 @@ function isFlagEnabled(name: string) {
 
 export const flags = {
     showSites: isFlagEnabled('sites'),
-    showAttributeEncrypt: isFlagEnabled('attribute-encrypt'),
     showIndexLengths: isFlagEnabled('index-lengths')
 };

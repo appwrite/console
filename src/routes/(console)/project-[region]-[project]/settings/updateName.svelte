@@ -49,8 +49,8 @@
     <svelte:fragment slot="actions">
         <Button
             secondary
-            event="view_keys"
-            href={`${base}/project-${page.params.region}-${page.params.project}/overview/keys#integrations`}>
+            event="view_api_keys"
+            href={`${base}/project-${page.params.region}-${page.params.project}/overview/api-keys#integrations`}>
             View API keys
         </Button>
     </svelte:fragment>

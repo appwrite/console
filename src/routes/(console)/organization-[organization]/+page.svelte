@@ -275,4 +275,5 @@
 <CreateProjectCloud
     projects={data.projects.total}
     bind:showCreateProjectCloud
-    regions={$regionsStore.regions} />
+    regions={$regionsStore.regions}
+    teamId={page.params.organization} />

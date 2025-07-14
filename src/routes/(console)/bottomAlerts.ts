@@ -1,17 +1,42 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
-import {
-    type BottomModalAlertItem,
-    showBottomModalAlert,
-    setMobileSingleAlertLayout
-} from '$lib/stores/bottom-alerts';
+import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
 
 import BulkApiDark from '$lib/images/promos/bulk-api-dark.png';
 import BulkApiLight from '$lib/images/promos/bulk-api-light.png';
 
+import CSVImportDark from '$lib/images/promos/csv-import-placeholder-dark.png';
+import CSVImportLight from '$lib/images/promos/csv-import-placeholder-light.png';
+
+import DatabaseUpsertDark from '$lib/images/promos/database-upsert-dark.png';
+import DatabaseUpsertLight from '$lib/images/promos/database-upsert-light.png';
+import EncryptedDatabasesDark from '$lib/images/promos/encrypted-attribute-dark.png';
+import EncryptedDatabasesLight from '$lib/images/promos/encrypted-attribute-light.png';
+
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
+    const csvImportPromo: BottomModalAlertItem = {
+        id: 'modal:csv_import_announcement',
+        src: {
+            dark: CSVImportDark,
+            light: CSVImportLight
+        },
+        title: 'Introducing CSV import',
+        message:
+            "We're introducing a new way to populate your Appwrite databases: document imports from CSV files.",
+        plan: 'free',
+        importance: 8,
+        scope: 'everywhere',
+        cta: {
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-csv-imports',
+            external: true,
+            hideOnClick: true
+        },
+        show: true
+    };
+
     const bulkApiPromo: BottomModalAlertItem = {
         id: 'modal:bulk_api_announcement',
         src: {
@@ -32,19 +57,45 @@ if (isCloud) {
         },
         show: true
     };
-
-    listOfPromotions.push(bulkApiPromo);
-
-    setMobileSingleAlertLayout({
-        title: bulkApiPromo.title,
-        message: bulkApiPromo.message,
-        enabled: true,
+    const databaseUpsert: BottomModalAlertItem = {
+        id: 'modal:database_upsert_announcement',
+        src: {
+            dark: DatabaseUpsertDark,
+            light: DatabaseUpsertLight
+        },
+        title: 'Introducing Database Upsert',
+        message: 'A new Appwrite Database feature, built to simplify your database interactions.',
+        plan: 'free',
+        importance: 8,
+        scope: 'project',
         cta: {
-            link: bulkApiPromo.cta.link,
-            external: bulkApiPromo.cta.external,
-            hideOnClick: bulkApiPromo.cta.hideOnClick
-        }
-    });
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-database-upsert',
+            external: true,
+            hideOnClick: true
+        },
+        show: true
+    };
+    const encryptedAttributePromo: BottomModalAlertItem = {
+        id: 'modal:encrypted_attribute_announcement',
+        src: {
+            dark: EncryptedDatabasesDark,
+            light: EncryptedDatabasesLight
+        },
+        title: 'Introducing Encrypted string attribute support',
+        message: 'Encrypt string attributes at rest, directly from the Appwrite Console.',
+        plan: 'free',
+        importance: 8,
+        scope: 'project',
+        cta: {
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-encrypted-string-attributes',
+            external: true,
+            hideOnClick: true
+        },
+        show: true
+    };
+    listOfPromotions.push(encryptedAttributePromo, databaseUpsert, bulkApiPromo, csvImportPromo);
 }
 
 export function addBottomModalAlerts() {
