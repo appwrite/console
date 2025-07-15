@@ -36,7 +36,7 @@
                 id: '$id',
                 title: 'ID',
                 type: 'string',
-                width: 250,
+                width: 200,
                 icon: IconFingerPrint
             },
             ...middle,

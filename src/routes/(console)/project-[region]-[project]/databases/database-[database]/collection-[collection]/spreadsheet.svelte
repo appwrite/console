@@ -235,6 +235,7 @@
     async function handleDelete() {
         showDelete = false;
         try {
+            // TODO: maybe this isn't working?
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .databases.deleteDocuments(databaseId, collectionId, [
