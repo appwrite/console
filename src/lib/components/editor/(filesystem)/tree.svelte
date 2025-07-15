@@ -19,39 +19,38 @@
     {@const isFolder = children !== undefined}
     {@const isRoot = level === 1}
 
-    <li style:margin-inline-start={isRoot ? '' : '1rem'} style:position="relative">
-        <div class="file-button">
-            <button
-                data-file={!isFolder}
-                class:selected={$isSelected(path)}
-                use:melt={$item({
-                    id: path,
-                    hasChildren: isFolder
-                })}
-                class="item-button">
-                {#if icon === 'folder' && isFolder && $isExpanded(path)}
-                    <div class="menuitem" class:not-active={!$isSelected(path)}>
-                        <Icon icon={icons['folderOpen']} />
-                    </div>
-                {:else}
-                    <div class="menuitem" class:not-active={!$isSelected(path)}>
-                        <Icon icon={icons[icon]} />
-                    </div>
-                {/if}
+    <FileActionMenu open={false}>
+        <li style:margin-inline-start={isRoot ? '' : '1rem'} style:position="relative">
+            <div class="file-button">
+                <button
+                    data-file={!isFolder}
+                    class:selected={$isSelected(path)}
+                    use:melt={$item({
+                        id: path,
+                        hasChildren: isFolder
+                    })}
+                    class="item-button">
+                    {#if icon === 'folder' && isFolder && $isExpanded(path)}
+                        <div class="menuitem" class:not-active={!$isSelected(path)}>
+                            <Icon icon={icons['folderOpen']} />
+                        </div>
+                    {:else}
+                        <div class="menuitem" class:not-active={!$isSelected(path)}>
+                            <Icon icon={icons[icon]} />
+                        </div>
+                    {/if}
 
-                <span class="label">{title}</span>
-            </button>
-            <span class="menu">
-                <FileActionMenu />
-            </span>
-        </div>
+                    <span class="label">{title}</span>
+                </button>
+            </div>
 
-        {#if children}
-            <ul use:melt={$group({ id: path })}>
-                <Tree items={children} level={level + 1} />
-            </ul>
-        {/if}
-    </li>
+            {#if children}
+                <ul use:melt={$group({ id: path })}>
+                    <Tree items={children} level={level + 1} />
+                </ul>
+            {/if}
+        </li>
+    </FileActionMenu>
 {/each}
 
 <style lang="scss">
