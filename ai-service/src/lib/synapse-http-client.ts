@@ -1,4 +1,3 @@
-import { ARTIFACT_ID, OVERRIDE_BASE_DIR } from "./constants";
 import * as _path from "path";
 
 export type ListFilesInDirResult = {
@@ -57,7 +56,7 @@ export class SynapseHTTPClient {
     path: string;
     content: string;
   }> {
-    const safeFilePath = _path.join(OVERRIDE_BASE_DIR, this.artifactBasePath, path);
+    const safeFilePath = _path.join(this.artifactBasePath, path);
     const response = await this.request({
       type: "fs",
       operation: "getFile",
@@ -103,7 +102,7 @@ export class SynapseHTTPClient {
     filepath: string;
     content: string;
   }) {
-    const safeFilePath = _path.join(OVERRIDE_BASE_DIR, this.artifactBasePath, filepath);
+    const safeFilePath = _path.join(this.artifactBasePath, filepath);
     const response = await this.request({
       type: "fs",
       operation: "updateFile",
@@ -123,8 +122,8 @@ export class SynapseHTTPClient {
     filepath: string;
     newPath: string;
   }) {
-    const safeFilePath = _path.join(OVERRIDE_BASE_DIR, this.artifactBasePath, filepath);
-    const safeNewPath = _path.join(OVERRIDE_BASE_DIR, this.artifactBasePath, newPath);
+    const safeFilePath = _path.join( this.artifactBasePath, filepath);
+    const safeNewPath = _path.join( this.artifactBasePath, newPath);
     console.log("updateFilePath", { filepath: safeFilePath, newPath: safeNewPath });
     const response = await this.request({
       type: "fs",
@@ -144,7 +143,7 @@ export class SynapseHTTPClient {
   }: {
     filepath: string;
   }) {
-    const safeFilePath = _path.join(OVERRIDE_BASE_DIR, this.artifactBasePath, filepath);
+    const safeFilePath = _path.join( this.artifactBasePath, filepath);
     const response = await this.request({
       type: "fs",
       operation: "deleteFile",
@@ -170,7 +169,7 @@ export class SynapseHTTPClient {
     output: string;
     exitCode: number;
   }> {
-    const safeCwd = _path.join(OVERRIDE_BASE_DIR, this.artifactBasePath, cwd);
+    const safeCwd = _path.join( this.artifactBasePath, cwd);
     console.log("executeCommand", { command, cwd: safeCwd });
 
     try {
@@ -209,7 +208,13 @@ export class SynapseHTTPClient {
     withContent?: boolean;
     additionalIgnorePatterns?: string[];
   }): Promise<ListFilesInDirResult[]> {
-    const safeDirPath = _path.join(OVERRIDE_BASE_DIR, this.artifactBasePath, dirPath);
+    console.log("making dir path", {
+      artifactBasePath: this.artifactBasePath,
+      dirPath,
+    })
+    const safeDirPath = _path.join(this.artifactBasePath, dirPath);
+
+    console.log("safeDirPath", safeDirPath);
 
     const response = await this.request({
       type: "fs",
@@ -247,10 +252,14 @@ export class SynapseHTTPClient {
   }
 }
 
-export const createSynapseClient = () => {
+export const createSynapseClient = ({
+  artifactId,
+}: {
+  artifactId: string;
+}) => {
   const synapse = new SynapseHTTPClient({
-    endpoint: "http://127.0.0.1:3010",
-    artifactId: ARTIFACT_ID,
+    endpoint: process.env.SYNAPSE_ENDPOINT!,
+    artifactId,
   });
 
   return synapse;

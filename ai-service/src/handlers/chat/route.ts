@@ -10,7 +10,8 @@ import {
 } from 'ai';
 import { createRuntimeContext, WriterType } from '@/lib/ai/mastra/utils/runtime-context';
 import { mastra } from '@/lib/ai/mastra';
-import { ARTIFACT_ID, PROJECT_ID } from '@/constants';
+import fs from 'fs';
+import { createSynapseClient } from '@/lib/synapse-http-client';
 
 export const handleChatRequest = async (c: Context) => {
     const signal = c.req.raw.signal;
@@ -35,8 +36,8 @@ export const handleChatRequest = async (c: Context) => {
       return c.body(null, 200);
     }
 
-    const artifactId = ARTIFACT_ID;
-    const projectId = PROJECT_ID;
+    const artifactId = process.env.IMAGINE_ARTIFACT_ID!; // TODO: dynamically from body
+    const projectId = process.env.IMAGINE_PROJECT_ID!; // TODO: dynamically from body
 
     const { conversation, isNewConversation } = await getOrCreateConversation({
         conversationId,
@@ -50,43 +51,51 @@ export const handleChatRequest = async (c: Context) => {
     const latestMessageTextPart = latestMessage.content[0] as TextPart;
     const restMessages = convertedMessages.slice(0, -1);
 
+    const synapseClient = createSynapseClient({
+      artifactId,
+    });
+
+    // Save to temp.json
+    fs.writeFileSync("temp.json", JSON.stringify(messages, null, 2));
+
     let didError = false;
 
     const stream = createUIMessageStream({
         originalMessages: messages,
         execute: async (params) => {
             const writer = params.writer as WriterType;
-            const runtimeContext = createRuntimeContext({ writer });
+            const runtimeContext = createRuntimeContext({ writer, artifactId, restMessages, isFirstMessage: isNewConversation, signal });
             const run = await mastra.getWorkflow('codeWorkflow').createRunAsync();
-            runtimeContext.set('restMessages', restMessages || []);
-            runtimeContext.set('isFirstMessage', isNewConversation);
-            runtimeContext.set('signal', signal);
 
             const result = run.stream({
                 inputData: {
-                    userPrompt: latestMessageTextPart.text
+                  userPrompt: latestMessageTextPart.text
                 },
                 runtimeContext
             });
 
             writer.write({
-                type: 'start'
+              type: 'start',
             });
 
             writer.write({
-                type: 'start-step'
+              type: 'start-step'
             });
+
+            console.log("BEFORE STREAM");
 
             for await (const chunk of result.stream) {
                 // We must await the stream
             }
+
+            console.log("AFTER STREAM");
 
             writer.write({
                 type: 'finish-step'
             });
 
             writer.write({
-                type: 'finish'
+                type: 'finish',
             });
         },
         onFinish: async (event) => {
@@ -97,6 +106,8 @@ export const handleChatRequest = async (c: Context) => {
 
             const { messages } = event;
 
+            console.log("Saving conversation", { conversationId });
+
             await updateConversation({
               conversation: {
                 ...conversation,
@@ -105,9 +116,6 @@ export const handleChatRequest = async (c: Context) => {
               artifactId,
               projectId,
             });
-
-            const savedModelmessages = convertToModelMessages(messages, {});
-            console.log('savedModelmessages', JSON.stringify(savedModelmessages, null, 2));
         },
         onError: (error) => {
             didError = true;

@@ -1,6 +1,6 @@
 import { createTool } from "@mastra/core";
 import { z } from "zod";
-import { createSynapseClient } from "@/lib/synapse-http-client";
+import { createSynapseClient, SynapseHTTPClient } from "@/lib/synapse-http-client";
 import { createIdGenerator } from "ai";
 import { getWriterFromContext, RuntimeContextType } from "../utils/runtime-context";
 
@@ -63,7 +63,7 @@ const readFileTool = createTool({
         },
       });
     }
-    const synapse = createSynapseClient();
+    const synapse = runtimeContext.get("synapseClient");
     const result = await synapse.readFile({ path });
     console.log(`[TOOL - readFile] Reading file at path: ${path}`);
 
@@ -106,8 +106,12 @@ const writeFilesTool = createTool({
       })
     ),
   }),
-  execute: async ({ context: { files } }) => {
-    const { successFiles, errorFiles } = await writeFiles(files);
+  execute: async (params) => {
+    const { context: { files } } = params;
+    const runtimeContext = params.runtimeContext as RuntimeContextType;
+    const synapse = runtimeContext.get("synapseClient");
+
+    const { successFiles, errorFiles } = await writeFiles(files, synapse);
 
     return {
       successFiles,
@@ -138,6 +142,7 @@ const writeFileTool = createTool({
     const runtimeContext = params.runtimeContext as RuntimeContextType;
     const skipWritingToolCalls = runtimeContext.get("skipWritingToolCalls");
     const writer = getWriterFromContext(runtimeContext);
+    const synapse = runtimeContext.get("synapseClient");
 
     const toolCallId = createIdGenerator({ size: 10 })();
 
@@ -153,7 +158,7 @@ const writeFileTool = createTool({
       });
     }
 
-    const { errorFiles } = await writeFiles([{ path, content }]);
+    const { errorFiles } = await writeFiles([{ path, content }], synapse);
 
     if (errorFiles.length > 0) {
       return {
@@ -177,9 +182,7 @@ const writeFileTool = createTool({
   },
 });
 
-async function writeFiles(files: { path: string; content: string }[]) {
-  const synapse = createSynapseClient();
-
+async function writeFiles(files: { path: string; content: string }[], synapse: SynapseHTTPClient) {
   const successFiles: { path: string }[] = [];
   const errorFiles: { path: string; error: string }[] = [];
 
@@ -224,11 +227,13 @@ const listFilesInDirectoryTool = createTool({
       })
     ),
   }),
-  execute: async ({ context: { path, recursive } }) => {
+  execute: async (params) => {
+    const { context: { path, recursive } } = params;
+    const runtimeContext = params.runtimeContext as RuntimeContextType;
+    const synapse = runtimeContext.get("synapseClient");
     console.log(
       `[TOOL - listFilesInDirectory] Listing files in directory at path: ${path}, recursive: ${recursive}`
     );
-    const synapse = createSynapseClient();
     const files = await synapse.listFilesInDir({
       dirPath: path || "/",
       recursive: recursive || false,
@@ -255,8 +260,10 @@ const deleteFileTool = createTool({
   outputSchema: z.object({
     success: z.boolean().describe("Whether the file was deleted successfully"),
   }),
-  execute: async ({ context: { path } }) => {
-    const synapse = createSynapseClient();
+  execute: async (params) => {
+    const { context: { path } } = params;
+    const runtimeContext = params.runtimeContext as RuntimeContextType;
+    const synapse = runtimeContext.get("synapseClient");
     await synapse.deleteFile({ filepath: path });
 
     return {
@@ -281,8 +288,10 @@ const moveFileTool = createTool({
   outputSchema: z.object({
     success: z.boolean().describe("Whether the file was moved successfully"),
   }),
-  execute: async ({ context: { path, newPath } }) => {
-    const synapse = createSynapseClient();
+  execute: async (params) => {
+    const { context: { path, newPath } } = params;
+    const runtimeContext = params.runtimeContext as RuntimeContextType;
+    const synapse = runtimeContext.get("synapseClient");
     await synapse.updateFilePath({ filepath: path, newPath });
 
     return {

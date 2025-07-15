@@ -4,6 +4,7 @@ import { fileTools } from "../tools/file-tools";
 import { UIMessage, UIMessageStreamWriter } from "ai";
 import { z } from "zod";
 import { checkpointDataUIPartSchema } from "../../custom-parts/checkpoint";
+import { createSynapseClient, SynapseHTTPClient } from "@/lib/synapse-http-client";
 
 export type WriterType = UIMessageStreamWriter<UIMessage<unknown, {
   checkpoint: z.infer<typeof checkpointDataUIPartSchema>;
@@ -17,6 +18,8 @@ export type RuntimeContextPayload = {
   restMessages?: any[];
   isFirstMessage?: boolean;
   signal?: AbortSignal;
+  artifactId: string;
+  synapseClient: SynapseHTTPClient;
 }
 export type RuntimeContextType = RuntimeContext<RuntimeContextPayload>;
 
@@ -36,12 +39,27 @@ export const cloneRuntimeContext = (runtimeContext: RuntimeContextType, override
   return newRuntimeContext;
 }
 
-export const createRuntimeContext = ({ writer }: { writer: WriterType }): RuntimeContextType => {
+export const createRuntimeContext = ({
+  writer,
+  artifactId,
+  restMessages,
+  isFirstMessage,
+  signal,
+}: {
+  writer: WriterType;
+  artifactId: string;
+  restMessages?: any[];
+  isFirstMessage?: boolean;
+  signal?: AbortSignal;
+}): RuntimeContextType => {
   const runtimeContext = new RuntimeContext<RuntimeContextPayload>();
   runtimeContext.set("skipWritingToolCalls", false);
   runtimeContext.set("writer", writer as WriterType);
-  runtimeContext.set("restMessages", []);
-  runtimeContext.set("isFirstMessage", true);
+  runtimeContext.set("restMessages", restMessages || []);
+  runtimeContext.set("synapseClient", createSynapseClient({ artifactId }));
+  runtimeContext.set("isFirstMessage", isFirstMessage || false);
+  runtimeContext.set("signal", signal);
+  runtimeContext.set("artifactId", artifactId);
   return runtimeContext;
 };
 

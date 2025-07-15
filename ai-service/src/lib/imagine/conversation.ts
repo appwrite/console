@@ -1,5 +1,4 @@
 import { InputJsonValue } from "@/lib/generated/prisma/runtime/library";
-import { ARTIFACT_ID, PROJECT_ID } from "../constants";
 import { prisma } from "@/lib/prisma";
 import { UIMessage } from "ai";
 import { Conversation } from "@/lib/generated/prisma";
@@ -29,8 +28,8 @@ export async function getOrCreateConversation({
   if (!existingConversation) {
     const newConversation: SanitizedConversation = {
       id: conversationId,
-      artifactId: ARTIFACT_ID,
-      projectId: PROJECT_ID,
+      artifactId,
+      projectId,
       title: "New Conversation",
       uiMessages: [],
       modelMessages: [],
