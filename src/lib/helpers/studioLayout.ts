@@ -17,7 +17,6 @@ type ImaginePrefs = {
 };
 
 const getProjectPrefs = (projectId: string): ProjectPrefs => {
-    console.log(get(user));
     const currentPrefs = userPreferences();
     const imaginePrefs = currentPrefs?.imagine;
     const projectPrefs = imaginePrefs?.[projectId] ?? ({} as ProjectPrefs);
@@ -28,7 +27,6 @@ const getProjectPrefs = (projectId: string): ProjectPrefs => {
 export function getChatWidthFromPrefs(projectId: string): number {
     const projectPrefs = getProjectPrefs(projectId);
 
-    console.log(projectPrefs);
     if (projectPrefs?.studioChatWidth) {
         if (window) {
             const maxSize = page.data?.subNavigation

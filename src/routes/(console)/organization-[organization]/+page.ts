@@ -27,7 +27,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         return new Date(project.$updatedAt) > new Date(latest.$updatedAt) ? project : latest;
     });
 
-    const isInternalLink = url.pathname.startsWith('/console/organization-');
+    const isInternalLink = document.referrer && document.referrer.startsWith('/console/');
 
     const accessedAt = new Date(account.accessedAt).getTime();
     const accessedYesterday = new Date().getTime() - accessedAt > 30 * 60 * 1000;

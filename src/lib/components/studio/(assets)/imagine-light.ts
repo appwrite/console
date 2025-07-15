@@ -1,5 +1,7 @@
+import type { MonacoTheme } from '../studio.svelte';
+
 export const imagineLight = {
-    base: 'vs' as 'vs' | 'vs-dark',
+    base: 'vs',
     inherit: true,
     rules: [
         {
@@ -55,4 +57,4 @@ export const imagineLight = {
         'editorIndentGuide.activeBackground': '#8c959f',
         'editorWhitespace.foreground': '#d1d9e0'
     }
-};
+} satisfies MonacoTheme;
