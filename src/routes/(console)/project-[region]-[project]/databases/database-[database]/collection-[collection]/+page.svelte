@@ -1,15 +1,14 @@
 <script lang="ts">
-    import { Empty, EmptySearch } from '$lib/components';
+    import { EmptySearch } from '$lib/components';
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
     import type { SheetColumn, SheetColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
-    import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
-    import { Card, Icon, Layout, Empty as PinkEmpty, Divider } from '@appwrite.io/pink-svelte';
+    // import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
+    import { Icon, Layout, Divider } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
-    import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
     import CreateAttribute from './createAttribute.svelte';
     import { collection, columns, isCsvImportInProgress } from './store';
@@ -24,11 +23,14 @@
     import { base } from '$app/paths';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
+    import EmptySheet from './emptySheet.svelte';
+    import CreateRecord from './createRecord.svelte';
 
     export let data: PageData;
 
     let showImportCSV = false;
     let showCreateAttribute = false;
+    let showRecordsCreateSheet = false;
     let selectedAttribute: Option['name'] = null;
 
     const filterColumns = writable<SheetColumn[]>([]);
@@ -108,7 +110,7 @@
                         <Button
                             secondary
                             disabled={!(hasAttributes && hasValidAttributes)}
-                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                            on:click={() => (showRecordsCreateSheet = true)}
                             event="create_document">
                             <Icon icon={IconPlus} slot="start" size="s" />
                             Create document
@@ -120,17 +122,20 @@
                 <Button
                     secondary
                     disabled={!(hasAttributes && hasValidAttributes)}
-                    href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                    on:click={() => (showRecordsCreateSheet = true)}
                     event="create_document">
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create document
                 </Button>
             {/if}
         </Layout.Stack>
+    </Container>
 
+    <div class="databases-spreadsheet">
         {#if hasAttributes && hasValidAttributes}
             {#if data.documents.total}
-                <!-- nothing for now -->
+                <Divider />
+                <SpreadSheet {data} />
             {:else if $hasPageQueries}
                 <EmptySearch hidePages>
                     <div class="common-section">
@@ -154,63 +159,12 @@
                     </div>
                 </EmptySearch>
             {:else}
-                <Empty
-                    allowCreate={$canWriteDocuments}
-                    single
-                    href="https://appwrite.io/docs/products/databases/documents"
-                    target="document">
-                    <svelte:fragment slot="actions">
-                        <Button
-                            external
-                            href="https://appwrite.io/docs/products/databases/documents"
-                            text
-                            event="empty_documentation"
-                            size="s"
-                            ariaLabel="create document">Documentation</Button>
-                        <Button
-                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
-                            secondary
-                            disabled={!$canWriteDocuments}
-                            size="s">
-                            Create document
-                        </Button>
-                    </svelte:fragment>
-                </Empty>
+                <EmptySheet on:record={() => (showRecordsCreateSheet = true)} />
             {/if}
         {:else}
-            <Card.Base padding="none">
-                <PinkEmpty
-                    title="Create an attribute to get started."
-                    description="Need a hand? Learn more in our documentation.">
-                    <slot name="actions" slot="actions">
-                        <Button
-                            external
-                            href="https://appwrite.io/docs/products/databases/collections#attributes"
-                            text
-                            event="empty_documentation"
-                            size="s">Documentation</Button>
-                        {#if $canWriteCollections}
-                            <CreateAttributeDropdown
-                                bind:selectedOption={selectedAttribute}
-                                bind:showCreate={showCreateAttribute}
-                                let:toggle>
-                                <Button secondary event="create_attribute" on:click={toggle}>
-                                    Create attribute
-                                </Button>
-                            </CreateAttributeDropdown>
-                        {/if}
-                    </slot>
-                </PinkEmpty>
-            </Card.Base>
+            <EmptySheet on:record={() => (showRecordsCreateSheet = true)} />
         {/if}
-    </Container>
-
-    {#if hasAttributes && hasValidAttributes && data.documents.total}
-        <Divider />
-        <div class="databases-spreadsheet">
-            <SpreadSheet {data} />
-        </div>
-    {/if}
+    </div>
 {/key}
 
 {#if showCreateAttribute}
@@ -230,4 +184,8 @@
             imageHeight: 32,
             imageWidth: 32
         }} />
+{/if}
+
+{#if showRecordsCreateSheet}
+    <CreateRecord collection={$collection} bind:showSheet={showRecordsCreateSheet} />
 {/if}

@@ -28,3 +28,21 @@ export const indexes = derived(page, ($page) => $page.data.collection.indexes as
 export const columns = writable<SheetColumn[]>([]);
 
 export const isCsvImportInProgress = writable(false);
+
+type DatabaseSheetOptions = {
+    show: boolean;
+    title?: string;
+    column?: Attributes;
+    isEdit?: boolean;
+    disableSubmit?: boolean;
+    submitAction?: () => Promise<void>;
+};
+
+export const databaseSheetOptions = writable<DatabaseSheetOptions>({
+    title: null,
+    show: false,
+    column: null,
+    isEdit: false,
+    disableSubmit: false,
+    submitAction: null
+});

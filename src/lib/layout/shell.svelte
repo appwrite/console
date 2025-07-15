@@ -237,6 +237,12 @@
                 padding-left: 210px;
             }
         }
+
+        @media (max-width: 768px) {
+            .main-content {
+                position: fixed;
+            }
+        }
     }
 
     .overlay {

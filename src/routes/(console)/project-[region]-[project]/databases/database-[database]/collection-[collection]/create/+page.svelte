@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
-    import { Alert, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Alert, Fieldset, Layout, Sheet, Typography } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import Form from '$lib/elements/forms/form.svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -83,13 +83,9 @@
     }
 </script>
 
-<Wizard
-    title="Create document"
-    href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/`}
-    bind:showExitModal
-    column
-    columnSize="s"
-    confirmExit>
+<Sheet bind:open={showExitModal}>
+    <div slot="header">Create document</div>
+
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Data">
@@ -127,13 +123,13 @@
         </Layout.Stack>
     </Form>
 
-    <svelte:fragment slot="footer">
-        <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
-        <Button
-            fullWidthMobile
-            on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting}>
-            Create
-        </Button>
-    </svelte:fragment>
-</Wizard>
+    <!--    <svelte:fragment slot="footer">-->
+    <!--        <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>-->
+    <!--        <Button-->
+    <!--            fullWidthMobile-->
+    <!--            on:click={() => formComponent.triggerSubmit()}-->
+    <!--            disabled={$isSubmitting}>-->
+    <!--            Create-->
+    <!--        </Button>-->
+    <!--    </svelte:fragment>-->
+</Sheet>

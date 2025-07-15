@@ -1,3 +1,4 @@
+import type { ComponentType } from 'svelte';
 import type { Writable } from 'svelte/store';
 
 export type PinkColumn = {
@@ -64,6 +65,8 @@ export type SheetColumn = PinkSheetColumn & {
     exclude?: boolean;
     elements?: string[] | { value: string | number; label: string }[];
     encrypt?: boolean;
+    icon?: ComponentType;
+    isPrimary?: boolean;
 };
 
 export function isValueOfStringEnum<T extends Record<string, string>>(
