@@ -58,11 +58,15 @@ export const imagineDark = {
             foreground: '#8cd9ff'
         },
         {
-            token: 'entity.name.function',
+            token: 'function',
             foreground: '#b38cff'
         },
         {
-            token: 'entity.name.method',
+            token: 'method',
+            foreground: '#b38cff'
+        },
+        {
+            token: 'type.identifier',
             foreground: '#b38cff'
         },
         {

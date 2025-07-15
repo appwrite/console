@@ -6,6 +6,7 @@
     import * as monaco from 'monaco-editor';
     import type { Action } from 'svelte/action';
     import IconImagine from '$routes/(console)/project-[region]-[project]/studio/assets/icon-imagine.svelte';
+    import { get } from 'svelte/store';
 
     type Props = {
         onsave?: (code: string) => void | Promise<void>;
@@ -57,7 +58,8 @@
     };
 
     $effect(() => {
-        monaco.editor.setTheme('imagine-dark');
+        const theme = get(app).themeInUse;
+        monaco.editor.setTheme(theme === 'light' ? 'imagine-light' : 'imagine-dark');
     });
     $effect(() => {
         const readOnly = studio.streaming;

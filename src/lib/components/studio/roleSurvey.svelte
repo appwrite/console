@@ -3,7 +3,7 @@
     import { Button, Layout, Tag } from '@appwrite.io/pink-svelte';
     import Modal from '../modal.svelte';
 
-    let show = $derived(getHasSurveyedFromPrefs() ? true : false);
+    let show = $derived(getHasSurveyedFromPrefs() ? false : true);
 
     const roles = [
         'Developer',

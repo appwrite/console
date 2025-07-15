@@ -10,6 +10,7 @@ import markdownWorker from 'monaco-editor/esm/vs/basic-languages/markdown/markdo
 import { app } from '$lib/stores/app';
 import { get } from 'svelte/store';
 import { imagineDark } from './(assets)/imagine-dark';
+import { imagineLight } from './(assets)/imagine-light';
 
 export interface MonacoTheme {
     base: 'vs-dark' | 'vs';
@@ -101,10 +102,11 @@ class Studio {
         };
 
         monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
+        monaco.editor.defineTheme('imagine-light', imagineLight);
         monaco.editor.defineTheme('imagine-dark', imagineDark);
 
         this.editor = monaco.editor.create(node, {
-            theme: 'imagine-dark',
+            theme: get(app).themeInUse === 'light' ? 'imagine-light' : 'imagine-dark',
             scrollbar: {
                 verticalScrollbarSize: 4,
                 horizontalScrollbarSize: 4
