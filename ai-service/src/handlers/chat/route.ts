@@ -1,4 +1,4 @@
-import { Context, Next } from 'hono';
+import { Context } from 'hono';
 import { chatRequestBodySchema, ChatRequestBodyType } from './types';
 import { z } from 'zod';
 import { getOrCreateConversation, updateConversation } from '@/lib/imagine/conversation';
@@ -11,7 +11,6 @@ import {
 import { createRuntimeContext, WriterType } from '@/lib/ai/mastra/utils/runtime-context';
 import { mastra } from '@/lib/ai/mastra';
 import { ARTIFACT_ID, PROJECT_ID } from '@/constants';
-import { StreamEvent } from '@mastra/core';
 
 export const handleChatRequest = async (c: Context) => {
     const signal = c.req.raw.signal;
@@ -92,14 +91,14 @@ export const handleChatRequest = async (c: Context) => {
 
             const { messages } = event;
 
-            // await updateConversation({
-            //   conversation: {
-            //     ...conversation,
-            //     uiMessages: messages,
-            //   },
-            //   artifactId,
-            //   projectId,
-            // });
+            await updateConversation({
+              conversation: {
+                ...conversation,
+                uiMessages: messages,
+              },
+              artifactId,
+              projectId,
+            });
 
             const savedModelmessages = convertToModelMessages(messages, {});
             console.log('savedModelmessages', JSON.stringify(savedModelmessages, null, 2));

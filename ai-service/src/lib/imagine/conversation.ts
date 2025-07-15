@@ -8,21 +8,6 @@ type SanitizedConversation = Omit<Conversation, "createdAt" | "updatedAt" | "uiM
   uiMessages: UIMessage[];
 };
 
-export async function createNewConversationObject({
-  conversationId
-}: {
-  conversationId: string;
-}): Promise<SanitizedConversation> {
-  return {
-    id: conversationId,
-    artifactId: ARTIFACT_ID,
-    projectId: PROJECT_ID,
-    title: "New Conversation",
-    uiMessages: [],
-    modelMessages: [],
-  }
-}
-
 export async function getOrCreateConversation({
   conversationId,
   artifactId,
@@ -42,7 +27,14 @@ export async function getOrCreateConversation({
   });
 
   if (!existingConversation) {
-    const newConversation = await createNewConversationObject({ conversationId });
+    const newConversation: SanitizedConversation = {
+      id: conversationId,
+      artifactId: ARTIFACT_ID,
+      projectId: PROJECT_ID,
+      title: "New Conversation",
+      uiMessages: [],
+      modelMessages: [],
+    };
     return {
       conversation: newConversation,
       isNewConversation: true,
@@ -54,44 +46,6 @@ export async function getOrCreateConversation({
     isNewConversation: false,
   };
 }
-
-// export async function createConversationIfNotExists({
-//   conversationId,
-// }: {
-//   conversationId: string;
-// }) {
-//   console.log("[createConversationIfNotExists] Called", { conversationId });
-//   const existingConversation = await prisma.conversation.findUnique({
-//     where: {
-//       id: conversationId,
-//     },
-//   });
-
-//   if (!existingConversation) {
-//     console.log("[createConversationIfNotExists] No existing conversation found, creating new one");
-//     const newConversation = await prisma.conversation.create({
-//       data: {
-//         id: conversationId,
-//         artifactId: ARTIFACT_ID,
-//         projectId: PROJECT_ID,
-//         title: "New Conversation",
-//         uiMessages: [] as unknown as InputJsonValue,
-//         modelMessages: [] as unknown as InputJsonValue,
-//       },
-//     });
-
-//     return {
-//       conversation: newConversation,
-//       isNewConversation: true,
-//     };
-//   }
-
-//   console.log("[createConversationIfNotExists] Existing conversation found", { conversationId });
-//   return {
-//     conversation: existingConversation,
-//     isNewConversation: false,
-//   };
-// }
 
 export async function updateConversation({
   conversation,
