@@ -34,7 +34,7 @@
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[region]-[project]/store';
     import { feedback } from '$lib/stores/feedback';
-    import { consoleProfile, hasStripePublicKey, isCloud, isStudio, VARS } from '$lib/system';
+    import { consoleProfile, hasStripePublicKey, isCloud, VARS } from '$lib/system';
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';

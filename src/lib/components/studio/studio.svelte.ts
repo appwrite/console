@@ -50,6 +50,16 @@ class Studio {
         this.activeTerminal = symbol;
     }
 
+    removeTerminal(terminalSymbol: symbol) {
+        this.terminals.delete(terminalSymbol);
+        if (this.activeTerminal === terminalSymbol) {
+            this.activeTerminal =
+                this.terminals.size > 0
+                    ? Array.from(this.terminals.keys())[0]
+                    : this.mainTerminalId;
+        }
+    }
+
     #resetTerminals() {
         this.activeTerminal = this.mainTerminalId;
         this.terminals.clear();

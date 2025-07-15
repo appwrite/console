@@ -29,7 +29,7 @@
             {#if (nestedLevel === 6 && paramCount === 2) || nestedLevel === 7}
                 <a href="../" style:display="flex" style:margin-inline-end="-8px"
                     ><Icon icon={IconChevronLeft} /></a>
-            {:else if paramCount >= 2}
+            {:else if paramCount >= 3}
                 <a href="./" style:display="flex" style:margin-inline-end="-8px"
                     ><Icon icon={IconChevronLeft} /></a>
             {/if}

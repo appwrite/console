@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Layout, Divider, Icon, Button, Status } from '@appwrite.io/pink-svelte';
+    import { Layout, Divider, Icon, Button } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
     import { ActionDropdown, Tab, Tabs, Terminal } from '$lib/components';
     import { base } from '$app/paths';
@@ -9,7 +9,8 @@
         IconChevronDoubleUp,
         IconPlusSm,
         IconTerminal,
-        IconPlus
+        IconPlus,
+        IconX
     } from '@appwrite.io/pink-icons-svelte';
     import { previewFrameRef } from '$routes/(console)/project-[region]-[project]/store';
     import {
@@ -18,7 +19,7 @@
         getStudioView,
         getTerminalHeightFromPrefs,
         getTerminalOpenFromPrefs,
-        saveImaginePrefs
+        saveImagineProjectPrefs
     } from '$lib/helpers/studioLayout';
     import { showChat } from '$lib/stores/chat';
     import { default as IconChatLayout } from '$routes/(console)/project-[region]-[project]/studio/assets/chat-layout.svelte';
@@ -29,16 +30,17 @@
     import { untrack } from 'svelte';
     import Debug from './debug.svelte';
     import ArtifactActionMenu from './artifactActionMenu.svelte';
+    import RoleSurvey from '$lib/components/studio/roleSurvey.svelte';
 
     const { children, data } = $props();
 
-    let view: 'preview' | 'editor' = $state(getStudioView() ?? 'preview');
+    let view: 'preview' | 'editor' = $state(getStudioView(data.project.$id) ?? 'preview');
 
     let debug = $state(false);
 
     function changeView(newView: 'preview' | 'editor') {
         view = newView;
-        saveImaginePrefs('studioView', newView);
+        saveImagineProjectPrefs(data.project.$id, 'studioView', newView);
     }
 
     $effect(() => {
@@ -46,11 +48,11 @@
         untrack(() => studio.selectArtifact(artifact));
     });
 
-    let terminalOpen = $state(getTerminalOpenFromPrefs());
+    let terminalOpen = $state(getTerminalOpenFromPrefs(data.project.$id));
     let isResizing = false;
 
     const minHeight = 150;
-    let resizerTopPosition = $state(getTerminalHeightFromPrefs() ?? minHeight);
+    let resizerTopPosition = $state(getTerminalHeightFromPrefs(data.project.$id) ?? minHeight);
     const terminalTabsHeight = 50;
     let layoutElement = $state<HTMLDivElement | null>(null);
 
@@ -61,7 +63,7 @@
 
     $effect(() => {
         if (terminalOpen !== undefined) {
-            saveImaginePrefs('studioTerminalOpen', terminalOpen);
+            saveImagineProjectPrefs(data.project.$id, 'studioTerminalOpen', terminalOpen);
         }
     });
 
@@ -105,7 +107,7 @@
 
     function stopResize() {
         isResizing = false;
-        saveImaginePrefs('studioTerminalHeight', resizerTopPosition);
+        saveImagineProjectPrefs(data.project.$id, 'studioTerminalHeight', resizerTopPosition);
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
         window.removeEventListener('touchmove', resize);
@@ -118,6 +120,13 @@
 
     function createTerminal() {
         studio.createTerminal();
+        if (studio.terminals.size > 1) {
+            terminalOpen = true;
+        }
+    }
+
+    function removeTerminal(symbol: symbol) {
+        studio.removeTerminal(symbol);
         if (studio.terminals.size > 1) {
             terminalOpen = true;
         }
@@ -166,7 +175,8 @@
     {/if}
 {/snippet}
 
-<svelte:window on:resize={onViewportResize} />
+<RoleSurvey />
+<svelte:window onresize={onViewportResize} />
 <div bind:this={layoutElement} class="layout">
     <Layout.Stack
         direction="column"
@@ -264,27 +274,48 @@
                                             <Icon icon={IconImagine} />
                                             Imagine
                                         </Tab>
-                                        {#each studio.terminals as [symbol] (symbol)}
-                                            <Tab
-                                                {root}
-                                                on:click={() => (studio.activeTerminal = symbol)}
-                                                selected={studio.activeTerminal === symbol}>
-                                                <Icon icon={IconTerminal} />
-                                                Terminal
-                                            </Tab>
+                                        {#each studio.terminals as [symbol], i (symbol)}
+                                            <div class="terminal-group">
+                                                <Tab
+                                                    {root}
+                                                    on:click={() =>
+                                                        (studio.activeTerminal = symbol)}
+                                                    selected={studio.activeTerminal === symbol}>
+                                                    <Icon icon={IconTerminal} />
+                                                    <span class="label">Terminal</span>
+                                                </Tab>
+
+                                                {#if i !== 0}
+                                                    <Button.Button
+                                                        variant="text"
+                                                        size="xs"
+                                                        class="terminal-close"
+                                                        onclick={(event) => {
+                                                            event.preventDefault();
+                                                            removeTerminal(symbol);
+                                                        }}
+                                                        icon>
+                                                        <Icon
+                                                            icon={IconX}
+                                                            --icon-size-s="12px"
+                                                            size="s"
+                                                            color="--fgcolor-neutral-tertiary" />
+                                                    </Button.Button>
+                                                {/if}
+                                            </div>
                                         {/each}
                                     </Tabs>
                                     <Button.Button
                                         variant="text"
                                         size="s"
-                                        on:click={(event) => {
+                                        onclick={(event) => {
                                             event.preventDefault();
                                             createTerminal();
                                         }}
                                         icon>
                                         <Icon
                                             icon={IconPlusSm}
-                                            size="m"
+                                            size="s"
                                             color="--fgcolor-neutral-tertiary" />
                                     </Button.Button>
                                 </Layout.Stack>
@@ -396,6 +427,32 @@
         width: calc(100%);
     }
 
+    .terminal-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .terminal-group:hover > :global(.terminal-close) {
+        opacity: 1;
+    }
+
+    :global(.terminal-close) {
+        position: absolute;
+        right: 2px;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: hsla(var(--bgcolor-neutral-primary) / 95) !important;
+        border: 0 !important;
+        backdrop-filter: blur(2px);
+        opacity: 0;
+        transition: opacity 150ms ease-in-out;
+    }
+
     .divider-wrapper-artifacts {
         margin-block-start: 8px;
         margin-block-end: 8px;
@@ -422,10 +479,10 @@
         }
     }
 
-    .hide-mobile {
-        display: none;
-        @media (min-width: 768px) {
-            display: block;
-        }
-    }
+    // .hide-mobile {
+    //     display: none;
+    //     @media (min-width: 768px) {
+    //         display: block;
+    //     }
+    // }
 </style>

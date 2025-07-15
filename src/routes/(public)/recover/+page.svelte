@@ -64,7 +64,7 @@
     <title>Recover - Appwrite</title>
 </svelte:head>
 {#if consoleProfile.hasFullPageSignup}
-    <UnauthenticatedStudio title="Password recovery">
+    <UnauthenticatedStudio title="Recover password">
         {#if userId && secret}
             <Form onSubmit={setPassword}>
                 <Layout.Stack>
@@ -96,7 +96,7 @@
                         required={true}
                         bind:value={email} />
 
-                    <Button fullWidth submit>Recover</Button>
+                    <Button fullWidth submit secondary>Recover</Button>
                     <div></div>
                     <Layout.Stack direction="row" justifyContent="center">
                         <a href={`${base}/login`}

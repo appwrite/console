@@ -1,17 +1,15 @@
 <script lang="ts">
-    import { Layout, ActionMenu, Icon, Divider, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Layout, ActionMenu, Divider, Tooltip } from '@appwrite.io/pink-svelte';
     import {
         IconAnnotation,
         IconCog,
         IconDatabase,
         IconFolder,
-        IconSparkles,
         IconTemplate,
-        IconUserGroup,
-        IconViewGrid
+        IconUserGroup
     } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
-    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import type { ComponentType } from 'svelte';
     import { page } from '$app/state';
 

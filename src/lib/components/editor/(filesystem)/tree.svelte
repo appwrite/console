@@ -1,15 +1,13 @@
 <script lang="ts">
-    import { melt, createContextMenu, type TreeView } from '@melt-ui/svelte';
+    import { melt, type TreeView } from '@melt-ui/svelte';
     import { getContext } from 'svelte';
     import { Icon } from '@appwrite.io/pink-svelte';
     import { icons, type TreeItem } from '.';
+    import Tree from './tree.svelte';
+    import FileActionMenu from '$routes/(console)/project-[region]-[project]/studio/artifact-[artifact]/fileActionMenu.svelte';
 
     export let items: TreeItem[];
     export let level = 1;
-
-    const {
-        elements: { trigger: cmTrigger, menu: cmMenu, item: cmItem, separator }
-    } = createContextMenu();
 
     const {
         elements: { item, group },
@@ -21,57 +19,38 @@
     {@const isFolder = children !== undefined}
     {@const isRoot = level === 1}
 
-    <li use:melt={$cmTrigger} style:margin-inline-start={isRoot ? '' : '1rem'}>
-        <button
-            data-file={!isFolder}
-            class:selected={$isSelected(path)}
-            use:melt={$item({
-                id: path,
-                hasChildren: isFolder
-            })}>
-            {#if icon === 'folder' && isFolder && $isExpanded(path)}
-                <div class="menuitem" class:not-active={!$isSelected(path)}>
-                    <Icon icon={icons['folderOpen']} />
-                </div>
-            {:else}
-                <div class="menuitem" class:not-active={!$isSelected(path)}>
-                    <Icon icon={icons[icon]} />
-                </div>
-            {/if}
+    <li style:margin-inline-start={isRoot ? '' : '1rem'} style:position="relative">
+        <div class="file-button">
+            <button
+                data-file={!isFolder}
+                class:selected={$isSelected(path)}
+                use:melt={$item({
+                    id: path,
+                    hasChildren: isFolder
+                })}
+                class="item-button">
+                {#if icon === 'folder' && isFolder && $isExpanded(path)}
+                    <div class="menuitem" class:not-active={!$isSelected(path)}>
+                        <Icon icon={icons['folderOpen']} />
+                    </div>
+                {:else}
+                    <div class="menuitem" class:not-active={!$isSelected(path)}>
+                        <Icon icon={icons[icon]} />
+                    </div>
+                {/if}
 
-            <span>{title}</span>
-        </button>
+                <span class="label">{title}</span>
+            </button>
+            <span class="menu">
+                <FileActionMenu />
+            </span>
+        </div>
 
         {#if children}
             <ul use:melt={$group({ id: path })}>
-                <svelte:self items={children} level={level + 1} />
+                <Tree items={children} level={level + 1} />
             </ul>
         {/if}
-
-        <div class=" menu" use:melt={$cmMenu}>
-            <button
-                class="item"
-                use:melt={$cmItem}
-                onclick={(e) => {
-                    e.preventDefault();
-                    alert('Create clicked');
-                }}>Create</button>
-            <button
-                class="item"
-                use:melt={$cmItem}
-                onclick={(e) => {
-                    e.preventDefault();
-                    alert('Rename clicked');
-                }}>Rename</button>
-            <div use:melt={$separator}></div>
-            <button
-                class="item"
-                use:melt={$cmItem}
-                onclick={(e) => {
-                    e.preventDefault();
-                    alert('Delete clicked');
-                }}>Delete</button>
-        </div>
     </li>
 {/each}
 
@@ -83,7 +62,7 @@
             padding-block-end: var(--space-1);
         }
     }
-    button {
+    .item-button {
         display: flex;
         width: 100%;
         height: 2rem;
@@ -93,16 +72,12 @@
         user-select: none;
         padding: var(--space-3) var(--space-4);
         cursor: pointer;
-        border-radius: var(--border-radius-s);
         color: var(--fgcolor-neutral-secondary);
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
-        &.selected {
-            background: var(--bgcolor-neutral-tertiary);
-        }
-        &:hover:not(.selected) {
-            background: var(--bgcolor-neutral-secondary);
-        }
         &:focus-visible {
             outline: 2px solid #007aff;
             outline-offset: -2px;
@@ -113,6 +88,42 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+    }
+
+    .file-button {
+        display: flex;
+        align-items: center;
+        border-radius: var(--border-radius-s);
+        overflow: hidden;
+
+        &:focus-within > .item-button {
+            background: var(--bgcolor-neutral-tertiary);
+        }
+
+        &:has(.selected),
+        &:focus-within {
+            background: var(--bgcolor-neutral-tertiary);
+        }
+
+        &:hover {
+            background-color: var(--bgcolor-neutral-tertiary);
+        }
+        .menu {
+            opacity: 0;
+            margin-right: 0;
+            margin-left: auto;
+        }
+    }
+
+    .file-button:hover > .menu,
+    .file-button:focus-within > .menu,
+    .file-button:has(.selected) > .menu {
+        opacity: 1;
+    }
+
+    .context-trigger {
+        position: absolute;
+        inset: 0;
     }
 
     .menuitem {

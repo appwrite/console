@@ -13,7 +13,7 @@ export const imagineDark = {
         },
         {
             token: 'string',
-            foreground: '#6edf0'
+            foreground: '#6edf00'
         },
         {
             token: 'number',
@@ -25,11 +25,11 @@ export const imagineDark = {
         },
         {
             token: 'function',
-            foreground: '#b840ff'
+            foreground: '#ff00ff'
         },
         {
             token: 'variable',
-            foreground: '#6edf0'
+            foreground: '#6edf00'
         },
         {
             token: 'constant',

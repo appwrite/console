@@ -7,7 +7,7 @@ import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 
 export const load: PageLoad = async ({ params, url, route, depends, parent }) => {
-    const { scopes } = await parent();
+    const { scopes, account } = await parent();
     depends(Dependencies.ORGANIZATION);
     const page = getPage(url);
     const limit = getLimit(url, route, CARD_LIMIT);
@@ -22,6 +22,22 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         Query.limit(limit),
         Query.orderDesc('')
     ]);
+
+    const lastUpdatedProject = projects.projects.reduce((latest, project) => {
+        return new Date(project.$updatedAt) > new Date(latest.$updatedAt) ? project : latest;
+    });
+
+    const isInternalLink = url.pathname.startsWith('/console/organization-');
+
+    const accessedAt = new Date(account.accessedAt).getTime();
+    const accessedYesterday = new Date().getTime() - accessedAt > 30 * 60 * 1000;
+
+    if (lastUpdatedProject && accessedYesterday && !isInternalLink) {
+        redirect(
+            303,
+            `${base}/project-${lastUpdatedProject.region}-${lastUpdatedProject.$id}/studio`
+        );
+    }
 
     // set `default` if no region!
     for (const project of projects.projects) {

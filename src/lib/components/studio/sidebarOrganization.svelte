@@ -60,6 +60,8 @@
         left: 0;
         top: 48px;
         width: 200px;
+        display: flex;
+        flex-direction: column;
         transform: translateX(-200px);
         height: calc(100vh - 48px);
         padding: var(--space-4) var(--space-8) var(--space-8) var(--space-8);
