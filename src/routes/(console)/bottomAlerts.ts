@@ -12,6 +12,8 @@ import DatabaseUpsertDark from '$lib/images/promos/database-upsert-dark.png';
 import DatabaseUpsertLight from '$lib/images/promos/database-upsert-light.png';
 import EncryptedDatabasesDark from '$lib/images/promos/encrypted-attribute-dark.png';
 import EncryptedDatabasesLight from '$lib/images/promos/encrypted-attribute-light.png';
+import AutoIncrementDark from '$lib/images/promos/auto-increment-dark.png';
+import AutoIncrementLight from '$lib/images/promos/auto-increment-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -95,7 +97,33 @@ if (isCloud) {
         },
         show: true
     };
-    listOfPromotions.push(encryptedAttributePromo, databaseUpsert, bulkApiPromo, csvImportPromo);
+    const autoIncrementPromo: BottomModalAlertItem = {
+        id: 'modal:auto_increment_announcement',
+        src: {
+            dark: AutoIncrementDark,
+            light: AutoIncrementLight
+        },
+        title: 'Announcing Auto-increment support',
+        message:
+            'Get a built-in numeric identifier that increases predictably with every new document added.',
+        plan: 'free',
+        importance: 8,
+        scope: 'project',
+        cta: {
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-auto-increment',
+            external: true,
+            hideOnClick: true
+        },
+        show: true
+    };
+    listOfPromotions.push(
+        autoIncrementPromo,
+        encryptedAttributePromo,
+        databaseUpsert,
+        bulkApiPromo,
+        csvImportPromo
+    );
 }
 
 export function addBottomModalAlerts() {

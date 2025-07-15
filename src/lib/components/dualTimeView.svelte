@@ -10,7 +10,7 @@
     import { Badge, InteractiveText, Layout, Popover, Typography } from '@appwrite.io/pink-svelte';
     import { menuOpen } from '$lib/components/menu/store';
 
-    export let time: string = '';
+    export let time: string | null = null;
     export let placement: ComponentProps<Popover>['placement'] = 'bottom';
 
     function timeDifference(dateString: string): string {
@@ -75,20 +75,21 @@
     $: timeToString = time ? timeDifference(time) : 'Invalid time';
 </script>
 
-<Popover let:show let:hide {placement} portal>
-    <button
-        on:mouseenter={() => {
-            if (!$menuOpen) {
-                setTimeout(show, 150);
-            }
-        }}
-        on:mouseleave={() => hidePopover(hide)}>
-        <slot>{capitalize(timeFromNow(time))}</slot>
-    </button>
+{#if time}
+    <Popover let:show let:hide {placement} portal>
+        <button
+            on:mouseenter={() => {
+                if (!$menuOpen) {
+                    setTimeout(show, 150);
+                }
+            }}
+            on:mouseleave={() => hidePopover(hide)}>
+            <slot>{capitalize(timeFromNow(time))}</slot>
+        </button>
 
-    <div
-        let:hide
-        let:showing
+        <div
+            let:hide
+            let:showing
         slot="tooltip"
         role="tooltip"
         style:padding="1rem"
@@ -138,4 +139,6 @@
             </Layout.Stack>
         {/if}
     </div>
-</Popover>
+</Popover>{:else}
+    <Typography.Text>{time === null || time === undefined ? 'null' : time}</Typography.Text>
+{/if}
