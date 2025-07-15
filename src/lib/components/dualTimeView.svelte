@@ -90,55 +90,55 @@
         <div
             let:hide
             let:showing
-        slot="tooltip"
-        role="tooltip"
-        style:padding="1rem"
-        style:margin="-1rem"
-        on:mouseenter={() => (isMouseOverTooltip = true)}
-        on:mouseleave={() => hidePopover(hide, false)}>
-        {#if showing}
-            <Layout.Stack gap="s" alignContent="flex-start">
-                <!-- `Raw time` as per design -->
-                <Typography.Caption color="--fgcolor-neutral-tertiary" variant="400">
-                    {#if $$slots.title}
-                        <slot name="title" />
-                    {:else}
-                        {timeToString}
-                    {/if}
-                </Typography.Caption>
+            slot="tooltip"
+            role="tooltip"
+            style:padding="1rem"
+            style:margin="-1rem"
+            on:mouseenter={() => (isMouseOverTooltip = true)}
+            on:mouseleave={() => hidePopover(hide, false)}>
+            {#if showing}
+                <Layout.Stack gap="s" alignContent="flex-start">
+                    <!-- `Raw time` as per design -->
+                    <Typography.Caption color="--fgcolor-neutral-tertiary" variant="400">
+                        {#if $$slots.title}
+                            <slot name="title" />
+                        {:else}
+                            {timeToString}
+                        {/if}
+                    </Typography.Caption>
 
-                <!-- `Absolute time` as per design -->
-                <Layout.Stack gap="xxs">
-                    <Layout.Stack
-                        direction="row"
-                        alignItems="center"
-                        alignContent="center"
-                        justifyContent="space-between">
-                        <InteractiveText
-                            isVisible
-                            variant="copy"
-                            text={toLocaleDateTime(time, false, 'UTC')}
-                            value={toISOString(time)} />
+                    <!-- `Absolute time` as per design -->
+                    <Layout.Stack gap="xxs">
+                        <Layout.Stack
+                            direction="row"
+                            alignItems="center"
+                            alignContent="center"
+                            justifyContent="space-between">
+                            <InteractiveText
+                                isVisible
+                                variant="copy"
+                                text={toLocaleDateTime(time, false, 'UTC')}
+                                value={toISOString(time)} />
 
-                        <Badge variant="secondary" content="UTC" size="xs" />
-                    </Layout.Stack>
+                            <Badge variant="secondary" content="UTC" size="xs" />
+                        </Layout.Stack>
 
-                    <Layout.Stack
-                        direction="row"
-                        alignItems="center"
-                        alignContent="center"
-                        justifyContent="space-between">
-                        <InteractiveText
-                            isVisible
-                            variant="copy"
-                            text={toLocaleDateTime(time)}
-                            value={toLocalDateTimeISO(time)} />
-                        <Badge variant="secondary" content="Local" size="xs" />
+                        <Layout.Stack
+                            direction="row"
+                            alignItems="center"
+                            alignContent="center"
+                            justifyContent="space-between">
+                            <InteractiveText
+                                isVisible
+                                variant="copy"
+                                text={toLocaleDateTime(time)}
+                                value={toLocalDateTimeISO(time)} />
+                            <Badge variant="secondary" content="Local" size="xs" />
+                        </Layout.Stack>
                     </Layout.Stack>
                 </Layout.Stack>
-            </Layout.Stack>
-        {/if}
-    </div>
-</Popover>{:else}
+            {/if}
+        </div>
+    </Popover>{:else}
     <Typography.Text>{time === null || time === undefined ? 'null' : time}</Typography.Text>
 {/if}

@@ -161,7 +161,8 @@
                 width: 200,
                 draggable: false,
                 type: 'string',
-                icon: IconFingerPrint
+                icon: IconFingerPrint,
+                isEditable: false
             },
             {
                 id: '$createdAt',
@@ -169,7 +170,8 @@
                 width: { min: 200 },
                 draggable: true,
                 type: 'datetime',
-                icon: IconCalendar
+                icon: IconCalendar,
+                isEditable: false
             },
             {
                 id: '$updatedAt',
@@ -177,7 +179,8 @@
                 width: { min: 200 },
                 draggable: true,
                 type: 'datetime',
-                icon: IconCalendar
+                icon: IconCalendar,
+                isEditable: false
             },
             {
                 id: 'actions',
@@ -185,7 +188,8 @@
                 width: 40,
                 isAction: true,
                 draggable: false,
-                type: 'string'
+                type: 'string',
+                isEditable: false
             }
         ];
 
@@ -393,11 +397,12 @@
         {#each documents.documents as document (document.$id)}
             <!-- TODO: add `value` for user attributes -->
             <Spreadsheet.Row.Base {root} id={document.$id}>
-                {#each $columns as { id } (id)}
+                {#each $columns as { id, isEditable } (id)}
                     {@const formatted = formatColumn(document[id])}
                     <Spreadsheet.Cell
                         {root}
                         column={id}
+                        {isEditable}
                         value={id.includes('$') || formatted.value === 'null'
                             ? undefined
                             : formatted.value}>

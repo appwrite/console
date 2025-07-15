@@ -67,6 +67,7 @@ export type SheetColumn = PinkSheetColumn & {
     encrypt?: boolean;
     icon?: ComponentType;
     isPrimary?: boolean;
+    isEditable?: boolean;
 };
 
 export function isValueOfStringEnum<T extends Record<string, string>>(
