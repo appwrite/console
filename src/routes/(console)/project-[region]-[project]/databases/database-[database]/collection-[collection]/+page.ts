@@ -8,7 +8,8 @@ import { queries, queryParamToMap } from '$lib/components/filters';
 export const load: PageLoad = async ({ params, depends, url, route }) => {
     depends(Dependencies.DOCUMENTS);
     const page = getPage(url);
-    const limit = getLimit(url, route, 18 /*PAGE_LIMIT*/);
+    // TODO: apply pagination
+    const limit = getLimit(url, route, 96 /*PAGE_LIMIT*/);
     const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
     const query = getQuery(url);

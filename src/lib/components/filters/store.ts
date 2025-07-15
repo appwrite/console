@@ -1,10 +1,10 @@
 import { goto } from '$app/navigation';
-import { derived, get, writable } from 'svelte/store';
 import { page } from '$app/stores';
 import deepEqual from 'deep-equal';
-import type { Column, ColumnType } from '$lib/helpers/types';
 import { Query } from '@appwrite.io/console';
 import { toLocaleDateTime } from '$lib/helpers/date';
+import { derived, get, writable } from 'svelte/store';
+import type { SheetColumn, SheetColumnType } from '$lib/helpers/types';
 
 export type TagValue = {
     tag: string;
@@ -14,7 +14,7 @@ export type TagValue = {
 export type Operator = {
     toTag: (attribute: string, input?: string | number | string[], type?: string) => TagValue;
     toQuery: (attribute: string, input?: string | number | string[]) => string;
-    types: ColumnType[];
+    types: SheetColumnType[];
     hideInput?: boolean;
 };
 
@@ -33,7 +33,7 @@ function initQueries(initialValue = new Map<TagValue, string>()) {
 
     type AddFilterArgs = {
         operator: Operator;
-        column: Column;
+        column: SheetColumn;
         value: string | number | string[];
     };
 
@@ -91,14 +91,14 @@ export const tags = derived(queries, ($queries) => Array.from($queries.keys()));
 
 /* eslint  @typescript-eslint/no-explicit-any: 'off' */
 export function addFilter(
-    columns: Column[],
+    columns: SheetColumn[],
     columnId: string,
     operatorKey: string,
     value: any, // We cast to any to not cause type errors in the input components
     arrayValues: string[] = []
 ) {
     const operator = operatorKey ? operators[operatorKey] : null;
-    const column = columns.find((c) => c.id === columnId) as Column;
+    const column = columns.find((c) => c.id === columnId) as SheetColumn;
     if (!column || !operator) return;
     if (column.array) {
         queries.addFilter({ column, operator, value: arrayValues });
@@ -135,7 +135,7 @@ const operatorsDefault = new Map<
     ValidOperators,
     {
         query: (attr: string, input: string | number | string[]) => string;
-        types: ColumnType[];
+        types: SheetColumnType[];
         hideInput?: boolean;
     }
 >([

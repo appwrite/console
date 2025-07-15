@@ -20,11 +20,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { base } from '$app/paths';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
-    import EmptySheet from './emptySheet.svelte';
+    import EmptySheet from './layout/emptySheet.svelte';
     import CreateRecord from './createRecord.svelte';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
 
     export let data: PageData;
 
@@ -135,7 +136,7 @@
         {#if hasAttributes && hasValidAttributes}
             {#if data.documents.total}
                 <Divider />
-                <SpreadSheet {data} />
+                <SpreadSheet {data} bind:showRecordsCreateSheet />
             {:else if $hasPageQueries}
                 <EmptySearch hidePages>
                     <div class="common-section">
@@ -159,10 +160,30 @@
                     </div>
                 </EmptySearch>
             {:else}
-                <EmptySheet on:record={() => (showRecordsCreateSheet = true)} />
+                <EmptySheet
+                    mode="records"
+                    cta={{
+                        primary: {
+                            onClick: () => {
+                                showRecordsCreateSheet = true;
+                            }
+                        }
+                    }} />
             {/if}
         {:else}
-            <EmptySheet on:record={() => (showRecordsCreateSheet = true)} />
+            <EmptySheet
+                mode="records"
+                title="You have no columns yet"
+                cta={{
+                    primary: {
+                        text: 'Create column',
+                        onClick: async () => {
+                            await goto(
+                                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/attributes`
+                            );
+                        }
+                    }
+                }} />
         {/if}
     </div>
 {/key}
@@ -186,6 +207,4 @@
         }} />
 {/if}
 
-{#if showRecordsCreateSheet}
-    <CreateRecord collection={$collection} bind:showSheet={showRecordsCreateSheet} />
-{/if}
+<CreateRecord collection={$collection} bind:showSheet={showRecordsCreateSheet} />

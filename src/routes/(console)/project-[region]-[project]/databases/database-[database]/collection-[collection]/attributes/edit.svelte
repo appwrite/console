@@ -43,7 +43,7 @@
         }
     }) as Option;
 
-    async function submit() {
+    export async function submit() {
         try {
             await option.update(databaseId, collectionId, selectedAttribute, originalKey);
             await invalidate(Dependencies.COLLECTION);
@@ -58,6 +58,7 @@
                 type: 'success',
                 message: `Attribute ${selectedAttribute.key} has been updated`
             });
+
             showEdit = false;
             trackEvent(Submit.AttributeUpdate);
 

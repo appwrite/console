@@ -31,9 +31,7 @@
         FloatingActionBar,
         Icon,
         InteractiveText,
-        Typography,
-        Sheet,
-        Divider
+        Typography
     } from '@appwrite.io/pink-svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
@@ -58,30 +56,23 @@
     import { type Action } from './sheetOptions.svelte';
     import EditAttribute from './attributes/edit.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import SideSheet from './layout/sidesheet.svelte';
+    import SpreadsheetContainer from './layout/spreadsheet.svelte';
 
     export let data: PageData;
+    export let showRecordsCreateSheet: boolean;
 
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
 
     let displayNames = {};
     let showRelationships = false;
-    let selectedRelationship: Models.AttributeRelationship = null;
     let relationshipData: Partial<Models.Document>[];
-
-    let spreadsheetHeight = '75vh';
-    let spreadsheetWrapper: HTMLDivElement;
+    let selectedRelationship: Models.AttributeRelationship = null;
 
     $: documents = data.documents;
 
-    function resizeSheet() {
-        if (!spreadsheetWrapper) return;
-        const rect = spreadsheetWrapper.getBoundingClientRect();
-        spreadsheetHeight = window.innerHeight - rect.top + 'px';
-    }
-
     onMount(async () => {
-        resizeSheet();
         displayNames = preferences.getDisplayNames();
     });
 
@@ -316,7 +307,7 @@
         if (type === 'update') {
             $databaseSheetOptions.show = true;
             $databaseSheetOptions.isEdit = true;
-            $databaseSheetOptions.title = 'update column';
+            $databaseSheetOptions.title = 'Update column';
         }
 
         if (type === 'column-left' || type === 'column-right') {
@@ -339,13 +330,7 @@
             : emptyCellsLimit - data.documents.documents.length;
 </script>
 
-<svelte:window on:resize={resizeSheet} />
-
-<div
-    bind:this={spreadsheetWrapper}
-    style:height={spreadsheetHeight}
-    style:position="relative"
-    style:width="100%">
+<SpreadsheetContainer>
     <Spreadsheet.Root
         let:root
         {loading}
@@ -361,7 +346,10 @@
             {#each $columns as column (column.id)}
                 {#if column.isAction}
                     <Spreadsheet.Header.Cell column="actions" {root}>
-                        <Button.Button icon variant="extra-compact" on:click={() => {}}>
+                        <Button.Button
+                            icon
+                            variant="extra-compact"
+                            on:click={() => (showRecordsCreateSheet = true)}>
                             <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                         </Button.Button>
                     </Spreadsheet.Header.Cell>
@@ -553,7 +541,7 @@
             </FloatingActionBar>
         </div>
     {/if}
-</div>
+</SpreadsheetContainer>
 
 <RelationshipsModal bind:show={showRelationships} {selectedRelationship} data={relationshipData} />
 
@@ -624,49 +612,19 @@
     </p>
 </Confirm>
 
-<div style="position: absolute; top: 0; ">
-    <Sheet bind:open={$databaseSheetOptions.show} closeOnBlur={false}>
-        <div slot="header" style:width="100%">
-            <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Layout.Stack direction="row" gap="m" alignItems="center">
-                    <Typography.Text variant="m-400">{$databaseSheetOptions.title}</Typography.Text>
-                </Layout.Stack>
-            </Layout.Stack>
-        </div>
-
-        <Layout.Stack direction="column" justifyContent="space-evenly">
-            <Layout.Stack gap="xl">
-                <EditAttribute
-                    isModal={false}
-                    showEdit={$databaseSheetOptions.isEdit}
-                    selectedAttribute={$databaseSheetOptions.column} />
-            </Layout.Stack>
-
-            <div class="sheet-footer">
-                <Layout.Stack gap="l">
-                    <Divider />
-
-                    <div class="sheet-footer-actions">
-                        <Layout.Stack gap="m" direction="row" justifyContent="flex-end">
-                            <Button.Button
-                                size="s"
-                                variant="secondary"
-                                on:click={() => ($databaseSheetOptions.show = false)}
-                                >Cancel</Button.Button>
-
-                            <Button.Button
-                                size="s"
-                                disabled={$databaseSheetOptions.disableSubmit}
-                                on:click={() => $databaseSheetOptions.submitAction()}>
-                                Update
-                            </Button.Button>
-                        </Layout.Stack>
-                    </div>
-                </Layout.Stack>
-            </div>
-        </Layout.Stack>
-    </Sheet>
-</div>
+<SideSheet
+    title={$databaseSheetOptions.title}
+    bind:show={$databaseSheetOptions.show}
+    submit={{
+        text: 'Update',
+        disabled: $databaseSheetOptions.disableSubmit,
+        onClick: () => $databaseSheetOptions.submitAction()
+    }}>
+    <EditAttribute
+        isModal={false}
+        showEdit={$databaseSheetOptions.isEdit}
+        selectedAttribute={$databaseSheetOptions.column} />
+</SideSheet>
 
 <style lang="scss">
     .floating-action-bar {
@@ -675,16 +633,5 @@
         z-index: 14;
         position: absolute;
         transform: translateX(-50%);
-    }
-
-    .sheet-footer {
-        left: 0;
-        right: 0;
-        bottom: 0;
-        position: absolute;
-
-        & .sheet-footer-actions {
-            padding: var(--space-8);
-        }
     }
 </style>
