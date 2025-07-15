@@ -10,8 +10,11 @@ import {
 } from 'ai';
 import { createRuntimeContext, WriterType } from '@/lib/ai/mastra/utils/runtime-context';
 import { mastra } from '@/lib/ai/mastra';
+import { exec as _exec } from 'child_process';
+import { promisify } from 'util';
+const exec = promisify(_exec);
 import fs from 'fs';
-import { createSynapseClient } from '@/lib/synapse-http-client';
+import path from 'path';
 
 export const handleChatRequest = async (c: Context) => {
     const signal = c.req.raw.signal;
@@ -51,12 +54,29 @@ export const handleChatRequest = async (c: Context) => {
     const latestMessageTextPart = latestMessage.content[0] as TextPart;
     const restMessages = convertedMessages.slice(0, -1);
 
-    const synapseClient = createSynapseClient({
-      artifactId,
-    });
+    console.log("isNewConversation", isNewConversation);
 
-    // Save to temp.json
-    fs.writeFileSync("temp.json", JSON.stringify(messages, null, 2));
+    // If it's a new conversation, we need to clone the workspace
+    // This is temporary and will be handled by Synapse shortly!
+    if (isNewConversation) {
+      const workspaceDir = path.resolve(process.cwd(), `./tmp/workspace/artifact/${artifactId}`)
+      console.log("workspaceDir", workspaceDir);
+      const exists = fs.existsSync(workspaceDir);
+
+      if (exists) {
+        console.log("Workspace already exists, skipping clone");
+      } else {
+        console.log("Workspace does not exist, creating directory...");
+        await exec(`mkdir -p ${workspaceDir}`);
+        console.log("Cloning template 'base-vite-template'...");
+        await exec(`pnpx degit appwrite/templates-for-frameworks/base-vite-template .`, { cwd: workspaceDir });
+        console.log("Installing dependencies...");
+        await exec(`bun install`, { cwd: workspaceDir });
+      }
+    } else {
+      console.log("Not a new conversation, skipping workspace clone");
+    }
+
 
     let didError = false;
 

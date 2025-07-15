@@ -417,10 +417,6 @@ Example of invalid requests:
       },
     ];
 
-
-    //save this in temp.json
-    fs.writeFileSync("./temp-messages.ts", JSON.stringify(messages, null, 2));
-
     const stream = streamText({
       // model: openai("gpt-4.1-mini"),
       model: anthropic("claude-3-7-sonnet-20250219"),
