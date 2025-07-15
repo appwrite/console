@@ -19,7 +19,7 @@
     {@const isFolder = children !== undefined}
     {@const isRoot = level === 1}
 
-    <FileActionMenu open={false}>
+    <FileActionMenu>
         <li style:margin-inline-start={isRoot ? '' : '1rem'} style:position="relative">
             <div class="file-button">
                 <button
