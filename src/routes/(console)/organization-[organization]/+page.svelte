@@ -122,9 +122,9 @@
 
     function isSetToArchive(project: Models.Project): boolean {
         if (!isCloud) return false;
-        if (data.organization.projects.length === 0) return false;
+        if (data.organization.projects?.length === 0) return false;
         if (!project || !project.$id) return false;
-        return !data.organization.projects.includes(project.$id);
+        return !data.organization.projects?.includes(project.$id);
     }
 
     function formatName(name: string, limit: number = 19) {
@@ -132,7 +132,7 @@
     }
 
     $: projectsToArchive = data.projects.projects.filter(
-        (project) => !data.organization.projects.includes(project.$id)
+        (project) => !data.organization.projects?.includes(project.$id)
     );
 </script>
 

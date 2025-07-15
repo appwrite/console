@@ -323,7 +323,7 @@ export async function checkForProjectsLimit(org: Organization, projects: number)
     const plan = await sdk.forConsole.billing.getOrganizationPlan(org.$id);
     if (!plan) return;
     if (plan.$id !== BillingPlan.FREE) return;
-    if (org.projects.length > 0) return;
+    if (org.projects?.length > 0) return;
 
     if (plan.projects > 0 && projects > plan.projects) {
         headerAlert.add({
