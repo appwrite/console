@@ -20,6 +20,9 @@ importers:
       '@ai-sdk/react':
         specifier: 2.0.0-beta.10
         version: 2.0.0-beta.10(react@19.1.0)(zod@3.25.76)
+      '@ai-sdk/vercel':
+        specifier: 1.0.0-beta.3
+        version: 1.0.0-beta.3(zod@3.25.76)
       '@eslint/eslintrc':
         specifier: ^3
         version: 3.3.1
@@ -99,6 +102,12 @@ packages:
     peerDependencies:
       zod: ^3.25.49
 
+  '@ai-sdk/openai-compatible@1.0.0-beta.3':
+    resolution: {integrity: sha512-EdBkUsDr51v+fDcQXZklPZphIJo9RuvBZzKRZg+1oSZjPo0vkxPkwjvJJ49fDmljqlwLqY/U9KASSwftuFyPww==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.49
+
   '@ai-sdk/openai@2.0.0-beta.5':
     resolution: {integrity: sha512-jDd3NKFIbLHam25XSkTsR9U0SZ7tgdl9z+HO0pu7n6sde6f5+CW/3zIk6BJoCNJKU9382kEDKu8u+6PREYd9ZQ==}
     engines: {node: '>=18'}
@@ -140,6 +149,12 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.23.8
+
+  '@ai-sdk/vercel@1.0.0-beta.3':
+    resolution: {integrity: sha512-cYVOI1KWW6N+qLdzQgd91UM4tgqTE+PP+h114tpTyFnBVYQSLzmaufBS0nTFrb8RqtjhAtneI7LEcHXZEEKqNQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.49
 
   '@apidevtools/json-schema-ref-parser@11.9.3':
     resolution: {integrity: sha512-60vepv88RwcJtSHrD6MjIL6Ta3SOYbgfnkHb+ppAVK+o9mXprRtulx7VlRl3lN3bbvysAfCS7WMVfhUYemB0IQ==}
@@ -2483,6 +2498,12 @@ snapshots:
       '@ai-sdk/provider-utils': 3.0.0-beta.2(zod@3.25.76)
       zod: 3.25.76
 
+  '@ai-sdk/openai-compatible@1.0.0-beta.3(zod@3.25.76)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0-beta.1
+      '@ai-sdk/provider-utils': 3.0.0-beta.2(zod@3.25.76)
+      zod: 3.25.76
+
   '@ai-sdk/openai@2.0.0-beta.5(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 2.0.0-beta.1
@@ -2528,6 +2549,13 @@ snapshots:
       '@ai-sdk/provider-utils': 2.2.8(zod@3.25.76)
       zod: 3.25.76
       zod-to-json-schema: 3.24.6(zod@3.25.76)
+
+  '@ai-sdk/vercel@1.0.0-beta.3(zod@3.25.76)':
+    dependencies:
+      '@ai-sdk/openai-compatible': 1.0.0-beta.3(zod@3.25.76)
+      '@ai-sdk/provider': 2.0.0-beta.1
+      '@ai-sdk/provider-utils': 3.0.0-beta.2(zod@3.25.76)
+      zod: 3.25.76
 
   '@apidevtools/json-schema-ref-parser@11.9.3':
     dependencies:

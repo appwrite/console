@@ -28,7 +28,13 @@ export const handleChatRequest = async (c: Context) => {
         return c.json('An unknown error occurred', 500);
     }
 
-    const { id: conversationId, messages } = body;
+    const { id: conversationId, messages, trigger } = body;
+
+    if (trigger === "submit-tool-result") {
+      // Skip
+      return c.body(null, 200);
+    }
+
     const artifactId = ARTIFACT_ID;
     const projectId = PROJECT_ID;
 

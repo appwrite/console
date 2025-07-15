@@ -44,7 +44,6 @@ const planStep = createStep({
     }) as RuntimeContextType;
     const writer = getWriterFromContext(runtimeContext);
     const restMessages = runtimeContext.get("restMessages") as any;
-
     const gitRepositoryUtils = new GitRepositoryUtils();
     const existingFiles =
       await gitRepositoryUtils.listRepositoryFileStrucrture();

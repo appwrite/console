@@ -10,7 +10,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.7.0",
   "devDependencies": {
     "@prisma/client": "^6.10.1",
     "@types/node": "^24.0.13",
@@ -22,6 +21,7 @@
     "@ai-sdk/google": "2.0.0-beta.6",
     "@ai-sdk/openai": "2.0.0-beta.5",
     "@ai-sdk/react": "2.0.0-beta.10",
+    "@ai-sdk/vercel": "1.0.0-beta.3",
     "@eslint/eslintrc": "^3",
     "@hono/node-server": "^1.16.0",
     "@mastra/core": "0.0.0-ai-v5-20250710191716",
@@ -35,5 +35,6 @@
     "hono": "^4.8.5",
     "prisma": "^6.10.1",
     "zod": "^3.25.76"
-  }
+  },
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }
