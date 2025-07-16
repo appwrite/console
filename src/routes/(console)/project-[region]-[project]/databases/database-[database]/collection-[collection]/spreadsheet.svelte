@@ -19,7 +19,7 @@
     } from './document-[document]/attributes/store';
     import { attributes, collection, columns, databaseSheetOptions } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
-    import type { SheetColumn, SheetColumnType } from '$lib/helpers/types';
+    import type { Column, ColumnType } from '$lib/helpers/types';
     import {
         Tooltip,
         Spreadsheet,
@@ -144,7 +144,7 @@
         const baseColumns = $collection.attributes.map((attribute) => ({
             id: attribute.key,
             title: attribute.key,
-            type: attribute.type as SheetColumnType,
+            type: attribute.type as ColumnType,
             hide: !!selected?.includes(attribute.key),
             array: attribute?.array,
             width: { min: 168 },
@@ -154,7 +154,7 @@
             elements: 'elements' in attribute ? attribute.elements : null
         }));
 
-        const staticColumns: SheetColumn[] = [
+        const staticColumns: Column[] = [
             {
                 id: '$id',
                 title: 'ID',

@@ -3,14 +3,15 @@
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
-    import type { SheetColumn, SheetColumnType } from '$lib/helpers/types';
+    import type { Column, ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
+    // TODO: use these for actions
     // import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
     import { Icon, Layout, Divider } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
-    import type { Option } from './attributes/store';
-    import CreateAttribute from './createAttribute.svelte';
+    // import type { Option } from './attributes/store';
+    // import CreateAttribute from './createAttribute.svelte';
     import { collection, columns, isCsvImportInProgress } from './store';
     import SpreadSheet from './spreadsheet.svelte';
     import { writable } from 'svelte/store';
@@ -30,11 +31,12 @@
     export let data: PageData;
 
     let showImportCSV = false;
-    let showCreateAttribute = false;
     let showRecordsCreateSheet = false;
-    let selectedAttribute: Option['name'] = null;
 
-    const filterColumns = writable<SheetColumn[]>([]);
+    // let showCreateAttribute = false;
+    // let selectedAttribute: Option['name'] = null;
+
+    const filterColumns = writable<Column[]>([]);
 
     $: selected = preferences.getCustomCollectionColumns(page.params.collection);
 
@@ -42,7 +44,7 @@
         $collection.attributes.map((attribute) => ({
             id: attribute.key,
             title: attribute.key,
-            type: attribute.type as SheetColumnType,
+            type: attribute.type as ColumnType,
             hide: !!selected?.includes(attribute.key),
             array: attribute?.array,
             format: 'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
@@ -162,7 +164,7 @@
             {:else}
                 <EmptySheet
                     mode="records"
-                    cta={{
+                    actions={{
                         primary: {
                             onClick: () => {
                                 showRecordsCreateSheet = true;
@@ -174,7 +176,7 @@
             <EmptySheet
                 mode="records"
                 title="You have no columns yet"
-                cta={{
+                actions={{
                     primary: {
                         text: 'Create column',
                         onClick: async () => {
@@ -188,11 +190,12 @@
     </div>
 {/key}
 
-{#if showCreateAttribute}
-    <CreateAttribute
-        bind:showCreate={showCreateAttribute}
-        bind:selectedOption={selectedAttribute} />
-{/if}
+<!-- TODO: goto attributes page -->
+<!--{#if showCreateAttribute}-->
+<!--    <CreateAttribute-->
+<!--        bind:showCreate={showCreateAttribute}-->
+<!--        bind:selectedOption={selectedAttribute} />-->
+<!--{/if}-->
 
 {#if showImportCSV}
     <!-- CSVs can be text/plain or text/csv sometimes! -->

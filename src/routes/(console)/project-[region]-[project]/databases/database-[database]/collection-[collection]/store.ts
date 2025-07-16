@@ -1,5 +1,5 @@
 import { page } from '$app/stores';
-import type { SheetColumn } from '$lib/helpers/types';
+import type { Column } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 
@@ -25,7 +25,7 @@ export const attributes = derived(
 );
 export const indexes = derived(page, ($page) => $page.data.collection.indexes as Models.Index[]);
 
-export const columns = writable<SheetColumn[]>([]);
+export const columns = writable<Column[]>([]);
 
 export const isCsvImportInProgress = writable(false);
 

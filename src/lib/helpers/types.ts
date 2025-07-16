@@ -15,25 +15,6 @@ export type PinkColumn = {
     hide?: boolean;
 };
 
-export type PinkSheetColumn = {
-    id: string;
-    width?:
-        | {
-              min: number;
-              max: number;
-          }
-        | {
-              min: number;
-          }
-        | number;
-    hide?: boolean;
-    fixed?: boolean;
-    resizable?: boolean;
-    draggable?: boolean;
-    resizedWidth?: number;
-    isAction?: boolean;
-};
-
 export type WritableValue<T> = T extends Writable<infer U> ? U : never;
 
 export function isHTMLElement(el: unknown): el is HTMLElement {
@@ -55,10 +36,10 @@ const columnTypes = [
     'relationship',
     'enum'
 ] as const;
-export type SheetColumnType = (typeof columnTypes)[number];
-export type SheetColumn = PinkSheetColumn & {
+export type ColumnType = (typeof columnTypes)[number];
+export type Column = PinkColumn & {
     title: string;
-    type: SheetColumnType;
+    type: ColumnType;
     filter?: boolean;
     array?: boolean;
     format?: string;
@@ -68,6 +49,11 @@ export type SheetColumn = PinkSheetColumn & {
     icon?: ComponentType;
     isPrimary?: boolean;
     isEditable?: boolean;
+    fixed?: boolean;
+    resizable?: boolean;
+    draggable?: boolean;
+    resizedWidth?: number;
+    isAction?: boolean;
 };
 
 export function isValueOfStringEnum<T extends Record<string, string>>(

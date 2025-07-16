@@ -4,11 +4,11 @@
     import Delete from './deleteIndex.svelte';
     import Create from './createIndex.svelte';
     import Overview from './overviewIndex.svelte';
-    import CreateAttribute from '../createAttribute.svelte';
+    // import CreateAttribute from '../createAttribute.svelte';
     import type { Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
     // import CreateAttributeDropdown from '../attributes/createAttributeDropdown.svelte';
-    import type { Option } from '../attributes/store';
+    // import type { Option } from '../attributes/store';
     import FailedModal from '../failedModal.svelte';
     import { canWriteCollections } from '$lib/stores/roles';
     import {
@@ -40,8 +40,8 @@
     let showCreateIndex = false;
     let showOverview = false;
     let showDelete = false;
-    let showCreateAttribute = false;
-    let selectedAttribute: Option['name'] = null;
+    // let showCreateAttribute = false;
+    // let selectedAttribute: Option['name'] = null;
     let showFailed = false;
     let error = '';
 
@@ -161,7 +161,7 @@
         {:else}
             <EmptySheet
                 mode="indexes"
-                cta={{
+                actions={{
                     primary: {
                         onClick: () => (showCreateIndex = true),
                         disabled: !$collection?.attributes?.length
@@ -173,7 +173,7 @@
         <EmptySheet
             mode="indexes"
             title="You have no columns yet"
-            cta={{
+            actions={{
                 primary: {
                     text: 'Create columns',
                     onClick: async () => {
@@ -193,10 +193,10 @@
     <Overview bind:showOverview {selectedIndex} />
 {/if}
 
-{#if showCreateAttribute}
-    <CreateAttribute
-        bind:showCreate={showCreateAttribute}
-        bind:selectedOption={selectedAttribute} />
-{/if}
+<!--{#if showCreateAttribute}-->
+<!--    <CreateAttribute-->
+<!--        bind:showCreate={showCreateAttribute}-->
+<!--        bind:selectedOption={selectedAttribute} />-->
+<!--{/if}-->
 
 <FailedModal bind:show={showFailed} title="Create index" header="Creation failed" {error} />

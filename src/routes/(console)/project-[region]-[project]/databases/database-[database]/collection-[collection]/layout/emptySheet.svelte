@@ -7,13 +7,13 @@
         Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import type { SheetColumn } from '$lib/helpers/types';
+    import type { Column } from '$lib/helpers/types';
     import { IconCalendar, IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
 
     type Mode = 'records' | 'columns' | 'indexes';
 
-    type ColumnsMap = Record<Mode, SheetColumn[]>;
+    type ColumnsMap = Record<Mode, Column[]>;
 
     type Action = {
         text?: string;
@@ -31,7 +31,7 @@
           }
         | undefined = undefined;
 
-    function makeColumns(...middle: SheetColumn[]): SheetColumn[] {
+    function makeColumns(...middle: Column[]): Column[] {
         return [
             {
                 id: '$id',

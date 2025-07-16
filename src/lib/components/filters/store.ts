@@ -4,7 +4,7 @@ import deepEqual from 'deep-equal';
 import { Query } from '@appwrite.io/console';
 import { toLocaleDateTime } from '$lib/helpers/date';
 import { derived, get, writable } from 'svelte/store';
-import type { SheetColumn, SheetColumnType } from '$lib/helpers/types';
+import type { Column, ColumnType } from '$lib/helpers/types';
 
 export type TagValue = {
     tag: string;
@@ -14,7 +14,7 @@ export type TagValue = {
 export type Operator = {
     toTag: (attribute: string, input?: string | number | string[], type?: string) => TagValue;
     toQuery: (attribute: string, input?: string | number | string[]) => string;
-    types: SheetColumnType[];
+    types: ColumnType[];
     hideInput?: boolean;
 };
 
@@ -33,7 +33,7 @@ function initQueries(initialValue = new Map<TagValue, string>()) {
 
     type AddFilterArgs = {
         operator: Operator;
-        column: SheetColumn;
+        column: Column;
         value: string | number | string[];
     };
 
@@ -91,14 +91,14 @@ export const tags = derived(queries, ($queries) => Array.from($queries.keys()));
 
 /* eslint  @typescript-eslint/no-explicit-any: 'off' */
 export function addFilter(
-    columns: SheetColumn[],
+    columns: Column[],
     columnId: string,
     operatorKey: string,
     value: any, // We cast to any to not cause type errors in the input components
     arrayValues: string[] = []
 ) {
     const operator = operatorKey ? operators[operatorKey] : null;
-    const column = columns.find((c) => c.id === columnId) as SheetColumn;
+    const column = columns.find((c) => c.id === columnId) as Column;
     if (!column || !operator) return;
     if (column.array) {
         queries.addFilter({ column, operator, value: arrayValues });
@@ -135,7 +135,7 @@ const operatorsDefault = new Map<
     ValidOperators,
     {
         query: (attr: string, input: string | number | string[]) => string;
-        types: SheetColumnType[];
+        types: ColumnType[];
         hideInput?: boolean;
     }
 >([
