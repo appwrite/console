@@ -129,6 +129,13 @@
             parser.chunk(message.content, from, {
                 group: message.$id
             });
+
+            console.log({
+                parser: parser.chunk(message.content, from, {
+                    group: message.$id
+                })
+            });
+
             parser.end();
         }
     });

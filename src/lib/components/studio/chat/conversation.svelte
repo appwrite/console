@@ -7,6 +7,7 @@
     import type { UIEventHandler, WheelEventHandler } from 'svelte/elements';
     import Message from './message.svelte';
     import { studio } from '../studio.svelte';
+    import { animatedText } from './animated-text.svelte';
 
     type Props = {
         parser: StreamParser;
@@ -17,13 +18,15 @@
 
     const chunks = parser.parsed;
 
+    const text = animatedText($chunks.map((chunk) => chunk.content).join(' '));
+
     function scrollToBottom(smooth: boolean = true) {
         document
             .getElementById('bottom')
             .scrollIntoView({ behavior: smooth ? 'smooth' : 'instant' });
     }
 
-    const onwheel: WheelEventHandler<HTMLDivElement> = (event) => {
+    const onwheel: WheelEventHandler<HTMLDivElement> = () => {
         if (studio.streaming) autoscroll = false;
     };
 
@@ -45,6 +48,7 @@
 
 <div class="overflow" {onwheel} {onscroll}>
     <section>
+        {text}
         {#each $chunks as message (message.id)}
             <Message {message} />
         {/each}

@@ -1,18 +1,22 @@
 import { page } from '$app/state';
-import { browser } from '$app/environment';
-
-let referrer = $state<string | null>(null);
-
-if (browser) {
-    let previousURL = $state(page.url.href);
-
-    const currentURL = page.url.href;
-    if (currentURL !== previousURL) {
-        referrer = previousURL;
-        previousURL = currentURL;
-    }
-}
 
 export const getReferrer = () => {
-    return referrer;
+   const url = page.url;
+
+   const referrer = usePrevious(url);
+
+   return referrer;
 };
+
+
+const usePrevious = <T>(value: T) => {
+    let current = $state<T>(value);
+    let previous = $state<T | null>(null);
+
+  if (value !== current) {
+    previous = current;
+    current = value;
+  }
+
+  return previous;
+}
