@@ -140,7 +140,7 @@
                             </Spreadsheet.Cell>
                             <Spreadsheet.Cell column="type" {root}>{index.type}</Spreadsheet.Cell>
                             <Spreadsheet.Cell column="columns" {root}>
-                                {index.attributes}
+                                {index.attributes.join(', ')}
                             </Spreadsheet.Cell>
                             <!--                            <Spreadsheet.Cell column="orders" {root}>-->
                             <!--                                {index.orders}-->
