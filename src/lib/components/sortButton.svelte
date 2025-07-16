@@ -52,7 +52,7 @@
             : $state.direction === 'asc'
               ? IconChevronUp
               : IconChevronDown}
-        color="--fgcolor-neutral-secondary" />
+        color="--fgcolor-neutral-weak" />
 </Button>
 
 <style lang="scss">
@@ -64,7 +64,12 @@
         &:hover {
             background-color: var(--bgcolor-neutral-secondary);
             border: var(--border-width-s) solid var(--bgcolor-neutral-secondary);
+
+            & :global(i) {
+                --icon-fill: var(--fgcolor-neutral-secondary) !important;
+            }
         }
+
         &:active {
             background-color: var(--bgcolor-neutral-tertiary);
             border: var(--border-width-s) solid var(--bgcolor-neutral-tertiary);
