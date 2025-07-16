@@ -269,7 +269,7 @@
         .icon {
             display: flex;
             align-items: center;
-            margin-left: -18px;
+            margin-left: -17.5px;
             margin-right: 4px;
             background-color: var(--bgcolor-neutral-primary);
             flex: 0 0;
