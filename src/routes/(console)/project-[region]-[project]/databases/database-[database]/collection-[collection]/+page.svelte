@@ -6,12 +6,9 @@
     import type { Column, ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
-    // TODO: use these for actions
-    // import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
+    import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
     import { Icon, Layout, Divider } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
-    // import type { Option } from './attributes/store';
-    // import CreateAttribute from './createAttribute.svelte';
     import { collection, columns, isCsvImportInProgress } from './store';
     import SpreadSheet from './spreadsheet.svelte';
     import { writable } from 'svelte/store';
@@ -32,10 +29,6 @@
 
     let showImportCSV = false;
     let showRecordsCreateSheet = false;
-
-    // let showCreateAttribute = false;
-    // let selectedAttribute: Option['name'] = null;
-
     const filterColumns = writable<Column[]>([]);
 
     $: selected = preferences.getCustomCollectionColumns(page.params.collection);
@@ -164,6 +157,7 @@
             {:else}
                 <EmptySheet
                     mode="records"
+                    showActions={$canWriteDocuments}
                     actions={{
                         primary: {
                             onClick: () => {
@@ -176,6 +170,7 @@
             <EmptySheet
                 mode="records"
                 title="You have no columns yet"
+                showActions={$canWriteCollections}
                 actions={{
                     primary: {
                         text: 'Create column',
@@ -189,13 +184,6 @@
         {/if}
     </div>
 {/key}
-
-<!-- TODO: goto attributes page -->
-<!--{#if showCreateAttribute}-->
-<!--    <CreateAttribute-->
-<!--        bind:showCreate={showCreateAttribute}-->
-<!--        bind:selectedOption={selectedAttribute} />-->
-<!--{/if}-->
 
 {#if showImportCSV}
     <!-- CSVs can be text/plain or text/csv sometimes! -->

@@ -1,7 +1,8 @@
 import { page } from '$app/stores';
+import { derived, writable } from 'svelte/store';
 import type { Column } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
-import { derived, writable } from 'svelte/store';
+import type { SortDirection } from '$lib/components/sortButton.svelte';
 
 export type Attributes =
     | Models.AttributeBoolean
@@ -45,4 +46,9 @@ export const databaseSheetOptions = writable<DatabaseSheetOptions>({
     isEdit: false,
     disableSubmit: false,
     submitAction: null
+});
+
+export const sortState = writable({
+    column: null as string,
+    direction: 'default' as SortDirection
 });

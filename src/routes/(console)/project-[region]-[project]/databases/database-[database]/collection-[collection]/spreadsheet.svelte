@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert, Confirm, Id } from '$lib/components';
+    import { Alert, Confirm, Id, SortButton } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button as ConsoleButton, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -17,7 +17,7 @@
         isRelationshipToMany,
         isString
     } from './document-[document]/attributes/store';
-    import { attributes, collection, columns, databaseSheetOptions } from './store';
+    import { attributes, collection, columns, databaseSheetOptions, sortState } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import {
@@ -47,10 +47,7 @@
         IconMail,
         IconText,
         IconToggle,
-        IconViewList,
-        IconSelector,
-        IconChevronUp,
-        IconChevronDown
+        IconViewList
     } from '@appwrite.io/pink-icons-svelte';
     import SheetOptions from './sheetOptions.svelte';
     import { type Action } from './sheetOptions.svelte';
@@ -207,32 +204,11 @@
     let showColumnDelete = false;
     let selectedRows: string[] = [];
 
-    let sortBy: string | null = null;
-    let sortDir: 'asc' | 'desc' | null = null;
-
-    async function sort(columnId: string) {
+    async function sort(query: string[]) {
         loading = true;
-        if (sortBy !== columnId) {
-            sortBy = columnId;
-            sortDir = 'asc';
-        } else if (sortDir === 'asc') {
-            sortDir = 'desc';
-        } else if (sortDir === 'desc') {
-            sortBy = null;
-            sortDir = null;
-        } else {
-            sortDir = 'asc';
-        }
-
-        let query: string[] = [];
-        if (sortBy && sortDir) {
-            query = [sortDir === 'asc' ? Query.orderAsc(sortBy) : Query.orderDesc(sortBy)];
-        }
-
         documents = await sdk
             .forProject(page.params.region, page.params.project)
             .databases.listDocuments(databaseId, collectionId, query);
-
         loading = false;
     }
 
@@ -369,23 +345,15 @@
                                 icon={column.icon ?? IconText}
                                 on:contextmenu={toggle}>
                                 <Layout.Stack
-                                    gap="xxxs"
+                                    gap="xs"
                                     direction="row"
                                     alignItems="center"
                                     alignContent="center">
                                     {column.title}
-                                    <Button.Button
-                                        icon
-                                        variant="extra-compact"
-                                        on:click={() => sort(column.id)}>
-                                        <Icon
-                                            size="s"
-                                            icon={sortBy === column.id
-                                                ? sortDir === 'asc'
-                                                    ? IconChevronUp
-                                                    : IconChevronDown
-                                                : IconSelector} />
-                                    </Button.Button>
+                                    <SortButton
+                                        onSort={sort}
+                                        column={column.id}
+                                        state={sortState} />
                                 </Layout.Stack>
                             </Spreadsheet.Header.Cell>
                         {/snippet}
