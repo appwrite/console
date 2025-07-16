@@ -12,12 +12,16 @@
     import rehypeHighlight from 'rehype-highlight';
     import type { ImagineUIMessage, ImagineUIToolParts } from '$shared-types';
     import Thinking from './thinking.svelte';
-    import ToolCalls from './toolCalls.svelte';
+    import Progress from './progress.svelte';
+    import type { CheckpointUIDataPart } from '../../../../../ai-service/src/lib/ai/custom-parts/checkpoint';
+    import Checkpoint from './checkpoint.svelte';
 
     type Props = {
         message: ImagineUIMessage;
+        version: number | null;
+        isLatestVersion: boolean;
     };
-    let { message }: Props = $props();
+    let { message, version, isLatestVersion }: Props = $props();
 
     const plugins: Plugin[] = [
         {
@@ -39,11 +43,14 @@
         const nonTextParts = message.parts.filter(p => p.type !== 'text');
         const textParts = message.parts.filter(p => p.type === 'text');
         const finalText = textParts[textParts.length - 1];
+        const toolCallParts = nonTextParts.filter(p => p.type.startsWith('tool-')) as ImagineUIToolParts[];
+        const checkpointPart = nonTextParts.filter(p => p.type === 'data-checkpoint')[0] as CheckpointUIDataPart;
         
         return {
             nonTextParts,
-            toolCalls: nonTextParts.filter(p => p.type.startsWith('tool-')) as ImagineUIToolParts[],
-            finalText
+            toolCallParts,
+            finalText,
+            checkpointPart,
         };
     });
 </script>
@@ -69,13 +76,18 @@
     {/each}
             
     <!-- Tool calls -->
-    {#if organizedParts().toolCalls.length > 0}
-        <ToolCalls toolCallParts={organizedParts().toolCalls} />
+    {#if organizedParts().toolCallParts.length > 0}
+        <Progress version={version} isLatestVersion={isLatestVersion} toolCallParts={organizedParts().toolCallParts} />
     {/if}
     
     <!-- Final text -->
     {#if organizedParts().finalText}
         <Markdown md={organizedParts().finalText.text} {plugins} />
+    {/if}
+
+    <!-- Checkpoint -->
+    {#if organizedParts().checkpointPart}
+        <Checkpoint checkpointPart={organizedParts().checkpointPart.data} />
     {/if}
 {/if}
 

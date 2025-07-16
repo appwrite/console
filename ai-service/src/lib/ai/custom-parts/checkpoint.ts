@@ -7,7 +7,7 @@ export const checkpointUIDataPartSchema = z.object({
 });
 
 export interface CheckpointUIDataPart {
-  type: "checkpoint";
+  type: "data-checkpoint";
   id: string;
   data: z.infer<typeof checkpointUIDataPartSchema>;
 }

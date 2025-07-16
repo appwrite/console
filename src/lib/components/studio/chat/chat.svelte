@@ -31,17 +31,15 @@
 
     let chatTextareaRef: HTMLTextAreaElement | null = $state(null);
 
+    console.log("conversation", $conversation.data);
+
     const chat = new Chat<ImagineUIMessage>({
-        id: $conversation.data?.$id,
+        maxSteps: 20,
+        id: $conversation.data.$id,
         transport: new DefaultChatTransport({
             api: `${VARS.AI_SERVICE_BASE_URL}/api/chat`,
-        })
-    });
-
-    $effect(() => {
-        if ($conversation.data?.messages) {
-            chat.messages = $conversation.data.messages;
-        }
+        }),
+        messages: $conversation.data.messages ?? []
     });
 
     const onkeydown: EventHandler<KeyboardEvent, HTMLTextAreaElement> = (event) => {
@@ -83,6 +81,7 @@
             text: message,
         }, {
             body: {
+                id: $conversation.data?.$id,
                 projectId: page.params.project,
                 artifactId: page.params.artifact,
             },

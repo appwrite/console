@@ -5,7 +5,15 @@
     import { slide } from 'svelte/transition';
     import type { ImagineUIToolParts } from '$shared-types';
 
-    let { toolCallParts }: { toolCallParts: ImagineUIToolParts[] } = $props();
+    let {
+        version,
+        isLatestVersion,
+        toolCallParts,
+    }: {
+        version: number | null;
+        isLatestVersion: boolean;
+        toolCallParts: ImagineUIToolParts[];
+    } = $props();
 
     const EXPANDED_SHOW_ITEMS = 3;
     let isExpanded = $state(false);
@@ -14,7 +22,7 @@
     let filteredParts = $derived(() => {
         let parts = toolCallParts.filter(
             (part) =>
-                part.type.startsWith('tool-readFile') || part.type.startsWith('tool-writeFile')
+                part.type.startsWith('tool-readFile') || part.type.startsWith('tool-writeFile') || part.type.startsWith('tool-listFilesInDirectory') || part.type.startsWith('tool-deleteFile')
         );
 
         const showMoreButton = parts.length > EXPANDED_SHOW_ITEMS;
@@ -27,6 +35,8 @@
         return { parts, showMoreButton };
     });
 
+    // duplicate the amount of tools to test stuff
+
     function toggleExpanded() {
         isExpanded = !isExpanded;
     }
@@ -34,8 +44,17 @@
 
 {#if filteredParts().parts.length > 0}
     <div class="tool-calls-container">
-        <div class="header">
-            <span class="version-text">Version 1</span>
+        <div class="header version-header">
+            <div class="version-text">
+                {#if version}
+                    Version {version}
+                {:else}
+                    Making changes...
+                {/if}
+            </div>
+            {#if isLatestVersion}
+                <div class="is-latest">Latest</div>
+            {/if}
         </div>
 
         <div class="content" class:has-more={filteredParts.length > EXPANDED_SHOW_ITEMS}>
@@ -63,6 +82,18 @@
                             {isLoading
                                 ? `Reading file ${toolCall.input.path}...`
                                 : `Read file ${toolCall.input.path}`}
+                        {:else if toolCall.type === 'tool-listFilesInDirectory'}
+                            {isLoading
+                                ? `Listing files in ${toolCall.input.path}...`
+                                : `Listed files in ${toolCall.input.path}`}
+                        {:else if toolCall.type === 'tool-deleteFile'}
+                            {isLoading
+                                ? `Deleting file ${toolCall.input.path}...`
+                                : `Deleted file ${toolCall.input.path}`}
+                        {:else if toolCall.type === 'tool-moveFile'}
+                            {isLoading
+                                ? `Moving file ${toolCall.input.path}...`
+                                : `Moved file ${toolCall.input.path}`}
                         {/if}
                     </div>
 
@@ -105,6 +136,18 @@
         display: flex;
         align-items: center;
         padding: 0.5rem 0.75rem;
+    }
+
+    .version-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .is-latest {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #737373;
     }
 
     .version-text {

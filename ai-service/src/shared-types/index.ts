@@ -3,7 +3,7 @@ import { thinkingUIDataPartSchema } from '@/lib/ai/custom-parts/thinking';
 import { fileTools } from '@/lib/ai/mastra/tools/file-tools';
 import { InferUIDataParts, InferUITool, ToolUIPart, UIMessage } from 'ai';
 
-type ImagineTools = {
+export type ImagineTools = {
     readFile: InferUITool<typeof fileTools.readFileTool>;
     writeFile: InferUITool<typeof fileTools.writeFileTool>;
     listFilesInDirectory: InferUITool<typeof fileTools.listFilesInDirectoryTool>;

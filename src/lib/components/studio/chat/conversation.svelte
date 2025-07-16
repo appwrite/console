@@ -39,19 +39,38 @@
             autoscroll = false;
         }
     };
+
+    const messagesWithCheckpoints = $derived(() => {
+        return chat.messages.filter((message) =>
+            message.parts.some((part) => part.type === 'data-checkpoint')
+        );
+    });
+
+    const getMessageVersion = (message: ImagineUIMessage) => {
+        const index = messagesWithCheckpoints().findIndex((m) => m.id === message.id);
+        return index === -1 ? null : index + 1;
+    };
+
+    const isLatestVersion = (message: ImagineUIMessage) => {
+        const index = messagesWithCheckpoints().findIndex((m) => m.id === message.id);
+        return index === messagesWithCheckpoints().length - 1;
+    };
 </script>
 
 <div class="overflow" {onwheel} {onscroll}>
     <section>
         {#each chat.messages as message (message.id)}
-            <Message {message} />
+            <Message
+                {message}
+                version={getMessageVersion(message)}
+                isLatestVersion={isLatestVersion(message)} />
         {/each}
 
-        {#if chat.status === "submitted" || chat.status === "streaming"}
+        {#if chat.status === 'submitted' || chat.status === 'streaming'}
             <Icon size="m" icon={Spinner} />
         {/if}
 
-        {#if chat.status === "error"}
+        {#if chat.status === 'error'}
             <span style:color="var(--fgcolor-error)">{chat.error?.message}</span>
         {/if}
 

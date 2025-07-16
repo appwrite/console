@@ -113,7 +113,9 @@
     });
 </script>
 
-<Chat width={chatWidth} hasSubNavigation={false} />
+{#if $conversation.data}
+    <Chat width={chatWidth} hasSubNavigation={false} />
+{/if}
 
 {#if !$isSmallViewport && ($showChat || isResizing)}
     <div
