@@ -52,6 +52,7 @@
     let error = '';
 
     let showEdit = false;
+    let createIndex: CreateIndex;
     let editAttribute: EditAttribute;
     let createAttribute: CreateAttribute;
 
@@ -303,9 +304,16 @@
     <EditAttribute showEdit isModal={false} {selectedAttribute} bind:this={editAttribute} />
 </SideSheet>
 
-{#if showCreateIndex}
-    <CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} />
-{/if}
+<SideSheet
+    title="Create index"
+    bind:show={showCreateIndex}
+    submit={{
+        text: 'Create',
+        onClick: async () => await createIndex.create()
+    }}>
+    <CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} bind:this={createIndex} />
+</SideSheet>
+
 {#if showFailed}
     <FailedModal bind:show={showFailed} title="Create attribute" header="Creation failed" {error} />
 {/if}
