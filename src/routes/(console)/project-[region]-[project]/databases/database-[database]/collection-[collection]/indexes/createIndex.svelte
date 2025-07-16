@@ -3,7 +3,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, InputNumber, InputSelect, InputText } from '$lib/elements/forms';
     import { remove } from '$lib/helpers/array';
@@ -13,7 +12,7 @@
     import { isRelationship } from '../document-[document]/attributes/store';
     import { type Attributes, collection, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { flags } from '$lib/flags';
 
     export let showCreateIndex = false;
@@ -22,12 +21,12 @@
     const databaseId = page.params.database;
 
     let key = '';
-    let error: string;
     let types = [
         { value: IndexType.Key, label: 'Key' },
         { value: IndexType.Unique, label: 'Unique' },
         { value: IndexType.Fulltext, label: 'FullText' }
     ];
+
     let selectedType = IndexType.Key;
 
     let attributeOptions = $collection.attributes
@@ -61,16 +60,14 @@
     }
 
     $: if (showCreateIndex) {
-        error = null;
         initialize();
         key = generateIndexKey();
     }
 
     $: addAttributeDisabled = !attributeList.at(-1)?.value || !attributeList.at(-1)?.order;
 
-    async function create() {
+    export async function create() {
         if (!(key && selectedType && !addAttributeDisabled)) {
-            error = 'All fields are required';
             return;
         }
 
@@ -101,7 +98,10 @@
             trackEvent(Submit.IndexCreate);
             showCreateIndex = false;
         } catch (err) {
-            error = err.message;
+            addNotification({
+                type: 'error',
+                message: err.message
+            });
             trackError(err, Submit.IndexCreate);
         }
     }
@@ -114,72 +114,61 @@
     }
 </script>
 
-<Modal title="Create index" bind:error onSubmit={create} bind:show={showCreateIndex}>
-    <InputText
-        required
-        id="key"
-        label="Index Key"
-        placeholder="Enter Key"
-        bind:value={key}
-        autofocus />
-    <InputSelect required options={types} id="type" label="Index type" bind:value={selectedType} />
+<InputText required id="key" label="Index Key" placeholder="Enter Key" bind:value={key} autofocus />
+<InputSelect required options={types} id="type" label="Index type" bind:value={selectedType} />
 
-    <Layout.Stack gap="s">
-        {#each attributeList as attribute, i}
-            <Layout.Stack direction="row">
-                <InputSelect
-                    required
-                    options={[
-                        { value: '$id', label: '$id' },
-                        { value: '$createdAt', label: '$createdAt' },
-                        { value: '$updatedAt', label: '$updatedAt' },
-                        ...attributeOptions
-                    ]}
-                    id={`attribute-${i}`}
-                    label={i === 0 ? 'Attribute' : undefined}
-                    placeholder="Select Attribute"
-                    bind:value={attribute.value} />
+<Layout.Stack gap="s">
+    {#each attributeList as attribute, i}
+        <Layout.Stack direction="row">
+            <InputSelect
+                required
+                options={[
+                    { value: '$id', label: '$id' },
+                    { value: '$createdAt', label: '$createdAt' },
+                    { value: '$updatedAt', label: '$updatedAt' },
+                    ...attributeOptions
+                ]}
+                id={`attribute-${i}`}
+                label={i === 0 ? 'Column' : undefined}
+                placeholder="Select column"
+                bind:value={attribute.value} />
 
-                <InputSelect
-                    options={[
-                        { value: 'ASC', label: 'ASC' },
-                        { value: 'DESC', label: 'DESC' }
-                    ]}
-                    required
-                    id={`order-${i}`}
-                    label={i === 0 ? 'Order' : undefined}
-                    bind:value={attribute.order}
-                    placeholder="Select Order" />
+            <InputSelect
+                options={[
+                    { value: 'ASC', label: 'ASC' },
+                    { value: 'DESC', label: 'DESC' }
+                ]}
+                required
+                id={`order-${i}`}
+                label={i === 0 ? 'Order' : undefined}
+                bind:value={attribute.order}
+                placeholder="Select Order" />
 
-                <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
-                    {#if selectedType === IndexType.Key && showLengths}
-                        <InputNumber
-                            id={`length-${i}`}
-                            label={i === 0 ? 'Length' : undefined}
-                            placeholder="Enter Length"
-                            bind:value={attribute.length} />
-                    {/if}
-                    <Button
-                        icon
-                        compact
-                        disabled={attributeList.length <= 1}
-                        on:click={() => {
-                            attributeList = remove(attributeList, i);
-                        }}>
-                        <span class="icon-x" aria-hidden="true"></span>
-                    </Button>
-                </Layout.Stack>
+            {#if selectedType === IndexType.Key && showLengths}
+                <InputNumber
+                    id={`length-${i}`}
+                    label={i === 0 ? 'Length' : undefined}
+                    placeholder="Enter Length"
+                    bind:value={attribute.length} />
+            {/if}
+
+            <Layout.Stack direction="row" alignItems="flex-end" inline>
+                <Button
+                    icon
+                    secondary
+                    disabled={attributeList.length <= 1}
+                    on:click={() => {
+                        attributeList = remove(attributeList, i);
+                    }}>
+                    <Icon icon={IconX} size="s" />
+                </Button>
             </Layout.Stack>
-        {/each}
-        <div>
-            <Button compact on:click={addAttribute} disabled={addAttributeDisabled}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Add attribute
-            </Button>
-        </div>
-    </Layout.Stack>
-    <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showCreateIndex = false)}>Cancel</Button>
-        <Button submit>Create</Button>
-    </svelte:fragment>
-</Modal>
+        </Layout.Stack>
+    {/each}
+    <div>
+        <Button compact on:click={addAttribute} disabled={addAttributeDisabled}>
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Add column
+        </Button>
+    </div>
+</Layout.Stack>
