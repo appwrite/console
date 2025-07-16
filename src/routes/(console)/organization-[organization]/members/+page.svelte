@@ -99,7 +99,10 @@
                         <Button.Button icon variant="extra-compact" size="s" on:click={toggle}>
                             <Icon size="s" icon={IconInfo} />
                         </Button.Button>
-                        <svelte:component this={Upgrade} slot="tooltip" />
+                        <svelte:component
+                            this={Upgrade}
+                            href="https://imagine.dev/pricing"
+                            slot="tooltip" />
                     </Popover>
                 </Layout.Stack>
             </Table.Header.Cell>

@@ -28,6 +28,7 @@
         Tag,
         Typography
     } from '@appwrite.io/pink-svelte';
+    import { isStudio } from '$lib/system';
 
     let show = false;
     let showEdit = false;
@@ -41,11 +42,13 @@
     });
 
     $: orgList = $organizationList.teams as unknown as Organization[];
+
+    const product = isStudio ? 'Imagine' : 'Appwrite';
 </script>
 
 <CardGrid>
     <svelte:fragment slot="title">Billing address</svelte:fragment>
-    View or update your billing address. This address will be included in your invoices from Appwrite.
+    View or update your billing address. This address will be included in your invoices from {product}.
     <svelte:fragment slot="aside">
         {#if $addressList.total && countryList?.total}
             <Table.Root

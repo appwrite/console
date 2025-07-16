@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import Base from './base.svelte';
     import { upgradeURL } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
@@ -6,6 +6,12 @@
     import { BillingPlan } from '$lib/constants';
     import Button from '$lib/elements/forms/button.svelte';
     import { Badge, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
+
+    type Props = {
+        href?: string;
+    };
+
+    const { href = 'https://appwrite.io/docs/advanced/platform/roles' }: Props = $props();
 </script>
 
 <Base>
@@ -15,10 +21,7 @@
                 <Typography.Text variant="m-600">Roles</Typography.Text>
                 <Typography.Text>Owner, Developer, Editor, Analyst and Billing.</Typography.Text>
                 <Typography.Text>
-                    <Link.Anchor
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href="https://appwrite.io/docs/advanced/platform/roles"
+                    <Link.Anchor target="_blank" rel="noopener noreferrer" {href}
                         >Learn more</Link.Anchor>
                 </Typography.Text>
             {:else}
@@ -34,11 +37,7 @@
                 </Typography.Text>
 
                 <p class="u-flex u-main-end u-cross-center u-gap-4">
-                    <Button
-                        size="s"
-                        text
-                        external
-                        href="https://appwrite.io/docs/advanced/platform/roles">Learn more</Button>
+                    <Button size="s" text external {href}>Learn more</Button>
                     <Button size="s" secondary external href={$upgradeURL}>Upgrade plan</Button>
                 </p>
             {/if}
@@ -54,11 +53,7 @@
                 hosted offering.
             </Typography.Text>
             <p class="u-flex u-main-end u-cross-center u-gap-4">
-                <Button
-                    size="s"
-                    text
-                    external
-                    href="https://appwrite.io/docs/advanced/platform/roles">Learn more</Button>
+                <Button size="s" text external {href}>Learn more</Button>
                 <Button size="s" secondary external href={$upgradeURL}>Upgrade to Cloud</Button>
             </p>
         {/if}

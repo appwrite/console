@@ -25,15 +25,7 @@
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import {
-        Badge,
-        Divider,
-        Icon,
-        Typography,
-        Card,
-        Layout,
-        Table
-    } from '@appwrite.io/pink-svelte';
+    import { Badge, Divider, Icon, Typography, Layout, Table } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
         IconApple,
@@ -48,6 +40,8 @@
     import { regions as regionsStore } from '$lib/stores/organization';
     import type { Column } from '@appwrite.io/pink-svelte/dist/table';
     import { timeFromNow } from '$lib/helpers/date';
+    import { get } from 'svelte/store';
+    import { app } from '$lib/stores/app';
 
     export let data;
 
@@ -134,8 +128,7 @@
 {#if isStudio}
     <Layout.Stack>
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography.Text variant="m-500" color="--fgcolor-neutral-secondary"
-                >Projects</Typography.Text>
+            <Typography.Title>Projects</Typography.Title>
             {#if $canWriteProjects}
                 <Button
                     size="s"
@@ -144,8 +137,6 @@
                     disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>Create project</Button>
             {/if}
         </Layout.Stack>
-
-        <Divider />
 
         <Table.Root let:root {columns}>
             <svelte:fragment slot="header" let:root>
@@ -163,6 +154,15 @@
                 </Table.Row.Link>
             {/each}
         </Table.Root>
+        <!-- <Empty
+            single
+            allowCreate={$canWriteProjects}
+            href="https://imagine.dev"
+            description="Deploy and manage your web your web applications with Sites. "
+            target="project"
+            src={get(app).themeInUse === 'dark' ? 'EmptyDark' : 'EmptyLight'}
+            on:click={handleCreateProject}>
+        </Empty> -->
     </Layout.Stack>
 {:else}
     <Container>

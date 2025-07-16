@@ -3,7 +3,7 @@
     import { Empty, Card, Layout, Avatar, Icon, Typography } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { consoleProfile, isStudio } from '$lib/system';
+    import { consoleProfile } from '$lib/system';
     import { showChat, showPrompt } from '$lib/stores/chat';
 
     export let single = false;

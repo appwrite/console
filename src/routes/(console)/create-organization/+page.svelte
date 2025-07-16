@@ -194,7 +194,7 @@
                     <Typography.Text>
                         For more details on our plans, visit our
                         <Link.Anchor
-                            href="https://appwrite.io/pricing"
+                            href="https://imagine.dev/pricing"
                             target="_blank"
                             rel="noopener noreferrer">pricing page</Link.Anchor
                         >.

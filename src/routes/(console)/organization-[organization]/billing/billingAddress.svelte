@@ -22,6 +22,7 @@
         IconSwitchHorizontal,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
+    import { isStudio } from '$lib/system';
 
     export let billingAddress: Address = null;
 
@@ -29,6 +30,8 @@
     let showEdit = false;
     let showReplace = false;
     let showRemove = false;
+
+    const product = isStudio ? 'Imagine' : 'Appwrite';
 
     async function addAddress(addressId: string) {
         try {
@@ -54,7 +57,7 @@
 
 <CardGrid>
     <svelte:fragment slot="title">Billing address</svelte:fragment>
-    View or update your billing address. This address will be included in your invoices from Appwrite.
+    View or update your billing address. This address will be included in your invoices from {product}.
     <svelte:fragment slot="aside">
         {#if $organization?.billingAddressId && billingAddress}
             <Card.Base variant="secondary" padding="s">
