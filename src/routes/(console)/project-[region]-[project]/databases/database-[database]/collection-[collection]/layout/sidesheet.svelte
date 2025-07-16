@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
-    import { Button } from '$lib/elements/forms';
+    import { Button, Form } from '$lib/elements/forms';
     import { Divider, Layout, Sheet, Typography } from '@appwrite.io/pink-svelte';
 
     let {
@@ -35,32 +35,32 @@
         </div>
 
         <Layout.Stack direction="column" justifyContent="space-evenly">
-            <Layout.Stack gap="xl">
-                {@render children()}
-            </Layout.Stack>
-
-            <div class="sheet-footer">
-                <Layout.Stack gap="l">
-                    <Divider />
-
-                    <div class="sheet-footer-actions">
-                        <Layout.Stack gap="m" direction="row" justifyContent="flex-end">
-                            <Button size="s" secondary on:click={() => (show = false)}
-                                >Cancel</Button>
-
-                            <Button
-                                size="s"
-                                disabled={submit.disabled}
-                                on:click={async () => {
-                                    await submit.onClick();
-                                    show = false;
-                                }}>
-                                {submit.text}
-                            </Button>
-                        </Layout.Stack>
-                    </div>
+            <Form
+                onSubmit={async () => {
+                    await submit.onClick();
+                    show = false;
+                }}>
+                <Layout.Stack gap="xl">
+                    {@render children()}
                 </Layout.Stack>
-            </div>
+
+                <div class="sheet-footer">
+                    <Layout.Stack gap="l">
+                        <Divider />
+
+                        <div class="sheet-footer-actions">
+                            <Layout.Stack gap="m" direction="row" justifyContent="flex-end">
+                                <Button size="s" secondary on:click={() => (show = false)}
+                                    >Cancel</Button>
+
+                                <Button size="s" submit disabled={submit.disabled}>
+                                    {submit.text}
+                                </Button>
+                            </Layout.Stack>
+                        </div>
+                    </Layout.Stack>
+                </div>
+            </Form>
         </Layout.Stack>
     </Sheet>
 </div>

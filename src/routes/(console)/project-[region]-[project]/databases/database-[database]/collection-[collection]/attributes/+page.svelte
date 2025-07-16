@@ -14,12 +14,11 @@
         Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import Create from '../createAttribute.svelte';
+    import CreateAttribute from '../createAttribute.svelte';
     import { isRelationship, isString } from '../document-[document]/attributes/store';
     import FailedModal from '../failedModal.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
     import { attributes, type Attributes, indexes, isCsvImportInProgress } from '../store';
-    import CreateAttributeDropdown from './createAttributeDropdown.svelte';
     import Delete from './deleteAttribute.svelte';
     import EditAttribute from './edit.svelte';
     import { attributeOptions, type Option } from './store';
@@ -44,7 +43,7 @@
     import EmptySheet from '../layout/emptySheet.svelte';
 
     let showDropdown = [];
-    let selectedOption: Option['name'] = null;
+    let selectedOption: Option['name'] = 'String';
     let selectedAttribute: Attributes = null;
     let showCreate = false;
     let showDelete = false;
@@ -54,6 +53,7 @@
 
     let showEdit = false;
     let editAttribute: EditAttribute;
+    let createAttribute: CreateAttribute;
 
     const attributeFormatIcon = {
         ip: IconLocationMarker,
@@ -83,9 +83,16 @@
 
 <Container expanded style="background: var(--bgcolor-neutral-primary)">
     <Layout.Stack direction="row" justifyContent="flex-end">
-        <!-- TODO: filters? -->
         {#if $canWriteCollections}
-            <CreateAttributeDropdown bind:selectedOption bind:showCreate />
+            <Button
+                size="s"
+                secondary
+                disabled={$isCsvImportInProgress}
+                on:click={() => (showCreate = true)}
+                event="create_attribute">
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create column
+            </Button>
         {/if}
     </Layout.Stack>
 </Container>
@@ -260,29 +267,41 @@
             </Spreadsheet.Root>
         </SpreadsheetContainer>
     {:else}
-        <!-- TODO: handle these cases -->
-        <!--{#if $canWriteCollections}-->
-        <EmptySheet mode="columns" />
+        <EmptySheet
+            mode="columns"
+            showActions={$canWriteCollections}
+            actions={{
+                primary: {
+                    onClick: () => (showCreate = true)
+                }
+            }} />
     {/if}
 </div>
 
-{#if showCreate}
-    <Create bind:showCreate bind:selectedOption />
-{/if}
+<SideSheet
+    title="Insert column"
+    bind:show={showCreate}
+    submit={{
+        text: 'Insert',
+        onClick: async () => await createAttribute.submit(),
+        disabled: !selectedOption
+    }}>
+    <CreateAttribute {showCreate} bind:selectedOption bind:this={createAttribute} />
+</SideSheet>
+
 {#if showDelete}
     <Delete bind:showDelete {selectedAttribute} />
 {/if}
-{#if showEdit}
-    <SideSheet
-        title="Edit column"
-        bind:show={showEdit}
-        submit={{
-            text: 'Update',
-            onClick: async () => await editAttribute.submit()
-        }}>
-        <EditAttribute showEdit isModal={false} {selectedAttribute} bind:this={editAttribute} />
-    </SideSheet>
-{/if}
+
+<SideSheet
+    title="Edit column"
+    bind:show={showEdit}
+    submit={{
+        text: 'Update',
+        onClick: async () => await editAttribute.submit()
+    }}>
+    <EditAttribute showEdit isModal={false} {selectedAttribute} bind:this={editAttribute} />
+</SideSheet>
 
 {#if showCreateIndex}
     <CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} />

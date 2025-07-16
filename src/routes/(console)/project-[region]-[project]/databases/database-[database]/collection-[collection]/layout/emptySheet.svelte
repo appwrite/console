@@ -15,18 +15,19 @@
 
     type ColumnsMap = Record<Mode, SheetColumn[]>;
 
-    type CTA = {
+    type Action = {
         text?: string;
         disabled?: boolean;
         onClick?: () => void;
     };
 
     export let mode: Mode;
+    export let showActions: boolean = true;
     export let title: string | undefined = undefined;
-    export let cta:
+    export let actions:
         | {
-              primary?: CTA;
-              random?: CTA;
+              primary?: Action;
+              random?: Action;
           }
         | undefined = undefined;
 
@@ -145,34 +146,36 @@
             <Layout.Stack gap="xl" alignItems="center">
                 <Typography.Title>{title ?? `You have no ${mode} yet`}</Typography.Title>
 
-                <Layout.Stack
-                    inline
-                    alignItems="center"
-                    direction={$isSmallViewport ? 'column' : 'row'}
-                    gap="s">
-                    <Button.Button
-                        icon
-                        size="s"
-                        variant="secondary"
-                        disabled={cta?.primary?.disabled}
-                        on:click={cta?.primary?.onClick}>
-                        <Icon icon={IconPlus} size="s" />
-                        {cta?.primary?.text ?? `Create ${mode}`}
-                    </Button.Button>
+                {#if showActions}
+                    <Layout.Stack
+                        inline
+                        alignItems="center"
+                        direction={$isSmallViewport ? 'column' : 'row'}
+                        gap="s">
+                        <Button.Button
+                            icon
+                            size="s"
+                            variant="secondary"
+                            disabled={actions?.primary?.disabled}
+                            on:click={actions?.primary?.onClick}>
+                            <Icon icon={IconPlus} size="s" />
+                            {actions?.primary?.text ?? `Create ${mode}`}
+                        </Button.Button>
 
-                    {#if mode === 'records'}
-                        <Tooltip>
-                            <Button.Button
-                                disabled={cta?.random?.disabled}
-                                size="s"
-                                variant="secondary"
-                                on:click={cta?.random.onClick}>
-                                {cta?.random?.text ?? `Generate random data`}
-                            </Button.Button>
-                            <span slot="tooltip">Yet to be added</span>
-                        </Tooltip>
-                    {/if}
-                </Layout.Stack>
+                        {#if mode === 'records'}
+                            <Tooltip>
+                                <Button.Button
+                                    disabled={actions?.random?.disabled}
+                                    size="s"
+                                    variant="secondary"
+                                    on:click={actions?.random.onClick}>
+                                    {actions?.random?.text ?? `Generate random data`}
+                                </Button.Button>
+                                <span slot="tooltip">Yet to be added</span>
+                            </Tooltip>
+                        {/if}
+                    </Layout.Stack>
+                {/if}
             </Layout.Stack>
         </div>
     </div>
