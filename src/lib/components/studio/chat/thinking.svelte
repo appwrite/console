@@ -2,7 +2,6 @@
     import { Typography, ShimmerText } from '@appwrite.io/pink-svelte';
     import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
     import { Icon } from '@appwrite.io/pink-svelte';
-
     import type { ImagineUIDataParts } from '$shared-types';
 
     let {

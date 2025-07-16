@@ -8,11 +8,9 @@
         getChatWidthFromPrefs,
         saveImagineProjectPrefs
     } from '$lib/helpers/studioLayout.js';
-    import { createStreamParser } from '$lib/components/studio/chat/parser.js';
     import { sdk } from '$lib/stores/sdk.js';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { previewFrameRef } from '$routes/(console)/project-[region]-[project]/store';
-    import { queue } from './chat/queue.svelte';
 
     $effect(() => {
         if ($isSmallViewport || page.params.artifact) {
@@ -94,10 +92,7 @@
         }
     }
 
-    const parser = createStreamParser();
-
-    async function getConversation(artifactId: string) {
-        parser.reset();
+    async function getOrCreateConversation(artifactId: string) {
         const { conversations } = await sdk
             .forProject(page.params.region, page.params.project)
             .imagine.listConversations(artifactId);
@@ -113,51 +108,12 @@
 
     $effect(() => {
         if (page.params.artifact && $conversation.data?.artifactId !== page.params.artifact) {
-            getConversation(page.params.artifact);
-        }
-    });
-
-    conversation.subscribe(async (convo) => {
-        if (!convo.data) return;
-        const { messages } = await sdk
-            .forProject(page.params.region, page.params.project)
-            .imagine.listMessages(convo.data.artifactId, convo.data.$id);
-
-        for (const message of messages) {
-            const from = message.role === 'assistant' ? 'system' : 'user';
-            queue.forceListStatus(message.$id, 'done');
-            parser.chunk(message.content, from, {
-                group: message.$id
-            });
-            parser.end();
-        }
-    });
-    parser.on('complete', async (action) => {
-        if (action.type !== 'file') {
-            queue.enqueue(action.group, action);
-            return;
-        }
-        const job = queue.lists[action.group]?.find((item) => item.data.id === action.id);
-        if (job)
-            queue.update(action.group, job.id, {
-                data: action,
-                status: 'done'
-            });
-    });
-    parser.on('update', async (action) => {
-        if (action.type !== 'file') return;
-        const job = queue.lists[action.group]?.find((item) => item.data.id === action.id);
-        if (job) {
-            queue.update(action.group, job.id, {
-                data: action
-            });
-        } else {
-            queue.enqueue(action.group, action);
+            getOrCreateConversation(page.params.artifact);
         }
     });
 </script>
 
-<Chat {parser} width={chatWidth} hasSubNavigation={false} />
+<Chat width={chatWidth} hasSubNavigation={false} />
 
 {#if !$isSmallViewport && ($showChat || isResizing)}
     <div

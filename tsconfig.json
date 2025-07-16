@@ -12,12 +12,7 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
-        "moduleResolution": "bundler",
-        "paths": {
-            "$shared-types": [
-                "./ai-service/src/shared-types"
-            ]
-        }
+        "moduleResolution": "bundler"
     },
     "references": [
         { "path": "./ai-service" }
