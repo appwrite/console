@@ -15,11 +15,13 @@
         title: string;
         spaced?: boolean;
         closeOnBlur?: boolean;
-        submit: {
-            text: string;
-            disabled?: boolean;
-            onClick: () => void | Promise<void>;
-        };
+        submit?:
+            | {
+                  text: string;
+                  disabled?: boolean;
+                  onClick: () => void | Promise<void>;
+              }
+            | undefined;
         children: Snippet;
     } = $props();
 </script>
@@ -37,29 +39,31 @@
         <Layout.Stack direction="column" justifyContent="space-evenly">
             <Form
                 onSubmit={async () => {
-                    await submit.onClick();
+                    await submit?.onClick();
                     show = false;
                 }}>
                 <Layout.Stack gap="xl">
                     {@render children()}
                 </Layout.Stack>
 
-                <div class="sheet-footer">
-                    <Layout.Stack gap="l">
-                        <Divider />
+                {#if submit}
+                    <div class="sheet-footer">
+                        <Layout.Stack gap="l">
+                            <Divider />
 
-                        <div class="sheet-footer-actions">
-                            <Layout.Stack gap="m" direction="row" justifyContent="flex-end">
-                                <Button size="s" secondary on:click={() => (show = false)}
-                                    >Cancel</Button>
+                            <div class="sheet-footer-actions">
+                                <Layout.Stack gap="m" direction="row" justifyContent="flex-end">
+                                    <Button size="s" secondary on:click={() => (show = false)}
+                                        >Cancel</Button>
 
-                                <Button size="s" submit disabled={submit.disabled}>
-                                    {submit.text}
-                                </Button>
-                            </Layout.Stack>
-                        </div>
-                    </Layout.Stack>
-                </div>
+                                    <Button size="s" submit disabled={submit.disabled}>
+                                        {submit.text}
+                                    </Button>
+                                </Layout.Stack>
+                            </div>
+                        </Layout.Stack>
+                    </div>
+                {/if}
             </Form>
         </Layout.Stack>
     </Sheet>

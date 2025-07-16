@@ -239,17 +239,20 @@
 {#if selectedIndex}
     <!-- TODO: delete multiple indexes -->
     <Delete bind:showDelete {selectedIndex} />
-    <Overview bind:showOverview {selectedIndex} />
 {/if}
+
+<SideSheet title="Preview index" bind:show={showOverview}>
+    <Overview {selectedIndex} />
+</SideSheet>
 
 <FailedModal bind:show={showFailed} title="Create index" header="Creation failed" {error} />
 
 <style lang="scss">
-  .floating-action-bar {
-    left: 50%;
-    width: 100%;
-    z-index: 14;
-    position: absolute;
-    transform: translateX(-50%);
-  }
+    .floating-action-bar {
+        left: 50%;
+        width: 100%;
+        z-index: 14;
+        position: absolute;
+        transform: translateX(-50%);
+    }
 </style>
