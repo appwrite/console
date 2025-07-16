@@ -7,7 +7,7 @@
 
     import { AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
     import { user } from '$lib/stores/user';
-    import { useCompletion } from '@ai-sdk/svelte';
+    import { Completion } from '@ai-sdk/svelte';
     import { subPanels } from '../subPanels';
 
     import { isLanguage, type Language } from '$lib/components/code.svelte';
@@ -15,7 +15,7 @@
     import { getApiEndpoint } from '$lib/stores/sdk';
 
     const endpoint = getApiEndpoint();
-    const { input, handleSubmit, completion, isLoading, complete, error } = useCompletion({
+    let { input, handleSubmit, completion, loading, complete, error } = new Completion({
         api: endpoint + '/console/assistant',
         headers: {
             'x-appwrite-project': 'console'
@@ -87,8 +87,9 @@
 
         return answer;
     }
+    ``;
 
-    $: answer = parseCompletion($completion);
+    $: answer = parseCompletion(completion);
 
     function renderMarkdown(answer: string): string {
         const trimmedAnswer = answer
@@ -123,25 +124,25 @@
     }
 
     let previousQuestion = '';
-    $: if ($input) {
-        previousQuestion = $input;
+    $: if (input) {
+        previousQuestion = input;
     }
 
-    $: if (!$isLoading && answer) {
+    $: if (!loading && answer) {
         // reset input if answer received.
-        $input = '';
+        input = '';
     }
 </script>
 
 <Template
-    options={$isLoading || answer
+    options={loading || answer
         ? undefined
         : examples.map((e) => {
               return {
                   label: e,
                   callback: () => {
-                      $input = e;
-                      complete($input);
+                      input = e;
+                      complete(input);
                   },
                   group: 'Examples'
               };
@@ -174,7 +175,7 @@
         </div>
     {/if}
 
-    {#if $isLoading || answer}
+    {#if loading || answer}
         <div class="content">
             <div class="u-flex u-gap-8 u-cross-center">
                 <div class="avatar is-size-x-small">{getInitials($user.name || $user.email)}</div>
@@ -185,7 +186,7 @@
                     <SvgIcon name="sparkles" type="color" />
                 </div>
                 <div class="answer">
-                    {#if $isLoading && !$completion}
+                    {#if loading && !completion}
                         <LoadingDots />
                     {:else}
                         {#each answer as part}
@@ -213,7 +214,7 @@
         </div>
     {/if}
 
-    {#if $error}
+    {#if error}
         <div style="padding: 1rem; padding-block-end: 0;">
             <Alert.Inline status="error" title="Something went wrong">
                 An unexpected error occurred while handling your request. Please try again later.
@@ -241,14 +242,14 @@
                         style:width="100%"
                         placeholder="Ask a question..."
                         autofocus
-                        bind:value={$input}
-                        disabled={$isLoading} />
+                        bind:value={input}
+                        disabled={loading} />
                     <div class="options-list">
                         <button
                             class="options-list-button"
                             aria-label="ask AI"
                             type="submit"
-                            disabled={!$input.trim() || $isLoading}>
+                            disabled={!input.trim() || loading}>
                             <span class="icon-arrow-sm-right" aria-hidden="true"></span>
                         </button>
                     </div>
