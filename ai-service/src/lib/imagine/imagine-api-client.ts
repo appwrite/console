@@ -1,5 +1,6 @@
 import { AppwriteException } from '@appwrite.io/console';
 import type { Client, Payload } from '@appwrite.io/console';
+import { UIMessage } from 'ai';
 
 export class Imagine {
     client: Client;
@@ -232,7 +233,8 @@ and all associated resources will be removed.
     updateConversation(
         artifactId: string,
         conversationId: string,
-        name?: string
+        name?: string,
+        messages?: UIMessage[]
     ): Promise<Conversation> {
         if (typeof artifactId === 'undefined') {
             throw new AppwriteException('Missing required parameter: "artifactId"');
@@ -246,6 +248,9 @@ and all associated resources will be removed.
         const payload: Payload = {};
         if (typeof name !== 'undefined') {
             payload['name'] = name;
+        }
+        if (typeof messages !== 'undefined') {
+            payload['messages'] = messages;
         }
         const uri = new URL(this.client.config.endpoint + apiPath);
 
@@ -561,6 +566,12 @@ export type Conversation = {
      * Search index string.
      */
     search: string;
+    /**
+     * Messages (UI)
+     */
+    messages: {
+        messages: UIMessage[];
+    };
 };
 /**
  * ConversationsMessage

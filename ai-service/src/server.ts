@@ -8,6 +8,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { fileURLToPath } from 'url';
 import { handleChatRequest } from '@/handlers/chat/route';
+import { getConversation, getConversations } from './handlers/conversation';
 
 const app = new Hono();
 
@@ -16,6 +17,8 @@ app.use('*', cors());
 
 // Routes
 app.post("/api/chat", handleChatRequest);
+app.get("/api/conversations/:conversationId", getConversation);
+app.get("/api/conversations", getConversations);
 app.get('/api/health', c => c.json({ status: 'ok' }));
 
 // Start server

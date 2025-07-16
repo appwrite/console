@@ -1,7 +1,6 @@
 import { Context } from 'hono';
 import { chatRequestBodySchema, ChatRequestBodyType } from './types';
 import { z } from 'zod';
-import { getOrCreateConversation, updateConversation } from '@/lib/imagine/conversation';
 import {
     convertToModelMessages,
     createUIMessageStream,
@@ -15,6 +14,8 @@ import { promisify } from 'util';
 const exec = promisify(_exec);
 import fs from 'fs';
 import path from 'path';
+import { createImagineClient } from '@/lib/imagine/create-artifact-client';
+import { IMAGINE_JWT } from '@/lib/constants';
 
 export const handleChatRequest = async (c: Context) => {
   console.log("incoming request");
@@ -48,12 +49,14 @@ export const handleChatRequest = async (c: Context) => {
     const artifactId = process.env.IMAGINE_ARTIFACT_ID!; // TODO: dynamically from body
     const projectId = process.env.IMAGINE_PROJECT_ID!; // TODO: dynamically from body
 
-    const { conversation, isNewConversation } = await getOrCreateConversation({
-        conversationId,
-        artifactId,
-        projectId
+    const imagineClient = await createImagineClient({
+      projectId,
+      token: IMAGINE_JWT, // TODO: use the token from the request
     });
-
+    const convos = await imagineClient.listConversations(artifactId);
+    const imagineConvo = convos.conversations[0];
+    const uiMessages = imagineConvo.messages.messages;
+    const isNewConversation = uiMessages.length === 0;
     const convertedMessages = convertToModelMessages(messages);
     const latestMessage = convertedMessages[convertedMessages.length - 1];
 
@@ -80,7 +83,6 @@ export const handleChatRequest = async (c: Context) => {
     } else {
       console.log("Not a new conversation, skipping workspace clone");
     }
-
 
     let didError = false;
 
@@ -126,14 +128,17 @@ export const handleChatRequest = async (c: Context) => {
 
             const { messages } = event;
 
-            await updateConversation({
-              conversation: {
-                ...conversation,
-                uiMessages: messages,
-              },
-              artifactId,
-              projectId,
-            });
+            console.log("Saving messages to imagine");
+            await imagineClient.updateConversation(artifactId, imagineConvo.$id, "Test Conversation", { messages } as any);
+            console.log("Messages saved to imagine");
+            // await updateConversation({
+            //   conversation: {
+            //     ...conversation,
+            //     uiMessages: messages,
+            //   },
+            //   artifactId,
+            //   projectId,
+            // });
         },
         onError: (error) => {
             didError = true;
