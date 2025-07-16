@@ -111,7 +111,7 @@ if (isCloud) {
         scope: 'project',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-auto-increment',
+            link: () => 'https://appwrite.io/blog/post/announcing-auto-increment-support',
             external: true,
             hideOnClick: true
         },
