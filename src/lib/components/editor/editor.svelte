@@ -7,6 +7,7 @@
     import type { Action } from 'svelte/action';
     import IconImagine from '$routes/(console)/project-[region]-[project]/studio/assets/icon-imagine.svelte';
     import { get } from 'svelte/store';
+    import { Button, Layout } from '@appwrite.io/pink-svelte';
 
     type Props = {
         onsave?: (code: string) => void | Promise<void>;
@@ -69,10 +70,40 @@
             })
         );
     });
+
+    function createFile() {
+        const filepath = prompt('Enter filename:');
+        if (filepath === null || filepath === '' || filepath.endsWith('/')) return;
+        studio.synapse.dispatch('fs', {
+            operation: 'createFile',
+            params: {
+                content: '',
+                filepath
+            }
+        });
+    }
+
+    function createFolder() {
+        const folderpath = prompt('Enter folder path:');
+        if (folderpath === null || folderpath === '') return;
+        studio.synapse.dispatch('fs', {
+            operation: 'createFolder',
+            params: {
+                folderpath
+            }
+        });
+    }
 </script>
 
 <div class="empty" style:display={studio.currentFile !== null ? 'none' : undefined}>
     <IconImagine />
+
+    <Layout.Stack direction="column" alignItems="center" gap="s">
+        <Button.Button variant="secondary" class="new-button" onclick={createFile}
+            >Create file</Button.Button>
+        <Button.Button variant="secondary" class="new-button" onclick={createFolder}
+            >Create folder</Button.Button>
+    </Layout.Stack>
 </div>
 <div
     style:display={studio.currentFile === null ? 'none' : undefined}
@@ -90,11 +121,17 @@
         display: grid;
         place-content: center;
         height: 100%;
+        gap: var(--space-4);
 
         :global(svg) {
             height: 128px;
             width: 128px;
             color: var(--fgcolor-neutral-weak);
+        }
+
+        :global(.new-button) {
+            width: 100% !important;
+            padding: var(--space-2) var(--space-4);
         }
     }
 </style>
