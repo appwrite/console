@@ -1,8 +1,8 @@
-import { UIMessage } from "ai";
 import { z } from "zod";
+import { ImagineUIMessage } from "@/shared-types";
 
 export const chatRequestBodySchema = z.object({
-  messages: z.array(z.custom<UIMessage>()).min(1),
+  messages: z.array(z.custom<ImagineUIMessage>()).min(1),
   trigger: z.string(),
   id: z.string(),
   artifactId: z.string(),

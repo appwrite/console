@@ -1,6 +1,6 @@
+import { ImagineUIMessage } from '@/shared-types';
 import { AppwriteException } from '@appwrite.io/console';
 import type { Client, Payload } from '@appwrite.io/console';
-import { UIMessage } from 'ai';
 
 export class Imagine {
     client: Client;
@@ -234,7 +234,7 @@ and all associated resources will be removed.
         artifactId: string,
         conversationId: string,
         name?: string,
-        messages?: UIMessage[]
+        messages?: ImagineUIMessage[]
     ): Promise<Conversation> {
         if (typeof artifactId === 'undefined') {
             throw new AppwriteException('Missing required parameter: "artifactId"');
@@ -569,9 +569,7 @@ export type Conversation = {
     /**
      * Messages (UI)
      */
-    messages: {
-        messages: UIMessage[];
-    };
+    messages: ImagineUIMessage[];
 };
 /**
  * ConversationsMessage

@@ -81,10 +81,22 @@ const planStep = createStep({
 
     const id = createIdGenerator({ size: 10 })();
 
+    // writer.write({
+    //   type: "reasoning-start",
+    //   id,
+    // });
+
+    const thinkingId = createIdGenerator({ size: 10 })();
+
     writer.write({
-      type: "reasoning-start",
-      id,
-    });
+      id: thinkingId,
+      type: "data-thinking",
+      data: {
+        text: "",
+        durationMs: null,
+        state: "streaming",
+      }
+    })
 
     const startTime = Date.now();
 
@@ -161,20 +173,21 @@ ${userPrompt}
       const delta = partialObject.plan.slice(previousPlan.length);
       previousPlan = partialObject.plan;
 
-      writer.write({
-        type: "reasoning-delta",
-        id,
-        delta,
-      });
-
       // writer.write({
-      //   type: "data-thoughts",
+      //   type: "reasoning-delta",
       //   id,
-      //   data: {
-      //     status: "streaming",
-      //     text: partialObject.plan,
-      //   }
+      //   delta,
       // });
+
+      writer.write({
+        type: "data-thinking",
+        id: thinkingId,
+        data: {
+          text: partialObject.plan ?? "",
+          durationMs: null,
+          state: "streaming",
+        }
+      });
     }
 
     console.log("[planStep] postStream", latestPartialObject);
@@ -185,25 +198,25 @@ ${userPrompt}
 
     const endTime = Date.now();
     const timeTaken = endTime - startTime;
-    // writer.write({
-    //   type: "data-thoughts",
-    //   id,
-    //   data: {
-    //     status: "done",
-    //     timeTaken,
-    //     text: latestPartialObject.plan,
-    //   }
-    // });
-
     writer.write({
-      type: "reasoning-end",
-      id,
-      providerMetadata: {
-        imagine: {
-          durationInMs: timeTaken,
-        }
-      } as any,
+      type: "data-thinking",
+      id: thinkingId,
+      data: {
+        text: latestPartialObject.plan,
+        durationMs: timeTaken,
+        state: "done",
+      }
     });
+
+    // writer.write({
+    //   type: "reasoning-end",
+    //   id,
+    //   providerMetadata: {
+    //     imagine: {
+    //       durationInMs: timeTaken,
+    //     }
+    //   } as any,
+    // });
 
     const { plan, shouldInvolveUIDeveloper } = latestPartialObject;
     return {

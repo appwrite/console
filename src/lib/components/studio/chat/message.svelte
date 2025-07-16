@@ -1,8 +1,5 @@
 <script lang="ts">
     import 'highlight.js/styles/atom-one-light.css';
-    import type { ParsedItem } from './parser';
-    import { Card, Layout, ShimmerText, Spinner, Typography, Icon } from '@appwrite.io/pink-svelte';
-    import { IconCheckCircle } from '@appwrite.io/pink-icons-svelte';
     import Markdown, { type Plugin } from 'svelte-exmarkdown';
     import Li from './(markdown)/Li.svelte';
     import H1 from './(markdown)/H1.svelte';
@@ -13,101 +10,14 @@
     import Ul from './(markdown)/Ul.svelte';
     import Ol from './(markdown)/Ol.svelte';
     import rehypeHighlight from 'rehype-highlight';
-    import { queue } from './queue.svelte';
-    import { studio } from '../studio.svelte';
+    import type { ImagineUIMessage, ImagineUIToolParts } from '$shared-types';
+    import Thinking from './thinking.svelte';
+    import ToolCalls from './toolCalls.svelte';
 
     type Props = {
-        message: ParsedItem;
+        message: ImagineUIMessage;
     };
     let { message }: Props = $props();
-    const tickets = $state([message.group]);
-
-    async function processQueueItem() {
-        if (tickets.length === 0 || !message.group) return;
-
-        const ticket = tickets.pop();
-        if (!ticket) return;
-
-        const list = queue.lists[message.group];
-        if (!list || !list.some((item) => item.status === 'waiting')) {
-            tickets.push(ticket);
-            return;
-        }
-
-        const item = queue.dequeue(message.group);
-        if (!item) {
-            tickets.push(ticket);
-            return;
-        }
-
-        try {
-            const action = item.data;
-            switch (action.type) {
-                case 'file':
-                    await studio.synapse.dispatch('fs', {
-                        operation: 'updateFile',
-                        params: {
-                            filepath: action.src,
-                            content: action.content
-                        }
-                    });
-                    studio.filesystem.add(action.src);
-                    break;
-                case 'shell':
-                    await studio.synapse.dispatch(
-                        'terminal',
-                        {
-                            operation: 'createCommand',
-                            params: {
-                                command: action.content + '\n'
-                            }
-                        },
-                        {
-                            noReturn: action.content.endsWith('run dev'),
-                            timeout: 30_000
-                        }
-                    );
-                    break;
-            }
-
-            if (message.group) {
-                const status = action.complete ? 'done' : 'waiting';
-                queue.update(message.group, item.id, { status });
-            }
-        } catch (error) {
-            console.error('Error processing queue item:', error);
-
-            if (message.group) {
-                queue.update(message.group, item.id, { status: 'failed' });
-            }
-        } finally {
-            tickets.push(ticket);
-
-            setTimeout(checkForMoreItems, 100);
-        }
-    }
-
-    function checkForMoreItems() {
-        if (!message.group) return;
-
-        const list = queue.lists[message.group];
-        if (tickets.length > 0 && list && list.some((item) => item.status === 'waiting')) {
-            processQueueItem();
-        }
-    }
-
-    $effect(() => {
-        if (!('type' in message)) return;
-        if (message.type !== 'actions') return;
-        if (!message.group) return;
-
-        const list = queue.lists[message.group];
-        if (!list) return;
-
-        if (tickets.length > 0 && list.some((item) => item.status === 'waiting')) {
-            processQueueItem();
-        }
-    });
 
     const plugins: Plugin[] = [
         {
@@ -124,115 +34,53 @@
             }
         }
     ];
+
+    const organizedParts = $derived(() => {
+        const nonTextParts = message.parts.filter(p => p.type !== 'text');
+        const textParts = message.parts.filter(p => p.type === 'text');
+        const finalText = textParts[textParts.length - 1];
+        
+        return {
+            nonTextParts,
+            toolCalls: nonTextParts.filter(p => p.type.startsWith('tool-')) as ImagineUIToolParts[],
+            finalText
+        };
+    });
 </script>
 
-{#if 'type' in message}
-    {#key message.content}
-        {#if message.type === 'actions'}
-            <Card.Base variant="primary" padding="none">
-                <Card.Base variant="secondary" padding="xs" class="title">
-                    <Layout.Stack
-                        direction="row"
-                        alignItems="center"
-                        justifyContent="space-between">
-                        <Typography.Text variant="m-500">Version 0</Typography.Text>
-                        {#if !message.complete}
-                            <Spinner />
-                        {/if}
-                    </Layout.Stack>
-                </Card.Base>
-                <div class="actions">
-                    <div class="grid-line"></div>
-                    {#each message.actions as action}
-                        {@const actionInQueue = queue.lists[action.group]?.find(
-                            (n) => n.data.id === action.id
-                        )}
-                        {#if actionInQueue}
-                            <Layout.Stack
-                                direction="row"
-                                alignItems="center"
-                                justifyContent="space-between">
-                                {#if action.type === 'file'}
-                                    <Typography.Code size="s" class="file">
-                                        <span class="icon">
-                                            {#if actionInQueue.status === 'done'}
-                                                <Icon
-                                                    size="s"
-                                                    --icon-size-s="12px"
-                                                    icon={IconCheckCircle} />
-                                            {:else}
-                                                <Spinner size="s" --icon-size-s="12px" />
-                                            {/if}
-                                        </span>
-                                        {action.src}</Typography.Code>
-                                    <Typography.Code size="s">
-                                        {#if actionInQueue.status === 'waiting'}
-                                            Waiting
-                                        {:else if actionInQueue.status === 'processing'}
-                                            <ShimmerText>Generating</ShimmerText>
-                                        {:else if actionInQueue.status === 'done'}
-                                            Generated
-                                        {:else if actionInQueue.status === 'failed'}
-                                            <span style:color="var(--fgcolor-error)">Failed</span>
-                                        {/if}
-                                    </Typography.Code>
-                                {:else if action.type === 'shell'}
-                                    <Typography.Code class="file" size="s">
-                                        <span class="icon">
-                                            {#if actionInQueue.status === 'done'}
-                                                <Icon
-                                                    size="s"
-                                                    --icon-size-s="12px"
-                                                    icon={IconCheckCircle} />
-                                            {:else}
-                                                <Spinner size="s" --icon-size-s="12px" />
-                                            {/if}
-                                        </span>
-                                        {action.content}</Typography.Code>
-                                    <Typography.Code size="s">
-                                        {#if actionInQueue.status === 'waiting'}
-                                            Waiting
-                                        {:else if actionInQueue.status === 'processing'}
-                                            <ShimmerText>Running</ShimmerText>
-                                        {:else if actionInQueue.status === 'done'}
-                                            Completed
-                                        {:else if actionInQueue.status === 'failed'}
-                                            <span style:color="var(--fgcolor-error)">Failed</span>
-                                        {/if}
-                                    </Typography.Code>
-                                {/if}
-                            </Layout.Stack>
-                        {/if}
-                    {/each}
-                    {#if !message.complete}
-                        <Typography.Code size="s">
-                            <ShimmerText>thinking...</ShimmerText>
-                        </Typography.Code>
-                    {/if}
-                </div>
-            </Card.Base>
+<!-- User Message -->
+{#if message.role === 'user'}
+    {#each message.parts as part, partIndex (partIndex)}
+        {#if part.type === 'text'}
+            <div class="message">
+                {part.text}
+            </div>
         {/if}
-    {/key}
-{:else}
-    {#snippet text()}
-        <Markdown md={message.content} {plugins} />
-    {/snippet}
-    {#if message.from === 'user'}
-        <div class="message">
-            {@render text()}
-        </div>
-    {:else if message.from === 'error'}
-        <div class="message">
-            {@render text()}
-        </div>
-    {:else}
-        {@render text()}
+    {/each}
+{/if}
+
+<!-- Assistant Messages -->
+{#if message.role === 'assistant'}
+    <!-- Non-text parts -->
+    {#each organizedParts().nonTextParts as part, partIndex (partIndex)}
+        {#if part.type === 'data-thinking'}
+            <Thinking data={part.data} didReceiveFirstAsisstantTextChunk={part.data.text.length > 0} />
+        {/if}
+    {/each}
+            
+    <!-- Tool calls -->
+    {#if organizedParts().toolCalls.length > 0}
+        <ToolCalls toolCallParts={organizedParts().toolCalls} />
+    {/if}
+    
+    <!-- Final text -->
+    {#if organizedParts().finalText}
+        <Markdown md={organizedParts().finalText.text} {plugins} />
     {/if}
 {/if}
 
 <style lang="scss">
     .message {
-        width: 90%;
         float: right;
         display: inline-flex;
         padding: 0.5rem;

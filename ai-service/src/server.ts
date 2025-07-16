@@ -6,6 +6,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
+import { HTTPException } from 'hono/http-exception';
 import { fileURLToPath } from 'url';
 import { handleChatRequest } from '@/handlers/chat/route';
 import { getConversation, getConversations } from './handlers/conversation';
@@ -14,6 +15,13 @@ const app = new Hono();
 
 // Middleware
 app.use('*', cors());
+app.onError((err, c) => {
+  if (err instanceof HTTPException) {
+    return err.getResponse();
+  }
+  console.error(err);
+  return new Response('Something went wrong', { status: 500 });
+});
 
 // Routes
 app.post("/api/chat", handleChatRequest);

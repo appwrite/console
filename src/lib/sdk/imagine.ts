@@ -1,3 +1,4 @@
+import type { ImagineUIMessage } from '$shared-types';
 import { AppwriteException } from '@appwrite.io/console';
 import type { Client, Payload } from '@appwrite.io/console';
 
@@ -561,6 +562,10 @@ export type Conversation = {
      * Search index string.
      */
     search: string;
+    /**
+     * Messages (UI)
+     */
+    messages: ImagineUIMessage[];
 };
 /**
  * ConversationsMessage

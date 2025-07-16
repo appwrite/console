@@ -10,7 +10,6 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import Conversation from './conversation.svelte';
-    import type { StreamParser } from './parser';
     import type { EventHandler } from 'svelte/elements';
     import { page } from '$app/state';
     import { studio } from '../studio.svelte';
@@ -18,44 +17,32 @@
     import { sdk } from '$lib/stores/sdk';
     import { conversation, showChat } from '$lib/stores/chat';
     import { DefaultChatTransport } from 'ai';
+    import type { ImagineUIMessage } from '$shared-types';
+    import { VARS } from '../../../system';
 
     type Props = {
         width: number;
         hasSubNavigation: boolean;
-        parser: StreamParser;
     };
-    let { width, hasSubNavigation, parser }: Props = $props();
+    let { width, hasSubNavigation }: Props = $props();
 
     let minimizeChat = $state($isSmallViewport ? true : false);
     let message = $state('');
-    let firstByteReceived = $state(true);
 
     let chatTextareaRef: HTMLTextAreaElement | null = $state(null);
 
-    const chatBody: {
-        token: string | null;
-        projectId: string;
-        artifactId: string | null;
-        conversationId: string | null;
-    } = {
-        token: null,
-        projectId: page.params.project,
-        artifactId: null,
-        conversationId: null
-    };
-
-    const chat = new Chat({
+    const chat = new Chat<ImagineUIMessage>({
+        id: $conversation.data?.$id,
         transport: new DefaultChatTransport({
-            api: 'http://localhost:8889/api/chat',
-            // body: chatBody
+            api: `${VARS.AI_SERVICE_BASE_URL}/api/chat`,
         })
     });
-    // const chat = new Chat({
-    //     transport: new DefaultChatTransport({
-    //         api: 'http://localhost:8889/api/chat',
-    //         body: chatBody
-    //     })
-    // });
+
+    $effect(() => {
+        if ($conversation.data?.messages) {
+            chat.messages = $conversation.data.messages;
+        }
+    });
 
     const onkeydown: EventHandler<KeyboardEvent, HTMLTextAreaElement> = (event) => {
         if (event.key === 'Enter') {
@@ -77,116 +64,34 @@
         if (chatTextareaRef && !$isSmallViewport) {
             chatTextareaRef.focus();
         }
+
+        refreshToken(); // TODO: remove
     });
 
     async function refreshToken() {
-        // const token = await sdk.forConsoleIn(page.params.region).account.createJWT();
         const token = await sdk
             .forProject(page.params.region, page.params.project)
             .account.createJWT();
-        chatBody.token = token.jwt;
+        return token;
     }
 
-    // let controller: AbortController;
-
     async function createMessage() {
-        await refreshToken();
+        const token = await refreshToken();
 
-        console.log('$conversation', $conversation);
-        chatBody.artifactId = $conversation?.data?.artifactId ?? null;
-        chatBody.conversationId = $conversation?.data?.$id ?? null;
-
-        const group = Symbol();
-        if (message.startsWith('!')) {
-            const [type, ...segments] = message.split(' ');
-            const content = segments.join(' ');
-            message = '';
-            const value = `<action type="${type.replace('!', '')}">${content}</action>`;
-            parser.chunk(value, 'system', { group });
-            parser.end();
-            return;
-        }
-
-        console.log('artifactId', $conversation?.data?.artifactId);
-
-        // chatIns
+        chat.sendMessage({
+            role: "user",
+            text: message,
+        }, {
+            body: {
+                projectId: page.params.project,
+                artifactId: page.params.artifact,
+            },
+            headers: {
+                "X-Imagine-Token": token.jwt
+            }
+        });
 
         message = '';
-
-        // const initialMessage = message;
-
-        // try {
-        // parser.chunk(message, 'user');
-        // firstByteReceived = false;
-        // message = '';
-        // controller = new AbortController();
-        // studio.streaming = true;
-
-        // const url = `${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}/imagine/artifacts/${$conversation.data.artifactId}/conversations/${$conversation.data.$id}/messages`;
-        // const response = await fetch(
-        //     url,
-        //     {
-        //         method: "POST",
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //             'X-Appwrite-Project': page.params.project,
-        //             'X-Appwrite-Mode': 'admin'
-        //         },
-        //         credentials: 'include',
-        //         body: JSON.stringify({
-        //             content: initialMessage,
-        //             type: 'text'
-        //         }),
-        //         signal: controller.signal
-        //     }
-        // )
-
-        // const response = await fetch(
-        //     url,
-        //     {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //             'X-Appwrite-Project': page.params.project,
-        //             'X-Appwrite-Mode': 'admin'
-        //         },
-        //         credentials: 'include',
-        //         body: JSON.stringify({
-        //             content: initialMessage,
-        //             type: 'text'
-        //         }),
-        //         signal: controller.signal
-        //     }
-        // );
-
-        // if (!response.ok) {
-        // throw new Error(`${response.status} Error: ${await response.text()}`);
-        // }
-
-        //     invalidate(Dependencies.ARTIFACTS);
-
-        //     const reader = response.body.getReader();
-        //     const decoder = new TextDecoder();
-
-        //     let chunk = await reader.read();
-        //     while (!chunk.done) {
-        //         if (!firstByteReceived) firstByteReceived = true;
-        //         parser.chunk(decoder.decode(chunk.value), 'system', {
-        //             group
-        //         });
-        //         chunk = await reader.read();
-        //     }
-        //     parser.end();
-        // } catch (error) {
-        //     if (error instanceof Error) {
-        //         parser.chunk(error.message, 'error');
-        //     }
-        //     message = initialMessage;
-        // } finally {
-        //     firstByteReceived = true;
-        //     studio.streaming = false;
-        // }
-        // }
     }
 
     let tokens = $state(2);
@@ -226,7 +131,7 @@
                 <Divider />
             </div>
 
-            <Conversation {chat} {parser} thinking={!firstByteReceived} />
+            <Conversation {chat} />
 
             {#if tokens < 2}
                 <UpgradePrompt>
@@ -242,7 +147,6 @@
                     {/if}
                 </UpgradePrompt>
             {/if}
-            <Conversation {chat} {parser} thinking={chat.status === 'submitted'} />
         {/if}
         <form {onsubmit} class="input" class:minimize-chat={minimizeChat}>
             <Layout.Stack

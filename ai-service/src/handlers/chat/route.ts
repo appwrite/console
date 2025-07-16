@@ -15,21 +15,23 @@ const exec = promisify(_exec);
 import fs from 'fs';
 import path from 'path';
 import { createImagineClient } from '@/lib/imagine/create-artifact-client';
-import { IMAGINE_JWT } from '@/lib/constants';
 
 export const handleChatRequest = async (c: Context) => {
-  console.log("incoming request");
     const signal = c.req.raw.signal;
+
+    const token = c.req.header('X-Imagine-Token');
+    if (!token) {
+        return c.json({ error: 'Unauthorized' }, 401);
+    }
+
     let body: ChatRequestBodyType;
 
     // Parse request body
     try {
         const json = await c.req.json();
-        // console.log("json", json);
         body = chatRequestBodySchema.parse(json);
     } catch (error) {
         if (error instanceof z.ZodError) {
-          console.log("zod error", error);
             return c.json({ errors: error.issues }, 400);
         }
 
@@ -37,51 +39,47 @@ export const handleChatRequest = async (c: Context) => {
         return c.json('An unknown error occurred', 500);
     }
 
-    const { id: conversationId, messages, trigger } = body;
+    const { id: conversationId, messages, trigger, artifactId, projectId } = body;
 
-    if (trigger === "submit-tool-result") {
-      // Skip
-      return c.body(null, 200);
+    if (trigger === 'submit-tool-result') {
+        // Skip
+        return c.body(null, 200);
     }
 
-    console.log("body", body);
-
-    const artifactId = process.env.IMAGINE_ARTIFACT_ID!; // TODO: dynamically from body
-    const projectId = process.env.IMAGINE_PROJECT_ID!; // TODO: dynamically from body
-
     const imagineClient = await createImagineClient({
-      projectId,
-      token: IMAGINE_JWT, // TODO: use the token from the request
+        projectId,
+        token // TODO: use the token from the request
     });
     const convos = await imagineClient.listConversations(artifactId);
     const imagineConvo = convos.conversations[0];
-    const uiMessages = imagineConvo.messages.messages;
-    const isNewConversation = uiMessages.length === 0;
     const convertedMessages = convertToModelMessages(messages);
     const latestMessage = convertedMessages[convertedMessages.length - 1];
-
+    
     const latestMessageTextPart = latestMessage.content[0] as TextPart;
     const restMessages = convertedMessages.slice(0, -1);
-
+    
     // If it's a new conversation, we need to clone the workspace
     // This is temporary and will be handled by Synapse shortly!
+    const isNewConversation = restMessages.length === 0;
     if (isNewConversation) {
-      const workspaceDir = path.resolve(process.cwd(), `./tmp/workspace/artifact/${artifactId}`)
-      console.log("workspaceDir", workspaceDir);
-      const exists = fs.existsSync(workspaceDir);
+        const workspaceDir = path.resolve(process.cwd(), `./tmp/workspace/artifact/${artifactId}`);
+        console.log('workspaceDir', workspaceDir);
+        const exists = fs.existsSync(workspaceDir);
 
-      if (exists) {
-        console.log("Workspace already exists, skipping clone");
-      } else {
-        console.log("Workspace does not exist, creating directory...");
-        await exec(`mkdir -p ${workspaceDir}`);
-        console.log("Cloning template 'base-vite-template'...");
-        await exec(`pnpx degit appwrite/templates-for-frameworks/base-vite-template .`, { cwd: workspaceDir });
-        console.log("Installing dependencies...");
-        await exec(`bun install`, { cwd: workspaceDir });
-      }
+        if (exists) {
+            console.log('Workspace already exists, skipping clone');
+        } else {
+            console.log('Workspace does not exist, creating directory...');
+            await exec(`mkdir -p ${workspaceDir}`);
+            console.log("Cloning template 'base-vite-template'...");
+            await exec(`pnpx degit appwrite/templates-for-frameworks/base-vite-template .`, {
+                cwd: workspaceDir
+            });
+            console.log('Installing dependencies...');
+            await exec(`bun install`, { cwd: workspaceDir });
+        }
     } else {
-      console.log("Not a new conversation, skipping workspace clone");
+        console.log('Not a new conversation, skipping workspace clone');
     }
 
     let didError = false;
@@ -90,22 +88,28 @@ export const handleChatRequest = async (c: Context) => {
         originalMessages: messages,
         execute: async (params) => {
             const writer = params.writer as WriterType;
-            const runtimeContext = createRuntimeContext({ writer, artifactId, restMessages, isFirstMessage: isNewConversation, signal });
+            const runtimeContext = createRuntimeContext({
+                writer,
+                artifactId,
+                restMessages,
+                isFirstMessage: isNewConversation,
+                signal
+            });
             const run = await mastra.getWorkflow('codeWorkflow').createRunAsync();
 
             const result = run.stream({
                 inputData: {
-                  userPrompt: latestMessageTextPart.text
+                    userPrompt: latestMessageTextPart.text
                 },
                 runtimeContext
             });
 
             writer.write({
-              type: 'start',
+                type: 'start'
             });
 
             writer.write({
-              type: 'start-step'
+                type: 'start-step'
             });
 
             for await (const chunk of result.stream) {
@@ -117,7 +121,7 @@ export const handleChatRequest = async (c: Context) => {
             });
 
             writer.write({
-                type: 'finish',
+                type: 'finish'
             });
         },
         onFinish: async (event) => {
@@ -128,17 +132,14 @@ export const handleChatRequest = async (c: Context) => {
 
             const { messages } = event;
 
-            console.log("Saving messages to imagine");
-            await imagineClient.updateConversation(artifactId, imagineConvo.$id, "Test Conversation", { messages } as any);
-            console.log("Messages saved to imagine");
-            // await updateConversation({
-            //   conversation: {
-            //     ...conversation,
-            //     uiMessages: messages,
-            //   },
-            //   artifactId,
-            //   projectId,
-            // });
+            console.log('Saving messages to imagine');
+            await imagineClient.updateConversation(
+                artifactId,
+                imagineConvo.$id,
+                'Test Conversation',
+                messages
+            );
+            console.log('Messages saved to imagine');
         },
         onError: (error) => {
             didError = true;

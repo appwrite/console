@@ -1,31 +1,19 @@
 <script lang="ts">
     import 'highlight.js/styles/atom-one-light.css';
-    import { StreamParser, type ParsedItem } from './parser';
-    import { Icon, Layout, ShimmerText, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Spinner, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { IconArrowDown } from '@appwrite.io/pink-icons-svelte';
     import { slide } from 'svelte/transition';
     import type { UIEventHandler, WheelEventHandler } from 'svelte/elements';
     import Message from './message.svelte';
     import { studio } from '../studio.svelte';
     import { Chat } from '@ai-sdk/svelte';
+    import type { ImagineUIMessage } from '$shared-types';
 
     type Props = {
-        parser: StreamParser;
         autoscroll?: boolean;
-        thinking?: boolean;
-        chat: Chat;
+        chat: Chat<ImagineUIMessage>;
     };
-    let { autoscroll = $bindable(true), thinking = false, chat }: Props = $props();
-
-    // const chunks = writable<ParsedItem[]>([
-    //     {
-    //         id: Symbol(),
-    //         from: 'user',
-    //         group: null,
-    //         content: "Test",
-    //         complete: true,
-    //     }
-    // ]);
+    let { autoscroll = $bindable(true), chat }: Props = $props();
 
     function scrollToBottom(smooth: boolean = true) {
         document
@@ -33,7 +21,7 @@
             .scrollIntoView({ behavior: smooth ? 'smooth' : 'instant' });
     }
 
-    const onwheel: WheelEventHandler<HTMLDivElement> = (event) => {
+    const onwheel: WheelEventHandler<HTMLDivElement> = () => {
         if (studio.streaming) autoscroll = false;
     };
 
@@ -51,35 +39,22 @@
             autoscroll = false;
         }
     };
-
-    $effect(() => {
-        console.log("DATA", chat.data);
-    });
-
 </script>
 
 <div class="overflow" {onwheel} {onscroll}>
     <section>
-        <!-- {#each $chunks as message (message.id)}
+        {#each chat.messages as message (message.id)}
             <Message {message} />
-        {/each} -->
-        {#each chat.messages as message, messageIndex (messageIndex)}
-            <Message
-                message={{
-                    id: Symbol(message.id),
-                    from: (message.role === 'user' ? 'user' : 'assistant') as any,
-                    group: null,
-                    content: message.content,
-                    complete: true
-                }} />
-            <!-- <pre style:border="1px solid black" style:padding="1rem">{JSON.stringify(message, null, 2)}</pre> -->
         {/each}
 
-        {#if thinking}
-            <Typography.Code size="s">
-                <ShimmerText>thinking...</ShimmerText>
-            </Typography.Code>
+        {#if chat.status === "submitted" || chat.status === "streaming"}
+            <Icon size="m" icon={Spinner} />
         {/if}
+
+        {#if chat.status === "error"}
+            <span style:color="var(--fgcolor-error)">{chat.error?.message}</span>
+        {/if}
+
         <div id="bottom"></div>
     </section>
 

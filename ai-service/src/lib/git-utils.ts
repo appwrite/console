@@ -15,9 +15,6 @@ export class GitRepositoryUtils {
       withContent: true,
       additionalIgnorePatterns: [],
     });
-
-    console.log("files", files);
-
     return files.map((file) => ({
       path: file.path,
       content: file.content!,

@@ -1,4 +1,3 @@
-import { IMAGINE_JWT } from "@/lib/constants";
 import { createImagineClient } from "@/lib/imagine/create-artifact-client";
 import { Conversation } from "@/lib/imagine/imagine-api-client";
 import { Context } from "hono";
@@ -7,20 +6,24 @@ const mapConversation = (conversation: Conversation) => {
   return {
     id: conversation.$id,
     name: conversation.name,
-    messages: conversation.messages.messages,
+    messages: conversation.messages,
   };
 };
 
 export const getConversation = async (c: Context) => {
-  console.log("getConversation");
   const { conversationId } = c.req.param();
+  const token = c.req.header("X-Imagine-Token");
+
+  if (!token) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
 
   const projectId = process.env.IMAGINE_PROJECT_ID!;
   const artifactId = process.env.IMAGINE_ARTIFACT_ID!;
 
   const imagineClient = await createImagineClient({
     projectId,
-    token: IMAGINE_JWT, // TODO: use the token from the request
+    token
   });
 
   const conversation = await imagineClient.getConversation(artifactId, conversationId);
@@ -32,10 +35,15 @@ export const getConversations = async (c: Context) => {
   console.log("getConversations");
   const projectId = process.env.IMAGINE_PROJECT_ID!;
   const artifactId = process.env.IMAGINE_ARTIFACT_ID!;
+  const token = c.req.header("X-Imagine-Token");
+
+  if (!token) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
 
   const imagineClient = await createImagineClient({
     projectId,
-    token: IMAGINE_JWT, // TODO: use the token from the request
+    token
   });
 
   const conversations = await imagineClient.listConversations(artifactId);
