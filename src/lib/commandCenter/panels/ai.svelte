@@ -7,7 +7,7 @@
 
     import { AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
     import { user } from '$lib/stores/user';
-    import { useCompletion } from '@ai-sdk/svelte';
+    import { Completion } from '@ai-sdk/svelte';
     import { subPanels } from '../subPanels';
 
     import { isLanguage, type Language } from '$lib/components/code.svelte';
@@ -15,14 +15,16 @@
     import { getApiEndpoint } from '$lib/stores/sdk';
 
     const endpoint = getApiEndpoint();
-    const { input, handleSubmit, completion, isLoading, complete, error } = useCompletion({
+
+    const completion = new Completion({
         api: endpoint + '/console/assistant',
         headers: {
             'x-appwrite-project': 'console'
         },
         credentials: 'include',
         streamProtocol: 'text'
-    });
+    })
+
 
     const examples = [
         'How to add platform in the console?',
@@ -88,7 +90,7 @@
         return answer;
     }
 
-    $: answer = parseCompletion($completion);
+    $: answer = parseCompletion(completion.completion);
 
     function renderMarkdown(answer: string): string {
         const trimmedAnswer = answer
@@ -123,25 +125,25 @@
     }
 
     let previousQuestion = '';
-    $: if ($input) {
-        previousQuestion = $input;
+    $: if (completion.input) {
+        previousQuestion = completion.input;
     }
 
-    $: if (!$isLoading && answer) {
+    $: if (!completion.loading && answer) {
         // reset input if answer received.
-        $input = '';
+        completion.input = '';
     }
 </script>
 
 <Template
-    options={$isLoading || answer
+    options={completion.loading || answer
         ? undefined
         : examples.map((e) => {
               return {
                   label: e,
                   callback: () => {
-                      $input = e;
-                      complete($input);
+                      completion.input = e;
+                      completion.complete(e);
                   },
                   group: 'Examples'
               };
@@ -174,7 +176,7 @@
         </div>
     {/if}
 
-    {#if $isLoading || answer}
+    {#if completion.loading || answer}
         <div class="content">
             <div class="u-flex u-gap-8 u-cross-center">
                 <div class="avatar is-size-x-small">{getInitials($user.name || $user.email)}</div>
@@ -185,7 +187,7 @@
                     <SvgIcon name="sparkles" type="color" />
                 </div>
                 <div class="answer">
-                    {#if $isLoading && !$completion}
+                    {#if completion.loading && !completion.completion}
                         <LoadingDots />
                     {:else}
                         {#each answer as part}
@@ -213,7 +215,7 @@
         </div>
     {/if}
 
-    {#if $error}
+    {#if completion.error}
         <div style="padding: 1rem; padding-block-end: 0;">
             <Alert.Inline status="error" title="Something went wrong">
                 An unexpected error occurred while handling your request. Please try again later.
@@ -232,7 +234,7 @@
                     style:width="100%"
                     style:align-items="center"
                     on:submit|preventDefault={(e) => {
-                        handleSubmit(e);
+                        completion.handleSubmit(e);
                     }}>
                     <!--  svelte-ignore a11y-autofocus -->
                     <input
@@ -241,14 +243,14 @@
                         style:width="100%"
                         placeholder="Ask a question..."
                         autofocus
-                        bind:value={$input}
-                        disabled={$isLoading} />
+                        bind:value={completion.input}
+                        disabled={completion.loading} />
                     <div class="options-list">
                         <button
                             class="options-list-button"
                             aria-label="ask AI"
                             type="submit"
-                            disabled={!$input.trim() || $isLoading}>
+                            disabled={!completion.input.trim() || completion.loading}>
                             <span class="icon-arrow-sm-right" aria-hidden="true"></span>
                         </button>
                     </div>

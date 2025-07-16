@@ -102,7 +102,7 @@
             .forProject(page.params.region, page.params.project)
             .imagine.listConversations(artifactId);
         if (conversations.length === 0) {
-            const convo = sdk
+            const convo = await sdk
                 .forProject(page.params.region, page.params.project)
                 .imagine.createConversation(artifactId, `Conversation ${new Date().getTime()}`);
             conversation.set(convo);

@@ -130,7 +130,8 @@ class Studio {
     }
     get #endpoint(): string {
         const url = new SvelteURL(this.#host);
-        url.searchParams.set('workDir', `/artifact/${this.#artifact}`);
+        // url.searchParams.set('workDir', `/artifact/${this.#artifact}`);
+        url.searchParams.set('workDir', `/Users/arielweinberger/Development/appwrite/appwrite-console/ai-service/tmp/workspace/artifact/68681e3c002a03876050`);
 
         return url.toString();
     }
@@ -159,4 +160,8 @@ class Studio {
     }
 }
 
-export const studio = new Studio('wss://terminal.appwrite.torsten.work');
+// export const studio = new Studio('wss://terminal.appwrite.torsten.work');
+// export const studio = new Studio('ws://127.0.0.1:4000');
+export const studio = new Studio('ws://127.0.0.1:3010');
+
+// POST http://127.0.0.1:4000 

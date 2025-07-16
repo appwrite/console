@@ -49,10 +49,8 @@ const planStep = createStep({
     const artifactId = runtimeContext.get("artifactId") as string;
     console.log("artifactId", artifactId);
     const gitRepositoryUtils = new GitRepositoryUtils(artifactId);
-    console.log("gitRepositoryUtils", gitRepositoryUtils);
     const existingFiles =
       await gitRepositoryUtils.listRepositoryFileStrucrture();
-    console.log("existingFiles", existingFiles);
     const relevantFiles = getPagesAndComponents(existingFiles);
     const readonlyFiles = [
       ...existingFiles.filter(

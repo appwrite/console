@@ -1,21 +1,31 @@
 <script lang="ts">
     import 'highlight.js/styles/atom-one-light.css';
-    import { StreamParser } from './parser';
+    import { StreamParser, type ParsedItem } from './parser';
     import { Icon, Layout, ShimmerText, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { IconArrowDown } from '@appwrite.io/pink-icons-svelte';
     import { slide } from 'svelte/transition';
     import type { UIEventHandler, WheelEventHandler } from 'svelte/elements';
     import Message from './message.svelte';
     import { studio } from '../studio.svelte';
+    import { Chat } from '@ai-sdk/svelte';
 
     type Props = {
         parser: StreamParser;
         autoscroll?: boolean;
         thinking?: boolean;
+        chat: Chat;
     };
-    let { parser, autoscroll = $bindable(true), thinking = false }: Props = $props();
+    let { autoscroll = $bindable(true), thinking = false, chat }: Props = $props();
 
-    const chunks = parser.parsed;
+    // const chunks = writable<ParsedItem[]>([
+    //     {
+    //         id: Symbol(),
+    //         from: 'user',
+    //         group: null,
+    //         content: "Test",
+    //         complete: true,
+    //     }
+    // ]);
 
     function scrollToBottom(smooth: boolean = true) {
         document
@@ -41,13 +51,30 @@
             autoscroll = false;
         }
     };
+
+    $effect(() => {
+        console.log("DATA", chat.data);
+    });
+
 </script>
 
 <div class="overflow" {onwheel} {onscroll}>
     <section>
-        {#each $chunks as message (message.id)}
+        <!-- {#each $chunks as message (message.id)}
             <Message {message} />
+        {/each} -->
+        {#each chat.messages as message, messageIndex (messageIndex)}
+            <Message
+                message={{
+                    id: Symbol(message.id),
+                    from: (message.role === 'user' ? 'user' : 'assistant') as any,
+                    group: null,
+                    content: message.content,
+                    complete: true
+                }} />
+            <!-- <pre style:border="1px solid black" style:padding="1rem">{JSON.stringify(message, null, 2)}</pre> -->
         {/each}
+
         {#if thinking}
             <Typography.Code size="s">
                 <ShimmerText>thinking...</ShimmerText>

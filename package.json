@@ -8,7 +8,7 @@
     "dev": "vite dev",
     "build": "node build.js",
     "preview": "vite preview",
-    "prepare": "svelte-kit sync || echo ''",
+    "prepare": "svelte-kit sync",
     "clean": "rm -rf node_modules && rm -rf .svelte_kit && pnpm i --force",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
@@ -21,7 +21,7 @@
     "e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "@ai-sdk/svelte": "^2.1.12",
+    "@ai-sdk/svelte": "3.0.0-beta.19",
     "@appwrite.io/console": "https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@a5e5564",
     "@appwrite.io/pink-icons": "0.25.0",
     "@appwrite.io/pink-icons-svelte": "^2.0.0-RC.1",
@@ -30,7 +30,7 @@
     "@popperjs/core": "^2.11.8",
     "@sentry/sveltekit": "^8.38.0",
     "@stripe/stripe-js": "^3.5.0",
-    "ai": "^2.2.37",
+    "ai": "5.0.0-beta.10",
     "analytics": "^0.8.16",
     "cron-parser": "^4.9.0",
     "dayjs": "^1.11.13",

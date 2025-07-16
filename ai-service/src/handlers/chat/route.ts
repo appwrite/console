@@ -17,14 +17,18 @@ import fs from 'fs';
 import path from 'path';
 
 export const handleChatRequest = async (c: Context) => {
+  console.log("incoming request");
     const signal = c.req.raw.signal;
     let body: ChatRequestBodyType;
 
     // Parse request body
     try {
-        body = chatRequestBodySchema.parse(await c.req.json());
+        const json = await c.req.json();
+        // console.log("json", json);
+        body = chatRequestBodySchema.parse(json);
     } catch (error) {
         if (error instanceof z.ZodError) {
+          console.log("zod error", error);
             return c.json({ errors: error.issues }, 400);
         }
 
@@ -38,6 +42,8 @@ export const handleChatRequest = async (c: Context) => {
       // Skip
       return c.body(null, 200);
     }
+
+    console.log("body", body);
 
     const artifactId = process.env.IMAGINE_ARTIFACT_ID!; // TODO: dynamically from body
     const projectId = process.env.IMAGINE_PROJECT_ID!; // TODO: dynamically from body
@@ -53,8 +59,6 @@ export const handleChatRequest = async (c: Context) => {
 
     const latestMessageTextPart = latestMessage.content[0] as TextPart;
     const restMessages = convertedMessages.slice(0, -1);
-
-    console.log("isNewConversation", isNewConversation);
 
     // If it's a new conversation, we need to clone the workspace
     // This is temporary and will be handled by Synapse shortly!
@@ -102,13 +106,9 @@ export const handleChatRequest = async (c: Context) => {
               type: 'start-step'
             });
 
-            console.log("BEFORE STREAM");
-
             for await (const chunk of result.stream) {
                 // We must await the stream
             }
-
-            console.log("AFTER STREAM");
 
             writer.write({
                 type: 'finish-step'
@@ -125,8 +125,6 @@ export const handleChatRequest = async (c: Context) => {
             }
 
             const { messages } = event;
-
-            console.log("Saving conversation", { conversationId });
 
             await updateConversation({
               conversation: {

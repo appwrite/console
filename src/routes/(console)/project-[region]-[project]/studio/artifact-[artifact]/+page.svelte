@@ -13,7 +13,9 @@
     import type { EventHandler } from 'svelte/elements';
     import { onMount } from 'svelte';
 
-    let previewUrl = new SvelteURL('https://preview.torsten.work');
+    // let previewUrl = new SvelteURL('https://preview.torsten.work');
+    // let previewUrl = new SvelteURL('http://localhost:1234');
+    let previewUrl = new SvelteURL('http://localhost:5173');
 
     let iframeRef: HTMLIFrameElement | null = $state(null);
     let iframeContainerRef: HTMLDivElement | null = $state(null);
@@ -129,7 +131,6 @@
     iframe {
         border: none;
         position: absolute;
-        background-color: red;
 
         margin-inline-start: calc(-1 * var(--space-4));
         width: calc(100% + var(--space-7));
