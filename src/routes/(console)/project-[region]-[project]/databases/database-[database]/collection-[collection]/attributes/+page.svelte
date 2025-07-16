@@ -311,7 +311,10 @@
         text: 'Create',
         onClick: async () => await createIndex.create()
     }}>
-    <CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} bind:this={createIndex} />
+    <CreateIndex
+        bind:showCreateIndex
+        externalAttribute={selectedAttribute}
+        bind:this={createIndex} />
 </SideSheet>
 
 {#if showFailed}
