@@ -10,22 +10,38 @@
     import Confirm from '$lib/components/confirm.svelte';
     import { Typography } from '@appwrite.io/pink-svelte';
 
-    export let showDelete = false;
-    export let selectedIndex: Models.Index;
+    let {
+        showDelete = $bindable(false),
+        selectedIndex = $bindable(null),
+    }: {
+        showDelete: boolean;
+        selectedIndex: Models.Index | string[]
+    } = $props()
 
-    const databaseId = page.params.database;
-    let error: string;
+    let error: string = $state(null);
+    let selectedKeys = $derived(getKeys(selectedIndex));
+
+    function getKeys(selected: Models.Index | string[]): string[] {
+        return Array.isArray(selected) ? selected : [selected.key];
+    }
 
     async function handleDelete() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .databases.deleteIndex(databaseId, $collection.$id, selectedIndex.key);
+            await Promise.all(
+                selectedKeys.map((key) =>
+                    sdk
+                        .forProject(page.params.region, page.params.project)
+                        .databases.deleteIndex(page.params.database, $collection.$id, key)
+                )
+            );
             await invalidate(Dependencies.COLLECTION);
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `Index has been deleted`
+                message:
+                    selectedKeys.length === 1
+                        ? 'Index has been deleted'
+                        : `${selectedKeys.length} indexes have been deleted`
             });
             trackEvent(Submit.IndexDelete);
         } catch (e) {
@@ -37,6 +53,15 @@
 
 <Confirm onSubmit={handleDelete} title="Delete index" bind:open={showDelete} bind:error>
     <Typography.Text>
-        Are you sure you want to delete <b>{selectedIndex.key}</b> from <b>{$collection.name}</b>?
+        {#if selectedKeys.length === 1}
+            Are you sure you want to delete <b>{selectedKeys[0]}</b> from
+            <b>{$collection.name}</b>?
+        {:else}
+            Are you sure you want to delete
+            <b>
+                {selectedKeys.join(', ')}
+            </b>
+            from <b>{$collection.name}</b>?
+        {/if}
     </Typography.Text>
 </Confirm>

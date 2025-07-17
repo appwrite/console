@@ -117,7 +117,7 @@
                     </svelte:fragment>
                     {#each data.collection.indexes as index}
                         <Spreadsheet.Row.Base {root} id={index.key}>
-                            <Spreadsheet.Cell column="key" {root}>
+                            <Spreadsheet.Cell column="key" {root} isEditable={false}>
                                 <Layout.Stack direction="row" alignItems="center">
                                     {index.key}
                                     {#if index.status !== 'available'}
@@ -138,15 +138,15 @@
                                     {/if}
                                 </Layout.Stack>
                             </Spreadsheet.Cell>
-                            <Spreadsheet.Cell column="type" {root}>{index.type}</Spreadsheet.Cell>
-                            <Spreadsheet.Cell column="columns" {root}>
+                            <Spreadsheet.Cell column="type" {root} isEditable={false}>{index.type}</Spreadsheet.Cell>
+                            <Spreadsheet.Cell column="columns" {root} isEditable={false}>
                                 {index.attributes.join(', ')}
                             </Spreadsheet.Cell>
-                            <!--                            <Spreadsheet.Cell column="orders" {root}>-->
+                            <!--                            <Spreadsheet.Cell column="orders" {root} isEditable={false}>-->
                             <!--                                {index.orders}-->
                             <!--                            </Spreadsheet.Cell>-->
                             {#if showLengths}
-                                <Spreadsheet.Cell column="lengths" {root}>
+                                <Spreadsheet.Cell column="lengths" {root} isEditable={false}>
                                     {index.lengths}
                                 </Spreadsheet.Cell>
                             {/if}
@@ -211,7 +211,7 @@
                         <Layout.Stack direction="row" alignItems="center" gap="m">
                             <Badge content={selectedIndexes.length.toString()} />
                             <span style:font-size="14px">
-                                {selectedIndexes.length > 1 ? 'indexex' : 'index'}
+                                {selectedIndexes.length > 1 ? 'indexes' : 'index'}
                                 selected
                             </span>
                         </Layout.Stack>
@@ -237,8 +237,9 @@
 </SideSheet>
 
 {#if selectedIndex}
-    <!-- TODO: delete multiple indexes -->
-    <Delete bind:showDelete {selectedIndex} />
+    <Delete bind:showDelete selectedIndex={selectedIndex} />
+{:else if selectedIndexes && selectedIndexes.length}
+    <Delete bind:showDelete bind:selectedIndex={selectedIndexes} />
 {/if}
 
 <SideSheet title="Preview index" bind:show={showOverview}>

@@ -179,13 +179,13 @@
                                 </Layout.Stack>
                             </Layout.Stack>
                         </Spreadsheet.Cell>
-                        <Spreadsheet.Cell column="indexed" {root}>
+                        <Spreadsheet.Cell column="indexed" {root} isEditable={false}>
                             {@const isIndexed = $indexes.some((index) =>
                                 index.attributes.includes(attribute.key)
                             )}
                             <Selector.Checkbox size="s" checked={isIndexed} disabled />
                         </Spreadsheet.Cell>
-                        <Spreadsheet.Cell column="default" {root}>
+                        <Spreadsheet.Cell column="default" {root} isEditable={false}>
                             {@const _default =
                                 attribute?.default !== null && attribute?.default !== undefined
                                     ? attribute?.default
@@ -197,7 +197,7 @@
                                 {_default}
                             {/if}
                         </Spreadsheet.Cell>
-                        <Spreadsheet.Cell column="actions" {root}>
+                        <Spreadsheet.Cell column="actions" {root} isEditable={false}>
                             {#if $isCsvImportInProgress}
                                 <CsvDisabled>
                                     <Button disabled text icon ariaLabel="more options">
