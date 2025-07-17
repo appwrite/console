@@ -31,6 +31,7 @@
     import Debug from './debug.svelte';
     import ArtifactActionMenu from './artifactActionMenu.svelte';
     import RoleSurvey from '$lib/components/studio/roleSurvey.svelte';
+    import ReleaseActionMenu from './releaseActionMenu.svelte';
 
     const { children, data } = $props();
 
@@ -222,7 +223,7 @@
 
                 <Layout.Stack gap="s" direction="row" alignItems="center" inline>
                     <ArtifactActionMenu />
-                    <Button.Button size="s" variant="primary">Release</Button.Button>
+                    <ReleaseActionMenu />
                 </Layout.Stack>
             </Layout.Stack>
             <div class="divider-wrapper">
