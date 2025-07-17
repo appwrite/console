@@ -168,8 +168,7 @@
                                     size="s"
                                     variant="secondary"
                                     disabled={actions?.random?.disabled}
-                                    on:click={actions?.random?.onClick}
-                                >
+                                    on:click={actions?.random?.onClick}>
                                     {actions?.random?.text ?? `Generate random data`}
                                 </Button.Button>
                                 <span slot="tooltip">Yet to be added</span>
