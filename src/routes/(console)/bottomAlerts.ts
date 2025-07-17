@@ -1,62 +1,16 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-
-import BulkApiDark from '$lib/images/promos/bulk-api-dark.png';
-import BulkApiLight from '$lib/images/promos/bulk-api-light.png';
-
-import CSVImportDark from '$lib/images/promos/csv-import-placeholder-dark.png';
-import CSVImportLight from '$lib/images/promos/csv-import-placeholder-light.png';
-
 import DatabaseUpsertDark from '$lib/images/promos/database-upsert-dark.png';
 import DatabaseUpsertLight from '$lib/images/promos/database-upsert-light.png';
 import EncryptedDatabasesDark from '$lib/images/promos/encrypted-attribute-dark.png';
 import EncryptedDatabasesLight from '$lib/images/promos/encrypted-attribute-light.png';
+import OptInRelationDark from '$lib/images/promos/opt-relation-dark.png';
+import OptInRelationLight from '$lib/images/promos/opt-relation-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const csvImportPromo: BottomModalAlertItem = {
-        id: 'modal:csv_import_announcement',
-        src: {
-            dark: CSVImportDark,
-            light: CSVImportLight
-        },
-        title: 'Introducing CSV import',
-        message:
-            "We're introducing a new way to populate your Appwrite databases: document imports from CSV files.",
-        plan: 'free',
-        importance: 8,
-        scope: 'everywhere',
-        cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-csv-imports',
-            external: true,
-            hideOnClick: true
-        },
-        show: true
-    };
-
-    const bulkApiPromo: BottomModalAlertItem = {
-        id: 'modal:bulk_api_announcement',
-        src: {
-            dark: BulkApiDark,
-            light: BulkApiLight
-        },
-        title: 'Introducing Bulk API',
-        message:
-            'A new Appwrite Databases feature, explicitly designed to handle heavy write workloads.',
-        plan: 'free',
-        importance: 8,
-        scope: 'project',
-        cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-bulk-api',
-            external: true,
-            hideOnClick: true
-        },
-        show: true
-    };
     const databaseUpsert: BottomModalAlertItem = {
         id: 'modal:database_upsert_announcement',
         src: {
@@ -95,7 +49,27 @@ if (isCloud) {
         },
         show: true
     };
-    listOfPromotions.push(encryptedAttributePromo, databaseUpsert, bulkApiPromo, csvImportPromo);
+    const optInRelationPromo: BottomModalAlertItem = {
+        id: 'modal:opt_in_relation_announcement',
+        src: {
+            dark: OptInRelationDark,
+            light: OptInRelationLight
+        },
+        title: 'Introducing Opt-in relationship loading',
+        message:
+            'Gain full control over which related documents to fetch and drastically reduce payload sizes.',
+        plan: 'free',
+        importance: 8,
+        scope: 'project',
+        cta: {
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-opt-in-relationship-loading',
+            external: true,
+            hideOnClick: true
+        },
+        show: true
+    };
+    listOfPromotions.push(optInRelationPromo, encryptedAttributePromo, databaseUpsert);
 }
 
 export function addBottomModalAlerts() {
