@@ -8,15 +8,14 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Confirm from '$lib/components/confirm.svelte';
-    import { Typography } from '@appwrite.io/pink-svelte';
 
     let {
         showDelete = $bindable(false),
-        selectedIndex = $bindable(null),
+        selectedIndex = $bindable(null)
     }: {
         showDelete: boolean;
-        selectedIndex: Models.Index | string[]
-    } = $props()
+        selectedIndex: Models.Index | string[];
+    } = $props();
 
     let error: string = $state(null);
     let selectedKeys = $derived(getKeys(selectedIndex));
@@ -51,17 +50,23 @@
     }
 </script>
 
-<Confirm onSubmit={handleDelete} title="Delete index" bind:open={showDelete} bind:error>
-    <Typography.Text>
-        {#if selectedKeys.length === 1}
-            Are you sure you want to delete <b>{selectedKeys[0]}</b> from
-            <b>{$collection.name}</b>?
-        {:else}
-            Are you sure you want to delete
-            <b>
-                {selectedKeys.join(', ')}
-            </b>
-            from <b>{$collection.name}</b>?
-        {/if}
-    </Typography.Text>
+<Confirm
+    bind:error
+    confirmDeletion
+    title="Delete index"
+    bind:open={showDelete}
+    onSubmit={handleDelete}>
+    {#if selectedKeys.length === 1}
+        <p>Are you sure you want to delete <b>{selectedKeys[0]}</b>?</p>
+        <p>
+            Deleting this index may slow down queries that depend on it. This action is
+            irreversible.
+        </p>
+    {:else}
+        <p>Are you sure you want to delete <b>{selectedKeys.join(', ')}</b>?</p>
+        <p>
+            Deleting these indexes may slow down queries that depend on it. This action is
+            irreversible.
+        </p>
+    {/if}
 </Confirm>

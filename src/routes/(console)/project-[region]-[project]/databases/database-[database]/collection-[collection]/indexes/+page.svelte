@@ -138,7 +138,8 @@
                                     {/if}
                                 </Layout.Stack>
                             </Spreadsheet.Cell>
-                            <Spreadsheet.Cell column="type" {root} isEditable={false}>{index.type}</Spreadsheet.Cell>
+                            <Spreadsheet.Cell column="type" {root} isEditable={false}
+                                >{index.type}</Spreadsheet.Cell>
                             <Spreadsheet.Cell column="columns" {root} isEditable={false}>
                                 {index.attributes.join(', ')}
                             </Spreadsheet.Cell>
@@ -237,7 +238,7 @@
 </SideSheet>
 
 {#if selectedIndex}
-    <Delete bind:showDelete selectedIndex={selectedIndex} />
+    <Delete bind:showDelete {selectedIndex} />
 {:else if selectedIndexes && selectedIndexes.length}
     <Delete bind:showDelete bind:selectedIndex={selectedIndexes} />
 {/if}
