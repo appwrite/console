@@ -9,7 +9,7 @@
         spaced = false,
         closeOnBlur = false,
         submit,
-        children
+        children = null
     }: {
         show: boolean;
         title: string;
@@ -22,7 +22,7 @@
                   onClick: () => void | Promise<void>;
               }
             | undefined;
-        children: Snippet;
+        children?: Snippet;
     } = $props();
 </script>
 
@@ -43,7 +43,7 @@
                     show = false;
                 }}>
                 <Layout.Stack gap="xl">
-                    {@render children()}
+                    {@render children?.()}
                 </Layout.Stack>
 
                 {#if submit}

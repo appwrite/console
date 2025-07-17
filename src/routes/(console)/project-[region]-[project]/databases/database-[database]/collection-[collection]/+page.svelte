@@ -9,7 +9,7 @@
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
     import { Icon, Layout, Divider } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
-    import { collection, columns, isCsvImportInProgress } from './store';
+    import { collection, columns, isCsvImportInProgress, showRecordsCreateSheet } from './store';
     import SpreadSheet from './spreadsheet.svelte';
     import { writable } from 'svelte/store';
     import FilePicker from '$lib/components/filePicker.svelte';
@@ -28,7 +28,6 @@
     export let data: PageData;
 
     let showImportCSV = false;
-    let showRecordsCreateSheet = false;
     const filterColumns = writable<Column[]>([]);
 
     $: selected = preferences.getCustomCollectionColumns(page.params.collection);
@@ -106,7 +105,7 @@
                         <Button
                             secondary
                             disabled={!(hasAttributes && hasValidAttributes)}
-                            on:click={() => (showRecordsCreateSheet = true)}
+                            on:click={() => ($showRecordsCreateSheet.show = true)}
                             event="create_document">
                             <Icon icon={IconPlus} slot="start" size="s" />
                             Create document
@@ -118,7 +117,7 @@
                 <Button
                     secondary
                     disabled={!(hasAttributes && hasValidAttributes)}
-                    on:click={() => (showRecordsCreateSheet = true)}
+                    on:click={() => ($showRecordsCreateSheet.show = true)}
                     event="create_document">
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create document
@@ -131,7 +130,7 @@
         {#if hasAttributes && hasValidAttributes}
             {#if data.documents.total}
                 <Divider />
-                <SpreadSheet {data} bind:showRecordsCreateSheet />
+                <SpreadSheet {data} bind:showRecordsCreateSheet={$showRecordsCreateSheet} />
             {:else if $hasPageQueries}
                 <EmptySearch hidePages>
                     <div class="common-section">
@@ -161,7 +160,7 @@
                     actions={{
                         primary: {
                             onClick: () => {
-                                showRecordsCreateSheet = true;
+                                $showRecordsCreateSheet.show = true;
                             }
                         }
                     }} />
@@ -198,4 +197,7 @@
         }} />
 {/if}
 
-<CreateRecord collection={$collection} bind:showSheet={showRecordsCreateSheet} />
+<CreateRecord
+    collection={$collection}
+    bind:showSheet={$showRecordsCreateSheet.show}
+    bind:existingData={$showRecordsCreateSheet.document} />

@@ -3,7 +3,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
-    import { writable } from 'svelte/store';
+    import { type Writable, writable } from 'svelte/store';
     import AttributeForm from './document-[document]/attributeForm.svelte';
     import { Permissions } from '$lib/components/permissions';
     import type { Attributes } from './store';
@@ -13,10 +13,17 @@
     import { Dependencies } from '$lib/constants';
     import SideSheet from './layout/sidesheet.svelte';
 
-    export let showSheet = false;
-    export let collection: Models.Collection;
+    let {
+        collection,
+        showSheet = $bindable(false),
+        existingData = $bindable(null)
+    }: {
+        showSheet: boolean;
+        collection: Models.Collection;
+        existingData: Models.Document | null;
+    } = $props();
 
-    let isSubmitting = false;
+    let isSubmitting = $state(false);
 
     type CreateDocument = {
         id?: string;
@@ -30,20 +37,31 @@
         const initial = {
             id: null,
             document: availableAttributes.reduce((acc, attr) => {
-                acc[attr.key] = attr.array ? [] : null;
-
+                if (existingData && existingData[attr.key]) {
+                    acc[attr.key] = attr.array
+                        ? Array.isArray(existingData[attr.key])
+                            ? [...existingData[attr.key]]
+                            : []
+                        : existingData[attr.key];
+                } else {
+                    acc[attr.key] = attr.array ? [] : null;
+                }
                 return acc;
             }, {}),
             permissions: [],
             attributes: availableAttributes
         };
 
-        const store = writable<CreateDocument>({ ...initial });
-
-        return store;
+        return writable<CreateDocument>({ ...initial });
     }
 
-    const createDocument = createDocumentWritable();
+    let createDocument: Writable<CreateDocument> = $state<Writable<CreateDocument> | null>(null);
+
+    $effect(() => {
+        if (showSheet) {
+            createDocument = createDocumentWritable();
+        }
+    });
 
     async function create() {
         isSubmitting = true;
@@ -68,6 +86,9 @@
             trackEvent(Submit.DocumentCreate, {
                 customId: !!$createDocument.id
             });
+
+            // post op clear.
+            existingData = null;
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -84,7 +105,7 @@
     <!-- TODO: add a ID badge-->
     <SideSheet
         spaced
-        title="Create record"
+        title={`${existingData ? 'Duplicate' : 'Create'} record`}
         bind:show={showSheet}
         closeOnBlur={false}
         submit={{

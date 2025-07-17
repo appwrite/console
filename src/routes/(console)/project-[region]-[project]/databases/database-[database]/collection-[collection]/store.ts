@@ -39,13 +39,28 @@ type DatabaseSheetOptions = {
     submitAction?: () => Promise<void>;
 };
 
-export const databaseSheetOptions = writable<DatabaseSheetOptions>({
+export const databaseColumnSheetOptions = writable<DatabaseSheetOptions>({
     title: null,
     show: false,
     column: null,
     isEdit: false,
     disableSubmit: false,
     submitAction: null
+});
+
+export const databaseRowSheetOptions = writable<
+    DatabaseSheetOptions & {
+        document: Models.Document;
+    }
+>({
+    title: null,
+    show: false,
+    document: null
+});
+
+export const showRecordsCreateSheet = writable({
+    show: false,
+    document: null
 });
 
 export const sortState = writable({

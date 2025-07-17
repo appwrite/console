@@ -1,12 +1,21 @@
 <script lang="ts" module>
-    export type Action =
+    export type HeaderCellAction =
         | 'update'
         | 'column-left'
         | 'column-right'
-        | 'duplicate-row'
+        | 'duplicate-header'
         | 'create-index'
         | 'sort-asc'
         | 'sort-desc'
+        | 'delete';
+
+    export type RowCellAction =
+        | 'update'
+        | 'duplicate-row'
+        | 'permissions'
+        | 'activity'
+        | 'copy-json'
+        // | 'copy-snippet'
         | 'delete';
 </script>
 
@@ -16,17 +25,20 @@
     import {
         IconArrowLeft,
         IconArrowRight,
+        IconChartBar,
+        IconClipboardCopy,
         IconDuplicate,
+        IconKey,
         IconPencil,
         IconSortAscending,
         IconSortDescending,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type Attributes, databaseSheetOptions } from './store';
+    import { type Attributes, databaseColumnSheetOptions } from './store';
 
     interface MenuItem {
         label?: string;
-        action?: Action;
+        action?: HeaderCellAction | RowCellAction;
         danger?: boolean;
         divider?: boolean;
         icon?: ComponentType;
@@ -35,11 +47,11 @@
     // Only allow sort for these columns
     const internalColumns = ['$id', '$createdAt', '$updatedAt'];
 
-    const menuItems: MenuItem[] = [
+    const headerMenuItems: MenuItem[] = [
         { label: 'Update', icon: IconPencil, action: 'update' },
         { label: 'Insert column left', icon: IconArrowLeft, action: 'column-left' },
         { label: 'Insert column right', icon: IconArrowRight, action: 'column-right' },
-        { label: 'Duplicate', icon: IconDuplicate, action: 'duplicate-row' },
+        { label: 'Duplicate', icon: IconDuplicate, action: 'duplicate-header' },
         { divider: true },
         { label: 'Create index', icon: IconPencil, action: 'create-index' },
         { label: 'Sort ascending', icon: IconSortAscending, action: 'sort-asc' },
@@ -48,20 +60,34 @@
         { label: 'Delete', icon: IconTrash, action: 'delete', danger: true }
     ];
 
+    const rowMenuItems: MenuItem[] = [
+        { label: 'Update', icon: IconPencil, action: 'update' },
+        { label: 'Duplicate', icon: IconDuplicate, action: 'duplicate-row' },
+        { divider: true },
+        { label: 'Manage permissions', icon: IconKey, action: 'permissions' },
+        { label: 'View activity', icon: IconChartBar, action: 'activity' },
+        { divider: true },
+        { label: 'Copy as JSON', icon: IconClipboardCopy, action: 'copy-json' },
+        { divider: true },
+        { label: 'Delete', icon: IconTrash, action: 'delete', danger: true }
+    ];
+
     let {
         column,
         children,
-        onSelect
+        onSelect,
+        type
     }: {
         column: Attributes;
-        onSelect: (option: Action) => void;
+        type: 'header' | 'row';
+        onSelect: (option: HeaderCellAction | RowCellAction) => void;
         children: Snippet<[toggle: (event: Event) => void]>;
     } = $props();
 
-    function handleSelect(action: Action, hide: () => void) {
+    function handleSelect(action: HeaderCellAction | RowCellAction, hide: () => void) {
         hide();
         onSelect(action);
-        $databaseSheetOptions.column = column;
+        $databaseColumnSheetOptions.column = column;
     }
 
     function shouldShow(item: MenuItem) {
@@ -72,14 +98,18 @@
     }
 </script>
 
-<Popover let:toggle padding="none" placement="bottom">
+<Popover let:toggle padding="none" placement="bottom" portal>
     {@render children(toggle)}
 
     <svelte:fragment slot="tooltip" let:hide>
-        <ActionMenu.Root width="180px" noPadding>
+        {@const menuItems = type === 'header' ? headerMenuItems : rowMenuItems}
+
+        <ActionMenu.Root width="180px">
             {#each menuItems as item, index (index)}
                 {#if item.divider}
-                    <Divider />
+                    <div style:padding-block="0.25rem">
+                        <Divider />
+                    </div>
                 {:else if shouldShow(item)}
                     <ActionMenu.Item.Button
                         leadingIcon={item.icon}

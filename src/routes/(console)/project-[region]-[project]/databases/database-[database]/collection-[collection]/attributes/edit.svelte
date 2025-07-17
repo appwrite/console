@@ -8,7 +8,7 @@
     import { Button, InputText } from '$lib/elements/forms';
     import deepEqual from 'deep-equal';
     import { addNotification } from '$lib/stores/notifications';
-    import { type Attributes, databaseSheetOptions } from '../store';
+    import { type Attributes, databaseColumnSheetOptions } from '../store';
     import { attributeOptions, type Option } from './store';
     import { onMount } from 'svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
@@ -26,7 +26,7 @@
 
     onMount(() => {
         if (!isModal) {
-            databaseSheetOptions.update((opts) => ({
+            databaseColumnSheetOptions.update((opts) => ({
                 ...opts,
                 submitAction: () => submit()
             }));
@@ -64,7 +64,7 @@
 
             if (!isModal) {
                 invalidate(Dependencies.DOCUMENTS);
-                $databaseSheetOptions.show = false;
+                $databaseColumnSheetOptions.show = false;
             }
         } catch (e) {
             error = e.message;
@@ -91,7 +91,7 @@
         }
     }
 
-    $: $databaseSheetOptions.disableSubmit = deepEqual(currentAttr, selectedAttribute);
+    $: $databaseColumnSheetOptions.disableSubmit = deepEqual(currentAttr, selectedAttribute);
 </script>
 
 {#if isModal}

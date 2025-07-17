@@ -6,6 +6,7 @@ import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters';
 
 export const load: PageLoad = async ({ params, depends, url, route }) => {
+    depends(Dependencies.DOCUMENT); /* TODO: we could just invalidate the documents maybe*/
     depends(Dependencies.DOCUMENTS);
     const page = getPage(url);
     // TODO: apply pagination

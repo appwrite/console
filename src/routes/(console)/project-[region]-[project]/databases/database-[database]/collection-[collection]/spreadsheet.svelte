@@ -17,7 +17,14 @@
         isRelationshipToMany,
         isString
     } from './document-[document]/attributes/store';
-    import { attributes, collection, columns, databaseSheetOptions, sortState } from './store';
+    import {
+        attributes,
+        collection,
+        columns,
+        databaseColumnSheetOptions,
+        databaseRowSheetOptions,
+        sortState
+    } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import {
@@ -50,14 +57,19 @@
         IconViewList
     } from '@appwrite.io/pink-icons-svelte';
     import SheetOptions from './sheetOptions.svelte';
-    import { type Action } from './sheetOptions.svelte';
+    import EditDocument from './editDocument.svelte';
+    import SideSheet from './layout/sidesheet.svelte';
     import EditAttribute from './attributes/edit.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import SideSheet from './layout/sidesheet.svelte';
     import SpreadsheetContainer from './layout/spreadsheet.svelte';
+    import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
+    import { copy } from '$lib/helpers/copy';
 
     export let data: PageData;
-    export let showRecordsCreateSheet: boolean;
+    export let showRecordsCreateSheet: {
+        show: boolean;
+        document: Models.Document | null;
+    };
 
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
@@ -66,6 +78,7 @@
     let showRelationships = false;
     let relationshipData: Partial<Models.Document>[];
     let selectedRelationship: Models.AttributeRelationship = null;
+    let editDocument: EditDocument;
 
     $: documents = data.documents;
 
@@ -200,9 +213,11 @@
     }
 
     let loading = false;
-    let showDelete = false;
     let showColumnDelete = false;
     let selectedRows: string[] = [];
+
+    let showDelete = false;
+    let selectedDocumentForDelete: Models.Document['$id'] | null = null;
 
     async function sort(query: string[]) {
         loading = true;
@@ -215,12 +230,19 @@
     async function handleDelete() {
         showDelete = false;
         try {
-            // TODO: maybe this isn't working?
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .databases.deleteDocuments(databaseId, collectionId, [
-                    Query.equal('$id', selectedRows)
-                ]);
+            if (selectedDocumentForDelete) {
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .databases.deleteDocument(databaseId, collectionId, selectedDocumentForDelete);
+
+                selectedDocumentForDelete = null;
+            } else {
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .databases.deleteDocuments(databaseId, collectionId, [
+                        Query.equal('$id', selectedRows)
+                    ]);
+            }
 
             trackEvent(Submit.DocumentDelete);
             addNotification({
@@ -245,7 +267,7 @@
                 .databases.deleteAttribute(
                     databaseId,
                     collectionId,
-                    $databaseSheetOptions.column.key
+                    $databaseColumnSheetOptions.column.key
                 );
 
             trackEvent(Submit.AttributeDelete);
@@ -284,23 +306,61 @@
 
     let checked = false;
 
-    function onSelectSheetOption(type: Action) {
-        if (type === 'update') {
-            $databaseSheetOptions.show = true;
-            $databaseSheetOptions.isEdit = true;
-            $databaseSheetOptions.title = 'Update column';
-        }
+    async function onSelectSheetOption(
+        action: HeaderCellAction | RowCellAction,
+        type: 'header' | 'row',
+        document: Models.Document | null = null
+    ) {
+        if (type === 'header') {
+            if (action === 'update') {
+                $databaseColumnSheetOptions.show = true;
+                $databaseColumnSheetOptions.isEdit = true;
+                $databaseColumnSheetOptions.title = 'Update column';
+            }
 
-        if (type === 'column-left' || type === 'column-right') {
-            $databaseSheetOptions.show = true;
-            $databaseSheetOptions.title = 'New column';
-        }
+            if (action === 'column-left' || action === 'column-right') {
+                $databaseColumnSheetOptions.show = true;
+                $databaseColumnSheetOptions.title = 'New column';
+            }
 
-        if (type === 'delete') {
-            showColumnDelete = true;
-        }
+            if (action === 'delete') {
+                showColumnDelete = true;
+            }
 
-        $databaseSheetOptions.column = null;
+            $databaseColumnSheetOptions.column = null;
+        } else if (type === 'row') {
+            if (action === 'update') {
+                $databaseRowSheetOptions.show = true;
+                $databaseRowSheetOptions.document = document;
+                $databaseRowSheetOptions.title = 'Update record';
+            }
+
+            if (action === 'duplicate-row') {
+                showRecordsCreateSheet.show = true;
+                showRecordsCreateSheet.document = document;
+            }
+
+            if (action === 'copy-json') {
+                const stringified = JSON.stringify(document, null, 2);
+                try {
+                    await copy(stringified);
+                    addNotification({
+                        type: 'success',
+                        message: 'Document copied' // TODO: should be Row later
+                    });
+                } catch (e) {
+                    addNotification({
+                        type: 'error',
+                        message: e.message
+                    });
+                }
+            }
+
+            if (action === 'delete') {
+                showDelete = true;
+                selectedDocumentForDelete = document.$id;
+            }
+        }
     }
 
     const emptyCellsLimit = $isSmallViewport ? 12 : 18;
@@ -330,14 +390,15 @@
                         <Button.Button
                             icon
                             variant="extra-compact"
-                            on:click={() => (showRecordsCreateSheet = true)}>
+                            on:click={() => (showRecordsCreateSheet.show = true)}>
                             <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                         </Button.Button>
                     </Spreadsheet.Header.Cell>
                 {:else}
                     <SheetOptions
+                        type="header"
                         column={$attributes.find((attr) => attr.key === column.id)}
-                        onSelect={onSelectSheetOption}>
+                        onSelect={(option) => onSelectSheetOption(option, 'header')}>
                         {#snippet children(toggle)}
                             <Spreadsheet.Header.Cell
                                 {root}
@@ -365,33 +426,42 @@
         {#each documents.documents as document (document.$id)}
             <!-- TODO: add `value` for user attributes -->
             <Spreadsheet.Row.Base {root} id={document.$id}>
-                {#each $columns as { id, isEditable } (id)}
-                    {@const formatted = formatColumn(document[id])}
+                {#each $columns as { id: columnId, isEditable } (columnId)}
+                    {@const formatted = formatColumn(document[columnId])}
                     <Spreadsheet.Cell
                         {root}
-                        column={id}
+                        column={columnId}
                         {isEditable}
-                        value={id.includes('$') || formatted.value === 'null'
+                        value={columnId.includes('$') || formatted.value === 'null'
                             ? undefined
                             : formatted.value}>
-                        {#if id === '$id'}
+                        {#if columnId === '$id'}
                             <Id value={document.$id}>{document.$id}</Id>
-                        {:else if id === '$createdAt' || id === '$updatedAt'}
-                            <DualTimeView time={document[id]} />
-                        {:else if id === 'actions'}
-                            <Button.Button icon variant="extra-compact">
-                                <Icon icon={IconDotsHorizontal} color="--fgcolor-neutral-primary" />
-                            </Button.Button>
+                        {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
+                            <DualTimeView time={document[columnId]} />
+                        {:else if columnId === 'actions'}
+                            <SheetOptions
+                                type="row"
+                                column={$attributes.find((attr) => attr.key === columnId)}
+                                onSelect={(option) => onSelectSheetOption(option, 'row', document)}>
+                                {#snippet children(toggle)}
+                                    <Button.Button icon variant="extra-compact" on:click={toggle}>
+                                        <Icon
+                                            icon={IconDotsHorizontal}
+                                            color="--fgcolor-neutral-primary" />
+                                    </Button.Button>
+                                {/snippet}
+                            </SheetOptions>
                         {:else}
-                            {@const attr = $attributes.find((n) => n.key === id)}
+                            {@const attr = $attributes.find((n) => n.key === columnId)}
                             {#if attr}
                                 {#if isRelationship(attr)}
                                     {@const args = displayNames?.[attr.relatedCollection] ?? [
                                         '$id'
                                     ]}
                                     {#if !isRelationshipToMany(attr)}
-                                        {#if document[id]}
-                                            {@const related = document[id]}
+                                        {#if document[columnId]}
+                                            {@const related = document[columnId]}
                                             <Link.Button
                                                 variant="muted"
                                                 on:click={(e) => {
@@ -413,7 +483,7 @@
                                             <span class="text">n/a</span>
                                         {/if}
                                     {:else}
-                                        {@const itemsNum = document[id]?.length}
+                                        {@const itemsNum = document[columnId]?.length}
                                         <Button.Button
                                             variant="extra-compact"
                                             disabled={!itemsNum}
@@ -421,7 +491,7 @@
                                             on:click={(e) => {
                                                 e.stopPropagation();
                                                 e.preventDefault();
-                                                relationshipData = document[id];
+                                                relationshipData = document[columnId];
                                                 showRelationships = true;
                                                 selectedRelationship = attr;
                                             }}>
@@ -429,8 +499,8 @@
                                         </Button.Button>
                                     {/if}
                                 {:else}
-                                    {@const value = document[id]}
-                                    {@const formatted = formatColumn(document[id])}
+                                    {@const value = document[columnId]}
+                                    {@const formatted = formatColumn(document[columnId])}
                                     {@const isDatetimeAttribute = attr.type === 'datetime'}
                                     {@const isEncryptedAttribute = isString(attr) && attr.encrypt}
                                     {#if isDatetimeAttribute}
@@ -519,10 +589,19 @@
 
 <RelationshipsModal bind:show={showRelationships} {selectedRelationship} data={relationshipData} />
 
-<Confirm title="Delete Documents" bind:open={showDelete} onSubmit={handleDelete}>
+<Confirm
+    title={selectedRows.length === 1 ? 'Delete Document' : 'Delete Documents'}
+    bind:open={showDelete}
+    onSubmit={handleDelete}>
+    {@const isSingle = selectedDocumentForDelete !== null}
+
     <div>
-        Are you sure you want to delete <b>{selectedRows.length}</b>
-        {selectedRows.length > 1 ? 'documents' : 'document'}?
+        {#if isSingle}
+            Are you sure you want to delete this document from <b>{$collection.name}</b>?
+        {:else}
+            Are you sure you want to delete <b>{selectedRows.length}</b>
+            {selectedRows.length > 1 ? 'documents' : 'document'} from <b>{$collection.name}</b>?
+        {/if}
 
         {#if relAttributes?.length}
             <Table.Root
@@ -560,10 +639,10 @@
             </Table.Root>
             <div class="u-flex u-flex-vertical u-gap-16">
                 <Alert>To change the selection edit the relationship settings.</Alert>
-
                 <ul>
                     <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
-                        Delete document from <span data-private>{$collection.name}</span>
+                        Delete {isSingle ? 'document' : 'documents'} from
+                        <span data-private>{$collection.name}</span>
                     </InputChoice>
                 </ul>
             </div>
@@ -578,7 +657,7 @@
     bind:open={showColumnDelete}
     onSubmit={handleColumnDelete}
     confirmDeletion>
-    <p>Are you sure you want to delete "<b>{$databaseSheetOptions.column.key}</b>"?</p>
+    <p>Are you sure you want to delete "<b>{$databaseColumnSheetOptions.column.key}</b>"?</p>
 
     <p>
         This will permanently remove all data stored in this column across all records. This action
@@ -587,17 +666,28 @@
 </Confirm>
 
 <SideSheet
-    title={$databaseSheetOptions.title}
-    bind:show={$databaseSheetOptions.show}
+    title={$databaseColumnSheetOptions.title}
+    bind:show={$databaseColumnSheetOptions.show}
     submit={{
         text: 'Update',
-        disabled: $databaseSheetOptions.disableSubmit,
-        onClick: () => $databaseSheetOptions.submitAction()
+        disabled: $databaseColumnSheetOptions.disableSubmit,
+        onClick: () => $databaseColumnSheetOptions.submitAction()
     }}>
     <EditAttribute
         isModal={false}
-        showEdit={$databaseSheetOptions.isEdit}
-        selectedAttribute={$databaseSheetOptions.column} />
+        showEdit={$databaseColumnSheetOptions.isEdit}
+        selectedAttribute={$databaseColumnSheetOptions.column} />
+</SideSheet>
+
+<SideSheet
+    title={$databaseRowSheetOptions.title}
+    bind:show={$databaseRowSheetOptions.show}
+    submit={{
+        text: 'Update',
+        disabled: editDocument?.isDisabled(),
+        onClick: async () => await editDocument?.update()
+    }}>
+    <EditDocument bind:document={$databaseRowSheetOptions.document} bind:this={editDocument} />
 </SideSheet>
 
 <style lang="scss">
