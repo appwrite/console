@@ -15,7 +15,7 @@
     import { user } from '$lib/stores/user';
 
     let isLoading = false;
-    let id: string;
+    let id: string = ID.unique();
     let startAnimation = false;
     let projectName = 'Appwrite project';
     let region = Region.Fra;
@@ -100,17 +100,17 @@
                 bind:id
                 bind:region
                 showTitle={true}>
-                <svelte:fragment slot="submit">
+                {#snippet submit()}
                     <Layout.Stack direction="row" justifyContent="flex-end">
                         <Button.Button
-                            onclick={createProject}
+                            on:click={createProject}
                             type="submit"
                             variant="primary"
                             size="s">
                             Create
                         </Button.Button>
                     </Layout.Stack>
-                </svelte:fragment>
+                {/snippet}
             </CreateProject>
         </Card.Base>
     {/if}
