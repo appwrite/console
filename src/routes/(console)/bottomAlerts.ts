@@ -89,4 +89,3 @@ export function isPromoLive(
 
     return isSameDay(now, target) && now >= target;
 }
-
