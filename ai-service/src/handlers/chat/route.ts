@@ -17,16 +17,23 @@ import fs from 'fs';
 import path from 'path';
 import { createImagineClient } from '@/lib/imagine/create-artifact-client';
 import { anthropic } from '@ai-sdk/anthropic';
+import { Workspace } from '@/lib/imagine/workspaces-api-client';
+import { AppwriteException } from '@appwrite.io/console';
+import { createSynapseClient } from '@/lib/synapse-http-client';
 
 export const handleChatRequest = async (c: Context) => {
+    c.res.headers.set('x-vercel-ai-ui-message-stream', 'v1');
     const signal = c.req.raw.signal;
-    
+
     const token = c.req.header('X-Imagine-Token');
     if (!token) {
         return c.json({ error: 'Unauthorized' }, 401);
     }
 
     let body: ChatRequestBodyType;
+
+    /** Create workspace */
+
 
     // Parse request body
     try {
@@ -52,7 +59,7 @@ export const handleChatRequest = async (c: Context) => {
         }).toUIMessageStreamResponse();
     }
 
-    const { imagineClient } = await createImagineClient({
+    const { imagineClient, workspacesClient } = await createImagineClient({
         projectId,
         token // TODO: use the token from the request
     });
@@ -62,6 +69,47 @@ export const handleChatRequest = async (c: Context) => {
     if (!imagineConvo) {
       throw new Error("Conversation not found");
     }
+
+    // Create workspace
+    console.log(`===== create workspace =====`);
+
+    let workspace: Workspace;
+    let isFound = false;
+
+    try{
+        workspace = await workspacesClient.get(artifactId);
+    } catch (error) {
+        if ((error as AppwriteException).type === "workspace_not_found") {
+            console.log("Workspace not found, creating workspace");
+            isFound = false;
+        } else {
+            throw error;
+        }
+    }
+
+    if (!isFound) {
+        console.log("Creating workspce")
+        workspace = await workspacesClient.create(artifactId, artifactId);
+        console.log("Workspace", workspace);
+        console.log("Creating proxy rule")
+        const proxyRule = await workspacesClient.createWorkspaceProxyRule(`${artifactId}.functions.localhost`, workspace.$id);
+        console.log("Proxy rule", proxyRule);
+        console.log(`===== create workspace =====`);
+    } else {
+        console.log("Workspace already exists, skipping creation");
+    }
+
+    const synapseClient = createSynapseClient({
+        artifactId
+    });
+
+    const result = await synapseClient.listFilesInDir({
+        dirPath: "/usr/local/server"
+    });
+
+    console.log("Result", result);
+
+    return;
 
     const convertedMessages = convertToModelMessages(messages);
 
@@ -73,24 +121,24 @@ export const handleChatRequest = async (c: Context) => {
     // If it's a new conversation, we need to clone the workspace
     // This is temporary and will be handled by Synapse shortly!
     const isNewConversation = restMessages.length === 0;
-    if (isNewConversation) {
-        const workspaceDir = path.resolve(process.cwd(), `./tmp/workspace/artifact/${artifactId}`);
-        console.log('workspaceDir', workspaceDir);
-        const exists = fs.existsSync(workspaceDir);
+    // if (isNewConversation) {
+    //     const workspaceDir = path.resolve(process.cwd(), `./tmp/workspace/artifact/${artifactId}`);
+    //     console.log('workspaceDir', workspaceDir);
+    //     const exists = fs.existsSync(workspaceDir);
 
-        if (exists) {
-            console.log('Workspace already exists, skipping clone');
-        } else {
-            console.log('Workspace does not exist, creating directory...');
-            await exec(`mkdir -p ${workspaceDir}`);
-            console.log("Cloning template 'base-vite-template'...");
-            await exec(`pnpx degit appwrite/templates-for-frameworks/base-vite-template .`, {
-                cwd: workspaceDir
-            });
-        }
-    } else {
-        console.log('Not a new conversation, skipping workspace clone');
-    }
+    //     if (exists) {
+    //         console.log('Workspace already exists, skipping clone');
+    //     } else {
+    //         console.log('Workspace does not exist, creating directory...');
+    //         await exec(`mkdir -p ${workspaceDir}`);
+    //         console.log("Cloning template 'base-vite-template'...");
+    //         await exec(`pnpx degit appwrite/templates-for-frameworks/base-vite-template .`, {
+    //             cwd: workspaceDir
+    //         });
+    //     }
+    // } else {
+    //     console.log('Not a new conversation, skipping workspace clone');
+    // }
 
     let didError = false;
 

@@ -1,4 +1,3 @@
-import { fileTools } from "./ai/tools/file-tools";
 import { createSynapseClient } from "./synapse-http-client";
 import { RepositoryFile } from "./types";
 

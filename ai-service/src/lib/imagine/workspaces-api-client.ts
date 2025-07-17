@@ -159,6 +159,10 @@ and all associated resources will be removed.
     
     /**
      * Create a new proxy rule for executing Appwrite Workspace on custom domain.
+     * e.g. '{artifactId}.functions.localhost'
+     * e.g. '{artifactId}.sites.localhost'
+     * any synapse request to port 4000
+     * Host: {artifactId}.functions.localhost
      *
      * @param {string} domain
      * @param {string} workspaceId

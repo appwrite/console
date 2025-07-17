@@ -125,7 +125,7 @@ export class Synapse {
     public async changeArtifact(endpoint: string, artifact: string, syncWorkDir: boolean = false) {
         const url = new SvelteURL(endpoint);
         // url.searchParams.set('workDir', `/artifact/${artifact}`);
-        url.searchParams.set('workDir', `/Users/arielweinberger/Development/appwrite/appwrite-console/ai-service/tmp/workspace/artifact/68681e3c002a03876050`);
+        // url.searchParams.set('workDir', `/Users/arielweinberger/Development/appwrite/appwrite-console/ai-service/tmp/workspace/artifact/68681e3c002a03876050`);
 
         if (syncWorkDir) url.searchParams.set('syncWorkDir', 'true');
 

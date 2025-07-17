@@ -99,14 +99,14 @@
     class="iframe-container"
     class:mobile-container={showMobileDevice}
     bind:this={iframeContainerRef}>
-    {#key refresh}
+    <!-- {#key refresh}
         <iframe
             src={previewUrl.toString()}
             bind:this={iframeRef}
             id="preview-iframe"
             title="preview">
         </iframe>
-    {/key}
+    {/key} -->
 </div>
 
 <style lang="scss">
