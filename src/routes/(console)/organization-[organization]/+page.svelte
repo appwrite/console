@@ -25,7 +25,7 @@
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Badge, Divider, Icon, Typography, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Typography, Layout, Table } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
         IconApple,
@@ -40,8 +40,6 @@
     import { regions as regionsStore } from '$lib/stores/organization';
     import type { Column } from '@appwrite.io/pink-svelte/dist/table';
     import { timeFromNow } from '$lib/helpers/date';
-    import { get } from 'svelte/store';
-    import { app } from '$lib/stores/app';
 
     export let data;
 

@@ -10,6 +10,8 @@
     import { addNotification } from '$lib/stores/notifications.js';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
+    import { consoleProfile } from '$lib/system';
+    import UnauthenticatedStudio from '$lib/layout/unauthenticatedStudio.svelte';
 
     export let data;
 
@@ -53,24 +55,44 @@
     <title>Verify - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated align="center">
-    <svelte:fragment slot="top">
-        <div class="top u-flex u-position-absolute u-main-center">
-            <div class="flex u-width-full-line">
-                <Button compact on:click={back}>
-                    <Icon icon={IconChevronLeft} slot="start" size="s" />
-                    Back
-                </Button>
+{#if consoleProfile.hasFullPageSignup}
+    <UnauthenticatedStudio title="Verify Identity">
+        {#snippet top()}
+            <div class="back u-flex u-cross-center u-main-center">
+                <div class="u-flex u-cross-center u-main-center u-width-full-line">
+                    <Button compact on:click={back}>
+                        <Icon icon={IconChevronLeft} slot="start" size="s" />
+                        Back
+                    </Button>
+                </div>
             </div>
-        </div>
-    </svelte:fragment>
-    <svelte:fragment slot="title">Verify your identity</svelte:fragment>
-    <Form onSubmit={submit}>
-        <Layout.Stack gap="l" justifyContent="center" alignContent="center" alignItems="center">
-            <MfaChallengeFormList {factors} bind:challenge bind:code bind:disabled />
-        </Layout.Stack>
-    </Form>
-</Unauthenticated>
+        {/snippet}
+        <Form onSubmit={submit}>
+            <Layout.Stack gap="l" justifyContent="center" alignContent="center" alignItems="center">
+                <MfaChallengeFormList {factors} bind:challenge bind:code bind:disabled />
+            </Layout.Stack>
+        </Form>
+    </UnauthenticatedStudio>
+{:else}
+    <Unauthenticated align="center">
+        <svelte:fragment slot="top">
+            <div class="top u-flex u-position-absolute u-main-center">
+                <div class="flex u-width-full-line">
+                    <Button compact on:click={back}>
+                        <Icon icon={IconChevronLeft} slot="start" size="s" />
+                        Back
+                    </Button>
+                </div>
+            </div>
+        </svelte:fragment>
+        <svelte:fragment slot="title">Verify your identity</svelte:fragment>
+        <Form onSubmit={submit}>
+            <Layout.Stack gap="l" justifyContent="center" alignContent="center" alignItems="center">
+                <MfaChallengeFormList {factors} bind:challenge bind:code bind:disabled />
+            </Layout.Stack>
+        </Form>
+    </Unauthenticated>
+{/if}
 
 <style lang="scss">
     @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';

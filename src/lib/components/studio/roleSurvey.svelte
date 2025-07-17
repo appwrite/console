@@ -1,9 +1,15 @@
 <script lang="ts">
     import { getHasSurveyedFromPrefs, saveHasSurveyed } from '$lib/helpers/studioLayout';
-    import { Button, Layout, Tag } from '@appwrite.io/pink-svelte';
+    import { Button, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import Modal from '../modal.svelte';
+    import { get } from 'svelte/store';
+    import { user } from '$lib/stores/user';
 
-    let show = $derived(getHasSurveyedFromPrefs() ? false : true);
+    const hours = 1;
+    let show = $derived(
+        Date.now() - new Date(get(user).registration).getTime() >= hours * 60 * 60 * 1000 &&
+            !getHasSurveyedFromPrefs()
+    );
 
     const roles = [
         'Developer',
@@ -21,13 +27,15 @@
     let role = $state<(typeof roles)[number]>('Developer');
 
     const handleSubmit = () => {
-        alert(`role is ${role}`);
+        console.log('surveyed');
         saveHasSurveyed();
         show = false;
     };
 </script>
 
-<Modal bind:show title="What is your role?">
+<Modal bind:show title="Tell us a little more about yourself">
+    <Typography.Text variant="m-500" color="var(--fgcolor-neutral-primary)"
+        >What is your role?</Typography.Text>
     <Layout.Stack direction="row" gap="m" wrap="wrap">
         {#each roles as r}
             {@const isActive = role === r}
@@ -41,7 +49,7 @@
         {/each}
     </Layout.Stack>
 
-    <Button.Button onclick={handleSubmit}>Submit</Button.Button>
+    <Button.Button slot="footer" onclick={handleSubmit}>Submit</Button.Button>
 </Modal>
 
 <style>

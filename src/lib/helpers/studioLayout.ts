@@ -102,6 +102,7 @@ export function getTerminalOpenFromPrefs(projectId: string): boolean {
 
 export const getHasSurveyedFromPrefs = () => {
     const currentPrefs = userPreferences();
+
     return !!currentPrefs?.hasSurveyed || false;
 };
 

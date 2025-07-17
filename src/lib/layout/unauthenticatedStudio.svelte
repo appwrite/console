@@ -6,7 +6,9 @@
     import type { Snippet } from 'svelte';
     import { app } from '$lib/stores/app';
 
-    let { title, children }: { title: string; children: Snippet } = $props();
+    type Props = { title: string; top?: Snippet; children: Snippet };
+
+    let { title, top, children }: Props = $props();
 
     const images = {
         dark: DesktopDark,
@@ -27,6 +29,9 @@
                     <Typography.Title size="m">{title}</Typography.Title>
                 </Layout.Stack>
                 {@render children()}
+                {#if top}
+                    {@render top()}
+                {/if}
             </Layout.Stack>
         </Card.Base>
     </div>
