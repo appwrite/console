@@ -32,6 +32,10 @@ app.get("/api/conversations", getConversations);
 app.get('/api/health', c => c.json({ status: 'ok' }));
 
 // Start server
-serve({ fetch: app.fetch, port: process.env.PORT ? parseInt(process.env.PORT) : 8889 }, (info) => {
-  console.log(`Server is running on port ${info.port}`);
+serve({ 
+  fetch: app.fetch, 
+  port: process.env.PORT ? parseInt(process.env.PORT) : 8889,
+  hostname: '0.0.0.0'
+}, (info) => {
+  console.log(`Server is running on ${info.address}:${info.port}`);
 });

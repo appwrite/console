@@ -1,0 +1,13 @@
+services:
+    ai-service:
+        image: appwrite/ai-service:dev
+        build:
+            context: .
+        ports:
+            - '8889:8889'
+        env_file:
+          - path: ./.env
+            required: true
+        environment:
+          SYNAPSE_ENDPOINT: http://host.docker.internal:3001
+          APPWRITE_ENDPOINT: http://host.docker.internal:80/v1
