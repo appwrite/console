@@ -1,7 +1,7 @@
 import { RuntimeContext } from "@mastra/core/runtime-context";
 import { UIMessageStreamWriter } from "ai";
-import { createSynapseClient, SynapseHTTPClient } from "@/lib/synapse-http-client";
-import { ImagineUIMessage } from "@/shared-types";
+import { createSynapseClient, SynapseHTTPClient } from "../../../synapse-http-client";
+import { ImagineUIMessage } from "../../../../shared-types";
 
 export type WriterType = UIMessageStreamWriter<ImagineUIMessage>;
 export type RuntimeContextPayload = {
@@ -14,6 +14,11 @@ export type RuntimeContextPayload = {
   synapseClient: SynapseHTTPClient;
 }
 export type RuntimeContextType = RuntimeContext<RuntimeContextPayload>;
+export type HonoEnv = {
+  Variables: {
+    runtimeContext: RuntimeContextType,
+  }
+}
 
 export const cloneRuntimeContext = (runtimeContext: RuntimeContextType, overrides?: Partial<RuntimeContextPayload>): RuntimeContextType => {
   const newRuntimeContext = new RuntimeContext<RuntimeContextPayload>();

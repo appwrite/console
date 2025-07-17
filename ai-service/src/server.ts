@@ -11,15 +11,8 @@ import { fileURLToPath } from 'url';
 import { handleChatRequest } from './handlers/chat/route';
 import { getConversation, getConversations } from './handlers/conversation';
 import { contextStorage } from "hono/context-storage";
-import { RuntimeContextType } from './lib/ai/mastra/utils/runtime-context';
 
-export type HonoEnv = {
-  Variables: {
-    runtimeContext: RuntimeContextType,
-  }
-}
-
-const app = new Hono<HonoEnv>();
+const app = new Hono();
 
 // Middleware
 app.use('*', cors());

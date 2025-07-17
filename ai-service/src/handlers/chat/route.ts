@@ -7,18 +7,18 @@ import {
     createUIMessageStreamResponse,
     TextPart
 } from 'ai';
-import { createRuntimeContext, WriterType } from '@/lib/ai/mastra/utils/runtime-context';
-import { mastra } from '@/lib/ai/mastra';
+import { createRuntimeContext, WriterType } from '../../lib/ai/mastra/utils/runtime-context';
+import { mastra } from '../../lib/ai/mastra';
 import { exec as _exec } from 'child_process';
 import { promisify } from 'util';
 const exec = promisify(_exec);
 import fs from 'fs';
 import path from 'path';
-import { createImagineClient } from '@/lib/imagine/create-artifact-client';
+import { createImagineClient } from '../../lib/imagine/create-artifact-client';
 
 export const handleChatRequest = async (c: Context) => {
     const signal = c.req.raw.signal;
-
+    
     const token = c.req.header('X-Imagine-Token');
     if (!token) {
         return c.json({ error: 'Unauthorized' }, 401);
@@ -95,6 +95,7 @@ export const handleChatRequest = async (c: Context) => {
                 isFirstMessage: isNewConversation,
                 signal
             });
+            c.set('runtimeContext', runtimeContext);
             const run = await mastra.getWorkflow('codeWorkflow').createRunAsync();
 
             const result = run.stream({

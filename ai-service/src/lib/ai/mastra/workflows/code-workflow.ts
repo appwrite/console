@@ -13,7 +13,7 @@ import {
   getPagesAndComponents,
   systemPromptPartsArrayToModelMessages,
 } from "../../system-prompt/system-prompt-utils";
-import { GitRepositoryUtils } from "@/lib/git-utils";
+import { GitRepositoryUtils } from "../../../../lib/git-utils";
 import { currentCode } from "../../system-prompt/system-prompt-parts";
 import { mastra } from "..";
 import { cacheSystemMessage } from "../utils";
@@ -24,7 +24,6 @@ import {
 } from "../utils/runtime-context";
 import { openai } from "@ai-sdk/openai";
 import * as systemPromptParts from "../../system-prompt/system-prompt-parts";
-import fs from "fs";
 import { anthropic } from "@ai-sdk/anthropic";
 
 const planStep = createStep({
