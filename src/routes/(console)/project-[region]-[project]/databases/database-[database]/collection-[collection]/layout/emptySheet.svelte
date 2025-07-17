@@ -165,10 +165,11 @@
                         {#if mode === 'records'}
                             <Tooltip>
                                 <Button.Button
-                                    disabled={actions?.random?.disabled}
                                     size="s"
                                     variant="secondary"
-                                    on:click={actions?.random.onClick}>
+                                    disabled={actions?.random?.disabled}
+                                    on:click={actions?.random?.onClick}
+                                >
                                     {actions?.random?.text ?? `Generate random data`}
                                 </Button.Button>
                                 <span slot="tooltip">Yet to be added</span>
