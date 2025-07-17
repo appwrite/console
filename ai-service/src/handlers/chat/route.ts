@@ -52,7 +52,7 @@ export const handleChatRequest = async (c: Context) => {
         }).toUIMessageStreamResponse();
     }
 
-    const imagineClient = await createImagineClient({
+    const { imagineClient } = await createImagineClient({
         projectId,
         token // TODO: use the token from the request
     });

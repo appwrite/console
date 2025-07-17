@@ -1,5 +1,6 @@
 import { Client } from "@appwrite.io/console";
 import { Imagine } from "./imagine-api-client";
+import { Workspaces } from "./workspaces-api-client";
 
 export async function createImagineClient({
   projectId,
@@ -15,5 +16,6 @@ export async function createImagineClient({
     .setMode("admin")
     .setJWT(token);
   const imagineClient = new Imagine(clientProject);
-  return imagineClient;
+  const workspacesClient = new Workspaces(clientProject);
+  return { imagineClient, workspacesClient };
 }

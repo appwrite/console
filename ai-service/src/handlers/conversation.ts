@@ -21,7 +21,7 @@ export const getConversation = async (c: Context) => {
   const projectId = process.env.IMAGINE_PROJECT_ID!;
   const artifactId = process.env.IMAGINE_ARTIFACT_ID!;
 
-  const imagineClient = await createImagineClient({
+  const { imagineClient } = await createImagineClient({
     projectId,
     token
   });
@@ -41,7 +41,7 @@ export const getConversations = async (c: Context) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const imagineClient = await createImagineClient({
+  const { imagineClient } = await createImagineClient({
     projectId,
     token
   });
