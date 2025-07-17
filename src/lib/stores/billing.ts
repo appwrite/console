@@ -379,7 +379,9 @@ export async function checkForUsageLimit(org: Organization) {
     const plan = get(currentPlan);
     const membersOverflow =
         // nested null checks needed: GitHub Education plan have empty addons.
-        members > plan.addons.seats?.limit ? members - (plan.addons.seats?.limit || members) : 0;
+        members > plan?.addons?.seats?.limit
+            ? members - (plan?.addons?.seats?.limit || members)
+            : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);
