@@ -59,7 +59,7 @@ export const handleChatRequest = async (c: Context) => {
     
     // If it's a new conversation, we need to clone the workspace
     // This is temporary and will be handled by Synapse shortly!
-    const isNewConversation = restMessages.length === 0;
+    const isNewConversation = imagineConvo.messages.length === 0;
     if (isNewConversation) {
         const workspaceDir = path.resolve(process.cwd(), `./tmp/workspace/artifact/${artifactId}`);
         console.log('workspaceDir', workspaceDir);
