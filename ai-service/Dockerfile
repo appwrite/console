@@ -10,7 +10,6 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN npm i -g corepack@latest
 RUN corepack enable
 RUN corepack prepare pnpm@10.0.0 --activate
-RUN pnpm install -g bun
 
 ADD ./package.json /app/package.json
 ADD ./pnpm-lock.yaml /app/pnpm-lock.yaml

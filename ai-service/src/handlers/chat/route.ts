@@ -50,8 +50,7 @@ export const handleChatRequest = async (c: Context) => {
         projectId,
         token // TODO: use the token from the request
     });
-    const convos = await imagineClient.listConversations(artifactId);
-    const imagineConvo = convos.conversations[0];
+    const imagineConvo = await imagineClient.getConversation(artifactId, conversationId);
     const convertedMessages = convertToModelMessages(messages);
     const latestMessage = convertedMessages[convertedMessages.length - 1];
     
@@ -75,8 +74,6 @@ export const handleChatRequest = async (c: Context) => {
             await exec(`pnpx degit appwrite/templates-for-frameworks/base-vite-template .`, {
                 cwd: workspaceDir
             });
-            console.log('Installing dependencies...');
-            await exec(`bun install`, { cwd: workspaceDir });
         }
     } else {
         console.log('Not a new conversation, skipping workspace clone');

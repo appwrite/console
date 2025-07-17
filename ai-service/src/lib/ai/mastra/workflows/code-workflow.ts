@@ -80,11 +80,6 @@ const planStep = createStep({
 
     const id = createIdGenerator({ size: 10 })();
 
-    // writer.write({
-    //   type: "reasoning-start",
-    //   id,
-    // });
-
     const thinkingId = createIdGenerator({ size: 10 })();
 
     writer.write({
@@ -99,11 +94,10 @@ const planStep = createStep({
 
     const startTime = Date.now();
 
-    const stream = await architectAgent.stream(
-      [
-        cacheSystemMessage({
-          role: "system",
-          content: `
+    const messages = [
+      cacheSystemMessage({
+        role: "system",
+        content: `
 Here is the current file layout and dependencies in the project:
 ${currentCodeContext.content}
 
@@ -133,26 +127,30 @@ Examples of when a UI developer IS NOT needed:
 - Adding an endpoint
 - Pure logic changes
 - Moving files around, renaming files, etc.
-          `,
-        }),
-        ...restMessages.map((m: any) => ({
-          role: m.role,
-          content: m.content,
-        })),
-        {
-          role: "user",
-          content: `
+        `,
+      }),
+      ...restMessages.map((m: any) => ({
+        role: m.role,
+        content: m.content,
+      })),
+      {
+        role: "user",
+        content: `
 
 Here is the product manager's request:
 <request>
 ${userPrompt}
 </request>
-        `,
-        },
-      ],
+      `,
+      },
+    ];
+
+    console.log("messages", messages);
+
+    const stream = await architectAgent.stream(
+      messages,
       {
         runtimeContext,
-        maxSteps: 20,
         maxOutputTokens: 1000,
         experimental_output: outputSchema,
         toolChoice: "none",
@@ -172,12 +170,6 @@ ${userPrompt}
       const delta = partialObject.plan.slice(previousPlan.length);
       previousPlan = partialObject.plan;
 
-      // writer.write({
-      //   type: "reasoning-delta",
-      //   id,
-      //   delta,
-      // });
-
       writer.write({
         type: "data-thinking",
         id: thinkingId,
@@ -188,6 +180,8 @@ ${userPrompt}
         }
       });
     }
+
+    console.log("resp", await stream.response)
 
     console.log("[planStep] postStream", latestPartialObject);
 
@@ -206,16 +200,6 @@ ${userPrompt}
         state: "done",
       }
     });
-
-    // writer.write({
-    //   type: "reasoning-end",
-    //   id,
-    //   providerMetadata: {
-    //     imagine: {
-    //       durationInMs: timeTaken,
-    //     }
-    //   } as any,
-    // });
 
     const { plan, shouldInvolveUIDeveloper } = latestPartialObject;
     return {
@@ -334,8 +318,8 @@ const implementStep = createStep({
     console.log(`Generating commit message`);
 
     const { object } = await generateObject({
-      model: openai("gpt-4.1-mini"),
-      // model: anthropic("claude-3-7-sonnet-20250219"),
+      // model: openai("gpt-4.1-mini"),
+      model: anthropic("claude-3-7-sonnet-20250219"),
       schema: z.object({
         commitMessage: z.string(),
       }),
@@ -472,7 +456,7 @@ Example of invalid requests:
     writer.write({
       type: "text-end",
       id,
-    });
+    });  
 
     const toolsUsed = await stream.toolCalls;
     const hasUsedProceedTool = toolsUsed.some(
