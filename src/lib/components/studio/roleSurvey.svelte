@@ -5,7 +5,7 @@
     import { get } from 'svelte/store';
     import { user } from '$lib/stores/user';
 
-    const hours = 24;
+    const hours = 1;
     let show = $derived(
         Date.now() - new Date(get(user).registration).getTime() >= hours * 60 * 60 * 1000 &&
             !getHasSurveyedFromPrefs()
@@ -49,7 +49,7 @@
         {/each}
     </Layout.Stack>
 
-    <Button.Button slot="footer" onclick={handleSubmit}>Submit</Button.Button>
+    <Button.Button size="s" slot="footer" onclick={handleSubmit}>Submit</Button.Button>
 </Modal>
 
 <style>
