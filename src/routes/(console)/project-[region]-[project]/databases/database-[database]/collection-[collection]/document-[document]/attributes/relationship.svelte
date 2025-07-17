@@ -39,8 +39,6 @@
             }
         }
 
-        documentList = await getDocuments();
-
         if (editing && $doc?.[attribute.key]) {
             if ($doc[attribute.key]?.length) {
                 relatedList =
@@ -59,7 +57,10 @@
     });
 
     async function getDocuments(search: string = null) {
-        const queries = search ? [Query.startsWith('$id', search), Query.orderDesc('')] : [];
+        const queries = search
+            ? [Query.select(['$id']), Query.startsWith('$id', search), Query.orderDesc('')]
+            : [Query.select(['$id'])];
+
         return await sdk
             .forProject(page.params.region, page.params.project)
             .databases.listDocuments(databaseId, attribute.relatedCollection, queries);
@@ -103,7 +104,7 @@
         showInput = false;
     }
 
-    //Reactive statements
+    // Reactive statements
     $: getDocuments(search).then((res) => (documentList = res));
 
     $: paginatedItems = editing
