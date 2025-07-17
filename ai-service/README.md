@@ -17,7 +17,7 @@ cd ai-service
 
 Install the dependencies:
 ```
-bun install
+pnpm install
 ```
 
 Make sure you set the environment variables as found in `.env.example`.
@@ -25,23 +25,24 @@ Make sure you set the environment variables as found in `.env.example`.
 Then, run the server:
 
 ```
-bun run dev
+pnpm run dev
 ```
 
-## Setting up Open Runtime
+## Running in Docker
 
-Create a new empty directory for the workspace and take note of its path:
+Make sure the environment variables are set in the `.env` file.
 
-```
-cd ai-service
-mkdir -p tmp/workspace
-export WORK_DIR="$(pwd)/tmp/workspace" # This is important for the next step
-```
-Checkout the open-runtime repository and run the latest version:
+Then, run the following command:
 
 ```
-cd runtimes/workspace/latest
-PORT=3010 WORK_DIR=$WORK_DIR pnpx nodemon src/server.js
+docker compose up --build
 ```
 
-You should be good to go!
+## Console
+
+In the Console project, make sure you set:
+```
+PUBLIC_AI_SERVICE_BASE_URL=http://localhost:8889
+```
+
+Enjoy!
