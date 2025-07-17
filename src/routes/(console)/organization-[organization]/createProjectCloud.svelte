@@ -7,11 +7,13 @@
     import { base } from '$app/paths';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { Modal } from '$lib/components';
+    import { currentPlan } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { Dependencies } from '$lib/constants';
 
     export let teamId: string;
     export let showCreateProjectCloud: boolean;
+    export let projects: number;
     export let regions: Array<Models.ConsoleRegion> = [];
 
     let id: string = null;
@@ -59,11 +61,18 @@
     title={'Create project'}
     onSubmit={create}
     bind:error>
-    <CreateProject showTitle={false} bind:id bind:projectName={name} bind:region {regions} />
+    <CreateProject
+        {projects}
+        showTitle={false}
+        bind:id
+        bind:projectName={name}
+        bind:region
+        {regions} />
     <svelte:fragment slot="footer">
         <Button
             submit
             size="s"
+            disabled={$currentPlan.projects > 0 && projects && projects >= $currentPlan?.projects}
             forceShowLoader={showSubmissionLoader}
             submissionLoader={showSubmissionLoader}>Create</Button>
     </svelte:fragment>
