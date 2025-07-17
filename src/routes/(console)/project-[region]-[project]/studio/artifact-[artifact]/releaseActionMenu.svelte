@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { measure } from '$lib/helpers/measure.svelte';
     import {
         Button,
         Popover,
@@ -10,7 +11,6 @@
         Typography
     } from '@appwrite.io/pink-svelte';
 
-    let height = $state(130);
     let publishing = $state(false);
     let published = $state(false);
 
@@ -22,15 +22,7 @@
         return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     });
 
-    type Dimension = number | null;
-
-    const dimensions = $state<{
-        height: Dimension;
-        width: Dimension;
-    }>({
-        width: null,
-        height: null
-    });
+    const { dimensions } = measure();
 
     const handlePublish = () => {
         publishing = true;
