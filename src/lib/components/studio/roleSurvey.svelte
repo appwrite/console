@@ -5,7 +5,7 @@
     import { get } from 'svelte/store';
     import { user } from '$lib/stores/user';
 
-    const hours = 1;
+    const hours = 24;
     let show = $derived(
         Date.now() - new Date(get(user).registration).getTime() >= hours * 60 * 60 * 1000 &&
             !getHasSurveyedFromPrefs()
