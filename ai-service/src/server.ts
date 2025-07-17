@@ -8,13 +8,22 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
 import { fileURLToPath } from 'url';
-import { handleChatRequest } from '@/handlers/chat/route';
+import { handleChatRequest } from './handlers/chat/route';
 import { getConversation, getConversations } from './handlers/conversation';
+import { contextStorage } from "hono/context-storage";
+import { RuntimeContextType } from './lib/ai/mastra/utils/runtime-context';
 
-const app = new Hono();
+export type HonoEnv = {
+  Variables: {
+    runtimeContext: RuntimeContextType,
+  }
+}
+
+const app = new Hono<HonoEnv>();
 
 // Middleware
 app.use('*', cors());
+app.use(contextStorage());
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
     return err.getResponse();

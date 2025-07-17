@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rimraf dist && tsup"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +14,8 @@
   "devDependencies": {
     "@prisma/client": "^6.10.1",
     "@types/node": "^24.0.13",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.5.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
