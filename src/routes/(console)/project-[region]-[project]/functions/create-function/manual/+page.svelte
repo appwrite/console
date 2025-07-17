@@ -193,33 +193,26 @@
                     {maxSize}
                     required
                     on:invalid={handleInvalid}>
-                    <Layout.Stack alignItems="center" gap="s">
-                        <Layout.Stack alignItems="center" gap="s">
-                            <Layout.Stack
-                                alignItems="center"
-                                justifyContent="center"
-                                direction="row"
-                                gap="s">
-                                <Typography.Text variant="l-500">
-                                    Drag and drop file here or click to upload
-                                </Typography.Text>
+                    <Layout.Stack alignItems="center" justifyContent="center" gap="s">
+                        <Typography.Text variant="l-500" align="center" inline>
+                            Drag and drop file here or click to <span
+                                style="display: inline-flex; align-items: center; gap: 0.25em;">
+                                upload
                                 <Tooltip>
-                                    <Layout.Stack
-                                        alignItems="center"
-                                        justifyContent="center"
-                                        inline>
+                                    <span style="display: inline-flex; align-items: center;">
                                         <Icon icon={IconInfo} size="s" />
-                                    </Layout.Stack>
-                                    <svelte:fragment slot="tooltip"
-                                        >Only .tar.gz files allowed</svelte:fragment>
+                                    </span>
+                                    <svelte:fragment slot="tooltip">
+                                        Only .tar.gz files allowed
+                                    </svelte:fragment>
                                 </Tooltip>
-                            </Layout.Stack>
-                            {#if maxSize > 0}
-                                <Typography.Caption variant="400"
-                                    >Max file size: {readableMaxSize.value +
-                                        readableMaxSize.unit}</Typography.Caption>
-                            {/if}
-                        </Layout.Stack>
+                            </span>
+                        </Typography.Text>
+                        {#if maxSize > 0}
+                            <Typography.Caption variant="400" align="center">
+                                Max file size: {readableMaxSize.value + readableMaxSize.unit}
+                            </Typography.Caption>
+                        {/if}
                     </Layout.Stack>
                 </Upload.Dropzone>
                 {#if files?.length}
