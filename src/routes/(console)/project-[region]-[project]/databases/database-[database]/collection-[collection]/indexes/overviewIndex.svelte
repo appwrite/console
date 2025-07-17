@@ -1,11 +1,15 @@
 <script lang="ts">
+    import { page } from '$app/state';
+    import { flags } from '$lib/flags';
     import { InputText } from '$lib/elements/forms';
     import { Layout } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
-    import { page } from '$app/state';
-    import { flags } from '$lib/flags';
 
-    export let selectedIndex: Models.Index = null;
+    let {
+        selectedIndex = null
+    }: {
+        selectedIndex: Models.Index;
+    } = $props();
 
     const showLengths = flags.showIndexLengths(page.data);
 </script>

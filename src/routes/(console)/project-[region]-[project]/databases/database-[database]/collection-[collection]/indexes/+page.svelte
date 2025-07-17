@@ -33,28 +33,33 @@
     import { page } from '$app/state';
     import SideSheet from '../layout/sidesheet.svelte';
     import { flags } from '$lib/flags';
+    import type { PageData } from './$types';
 
-    export let data;
+    let {
+        data
+    }: {
+        data: PageData;
+    } = $props();
 
-    let showCreateIndex = false;
-    let selectedIndex: Models.Index = null;
+    let showCreateIndex = $state(false);
+    let selectedIndex: Models.Index = $state(null);
 
-    let selectedIndexes = [];
+    let selectedIndexes = $state([]);
     let createIndex: CreateIndex;
 
-    let error = '';
-    let showFailed = false;
-    let showDelete = false;
-    let showOverview = false;
+    let error = $state('');
+    let showFailed = $state(false);
+    let showDelete = $state(false);
+    let showOverview = $state(false);
 
-    let columns = [
+    let columns = $state([
         { id: 'key' },
         { id: 'type' },
         { id: 'columns' },
         // { id: 'orders' }, // design doesn't have orders atm
         { id: 'lengths' },
         { id: 'actions', width: 40, isAction: true }
-    ];
+    ]);
 
     function getAttributeStatusBadge(status: string): ComponentProps<Badge>['type'] {
         switch (status) {
