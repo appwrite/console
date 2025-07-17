@@ -12,7 +12,7 @@
             $organization.$id,
             $paymentMissingMandate.$id
         );
-        await confirmSetup(method.clientSecret, method.$id);
+        await confirmSetup(method.clientSecret, method.providerMethodId);
     }
 </script>
 
