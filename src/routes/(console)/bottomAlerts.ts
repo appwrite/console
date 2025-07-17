@@ -88,5 +88,5 @@ export function isPromoLive(
     const targetString = `${date}T${time}:00`;
     const target = new Date(new Date(targetString).toLocaleString('en-US', { timeZone }));
 
-    return isSameDay(now, target) && now > target;
+    return isSameDay(now, target) && now >= target;
 }
