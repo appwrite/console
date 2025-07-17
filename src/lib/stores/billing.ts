@@ -69,7 +69,7 @@ export const roles = [
 
 export const teamStatusReadonly = 'readonly';
 export const billingLimitOutstandingInvoice = 'outstanding_invoice';
-export const billingProjectsLimitDate = '[date]';
+export const billingProjectsLimitDate = '2024-09-01';
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);

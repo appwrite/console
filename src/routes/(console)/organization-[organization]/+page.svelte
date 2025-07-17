@@ -39,6 +39,7 @@
     import CreateProjectCloud from './createProjectCloud.svelte';
     import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
+    import { toLocaleDate } from '$lib/helpers/date';
 
     export let data;
 
@@ -165,7 +166,7 @@
 
     {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects}
         <Alert.Inline
-            title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${billingProjectsLimitDate}`}>
+            title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
             <Typography.Text>
                 {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
                     {@html text}{index == projectsToArchive.length - 2

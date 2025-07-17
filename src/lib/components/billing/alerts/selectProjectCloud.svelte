@@ -9,7 +9,7 @@
     import { Dependencies } from '$lib/constants';
     import { billingProjectsLimitDate } from '$lib/stores/billing';
     import { page } from '$app/state';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { currentPlan } from '$lib/stores/organization';
 
     let {
@@ -101,7 +101,7 @@
     {#if selectedProjects.length === $currentPlan?.projects}
         <Alert.Inline
             status="warning"
-            title={`${projects.length - selectedProjects.length} projects will be archived on ${billingProjectsLimitDate}`}>
+            title={`${projects.length - selectedProjects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
             <span>
                 {@html formatProjectsToArchive()}
                 will be archived.

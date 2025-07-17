@@ -11,6 +11,7 @@
     import { currentPlan } from '$lib/stores/organization';
     import { onMount } from 'svelte';
     import SelectProjectCloud from './selectProjectCloud.svelte';
+    import { toLocaleDate } from '$lib/helpers/date';
     let showSelectProject: boolean = $state(false);
     let selectedProjects: string[] = $state([]);
     onMount(() => {
@@ -25,8 +26,8 @@
         type="warning"
         title="Action required: You have more than {$currentPlan.projects} projects.">
         <svelte:fragment>
-            Choose which projects to keep before {billingProjectsLimitDate} or upgrade to Pro. Projects
-            over the limit will be blocked after this date.
+            Choose which projects to keep before {toLocaleDate(billingProjectsLimitDate)} or upgrade
+            to Pro. Projects over the limit will be blocked after this date.
         </svelte:fragment>
         <svelte:fragment slot="buttons">
             <Button
