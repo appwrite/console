@@ -5,7 +5,8 @@ import {
     convertToModelMessages,
     createUIMessageStream,
     createUIMessageStreamResponse,
-    TextPart
+    streamText,
+    TextPart,
 } from 'ai';
 import { createRuntimeContext, WriterType } from '../../lib/ai/mastra/utils/runtime-context';
 import { mastra } from '../../lib/ai/mastra';
@@ -14,7 +15,8 @@ import { promisify } from 'util';
 const exec = promisify(_exec);
 import fs from 'fs';
 import path from 'path';
-import { createImagineClient } from '../../lib/imagine/create-artifact-client';
+import { createImagineClient } from '@/lib/imagine/create-artifact-client';
+import { anthropic } from '@ai-sdk/anthropic';
 
 export const handleChatRequest = async (c: Context) => {
     const signal = c.req.raw.signal;
@@ -42,16 +44,27 @@ export const handleChatRequest = async (c: Context) => {
     const { id: conversationId, messages, trigger, artifactId, projectId } = body;
 
     if (trigger === 'submit-tool-result') {
-        // Skip
-        return c.body(null, 200);
+        // save to file
+        // return c.body(null, 200);
+        return streamText({
+          model: anthropic("claude-3-7-sonnet-20250219"),
+          messages: convertToModelMessages(messages),
+        }).toUIMessageStreamResponse();
     }
 
     const imagineClient = await createImagineClient({
         projectId,
         token // TODO: use the token from the request
     });
+
     const imagineConvo = await imagineClient.getConversation(artifactId, conversationId);
+
+    if (!imagineConvo) {
+      throw new Error("Conversation not found");
+    }
+
     const convertedMessages = convertToModelMessages(messages);
+
     const latestMessage = convertedMessages[convertedMessages.length - 1];
     
     const latestMessageTextPart = latestMessage.content[0] as TextPart;
@@ -59,7 +72,7 @@ export const handleChatRequest = async (c: Context) => {
     
     // If it's a new conversation, we need to clone the workspace
     // This is temporary and will be handled by Synapse shortly!
-    const isNewConversation = imagineConvo.messages.length === 0;
+    const isNewConversation = restMessages.length === 0;
     if (isNewConversation) {
         const workspaceDir = path.resolve(process.cwd(), `./tmp/workspace/artifact/${artifactId}`);
         console.log('workspaceDir', workspaceDir);
@@ -129,6 +142,8 @@ export const handleChatRequest = async (c: Context) => {
             }
 
             const { messages } = event;
+
+            console.log("finalMessagesToSave", JSON.stringify(messages, null, 2));
 
             console.log('Saving messages to imagine');
             await imagineClient.updateConversation(

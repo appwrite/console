@@ -18,13 +18,12 @@ import { currentCode } from "../../system-prompt/system-prompt-parts";
 import { mastra } from "..";
 import { cacheSystemMessage } from "../utils";
 import {
-  cloneRuntimeContext,
   getWriterFromContext,
-  RuntimeContextType,
+  HonoEnv,
 } from "../utils/runtime-context";
-import { openai } from "@ai-sdk/openai";
 import * as systemPromptParts from "../../system-prompt/system-prompt-parts";
 import { anthropic } from "@ai-sdk/anthropic";
+import { getContext } from "hono/context-storage";
 
 const planStep = createStep({
   id: "planStep",
@@ -40,9 +39,10 @@ const planStep = createStep({
   execute: async (params) => {
     console.log("[planStep] start");
     const { userPrompt } = params.inputData;
-    const runtimeContext = cloneRuntimeContext(params.runtimeContext, {
-      skipWritingToolCalls: true,
-    }) as RuntimeContextType;
+    // const runtimeContext = cloneRuntimeContext(params.runtimeContext, {
+    //   skipWritingToolCalls: true,
+    // }) as RuntimeContextType;
+    const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
     const writer = getWriterFromContext(runtimeContext);
     const restMessages = runtimeContext.get("restMessages") as any;
     const artifactId = runtimeContext.get("artifactId") as string;
@@ -225,7 +225,7 @@ const implementStep = createStep({
   }),
   execute: async (params) => {
     console.log("[implementStep]");
-    const runtimeContext = params.runtimeContext as RuntimeContextType;
+    const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
     const writer = getWriterFromContext(runtimeContext);
     const isFirstMessage = runtimeContext.get("isFirstMessage") as boolean;
 
@@ -292,28 +292,28 @@ const implementStep = createStep({
 
       if (reportDonePart && (reportDonePart as any).input?.summary) {
         if (!receivedFirstReportDoneChunk) {
-          writer.write({
-            type: "text-start",
-            id,
-          });
+          // writer.write({
+          //   type: "text-start",
+          //   id,
+          // });
           receivedFirstReportDoneChunk = true;
         }
 
         const summary = (reportDonePart as any).input.summary;
         const delta = summary.slice(fullSummary.length);
         fullSummary = summary;
-        writer.write({
-          type: "text-delta",
-          id,
-          delta,
-        });
+        // writer.write({
+        //   type: "text-delta",
+        //   id,
+        //   delta,
+        // });
       }
     }
 
-    writer.write({
-      type: "text-end",
-      id,
-    });
+    // writer.write({
+    //   type: "text-end",
+    //   id,
+    // });
 
     console.log(`Generating commit message`);
 
@@ -367,7 +367,7 @@ const routerStep = createStep({
   execute: async (params) => {
     console.log("[routerStep] start");
     const { userPrompt } = params.inputData;
-    const runtimeContext = params.runtimeContext as RuntimeContextType;
+    const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
     const restMessages = runtimeContext.get("restMessages") as any[];
     const writer = getWriterFromContext(runtimeContext);
     const abortSignal = runtimeContext.get("signal");

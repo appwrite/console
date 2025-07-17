@@ -8,7 +8,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
 import { fileURLToPath } from 'url';
-import { handleChatRequest } from './handlers/chat/route';
+import { handleChatRequest } from '@/handlers/chat/route';
 import { getConversation, getConversations } from './handlers/conversation';
 import { contextStorage } from "hono/context-storage";
 

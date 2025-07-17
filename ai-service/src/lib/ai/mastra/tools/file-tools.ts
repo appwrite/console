@@ -21,6 +21,13 @@ const readMultipleFilesInParallelTool = createImagineTool({
         )
     }),
     execute: async ({ paths }) => {
+        const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
+        const writer = getWriterFromContext(runtimeContext);
+        
+        writer.write({
+          type: "start-step",
+        })
+
         console.log(`[TOOL - readMultipleFilesInParallel]`, { paths });
 
         const files = await Promise.all(
@@ -31,6 +38,10 @@ const readMultipleFilesInParallelTool = createImagineTool({
                 return result;
             })
         );
+
+        writer.write({
+          type: "finish-step",
+        })
 
         return { files };
     }
@@ -52,6 +63,10 @@ const readFileTool = createImagineTool({
         const writer = getWriterFromContext(runtimeContext);
         const toolCallId = createIdGenerator({ size: 10 })();
 
+        writer.write({
+          type: "start-step",
+        })
+
         if (!skipWritingToolCalls) {
             writer.write({
                 type: 'tool-input-available',
@@ -71,10 +86,15 @@ const readFileTool = createImagineTool({
                 type: 'tool-output-available',
                 toolCallId,
                 output: {
-                    success: true
+                  path: result.path,
+                  content: result.content
                 }
             });
         }
+
+        writer.write({
+          type: "finish-step",
+        })
 
         return {
             path: result.path,
@@ -105,9 +125,18 @@ const writeFilesTool = createImagineTool({
     }),
     execute: async ({ files }) => {
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
+        const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
 
+        writer.write({
+          type: "start-step",
+        })
+
         const { successFiles, errorFiles } = await writeFiles(files, synapse);
+
+        writer.write({
+          type: "finish-step",
+        })
 
         return {
             successFiles,
@@ -137,6 +166,10 @@ const writeFileTool = createImagineTool({
         const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
 
+        writer.write({
+          type: "start-step",
+        })
+
         const toolCallId = createIdGenerator({ size: 10 })();
 
         if (!skipWritingToolCalls) {
@@ -154,6 +187,9 @@ const writeFileTool = createImagineTool({
         const { errorFiles } = await writeFiles([{ path, content }], synapse);
 
         if (errorFiles.length > 0) {
+            writer.write({
+              type: "finish-step",
+            })
             return {
                 success: false,
                 error: errorFiles[0].error
@@ -168,6 +204,9 @@ const writeFileTool = createImagineTool({
                     }
                 });
             }
+            writer.write({
+              type: "finish-step",
+            })
             return {
                 success: true
             };
@@ -219,7 +258,13 @@ const listFilesInDirectoryTool = createImagineTool({
     }),
     execute: async ({ path, recursive }) => {
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
+        const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
+
+        writer.write({
+          type: "start-step",
+        })
+
         console.log(
             `[TOOL - listFilesInDirectory] Listing files in directory at path: ${path}, recursive: ${recursive}`
         );
@@ -233,6 +278,10 @@ const listFilesInDirectoryTool = createImagineTool({
         console.log(
             `[TOOL - listFilesInDirectory] Found ${files.length} files in directory at path: ${path}`
         );
+
+        writer.write({
+          type: "finish-step",
+        })
 
         return {
             files
@@ -251,8 +300,18 @@ const deleteFileTool = createImagineTool({
     }),
     execute: async ({ path }) => {
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
+        const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
+
+        writer.write({
+          type: "start-step",
+        })
+
         await synapse.deleteFile({ filepath: path });
+
+        writer.write({
+          type: "finish-step",
+        })
 
         return {
             success: true
@@ -278,8 +337,18 @@ const moveFileTool = createImagineTool({
     }),
     execute: async ({ path, newPath }) => {
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
+        const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
+
+        writer.write({
+          type: "start-step",
+        })
+
         await synapse.updateFilePath({ filepath: path, newPath });
+
+        writer.write({
+          type: "finish-step",
+        })
 
         return {
             success: true
@@ -295,25 +364,3 @@ export const fileTools = {
     moveFileTool,
     readMultipleFilesInParallelTool
 };
-
-// function convertMastraToolToVercelTool<
-//   TInputSchema extends z.ZodSchema,
-//   TOutputSchema extends z.ZodSchema
-// >(mastraTool: {
-//   description: string;
-//   inputSchema: TInputSchema;
-//   outputSchema: TOutputSchema;
-//   execute: any;
-// }): VercelTool<z.infer<TInputSchema>, z.infer<TOutputSchema>> {
-//   return {
-//     description: mastraTool.description,
-//     inputSchema: mastraTool.inputSchema,
-//     outputSchema: mastraTool.outputSchema,
-//     execute: mastraTool.execute,
-//   } as VercelTool<z.infer<TInputSchema>, z.infer<TOutputSchema>>;
-// }
-
-
-// export const fileToolsVercel = {
-//     readFileTool: convertMastraToolToVercelTool<typeof readFileTool.inputSchema, typeof readFileTool.outputSchema>(readFileTool)
-// };
