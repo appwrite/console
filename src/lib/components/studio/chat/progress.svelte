@@ -120,7 +120,6 @@
         border: 1px solid #e5e5e5;
         border-top: 0;
         border-radius: 8px;
-        overflow: hidden;
         transition: all 0.3s ease;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
@@ -128,7 +127,8 @@
     .header {
         background: rgba(245, 245, 245, 0.5);
         border: 1px solid #e5e5e5;
-        border-radius: 0.125rem 0.125rem 0 0;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
         border-left: 0;
         border-right: 0;
         color: #737373;
