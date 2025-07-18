@@ -19,12 +19,11 @@ export class SynapseHTTPClient {
 
     constructor({ endpoint, artifactId }: { endpoint: string; artifactId: string }) {
         this.endpoint = endpoint;
-        this.artifactBasePath = `/usr/local`;
+        this.artifactBasePath = `/usr/local/artifact`;
         this.artifactId = artifactId;
     }
 
     async getFolder({ path, ignoreBasePath = false }: { path: string; ignoreBasePath?: boolean }) {
-        console.log('getFolder', { path });
         const response = await this.request({
             type: 'fs',
             operation: 'getFolder',
@@ -41,6 +40,7 @@ export class SynapseHTTPClient {
         content: string;
     }> {
         const safeFilePath = _path.join(this.artifactBasePath, path);
+        console.log('[readFile]', { path, safeFilePath, artifactBasePath: this.artifactBasePath });
         const response = await this.request({
             type: 'fs',
             operation: 'getFile',
@@ -79,6 +79,7 @@ export class SynapseHTTPClient {
 
     async createOrUpdateFile({ filepath, content }: { filepath: string; content: string }) {
         const safeFilePath = _path.join(this.artifactBasePath, filepath);
+        console.log('[createOrUpdateFile]', { filepath, safeFilePath, artifactBasePath: this.artifactBasePath });
         const response = await this.request({
             type: 'fs',
             operation: 'updateFile',

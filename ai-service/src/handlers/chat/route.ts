@@ -72,6 +72,11 @@ export const handleChatRequest = async (c: Context) => {
     const workspaceUrl = `${process.env.WORKSPACE_URL_PROTOCOL}://${artifactId}.${process.env.WORKSPACE_URL_DOMAIN}:${process.env.WORKSPACE_URL_PORT}`;
     console.log('workspaceUrl', workspaceUrl);
 
+    const synapseClient = createSynapseClient({
+        artifactId
+    });
+    
+
     try {
         console.log('Getting workspace');
         workspace = await workspacesClient.get(artifactId);
@@ -87,43 +92,43 @@ export const handleChatRequest = async (c: Context) => {
                 `${artifactId}.functions.localhost`,
                 workspace.$id
             );
+
+            await new Promise((resolve) => setTimeout(resolve, 3000));
             console.timeEnd("createWorkspaceProxyRule");
             console.log('Created proxy rule', proxyRule);
+
+            console.log("Creating artifact directory");
+            await synapseClient.executeCommand({
+                command: "mkdir -p artifact",
+                cwd: "/usr/local"
+            });
+            
+            console.log("Cloning template")
+            await synapseClient.executeCommand({
+                command: "bunx giget@latest gh:appwrite/templates-for-frameworks/base-vite-template .",
+                cwd: "/usr/local/artifact",
+                timeout: 60000,
+            });
+        
+            console.log("Installing dependencies")
+            await synapseClient.executeCommand({
+                command: "bun install",
+                cwd: "/usr/local/artifact",
+                timeout: 60000,
+            });
+        
+            console.log("Running bun dev in the background")
+            await synapseClient.startBackgroundProcess({
+                command: "bun",
+                args: ["run", "dev"],
+                cwd: "/usr/local/artifact", 
+            });
+        
         } else {
             throw error;
         }
     }
-    
-    const synapseClient = createSynapseClient({
-        artifactId
-    });
-    
-    console.log("Creating artifact directory");
-    await synapseClient.executeCommand({
-        command: "mkdir -p artifact",
-        cwd: "/usr/local"
-    });
-    
-    console.log("Cloning template")
-    await synapseClient.executeCommand({
-        command: "bunx giget@latest gh:appwrite/templates-for-frameworks/base-vite-template .",
-        cwd: "/usr/local/artifact",
-        timeout: 60000,
-    });
 
-    console.log("Installing dependencies")
-    await synapseClient.executeCommand({
-        command: "bun install",
-        cwd: "/usr/local/artifact",
-        timeout: 60000,
-    });
-
-    console.log("Running bun dev in the background")
-    await synapseClient.startBackgroundProcess({
-        command: "bun",
-        args: ["run", "dev"],
-        cwd: "/usr/local/artifact", 
-    });
 
     const convertedMessages = convertToModelMessages(messages);
 
@@ -194,7 +199,10 @@ export const handleChatRequest = async (c: Context) => {
 
             const { messages } = event;
 
-            console.log('finalMessagesToSave', JSON.stringify(messages, null, 2));
+            // The last message should NEVER be by the user. If that's the case, remove it.
+            const lastMessage = messages[messages.length - 1];
+
+            console.log('lastMessage', JSON.stringify(lastMessage, null, 2));
 
             console.log('Saving messages to imagine');
             await imagineClient.updateConversation(
