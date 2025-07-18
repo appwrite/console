@@ -37,6 +37,7 @@
     import { showChat } from '$lib/stores/chat';
     import { type Snippet } from 'svelte';
     import { default as LogoImagine } from '$routes/(console)/project-[region]-[project]/studio/assets/imagine-logo.svelte';
+    import SidebarProfile from '$lib/components/studio/sidebarProfile.svelte';
 
     let hasProjectSidebar = $state(false);
     let hasOrganizationSidebar = $state(false);
@@ -307,6 +308,8 @@
             <SidebarOrganization
                 organization={page.data.organization}
                 bind:isOpen={showSideNavigation} />
+        {:else}
+            <SidebarProfile bind:isOpen={showSideNavigation} />
         {/if}
     </Layout.Stack>
 </main>

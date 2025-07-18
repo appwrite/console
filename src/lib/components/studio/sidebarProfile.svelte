@@ -2,36 +2,48 @@
     import { ActionMenu, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import { page } from '$app/state';
+    import { isCloud } from '$lib/system';
 
     let { isOpen = $bindable(false) }: { isOpen: boolean } = $props();
+
+    const path = `${base}/account`;
 
     let menuItems = $derived.by(() => {
         const items = [
             {
-                path: `${base}/`,
-                label: 'Projects'
+                path: path,
+                label: 'Overview'
             },
             {
-                path: `${base}/`,
-                label: 'Members'
+                path: `${path}/sessions`,
+                label: 'Sessions'
             },
             {
-                path: `${base}/`,
-                label: 'Usage'
+                path: `${path}/activity`,
+                label: 'Activity'
             },
             {
-                path: `${base}/`,
-                label: 'Billing'
-            },
-            {
-                path: `${base}/`,
-                label: 'Settings'
+                path: `${path}/organizations`,
+                label: 'Organizations'
             }
         ];
         return items.map((item) => {
             return { ...item, isActive: page.url.pathname === item.path };
         });
     });
+
+    let tabs = $derived(
+        isCloud
+            ? [
+                  ...menuItems,
+                  {
+                      path: `${path}/payments`,
+                      label: 'Payments',
+                      isActive: page.url.pathname === `${path}/payments`
+                  }
+              ]
+            : menuItems
+    );
 </script>
 
 <nav class:isOpen>
@@ -39,7 +51,7 @@
         <Typography.Text color="--fgcolor-neutral-tertiary">Account settings</Typography.Text>
 
         <Layout.Stack gap="xs">
-            {#each menuItems as menuItem}
+            {#each tabs as menuItem}
                 {#if menuItem.isActive}
                     <ActionMenu.Item.Anchor class="navigation-item-active" href={menuItem.path}
                         >{menuItem.label}</ActionMenu.Item.Anchor>
