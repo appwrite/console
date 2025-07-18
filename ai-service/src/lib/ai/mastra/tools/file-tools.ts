@@ -21,6 +21,7 @@ const readMultipleFilesInParallelTool = createImagineTool({
         )
     }),
     execute: async ({ paths }) => {
+        console.log('readMultipleFilesInParallelTool', { paths });
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
         const writer = getWriterFromContext(runtimeContext);
         
@@ -58,6 +59,7 @@ const readFileTool = createImagineTool({
         content: z.string().describe('The content of the file')
     }),
     execute: async ({ path }) => {
+        console.log('readFileTool', { path });
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
         const skipWritingToolCalls = runtimeContext.get('skipWritingToolCalls');
         const writer = getWriterFromContext(runtimeContext);
@@ -124,6 +126,7 @@ const writeFilesTool = createImagineTool({
         )
     }),
     execute: async ({ files }) => {
+        console.log('writeFilesTool', { files });
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
         const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
@@ -161,6 +164,7 @@ const writeFileTool = createImagineTool({
             .describe('The error message if the file was not written successfully')
     }),
     execute: async ({ path, content }) => {
+        console.log('writeFileTool', { path, content });
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
         const skipWritingToolCalls = runtimeContext.get('skipWritingToolCalls');
         const writer = getWriterFromContext(runtimeContext);
@@ -257,6 +261,7 @@ const listFilesInDirectoryTool = createImagineTool({
         )
     }),
     execute: async ({ path, recursive }) => {
+        console.log('listFilesInDirectoryTool', { path, recursive });
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
         const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
@@ -299,6 +304,7 @@ const deleteFileTool = createImagineTool({
         success: z.boolean().describe('Whether the file was deleted successfully')
     }),
     execute: async ({ path }) => {
+        console.log('deleteFileTool', { path });
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
         const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
@@ -335,7 +341,8 @@ const moveFileTool = createImagineTool({
     outputSchema: z.object({
         success: z.boolean().describe('Whether the file was moved successfully')
     }),
-    execute: async ({ path, newPath }) => {
+    execute: async ({ path, newPath, intent }) => {
+        console.log('moveFileTool', { path, newPath, intent });
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
         const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
