@@ -2,33 +2,29 @@
     import { ActionMenu, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import type { Organization } from '$lib/stores/organization';
 
-    let {
-        organization,
-        isOpen = $bindable(false)
-    }: { organization: Organization; isOpen: boolean } = $props();
+    let { isOpen = $bindable(false) }: { isOpen: boolean } = $props();
 
     let menuItems = $derived.by(() => {
         const items = [
             {
-                path: `${base}/organization-${organization.$id}`,
+                path: `${base}/`,
                 label: 'Projects'
             },
             {
-                path: `${base}/organization-${organization.$id}/members`,
+                path: `${base}/`,
                 label: 'Members'
             },
             {
-                path: `${base}/organization-${organization.$id}/usage`,
+                path: `${base}/`,
                 label: 'Usage'
             },
             {
-                path: `${base}/organization-${organization.$id}/billing`,
+                path: `${base}/`,
                 label: 'Billing'
             },
             {
-                path: `${base}/organization-${organization.$id}/settings`,
+                path: `${base}/`,
                 label: 'Settings'
             }
         ];
@@ -40,7 +36,7 @@
 
 <nav class:isOpen>
     <Layout.Stack>
-        <Typography.Text color="--fgcolor-neutral-tertiary">{organization.name}</Typography.Text>
+        <Typography.Text color="--fgcolor-neutral-tertiary">Account settings</Typography.Text>
 
         <Layout.Stack gap="xs">
             {#each menuItems as menuItem}

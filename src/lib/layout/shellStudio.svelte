@@ -34,7 +34,7 @@
     import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
     import { logout } from '$lib/helpers/logout';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { conversation, showChat } from '$lib/stores/chat';
+    import { showChat } from '$lib/stores/chat';
     import { type Snippet } from 'svelte';
     import { default as LogoImagine } from '$routes/(console)/project-[region]-[project]/studio/assets/imagine-logo.svelte';
 
