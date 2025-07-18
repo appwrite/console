@@ -109,6 +109,8 @@
     $effect(() => {
         if (page.params.artifact && $conversation.data?.artifactId !== page.params.artifact) {
             getOrCreateConversation(page.params.artifact);
+        } else {
+            console.log('conversation', $conversation.data);
         }
     });
 </script>
