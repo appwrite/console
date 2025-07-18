@@ -101,7 +101,8 @@
     }
 </script>
 
-<div class="sheet-container">
+{#if $createDocument}
+    <div class="sheet-container">
     <!-- TODO: add a ID badge-->
     <SideSheet
         spaced
@@ -143,3 +144,4 @@
         </Layout.Stack>
     </SideSheet>
 </div>
+{/if}
