@@ -239,7 +239,7 @@ export class SynapseHTTPClient {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Host': `${this.artifactId}.functions.localhost`
+                'X-Host': `${this.artifactId}.${process.env.WORKSPACE_URL_DOMAIN}`
             },
             body: JSON.stringify(body)
         });
