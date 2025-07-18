@@ -107,7 +107,7 @@
     {#if $workspaceState.ready && $workspaceState.workspaceUrl}
         {#key refresh}
             <iframe
-                src={$workspaceState.workspaceUrl}
+                src={$workspaceState.workspaceUrl.toString()}
                 bind:this={iframeRef}
                 id="preview-iframe"
                 title="preview">

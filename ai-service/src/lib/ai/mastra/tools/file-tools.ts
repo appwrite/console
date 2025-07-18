@@ -78,7 +78,7 @@ const readFileTool = createImagineTool({
             });
         }
         const synapse = runtimeContext.get('synapseClient');
-        const result = await synapse.readFile({ path });
+        const result = await synapse.readFile({ path: `./${path}` });
         console.log(`[TOOL - readFile] Reading file at path: ${path}`);
 
         if (!skipWritingToolCalls) {
@@ -221,7 +221,7 @@ async function writeFiles(files: { path: string; content: string }[], synapse: S
     for (const file of files) {
         try {
             await synapse.createOrUpdateFile({
-                filepath: file.path,
+                filepath: `./${file.path}`,
                 content: file.content
             });
             successFiles.push({ path: file.path });
@@ -269,7 +269,7 @@ const listFilesInDirectoryTool = createImagineTool({
             `[TOOL - listFilesInDirectory] Listing files in directory at path: ${path}, recursive: ${recursive}`
         );
         const files = await synapse.listFilesInDir({
-            dirPath: path || '/',
+            dirPath: `./${path ?? ""}`,
             recursive: recursive || false,
             withContent: false,
             additionalIgnorePatterns: []
@@ -307,7 +307,7 @@ const deleteFileTool = createImagineTool({
           type: "start-step",
         })
 
-        await synapse.deleteFile({ filepath: path });
+        await synapse.deleteFile({ filepath: `./${path}` });
 
         writer.write({
           type: "finish-step",
@@ -344,7 +344,7 @@ const moveFileTool = createImagineTool({
           type: "start-step",
         })
 
-        await synapse.updateFilePath({ filepath: path, newPath });
+        await synapse.updateFilePath({ filepath: `./${path}`, newPath: `./${newPath}` });
 
         writer.write({
           type: "finish-step",
