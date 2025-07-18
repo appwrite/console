@@ -13,7 +13,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { Alert } from '$lib/components';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import UpdateRepository from './updateRepository.svelte';
@@ -55,8 +55,8 @@
 
 <Container>
     {#if data.function.version === 'v2' && showAlert}
-        <Alert
-            type="warning"
+        <Alert.Inline
+            status="warning"
             dismissible
             class="u-margin-block-start-24"
             on:dismiss={() => (showAlert = false)}>
@@ -69,7 +69,7 @@
                 rel="noopener noreferrer"
                 class="link">documentation</a
             >.
-            <svelte:fragment slot="buttons">
+            <svelte:fragment slot="actions">
                 <Button
                     on:click={() =>
                         trackEvent(Click.WebsiteOpenClick, {
@@ -83,7 +83,7 @@
                     Learn more
                 </Button>
             </svelte:fragment>
-        </Alert>
+        </Alert.Inline>
     {/if}
     <ExecuteFunction />
     <UpdateName />
