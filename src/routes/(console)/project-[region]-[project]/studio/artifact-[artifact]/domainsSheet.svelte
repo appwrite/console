@@ -1,13 +1,23 @@
 <script lang="ts">
-    import { Sheet } from '@appwrite.io/pink-svelte';
+    import { Sheet, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     type Props = {
+        primaryDomain: string;
         open?: boolean;
     };
 
-    const { open }: Props = $props();
+    let { open, primaryDomain }: Props = $props();
 </script>
 
-<Sheet {open}>
-    <div>Manage your domains here</div>
+<Sheet bind:open>
+    <div slot="header" style:width="100%">
+        <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Layout.Stack direction="row" gap="m" alignItems="center">
+                <Typography.Text variant="m-400">Domains</Typography.Text>
+            </Layout.Stack>
+        </Layout.Stack>
+    </div>
+    <Layout.Stack>
+        <Typography.Text>{primaryDomain}</Typography.Text>
+    </Layout.Stack>
 </Sheet>

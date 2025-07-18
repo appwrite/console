@@ -24,20 +24,22 @@
 </script>
 
 {#if isStudio}
-    <Layout.Stack direction="row" alignItems="center">
-        {#if nestedLevel > 4}
-            {#if (nestedLevel === 6 && paramCount === 2) || nestedLevel === 7}
-                <a href="../" style:display="flex" style:margin-inline-end="-8px"
-                    ><Icon icon={IconChevronLeft} /></a>
-            {:else if paramCount >= 3}
-                <a href="./" style:display="flex" style:margin-inline-end="-8px"
-                    ><Icon icon={IconChevronLeft} /></a>
+    <div class="header-top">
+        <Layout.Stack direction="row" alignItems="center">
+            {#if nestedLevel > 4}
+                {#if (nestedLevel === 6 && paramCount === 2) || nestedLevel === 7}
+                    <a href="../" style:display="flex" style:margin-inline-end="-8px"
+                        ><Icon icon={IconChevronLeft} /></a>
+                {:else if paramCount >= 3}
+                    <a href="./" style:display="flex" style:margin-inline-end="-8px"
+                        ><Icon icon={IconChevronLeft} /></a>
+                {/if}
             {/if}
-        {/if}
 
-        <slot name="header" />
-    </Layout.Stack>
-    <slot />
+            <slot name="header" />
+        </Layout.Stack>
+        <slot />
+    </div>
 {:else}
     <div class="top-cover-console" style:block-size={blocksize}>
         <div class="cover-container" {style}>
@@ -91,5 +93,9 @@
             margin-inline: auto;
             max-width: 1200px;
         }
+    }
+
+    .header-top {
+        border-bottom: 1px solid var(--fgcolor-neutral-weak);
     }
 </style>

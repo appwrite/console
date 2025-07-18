@@ -8,7 +8,7 @@
     let {
         version,
         isLatestVersion,
-        toolCallParts,
+        toolCallParts
     }: {
         version: number | null;
         isLatestVersion: boolean;
@@ -22,7 +22,10 @@
     let filteredParts = $derived(() => {
         let parts = toolCallParts.filter(
             (part) =>
-                part.type.startsWith('tool-readFile') || part.type.startsWith('tool-writeFile') || part.type.startsWith('tool-listFilesInDirectory') || part.type.startsWith('tool-deleteFile')
+                part.type.startsWith('tool-readFile') ||
+                part.type.startsWith('tool-writeFile') ||
+                part.type.startsWith('tool-listFilesInDirectory') ||
+                part.type.startsWith('tool-deleteFile')
         );
 
         const showMoreButton = parts.length > EXPANDED_SHOW_ITEMS;

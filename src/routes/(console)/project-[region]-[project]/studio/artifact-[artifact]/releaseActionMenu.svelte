@@ -10,9 +10,11 @@
         Spinner,
         Typography
     } from '@appwrite.io/pink-svelte';
+    import DomainsSheet from './domainsSheet.svelte';
 
     let publishing = $state(false);
     let published = $state(false);
+    let sheetOpen = $state(false);
 
     const releaseDate = new Date('2025-07-15T12:00:00Z');
 
@@ -71,7 +73,7 @@
                             <Button.Button
                                 size="s"
                                 variant="secondary"
-                                onclick={() => alert('connect clicked')}
+                                onclick={() => (sheetOpen = !sheetOpen)}
                                 >Connect domain</Button.Button>
                             <Button.Button size="s" onclick={handlePublish}>Deploy</Button.Button>
                         </Layout.Stack>
@@ -96,6 +98,7 @@
         </div>
     </svelte:fragment>
 </Popover>
+<DomainsSheet primaryDomain="https://sarakandoorp.com" open={sheetOpen} />
 
 <style>
     :global(.popover-section) {
