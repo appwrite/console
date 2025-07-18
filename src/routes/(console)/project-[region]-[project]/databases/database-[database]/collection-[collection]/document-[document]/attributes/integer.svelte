@@ -7,7 +7,7 @@
     export let value: number;
     export let attribute: Models.AttributeInteger;
 
-    $: nullable = attribute.required ? false : !value;
+    $: nullable = !attribute.required;
 </script>
 
 <InputNumber

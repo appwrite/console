@@ -7,7 +7,7 @@
     export let value: string | null;
     export let attribute: Models.AttributeUrl;
 
-    $: nullable = attribute.required ? false : !value;
+    $: nullable = !attribute.required;
 </script>
 
 <InputURL

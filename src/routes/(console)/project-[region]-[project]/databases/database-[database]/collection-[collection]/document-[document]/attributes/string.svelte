@@ -7,7 +7,7 @@
     export let value: string;
     export let attribute: Models.AttributeString;
 
-    $: nullable = attribute.required ? false : !value;
+    $: nullable = !attribute.required;
 </script>
 
 {#if attribute.size >= 50}
