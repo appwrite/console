@@ -235,11 +235,14 @@ export class SynapseHTTPClient {
 
     private async request(body: Record<string, unknown>) {
         const endpoint = `${this.endpoint}`;
+
+        const host = `${this.artifactId}.${process.env.WORKSPACE_URL_DOMAIN}`;
+
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Host': `${this.artifactId}.${process.env.WORKSPACE_URL_DOMAIN}`
+                'X-Host': host
             },
             body: JSON.stringify(body)
         });
