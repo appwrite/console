@@ -9,7 +9,7 @@ export class GitRepositoryUtils {
       artifactId: this.artifactId,
     });
     const files = await synapse.listFilesInDir({
-      dirPath: "./",
+      dirPath: ".",
       recursive: true,
       withContent: true,
       additionalIgnorePatterns: [],
