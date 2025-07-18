@@ -12,7 +12,7 @@
     import { OAuthProvider } from '@appwrite.io/console';
     import { redirectTo } from '$routes/store';
     import { user } from '$lib/stores/user';
-    import { Layout, Card, Modal, Typography } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     let mail: string, pass: string, disabled: boolean;
 
@@ -146,12 +146,12 @@
                     <div></div>
                     <Layout.Stack direction="row" justifyContent="center">
                         <a href={`${base}/recover`}
-                            ><Typography.Text variant="m-500" color="--neutral-750"
+                            ><Typography.Text variant="m-500" color="--fgcolor-neutral-secondary"
                                 >Forgot password?</Typography.Text
                             ></a>
                         <span>&bull;</span>
                         <a href={`${base}/register${page?.url?.search ?? ''}`}>
-                            <Typography.Text variant="m-500" color="--neutral-750"
+                            <Typography.Text variant="m-500" color="--fgcolor-neutral-secondary"
                                 >Sign up</Typography.Text>
                         </a>
                     </Layout.Stack>

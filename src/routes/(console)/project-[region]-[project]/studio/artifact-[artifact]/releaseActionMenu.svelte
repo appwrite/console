@@ -86,7 +86,7 @@
                             <Typography.Text
                                 class="status-text"
                                 variant="m-500"
-                                color="var(--fgcolor-neutral-secondary)">
+                                color="--fgcolor-neutral-secondary">
                                 Releasing...</Typography.Text>
                             <Spinner size="s" />
                         </Layout.Stack>

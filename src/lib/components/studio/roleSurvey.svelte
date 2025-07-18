@@ -34,7 +34,7 @@
 </script>
 
 <Modal bind:show title="Tell us a little more about yourself">
-    <Typography.Text variant="m-500" color="var(--fgcolor-neutral-primary)"
+    <Typography.Text variant="m-500" color="--fgcolor-neutral-primary"
         >What is your role?</Typography.Text>
     <Layout.Stack direction="row" gap="m" wrap="wrap">
         {#each roles as r}
