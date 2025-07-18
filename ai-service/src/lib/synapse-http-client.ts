@@ -19,8 +19,7 @@ export class SynapseHTTPClient {
 
     constructor({ endpoint, artifactId }: { endpoint: string; artifactId: string }) {
         this.endpoint = endpoint;
-        // this.artifactBasePath = `artifact/${artifactId}`;
-        this.artifactBasePath = `/usr/local/artifact`;
+        this.artifactBasePath = `/usr/local`;
         this.artifactId = artifactId;
     }
 
@@ -121,6 +120,31 @@ export class SynapseHTTPClient {
         return response;
     }
 
+    async startBackgroundProcess({
+        command,
+        args,
+        cwd
+    }: {
+        command: string;
+        args: string[];
+        cwd: string;
+    }): Promise<{ success: true; pid: number } | { success: false; error: string }> {
+        console.log('startBackgroundProcess', { command, cwd, args });
+
+        const response = await this.request({
+            type: 'stateless',
+            operation: 'startBackgroundProcess',
+            params: {
+                command,
+                args,
+                cwd
+            }
+        });
+
+        console.log("Response", response);
+
+        return response;
+    }
     async executeCommand({
         command,
         cwd,
@@ -135,16 +159,15 @@ export class SynapseHTTPClient {
         output: string;
         exitCode: number;
     }> {
-        const safeCwd = _path.join(this.artifactBasePath, cwd);
-        console.log('executeCommand', { command, cwd: safeCwd });
+        console.log('executeCommand', { command, cwd });
 
         try {
             const response = await this.request({
-                type: 'terminal',
+                type: 'stateless',
                 operation: 'executeCommand',
                 params: {
                     command,
-                    cwd: safeCwd,
+                    cwd,
                     timeout
                 }
             });
@@ -195,7 +218,7 @@ export class SynapseHTTPClient {
             }
         });
 
-        console.log("Response", response);
+        console.log('Response', response);
 
         const data: ListFilesInDirResult[] = response.data;
 
@@ -211,8 +234,6 @@ export class SynapseHTTPClient {
 
     private async request(body: Record<string, unknown>) {
         const endpoint = `${this.endpoint}`;
-        console.log("Endpoint", endpoint);
-
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: {

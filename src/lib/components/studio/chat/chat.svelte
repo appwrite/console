@@ -15,10 +15,11 @@
     import { studio } from '../studio.svelte';
     import UpgradePrompt from '$routes/(console)/project-[region]-[project]/studio/artifact-[artifact]/upgradePrompt.svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { conversation, showChat } from '$lib/stores/chat';
+    import { conversation, showChat, workspaceState } from '$lib/stores/chat';
     import { DefaultChatTransport } from 'ai';
-    import type { ImagineUIMessage } from '$shared-types';
+    import type { ImagineUIDataParts, ImagineUIMessage } from '$shared-types';
     import { VARS } from '../../../system';
+    import { SvelteURL } from 'svelte/reactivity';
 
     type Props = {
         width: number;
@@ -39,7 +40,19 @@
         transport: new DefaultChatTransport({
             api: `${VARS.AI_SERVICE_BASE_URL}/api/chat`,
         }),
-        messages: $conversation.data.messages ?? []
+        messages: $conversation.data.messages ?? [],
+        onData: (dataPart) => {
+            console.log("data", dataPart);
+            
+            if (dataPart.type === "data-workspace-state") {
+                const data = dataPart.data as ImagineUIDataParts["workspace-state"];
+                const { state, workspaceUrl } = data;
+                workspaceState.set({
+                    ready: state === "ready",
+                    workspaceUrl: new SvelteURL(workspaceUrl),
+                });
+            }
+        }
     });
 
     const onkeydown: EventHandler<KeyboardEvent, HTMLTextAreaElement> = (event) => {
@@ -62,8 +75,6 @@
         if (chatTextareaRef && !$isSmallViewport) {
             chatTextareaRef.focus();
         }
-
-        refreshToken(); // TODO: remove
     });
 
     async function refreshToken() {

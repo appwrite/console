@@ -6,15 +6,10 @@ import {
     createUIMessageStream,
     createUIMessageStreamResponse,
     streamText,
-    TextPart,
+    TextPart
 } from 'ai';
 import { createRuntimeContext, WriterType } from '../../lib/ai/mastra/utils/runtime-context';
 import { mastra } from '../../lib/ai/mastra';
-import { exec as _exec } from 'child_process';
-import { promisify } from 'util';
-const exec = promisify(_exec);
-import fs from 'fs';
-import path from 'path';
 import { createImagineClient } from '@/lib/imagine/create-artifact-client';
 import { anthropic } from '@ai-sdk/anthropic';
 import { Workspace } from '@/lib/imagine/workspaces-api-client';
@@ -26,6 +21,9 @@ export const handleChatRequest = async (c: Context) => {
     const signal = c.req.raw.signal;
 
     const token = c.req.header('X-Imagine-Token');
+
+    console.log('token', token);
+
     if (!token) {
         return c.json({ error: 'Unauthorized' }, 401);
     }
@@ -33,7 +31,6 @@ export const handleChatRequest = async (c: Context) => {
     let body: ChatRequestBodyType;
 
     /** Create workspace */
-
 
     // Parse request body
     try {
@@ -54,8 +51,8 @@ export const handleChatRequest = async (c: Context) => {
         // save to file
         // return c.body(null, 200);
         return streamText({
-          model: anthropic("claude-3-7-sonnet-20250219"),
-          messages: convertToModelMessages(messages),
+            model: anthropic('claude-3-7-sonnet-20250219'),
+            messages: convertToModelMessages(messages)
         }).toUIMessageStreamResponse();
     }
 
@@ -67,78 +64,74 @@ export const handleChatRequest = async (c: Context) => {
     const imagineConvo = await imagineClient.getConversation(artifactId, conversationId);
 
     if (!imagineConvo) {
-      throw new Error("Conversation not found");
+        throw new Error('Conversation not found');
     }
 
     // Create workspace
-    console.log(`===== create workspace =====`);
-
     let workspace: Workspace;
-    let isFound = false;
+    const workspaceUrl = `${process.env.WORKSPACE_URL_PROTOCOL}://${artifactId}.${process.env.WORKSPACE_URL_DOMAIN}:${process.env.WORKSPACE_URL_PORT}`;
+    console.log('workspaceUrl', workspaceUrl);
 
-    try{
+    try {
+        console.log('Getting workspace');
         workspace = await workspacesClient.get(artifactId);
+        console.log('Found existing workspace', workspace);
     } catch (error) {
-        if ((error as AppwriteException).type === "workspace_not_found") {
-            console.log("Workspace not found, creating workspace");
-            isFound = false;
+        if ((error as AppwriteException).type === 'workspace_not_found') {
+            console.log('Workspace not found, creating...');
+            workspace = await workspacesClient.create(artifactId, artifactId, "s-1vcpu-1gb");
+            console.log('Created new workspace', workspace);
+            console.log('Creating proxy rule');
+            console.time("createWorkspaceProxyRule");
+            const proxyRule = await workspacesClient.createWorkspaceProxyRule(
+                `${artifactId}.functions.localhost`,
+                workspace.$id
+            );
+            console.timeEnd("createWorkspaceProxyRule");
+            console.log('Created proxy rule', proxyRule);
         } else {
             throw error;
         }
     }
-
-    if (!isFound) {
-        console.log("Creating workspce")
-        workspace = await workspacesClient.create(artifactId, artifactId);
-        console.log("Workspace", workspace);
-        console.log("Creating proxy rule")
-        const proxyRule = await workspacesClient.createWorkspaceProxyRule(`${artifactId}.functions.localhost`, workspace.$id);
-        console.log("Proxy rule", proxyRule);
-        console.log(`===== create workspace =====`);
-    } else {
-        console.log("Workspace already exists, skipping creation");
-    }
-
+    
     const synapseClient = createSynapseClient({
         artifactId
     });
-
-    const result = await synapseClient.listFilesInDir({
-        dirPath: "/usr/local/server"
+    
+    console.log("Creating artifact directory");
+    await synapseClient.executeCommand({
+        command: "mkdir -p artifact",
+        cwd: "/usr/local"
+    });
+    
+    console.log("Cloning template")
+    await synapseClient.executeCommand({
+        command: "bunx giget@latest gh:appwrite/templates-for-frameworks/base-vite-template .",
+        cwd: "/usr/local/artifact",
+        timeout: 60000,
     });
 
-    console.log("Result", result);
+    console.log("Installing dependencies")
+    await synapseClient.executeCommand({
+        command: "bun install",
+        cwd: "/usr/local/artifact",
+        timeout: 60000,
+    });
 
-    return;
+    console.log("Running bun dev in the background")
+    await synapseClient.startBackgroundProcess({
+        command: "bun",
+        args: ["run", "dev"],
+        cwd: "/usr/local/artifact", 
+    });
 
     const convertedMessages = convertToModelMessages(messages);
 
     const latestMessage = convertedMessages[convertedMessages.length - 1];
-    
+
     const latestMessageTextPart = latestMessage.content[0] as TextPart;
     const restMessages = convertedMessages.slice(0, -1);
-    
-    // If it's a new conversation, we need to clone the workspace
-    // This is temporary and will be handled by Synapse shortly!
     const isNewConversation = restMessages.length === 0;
-    // if (isNewConversation) {
-    //     const workspaceDir = path.resolve(process.cwd(), `./tmp/workspace/artifact/${artifactId}`);
-    //     console.log('workspaceDir', workspaceDir);
-    //     const exists = fs.existsSync(workspaceDir);
-
-    //     if (exists) {
-    //         console.log('Workspace already exists, skipping clone');
-    //     } else {
-    //         console.log('Workspace does not exist, creating directory...');
-    //         await exec(`mkdir -p ${workspaceDir}`);
-    //         console.log("Cloning template 'base-vite-template'...");
-    //         await exec(`pnpx degit appwrite/templates-for-frameworks/base-vite-template .`, {
-    //             cwd: workspaceDir
-    //         });
-    //     }
-    // } else {
-    //     console.log('Not a new conversation, skipping workspace clone');
-    // }
 
     let didError = false;
 
@@ -153,6 +146,16 @@ export const handleChatRequest = async (c: Context) => {
                 isFirstMessage: isNewConversation,
                 signal
             });
+
+            writer.write({
+               type: "data-workspace-state",
+               data: {
+                state: "ready",
+                workspaceUrl,
+               },
+               transient: true
+            })
+
             c.set('runtimeContext', runtimeContext);
             const run = await mastra.getWorkflow('codeWorkflow').createRunAsync();
 
@@ -191,7 +194,7 @@ export const handleChatRequest = async (c: Context) => {
 
             const { messages } = event;
 
-            console.log("finalMessagesToSave", JSON.stringify(messages, null, 2));
+            console.log('finalMessagesToSave', JSON.stringify(messages, null, 2));
 
             console.log('Saving messages to imagine');
             await imagineClient.updateConversation(
