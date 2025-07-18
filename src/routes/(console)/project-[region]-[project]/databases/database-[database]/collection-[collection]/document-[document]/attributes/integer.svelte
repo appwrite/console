@@ -6,16 +6,14 @@
     export let label: string;
     export let value: number;
     export let attribute: Models.AttributeInteger;
-
-    $: nullable = !attribute.required;
 </script>
 
 <InputNumber
     {id}
     {label}
-    {nullable}
-    required={attribute.required}
+    bind:value
     min={attribute.min}
     max={attribute.max}
-    step={attribute.type === 'double' ? 'any' : 1}
-    bind:value />
+    required={attribute.required}
+    nullable={!attribute.required}
+    step={attribute.type === 'double' ? 'any' : 1} />
