@@ -9,11 +9,9 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { Layout, Icon, Divider, Button } from '@appwrite.io/pink-svelte';
     import { previewFrameRef } from '$routes/(console)/project-[region]-[project]/store';
-    import { SvelteURL } from 'svelte/reactivity';
     import type { EventHandler } from 'svelte/elements';
     import { onMount } from 'svelte';
-
-    let previewUrl = new SvelteURL('https://preview.torsten.work');
+    import { workspaceState } from '$lib/stores/chat';
 
     let iframeRef: HTMLIFrameElement | null = $state(null);
     let iframeContainerRef: HTMLDivElement | null = $state(null);
@@ -36,8 +34,8 @@
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const path = formData.get('path');
-        if (typeof path === 'string') {
-            previewUrl.pathname = path;
+        if (typeof path === 'string' && $workspaceState.workspaceUrl) {
+            $workspaceState.workspaceUrl.pathname = path;
         }
     };
 
@@ -53,6 +51,7 @@
                 variant="extra-compact"
                 type="button"
                 size="s"
+                disabled={!$workspaceState.ready}
                 onclick={() => alert('back button clicked')}>
                 <Icon icon={IconChevronLeft} color="--fgcolor-neutral-tertiary" />
             </Button.Button>
@@ -60,6 +59,7 @@
                 variant="extra-compact"
                 type="button"
                 size="s"
+                disabled={!$workspaceState.ready}
                 onclick={() => alert('forward button clicked')}>
                 <Icon icon={IconChevronRight} color="--fgcolor-neutral-tertiary" />
             </Button.Button>
@@ -67,13 +67,19 @@
                 variant="extra-compact"
                 type="button"
                 size="s"
+                disabled={!$workspaceState.ready}
                 on:click={() => (refresh = !refresh)}>
                 <Icon icon={IconRefresh} color="--fgcolor-neutral-tertiary" />
             </Button.Button>
-            <InputText name="path" id="previewUrl" value={previewUrl.pathname} />
+            <InputText
+                disabled={!$workspaceState.ready}
+                name="path"
+                id="previewUrl"
+                value={$workspaceState.workspaceUrl?.pathname ?? ''} />
             <Button.Button
                 variant="extra-compact"
                 type="button"
+                disabled={!$workspaceState.ready}
                 onclick={() => {
                     showMobileDevice = !showMobileDevice;
                 }}
@@ -82,7 +88,8 @@
             <Button.Anchor
                 variant="extra-compact"
                 type="button"
-                href={previewUrl.toString()}
+                disabled={!$workspaceState.ready}
+                href={$workspaceState.workspaceUrl?.toString() ?? ''}
                 size="s"
                 target="_blank"
                 ><Icon icon={IconExternalLink} color="--fgcolor-neutral-tertiary" />
@@ -97,14 +104,16 @@
     class="iframe-container"
     class:mobile-container={showMobileDevice}
     bind:this={iframeContainerRef}>
-    {#key refresh}
-        <iframe
-            src={previewUrl.toString()}
-            bind:this={iframeRef}
-            id="preview-iframe"
-            title="preview">
-        </iframe>
-    {/key}
+    {#if $workspaceState.ready && $workspaceState.workspaceUrl}
+        {#key refresh}
+            <iframe
+                src={$workspaceState.workspaceUrl.toString()}
+                bind:this={iframeRef}
+                id="preview-iframe"
+                title="preview">
+            </iframe>
+        {/key}
+    {/if}
 </div>
 
 <style lang="scss">
@@ -129,7 +138,6 @@
     iframe {
         border: none;
         position: absolute;
-        background-color: red;
 
         margin-inline-start: calc(-1 * var(--space-4));
         width: calc(100% + var(--space-7));

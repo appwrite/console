@@ -17,7 +17,8 @@ export const VARS = {
     APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT ?? undefined,
     GROWTH_ENDPOINT: env.PUBLIC_GROWTH_ENDPOINT ?? undefined,
     PUBLIC_STRIPE_KEY: env.PUBLIC_STRIPE_KEY ?? undefined,
-    PROJECT_PROFILE: (env.PUBLIC_PROJECT_PROFILE as Profile) ?? undefined
+    PROJECT_PROFILE: (env.PUBLIC_PROJECT_PROFILE as Profile) ?? undefined,
+    AI_SERVICE_BASE_URL: env.PUBLIC_AI_SERVICE_BASE_URL ?? undefined
 };
 
 export const ENV = {

@@ -1,4 +1,4 @@
-import type { ImagineUIMessage } from '$shared-types';
+import { ImagineUIMessage } from '@/shared-types';
 import { AppwriteException } from '@appwrite.io/console';
 import type { Client, Payload } from '@appwrite.io/console';
 
@@ -233,7 +233,8 @@ and all associated resources will be removed.
     updateConversation(
         artifactId: string,
         conversationId: string,
-        name?: string
+        name?: string,
+        messages?: ImagineUIMessage[]
     ): Promise<Conversation> {
         if (typeof artifactId === 'undefined') {
             throw new AppwriteException('Missing required parameter: "artifactId"');
@@ -247,6 +248,9 @@ and all associated resources will be removed.
         const payload: Payload = {};
         if (typeof name !== 'undefined') {
             payload['name'] = name;
+        }
+        if (typeof messages !== 'undefined') {
+            payload['messages'] = messages;
         }
         const uri = new URL(this.client.config.endpoint + apiPath);
 
@@ -283,215 +287,13 @@ and all associated resources will be removed.
 
         return this.client.call('delete', uri, apiHeaders, payload);
     }
-    /**
-     *     List all messages in a conversation. This endpoint supports pagination and searching.
-     *
-     * @param {string} artifactId
-     * @param {string} conversationId
-     * @param {string[]} queries
-     * @param {string} search
-     * @throws {AppwriteException}
-     * @returns {Promise<ConversationsMessagesList>}
-     */
-    listMessages(
-        artifactId: string,
-        conversationId: string,
-        queries?: string[],
-        search?: string
-    ): Promise<ConversationsMessagesList> {
-        if (typeof artifactId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "artifactId"');
-        }
-        if (typeof conversationId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "conversationId"');
-        }
-        const apiPath = '/imagine/artifacts/{artifactId}/conversations/{conversationId}/messages'
-            .replace('{artifactId}', artifactId)
-            .replace('{conversationId}', conversationId);
-        const payload: Payload = {};
-        if (typeof queries !== 'undefined') {
-            payload['queries'] = queries;
-        }
-        if (typeof search !== 'undefined') {
-            payload['search'] = search;
-        }
-        const uri = new URL(this.client.config.endpoint + apiPath);
-
-        const apiHeaders: { [header: string]: string } = {
-            'content-type': 'application/json'
-        };
-
-        return this.client.call('get', uri, apiHeaders, payload);
-    }
-    /**
-     *     Create a new message in a conversation.
-     *
-     * @param {string} artifactId
-     * @param {string} conversationId
-     * @param {Type} type
-     * @param {string} content
-     * @throws {AppwriteException}
-     * @returns {Promise<Message>}
-     */
-    createMessage(
-        artifactId: string,
-        conversationId: string,
-        type: Type,
-        content: string
-    ): Promise<Message> {
-        if (typeof artifactId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "artifactId"');
-        }
-        if (typeof conversationId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "conversationId"');
-        }
-        if (typeof type === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "type"');
-        }
-        if (typeof content === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "content"');
-        }
-        const apiPath = '/imagine/artifacts/{artifactId}/conversations/{conversationId}/messages'
-            .replace('{artifactId}', artifactId)
-            .replace('{conversationId}', conversationId);
-        const payload: Payload = {};
-        if (typeof type !== 'undefined') {
-            payload['type'] = type;
-        }
-        if (typeof content !== 'undefined') {
-            payload['content'] = content;
-        }
-        const uri = new URL(this.client.config.endpoint + apiPath);
-
-        const apiHeaders: { [header: string]: string } = {
-            'content-type': 'application/json'
-        };
-
-        return this.client.call('post', uri, apiHeaders, payload);
-    }
-    /**
-     *     Get a message by its unique ID.
-     *
-     * @param {string} artifactId
-     * @param {string} conversationId
-     * @param {string} messageId
-     * @throws {AppwriteException}
-     * @returns {Promise<ConversationsMessage>}
-     */
-    getMessage(
-        artifactId: string,
-        conversationId: string,
-        messageId: string
-    ): Promise<ConversationsMessage> {
-        if (typeof artifactId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "artifactId"');
-        }
-        if (typeof conversationId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "conversationId"');
-        }
-        if (typeof messageId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "messageId"');
-        }
-        const apiPath =
-            '/imagine/artifacts/{artifactId}/conversations/{conversationId}/messages/{messageId}'
-                .replace('{artifactId}', artifactId)
-                .replace('{conversationId}', conversationId)
-                .replace('{messageId}', messageId);
-        const payload: Payload = {};
-        const uri = new URL(this.client.config.endpoint + apiPath);
-
-        const apiHeaders: { [header: string]: string } = {
-            'content-type': 'application/json'
-        };
-
-        return this.client.call('get', uri, apiHeaders, payload);
-    }
-    /**
-     *     Update a message by its unique ID. This endpoint allows you to update the message&#039;s content and type.
-     *
-     * @param {string} artifactId
-     * @param {string} conversationId
-     * @param {string} messageId
-     * @param {string} content
-     * @param {string} type
-     * @throws {AppwriteException}
-     * @returns {Promise<ConversationsMessage>}
-     */
-    updateMessage(
-        artifactId: string,
-        conversationId: string,
-        messageId: string,
-        content?: string,
-        type?: string
-    ): Promise<ConversationsMessage> {
-        if (typeof artifactId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "artifactId"');
-        }
-        if (typeof conversationId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "conversationId"');
-        }
-        if (typeof messageId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "messageId"');
-        }
-        const apiPath =
-            '/imagine/artifacts/{artifactId}/conversations/{conversationId}/messages/{messageId}'
-                .replace('{artifactId}', artifactId)
-                .replace('{conversationId}', conversationId)
-                .replace('{messageId}', messageId);
-        const payload: Payload = {};
-        if (typeof content !== 'undefined') {
-            payload['content'] = content;
-        }
-        if (typeof type !== 'undefined') {
-            payload['type'] = type;
-        }
-        const uri = new URL(this.client.config.endpoint + apiPath);
-
-        const apiHeaders: { [header: string]: string } = {
-            'content-type': 'application/json'
-        };
-
-        return this.client.call('patch', uri, apiHeaders, payload);
-    }
-    /**
-     *     Delete a message by its unique ID. Once deleted, the message will no longer be available.
-     *
-     * @param {string} artifactId
-     * @param {string} conversationId
-     * @param {string} messageId
-     * @throws {AppwriteException}
-     * @returns {Promise<{}>}
-     */
-    deleteMessage(artifactId: string, conversationId: string, messageId: string): Promise<{}> {
-        if (typeof artifactId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "artifactId"');
-        }
-        if (typeof conversationId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "conversationId"');
-        }
-        if (typeof messageId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "messageId"');
-        }
-        const apiPath =
-            '/imagine/artifacts/{artifactId}/conversations/{conversationId}/messages/{messageId}'
-                .replace('{artifactId}', artifactId)
-                .replace('{conversationId}', conversationId)
-                .replace('{messageId}', messageId);
-        const payload: Payload = {};
-        const uri = new URL(this.client.config.endpoint + apiPath);
-
-        const apiHeaders: { [header: string]: string } = {
-            'content-type': 'application/json'
-        };
-
-        return this.client.call('delete', uri, apiHeaders, payload);
-    }
 }
 
 export enum Type {
     Text = 'text',
     Image = 'image'
 }
+
 export type Artifact = {
     /**
      * Artifact unique ID.
@@ -629,75 +431,4 @@ export type ConversationsList = {
      * List of conversations.
      */
     conversations: Conversation[];
-};
-/**
- * Conversations Messages List
- */
-export type ConversationsMessagesList = {
-    /**
-     * Total number of messages documents that matched your query.
-     */
-    total: number;
-    /**
-     * List of messages.
-     */
-    messages: ConversationsMessage[];
-};
-
-/**
- * Message
- */
-export type Message = {
-    /**
-     * Message ID.
-     */
-    $id: string;
-    /**
-     * Message creation time in ISO 8601 format.
-     */
-    $createdAt: string;
-    /**
-     * Message update date in ISO 8601 format.
-     */
-    $updatedAt: string;
-    /**
-     * Message provider type.
-     */
-    providerType: string;
-    /**
-     * Topic IDs set as recipients.
-     */
-    topics: string[];
-    /**
-     * User IDs set as recipients.
-     */
-    users: string[];
-    /**
-     * Target IDs set as recipients.
-     */
-    targets: string[];
-    /**
-     * The scheduled time for message.
-     */
-    scheduledAt?: string;
-    /**
-     * The time when the message was delivered.
-     */
-    deliveredAt?: string;
-    /**
-     * Delivery errors if any.
-     */
-    deliveryErrors?: string[];
-    /**
-     * Number of recipients the message was delivered to.
-     */
-    deliveredTotal: number;
-    /**
-     * Data of the message.
-     */
-    data: object;
-    /**
-     * Status of delivery.
-     */
-    status: string;
 };

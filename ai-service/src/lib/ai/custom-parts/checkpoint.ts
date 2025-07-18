@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-export const checkpointDataUIPartSchema = z.object({
+export const checkpointUIDataPartSchema = z.object({
   commitSha: z.string(),
   commitMessage: z.string(),
   timestamp: z.string(),
 });
 
-export interface CheckpointDataUIPart {
-  type: "checkpoint";
+export interface CheckpointUIDataPart {
+  type: "data-checkpoint";
   id: string;
-  data: z.infer<typeof checkpointDataUIPartSchema>;
+  data: z.infer<typeof checkpointUIDataPartSchema>;
 }

@@ -21,7 +21,7 @@
     "e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "@ai-sdk/svelte": "^2.1.12",
+    "@ai-sdk/svelte": "3.0.0-beta.19",
     "@appwrite.io/console": "https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@a5e5564",
     "@appwrite.io/pink-icons": "0.25.0",
     "@appwrite.io/pink-icons-svelte": "^2.0.0-RC.1",
@@ -30,7 +30,7 @@
     "@popperjs/core": "^2.11.8",
     "@sentry/sveltekit": "^8.38.0",
     "@stripe/stripe-js": "^3.5.0",
-    "ai": "^2.2.37",
+    "ai": "5.0.0-beta.10",
     "analytics": "^0.8.16",
     "cron-parser": "^4.9.0",
     "dayjs": "^1.11.13",
@@ -82,7 +82,7 @@
     "prettier-plugin-svelte": "^3.3.3",
     "rehype-highlight": "^7.0.2",
     "sass": "^1.86.0",
-    "svelte": "^5.25.3",
+    "svelte": "^5.36.3",
     "svelte-check": "^4.1.5",
     "svelte-preprocess": "^6.0.3",
     "svelte-sequential-preprocessor": "^2.0.2",

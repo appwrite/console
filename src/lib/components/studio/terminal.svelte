@@ -38,6 +38,9 @@
                     domEvent.stopPropagation();
                     return;
                 }
+
+                console.log(`Key: "${key}"`);
+
                 synapse.dispatch(
                     'terminal',
                     {

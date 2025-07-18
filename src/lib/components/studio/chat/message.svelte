@@ -1,6 +1,5 @@
 <script lang="ts">
     import 'highlight.js/styles/atom-one-light.css';
-    import type { ParsedItem } from './parser';
     import Markdown, { type Plugin } from 'svelte-exmarkdown';
     import Li from './(markdown)/Li.svelte';
     import H1 from './(markdown)/H1.svelte';
@@ -11,102 +10,18 @@
     import Ul from './(markdown)/Ul.svelte';
     import Ol from './(markdown)/Ol.svelte';
     import rehypeHighlight from 'rehype-highlight';
-    import { queue } from './queue.svelte';
-    import { studio } from '../studio.svelte';
-    import MessageActions from './messageActions.svelte';
+    import type { ImagineUIMessage, ImagineUIToolParts } from '$shared-types';
+    import Thinking from './thinking.svelte';
+    import Progress from './progress.svelte';
+    import type { CheckpointUIDataPart } from '../../../../../ai-service/src/lib/ai/custom-parts/checkpoint';
+    import Checkpoint from './checkpoint.svelte';
 
     type Props = {
-        message: ParsedItem;
+        message: ImagineUIMessage;
+        version: number | null;
+        isLatestVersion: boolean;
     };
-    let { message }: Props = $props();
-    const tickets = $state([message.group]);
-
-    async function processQueueItem() {
-        if (tickets.length === 0 || !message.group) return;
-
-        const ticket = tickets.pop();
-        if (!ticket) return;
-
-        const list = queue.lists[message.group];
-        if (!list || !list.some((item) => item.status === 'waiting')) {
-            tickets.push(ticket);
-            return;
-        }
-
-        const item = queue.dequeue(message.group);
-        if (!item) {
-            tickets.push(ticket);
-            return;
-        }
-
-        try {
-            const action = item.data;
-            switch (action.type) {
-                case 'file':
-                    await studio.synapse.dispatch('fs', {
-                        operation: 'updateFile',
-                        params: {
-                            filepath: action.src,
-                            content: action.content
-                        }
-                    });
-                    studio.filesystem.add(action.src);
-                    break;
-                case 'shell':
-                    await studio.synapse.dispatch(
-                        'terminal',
-                        {
-                            operation: 'createCommand',
-                            params: {
-                                command: action.content + '\n'
-                            }
-                        },
-                        {
-                            noReturn: action.content.endsWith('run dev'),
-                            timeout: 30_000
-                        }
-                    );
-                    break;
-            }
-
-            if (message.group) {
-                const status = action.complete ? 'done' : 'waiting';
-                queue.update(message.group, item.id, { status });
-            }
-        } catch (error) {
-            console.error('Error processing queue item:', error);
-
-            if (message.group) {
-                queue.update(message.group, item.id, { status: 'failed' });
-            }
-        } finally {
-            tickets.push(ticket);
-
-            setTimeout(checkForMoreItems, 100);
-        }
-    }
-
-    function checkForMoreItems() {
-        if (!message.group) return;
-
-        const list = queue.lists[message.group];
-        if (tickets.length > 0 && list && list.some((item) => item.status === 'waiting')) {
-            processQueueItem();
-        }
-    }
-
-    $effect(() => {
-        if (!('type' in message)) return;
-        if (message.type !== 'actions') return;
-        if (!message.group) return;
-
-        const list = queue.lists[message.group];
-        if (!list) return;
-
-        if (tickets.length > 0 && list.some((item) => item.status === 'waiting')) {
-            processQueueItem();
-        }
-    });
+    let { message, version, isLatestVersion }: Props = $props();
 
     const plugins: Plugin[] = [
         {
@@ -123,28 +38,62 @@
             }
         }
     ];
+
+    const organizedParts = $derived(() => {
+        const nonTextParts = message.parts.filter((p) => p.type !== 'text');
+        const textParts = message.parts.filter((p) => p.type === 'text');
+        const finalText = textParts[textParts.length - 1];
+        const toolCallParts = nonTextParts.filter((p) =>
+            p.type.startsWith('tool-')
+        ) as ImagineUIToolParts[];
+        const checkpointPart = nonTextParts.filter(
+            (p) => p.type === 'data-checkpoint'
+        )[0] as CheckpointUIDataPart;
+
+        return {
+            nonTextParts,
+            toolCallParts,
+            finalText,
+            checkpointPart
+        };
+    });
 </script>
 
-{#if 'type' in message}
-    {#key message.content}
-        {#if message.type === 'actions'}
-            <MessageActions {message} />
+<!-- User Message -->
+{#if message.role === 'user'}
+    {#each message.parts as part, partIndex (partIndex)}
+        {#if part.type === 'text'}
+            <div class="message">
+                {part.text}
+            </div>
         {/if}
-    {/key}
-{:else}
-    {#snippet text()}
-        <Markdown md={message.content} {plugins} />
-    {/snippet}
-    {#if message.from === 'user'}
-        <div class="message">
-            {@render text()}
-        </div>
-    {:else if message.from === 'error'}
-        <div class="message">
-            {@render text()}
-        </div>
-    {:else}
-        {@render text()}
+    {/each}
+{/if}
+
+<!-- Assistant Messages -->
+{#if message.role === 'assistant'}
+    <!-- Non-text parts -->
+    {#each organizedParts().nonTextParts as part, partIndex (partIndex)}
+        {#if part.type === 'data-thinking'}
+            <Thinking
+                data={part.data}
+                didReceiveFirstAsisstantTextChunk={part.data.text.length > 0} />
+        {/if}
+    {/each}
+
+    <!-- Tool calls -->
+    {#if organizedParts().toolCallParts.length > 0}
+        <Progress {version} {isLatestVersion} toolCallParts={organizedParts().toolCallParts} />
+    {/if}
+
+    <!-- Final text -->
+    {#if organizedParts().finalText}
+        <Markdown md={organizedParts().finalText.text} {plugins} />
+    {/if}
+
+    <!-- Checkpoint -->
+    {#if organizedParts().checkpointPart}
+        <Checkpoint checkpointPart={organizedParts().checkpointPart.data} />
     {/if}
 {/if}
 

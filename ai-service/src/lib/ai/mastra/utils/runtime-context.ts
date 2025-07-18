@@ -1,17 +1,9 @@
 import { RuntimeContext } from "@mastra/core/runtime-context";
-import { InferUITool } from "ai";
-import { fileTools } from "../tools/file-tools";
-import { UIMessage, UIMessageStreamWriter } from "ai";
-import { z } from "zod";
-import { checkpointDataUIPartSchema } from "../../custom-parts/checkpoint";
-import { createSynapseClient, SynapseHTTPClient } from "@/lib/synapse-http-client";
+import { UIMessageStreamWriter } from "ai";
+import { createSynapseClient, SynapseHTTPClient } from "../../../synapse-http-client";
+import { ImagineUIMessage } from "../../../../shared-types";
 
-export type WriterType = UIMessageStreamWriter<UIMessage<unknown, {
-  checkpoint: z.infer<typeof checkpointDataUIPartSchema>;
-}, {
-  readFile: InferUITool<typeof fileTools.readFileTool>;
-  writeFile: InferUITool<typeof fileTools.writeFileTool>;
-}>>;
+export type WriterType = UIMessageStreamWriter<ImagineUIMessage>;
 export type RuntimeContextPayload = {
   writer: WriterType;
   skipWritingToolCalls?: boolean;
@@ -22,6 +14,11 @@ export type RuntimeContextPayload = {
   synapseClient: SynapseHTTPClient;
 }
 export type RuntimeContextType = RuntimeContext<RuntimeContextPayload>;
+export type HonoEnv = {
+  Variables: {
+    runtimeContext: RuntimeContextType,
+  }
+}
 
 export const cloneRuntimeContext = (runtimeContext: RuntimeContextType, overrides?: Partial<RuntimeContextPayload>): RuntimeContextType => {
   const newRuntimeContext = new RuntimeContext<RuntimeContextPayload>();

@@ -4,7 +4,7 @@ import { fileTools } from "../tools/file-tools";
 import { smoothStream } from "ai";
 import z from "zod";
 import { RuntimeContextType } from "../utils/runtime-context";
-import { vercel } from "@ai-sdk/vercel"
+import { imagineToMastraToolset } from "../tools/imagine-tool";
 
 export const developerAgent = new Agent({
   name: "Software Developer Agent",
@@ -22,7 +22,7 @@ You must always use the reportDone tool to report to the architect that you are 
   model: anthropic("claude-sonnet-4-20250514"),
   // model: anthropic("claude-3-7-sonnet-20250219"),
   // model: vercel("v0-1.5-md"),
-  tools: {
+  tools: imagineToMastraToolset({
     readFile: fileTools.readFileTool,
     writeFile: fileTools.writeFileTool,
     listFilesInDirectory: fileTools.listFilesInDirectoryTool,
@@ -45,7 +45,7 @@ You must always use the reportDone tool to report to the architect that you are 
         return "Thanks for your summary!";
       },
     }),
-  },
+  }),
   defaultStreamOptions: ({ runtimeContext }: { runtimeContext: RuntimeContextType }) => {
     const abortSignal = runtimeContext.get("signal");
     return {

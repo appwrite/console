@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Chat } from '@ai-sdk/svelte';
     import { Divider, Typography, Layout, Button, Icon } from '@appwrite.io/pink-svelte';
     import {
         IconArrowUp,
@@ -9,28 +10,50 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import Conversation from './conversation.svelte';
-    import { conversation, showChat } from '$lib/stores/chat';
-    import type { StreamParser } from './parser';
     import type { EventHandler } from 'svelte/elements';
-    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import { studio } from '../studio.svelte';
     import UpgradePrompt from '$routes/(console)/project-[region]-[project]/studio/artifact-[artifact]/upgradePrompt.svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { conversation, showChat, workspaceState } from '$lib/stores/chat';
+    import { DefaultChatTransport } from 'ai';
+    import type { ImagineUIDataParts, ImagineUIMessage } from '$shared-types';
+    import { VARS } from '../../../system';
+    import { SvelteURL } from 'svelte/reactivity';
 
     type Props = {
         width: number;
         hasSubNavigation: boolean;
-        parser: StreamParser;
     };
-    let { width, hasSubNavigation, parser }: Props = $props();
+    let { width, hasSubNavigation }: Props = $props();
 
     let minimizeChat = $state($isSmallViewport ? true : false);
     let message = $state('');
-    let firstByteReceived = $state(true);
 
     let chatTextareaRef: HTMLTextAreaElement | null = $state(null);
+
+    console.log("conversation", $conversation.data);
+
+    const chat = new Chat<ImagineUIMessage>({
+        maxSteps: 20,
+        id: $conversation.data.$id,
+        transport: new DefaultChatTransport({
+            api: `${VARS.AI_SERVICE_BASE_URL}/api/chat`,
+        }),
+        messages: $conversation.data.messages ?? [],
+        onData: (dataPart) => {
+            console.log("data", dataPart);
+            
+            if (dataPart.type === "data-workspace-state") {
+                const data = dataPart.data as ImagineUIDataParts["workspace-state"];
+                const { state, workspaceUrl } = data;
+                workspaceState.set({
+                    ready: state === "ready",
+                    workspaceUrl: new SvelteURL(workspaceUrl),
+                });
+            }
+        }
+    });
 
     const onkeydown: EventHandler<KeyboardEvent, HTMLTextAreaElement> = (event) => {
         if (event.key === 'Enter') {
@@ -42,8 +65,9 @@
     const onsubmit: EventHandler<SubmitEvent, HTMLFormElement> = (event) => {
         event.preventDefault();
         tokens = tokens - 1;
-        if (studio.streaming) controller.abort();
-        else createMessage();
+        // if (studio.streaming) controller.abort();
+        // else createMessage();
+        createMessage();
     };
 
     $effect(() => {
@@ -53,74 +77,31 @@
         }
     });
 
-    let controller: AbortController;
+    async function refreshToken() {
+        const token = await sdk
+            .forProject(page.params.region, page.params.project)
+            .account.createJWT();
+        return token;
+    }
 
     async function createMessage() {
-        const group = Symbol();
-        if (message.startsWith('!')) {
-            const [type, ...segments] = message.split(' ');
-            const content = segments.join(' ');
-            message = '';
-            const value = `<action type="${type.replace('!', '')}">${content}</action>`;
-            parser.chunk(value, 'system', {
-                group
-            });
-            parser.end();
+        const token = await refreshToken();
 
-            return;
-        }
-        const initialMessage = message;
-        try {
-            parser.chunk(message, 'user');
-            firstByteReceived = false;
-            message = '';
-            controller = new AbortController();
-            studio.streaming = true;
-            const response = await fetch(
-                `${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}/imagine/artifacts/${$conversation.data.artifactId}/conversations/${$conversation.data.$id}/messages`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Appwrite-Project': page.params.project,
-                        'X-Appwrite-Mode': 'admin'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        content: initialMessage,
-                        type: 'text'
-                    }),
-                    signal: controller.signal
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error(`${response.status} Error: ${await response.text()}`);
+        chat.sendMessage({
+            role: "user",
+            text: message,
+        }, {
+            body: {
+                id: $conversation.data?.$id,
+                projectId: page.params.project,
+                artifactId: page.params.artifact,
+            },
+            headers: {
+                "X-Imagine-Token": token.jwt
             }
+        });
 
-            invalidate(Dependencies.ARTIFACTS);
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-
-            let chunk = await reader.read();
-            while (!chunk.done) {
-                if (!firstByteReceived) firstByteReceived = true;
-                parser.chunk(decoder.decode(chunk.value), 'system', {
-                    group
-                });
-                chunk = await reader.read();
-            }
-            parser.end();
-        } catch (error) {
-            if (error instanceof Error) {
-                parser.chunk(error.message, 'error');
-            }
-            message = initialMessage;
-        } finally {
-            firstByteReceived = true;
-            studio.streaming = false;
-        }
+        message = '';
     }
 
     let tokens = $state(2);
@@ -160,7 +141,7 @@
                 <Divider />
             </div>
 
-            <Conversation {parser} thinking={!firstByteReceived} />
+            <Conversation {chat} />
 
             {#if tokens < 2}
                 <UpgradePrompt>

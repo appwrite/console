@@ -1,4 +1,3 @@
-import { fileTools } from "./ai/tools/file-tools";
 import { createSynapseClient } from "./synapse-http-client";
 import { RepositoryFile } from "./types";
 
@@ -10,14 +9,11 @@ export class GitRepositoryUtils {
       artifactId: this.artifactId,
     });
     const files = await synapse.listFilesInDir({
-      dirPath: "/",
+      dirPath: "./",
       recursive: true,
       withContent: true,
       additionalIgnorePatterns: [],
     });
-
-    console.log("files", files);
-
     return files.map((file) => ({
       path: file.path,
       content: file.content!,

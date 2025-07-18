@@ -1,24 +1,19 @@
 <script lang="ts">
     import 'highlight.js/styles/atom-one-light.css';
-    import { StreamParser } from './parser';
-    import { Icon, Layout, ShimmerText, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Spinner, Layout, Tag } from '@appwrite.io/pink-svelte';
     import { IconArrowDown } from '@appwrite.io/pink-icons-svelte';
     import { slide } from 'svelte/transition';
     import type { UIEventHandler, WheelEventHandler } from 'svelte/elements';
     import Message from './message.svelte';
     import { studio } from '../studio.svelte';
-    import { animatedText } from './animated-text.svelte';
+    import { Chat } from '@ai-sdk/svelte';
+    import type { ImagineUIMessage } from '$shared-types';
 
     type Props = {
-        parser: StreamParser;
         autoscroll?: boolean;
-        thinking?: boolean;
+        chat: Chat<ImagineUIMessage>;
     };
-    let { parser, autoscroll = $bindable(true), thinking = false }: Props = $props();
-
-    const chunks = parser.parsed;
-
-    const text = animatedText($chunks.map((chunk) => chunk.content).join(' '));
+    let { autoscroll = $bindable(true), chat }: Props = $props();
 
     function scrollToBottom(smooth: boolean = true) {
         document
@@ -44,19 +39,41 @@
             autoscroll = false;
         }
     };
+
+    const messagesWithCheckpoints = $derived(() => {
+        return chat.messages.filter((message) =>
+            message.parts.some((part) => part.type === 'data-checkpoint')
+        );
+    });
+
+    const getMessageVersion = (message: ImagineUIMessage) => {
+        const index = messagesWithCheckpoints().findIndex((m) => m.id === message.id);
+        return index === -1 ? null : index + 1;
+    };
+
+    const isLatestVersion = (message: ImagineUIMessage) => {
+        const index = messagesWithCheckpoints().findIndex((m) => m.id === message.id);
+        return index === messagesWithCheckpoints().length - 1;
+    };
 </script>
 
 <div class="overflow" {onwheel} {onscroll}>
     <section>
-        {text}
-        {#each $chunks as message (message.id)}
-            <Message {message} />
+        {#each chat.messages as message (message.id)}
+            <Message
+                {message}
+                version={getMessageVersion(message)}
+                isLatestVersion={isLatestVersion(message)} />
         {/each}
-        {#if thinking}
-            <Typography.Code size="s">
-                <ShimmerText>thinking...</ShimmerText>
-            </Typography.Code>
+
+        {#if chat.status === 'submitted' || chat.status === 'streaming'}
+            <Icon size="m" icon={Spinner} />
         {/if}
+
+        {#if chat.status === 'error'}
+            <span style:color="var(--fgcolor-error)">{chat.error?.message}</span>
+        {/if}
+
         <div id="bottom"></div>
     </section>
 

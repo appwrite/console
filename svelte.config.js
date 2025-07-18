@@ -19,7 +19,8 @@ const config = {
     kit: {
         alias: {
             $routes: './src/routes',
-            $themes: './src/themes'
+            $themes: './src/themes',
+            '$shared-types': './ai-service/src/shared-types'
         },
         adapter: adapter({
             fallback: 'index.html',

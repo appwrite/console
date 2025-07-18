@@ -12,6 +12,10 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
-        "moduleResolution": "bundler"
-    }
+        "moduleResolution": "bundler",
+        "declaration": true,
+    },
+    "references": [
+        { "path": "./ai-service" }
+    ]
 }
