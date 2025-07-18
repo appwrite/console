@@ -46,7 +46,7 @@
         >Release
     </Button.Button>
     <svelte:fragment slot="tooltip">
-        <div class="popover" style:width="284px" style:--height={`${dimensions.height}px`}>
+        <div class="popover" style:width="284px" style:height={`${dimensions.height}px`}>
             <div bind:clientHeight={dimensions.height}>
                 {#if !publishing}
                     <Layout.Stack direction="column" gap="none">
@@ -104,7 +104,6 @@
     }
 
     .popover {
-        height: var(--height);
-        transition: all ease-out 0.25s;
+        transition: all ease-out 175ms;
     }
 </style>
