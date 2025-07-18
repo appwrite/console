@@ -19,6 +19,7 @@ ADD ./svelte.config.js /app/svelte.config.js
 ADD ./vite.config.ts /app/vite.config.ts
 ADD ./src /app/src
 ADD ./static /app/static
+ADD ./ai-service /app/ai-service
 
 ARG PUBLIC_CONSOLE_MODE
 ARG PUBLIC_CONSOLE_FEATURE_FLAGS
