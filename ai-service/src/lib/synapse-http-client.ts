@@ -249,6 +249,10 @@ export class SynapseHTTPClient {
 }
 
 export const createSynapseClient = ({ artifactId }: { artifactId: string }) => {
+    console.log('Creating synapse client', {
+        endpoint: process.env.SYNAPSE_ENDPOINT,
+        artifactId
+    });
     const synapse = new SynapseHTTPClient({
         endpoint: process.env.SYNAPSE_ENDPOINT!,
         artifactId
