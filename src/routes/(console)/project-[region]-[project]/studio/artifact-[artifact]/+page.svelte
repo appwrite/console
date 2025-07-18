@@ -125,7 +125,7 @@
         }
     }
 
-    .frame-container iframe {
+    #preview-iframe {
         height: 100%;
         width: 100%;
     }
