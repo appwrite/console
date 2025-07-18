@@ -89,7 +89,7 @@ export const handleChatRequest = async (c: Context) => {
             console.log('Creating proxy rule');
             console.time("createWorkspaceProxyRule");
             const proxyRule = await workspacesClient.createWorkspaceProxyRule(
-                `${artifactId}.functions.localhost`,
+                `${artifactId}.${process.env.WORKSPACE_URL_DOMAIN}`,
                 workspace.$id
             );
 
