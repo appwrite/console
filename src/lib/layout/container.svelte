@@ -1,6 +1,8 @@
 <script lang="ts">
     import { Layout } from '@appwrite.io/pink-svelte';
+
     export let overlapCover = false;
+    export let expanded = false;
     export let size: 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl' = null;
 
     $: style = size
@@ -8,8 +10,8 @@
         : '';
 </script>
 
-<div style:container-type="inline-size" class:overlap-cover={overlapCover}>
-    <div class="console-container" {style}>
+<div style:container-type="inline-size" class:overlap-cover={overlapCover} {...$$restProps}>
+    <div class="console-container" class:expanded {style}>
         <Layout.Stack gap="l">
             <slot />
         </Layout.Stack>
@@ -22,6 +24,11 @@
     }
     :global(.console-container) {
         margin-block: var(--base-32);
+
+        &.expanded {
+            padding-inline-end: 0 !important;
+            margin-block: var(--base-8) !important;
+        }
 
         @media (min-width: 360px) {
             margin-inline: 1rem;

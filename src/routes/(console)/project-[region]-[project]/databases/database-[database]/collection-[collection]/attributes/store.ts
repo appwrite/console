@@ -15,12 +15,12 @@ import {
     IconCalendar,
     IconHashtag,
     IconLink,
+    IconList,
     IconLocationMarker,
     IconMail,
     IconRelationship,
     IconText,
-    IconToggle,
-    IconViewList
+    IconToggle
 } from '@appwrite.io/pink-icons-svelte';
 import type { ComponentType } from 'svelte';
 
@@ -139,7 +139,7 @@ export const attributeOptions: Option[] = [
         format: 'enum',
         create: submitEnum,
         update: updateEnum,
-        icon: IconViewList
+        icon: IconList
     },
     {
         name: 'Relationship',

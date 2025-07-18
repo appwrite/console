@@ -1,7 +1,8 @@
 import { page } from '$app/stores';
+import { derived, writable } from 'svelte/store';
 import type { Column } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
-import { derived, writable } from 'svelte/store';
+import type { SortDirection } from '$lib/components/sortButton.svelte';
 
 export type Attributes =
     | Models.AttributeBoolean
@@ -28,3 +29,41 @@ export const indexes = derived(page, ($page) => $page.data.collection.indexes as
 export const columns = writable<Column[]>([]);
 
 export const isCsvImportInProgress = writable(false);
+
+type DatabaseSheetOptions = {
+    show: boolean;
+    title?: string;
+    column?: Attributes;
+    isEdit?: boolean;
+    disableSubmit?: boolean;
+    submitAction?: () => Promise<void>;
+};
+
+export const databaseColumnSheetOptions = writable<DatabaseSheetOptions>({
+    title: null,
+    show: false,
+    column: null,
+    isEdit: false,
+    disableSubmit: false,
+    submitAction: null
+});
+
+export const databaseRowSheetOptions = writable<
+    DatabaseSheetOptions & {
+        document: Models.Document;
+    }
+>({
+    title: null,
+    show: false,
+    document: null
+});
+
+export const showRecordsCreateSheet = writable({
+    show: false,
+    document: null
+});
+
+export const sortState = writable({
+    column: null as string,
+    direction: 'default' as SortDirection
+});

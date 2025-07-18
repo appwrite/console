@@ -1,85 +1,101 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import { option, attributeOptions, type Option } from './attributes/store';
-    import { Button, InputText } from '$lib/elements/forms';
-    import { goto, invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import { page } from '$app/state';
-    import { addNotification } from '$lib/stores/notifications';
-    import { base } from '$app/paths';
     import type { Attributes } from './store';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { Layout } from '@appwrite.io/pink-svelte';
+    import { InputSelect, InputText } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { option, attributeOptions, type Option } from './attributes/store';
 
-    export let showCreate = false;
-    export let selectedOption: Option['name'] = null;
+    let {
+        showCreate = false,
+        selectedOption = $bindable('String')
+    }: {
+        showCreate: boolean;
+        selectedOption: Option['name'];
+    } = $props();
+
     const databaseId = page.params.database;
-    $: collectionId = page.params.collection;
+    const collectionId = page.params.collection;
 
-    let key: string = null;
-    let data: Partial<Attributes> = {
+    let key: string = $state(null);
+    let data: Partial<Attributes> = $state({
         required: false,
         array: false,
         default: null
-    };
-    let error: string;
+    });
 
-    async function submit() {
+    let AttributeComponent = $derived(
+        attributeOptions.find((option) => option.name === selectedOption).component
+    );
+
+    export async function submit() {
         try {
             await $option.create(databaseId, collectionId, key, data);
             await invalidate(Dependencies.COLLECTION);
 
-            if (!page.url.pathname.includes('attributes')) {
-                await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
-                );
-            }
             addNotification({
                 type: 'success',
-                message: `Attribute ${key ?? data?.key} has been created`
+                message: `Column ${key ?? data?.key} has been created`
             });
-            showCreate = false;
             trackEvent(Submit.AttributeCreate);
         } catch (e) {
-            error = e.message;
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
             trackError(e, Submit.AttributeCreate);
         }
     }
 
-    $: if (selectedOption) {
-        $option = attributeOptions.find((option) => option.name === selectedOption);
-    }
+    $effect(() => {
+        // correct view
+        if (selectedOption) {
+            $option = attributeOptions.find((option) => option.name === selectedOption);
+        }
 
-    $: if (!showCreate) {
-        error = null;
-        key = null;
-        selectedOption = null;
-        $option = null;
-        data = {
-            required: false,
-            array: false,
-            default: null
-        };
-    }
-
-    $: title = `Create ${attributeOptions.find((option) => option.name === selectedOption)?.sentenceName ?? ''} attribute`;
+        // cleanup
+        if (!showCreate) {
+            key = null;
+            $option = null;
+            selectedOption = null;
+            data = {
+                required: false,
+                array: false,
+                default: null
+            };
+        }
+    });
 </script>
 
-<Modal {error} bind:show={showCreate} onSubmit={submit} {title}>
-    {#if selectedOption !== 'Relationship'}
+<Layout.Stack gap="xl">
+    <Layout.Stack direction="row">
         <InputText
             id="key"
-            label="Attribute key"
+            label="Key"
             placeholder="Enter key"
             bind:value={key}
             autofocus
-            helper="Allowed characters: alphanumeric, hyphen, non-leading underscore, period."
+            disabled={selectedOption === 'Relationship'}
             required />
-    {/if}
+
+        <InputSelect
+            id="type"
+            label="Type"
+            bind:value={selectedOption}
+            options={attributeOptions.map((attr) => {
+                return {
+                    label: attr.name,
+                    value: attr.name,
+                    leadingIcon: attr.icon
+                };
+            })}
+            required />
+    </Layout.Stack>
+
     {#if selectedOption}
-        <svelte:component this={$option.component} bind:data onclose={() => ($option = null)} />
+        <AttributeComponent bind:data onclose={() => ($option = null)} />
     {/if}
-    <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-        <Button submit disabled={!selectedOption}>Create</Button>
-    </svelte:fragment>
-</Modal>
+</Layout.Stack>

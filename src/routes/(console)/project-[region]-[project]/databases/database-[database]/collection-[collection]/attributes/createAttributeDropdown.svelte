@@ -6,8 +6,8 @@
     import CsvDisabled from '../csvDisabled.svelte';
     import { isCsvImportInProgress } from '../store';
 
-    export let selectedOption: Option['name'] = null;
     export let showCreate = false;
+    export let selectedOption: Option['name'] = null;
 </script>
 
 {#if $isCsvImportInProgress}
@@ -20,9 +20,9 @@
 {:else}
     <Popover let:toggle padding="none" placement="bottom-start">
         <slot {toggle}>
-            <Button on:click={toggle} event="create_attribute">
+            <Button secondary on:click={toggle} event="create_attribute">
                 <Icon icon={IconPlus} slot="start" size="s" />
-                Create attribute
+                Create column
             </Button>
         </slot>
         <ActionMenu.Root slot="tooltip">

@@ -230,6 +230,21 @@
         }
     }
 
+    :global(main:has(.databases-spreadsheet)) {
+        @media (min-width: 1024px) {
+            .main-content {
+                height: auto;
+                padding-left: 210px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                position: fixed;
+            }
+        }
+    }
+
     .overlay {
         position: fixed;
         width: 100vw;

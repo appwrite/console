@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty, EmptySearch, PaginationWithLimit } from '$lib/components';
+    import { EmptySearch } from '$lib/components';
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
@@ -7,13 +7,10 @@
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
-    import { Card, Icon, Layout, Empty as PinkEmpty } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Divider } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
-    import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
-    import type { Option } from './attributes/store';
-    import CreateAttribute from './createAttribute.svelte';
-    import { collection, columns, isCsvImportInProgress } from './store';
-    import Table from './table.svelte';
+    import { collection, columns, isCsvImportInProgress, showRecordsCreateSheet } from './store';
+    import SpreadSheet from './spreadsheet.svelte';
     import { writable } from 'svelte/store';
     import FilePicker from '$lib/components/filePicker.svelte';
     import { page } from '$app/state';
@@ -21,16 +18,16 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { base } from '$app/paths';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
+    import EmptySheet from './layout/emptySheet.svelte';
+    import CreateRecord from './createRecord.svelte';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
 
     export let data: PageData;
 
     let showImportCSV = false;
-    let showCreateAttribute = false;
-    let selectedAttribute: Option['name'] = null;
-
     const filterColumns = writable<Column[]>([]);
 
     $: selected = preferences.getCustomCollectionColumns(page.params.collection);
@@ -46,15 +43,8 @@
             elements: 'elements' in attribute ? attribute.elements : null
         }))
     );
-    $: filterColumns.set([
-        ...$columns,
-        ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
-            id,
-            title: id,
-            show: true,
-            type: (id === '$id' ? 'string' : 'datetime') as ColumnType
-        }))
-    ]);
+
+    $: filterColumns.set([...$columns.filter((column) => !column.isAction)]);
 
     $: hasAttributes = !!$collection.attributes.length;
     $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
@@ -90,7 +80,7 @@
 </script>
 
 {#key page.params.collection}
-    <Container>
+    <Container expanded style="background: var(--bgcolor-neutral-primary)">
         <Layout.Stack direction="column" gap="xl">
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Filters
@@ -99,7 +89,11 @@
                     disabled={!(hasAttributes && hasValidAttributes)}
                     analyticsSource="database_documents" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    <ViewSelector view={data.view} {columns} hideView isCustomCollection />
+                    <ViewSelector
+                        view={data.view}
+                        columns={filterColumns}
+                        hideView
+                        isCustomCollection />
                     <Button
                         secondary
                         event={Click.DatabaseImportCsv}
@@ -109,8 +103,9 @@
                     </Button>
                     {#if !$isSmallViewport}
                         <Button
+                            secondary
                             disabled={!(hasAttributes && hasValidAttributes)}
-                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                            on:click={() => ($showRecordsCreateSheet.show = true)}
                             event="create_document">
                             <Icon icon={IconPlus} slot="start" size="s" />
                             Create document
@@ -120,24 +115,22 @@
             </Layout.Stack>
             {#if $isSmallViewport}
                 <Button
+                    secondary
                     disabled={!(hasAttributes && hasValidAttributes)}
-                    href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                    on:click={() => ($showRecordsCreateSheet.show = true)}
                     event="create_document">
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create document
                 </Button>
             {/if}
         </Layout.Stack>
+    </Container>
 
+    <div class="databases-spreadsheet">
         {#if hasAttributes && hasValidAttributes}
             {#if data.documents.total}
-                <Table {data} />
-
-                <PaginationWithLimit
-                    name="Documents"
-                    limit={data.limit}
-                    offset={data.offset}
-                    total={data.documents.total} />
+                <Divider />
+                <SpreadSheet {data} bind:showRecordsCreateSheet={$showRecordsCreateSheet} />
             {:else if $hasPageQueries}
                 <EmptySearch hidePages>
                     <div class="common-section">
@@ -161,63 +154,35 @@
                     </div>
                 </EmptySearch>
             {:else}
-                <Empty
-                    allowCreate={$canWriteDocuments}
-                    single
-                    href="https://appwrite.io/docs/products/databases/documents"
-                    target="document">
-                    <svelte:fragment slot="actions">
-                        <Button
-                            external
-                            href="https://appwrite.io/docs/products/databases/documents"
-                            text
-                            event="empty_documentation"
-                            size="s"
-                            ariaLabel="create document">Documentation</Button>
-                        <Button
-                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
-                            secondary
-                            disabled={!$canWriteDocuments}
-                            size="s">
-                            Create document
-                        </Button>
-                    </svelte:fragment>
-                </Empty>
+                <EmptySheet
+                    mode="records"
+                    showActions={$canWriteDocuments}
+                    actions={{
+                        primary: {
+                            onClick: () => {
+                                $showRecordsCreateSheet.show = true;
+                            }
+                        }
+                    }} />
             {/if}
         {:else}
-            <Card.Base padding="none">
-                <PinkEmpty
-                    title="Create an attribute to get started."
-                    description="Need a hand? Learn more in our documentation.">
-                    <slot name="actions" slot="actions">
-                        <Button
-                            external
-                            href="https://appwrite.io/docs/products/databases/collections#attributes"
-                            text
-                            event="empty_documentation"
-                            size="s">Documentation</Button>
-                        {#if $canWriteCollections}
-                            <CreateAttributeDropdown
-                                bind:selectedOption={selectedAttribute}
-                                bind:showCreate={showCreateAttribute}
-                                let:toggle>
-                                <Button secondary event="create_attribute" on:click={toggle}>
-                                    Create attribute
-                                </Button>
-                            </CreateAttributeDropdown>
-                        {/if}
-                    </slot>
-                </PinkEmpty>
-            </Card.Base>
+            <EmptySheet
+                mode="records"
+                title="You have no columns yet"
+                showActions={$canWriteCollections}
+                actions={{
+                    primary: {
+                        text: 'Create column',
+                        onClick: async () => {
+                            await goto(
+                                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/attributes`
+                            );
+                        }
+                    }
+                }} />
         {/if}
-    </Container>
+    </div>
 {/key}
-
-{#if showCreateAttribute}
-    <CreateAttribute
-        bind:showCreate={showCreateAttribute}
-        bind:selectedOption={selectedAttribute} />
-{/if}
 
 {#if showImportCSV}
     <!-- CSVs can be text/plain or text/csv sometimes! -->
@@ -231,3 +196,8 @@
             imageWidth: 32
         }} />
 {/if}
+
+<CreateRecord
+    collection={$collection}
+    bind:showSheet={$showRecordsCreateSheet.show}
+    bind:existingData={$showRecordsCreateSheet.document} />
