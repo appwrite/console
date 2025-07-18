@@ -119,11 +119,15 @@
 <style lang="scss">
     .iframe-container {
         height: 100%;
-
         @media (min-width: 768px) {
             flex-grow: 1;
             height: auto;
         }
+    }
+
+    .frame-container iframe {
+        height: 100%;
+        width: 100%;
     }
 
     .mobile-container {
