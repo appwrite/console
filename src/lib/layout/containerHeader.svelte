@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { Alert, DropList } from '$lib/components';
+    import { DropList } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
     import { Link, Pill } from '$lib/elements';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import {
         checkForProjectLimitation,
         checkForUsageFees,
@@ -95,16 +96,16 @@
     {#if services.length}
         <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees} {services}>
             {#if $organization?.billingPlan !== BillingPlan.FREE && hasUsageFees}
-                <Alert type="info" isStandalone>
+                <Alert.Inline status="info">
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan.
                         <Link on:mousedown={() => ($showUsageRatesModal = true)}
                             >Excess usage fees will apply</Link
                         >.
                     </span>
-                </Alert>
+                </Alert.Inline>
             {:else}
-                <Alert type={alertType} isStandalone>
+                <Alert.Inline status={alertType === 'default' ? 'info' : alertType}>
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan. <Link
                             href={$upgradeURL}
@@ -112,7 +113,7 @@
                             eventData={{ from: 'event', source: 'inline_alert' }}>Upgrade</Link> your
                         organization for additional resources.
                     </span>
-                </Alert>
+                </Alert.Inline>
             {/if}
         </slot>
     {/if}

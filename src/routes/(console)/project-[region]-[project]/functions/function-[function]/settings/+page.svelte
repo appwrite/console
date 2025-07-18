@@ -13,7 +13,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { Alert } from '$lib/components';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import UpdateRepository from './updateRepository.svelte';
@@ -55,35 +55,33 @@
 
 <Container>
     {#if data.function.version === 'v2' && showAlert}
-        <Alert
-            type="warning"
-            dismissible
-            class="u-margin-block-start-24"
-            on:dismiss={() => (showAlert = false)}>
-            <svelte:fragment slot="title">Your function is outdated</svelte:fragment>
-            Update your function version to make use of new features including build commands and HTTP
-            data in your executions. To update, follow the steps outlined in our
-            <a
-                href="https://appwrite.io/docs/products/functions/development"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link">documentation</a
-            >.
-            <svelte:fragment slot="buttons">
-                <Button
-                    on:click={() =>
-                        trackEvent(Click.WebsiteOpenClick, {
-                            from: 'button',
-                            source: 'function_keys_card',
-                            destination: 'docs'
-                        })}
+        <div class="u-margin-block-start-24">
+            <Alert.Inline status="warning" dismissible on:dismiss={() => (showAlert = false)}>
+                <svelte:fragment slot="title">Your function is outdated</svelte:fragment>
+                Update your function version to make use of new features including build commands and
+                HTTP data in your executions. To update, follow the steps outlined in our
+                <a
                     href="https://appwrite.io/docs/products/functions/development"
-                    external
-                    text>
-                    Learn more
-                </Button>
-            </svelte:fragment>
-        </Alert>
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="link">documentation</a
+                >.
+                <svelte:fragment slot="actions">
+                    <Button
+                        on:click={() =>
+                            trackEvent(Click.WebsiteOpenClick, {
+                                from: 'button',
+                                source: 'function_keys_card',
+                                destination: 'docs'
+                            })}
+                        href="https://appwrite.io/docs/products/functions/development"
+                        external
+                        text>
+                        Learn more
+                    </Button>
+                </svelte:fragment>
+            </Alert.Inline>
+        </div>
     {/if}
     <ExecuteFunction />
     <UpdateName />

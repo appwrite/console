@@ -3,7 +3,8 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert, Confirm, Id } from '$lib/components';
+    import { Confirm, Id } from '$lib/components';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';
     import { Button as ConsoleButton, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -343,7 +344,8 @@
                 {/each}
             </Table.Root>
             <div class="u-flex u-flex-vertical u-gap-16">
-                <Alert>To change the selection edit the relationship settings.</Alert>
+                <Alert.Inline status="info"
+                    >To change the selection edit the relationship settings.</Alert.Inline>
 
                 <ul>
                     <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
