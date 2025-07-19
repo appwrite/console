@@ -153,12 +153,12 @@ export const handleChatRequest = async (c: Context) => {
             console.log('lastMessage', JSON.stringify(lastMessage, null, 2));
 
             console.log('Saving messages to imagine');
-            await imagineClient.updateConversation(
-                artifactId,
-                imagineConvo.$id,
-                'Test Conversation',
-                messages
-            );
+            // await imagineClient.updateConversation(
+            //     artifactId,
+            //     imagineConvo.$id,
+            //     'Test Conversation',
+            //     messages
+            // );
             console.log('Messages saved to imagine');
         },
         onError: (error) => {
