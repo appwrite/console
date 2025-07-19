@@ -124,7 +124,7 @@
             onExit();
             await invalidate(Dependencies.PROJECTS);
             await goto(
-                `${base}/project-${currentSelectedProject.region}-${currentSelectedProject.$id}/settings/migrations`
+                `${base}/project-${currentSelectedProject.region || 'default'}-${currentSelectedProject.$id}/settings/migrations`
             );
         } catch (error) {
             addNotification({

@@ -114,7 +114,7 @@
         if (loadedProjects.total > 1 && selectedOrg) {
             const projectLinks = loadedProjects.projects.slice(0, 4).map((project) => ({
                 name: project.name,
-                href: `${base}/project-${project.region}-${project.$id}/overview/platforms`
+                href: `${base}/project-${project.region || 'default'}-${project.$id}/overview/platforms`
             }));
 
             if (loadedProjects.projects.length > 4) {

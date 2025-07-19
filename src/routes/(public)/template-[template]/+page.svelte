@@ -63,9 +63,9 @@
 
     function generateUrl(project: Models.Project) {
         if (isSiteTemplate(data.template, data.product)) {
-            return `${base}/project-${project.region}-${project.$id}/sites/create-site/templates/template-${data.template.key}`;
+            return `${base}/project-${project.region || 'default'}-${project.$id}/sites/create-site/templates/template-${data.template.key}`;
         } else {
-            return `${base}/project-${project.region}-${project.$id}/functions/create-function/templates/template-${data.template.name}`;
+            return `${base}/project-${project.region || 'default'}-${project.$id}/functions/create-function/templates/template-${data.template.name}`;
         }
     }
 

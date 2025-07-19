@@ -144,7 +144,7 @@
                 <Button.Anchor
                     size="xs"
                     variant="secondary"
-                    href={`${base}/project-${currentProject.region}-${currentProject.$id}/get-started`}
+                    href={`${base}/project-${currentProject.region || 'default'}-${currentProject.$id}/get-started`}
                     >Connect</Button.Anchor>
             </div>
         {/if}

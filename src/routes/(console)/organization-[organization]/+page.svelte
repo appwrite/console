@@ -106,7 +106,9 @@
             trackEvent(Submit.ProjectCreate, {
                 teamId: page.params.organization
             });
-            await goto(`${base}/project-${project.region}-${project.$id}/settings/migrations`);
+            await goto(
+                `${base}/project-${project.region || 'default'}-${project.$id}/settings/migrations`
+            );
             openImportWizard();
             loading.set(false);
         } catch (e) {
