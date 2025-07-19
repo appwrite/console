@@ -15,11 +15,11 @@
             title: $project.name
         },
         {
-            href: `${base}/project-${$project.region}-${$project.$id}/overview/platforms`,
+            href: `${base}/project-${$project.region || 'default'}-${$project.$id}/overview/platforms`,
             title: 'Platforms'
         },
         {
-            href: `${base}/project-${$project.region}-${$project.$id}/overview/platforms/${$platform.$id}`,
+            href: `${base}/project-${$project.region || 'default'}-${$project.$id}/overview/platforms/${$platform.$id}`,
             title: $platform.name
         }
     ];

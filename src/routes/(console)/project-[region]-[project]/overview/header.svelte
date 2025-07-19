@@ -14,7 +14,7 @@
     function dismissOnboarding() {
         setHasOnboardingDismissed($project.$id, $user);
         trackEvent('onboarding_hub_platform_dismiss');
-        goto(`${base}/project-${$project.region}-${$project.$id}/overview/platforms`);
+        goto(`${base}/project-${$project.region || 'default'}-${$project.$id}/overview/platforms`);
     }
 </script>
 

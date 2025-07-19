@@ -31,7 +31,7 @@
         try {
             project = await sdk.forConsole.projects.create(id ?? ID.unique(), name, teamId, region);
 
-            await goto(`${base}/project-${project.region}-${project.$id}`);
+            await goto(`${base}/project-${project.region || 'default'}-${project.$id}`);
             trackEvent(Submit.ProjectCreate, { customId: !!id, teamId, region: region });
         } catch (e) {
             error = e.message;

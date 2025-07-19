@@ -38,7 +38,7 @@
                 type: 'success',
                 message: `${name} has been created`
             });
-            await goto(`${base}/project-${project.region ?? 'default'}-${project.$id}`);
+            await goto(`${base}/project-${project.region || 'default'}-${project.$id}`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.ProjectCreate);
