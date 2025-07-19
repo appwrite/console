@@ -1,6 +1,8 @@
 import { Sandbox } from '@daytonaio/sdk';
 import { daytona } from './daytona-client';
 import { DaytonaNotFoundError } from '@daytonaio/sdk/src/errors/DaytonaError';
+import { WriterType } from './ai/mastra/utils/runtime-context';
+import { OnStepUpdateFn, WorkspaceStepId } from './ai/custom-parts/workspace-state';
 
 const sandboxId = 'b62d2a47-2f7c-4367-aa53-4980f3fe6627';
 const baseDir = '/home/daytona/workspace';
@@ -210,12 +212,12 @@ const createSandbox = async ({ artifactId }: { artifactId: string }) => {
             await deleteOldSandboxes();
 
             try {
-              sandbox = await createSandbox({
-                artifactId
-              });
+                sandbox = await createSandbox({
+                    artifactId
+                });
             } catch (e) {
-              console.log("Error creating sandbox", e);
-              throw e;
+                console.log('Error creating sandbox', e);
+                throw e;
             }
         }
 
@@ -224,9 +226,11 @@ const createSandbox = async ({ artifactId }: { artifactId: string }) => {
 };
 
 export const getOrCreateArtifactSandbox = async ({
-    artifactId
+    artifactId,
+    onStepUpdate
 }: {
     artifactId: string;
+    onStepUpdate: OnStepUpdateFn;
 }): Promise<{ sandbox: Sandbox }> => {
     const sandboxes = await daytona.list({
         artifactId
@@ -237,9 +241,25 @@ export const getOrCreateArtifactSandbox = async ({
     let sandbox: Sandbox;
 
     if (existingSandbox) {
+        onStepUpdate({
+            id: WorkspaceStepId.CREATE_SANDBOX,
+            status: 'in-progress',
+            text: 'Getting existing workspace...'
+        });
         sandbox = await daytona.get(existingSandbox.id);
+        onStepUpdate({
+            id: WorkspaceStepId.CREATE_SANDBOX,
+            status: 'completed',
+            text: 'Workspace found'
+        });
     } else {
         console.log('Workspace not found, creating...');
+
+        onStepUpdate({
+            id: WorkspaceStepId.CREATE_SANDBOX,
+            status: 'in-progress',
+            text: 'Creating workspace...'
+        });
 
         sandbox = await createSandbox({
             artifactId
@@ -251,6 +271,18 @@ export const getOrCreateArtifactSandbox = async ({
 
         console.log('Creating artifact directory');
         await sandbox.fs.createFolder(cwd, '755');
+
+        onStepUpdate({
+            id: WorkspaceStepId.CREATE_SANDBOX,
+            status: 'completed',
+            text: 'Sandbox created'
+        });
+
+        onStepUpdate({
+            id: WorkspaceStepId.REPOSITORY_SETUP,
+            status: 'in-progress',
+            text: 'Setting up repository...'
+        });
 
         const ls = await sandbox.process.executeCommand('npm install -g bun', cwd, {}, 30 * 1000);
 
@@ -266,16 +298,46 @@ export const getOrCreateArtifactSandbox = async ({
 
         console.log('Template cloned', clone);
 
+        onStepUpdate({
+            id: WorkspaceStepId.REPOSITORY_SETUP,
+            status: 'completed',
+            text: 'Repository set up'
+        });
+
+        onStepUpdate({
+            id: WorkspaceStepId.INSTALL_DEPENDENCIES,
+            status: 'in-progress',
+            text: 'Installing dependencies...'
+        });
+
         console.log('Installing dependencies');
         const install = await sandbox.process.executeCommand('bun install', cwd, {}, 60);
 
         console.log('Dependencies installed', install);
+
+        onStepUpdate({
+            id: WorkspaceStepId.INSTALL_DEPENDENCIES,
+            status: 'completed',
+            text: 'Dependencies installed'
+        });
     }
 
     return { sandbox };
 };
 
-export async function startDevServer({ sandbox }: { sandbox: Sandbox }) {
+export async function startDevServer({
+    sandbox,
+    onStepUpdate
+}: {
+    sandbox: Sandbox;
+    onStepUpdate: OnStepUpdateFn;
+}) {
+    onStepUpdate({
+        id: WorkspaceStepId.START_DEV_SERVER,
+        status: 'in-progress',
+        text: 'Starting dev server...'
+    });
+
     console.log('Exposing port 3000');
     const previewLink = await sandbox.getPreviewLink(3000);
     console.log('Preview link', { ...previewLink });
@@ -307,14 +369,17 @@ export async function startDevServer({ sandbox }: { sandbox: Sandbox }) {
         if (!cmd.cmdId) {
             throw new Error('Command ID not found');
         }
-
-        // Wait 3 seconds
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-        // Read logs
-        const logs = await sandbox.process.getSessionCommandLogs('devserver', cmd.cmdId!);
-
-        console.log('logs', logs);
     }
+
+    onStepUpdate({
+        id: WorkspaceStepId.START_DEV_SERVER,
+        status: 'completed',
+        text: 'Dev server started'
+    });
+
+    // Wait 3 seconds
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // Read logs
 
     return {
         success: true,

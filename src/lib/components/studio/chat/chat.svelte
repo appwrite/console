@@ -46,10 +46,11 @@
             
             if (dataPart.type === "data-workspace-state") {
                 const data = dataPart.data as ImagineUIDataParts["workspace-state"];
-                const { state, workspaceUrl } = data;
+                const { state, workspaceUrl, steps } = data;
                 workspaceState.set({
-                    ready: state === "ready",
-                    workspaceUrl: new SvelteURL(workspaceUrl),
+                    state,
+                    workspaceUrl: workspaceUrl ? new SvelteURL(workspaceUrl) : null,
+                    steps,
                 });
             }
         }

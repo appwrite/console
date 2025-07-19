@@ -18,6 +18,7 @@ import { createSynapseClient } from '@/lib/synapse-http-client';
 import { daytona } from '@/lib/daytona-client';
 import { Sandbox } from '@daytonaio/sdk';
 import { getOrCreateArtifactSandbox, startDevServer } from '@/lib/daytona-utils';
+import { OnStepUpdateFn, WorkspaceStepId, workspaceStepSchema } from '@/lib/ai/custom-parts/workspace-state';
 
 export const handleChatRequest = async (c: Context) => {
     c.res.headers.set('x-vercel-ai-ui-message-stream', 'v1');
@@ -68,15 +69,6 @@ export const handleChatRequest = async (c: Context) => {
         throw new Error('Conversation not found');
     }
 
-    const { sandbox } = await getOrCreateArtifactSandbox({
-        artifactId
-    });
-
-    const { previewUrl } = await startDevServer({
-        sandbox
-    });
-
-    const workspaceUrl = previewUrl;
     const convertedMessages = convertToModelMessages(messages);
 
     const latestMessage = convertedMessages[convertedMessages.length - 1];
@@ -91,23 +83,74 @@ export const handleChatRequest = async (c: Context) => {
         originalMessages: messages,
         execute: async (params) => {
             const writer = params.writer as WriterType;
+
+            writer.write({
+                type: 'data-workspace-state',
+                data: {
+                    state: 'pending',
+                    workspaceUrl: null,
+                    steps: []
+                },
+                transient: true
+            });
+
+            const steps: z.infer<typeof workspaceStepSchema>[] = [];
+
+            const updateStep: OnStepUpdateFn = ({
+                id,
+                status,
+                text
+                }: Parameters<OnStepUpdateFn>[0]) => {
+                const found = steps.find((step) => step.id === id);
+
+                if (found) {
+                    found.status = status;
+                    found.text = text;
+                } else {
+                    steps.push({ id, status, text });
+                }
+
+                writer.write({
+                    type: "data-workspace-state",
+                    data: {
+                        state: "in-progress",
+                        steps,
+                        workspaceUrl: null
+                    }
+                })
+            };
+
+            const { sandbox } = await getOrCreateArtifactSandbox({
+                artifactId,
+                onStepUpdate: updateStep
+            });
+
+            const { previewUrl } = await startDevServer({
+                sandbox,
+                onStepUpdate: updateStep
+            });
+
+            const workspaceUrl = previewUrl;
+
             const runtimeContext = createRuntimeContext({
                 writer,
                 artifactId,
                 restMessages,
                 isFirstMessage: isNewConversation,
                 signal,
-                sandbox,
+                sandbox
             });
 
+            console.log("Reporting compelted");
+
             writer.write({
-                type: 'data-workspace-state',
+                type: "data-workspace-state",
                 data: {
-                    state: 'ready',
+                    state: "completed",
+                    steps,
                     workspaceUrl
-                },
-                transient: true
-            });
+                }
+            })
 
             c.set('runtimeContext', runtimeContext);
             const run = await mastra.getWorkflow('codeWorkflow').createRunAsync();

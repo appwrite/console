@@ -12,6 +12,7 @@
     import type { EventHandler } from 'svelte/elements';
     import { onMount } from 'svelte';
     import { workspaceState } from '$lib/stores/chat';
+    import WorkspaceProgress from './workspaceProgress.svelte';
 
     let iframeRef: HTMLIFrameElement | null = $state(null);
     let iframeContainerRef: HTMLDivElement | null = $state(null);
@@ -44,6 +45,12 @@
 </script>
 
 <svelte:window on:resize={calculateIframeHeight} />
+
+{#if $workspaceState.state === "in-progress"}
+<WorkspaceProgress />
+{/if}
+
+{#if $workspaceState.state === "completed" && $workspaceState.workspaceUrl}
 <Layout.Stack direction="column" gap="s">
     <form {onsubmit}>
         <Layout.Stack direction="row" alignItems="center">
@@ -51,7 +58,6 @@
                 variant="extra-compact"
                 type="button"
                 size="s"
-                disabled={!$workspaceState.ready}
                 onclick={() => alert('back button clicked')}>
                 <Icon icon={IconChevronLeft} color="--fgcolor-neutral-tertiary" />
             </Button.Button>
@@ -59,7 +65,6 @@
                 variant="extra-compact"
                 type="button"
                 size="s"
-                disabled={!$workspaceState.ready}
                 onclick={() => alert('forward button clicked')}>
                 <Icon icon={IconChevronRight} color="--fgcolor-neutral-tertiary" />
             </Button.Button>
@@ -67,19 +72,16 @@
                 variant="extra-compact"
                 type="button"
                 size="s"
-                disabled={!$workspaceState.ready}
                 on:click={() => (refresh = !refresh)}>
                 <Icon icon={IconRefresh} color="--fgcolor-neutral-tertiary" />
             </Button.Button>
             <InputText
-                disabled={!$workspaceState.ready}
                 name="path"
                 id="previewUrl"
                 value={$workspaceState.workspaceUrl?.pathname ?? ''} />
             <Button.Button
                 variant="extra-compact"
                 type="button"
-                disabled={!$workspaceState.ready}
                 onclick={() => {
                     showMobileDevice = !showMobileDevice;
                 }}
@@ -88,7 +90,6 @@
             <Button.Anchor
                 variant="extra-compact"
                 type="button"
-                disabled={!$workspaceState.ready}
                 href={$workspaceState.workspaceUrl?.toString() ?? ''}
                 size="s"
                 target="_blank"
@@ -104,7 +105,7 @@
     class="iframe-container"
     class:mobile-container={showMobileDevice}
     bind:this={iframeContainerRef}>
-    {#if $workspaceState.ready && $workspaceState.workspaceUrl}
+    {#if $workspaceState["state"] === "completed" && $workspaceState.workspaceUrl}
         {#key refresh}
             <iframe
                 src={$workspaceState.workspaceUrl.toString()}
@@ -115,6 +116,7 @@
         {/key}
     {/if}
 </div>
+{/if}
 
 <style lang="scss">
     .iframe-container {
