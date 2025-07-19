@@ -21,7 +21,9 @@
                 message: `${$platform.name} has been deleted`
             });
             trackEvent(Submit.PlatformDelete);
-            await goto(`${base}/project-${$project.region}-${$project.$id}/overview/platforms`);
+            await goto(
+                `${base}/project-${$project.region || 'default'}-${$project.$id}/overview/platforms`
+            );
         } catch (e) {
             error = e.message;
             trackError(e, Submit.PlatformDelete);

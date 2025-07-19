@@ -201,7 +201,7 @@
                     ? formatName(project.name)
                     : project.name}
                 <GridItem1
-                    href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
+                    href={`${base}/project-${project.region || 'default'}-${project.$id}/overview/platforms`}>
                     <svelte:fragment slot="eyebrow">
                         {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
                     </svelte:fragment>
