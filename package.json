@@ -30,7 +30,7 @@
         "@popperjs/core": "^2.11.8",
         "@sentry/sveltekit": "^8.38.0",
         "@stripe/stripe-js": "^3.5.0",
-        "ai": "^2.2.37",
+        "ai": "^3.4.20",
         "analytics": "^0.8.16",
         "cron-parser": "^4.9.0",
         "dayjs": "^1.11.13",
