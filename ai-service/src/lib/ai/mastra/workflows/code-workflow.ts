@@ -44,12 +44,19 @@ const planStep = createStep({
     const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
     const writer = getWriterFromContext(runtimeContext);
     const restMessages = runtimeContext.get("restMessages") as any;
-    const artifactId = runtimeContext.get("artifactId") as string;
+    const artifactId = runtimeContext.get("artifactId");
+    const synapse = runtimeContext.get("synapseClient");
+    console.log("0");
     console.log("artifactId", artifactId);
-    const gitRepositoryUtils = new GitRepositoryUtils(artifactId);
+    console.log("1");
+    const gitRepositoryUtils = new GitRepositoryUtils(artifactId, synapse);
+    console.log("2");
     const existingFiles =
-      await gitRepositoryUtils.listRepositoryFileStrucrture();
+    await gitRepositoryUtils.listRepositoryFileStrucrture();
+
+    console.log("3");
     const relevantFiles = getPagesAndComponents(existingFiles);
+    console.log("4");
     const readonlyFiles = [
       ...existingFiles.filter(
         (f) => !relevantFiles.map((f) => f.path).includes(f.path)
@@ -59,16 +66,21 @@ const planStep = createStep({
         content: "",
       },
     ];
+
+    console.log("5")
     const packageJson = JSON.parse(
       existingFiles.find((f) => f.path.includes("package.json"))?.content ||
         "{}"
     );
 
+    console.log("6")
     const currentCodeContext = currentCode({
       relevantFiles: existingFiles,
       readonlyFiles,
       packageJson,
     });
+
+    console.log("7")
 
     const architectAgent = mastra.getAgent("architectAgent");
 
@@ -144,8 +156,6 @@ ${userPrompt}
       },
     ];
 
-    console.log("messages", messages);
-
     const stream = await architectAgent.stream(
       messages,
       {
@@ -180,7 +190,6 @@ ${userPrompt}
       });
     }
 
-    console.log("resp", await stream.response)
 
     console.log("[planStep] postStream", latestPartialObject);
 

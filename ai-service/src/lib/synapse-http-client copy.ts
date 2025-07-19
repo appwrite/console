@@ -1,6 +1,4 @@
 import * as _path from 'path';
-import { createOrUpdateFile, deleteFile, getFileContent, listFilesInDir, moveFile } from './daytona-utils';
-import { Sandbox } from '@daytonaio/sdk';
 
 export type ListFilesInDirResult = {
     path: string;
@@ -15,24 +13,14 @@ export type ListFilesInDirParams = {
 };
 
 export class SynapseHTTPClient {
-    private sandbox: Sandbox;
     private endpoint: string;
     private artifactBasePath: string;
     private artifactId: string;
 
-    constructor({
-        endpoint,
-        artifactId,
-        sandbox
-    }: {
-        endpoint: string;
-        artifactId: string;
-        sandbox: Sandbox;
-    }) {
+    constructor({ endpoint, artifactId }: { endpoint: string; artifactId: string }) {
         this.endpoint = endpoint;
         this.artifactBasePath = `/usr/local/artifact`;
         this.artifactId = artifactId;
-        this.sandbox = sandbox;
     }
 
     async getFolder({ path, ignoreBasePath = false }: { path: string; ignoreBasePath?: boolean }) {
@@ -51,14 +39,19 @@ export class SynapseHTTPClient {
         path: string;
         content: string;
     }> {
-        const content = await getFileContent({
-            sandbox: this.sandbox,
-            filePath: `/home/daytona/workspace/${path}`
+        const safeFilePath = _path.join(this.artifactBasePath, path);
+        console.log('[readFile]', { path, safeFilePath, artifactBasePath: this.artifactBasePath });
+        const response = await this.request({
+            type: 'fs',
+            operation: 'getFile',
+            params: {
+                filepath: safeFilePath
+            }
         });
 
         return {
-            path,
-            content
+            path: safeFilePath,
+            content: response.data.content
         };
     }
 
@@ -85,30 +78,47 @@ export class SynapseHTTPClient {
     }
 
     async createOrUpdateFile({ filepath, content }: { filepath: string; content: string }) {
-        return createOrUpdateFile({
-            sandbox: this.sandbox,
-            filePath: filepath,
-            content,
+        const safeFilePath = _path.join(this.artifactBasePath, filepath);
+        console.log('[createOrUpdateFile]', { filepath, safeFilePath, artifactBasePath: this.artifactBasePath });
+        const response = await this.request({
+            type: 'fs',
+            operation: 'updateFile',
+            params: {
+                filepath: safeFilePath,
+                content
+            }
         });
+
+        return response;
     }
 
     async updateFilePath({ filepath, newPath }: { filepath: string; newPath: string }) {
-        const result = await moveFile({
-            filePath: filepath,
-            newPath,
-            sandbox: this.sandbox,
+        const safeFilePath = _path.join(this.artifactBasePath, filepath);
+        const safeNewPath = _path.join(this.artifactBasePath, newPath);
+        console.log('updateFilePath', { filepath: safeFilePath, newPath: safeNewPath });
+        const response = await this.request({
+            type: 'fs',
+            operation: 'updateFilePath',
+            params: {
+                filepath: safeFilePath,
+                newPath: safeNewPath
+            }
         });
 
-        return result;
+        return response;
     }
 
     async deleteFile({ filepath }: { filepath: string }) {
-        const result = await deleteFile({
-            sandbox: this.sandbox,
-            filePath: filepath,
+        const safeFilePath = _path.join(this.artifactBasePath, filepath);
+        const response = await this.request({
+            type: 'fs',
+            operation: 'deleteFile',
+            params: {
+                filepath: safeFilePath
+            }
         });
 
-        return result;
+        return response;
     }
 
     async startBackgroundProcess({
@@ -132,7 +142,7 @@ export class SynapseHTTPClient {
             }
         });
 
-        console.log('Response', response);
+        console.log("Response", response);
 
         return response;
     }
@@ -190,17 +200,37 @@ export class SynapseHTTPClient {
         withContent?: boolean;
         additionalIgnorePatterns?: string[];
     }): Promise<ListFilesInDirResult[]> {
-        const files = await listFilesInDir({
-            sandbox: this.sandbox,
-            dirPath,
-            recursive: recursive || false,
-            withContent: withContent || false
+        console.log('making dir path', {
+            artifactBasePath: this.artifactBasePath,
+            dirPath
+        });
+        const safeDirPath = _path.join(this.artifactBasePath, dirPath);
+
+        console.log('safeDirPath', safeDirPath);
+
+        const response = await this.request({
+            type: 'fs',
+            operation: 'listFilesInDir',
+            params: {
+                dirPath: safeDirPath,
+                recursive,
+                withContent,
+                additionalIgnorePatterns
+            }
         });
 
-        return files.map((file) => ({
-            path: file.path,
-            content: file.content
-        }));
+        console.log('Response', response);
+
+        const data: ListFilesInDirResult[] = response.data;
+
+        const cleanResult = data.map((file) => {
+            return {
+                ...file,
+                path: file.path.replace(`${this.artifactBasePath}/`, '')
+            };
+        });
+
+        return cleanResult;
     }
 
     private async request(body: Record<string, unknown>) {
@@ -221,21 +251,14 @@ export class SynapseHTTPClient {
     }
 }
 
-export const createSynapseClient = ({
-    artifactId,
-    sandbox
-}: {
-    artifactId: string;
-    sandbox: Sandbox;
-}) => {
+export const createSynapseClient = ({ artifactId }: { artifactId: string }) => {
     console.log('Creating synapse client', {
         endpoint: process.env.SYNAPSE_ENDPOINT,
         artifactId
     });
     const synapse = new SynapseHTTPClient({
         endpoint: process.env.SYNAPSE_ENDPOINT!,
-        artifactId,
-        sandbox
+        artifactId
     });
 
     return synapse;

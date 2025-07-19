@@ -1,14 +1,11 @@
-import { createSynapseClient } from "./synapse-http-client";
+import { createSynapseClient, SynapseHTTPClient } from "./synapse-http-client";
 import { RepositoryFile } from "./types";
 
 export class GitRepositoryUtils {
-  constructor(private artifactId: string) {}
+  constructor(private artifactId: string, private synapse: SynapseHTTPClient) {}
 
   async listRepositoryFileStrucrture(): Promise<RepositoryFile[]> {
-    const synapse = createSynapseClient({
-      artifactId: this.artifactId,
-    });
-    const files = await synapse.listFilesInDir({
+    const files = await this.synapse.listFilesInDir({
       dirPath: ".",
       recursive: true,
       withContent: true,
@@ -16,7 +13,7 @@ export class GitRepositoryUtils {
     });
     return files.map((file) => ({
       path: file.path,
-      content: file.content!,
+      content: file.content ?? "",
     }));
   }
 }

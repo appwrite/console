@@ -15,15 +15,14 @@ import { anthropic } from '@ai-sdk/anthropic';
 import { Workspace } from '@/lib/imagine/workspaces-api-client';
 import { AppwriteException } from '@appwrite.io/console';
 import { createSynapseClient } from '@/lib/synapse-http-client';
-import { daytona } from '@/lib/daytona-client';
-import { Sandbox } from '@daytonaio/sdk';
-import { getOrCreateArtifactSandbox, startDevServer } from '@/lib/daytona-utils';
 
 export const handleChatRequest = async (c: Context) => {
     c.res.headers.set('x-vercel-ai-ui-message-stream', 'v1');
     const signal = c.req.raw.signal;
 
     const token = c.req.header('X-Imagine-Token');
+
+    console.log('token', token);
 
     if (!token) {
         return c.json({ error: 'Unauthorized' }, 401);
@@ -68,15 +67,69 @@ export const handleChatRequest = async (c: Context) => {
         throw new Error('Conversation not found');
     }
 
-    const { sandbox } = await getOrCreateArtifactSandbox({
+    // Create workspace
+    let workspace: Workspace;
+    const workspaceUrl = `${process.env.WORKSPACE_URL_PROTOCOL}://${artifactId}.${process.env.WORKSPACE_URL_DOMAIN}:${process.env.WORKSPACE_URL_PORT}`;
+    console.log('workspaceUrl', workspaceUrl);
+
+    const synapseClient = createSynapseClient({
         artifactId
     });
+    
 
-    const { previewUrl } = await startDevServer({
-        sandbox
-    });
+    try {
+        console.log('Getting workspace');
+        workspace = await workspacesClient.get(artifactId);
+        console.log('Found existing workspace', workspace);
+    } catch (error) {
+        if ((error as AppwriteException).type === 'workspace_not_found') {
+            console.log('Workspace not found, creating...');
+            workspace = await workspacesClient.create(artifactId, artifactId, "s-1vcpu-1gb");
+            console.log('Created new workspace', workspace);
+            console.log('Creating proxy rule');
+            console.time("createWorkspaceProxyRule");
+            const proxyRule = await workspacesClient.createWorkspaceProxyRule(
+                `${artifactId}.${process.env.WORKSPACE_URL_DOMAIN}`,
+                workspace.$id
+            );
 
-    const workspaceUrl = previewUrl;
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            console.timeEnd("createWorkspaceProxyRule");
+            console.log('Created proxy rule', proxyRule);
+
+            console.log("Creating artifact directory");
+            await synapseClient.executeCommand({
+                command: "mkdir -p artifact",
+                cwd: "/usr/local"
+            });
+            
+            console.log("Cloning template")
+            await synapseClient.executeCommand({
+                command: "bunx giget@latest gh:appwrite/templates-for-frameworks/base-vite-template .",
+                cwd: "/usr/local/artifact",
+                timeout: 60000,
+            });
+        
+            console.log("Installing dependencies")
+            await synapseClient.executeCommand({
+                command: "bun install",
+                cwd: "/usr/local/artifact",
+                timeout: 60000,
+            });
+        
+            console.log("Running bun dev in the background")
+            await synapseClient.startBackgroundProcess({
+                command: "bun",
+                args: ["run", "dev"],
+                cwd: "/usr/local/artifact", 
+            });
+        
+        } else {
+            throw error;
+        }
+    }
+
+
     const convertedMessages = convertToModelMessages(messages);
 
     const latestMessage = convertedMessages[convertedMessages.length - 1];
@@ -96,18 +149,17 @@ export const handleChatRequest = async (c: Context) => {
                 artifactId,
                 restMessages,
                 isFirstMessage: isNewConversation,
-                signal,
-                sandbox,
+                signal
             });
 
             writer.write({
-                type: 'data-workspace-state',
-                data: {
-                    state: 'ready',
-                    workspaceUrl
-                },
-                transient: true
-            });
+               type: "data-workspace-state",
+               data: {
+                state: "ready",
+                workspaceUrl,
+               },
+               transient: true
+            })
 
             c.set('runtimeContext', runtimeContext);
             const run = await mastra.getWorkflow('codeWorkflow').createRunAsync();

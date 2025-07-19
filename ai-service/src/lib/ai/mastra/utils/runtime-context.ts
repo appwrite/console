@@ -2,6 +2,7 @@ import { RuntimeContext } from "@mastra/core/runtime-context";
 import { UIMessageStreamWriter } from "ai";
 import { createSynapseClient, SynapseHTTPClient } from "../../../synapse-http-client";
 import { ImagineUIMessage } from "../../../../shared-types";
+import { Sandbox } from "@daytonaio/sdk";
 
 export type WriterType = UIMessageStreamWriter<ImagineUIMessage>;
 export type RuntimeContextPayload = {
@@ -42,18 +43,20 @@ export const createRuntimeContext = ({
   restMessages,
   isFirstMessage,
   signal,
+  sandbox,
 }: {
   writer: WriterType;
   artifactId: string;
   restMessages?: any[];
   isFirstMessage?: boolean;
   signal?: AbortSignal;
+  sandbox: Sandbox;
 }): RuntimeContextType => {
   const runtimeContext = new RuntimeContext<RuntimeContextPayload>();
   runtimeContext.set("skipWritingToolCalls", false);
   runtimeContext.set("writer", writer as WriterType);
   runtimeContext.set("restMessages", restMessages || []);
-  runtimeContext.set("synapseClient", createSynapseClient({ artifactId }));
+  runtimeContext.set("synapseClient", createSynapseClient({ artifactId, sandbox }));
   runtimeContext.set("isFirstMessage", isFirstMessage || false);
   runtimeContext.set("signal", signal);
   runtimeContext.set("artifactId", artifactId);
