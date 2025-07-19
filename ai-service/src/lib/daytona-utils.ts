@@ -275,7 +275,7 @@ export const getOrCreateArtifactSandbox = async ({
         onStepUpdate({
             id: WorkspaceStepId.CREATE_SANDBOX,
             status: 'completed',
-            text: 'Sandbox created'
+            text: 'Workspace created'
         });
 
         onStepUpdate({
