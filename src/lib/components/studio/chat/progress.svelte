@@ -116,22 +116,22 @@
         margin-top: 0.4rem;
         margin-bottom: 0.4rem;
         font-size: 0.75rem;
-        background: white;
-        border: 1px solid #e5e5e5;
+        background: var(--bgcolor-neutral-primary);
+        border: 1px solid var(--border-neutral);
         border-top: 0;
         border-radius: 8px;
         transition: all 0.3s ease;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 1px 3px var(--overlay-neutral-hover);
     }
 
     .header {
-        background: rgba(245, 245, 245, 0.5);
-        border: 1px solid #e5e5e5;
+        background: var(--bgcolor-neutral-secondary);
+        border: 1px solid var(--border-neutral);
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
         border-left: 0;
         border-right: 0;
-        color: #737373;
+        color: var(--fgcolor-neutral-secondary);
         height: 2rem;
         display: flex;
         align-items: center;
@@ -147,7 +147,7 @@
     .is-latest {
         font-size: 0.75rem;
         font-weight: 500;
-        color: #737373;
+        color: var(--fgcolor-neutral-secondary);
     }
 
     .version-text {
@@ -166,7 +166,7 @@
 
     .tool-item {
         font-size: 0.725rem;
-        color: #a3a3a3;
+        color: var(--fgcolor-neutral-tertiary);
         height: 1.375rem;
         font-family: monospace;
         gap: 0.5rem;
@@ -180,9 +180,9 @@
         align-items: center;
         justify-content: center;
         width: 0.875rem;
-        background: white;
+        background: var(--bgcolor-neutral-primary);
         z-index: 10;
-        color: #d4d4d4;
+        color: var(--fgcolor-neutral-weak);
     }
 
     .icon {
@@ -198,7 +198,7 @@
 
     .connector-line {
         position: absolute;
-        background: #e5e5e5;
+        background: var(--border-neutral);
         height: 0.625rem;
         top: -0.3125rem;
         width: 1px;
@@ -211,9 +211,10 @@
 
     :global(.show-more-btn) {
         font-size: 0.625rem !important;
-        background: #fafafa !important;
+        background: var(--bgcolor-neutral-secondary) !important;
         border-radius: 9999px !important;
-        border: 1px solid #e5e5e5 !important;
+        border: 1px solid var(--border-neutral) !important;
+        color: var(--fgcolor-neutral-primary) !important;
         height: 1.25rem !important;
         padding: 0 0.5rem !important;
         position: absolute !important;

@@ -27,22 +27,22 @@
         margin-top: 0.4rem;
         margin-bottom: 0.4rem;
         font-size: 0.75rem;
-        background: white;
-        border: 1px solid #e5e5e5;
+        background: var(--bgcolor-neutral-primary);
+        border: 1px solid var(--border-neutral);
         border-top: 0;
         border-radius: 8px;
         overflow: hidden;
         transition: all 0.3s ease;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 1px 3px var(--overlay-neutral-hover);
     }
 
     .header {
-        background: rgba(245, 245, 245, 0.5);
-        border: 1px solid #e5e5e5;
+        background: var(--bgcolor-neutral-secondary);
+        border: 1px solid var(--border-neutral);
         border-radius: 0.125rem 0.125rem 0 0;
         border-left: 0;
         border-right: 0;
-        color: #737373;
+        color: var(--fgcolor-neutral-secondary);
         height: 2rem;
         display: flex;
         align-items: center;
