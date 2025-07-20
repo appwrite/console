@@ -32,7 +32,7 @@
     };
 
     const saveColumnPreferences = () => {
-        const shownColumns = $columns.filter((n) => n.hide !== true).map((n) => n.id);
+        const shownColumns = $columns.filter((n) => n.hide === true).map((n) => n.id);
 
         if (isCustomTable) {
             preferences.setCustomTableColumns(page.params.table, shownColumns);
@@ -45,22 +45,22 @@
         if (isCustomTable) {
             const shownColumns = preferences.getCustomTableColumns(page.params.table);
 
-            columns.update((columns) => {
-                return columns.map((column) => {
-                    column.hide = !shownColumns.includes(column.id);
+            columns.update((n) =>
+                n.map((column) => {
+                    column.hide = shownColumns?.includes(column.id) ?? false;
                     return column;
-                });
-            });
+                })
+            );
         } else {
             const prefs = preferences.get(page.route);
 
-            if (prefs?.columns && prefs.columns.length > 0) {
-                columns.update((cols) => {
-                    return cols.map((column) => {
-                        column.hide = !prefs.columns.includes(column.id);
+            if (prefs?.columns) {
+                columns.update((n) =>
+                    n.map((column) => {
+                        column.hide = prefs.columns?.includes(column.id) ?? false;
                         return column;
-                    });
-                });
+                    })
+                );
             }
         }
 
@@ -79,7 +79,7 @@
         columns.update((cols) =>
             cols.map((col) => {
                 if (col.id === column.id) {
-                    col.hide = !column.hide;
+                    column.hide = !column.hide;
                 }
                 return col;
             })
@@ -90,6 +90,7 @@
 </script>
 
 <svelte:window on:resize={calcMaxHeight} />
+
 {#if $columns?.length}
     <Popover let:toggle placement="bottom-end" padding="none">
         {@render children(toggle, selectedColumnsNumber)}

@@ -116,9 +116,29 @@
     $: totalCount = relatedList?.length ?? 0;
 
     $: options =
-        rowList?.rows?.map((n) => {
-            const data = displayNames.filter((name) => name !== '$id').map((name) => n?.[name]);
-            return { value: n.$id, label: n.$id, data };
+        rowList?.rows?.map((row) => {
+            const names = displayNames.filter((name) => name !== '$id');
+            const values = names
+                .map((name) => row?.[name])
+                // always supposed to be a string but just being a bit safe here
+                .filter((value) => value != null && typeof value === 'string' && value !== '');
+
+            const displayValues = !editing
+                ? values
+                : // on non edit routes like create, there's enough space!
+                  values.map((value) => (value.length > 5 ? value.slice(0, 5) + '...' : value));
+
+            const label = !values.length
+                ? row.$id
+                : // values are in `$id (a | b)` format
+                  // previously used to have a `$id a | b`.
+                  `${row.$id} (${displayValues.join(' | ')})`;
+
+            return {
+                label,
+                value: row.$id,
+                data: names.map((name) => row?.[name])
+            };
         }) ?? [];
 
     $: hasItems = totalCount > 0;

@@ -17,10 +17,23 @@
     const tableId = page.params.table;
     let names: string[] = [...(preferences.getDisplayNames()?.[tableId] ?? [])];
 
+    function getDisplayNames() {
+        return [...(preferences.getDisplayNames()?.[tableId] ?? [])].filter(
+            (name) => name !== '$id'
+        ); // edge case with `$id`? got saved during tests!
+    }
+
+    let names: string[] = $state(getDisplayNames());
+
     async function updateDisplayName() {
         try {
-            await preferences.setDisplayNames($organization.$id, tableId, names);
-            names = [...(preferences.getDisplayNames()?.[tableId] ?? [])];
+            // $state makes proxy,
+            // structuredClone doesn't work
+            const regularArray = [...names];
+
+            await preferences.setDisplayNames($organization.$id, tableId, regularArray);
+            names = getDisplayNames();
+
             await invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Display names have been updated',
@@ -36,23 +49,34 @@
         }
     }
 
-    $: options = ($columns as Models.ColumnString[])
-        .filter(
-            (attr) =>
-                attr.type === 'string' && !attr?.array && !names?.some((name) => name === attr.key)
-        )
-        .map((attr) => {
-            return {
+    function getValidAttributes() {
+        return ($attributes as Models.AttributeString[]).filter(
+            (attr) => attr.type === 'string' && !attr?.array
+        );
+    }
+
+    function getOptions(index: number) {
+        const current = names?.[index];
+        return getValidAttributes()
+            .filter((attr) => !names?.includes(attr.key) || attr.key === current)
+            .map((attr) => ({
                 value: attr.key,
                 label: attr.key
-            };
-        });
+            }));
+    }
 
-    $: addAttributeDisabled = names?.length >= 5 || (names?.length && !names[names?.length - 1]);
+    const addAttributeDisabled = $derived(
+        names?.length >= 5 || (names?.length && !names[names?.length - 1])
+    );
 
-    $: updateBtnDisabled =
+    const updateBtnDisabled = $derived(
         !symmetricDifference(names, preferences.getDisplayNames()?.[tableId] ?? [])?.length ||
-        (names?.length && !last(names));
+            (names?.length && !last(names))
+    );
+
+    const hasExhaustedOptions = $derived(
+        getValidAttributes().length === names.filter(Boolean).length
+    );
 </script>
 
 <Form onSubmit={updateDisplayName}>
@@ -72,19 +96,22 @@
                     </span>
                 </Layout.Stack>
                 {#if names?.length}
-                    {#each names as name, i}
+                    {#each names as name, index}
                         <Layout.Stack direction="row" gap="xxs">
+                            {@const options = getOptions(index)}
+                            {@const disabled =
+                                (!!names[index] && names.length > index + 1) || hasExhaustedOptions}
                             <InputSelect
                                 id={name}
-                                placeholder="Select column"
-                                bind:value={names[i]}
-                                disabled={!!names[i] && names.length > i + 1}
-                                {options} />
+                                {options}
+                                {disabled}
+                                bind:value={names[index]}
+                                placeholder="Select column" />
                             <Button
                                 icon
                                 extraCompact
                                 on:click={() => {
-                                    names.splice(i, 1);
+                                    names.splice(index, 1);
                                     names = names;
                                 }}>
                                 <Icon icon={IconX} />
@@ -92,18 +119,22 @@
                         </Layout.Stack>
                     {/each}
                 {/if}
-                <div>
-                    <Button
-                        compact
-                        disabled={addAttributeDisabled}
-                        on:click={() => {
-                            names[names.length] = null;
-                            names = names;
-                        }}>
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Add column
-                    </Button>
-                </div>
+
+                <!-- show only when options don't have all the attributes -->
+                {#if !hasExhaustedOptions}
+                    <div>
+                        <Button
+                            compact
+                            disabled={addAttributeDisabled}
+                            on:click={() => {
+                                names[names.length] = null;
+                                names = names;
+                            }}>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add column
+                        </Button>
+                    </div>
+                {/if}
             </Layout.Stack>
         </svelte:fragment>
 

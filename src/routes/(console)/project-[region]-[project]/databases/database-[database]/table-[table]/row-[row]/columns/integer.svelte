@@ -6,16 +6,14 @@
     export let label: string;
     export let value: number;
     export let column: Models.ColumnInteger;
-
-    $: nullable = column.required ? false : !value;
 </script>
 
 <InputNumber
     {id}
     {label}
-    {nullable}
-    required={column.required}
+    bind:value
     min={column.min}
     max={column.max}
-    step={column.type === 'double' ? 'any' : 1}
-    bind:value />
+    required={column.required}
+    nullable={!column.required}
+    step={column.type === 'double' ? 'any' : 1} />

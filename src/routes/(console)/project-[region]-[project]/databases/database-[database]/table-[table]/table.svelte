@@ -10,7 +10,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { afterUpdate, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import type { PageData } from './$types';
     import { isRelationship, isRelationshipToMany, isString } from './row-[row]/columns/store';
     import RelationshipsModal from './relationshipsModal.svelte';
@@ -28,35 +28,20 @@
     } from '@appwrite.io/pink-svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-    import { flags } from '$lib/flags';
 
     export let data: PageData;
 
     const databaseId = page.params.database;
     const tableId = page.params.table;
+
+    let displayNames = {};
     let showRelationships = false;
     let selectedRelationship: Models.ColumnRelationship = null;
     let relationshipData: Partial<Models.Document>[];
-    let displayNames = {};
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
-        updateMaxWidth();
     });
-
-    afterUpdate(() => updateMaxWidth());
-
-    function updateMaxWidth() {
-        const tableCells = Array.from(document.querySelectorAll('.less-width-truncated'));
-
-        const visibleColumnsCount = $tableColumns.filter((col) => !col.hide).length;
-        const newMaxWidth = Math.max(50 - (visibleColumnsCount - 1) * 5, 25);
-
-        tableCells.forEach((cell) => {
-            const cellItem = cell as HTMLElement;
-            cellItem.style.maxWidth = `${newMaxWidth}vw`;
-        });
-    }
 
     function formatArray(array: unknown[]) {
         if (array.length === 0) return '[ ]';
@@ -104,7 +89,7 @@
                 id: column.key,
                 title: column.key,
                 type: column.type as ColumnType,
-                hide: !selected?.includes(column.key),
+                hide: !!selected?.includes(column.key),
                 array: column?.array,
                 width: { min: 168 },
                 format: 'format' in column && column?.format === 'enum' ? column.format : null,
@@ -164,8 +149,6 @@
     ) as Models.ColumnRelationship[];
 
     let checked = false;
-
-    const showEncrypt = flags.showAttributeEncrypt(data);
 </script>
 
 <Table.Root
@@ -257,7 +240,7 @@
                                     <span slot="title">Timestamp</span>
                                     {toLocaleDateTime(datetime, true)}
                                 </DualTimeView>
-                            {:else if isEncryptedAttribute && showEncrypt}
+                            {:else if isEncryptedAttribute}
                                 <button on:click={(e) => e.preventDefault()}>
                                     <InteractiveText
                                         copy={false}
@@ -370,8 +353,12 @@
 </Confirm>
 
 <style>
-    .floating-action-bar :global(div:first-of-type) {
-        /* 50% > 60% because we have sub-navigation */
-        left: calc(60% - var(--p-floating-action-bar-width) / 2);
+    .floating-action-bar {
+        position: fixed;
+
+        :global(div:first-of-type) {
+            /* 50% > 60% because we have sub-navigation */
+            left: calc(60% - var(--p-floating-action-bar-width) / 2);
+        }
     }
 </style>

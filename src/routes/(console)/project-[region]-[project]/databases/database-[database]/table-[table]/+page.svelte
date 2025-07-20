@@ -24,7 +24,6 @@
     import { base } from '$app/paths';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
-    import { flags } from '$lib/flags';
 
     export let data: PageData;
 
@@ -35,12 +34,13 @@
     const filterColumns = writable<Column[]>([]);
 
     $: selected = preferences.getCustomTableColumns(page.params.table);
+
     $: tableColumns.set(
         $table.columns.map((column) => ({
             id: column.key,
             title: column.key,
             type: column.type as ColumnType,
-            hide: !selected?.includes(column.key),
+            hide: !!selected?.includes(column.key),
             array: column?.array,
             format: 'format' in column && column?.format === 'enum' ? column.format : null,
             elements: 'elements' in column ? column.elements : null
@@ -51,13 +51,13 @@
         ...['$id', '$createdAt', '$updatedAt'].map((id) => ({
             id,
             title: id,
-            hide: false,
+            show: true,
             type: (id === '$id' ? 'string' : 'datetime') as ColumnType
         }))
     ]);
 
     $: hasColumns = !!$table.columns.length;
-    $: hasValidColumns = $table?.columns?.some((attr) => attr.status === 'available');
+    $: hasValidColumns = $table?.columns?.some((col) => col.status === 'available');
 
     async function onSelect(file: Models.File) {
         $isCsvImportInProgress = true;
@@ -100,15 +100,13 @@
                     analyticsSource="database_rows" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     <ViewSelector view={data.view} columns={tableColumns} hideView isCustomTable />
-                    {#if flags.showCsvImport(data)}
-                        <Button
-                            secondary
-                            event={Click.DatabaseImportCsv}
-                            disabled={!(hasColumns && hasValidColumns)}
-                            on:click={() => (showImportCSV = true)}>
-                            Import CSV
-                        </Button>
-                    {/if}
+                    <Button
+                        secondary
+                        event={Click.DatabaseImportCsv}
+                        disabled={!(hasColumns && hasValidColumns)}
+                        on:click={() => (showImportCSV = true)}>
+                        Import CSV
+                    </Button>
                     {#if !$isSmallViewport}
                         <Button
                             disabled={!(hasColumns && hasValidColumns)}

@@ -22,18 +22,22 @@
         data = null;
         selectedRelationship = null;
     }
+
+    $: tableColumns = [
+        // take full width if no display names set
+        { id: '$id', width: args.length ? 200 : undefined },
+        ...args.map((id) => ({ id }))
+    ];
 </script>
 
 <Modal bind:show title={selectedRelationship?.key} hideFooter>
     {#if data?.length}
         <Paginator items={data} {limit}>
             {#snippet children(paginatedItems: typeof data)}
-                <Table.Root
-                    let:root
-                    columns={[{ id: '$id', width: 150 }, ...args.map((id) => ({ id }))]}>
+                <Table.Root let:root columns={tableColumns}>
                     <svelte:fragment slot="header" let:root>
                         <Table.Header.Cell column="$id" {root}>Row ID</Table.Header.Cell>
-                        {#if args?.length}
+                        {#if args.length}
                             {#each args as arg}
                                 <Table.Header.Cell column={arg} {root}>{arg}</Table.Header.Cell>
                             {/each}
@@ -47,7 +51,7 @@
                             <Table.Cell column="$id" {root}>
                                 <Id value={doc.$id}>{doc.$id}</Id>
                             </Table.Cell>
-                            {#if args?.length}
+                            {#if args.length}
                                 {#each args as arg}
                                     <Table.Cell column={arg} {root}>{doc[arg]}</Table.Cell>
                                 {/each}

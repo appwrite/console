@@ -50,7 +50,6 @@
     import { ActionMenu, Selector } from '@appwrite.io/pink-svelte';
     import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
     import { Popover, Layout, Tag, Typography, Link } from '@appwrite.io/pink-svelte';
-    import { flags } from '$lib/flags';
 
     export let data: Partial<Models.ColumnString> = {
         required: false,
@@ -62,8 +61,6 @@
     export let editing = false;
 
     let savedDefault = data.default;
-
-    const showEncrypt = flags.showAttributeEncrypt(page.data);
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
@@ -128,53 +125,55 @@
     disabled={data.required || editing}
     description="Indicate whether this column is an array. Defaults to an empty array." />
 
-{#if showEncrypt}
-    <Layout.Stack gap="xs" direction="column">
-        <div class="popover-holder" class:disabled-checkbox={!supportsStringEncryption || editing}>
-            <Layout.Stack inline gap="s" alignItems="flex-start" direction="row">
-                <Popover let:toggle placement="bottom-start">
-                    <Selector.Checkbox
-                        size="s"
-                        id="encrypt"
-                        bind:checked={data.encrypt}
-                        disabled={!supportsStringEncryption || editing} />
+<Layout.Stack gap="xs" direction="column">
+    <div
+        class="popover-holder"
+        class:cursor-not-allowed={editing}
+        class:disabled-checkbox={!supportsStringEncryption || editing}>
+        <Layout.Stack inline gap="s" alignItems="flex-start" direction="row">
+            <Popover let:toggle placement="bottom-start">
+                <Selector.Checkbox
+                    size="s"
+                    id="encrypt"
+                    bind:checked={data.encrypt}
+                    disabled={!supportsStringEncryption || editing} />
 
-                    <Layout.Stack gap="xxs" direction="column">
-                        <button
-                            type="button"
-                            class="u-cursor-pointer"
-                            on:click={(e) => {
-                                if (!supportsStringEncryption) {
-                                    toggle(e);
-                                } else {
-                                    data.encrypt = !data.encrypt;
-                                }
-                            }}>
-                            <Layout.Stack inline gap="xxs" direction="row" alignItems="center">
-                                <Typography.Text variant="m-500">Encrypted</Typography.Text>
-                                {#if !supportsStringEncryption}
-                                    <Tag variant="default" size="xs" on:click={toggle}>Pro</Tag>
-                                {/if}
-                            </Layout.Stack>
-                        </button>
-                        <Typography.Text color="--fgcolor-neutral-tertiary">
-                            Indicate whether this column is encrypted. Encrypted columns cannot be
-                            queried.
-                        </Typography.Text>
-                    </Layout.Stack>
+                <Layout.Stack gap="xxs" direction="column">
+                    <button
+                        type="button"
+                        disabled={editing}
+                        class:cursor-pointer={!editing}
+                        class:cursor-not-allowed={editing}
+                        on:click={(e) => {
+                            if (!supportsStringEncryption) {
+                                toggle(e);
+                            } else {
+                                data.encrypt = !data.encrypt;
+                            }
+                        }}>
+                        <Layout.Stack inline gap="xxs" direction="row" alignItems="center">
+                            <Typography.Text variant="m-500">Encrypted</Typography.Text>
+                            {#if !supportsStringEncryption}
+                                <Tag variant="default" size="xs" on:click={toggle}>Pro</Tag>
+                            {/if}
+                        </Layout.Stack>
+                    </button>
+                    <Typography.Text color="--fgcolor-neutral-tertiary">
+                        Protect attribute against data leaks for best privacy compliance. Encrypted
+                        attributes cannot be queried.
+                    </Typography.Text>
+                </Layout.Stack>
 
-                    <ActionMenu.Root width="180px" slot="tooltip">
-                        <Typography.Text variant="m-500">
-                            Available on Pro plan. <Link.Anchor href={$upgradeURL}
-                                >Upgrade</Link.Anchor>
-                            to enable encrypted columns.
-                        </Typography.Text>
-                    </ActionMenu.Root>
-                </Popover>
-            </Layout.Stack>
-        </div>
-    </Layout.Stack>
-{/if}
+                <ActionMenu.Root width="180px" slot="tooltip">
+                    <Typography.Text variant="m-500">
+                        Available on Pro plan. <Link.Anchor href={$upgradeURL}>Upgrade</Link.Anchor>
+                        to enable encrypted columns.
+                    </Typography.Text>
+                </ActionMenu.Root>
+            </Popover>
+        </Layout.Stack>
+    </div>
+</Layout.Stack>
 
 <style lang="scss">
     .popover-holder {
@@ -185,7 +184,16 @@
 
         // no cursor when disabled
         &.disabled-checkbox :global(button) {
-            cursor: unset !important;
+            cursor: unset;
         }
+    }
+
+    .cursor-pointer {
+        // !important is needed
+        cursor: pointer !important;
+    }
+
+    .cursor-not-allowed {
+        cursor: not-allowed;
     }
 </style>

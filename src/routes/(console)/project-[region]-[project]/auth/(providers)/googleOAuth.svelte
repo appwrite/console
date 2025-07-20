@@ -65,11 +65,9 @@
         To complete the setup, create an OAuth2 client ID with "Web application" as the application
         type, then add this redirect URI to your {provider.name} configuration.
     </Alert.Inline>
-    <div>
-        <p>URI</p>
-        <CopyInput
-            value={`${getApiEndpoint(page.params.region)}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
-    </div>
+    <CopyInput
+        label="URI"
+        value={`${getApiEndpoint(page.params.region)}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>

@@ -6,26 +6,24 @@
     export let label: string;
     export let value: string;
     export let column: Models.ColumnString;
-
-    $: nullable = column.required ? false : !value;
 </script>
 
 {#if column.size >= 50}
     <InputTextarea
         {id}
         {label}
-        {nullable}
+        bind:value
         placeholder="Enter string"
-        required={column.required}
         maxlength={column.size}
-        bind:value />
+        required={column.required}
+        nullable={!column.required} />
 {:else}
     <InputText
         {id}
         {label}
-        {nullable}
+        bind:value
         placeholder="Enter string"
-        required={column.required}
         maxlength={column.size}
-        bind:value />
+        required={column.required}
+        nullable={!column.required} />
 {/if}

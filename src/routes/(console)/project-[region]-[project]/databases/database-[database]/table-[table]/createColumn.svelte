@@ -13,7 +13,6 @@
     import { base } from '$app/paths';
     import type { Columns } from './store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { preferences } from '$lib/stores/preferences';
 
     export let showCreate = false;
     export let selectedOption: Option['name'] = null;
@@ -29,17 +28,10 @@
     };
     let error: string;
 
-    async function updateTableColumns() {
-        const selectedColumns = preferences.getCustomTableColumns(tableId);
-        selectedColumns.push(key ?? data?.key);
-        await preferences.setCustomTableColumns(tableId, selectedColumns);
-        await invalidate(Dependencies.TABLE);
-    }
-
     async function submit() {
         try {
             await $option.create(databaseId, tableId, key, data);
-            await updateTableColumns();
+            await invalidate(Dependencies.TABLE);
 
             if (!page.url.pathname.includes('columns')) {
                 await goto(

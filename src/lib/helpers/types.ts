@@ -60,9 +60,8 @@ export type TableRootProp = {
     selectedAll: boolean;
     selectedNone: boolean;
     selectedSome: boolean;
-    // columns: Array<Column> | number;
-    columns: Record<PinkColumn['id'], PinkColumn>;
-    // columnsMap: Record<PinkColumn['id'], PinkColumn>;
+    columns: Array<PinkColumn> | number;
+    columnsMap: Record<PinkColumn['id'], PinkColumn>;
     toggle: (id: string) => void;
     toggleAll: () => void;
     addAvailableId: (id: string) => void;

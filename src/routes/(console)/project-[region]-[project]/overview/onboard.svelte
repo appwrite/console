@@ -43,9 +43,12 @@
         trackEvent(Click.KeyCreateClick, {
             source: 'onboarding'
         });
-        goto(`${base}/project-${page.params.region}-${page.params.project}/overview/keys/create`, {
-            replaceState: true
-        });
+        goto(
+            `${base}/project-${page.params.region}-${page.params.project}/overview/api-keys/create`,
+            {
+                replaceState: true
+            }
+        );
     }
 
     export let platforms: Models.Platform[] = [];

@@ -6,8 +6,12 @@
     export let label: string;
     export let value: string | null;
     export let column: Models.ColumnUrl;
-
-    $: nullable = column.required ? false : !value;
 </script>
 
-<InputURL {id} {label} {nullable} placeholder="Enter URL" required={column.required} bind:value />
+<InputURL
+    {id}
+    {label}
+    bind:value
+    placeholder="Enter URL"
+    required={column.required}
+    nullable={!column.required} />

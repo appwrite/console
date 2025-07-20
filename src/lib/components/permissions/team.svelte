@@ -34,6 +34,7 @@
         offset = 0;
         search = '';
         selected.clear();
+        show = false;
     }
 
     function create() {
@@ -88,11 +89,13 @@
                 {@const exists = $groups.has(role)}
                 <Table.Row.Button {root} on:click={() => onSelection(role)} disabled={exists}>
                     <Table.Cell column="checkbox" {root}>
-                        <Selector.Checkbox
-                            size="s"
-                            id={team.$id}
-                            disabled={exists}
-                            checked={exists || selected.has(role)} />
+                        <div style:pointer-events="none">
+                            <Selector.Checkbox
+                                size="s"
+                                id={team.$id}
+                                disabled={exists}
+                                checked={exists || selected.has(role)} />
+                        </div>
                     </Table.Cell>
                     <Table.Cell column="team" {root}>
                         <Layout.Stack direction="row" alignItems="center" gap="s">
