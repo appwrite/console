@@ -1,5 +1,5 @@
 import { daytona } from "@/lib/daytona-client";
-import { getArtifactSandbox } from "@/lib/daytona-utils";
+import { getArtifactSandbox, startDevServer } from "@/lib/daytona-utils";
 import { convertDBMessagesToImagineUIMessages, getOrCreateConversation } from "@/lib/message-history";
 import { prisma } from "@/lib/prisma";
 import { ImagineUIMessage } from "@/shared-types";
@@ -35,6 +35,16 @@ export const getConversation = async (c: Context) => {
   const sandbox = await getArtifactSandbox({ artifactId: conversationId });
 
   if (sandbox) {
+    console.log("Sandbox id", sandbox.id);
+
+    if (sandbox.state === "stopped") {
+      await sandbox.start();
+      await startDevServer({
+        sandbox,
+        onStepUpdate: () => {}
+      });
+    }
+
     const previewLinkResult = await sandbox.getPreviewLink(3000);
     previewUrl = previewLinkResult.url;
   }
