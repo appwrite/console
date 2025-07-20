@@ -1,5 +1,5 @@
 import { Sandbox } from '@daytonaio/sdk';
-import { daytona } from '../daytona-client';
+import { daytona } from './daytona-client';
 import { OnStepUpdateFn, WorkspaceStepId } from '@/lib/ai/custom-parts/workspace-state';
 import { prisma } from '@/lib/prisma';
 

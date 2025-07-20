@@ -8,8 +8,8 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
 import { fileURLToPath } from 'url';
-import { handleChatRequest } from '@/handlers/chat/route';
-import { getConversation, getConversations } from './handlers/conversation';
+import { handleChatRequest } from '@/handlers/chat.handler';
+import { getConversation, getConversations } from './handlers/conversations.handler';
 import { contextStorage } from "hono/context-storage";
 
 const app = new Hono();

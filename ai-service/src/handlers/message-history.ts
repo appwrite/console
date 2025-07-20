@@ -1,6 +1,6 @@
 import { ImagineUIMessage } from "@/shared-types";
-import { Message, Prisma } from "./generated/prisma";
-import { prisma } from "./prisma";
+import { Message, Prisma } from "@/lib/generated/prisma";
+import { prisma } from "@/lib/prisma";
 
 type ConversationWithMessages = Prisma.ConversationGetPayload<{
   include: {

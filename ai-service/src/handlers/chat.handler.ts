@@ -8,8 +8,8 @@ import {
     streamText,
     TextPart
 } from 'ai';
-import { createRuntimeContext, WriterType } from '../../lib/ai/mastra/utils/runtime-context';
-import { mastra } from '../../lib/ai/mastra';
+import { createRuntimeContext, WriterType } from '../lib/ai/mastra/utils/runtime-context';
+import { mastra } from '../lib/ai/mastra';
 import { createImagineClient } from '@/lib/imagine/create-artifact-client';
 import { anthropic } from '@ai-sdk/anthropic';
 import { getOrCreateArtifactSandbox, startDevServer } from '@/lib/daytona/daytona-sandbox';
@@ -20,7 +20,7 @@ import {
 import {
     getOrCreateConversation,
     updateConversationHistory
-} from '@/lib/message-history';
+} from './message-history';
 
 export const routeHandler = async (c: Context) => {
     try {
