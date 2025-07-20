@@ -26,7 +26,7 @@
   .workspace-progress {
     height: 100%;
     width: 100%;
-    background-color: #000;
+    background-color: var(--bgcolor-neutral-primary);
     justify-content: center;
     align-items: center;
     display: flex;
@@ -34,19 +34,34 @@
 
   .progress-steps {
     width: 240px;
-    background-color: #282828;
+    background-color: var(--bgcolor-neutral-secondary);
     border-radius: 8px;
-    color: #fff;
+    color: var(--fgcolor-neutral-primary);
   }
 
   .step {
     padding: 12px 16px;
     display: flex;
+    align-items: center;
     gap: 12px;
   }
 
   .step:not(:last-child) {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border-neutral);
+  }
+
+  .step-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+  }
+
+  .step-text {
+    display: flex;
+    align-items: center;
+    line-height: 1;
   }
   
 </style>

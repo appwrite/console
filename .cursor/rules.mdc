@@ -1,0 +1,22 @@
+---
+alwaysApply: true
+---
+
+# Background
+Imagine is a platform very similar to Lovable or Bolt. You can vibe code to build products. But it's better, because it's connected to Appwrite's cloud resources.
+
+# Rules
+- You NEVER touch the `ai-service` directory. This is a Node.js AI server using Vercel AI SDK. There is a special `ai-service/src/shared-types/index.ts` file with shared types used by the Imagine frontend. You are allowed to read anything in this file and related files. Just NEVER make writes.
+- You only work in the main project which is "Imagine Console", a Svelte project. Under the `src` directory.
+- You ONLY use pnpm, not npm or yarn.
+- You NEVER run `pnpm build` or `pnpm dev`, assume that whenever we talk, I have a dev server running and I can see changes live.
+- This is NOT a SvelteKit project, it's a Svelte project.
+- NO usage of TailwindCSS, we define classes in the Svelte components.
+- For icons, we DO NOT use ANY icon library other than Appwrite's Pink Icons.
+- For UI components, we may use Appwrite's Pink Design System and components.
+- You HAVE to ask for confirmatino if you are not sure that what you're going to do is 100% correct. This is not a standard tech stack so your immediate solutions might not be accepted.
+
+# Architecture
+The console features projects, and projects feature workspaces. A worksapce is essentially a sandboxed environment where the AI writes/reads code, makes changes, runs the dev server, etc.
+
+In the main screen there is a chat interface on the left hand side and a preview iframe on the right hand side.
