@@ -3,6 +3,7 @@ import { thinkingUIDataPartSchema } from '@/lib/ai/custom-parts/thinking';
 import { workspaceStateUIDataPartSchema } from '@/lib/ai/custom-parts/workspace-state';
 import { fileTools } from '@/lib/ai/mastra/tools/file-tools';
 import { InferUIDataParts, InferUITool, ToolUIPart, UIMessage } from 'ai';
+export type { GetConversationResult, GetConversationsResult } from '@/handlers/conversation';
 
 export type ImagineTools = {
     readFile: InferUITool<typeof fileTools.readFileTool>;

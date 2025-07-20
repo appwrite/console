@@ -16,11 +16,24 @@ datasource db {
 
 model Conversation {
   artifactId String
-  projectId String
-  id        String   @id @default(uuid())
+  id        String   @id
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   title String
-  uiMessages  Json
-  modelMessages Json
+  messages Message[]
+  sandboxId String?
+}
+
+enum MessageRole {
+  user
+  assistant
+}
+
+model Message {
+  id String @id
+  role MessageRole
+  parts Json
+  conversationId String
+  createdAt DateTime @default(now())
+  conversation Conversation @relation(fields: [conversationId], references: [id])
 }

@@ -1,4 +1,4 @@
-import type { ImagineUIMessage } from '$shared-types';
+import type { GetConversationResult, ImagineUIMessage } from '$shared-types';
 import { AppwriteException } from '@appwrite.io/console';
 import type { Client, Payload } from '@appwrite.io/console';
 
@@ -534,39 +534,42 @@ export type Artifact = {
      */
     status: string;
 };
-/**
- * Conversation
- */
-export type Conversation = {
-    /**
-     * Conversation unique ID.
-     */
-    $id: string;
-    /**
-     * Conversation creation date in ISO 8601 format.
-     */
-    $createdAt: string;
-    /**
-     * Conversation update date in ISO 8601 format.
-     */
-    $updatedAt: string;
-    /**
-     * ID of the artifact this conversation belongs to.
-     */
-    artifactId: string;
-    /**
-     * Conversation name.
-     */
-    name: string;
-    /**
-     * Search index string.
-     */
-    search: string;
-    /**
-     * Messages (UI)
-     */
-    messages: ImagineUIMessage[];
-};
+
+export type Conversation = GetConversationResult;
+
+// /**
+//  * Conversation
+//  */
+// export type Conversation = {
+//     /**
+//      * Conversation unique ID.
+//      */
+//     $id: string;
+//     /**
+//      * Conversation creation date in ISO 8601 format.
+//      */
+//     $createdAt: string;
+//     /**
+//      * Conversation update date in ISO 8601 format.
+//      */
+//     $updatedAt: string;
+//     /**
+//      * ID of the artifact this conversation belongs to.
+//      */
+//     artifactId: string;
+//     /**
+//      * Conversation name.
+//      */
+//     name: string;
+//     /**
+//      * Search index string.
+//      */
+//     search: string;
+//     /**
+//      * Messages (UI)
+//      */
+//     messages: ImagineUIMessage[];
+// };
 /**
  * ConversationsMessage
  */

@@ -18,7 +18,22 @@ import { createSynapseClient } from '@/lib/synapse-http-client';
 import { daytona } from '@/lib/daytona-client';
 import { Sandbox } from '@daytonaio/sdk';
 import { getOrCreateArtifactSandbox, startDevServer } from '@/lib/daytona-utils';
-import { OnStepUpdateFn, WorkspaceStepId, workspaceStepSchema } from '@/lib/ai/custom-parts/workspace-state';
+import {
+    OnStepUpdateFn,
+    workspaceStepSchema
+} from '@/lib/ai/custom-parts/workspace-state';
+import {
+    getOrCreateConversation,
+    updateConversationHistory
+} from '@/lib/message-history';
+
+export const routeHandler = async (c: Context) => {
+    try {
+        return handleChatRequest(c);
+    } catch (e) {
+        console.error('Error', e);
+    }
+};
 
 export const handleChatRequest = async (c: Context) => {
     c.res.headers.set('x-vercel-ai-ui-message-stream', 'v1');
@@ -63,9 +78,12 @@ export const handleChatRequest = async (c: Context) => {
         token // TODO: use the token from the request
     });
 
-    const imagineConvo = await imagineClient.getConversation(artifactId, conversationId);
+    const convo = await getOrCreateConversation({
+        conversationId,
+        artifactId: conversationId,
+    });
 
-    if (!imagineConvo) {
+    if (!convo) {
         throw new Error('Conversation not found');
     }
 
@@ -100,7 +118,7 @@ export const handleChatRequest = async (c: Context) => {
                 id,
                 status,
                 text
-                }: Parameters<OnStepUpdateFn>[0]) => {
+            }: Parameters<OnStepUpdateFn>[0]) => {
                 const found = steps.find((step) => step.id === id);
 
                 if (found) {
@@ -111,13 +129,13 @@ export const handleChatRequest = async (c: Context) => {
                 }
 
                 writer.write({
-                    type: "data-workspace-state",
+                    type: 'data-workspace-state',
                     data: {
-                        state: "in-progress",
+                        state: 'in-progress',
                         steps,
                         workspaceUrl: null
                     }
-                })
+                });
             };
 
             const { sandbox } = await getOrCreateArtifactSandbox({
@@ -141,16 +159,16 @@ export const handleChatRequest = async (c: Context) => {
                 sandbox
             });
 
-            console.log("Reporting compelted");
+            console.log('Reporting compelted');
 
             writer.write({
-                type: "data-workspace-state",
+                type: 'data-workspace-state',
                 data: {
-                    state: "completed",
+                    state: 'completed',
                     steps,
                     workspaceUrl
                 }
-            })
+            });
 
             c.set('runtimeContext', runtimeContext);
             const run = await mastra.getWorkflow('codeWorkflow').createRunAsync();
@@ -193,15 +211,13 @@ export const handleChatRequest = async (c: Context) => {
             // The last message should NEVER be by the user. If that's the case, remove it.
             const lastMessage = messages[messages.length - 1];
 
-            console.log('lastMessage', JSON.stringify(lastMessage, null, 2));
+            console.log('Saving messages');
 
-            console.log('Saving messages to imagine');
-            // await imagineClient.updateConversation(
-            //     artifactId,
-            //     imagineConvo.$id,
-            //     'Test Conversation',
-            //     messages
-            // );
+            await updateConversationHistory({
+                conversationId,
+                messages
+            });
+
             console.log('Messages saved to imagine');
         },
         onError: (error) => {

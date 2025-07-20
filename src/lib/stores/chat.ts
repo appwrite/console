@@ -8,7 +8,6 @@ export const showChat = writable(false);
 export const showPrompt = writable(false);
 export const conversation = asyncWritable<Conversation>();
 
-
 export type WorkspaceState = Omit<WorkspaceStateUIDataPart["data"], "workspaceUrl"> & {
     workspaceUrl: SvelteURL | null;
 }

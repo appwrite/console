@@ -3,6 +3,7 @@ import { daytona } from './daytona-client';
 import { DaytonaNotFoundError } from '@daytonaio/sdk/src/errors/DaytonaError';
 import { WriterType } from './ai/mastra/utils/runtime-context';
 import { OnStepUpdateFn, WorkspaceStepId } from './ai/custom-parts/workspace-state';
+import { prisma } from './prisma';
 
 const sandboxId = 'b62d2a47-2f7c-4367-aa53-4980f3fe6627';
 const baseDir = '/home/daytona/workspace';
@@ -196,10 +197,11 @@ const createSandbox = async ({ artifactId }: { artifactId: string }) => {
     let sandbox: Sandbox;
     try {
         sandbox = await daytona.create({
+            snapshot: "imgn-base-vite:v2",
             labels: { artifactId },
-            autoStopInterval: 600, // 10 minutes
-            autoDeleteInterval: 1200, // 20 minutes
-            language: 'typescript',
+            autoStopInterval: 10, // 10 minutes
+            autoDeleteInterval: 60, // 20 minutes
+            // language: 'typescript',
             public: true
         });
 
@@ -225,6 +227,20 @@ const createSandbox = async ({ artifactId }: { artifactId: string }) => {
     }
 };
 
+export const getArtifactSandbox = async ({ artifactId }: { artifactId: string }): Promise<Sandbox | null> => {
+    const sandboxes = await daytona.list({
+        artifactId
+    });
+
+    const sandbox = sandboxes[0];
+
+    if (!sandbox) {
+        return null;
+    }
+
+    return sandbox;
+}
+
 export const getOrCreateArtifactSandbox = async ({
     artifactId,
     onStepUpdate
@@ -232,13 +248,8 @@ export const getOrCreateArtifactSandbox = async ({
     artifactId: string;
     onStepUpdate: OnStepUpdateFn;
 }): Promise<{ sandbox: Sandbox }> => {
-    const sandboxes = await daytona.list({
-        artifactId
-    });
-
-    const existingSandbox = sandboxes[0];
-
     let sandbox: Sandbox;
+    const existingSandbox = await getArtifactSandbox({ artifactId });
 
     if (existingSandbox) {
         onStepUpdate({
@@ -246,12 +257,16 @@ export const getOrCreateArtifactSandbox = async ({
             status: 'in-progress',
             text: 'Getting existing workspace...'
         });
-        sandbox = await daytona.get(existingSandbox.id);
-        onStepUpdate({
-            id: WorkspaceStepId.CREATE_SANDBOX,
-            status: 'completed',
-            text: 'Workspace found'
-        });
+
+        const foundSandbox = await daytona.get(existingSandbox.id);
+
+        if (foundSandbox.state === "stopped") {
+            console.log('Sandbox is stopped, starting...');
+            await foundSandbox.start();
+            console.log('Sandbox started');
+        }
+
+        sandbox = foundSandbox;
     } else {
         console.log('Workspace not found, creating...');
 
@@ -265,62 +280,25 @@ export const getOrCreateArtifactSandbox = async ({
             artifactId
         });
 
+        // Save sandbox id to db
+        await prisma.conversation.update({
+            where: {
+                id: artifactId
+            },
+            data: {
+                sandboxId: sandbox.id
+            }
+        });
+
         const cwd = `/home/daytona/workspace`;
-
         console.log('Created sandbox', sandbox);
-
-        console.log('Creating artifact directory');
-        await sandbox.fs.createFolder(cwd, '755');
-
-        onStepUpdate({
-            id: WorkspaceStepId.CREATE_SANDBOX,
-            status: 'completed',
-            text: 'Workspace created'
-        });
-
-        onStepUpdate({
-            id: WorkspaceStepId.REPOSITORY_SETUP,
-            status: 'in-progress',
-            text: 'Setting up repository...'
-        });
-
-        const ls = await sandbox.process.executeCommand('npm install -g bun', cwd, {}, 30 * 1000);
-
-        console.log('ls', ls);
-
-        console.log('Cloning template');
-        const clone = await sandbox.process.executeCommand(
-            'bunx giget@latest gh:appwrite/templates-for-frameworks/base-vite-template .',
-            cwd,
-            {},
-            30
-        );
-
-        console.log('Template cloned', clone);
-
-        onStepUpdate({
-            id: WorkspaceStepId.REPOSITORY_SETUP,
-            status: 'completed',
-            text: 'Repository set up'
-        });
-
-        onStepUpdate({
-            id: WorkspaceStepId.INSTALL_DEPENDENCIES,
-            status: 'in-progress',
-            text: 'Installing dependencies...'
-        });
-
-        console.log('Installing dependencies');
-        const install = await sandbox.process.executeCommand('bun install', cwd, {}, 60);
-
-        console.log('Dependencies installed', install);
-
-        onStepUpdate({
-            id: WorkspaceStepId.INSTALL_DEPENDENCIES,
-            status: 'completed',
-            text: 'Dependencies installed'
-        });
     }
+
+    onStepUpdate({
+      id: WorkspaceStepId.CREATE_SANDBOX,
+      status: 'completed',
+      text: 'Workspace found'
+  });
 
     return { sandbox };
 };
@@ -376,10 +354,6 @@ export async function startDevServer({
         status: 'completed',
         text: 'Dev server started'
     });
-
-    // Wait 3 seconds
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    // Read logs
 
     return {
         success: true,

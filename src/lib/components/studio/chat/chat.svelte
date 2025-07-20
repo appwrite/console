@@ -36,7 +36,7 @@
 
     const chat = new Chat<ImagineUIMessage>({
         maxSteps: 20,
-        id: $conversation.data.$id,
+        id: $conversation.data.id,
         transport: new DefaultChatTransport({
             api: `${VARS.AI_SERVICE_BASE_URL}/api/chat`,
         }),
@@ -93,7 +93,7 @@
             text: message,
         }, {
             body: {
-                id: $conversation.data?.$id,
+                id: $conversation.data.id,
                 projectId: page.params.project,
                 artifactId: page.params.artifact,
             },

@@ -1,16 +1,19 @@
 <script lang="ts">
     import Chat from '$lib/components/studio/chat/chat.svelte';
     import { page } from '$app/state';
-    import { conversation, showChat } from '$lib/stores/chat.js';
+    import { conversation, showChat, workspaceState } from '$lib/stores/chat.js';
     import {
         disableBodySelect,
         enabledBodySelect,
         getChatWidthFromPrefs,
         saveImagineProjectPrefs
     } from '$lib/helpers/studioLayout.js';
-    import { sdk } from '$lib/stores/sdk.js';
+
     import { isSmallViewport } from '$lib/stores/viewport';
     import { previewFrameRef } from '$routes/(console)/project-[region]-[project]/store';
+    import { VARS } from '$lib/system';
+    import type { Conversation } from '$lib/sdk/imagine';
+    import { SvelteURL } from 'svelte/reactivity';
 
     $effect(() => {
         if ($isSmallViewport || page.params.artifact) {
@@ -93,24 +96,38 @@
     }
 
     async function getOrCreateConversation(artifactId: string) {
-        const { conversations } = await sdk
-            .forProject(page.params.region, page.params.project)
-            .imagine.listConversations(artifactId);
-        if (conversations.length === 0) {
-            const convo = await sdk
-                .forProject(page.params.region, page.params.project)
-                .imagine.createConversation(artifactId, `Conversation ${new Date().getTime()}`);
-            conversation.set(convo);
-        } else {
-            conversation.set(conversations[0]);
+        try {
+            const response = await fetch(`${VARS.AI_SERVICE_BASE_URL}/api/conversations/${artifactId}`, {
+                headers: {
+                    "X-Imagine-Token": "test",
+                    "Content-Type": "application/json",
+                }
+            });
+            const data = (await response.json()) as Conversation;
+            conversation.set(data);
+
+            if (data.previewUrl) {
+                workspaceState.set({
+                    state: "completed",
+                    workspaceUrl: new SvelteURL(data.previewUrl),
+                    steps: [],
+                });
+            }
+
+            return data;
+        } catch (error) {
+            console.error(`Could not get conversation for artifact ${artifactId}`, error);
         }
     }
 
+    let lastArtifactId: string | undefined = $state();
+
     $effect(() => {
-        if (page.params.artifact && $conversation.data?.artifactId !== page.params.artifact) {
-            getOrCreateConversation(page.params.artifact);
-        } else {
-            console.log('conversation', $conversation.data);
+        const artifactId = page.params.artifact;
+        
+        if (artifactId && artifactId !== lastArtifactId) {
+            lastArtifactId = artifactId;
+            getOrCreateConversation(artifactId);
         }
     });
 </script>
