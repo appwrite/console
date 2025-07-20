@@ -21,7 +21,7 @@
         getTerminalOpenFromPrefs,
         saveImagineProjectPrefs
     } from '$lib/helpers/studioLayout';
-    import { showChat } from '$lib/stores/chat';
+    import { showChat, conversation, workspaceState } from '$lib/stores/chat';
     import { default as IconChatLayout } from '$routes/(console)/project-[region]-[project]/studio/assets/chat-layout.svelte';
     import { default as IconImagine } from '$routes/(console)/project-[region]-[project]/studio/assets/icon-imagine.svelte';
     import { createArtifact } from '$lib/helpers/artifact';
@@ -31,6 +31,8 @@
     import Debug from './debug.svelte';
     import ArtifactActionMenu from './artifactActionMenu.svelte';
     import RoleSurvey from '$lib/components/studio/roleSurvey.svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const { children, data } = $props();
 
@@ -43,8 +45,23 @@
         saveImagineProjectPrefs(data.project.$id, 'studioView', newView);
     }
 
+    let previousArtifact = $state(page.params.artifact);
+
     $effect(() => {
         const { artifact } = page.params;
+        
+        // If the artifact has changed, reset conversation and workspace state
+        if (previousArtifact && previousArtifact !== artifact) {
+            conversation.set(null);
+            workspaceState.set({
+                state: "pending",
+                steps: [],
+                workspaceUrl: null,
+            });
+            invalidate(Dependencies.ARTIFACTS);
+        }
+        
+        previousArtifact = artifact;
         untrack(() => studio.selectArtifact(artifact));
     });
 
