@@ -1,5 +1,5 @@
 import * as _path from 'path';
-import { createOrUpdateFile, deleteFile, getFileContent, listFilesInDir, moveFile } from './daytona-utils';
+import * as daytonaFs from './daytona/daytona-filesystem';
 import { Sandbox } from '@daytonaio/sdk';
 
 export type ListFilesInDirResult = {
@@ -35,26 +35,12 @@ export class SynapseHTTPClient {
         this.sandbox = sandbox;
     }
 
-    async getFolder({ path, ignoreBasePath = false }: { path: string; ignoreBasePath?: boolean }) {
-        const response = await this.request({
-            type: 'fs',
-            operation: 'getFolder',
-            params: {
-                folderpath: ignoreBasePath ? path : _path.resolve(this.artifactBasePath, path)
-            }
-        });
-
-        return response;
-    }
-
     async readFile({ path }: { path: string }): Promise<{
         path: string;
         content: string;
     }> {
-        const content = await getFileContent({
-            sandbox: this.sandbox,
-            filePath: `/home/daytona/workspace/${path}`
-        });
+        const fileContentBuffer = await this.sandbox.fs.downloadFile(`/home/daytona/workspace/${path}`);
+        const content = fileContentBuffer.toString('utf-8');
 
         return {
             path,
@@ -85,7 +71,7 @@ export class SynapseHTTPClient {
     }
 
     async createOrUpdateFile({ filepath, content }: { filepath: string; content: string }) {
-        return createOrUpdateFile({
+        return daytonaFs.createOrUpdateFile({
             sandbox: this.sandbox,
             filePath: filepath,
             content,
@@ -93,7 +79,7 @@ export class SynapseHTTPClient {
     }
 
     async updateFilePath({ filepath, newPath }: { filepath: string; newPath: string }) {
-        const result = await moveFile({
+        const result = await daytonaFs.moveFile({
             filePath: filepath,
             newPath,
             sandbox: this.sandbox,
@@ -103,7 +89,7 @@ export class SynapseHTTPClient {
     }
 
     async deleteFile({ filepath }: { filepath: string }) {
-        const result = await deleteFile({
+        const result = await daytonaFs.deleteFile({
             sandbox: this.sandbox,
             filePath: filepath,
         });
@@ -190,7 +176,7 @@ export class SynapseHTTPClient {
         withContent?: boolean;
         additionalIgnorePatterns?: string[];
     }): Promise<ListFilesInDirResult[]> {
-        const files = await listFilesInDir({
+        const files = await daytonaFs.listFilesInDir({
             sandbox: this.sandbox,
             dirPath,
             recursive: recursive || false,

@@ -12,12 +12,7 @@ import { createRuntimeContext, WriterType } from '../../lib/ai/mastra/utils/runt
 import { mastra } from '../../lib/ai/mastra';
 import { createImagineClient } from '@/lib/imagine/create-artifact-client';
 import { anthropic } from '@ai-sdk/anthropic';
-import { Workspace } from '@/lib/imagine/workspaces-api-client';
-import { AppwriteException } from '@appwrite.io/console';
-import { createSynapseClient } from '@/lib/synapse-http-client';
-import { daytona } from '@/lib/daytona-client';
-import { Sandbox } from '@daytonaio/sdk';
-import { getOrCreateArtifactSandbox, startDevServer } from '@/lib/daytona-utils';
+import { getOrCreateArtifactSandbox, startDevServer } from '@/lib/daytona/daytona-sandbox';
 import {
     OnStepUpdateFn,
     workspaceStepSchema
@@ -88,9 +83,7 @@ export const handleChatRequest = async (c: Context) => {
     }
 
     const convertedMessages = convertToModelMessages(messages);
-
     const latestMessage = convertedMessages[convertedMessages.length - 1];
-
     const latestMessageTextPart = latestMessage.content[0] as TextPart;
     const restMessages = convertedMessages.slice(0, -1);
     const isNewConversation = restMessages.length === 0;

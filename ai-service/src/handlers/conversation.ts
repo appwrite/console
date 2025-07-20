@@ -1,5 +1,4 @@
-import { daytona } from "@/lib/daytona-client";
-import { getArtifactSandbox, startDevServer } from "@/lib/daytona-utils";
+import { getArtifactSandbox, startDevServer } from "@/lib/daytona/daytona-sandbox";
 import { convertDBMessagesToImagineUIMessages, getOrCreateConversation } from "@/lib/message-history";
 import { prisma } from "@/lib/prisma";
 import { ImagineUIMessage } from "@/shared-types";
