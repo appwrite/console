@@ -62,6 +62,9 @@
     display: flex;
     align-items: center;
     line-height: 1;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
   }
   
 </style>
