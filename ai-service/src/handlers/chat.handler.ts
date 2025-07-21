@@ -9,7 +9,6 @@ import {
     generateId,
     hasToolCall,
     smoothStream,
-    streamObject,
     streamText,
     TextPart,
     tool
@@ -20,9 +19,7 @@ import { anthropic } from '@ai-sdk/anthropic';
 import { getOrCreateArtifactSandbox, startDevServer } from '@/lib/daytona/daytona-sandbox';
 import { OnStepUpdateFn, workspaceStepSchema } from '@/lib/ai/custom-parts/workspace-state';
 import { getOrCreateConversation, updateConversationHistory } from './message-history';
-import { imagineToMastraToolset } from '@/lib/ai/mastra/tools/imagine-tool';
 import { fileTools } from '@/lib/ai/mastra/tools/file-tools';
-import { createSystemPrompt } from '@/lib/ai/system-prompt/create-system-prompt';
 import { GitRepositoryUtils } from '@/lib/git-utils';
 import {
     getPagesAndComponents,
@@ -73,10 +70,14 @@ export const handleChatRequest = async (c: Context) => {
     if (trigger === 'submit-tool-result') {
         // save to file
         // return c.body(null, 200);
-        return streamText({
-            model: anthropic('claude-3-7-sonnet-20250219'),
-            messages: convertToModelMessages(messages)
-        }).toUIMessageStreamResponse();
+        // return streamText({
+        //     model: anthropic('claude-3-7-sonnet-20250219'),
+        //     messages: convertToModelMessages(messages)
+        // }).toUIMessageStreamResponse();
+        // return c.json({
+        //     error: 'Not implemented'
+        // }, 500);
+        console.log('submit-tool-result');
     }
 
     const { imagineClient, workspacesClient } = await createImagineClient({
@@ -110,8 +111,8 @@ export const handleChatRequest = async (c: Context) => {
 
             writer.write({
                 type: 'start',
-                messageId,
-            })
+                messageId
+            });
 
             const updateStep: OnStepUpdateFn = ({
                 id,
@@ -130,6 +131,7 @@ export const handleChatRequest = async (c: Context) => {
                 if (steps.length > 0) {
                     writer.write({
                         type: 'data-workspace-state',
+                        transient: true,
                         data: {
                             state: 'in-progress',
                             steps,
@@ -172,7 +174,6 @@ export const handleChatRequest = async (c: Context) => {
                 }
             });
 
-
             /** SYSTEM PROMPT */
 
             const gitRepositoryUtils = new GitRepositoryUtils(
@@ -201,147 +202,178 @@ export const handleChatRequest = async (c: Context) => {
 
             /** */
 
-            const thinkingStartTime = Date.now();
-            const thinkingId = createIdGenerator({ size: 10 })();
-            let thoughts = '';
+            // const thinkingStartTime = Date.now();
+            // const thinkingId = createIdGenerator({ size: 10 })();
+            // let thoughts = '';
 
-            const planResult = streamText({
-                maxRetries: 3,
-                model: anthropic('claude-sonnet-4-20250514'),
-                abortSignal: signal,
-                tools: {
-                    readFile: fileTools.readFileTool,
-                    listFilesInDirectory: fileTools.listFilesInDirectoryTool,
-                    readMultipleFilesInParallel: fileTools.readMultipleFilesInParallelTool,
-                    reportPlan: tool({
-                        name: 'reportPlan',
-                        description: 'You use this tool to report your final plan for implementation.',
-                        inputSchema: z.object({
-                            plan: z.string().describe('A detailed plan for implementation. Must be a few paragraphs long.'),
-                        }),
-                        execute: async ({ plan }) => {
-                            console.log('reportPlan', plan);
-                            return 'Your plan has been reported.';
-                        }
-                    })
-                },
-                stopWhen: hasToolCall('reportPlan'),
-                activeTools: ["readFile", "listFilesInDirectory", "readMultipleFilesInParallel", "reportPlan"],
-                messages: [
-                    {
-                        role: 'system',
-                        content: dedent(`
-                            You are an elite software architect.
+            // console.log('[planResult] start');
 
-                            Here is the current file layout and dependencies in the project:
-                            ${currentCodeContext.content}
+            // const planResult = streamText({
+            //     maxRetries: 3,
+            //     model: anthropic('claude-sonnet-4-20250514'),
+            //     abortSignal: signal,
+            //     tools: {
+            //         readFile: fileTools.readFileTool,
+            //         listFilesInDirectory: fileTools.listFilesInDirectoryTool,
+            //         readMultipleFilesInParallel: fileTools.readMultipleFilesInParallelTool,
+            //         reportPlan: tool({
+            //             name: 'reportPlan',
+            //             description:
+            //                 'You use this tool to report your final plan for implementation.',
+            //             inputSchema: z.object({
+            //                 plan: z
+            //                     .string()
+            //                     .describe(
+            //                         'A detailed plan for implementation. Must be a few paragraphs long.'
+            //                     )
+            //             }),
+            //             execute: async ({ plan }) => {
+            //                 console.log('reportPlan', plan);
+            //                 return 'Your plan has been reported.';
+            //             }
+            //         })
+            //     },
+            //     stopWhen: hasToolCall('reportPlan'),
+            //     activeTools: [
+            //         'readFile',
+            //         'listFilesInDirectory',
+            //         'readMultipleFilesInParallel',
+            //         'reportPlan'
+            //     ],
+            //     messages: [
+            //         {
+            //             role: 'system',
+            //             content: dedent(`
+            //                 You are an elite software architect.
+
+            //                 Here is the current file layout and dependencies in the project:
+            //                 ${currentCodeContext.content}
 
 
-                            Please plan the steps to implement the user's request. You do not write any code.
-                            You may read files to understand the contents of files, which will help you make a better plan.
-                            Your plans should be concise and to the point.
+            //                 Please plan the steps to implement the user's request. You do not write any code.
+            //                 You may read files to understand the contents of files, which will help you make a better plan.
+            //                 Your plans should be concise and to the point.
 
-                            You will produce the following outputs:
-                            - A short and concise plan
-                            - Whether a UI developer is needed
+            //                 You will produce the following outputs:
+            //                 - A short and concise plan
+            //                 - Whether a UI developer is needed
 
-                            # Outputs
+            //                 # Outputs
 
-                            ## Plan
-                            A short and concise plan of what exactly needs to be done to achieve the product manager's request. This should be 3-4 sentences maximum and in first person. E.g. 'I will ... and then ... '
+            //                 ## Plan
+            //                 A short and concise plan of what exactly needs to be done to achieve the product manager's request. This should be 3-4 sentences maximum and in first person. E.g. 'I will ... and then ... '
 
-                            ## When is a UI developer needed?
-                            This is important because the UI developer will be the one to implement the design.
+            //                 ## When is a UI developer needed?
+            //                 This is important because the UI developer will be the one to implement the design.
 
-                            Examples of when a UI developer IS needed:
-                            - Create new screens
-                            - Modify existing screens with explicit design requests (e.g. adding elements or restructuring the layout)
+            //                 Examples of when a UI developer IS needed:
+            //                 - Create new screens
+            //                 - Modify existing screens with explicit design requests (e.g. adding elements or restructuring the layout)
 
-                            Examples of when a UI developer IS NOT needed:
-                            - Adding a React hook
-                            - Adding an endpoint
-                            - Pure logic changes
-                            - Moving files around, renaming files, etc.
+            //                 Examples of when a UI developer IS NOT needed:
+            //                 - Adding a React hook
+            //                 - Adding an endpoint
+            //                 - Pure logic changes
+            //                 - Moving files around, renaming files, etc.
 
-                            In termso f filesystem tool usage:
-                            - You ONLY have access to read-only filesystem tools
-                        `)
-                    },
-                    ...restMessages.map((m: any) => ({
-                        role: m.role,
-                        content: m.content
-                    })),
-                    {
-                        role: 'user',
-                        content: `
+            //                 In termso f filesystem tool usage:
+            //                 - You ONLY have access to read-only filesystem tools
+            //             `)
+            //         },
+            //         ...restMessages.map((m: any) => ({
+            //             role: m.role,
+            //             content: m.content
+            //         })),
+            //         {
+            //             role: 'user',
+            //             content: `
                 
-                Here is the product manager's request:
-                <request>
-                ${latestMessageTextPart.text}
-                </request>
-                      `
-                    }
-                ],
-                headers: {
-                    'anthropic-beta': [
-                        'token-efficient-tools-2025-02-19',
-                        'fine-grained-tool-streaming-2025-05-14',
-                        'extended-cache-ttl-2025-04-11'
-                    ].join(',')
-                },
-                experimental_transform: smoothStream({
-                    delayInMs: 30,
-                    chunking: 'word'
-                }),
-                onChunk: (event) => {
-                    if (event.chunk.type === 'text') {
-                        thoughts += event.chunk.text;
+            //     Here is the product manager's request:
+            //     <request>
+            //     ${latestMessageTextPart.text}
+            //     </request>
+            //           `
+            //         }
+            //     ],
+            //     headers: {
+            //         'anthropic-beta': [
+            //             'token-efficient-tools-2025-02-19',
+            //             'fine-grained-tool-streaming-2025-05-14',
+            //             'extended-cache-ttl-2025-04-11'
+            //         ].join(',')
+            //     },
+            //     experimental_transform: smoothStream({
+            //         delayInMs: 30,
+            //         chunking: 'word'
+            //     }),
+            //     onChunk: (event) => {
+            //         if (event.chunk.type === 'text') {
+            //             thoughts += event.chunk.text;
 
-                        writer.write({
-                            type: 'data-thinking',
-                            id: thinkingId,
-                            data: {
-                                text: thoughts,
-                                durationMs: null,
-                                state: 'streaming'
+            //             writer.write({
+            //                 type: 'data-thinking',
+            //                 id: thinkingId,
+            //                 data: {
+            //                     text: thoughts,
+            //                     durationMs: null,
+            //                     state: 'streaming'
+            //                 }
+            //             });
+            //         }
+            //     },
+            //     onFinish: () => {
+            //         console.log('[planResult] onFinish', { thoughts });
+            //         const thinkingEndTime = Date.now();
+            //         const thinkingDuration = thinkingEndTime - thinkingStartTime;
+            //         writer.write({
+            //             type: 'data-thinking',
+            //             id: thinkingId,
+            //             data: {
+            //                 text: thoughts,
+            //                 durationMs: thinkingDuration,
+            //                 state: 'done'
+            //             }
+            //         });
+            //     }
+            // });
+
+            // for await (const chunk of planResult.textStream) {
+            // }
+
+            // const planToolCall = (await planResult.toolCalls).find(
+            //     (call) => call.toolName === 'reportPlan'
+            // );
+
+            // // if (!planToolCall) {
+            // //     writer.write({
+            // //         type: "finish",
+            // //     })
+            // //     return;
+            // // }
+
+            // const plan = planToolCall?.input?.plan ?? '';
+
+            // console.log('[plan]', plan);
+
+            console.log('[implementResult] start');
+
+            /*
+                                
+                            ${
+                                plan
+                                    ? dedent(`
+                            Here is the plan from the architect on how to implement it:
+                            <architect-plan>
+                            ${plan}
+                            </architect-plan>`)
+                                    : ''
                             }
-                        });
-                    }
-                },
-                onFinish: () => {
-                    const thinkingEndTime = Date.now();
-                    const thinkingDuration = thinkingEndTime - thinkingStartTime;
-                    writer.write({
-                        type: 'data-thinking',
-                        id: thinkingId,
-                        data: {
-                            text: thoughts,
-                            durationMs: thinkingDuration,
-                            state: 'done'
-                        }
-                    });
-                }
-            });
-
-            for await (const chunk of planResult.textStream) { }
-
-            const planToolCall = (await planResult.toolCalls).find((call) => call.toolName === "reportPlan");
-
-            if (!planToolCall) {
-                writer.write({
-                    type: "finish",
-                })
-                return;
-            }
-
-            const plan = planToolCall.input.plan;
-
-            console.log('plan', plan);
+            */
 
             const implementResult = streamText({
                 maxOutputTokens: 52000,
                 maxRetries: 5,
-                model: anthropic('claude-sonnet-4-20250514'),
+                model: anthropic('claude-3-7-sonnet-20250219'),
                 stopWhen: hasToolCall('reportDone'),
                 tools: {
                     readFile: fileTools.readFileTool,
@@ -385,11 +417,6 @@ export const handleChatRequest = async (c: Context) => {
                             <product-manager-request>
                             ${latestMessageTextPart.text}
                             </product-manager-request>
-                            
-                            Here is the plan from the architect on how to implement it:
-                            <architect-plan>
-                            ${plan}
-                            </architect-plan>
                         `
                     }
                 ],
@@ -406,7 +433,7 @@ export const handleChatRequest = async (c: Context) => {
                 }),
                 onStepFinish: async (event) => {
                     console.log('[implementResult onStepFinish] onStepFinish');
-                
+
                     const changedFiles = runtimeContext.get('changedFiles');
                     console.log('[implementResult onStepFinish] changedFiles', changedFiles);
 
@@ -419,20 +446,23 @@ export const handleChatRequest = async (c: Context) => {
                             return {
                                 path: f.path,
                                 content: content.content
-                            }
+                            };
                         })
-                    )
+                    );
 
-                    await updateDependencies(
-                        filesWithContents
-                    )
+                    await updateDependencies(filesWithContents);
+                },
+                onFinish: () => {
+                    console.log('[implementResult] onFinish');
                 }
             });
 
-            writer.merge(implementResult.toUIMessageStream({
-                originalMessages: messages,
-                sendStart: false,
-            }));
+            writer.merge(
+                implementResult.toUIMessageStream({
+                    originalMessages: messages,
+                    sendStart: false
+                })
+            );
         },
         onFinish: async (event) => {
             console.log('onFinish', { didError });
@@ -466,6 +496,6 @@ export const handleChatRequest = async (c: Context) => {
     });
 
     return createUIMessageStreamResponse({
-        stream,
+        stream
     });
 };

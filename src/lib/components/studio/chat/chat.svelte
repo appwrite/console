@@ -34,15 +34,13 @@
 
 
     const chat = new Chat<ImagineUIMessage>({
-        maxSteps: 20,
+        maxSteps: 50,
         id: $conversation.data.id,
         transport: new DefaultChatTransport({
             api: `${VARS.AI_SERVICE_BASE_URL}/api/chat`,
         }),
         messages: $conversation.data.messages ?? [],
         onData: (dataPart) => {
-            console.log("data", dataPart);
-            
             if (dataPart.type === "data-workspace-state") {
                 const data = dataPart.data as ImagineUIDataParts["workspace-state"];
                 const { state, workspaceUrl, steps } = data;

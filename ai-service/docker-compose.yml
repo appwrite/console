@@ -11,5 +11,3 @@ services:
         environment:
           SYNAPSE_ENDPOINT: http://host.docker.internal:3001
           APPWRITE_ENDPOINT: http://host.docker.internal:80/v1
-        volumes:
-          - ./tmp:/app/tmp

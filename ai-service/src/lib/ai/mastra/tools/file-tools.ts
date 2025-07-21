@@ -25,9 +25,9 @@ const readMultipleFilesInParallelTool = tool({
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
         const writer = getWriterFromContext(runtimeContext);
 
-        writer.write({
-            type: 'start-step'
-        });
+        // writer.write({
+        //     type: 'start-step'
+        // });
 
         console.log(`[TOOL - readMultipleFilesInParallel]`, { paths });
 
@@ -42,9 +42,9 @@ const readMultipleFilesInParallelTool = tool({
             })
         );
 
-        writer.write({
-            type: 'finish-step'
-        });
+        // writer.write({
+        //     type: 'finish-step'
+        // });
 
         return { files };
     }
@@ -74,9 +74,9 @@ const readFileTool = tool({
         const writer = getWriterFromContext(runtimeContext);
         const toolCallId = createIdGenerator({ size: 10 })();
 
-        writer.write({
-            type: 'start-step'
-        });
+        // writer.write({
+        //     type: 'start-step'
+        // });
 
         if (!skipWritingToolCalls) {
             writer.write({
@@ -92,20 +92,20 @@ const readFileTool = tool({
         const result = await readFileFn(`./${path}`);
         console.log(`[TOOL - readFile] Reading file at path: ${path}`);
 
-        if (!skipWritingToolCalls) {
-            writer.write({
-                type: 'tool-output-available',
-                toolCallId,
-                output: {
-                    path: result.path,
-                    content: result.content
-                }
-            });
-        }
+        // if (!skipWritingToolCalls) {
+        //     writer.write({
+        //         type: 'tool-output-available',
+        //         toolCallId,
+        //         output: {
+        //             path: result.path,
+        //             content: result.content
+        //         }
+        //     });
+        // }
 
-        writer.write({
-            type: 'finish-step'
-        });
+        // writer.write({
+        //     type: 'finish-step'
+        // });
 
         return {
             path: result.path,
@@ -140,15 +140,15 @@ const writeFilesTool = tool({
         const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
 
-        writer.write({
-            type: 'start-step'
-        });
+        // writer.write({
+        //     type: 'start-step'
+        // });
 
         const { successFiles, errorFiles } = await writeFiles(files, synapse);
 
-        writer.write({
-            type: 'finish-step'
-        });
+        // writer.write({
+        //     type: 'finish-step'
+        // });
 
         return {
             successFiles,
@@ -169,7 +169,7 @@ const writeFileTool = tool({
         success: z.boolean().describe('Whether the file was written successfully'),
         error: z
             .string()
-            .optional()
+            .nullable()
             .describe('The error message if the file was not written successfully')
     }),
     execute: async ({ path, content }) => {
@@ -178,23 +178,23 @@ const writeFileTool = tool({
         const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
 
-        writer.write({
-            type: 'start-step'
-        });
+        // writer.write({
+        //     type: 'start-step'
+        // });
 
-        const toolCallId = createIdGenerator({ size: 10 })();
+        // const toolCallId = createIdGenerator({ size: 10 })();
 
-        if (!skipWritingToolCalls) {
-            writer.write({
-                type: 'tool-input-available',
-                toolCallId,
-                toolName: 'writeFile',
-                input: {
-                    path,
-                    content
-                }
-            });
-        }
+        // if (!skipWritingToolCalls) {
+        //     writer.write({
+        //         type: 'tool-input-available',
+        //         toolCallId,
+        //         toolName: 'writeFile',
+        //         input: {
+        //             path,
+        //             content
+        //         }
+        //     });
+        // }
 
         const { errorFiles, successFiles } = await writeFiles([{ path, content }], synapse);
 
@@ -204,20 +204,21 @@ const writeFileTool = tool({
 
         console.log('changedFiles', newChangedFiles);
 
-        if (!skipWritingToolCalls) {
-            writer.write({
-                type: 'tool-output-available',
-                toolCallId,
-                output: {
-                    success: true
-                }
-            });
-        }
-        writer.write({
-            type: 'finish-step'
-        });
+        // if (!skipWritingToolCalls) {
+        //     writer.write({
+        //         type: 'tool-output-available',
+        //         toolCallId,
+        //         output: {
+        //             success: true
+        //         }
+        //     });
+        // }
+        // writer.write({
+        //     type: 'finish-step'
+        // });
         return {
-            success: true
+            success: true,
+            error: null
         };
     }
 });
@@ -270,9 +271,9 @@ const listFilesInDirectoryTool = tool({
         const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
 
-        writer.write({
-            type: 'start-step'
-        });
+        // writer.write({
+        //     type: 'start-step'
+        // });
 
         console.log(
             `[TOOL - listFilesInDirectory] Listing files in directory at path: ${path}, recursive: ${recursive}`
@@ -288,9 +289,9 @@ const listFilesInDirectoryTool = tool({
             `[TOOL - listFilesInDirectory] Found ${files.length} files in directory at path: ${path}`
         );
 
-        writer.write({
-            type: 'finish-step'
-        });
+        // writer.write({
+        //     type: 'finish-step'
+        // });
 
         return {
             files
@@ -313,15 +314,15 @@ const deleteFileTool = tool({
         const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
 
-        writer.write({
-            type: 'start-step'
-        });
+        // writer.write({
+        //     type: 'start-step'
+        // });
 
         await synapse.deleteFile({ filepath: `./${path}` });
 
-        writer.write({
-            type: 'finish-step'
-        });
+        // writer.write({
+        //     type: 'finish-step'
+        // });
 
         return {
             success: true
@@ -351,15 +352,15 @@ const moveFileTool = tool({
         const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
 
-        writer.write({
-            type: 'start-step'
-        });
+        // writer.write({
+        //     type: 'start-step'
+        // });
 
         await synapse.updateFilePath({ filepath: `./${path}`, newPath: `./${newPath}` });
 
-        writer.write({
-            type: 'finish-step'
-        });
+        // writer.write({
+        //     type: 'finish-step'
+        // });
 
         return {
             success: true

@@ -17,7 +17,6 @@ export type ListFilesInDirParams = {
 export class SynapseHTTPClient {
     private sandbox: Sandbox;
     private endpoint: string;
-    private artifactBasePath: string;
     private artifactId: string;
 
     constructor({
@@ -30,7 +29,6 @@ export class SynapseHTTPClient {
         sandbox: Sandbox;
     }) {
         this.endpoint = endpoint;
-        this.artifactBasePath = `/usr/local/artifact`;
         this.artifactId = artifactId;
         this.sandbox = sandbox;
     }
@@ -46,28 +44,6 @@ export class SynapseHTTPClient {
             path,
             content
         };
-    }
-
-    async createFile({
-        path,
-        content,
-        ignoreBasePath = false
-    }: {
-        path: string;
-        content: string;
-        ignoreBasePath?: boolean;
-    }) {
-        console.log('createFile', { path, content });
-        const response = await this.request({
-            type: 'fs',
-            operation: 'createFile',
-            params: {
-                filepath: ignoreBasePath ? path : _path.resolve(this.artifactBasePath, path),
-                content
-            }
-        });
-
-        return response;
     }
 
     async createOrUpdateFile({ filepath, content }: { filepath: string; content: string }) {

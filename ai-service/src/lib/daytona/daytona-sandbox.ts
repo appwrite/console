@@ -25,10 +25,10 @@ const createSandbox = async ({ artifactId }: { artifactId: string }) => {
     let sandbox: Sandbox;
     try {
         sandbox = await daytona.create({
-            snapshot: 'imgn-base-vite:v2',
+            snapshot: 'imgn-base-vite:v4',
             labels: { artifactId },
             autoStopInterval: 10, // 10 minutes
-            autoDeleteInterval: 60, // 20 minutes
+            autoDeleteInterval: 60, // 60 minutes
             // language: 'typescript',
             public: true
         });
@@ -109,6 +109,13 @@ export const getOrCreateArtifactSandbox = async ({
             console.log('Sandbox started');
         }
 
+        onStepUpdate({
+          id: WorkspaceStepId.CREATE_SANDBOX,
+          status: 'completed',
+          text: 'Workspace set up'
+        });
+  
+
         sandbox = foundSandbox;
     } else {
         console.log('Workspace not found, creating...');
@@ -123,6 +130,52 @@ export const getOrCreateArtifactSandbox = async ({
             artifactId
         });
 
+        onStepUpdate({
+          id: WorkspaceStepId.CREATE_SANDBOX,
+          status: 'completed',
+          text: 'Workspace created'
+      });
+  
+
+        onStepUpdate({
+          id: WorkspaceStepId.REPOSITORY_SETUP,
+          status: 'in-progress',
+          text: 'Setting up repo...'
+        });
+
+        await sandbox.process.executeCommand(
+          'bunx giget@latest gh:appwrite/templates-for-frameworks/base-vite-template .',
+          '/home/daytona/workspace',
+          {},
+          30
+        );
+
+        onStepUpdate({
+          id: WorkspaceStepId.REPOSITORY_SETUP,
+          status: 'completed',
+          text: 'Repository set up'
+        });
+
+        onStepUpdate({
+          id: WorkspaceStepId.INSTALL_DEPENDENCIES,
+          status: 'in-progress',
+          text: 'Installing dependencies...'
+        });
+
+        await sandbox.process.executeCommand(
+          'bun install',
+          '/home/daytona/workspace',
+          {},
+          30
+        );
+
+        onStepUpdate({
+          id: WorkspaceStepId.INSTALL_DEPENDENCIES,
+          status: 'completed',
+          text: 'Dependencies installed'
+        });
+
+
         // Save sandbox id to db
         await prisma.conversation.update({
             where: {
@@ -136,12 +189,6 @@ export const getOrCreateArtifactSandbox = async ({
         const cwd = `/home/daytona/workspace`;
         console.log('Created sandbox', sandbox);
     }
-
-    onStepUpdate({
-        id: WorkspaceStepId.CREATE_SANDBOX,
-        status: 'completed',
-        text: 'Workspace found'
-    });
 
     return { sandbox };
 };
