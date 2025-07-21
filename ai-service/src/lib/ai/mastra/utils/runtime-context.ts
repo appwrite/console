@@ -13,6 +13,7 @@ export type RuntimeContextPayload = {
   signal?: AbortSignal;
   artifactId: string;
   synapseClient: SynapseHTTPClient;
+  changedFiles: { path: string }[];
 }
 export type RuntimeContextType = RuntimeContext<RuntimeContextPayload>;
 export type HonoEnv = {
@@ -60,6 +61,7 @@ export const createRuntimeContext = ({
   runtimeContext.set("isFirstMessage", isFirstMessage || false);
   runtimeContext.set("signal", signal);
   runtimeContext.set("artifactId", artifactId);
+  runtimeContext.set("changedFiles", []);
   return runtimeContext;
 };
 

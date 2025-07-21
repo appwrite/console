@@ -8,6 +8,7 @@ RUN npm -v
 RUN npm install -g bun
 RUN bunx giget --version
 
+RUN ls -la
 RUN bunx giget@latest gh:appwrite/templates-for-frameworks/base-vite-template .
 RUN bun install
 

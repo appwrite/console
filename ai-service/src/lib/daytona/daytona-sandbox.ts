@@ -84,6 +84,17 @@ export const getOrCreateArtifactSandbox = async ({
     const existingSandbox = await getArtifactSandbox({ artifactId });
 
     if (existingSandbox) {
+        const previewLink = await existingSandbox.getPreviewLink(3000);
+        if (previewLink.url) {
+            const result = await pingDevServer(previewLink.url);
+            if (result) {
+                console.log('Dev server already running');
+                return {
+                    sandbox: existingSandbox
+                };
+            }
+        }
+
         onStepUpdate({
             id: WorkspaceStepId.CREATE_SANDBOX,
             status: 'in-progress',
@@ -142,6 +153,21 @@ export async function startDevServer({
     sandbox: Sandbox;
     onStepUpdate: OnStepUpdateFn;
 }) {
+    // Check, maybe it's already up
+    const previewLink = await sandbox.getPreviewLink(3000);
+    console.log('Preview link', { ...previewLink });
+
+    if (previewLink.url) {
+        const result = await pingDevServer(previewLink.url);
+        if (result) {
+            console.log('Dev server already running');
+            return {
+                success: true,
+                previewUrl: previewLink.url
+            };
+        }
+    }
+
     onStepUpdate({
         id: WorkspaceStepId.START_DEV_SERVER,
         status: 'in-progress',
@@ -149,8 +175,6 @@ export async function startDevServer({
     });
 
     console.log('Exposing port 3000');
-    const previewLink = await sandbox.getPreviewLink(3000);
-    console.log('Preview link', { ...previewLink });
 
     let sessionFound = true;
 
@@ -196,6 +220,11 @@ export async function startDevServer({
         previewUrl: previewLink.url
     };
 }
+
+export const pingDevServer = async (previewUrl: string) => {
+    const response = await fetch(previewUrl);
+    return response.status === 200;
+};
 
 export const waitForDevServer = async (previewUrl: string) => {
     // Ping preview link until getting 200

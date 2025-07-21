@@ -120,11 +120,8 @@
 
 <style lang="scss">
     .iframe-container {
-        height: 100%;
-        @media (min-width: 768px) {
-            flex-grow: 1;
-            height: auto;
-        }
+        position: relative;
+        flex-grow: 1;
     }
 
     #preview-iframe {

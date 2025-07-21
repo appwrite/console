@@ -133,36 +133,34 @@ export class SynapseHTTPClient {
         timeout?: number;
         throwOnError?: boolean;
     }): Promise<{
+        success: boolean;
         output: string;
         exitCode: number;
     }> {
         console.log('executeCommand', { command, cwd });
 
-        try {
-            const response = await this.request({
-                type: 'stateless',
-                operation: 'executeCommand',
-                params: {
-                    command,
-                    cwd,
-                    timeout
-                }
-            });
+        const response = await this.sandbox.process.executeCommand(
+            command,
+            cwd,
+            {},
+            30
+        );
 
-            if (throwOnError && response.data.exitCode !== 0) {
-                throw new Error(
-                    `Command "${command}" failed with exit code ${response.data.exitCode}: ${response.data.output}`
-                );
-            }
+        console.log('executeCommand response', response);
 
+        if (response.exitCode !== 0) {
             return {
-                output: response.data.output,
-                exitCode: response.data.exitCode
+                success: false,
+                output: response.result,
+                exitCode: response.exitCode
             };
-        } catch (error) {
-            console.error('Error executing command', error);
-            throw error;
         }
+
+        return {
+            success: true,
+            output: response.result,
+            exitCode: response.exitCode
+        };
     }
 
     async listFilesInDir({

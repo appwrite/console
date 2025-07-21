@@ -32,7 +32,6 @@
 
     let chatTextareaRef: HTMLTextAreaElement | null = $state(null);
 
-    console.log("conversation", $conversation.data);
 
     const chat = new Chat<ImagineUIMessage>({
         maxSteps: 20,
@@ -53,6 +52,8 @@
                     steps,
                 });
             }
+        },
+        onFinish: (event) => {
         }
     });
 

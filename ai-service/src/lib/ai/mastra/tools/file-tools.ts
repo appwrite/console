@@ -1,12 +1,12 @@
 import { z } from 'zod';
 import { SynapseHTTPClient } from '@/lib/synapse-http-client';
-import { createIdGenerator } from 'ai';
+import { createIdGenerator, tool } from 'ai';
 import { getWriterFromContext, HonoEnv } from '../utils/runtime-context';
 import { createImagineTool } from './imagine-tool';
 import { getContext } from 'hono/context-storage';
 
-const readMultipleFilesInParallelTool = createImagineTool({
-    id: 'readMultipleFilesInParallel',
+const readMultipleFilesInParallelTool = tool({
+    name: 'readMultipleFilesInParallel',
     description:
         'Read multiple files from the repository. This is always encouraged over a single readFile if you know you need to read multiple files.',
     inputSchema: z.object({
@@ -24,32 +24,41 @@ const readMultipleFilesInParallelTool = createImagineTool({
         console.log('readMultipleFilesInParallelTool', { paths });
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
         const writer = getWriterFromContext(runtimeContext);
-        
+
         writer.write({
-          type: "start-step",
-        })
+            type: 'start-step'
+        });
 
         console.log(`[TOOL - readMultipleFilesInParallel]`, { paths });
 
+        if (!readFileTool.execute) {
+            throw new Error('readFileTool.execute is undefined');
+        }
+
         const files = await Promise.all(
             paths.map(async (path) => {
-                const result = await readFileTool.execute({
-                    path
-                });
-                return result;
+                const content = await readFileFn(`./${path}`);
+                return content;
             })
         );
 
         writer.write({
-          type: "finish-step",
-        })
+            type: 'finish-step'
+        });
 
         return { files };
     }
 });
 
-const readFileTool = createImagineTool({
-    id: 'readFile',
+export const readFileFn = async (path: string) => {
+    const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
+    const synapse = runtimeContext.get('synapseClient');
+    const result = await synapse.readFile({ path: `./${path}` });
+    return result;
+};
+
+const readFileTool = tool({
+    name: 'readFile',
     description: 'Read a file from the repository',
     inputSchema: z.object({
         path: z.string().describe('The path to the file to read')
@@ -66,8 +75,8 @@ const readFileTool = createImagineTool({
         const toolCallId = createIdGenerator({ size: 10 })();
 
         writer.write({
-          type: "start-step",
-        })
+            type: 'start-step'
+        });
 
         if (!skipWritingToolCalls) {
             writer.write({
@@ -80,7 +89,7 @@ const readFileTool = createImagineTool({
             });
         }
         const synapse = runtimeContext.get('synapseClient');
-        const result = await synapse.readFile({ path: `./${path}` });
+        const result = await readFileFn(`./${path}`);
         console.log(`[TOOL - readFile] Reading file at path: ${path}`);
 
         if (!skipWritingToolCalls) {
@@ -88,15 +97,15 @@ const readFileTool = createImagineTool({
                 type: 'tool-output-available',
                 toolCallId,
                 output: {
-                  path: result.path,
-                  content: result.content
+                    path: result.path,
+                    content: result.content
                 }
             });
         }
 
         writer.write({
-          type: "finish-step",
-        })
+            type: 'finish-step'
+        });
 
         return {
             path: result.path,
@@ -105,8 +114,8 @@ const readFileTool = createImagineTool({
     }
 });
 
-const writeFilesTool = createImagineTool({
-    id: 'writeFiles',
+const writeFilesTool = tool({
+    name: 'writeFiles',
     description: 'Write multiple files to the repository',
     inputSchema: z.object({
         files: z.array(
@@ -132,14 +141,14 @@ const writeFilesTool = createImagineTool({
         const synapse = runtimeContext.get('synapseClient');
 
         writer.write({
-          type: "start-step",
-        })
+            type: 'start-step'
+        });
 
         const { successFiles, errorFiles } = await writeFiles(files, synapse);
 
         writer.write({
-          type: "finish-step",
-        })
+            type: 'finish-step'
+        });
 
         return {
             successFiles,
@@ -148,8 +157,8 @@ const writeFilesTool = createImagineTool({
     }
 });
 
-const writeFileTool = createImagineTool({
-    id: 'writeFile',
+const writeFileTool = tool({
+    name: 'writeFile',
     description:
         'Write a single file to the repository. If the file does not exist, it will be created. If the file exists, it will be overwritten. You must provide the full file contents.',
     inputSchema: z.object({
@@ -164,15 +173,14 @@ const writeFileTool = createImagineTool({
             .describe('The error message if the file was not written successfully')
     }),
     execute: async ({ path, content }) => {
-        console.log('writeFileTool', { path, content });
         const runtimeContext = getContext<HonoEnv>().var.runtimeContext;
         const skipWritingToolCalls = runtimeContext.get('skipWritingToolCalls');
         const writer = getWriterFromContext(runtimeContext);
         const synapse = runtimeContext.get('synapseClient');
 
         writer.write({
-          type: "start-step",
-        })
+            type: 'start-step'
+        });
 
         const toolCallId = createIdGenerator({ size: 10 })();
 
@@ -188,33 +196,29 @@ const writeFileTool = createImagineTool({
             });
         }
 
-        const { errorFiles } = await writeFiles([{ path, content }], synapse);
+        const { errorFiles, successFiles } = await writeFiles([{ path, content }], synapse);
 
-        if (errorFiles.length > 0) {
+        const changedFiles = runtimeContext.get('changedFiles');
+        const newChangedFiles = [...changedFiles, ...successFiles];
+        runtimeContext.set('changedFiles', newChangedFiles);
+
+        console.log('changedFiles', newChangedFiles);
+
+        if (!skipWritingToolCalls) {
             writer.write({
-              type: "finish-step",
-            })
-            return {
-                success: false,
-                error: errorFiles[0].error
-            };
-        } else {
-            if (!skipWritingToolCalls) {
-                writer.write({
-                    type: 'tool-output-available',
-                    toolCallId,
-                    output: {
-                        success: true
-                    }
-                });
-            }
-            writer.write({
-              type: "finish-step",
-            })
-            return {
-                success: true
-            };
+                type: 'tool-output-available',
+                toolCallId,
+                output: {
+                    success: true
+                }
+            });
         }
+        writer.write({
+            type: 'finish-step'
+        });
+        return {
+            success: true
+        };
     }
 });
 
@@ -243,8 +247,8 @@ async function writeFiles(files: { path: string; content: string }[], synapse: S
     };
 }
 
-const listFilesInDirectoryTool = createImagineTool({
-    id: 'listFilesInDirectory',
+const listFilesInDirectoryTool = tool({
+    name: 'listFilesInDirectory',
     description: 'List all files in a directory',
     inputSchema: z.object({
         path: z.string().default('/').describe('The path to the directory to list files from'),
@@ -267,14 +271,14 @@ const listFilesInDirectoryTool = createImagineTool({
         const synapse = runtimeContext.get('synapseClient');
 
         writer.write({
-          type: "start-step",
-        })
+            type: 'start-step'
+        });
 
         console.log(
             `[TOOL - listFilesInDirectory] Listing files in directory at path: ${path}, recursive: ${recursive}`
         );
         const files = await synapse.listFilesInDir({
-            dirPath: `./${path ?? ""}`,
+            dirPath: `./${path ?? ''}`,
             recursive: recursive || false,
             withContent: false,
             additionalIgnorePatterns: []
@@ -285,8 +289,8 @@ const listFilesInDirectoryTool = createImagineTool({
         );
 
         writer.write({
-          type: "finish-step",
-        })
+            type: 'finish-step'
+        });
 
         return {
             files
@@ -294,8 +298,8 @@ const listFilesInDirectoryTool = createImagineTool({
     }
 });
 
-const deleteFileTool = createImagineTool({
-    id: 'deleteFile',
+const deleteFileTool = tool({
+    name: 'deleteFile',
     description: 'Delete a file from the repository',
     inputSchema: z.object({
         path: z.string().describe('The path to the file to delete')
@@ -310,14 +314,14 @@ const deleteFileTool = createImagineTool({
         const synapse = runtimeContext.get('synapseClient');
 
         writer.write({
-          type: "start-step",
-        })
+            type: 'start-step'
+        });
 
         await synapse.deleteFile({ filepath: `./${path}` });
 
         writer.write({
-          type: "finish-step",
-        })
+            type: 'finish-step'
+        });
 
         return {
             success: true
@@ -325,8 +329,8 @@ const deleteFileTool = createImagineTool({
     }
 });
 
-const moveFileTool = createImagineTool({
-    id: 'moveFile',
+const moveFileTool = tool({
+    name: 'moveFile',
     description:
         'Move a file from one path to another. Also useful when renaming. If the directory does not exist, it will be created.',
     inputSchema: z.object({
@@ -348,14 +352,14 @@ const moveFileTool = createImagineTool({
         const synapse = runtimeContext.get('synapseClient');
 
         writer.write({
-          type: "start-step",
-        })
+            type: 'start-step'
+        });
 
         await synapse.updateFilePath({ filepath: `./${path}`, newPath: `./${newPath}` });
 
         writer.write({
-          type: "finish-step",
-        })
+            type: 'finish-step'
+        });
 
         return {
             success: true

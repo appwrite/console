@@ -14,8 +14,10 @@
   "license": "ISC",
   "devDependencies": {
     "@prisma/client": "^6.10.1",
+    "@types/babel__traverse": "^7.20.7",
     "@types/node": "^24.0.13",
     "rimraf": "^6.0.1",
+    "traverse": "link:@types/@babel/traverse",
     "tsup": "^8.5.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
@@ -27,6 +29,8 @@
     "@ai-sdk/react": "2.0.0-beta.10",
     "@ai-sdk/vercel": "1.0.0-beta.3",
     "@appwrite.io/console": "^1.9.0",
+    "@babel/parser": "^7.28.0",
+    "@babel/traverse": "^7.28.0",
     "@daytonaio/api-client": "^0.24.2",
     "@daytonaio/sdk": "^0.24.2",
     "@eslint/eslintrc": "^3",
@@ -36,6 +40,7 @@
     "@mastra/loggers": "0.0.0-ai-v5-20250710191716",
     "@mastra/memory": "0.0.0-ai-v5-20250710191716",
     "ai": "5.0.0-beta.21",
+    "dedent": "^1.6.0",
     "dotenv": "^17.2.0",
     "eslint": "^9",
     "file-paths-to-tree": "^4.0.0",

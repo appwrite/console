@@ -1,6 +1,6 @@
 <script lang="ts">
     import 'highlight.js/styles/atom-one-light.css';
-    import { Icon, Spinner, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Spinner, Layout, Tag } from '@appwrite.io/pink-svelte';
     import { IconArrowDown } from '@appwrite.io/pink-icons-svelte';
     import { slide } from 'svelte/transition';
     import type { UIEventHandler, WheelEventHandler } from 'svelte/elements';

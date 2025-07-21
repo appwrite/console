@@ -86,9 +86,9 @@
     {/if}
 
     <!-- Checkpoint -->
-    {#if organizedParts().checkpointPart}
+    <!-- {#if organizedParts().checkpointPart}
         <Checkpoint checkpointPart={organizedParts().checkpointPart.data} />
-    {/if}
+    {/if} -->
 {/if}
 
 <style lang="scss">

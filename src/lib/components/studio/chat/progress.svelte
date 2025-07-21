@@ -74,23 +74,23 @@
                     </div>
 
                     <div class="tool-text">
-                        {#if toolCall.type === 'tool-writeFile'}
+                        {#if toolCall.type === 'tool-writeFile' && toolCall.input?.path}
                             {isLoading
                                 ? `Writing file ${toolCall.input.path}...`
                                 : `Wrote file ${toolCall.input.path}`}
-                        {:else if toolCall.type === 'tool-readFile'}
+                        {:else if toolCall.type === 'tool-readFile' && toolCall.input?.path}
                             {isLoading
                                 ? `Reading file ${toolCall.input.path}...`
                                 : `Read file ${toolCall.input.path}`}
-                        {:else if toolCall.type === 'tool-listFilesInDirectory'}
+                        {:else if toolCall.type === 'tool-listFilesInDirectory' && toolCall.input?.path}
                             {isLoading
                                 ? `Listing files in ${toolCall.input.path}...`
                                 : `Listed files in ${toolCall.input.path}`}
-                        {:else if toolCall.type === 'tool-deleteFile'}
+                        {:else if toolCall.type === 'tool-deleteFile' && toolCall.input?.path}
                             {isLoading
                                 ? `Deleting file ${toolCall.input.path}...`
                                 : `Deleted file ${toolCall.input.path}`}
-                        {:else if toolCall.type === 'tool-moveFile'}
+                        {:else if toolCall.type === 'tool-moveFile' && toolCall.input?.path}
                             {isLoading
                                 ? `Moving file ${toolCall.input.path}...`
                                 : `Moved file ${toolCall.input.path}`}
