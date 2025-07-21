@@ -2,7 +2,7 @@
     import { Card } from '$lib/components/index.js';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
-    import type { Models } from '@appwrite.io/console';
+    import { ImageFormat, type Models } from '@appwrite.io/console';
     import { page } from '$app/state';
     import {
         Badge,
@@ -46,7 +46,23 @@
     }
 
     function getFilePreview(fileId: string) {
-        return sdk.forConsoleIn(page.params.region).storage.getFileView('screenshots', fileId);
+        return sdk
+            .forConsoleIn(page.params.region)
+            .storage.getFilePreview(
+                'screenshots',
+                fileId,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                ImageFormat.Webp
+            );
     }
 </script>
 
