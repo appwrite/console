@@ -4,6 +4,7 @@ import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
 import type { Columns } from '../store';
+import { buildWildcardColumnsQuery } from './columns/store';
 
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
     depends(Dependencies.ROW);
@@ -11,7 +12,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
 
     const row = await sdk
         .forProject(params.region, params.project)
-        .tables.getRow(params.database, params.table, params.row);
+        .tables.getRow(params.database, params.table, params.row, buildWildcardColumnsQuery(table));
 
     /**
      * Sanitize DateTime to remove UTC Timezone section.

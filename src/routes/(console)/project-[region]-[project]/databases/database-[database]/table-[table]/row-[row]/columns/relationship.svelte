@@ -39,8 +39,6 @@
             }
         }
 
-        rowList = await getRows();
-
         if (editing && $row?.[column.key]) {
             if ($row[column.key]?.length) {
                 relatedList =
@@ -59,7 +57,10 @@
     });
 
     async function getRows(search: string = null) {
-        const queries = search ? [Query.startsWith('$id', search), Query.orderDesc('')] : [];
+        const queries = search
+            ? [Query.select(['$id']), Query.startsWith('$id', search), Query.orderDesc('')]
+            : [Query.select(['$id'])];
+
         return await sdk
             .forProject(page.params.region, page.params.project)
             .tables.listRows(databaseId, column.relatedTable, queries);
@@ -103,7 +104,7 @@
         showInput = false;
     }
 
-    //Reactive statements
+    // Reactive statements
     $: getRows(search).then((res) => (rowList = res));
 
     $: paginatedItems = editing

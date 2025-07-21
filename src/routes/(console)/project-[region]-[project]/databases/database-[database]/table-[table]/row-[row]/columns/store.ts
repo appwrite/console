@@ -1,4 +1,4 @@
-import type { Models } from '@appwrite.io/console';
+import { type Models, Query } from '@appwrite.io/console';
 import type { Columns } from '../../store';
 
 export function isRelationshipToMany(column: Models.ColumnRelationship) {
@@ -19,4 +19,17 @@ export function isRelationship(column: Columns): column is Models.ColumnRelation
 export function isString(column: Columns): column is Models.ColumnString {
     if (!column) return false;
     return column?.type === 'string';
+}
+
+/**
+ * Returns select queries for all main and related fields in a table.
+ */
+export function buildWildcardColumnsQuery(table: Models.Table | null = null): string[] {
+    return [
+        ...(table?.columns
+            ?.filter((col) => isRelationship(col))
+            ?.map((col) => Query.select([`${col.key}.*`])) ?? []),
+
+        Query.select(['*'])
+    ];
 }
