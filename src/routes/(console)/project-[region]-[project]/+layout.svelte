@@ -25,7 +25,6 @@
         canWriteSites
     } from '$lib/stores/roles';
     import CsvImportBox from '$lib/components/csvImportBox.svelte';
-    import { isCloud } from '$lib/system';
 
     onMount(() => {
         return realtime
@@ -43,8 +42,8 @@
         {
             label: 'Go to Auth',
             callback: () => {
-                const region = $project.region || (!isCloud ? 'default' : $project.region);
-                goto(`${base}/project-${region}-${$project.$id}/auth`);
+                $project.region ??= 'default';
+                goto(`${base}/project-${$project.region}-${$project.$id}/auth`);
             },
             keys: ['g', 'a'],
             group: 'navigation'
@@ -52,8 +51,8 @@
         {
             label: 'Go to Databases',
             callback: () => {
-                const region = $project.region || (!isCloud ? 'default' : $project.region);
-                goto(`${base}/project-${region}-${$project.$id}/databases`);
+                $project.region ??= 'default';
+                goto(`${base}/project-${$project.region}-${$project.$id}/databases`);
             },
             keys: ['g', 'd'],
             group: 'navigation',
@@ -62,8 +61,8 @@
         {
             label: 'Go to Functions',
             callback: () => {
-                const region = $project.region || (!isCloud ? 'default' : $project.region);
-                goto(`${base}/project-${region}-${$project.$id}/functions`);
+                $project.region ??= 'default';
+                goto(`${base}/project-${$project.region}-${$project.$id}/functions`);
             },
             keys: ['g', 'f'],
             group: 'navigation',
@@ -72,8 +71,8 @@
         {
             label: 'Go to Messaging',
             callback: () => {
-                const region = $project.region || (!isCloud ? 'default' : $project.region);
-                goto(`${base}/project-${region}-${$project.$id}/messaging`);
+                $project.region ??= 'default';
+                goto(`${base}/project-${$project.region}-${$project.$id}/messaging`);
             },
             keys: ['g', 'm'],
             disabled: page.url.pathname.endsWith('messaging') || !$canSeeMessages,
@@ -82,8 +81,8 @@
         {
             label: 'Go to Storage',
             callback: () => {
-                const region = $project.region || (!isCloud ? 'default' : $project.region);
-                goto(`${base}/project-${region}-${$project.$id}/storage`);
+                $project.region ??= 'default';
+                goto(`${base}/project-${$project.region}-${$project.$id}/storage`);
             },
             keys: ['g', 's'],
             group: 'navigation',
@@ -92,8 +91,8 @@
         {
             label: 'Go to Settings',
             callback: () => {
-                const region = $project.region || (!isCloud ? 'default' : $project.region);
-                goto(`${base}/project-${region}-${$project.$id}/settings`);
+                $project.region ??= 'default';
+                goto(`${base}/project-${$project.region}-${$project.$id}/settings`);
             },
             keys: ['g', 'e'],
             group: 'navigation',
@@ -102,8 +101,8 @@
         {
             label: 'Go to Sites',
             callback: () => {
-                const region = $project.region || (!isCloud ? 'default' : $project.region);
-                goto(`${base}/project-${region}-${$project.$id}/sites`);
+                $project.region ??= 'default';
+                goto(`${base}/project-${$project.region}-${$project.$id}/sites`);
             },
             keys: ['g', 'i'],
             group: 'navigation',
@@ -112,8 +111,8 @@
         {
             label: 'Go to Overview',
             callback: () => {
-                const region = $project.region || (!isCloud ? 'default' : $project.region);
-                goto(`${base}/project-${region}-${$project.$id}`);
+                $project.region ??= 'default';
+                goto(`${base}/project-${$project.region}-${$project.$id}`);
             },
             keys: ['g', 'o'],
             group: 'navigation'
