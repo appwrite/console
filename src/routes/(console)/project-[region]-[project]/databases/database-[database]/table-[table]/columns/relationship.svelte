@@ -119,7 +119,7 @@
     });
 
     // Reactive statements
-    $: collections = tableList?.tables?.filter((n) => n.$id !== $table.$id) ?? [];
+    $: tables = tableList?.tables?.filter((n) => n.$id !== $table.$id) ?? [];
 
     $: if (editing) {
         way = data.twoWay ? 'two' : 'one';
@@ -176,7 +176,7 @@
     placeholder="Select a table"
     bind:value={data.relatedTable}
     on:change={updateKeyName}
-    options={collections?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
+    options={tables?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
 
 {#if data?.relatedTable}
     <InputText

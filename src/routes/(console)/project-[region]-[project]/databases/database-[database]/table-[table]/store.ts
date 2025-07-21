@@ -1,7 +1,7 @@
 import { page } from '$app/stores';
-import type { Column as TableColumn } from '$lib/helpers/types';
-import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
+import type { Models } from '@appwrite.io/console';
+import type { Column as TableColumn } from '$lib/helpers/types';
 
 export type Columns =
     | Models.ColumnBoolean

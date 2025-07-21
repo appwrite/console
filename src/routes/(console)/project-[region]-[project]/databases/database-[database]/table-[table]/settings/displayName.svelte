@@ -15,7 +15,6 @@
     import { organization } from '$lib/stores/organization';
 
     const tableId = page.params.table;
-    let names: string[] = [...(preferences.getDisplayNames()?.[tableId] ?? [])];
 
     function getDisplayNames() {
         return [...(preferences.getDisplayNames()?.[tableId] ?? [])].filter(
@@ -49,15 +48,15 @@
         }
     }
 
-    function getValidAttributes() {
-        return ($attributes as Models.AttributeString[]).filter(
+    function getValidColumns() {
+        return ($columns as Models.ColumnString[]).filter(
             (attr) => attr.type === 'string' && !attr?.array
         );
     }
 
     function getOptions(index: number) {
         const current = names?.[index];
-        return getValidAttributes()
+        return getValidColumns()
             .filter((attr) => !names?.includes(attr.key) || attr.key === current)
             .map((attr) => ({
                 value: attr.key,
@@ -74,9 +73,7 @@
             (names?.length && !last(names))
     );
 
-    const hasExhaustedOptions = $derived(
-        getValidAttributes().length === names.filter(Boolean).length
-    );
+    const hasExhaustedOptions = $derived(getValidColumns().length === names.filter(Boolean).length);
 </script>
 
 <Form onSubmit={updateDisplayName}>

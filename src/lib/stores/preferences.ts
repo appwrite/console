@@ -111,7 +111,7 @@ function createPreferences() {
             );
         },
         getCustomTableColumns: (tableId: string): Preferences['columns'] => {
-            return preferences?.collections?.[tableId] ?? preferences?.tables?.[tableId] ?? [];
+            return preferences?.tables?.[tableId] ?? preferences?.collections?.[tableId] ?? [];
         },
         setLimit: (limit: Preferences['limit']) =>
             updateAndSync((n) => {
@@ -159,7 +159,8 @@ function createPreferences() {
                 n.tables ??= {};
 
                 n.tables[tableId] = Array.from(new Set(columns));
-                n.collections[tableId] = Array.from(new Set(columns));
+                // let's not double save
+                // n.collections[tableId] = Array.from(new Set(columns));
                 return n;
             }),
         loadTeamPrefs: async (id: string) => {
