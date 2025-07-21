@@ -4,14 +4,20 @@ import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
 import type { Attributes } from '../store';
+import { buildWildcardAttributesQuery } from './attributes/store';
 
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
-    depends(Dependencies.DOCUMENT);
     const { collection } = await parent();
+    depends(Dependencies.DOCUMENT);
 
     const document = await sdk
         .forProject(params.region, params.project)
-        .databases.getDocument(params.database, params.collection, params.document);
+        .databases.getDocument(
+            params.database,
+            params.collection,
+            params.document,
+            buildWildcardAttributesQuery(collection)
+        );
 
     /**
      * Sanitize DateTime to remove UTC Timezone section.
