@@ -29,7 +29,8 @@
         Badge,
         FloatingActionBar,
         InteractiveText,
-        Typography
+        Typography,
+        Layout
     } from '@appwrite.io/pink-svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
@@ -343,7 +344,7 @@
                     </Table.Row.Base>
                 {/each}
             </Table.Root>
-            <div class="u-flex u-flex-vertical u-gap-16">
+            <Layout.Stack gap="m" direction="column">
                 <Alert.Inline status="info"
                     >To change the selection edit the relationship settings.</Alert.Inline>
 
@@ -352,7 +353,7 @@
                         Delete document from <span data-private>{$collection.name}</span>
                     </InputChoice>
                 </ul>
-            </div>
+            </Layout.Stack>
         {:else}
             <p class="u-bold">This action is irreversible.</p>
         {/if}

@@ -23,7 +23,7 @@
     export let title: string;
     export let serviceId = title.toLocaleLowerCase() as PlanServices;
     export let total: number = null;
-    export let alertType: 'info' | 'success' | 'warning' | 'error' | 'default' = 'warning';
+    export let alertType: 'info' | 'success' | 'warning' | 'error' = 'warning';
     export let showAlert = true;
 
     export let buttonText: string = null;
@@ -105,7 +105,7 @@
                     </span>
                 </Alert.Inline>
             {:else}
-                <Alert.Inline status={alertType === 'default' ? 'info' : alertType}>
+                <Alert.Inline status={alertType}>
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan. <Link
                             href={$upgradeURL}

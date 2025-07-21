@@ -22,6 +22,7 @@
     import { isCloud } from '$lib/system';
     import UpdateVariables from '$routes/(console)/project-[region]-[project]/updateVariables.svelte';
     import { page } from '$app/state';
+    import { Link } from '$lib/elements';
 
     export let data;
     let showAlert = true;
@@ -55,16 +56,16 @@
 
 <Container>
     {#if data.function.version === 'v2' && showAlert}
-        <div class="u-margin-block-start-24">
-            <Alert.Inline status="warning" dismissible on:dismiss={() => (showAlert = false)}>
-                <svelte:fragment slot="title">Your function is outdated</svelte:fragment>
-                Update your function version to make use of new features including build commands and
-                HTTP data in your executions. To update, follow the steps outlined in our
-                <a
-                    href="https://appwrite.io/docs/products/functions/development"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="link">documentation</a
+        <div>
+            <Alert.Inline
+                status="warning"
+                dismissible
+                title="Your function is outdated"
+                on:dismiss={() => (showAlert = false)}>
+                Update your function version to make use of new features including build commands
+                and HTTP data in your executions. To update, follow the steps outlined in our
+                <Link href="https://appwrite.io/docs/products/functions/development" external
+                    >documentation</Link
                 >.
                 <svelte:fragment slot="actions">
                     <Button
