@@ -11,15 +11,17 @@
     import type { Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { doc } from './store';
     import { collection, type Attributes } from '../store';
     import AttributeItem from './attributeItem.svelte';
     import { isRelationship, isRelationshipToMany } from './attributes/store';
     import { deepClone } from '$lib/helpers/object';
 
+    export let data;
+
+    const document = data.document;
     const databaseId = page.params.database;
-    const collectionId = page.params.collection;
     const documentId = page.params.document;
+    const collectionId = page.params.collection;
 
     function initWork() {
         const prohibitedKeys = [
@@ -31,12 +33,12 @@
             '$updatedAt'
         ];
 
-        const filteredKeys = Object.keys($doc).filter((key) => {
+        const filteredKeys = Object.keys(document).filter((key) => {
             return !prohibitedKeys.includes(key);
         });
 
         const result = filteredKeys.reduce((obj, key) => {
-            obj[key] = $doc[key];
+            obj[key] = document[key];
             return obj;
         }, {});
 
@@ -72,42 +74,46 @@
         }
     }
 
-    function compareAttributes(
-        attribute: Attributes,
-        $work: Models.Document,
-        $doc: Models.Document
-    ) {
-        if (!attribute) {
+    function compareAttributes(attr: Attributes, related: Models.Document, doc: Models.Document) {
+        if (!attr) {
             return false;
         }
 
-        const workAttribute = $work?.[attribute.key];
-        const docAttribute = $doc?.[attribute.key];
+        const documentAttribute = doc?.[attr.key];
+        const relatedAttribute = related?.[attr.key];
 
-        if (attribute.array) {
-            return !symmetricDifference(Array.from(workAttribute), Array.from(docAttribute)).length;
+        // undefined for a second, not sure why!
+        if (documentAttribute === undefined || relatedAttribute === undefined) {
+            return false;
         }
 
-        if (isRelationship(attribute)) {
-            if (isRelationshipToMany(attribute as Models.AttributeRelationship)) {
-                const workIds = workAttribute.map((doc: string | Record<string, unknown>) =>
+        if (attr.array) {
+            return !symmetricDifference(Array.from(relatedAttribute), Array.from(documentAttribute))
+                .length;
+        }
+
+        if (isRelationship(attr)) {
+            if (isRelationshipToMany(attr as Models.AttributeRelationship)) {
+                const workIds = relatedAttribute.map((doc: string | Record<string, unknown>) =>
                     typeof doc === 'string' ? doc : doc.$id
                 );
 
-                const relatedIds = docAttribute.map((doc: string | Record<string, unknown>) =>
+                const relatedIds = documentAttribute.map((doc: string | Record<string, unknown>) =>
                     typeof doc === 'string' ? doc : doc.$id
                 );
                 return !symmetricDifference(workIds, relatedIds).length;
             } else {
                 const workId =
-                    typeof workAttribute === 'string' ? workAttribute : workAttribute?.$id;
+                    typeof relatedAttribute === 'string' ? relatedAttribute : relatedAttribute?.$id;
                 const relatedId =
-                    typeof docAttribute === 'string' ? docAttribute : docAttribute?.$id;
+                    typeof documentAttribute === 'string'
+                        ? documentAttribute
+                        : documentAttribute?.$id;
 
                 return workId === relatedId;
             }
         }
-        return workAttribute === docAttribute;
+        return relatedAttribute === documentAttribute;
     }
 </script>
 
@@ -117,7 +123,7 @@
 
 <Container>
     {#if $collection?.attributes?.length}
-        {#each $collection.attributes as attribute}
+        {#each $collection.attributes as attribute (attribute.key)}
             {@const label = attribute.key}
             <CardGrid>
                 <svelte:fragment slot="title">{label}</svelte:fragment>
@@ -128,7 +134,7 @@
 
                 <svelte:fragment slot="actions">
                     <Button
-                        disabled={compareAttributes(attribute, $work, $doc)}
+                        disabled={compareAttributes(attribute, $work, document)}
                         on:click={() => updateData()}>Update</Button>
                 </svelte:fragment>
             </CardGrid>

@@ -61,7 +61,7 @@
         </Layout.Stack>
     {:else}
         <Layout.Stack>
-            {#each [...formValues[attribute.key].keys()] as index}
+            {#each [...(formValues[attribute.key]?.keys() ?? [])] as index}
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                     <Attribute
                         {attribute}
