@@ -112,10 +112,13 @@
         };
 
         if (loadedProjects.total > 1 && selectedOrg) {
-            const projectLinks = loadedProjects.projects.slice(0, 4).map((project) => ({
-                name: project.name,
-                href: `${base}/project-${project.region}-${project.$id}/overview/platforms`
-            }));
+            const projectLinks = loadedProjects.projects.slice(0, 4).map((project) => {
+                const region = project.region || (!isCloud ? 'default' : project.region);
+                return {
+                    name: project.name,
+                    href: `${base}/project-${region}-${project.$id}/overview/platforms`
+                };
+            });
 
             if (loadedProjects.projects.length > 4) {
                 projectLinks.push({
@@ -341,7 +344,7 @@
                                 <div use:melt={$itemProjects}>
                                     <ActionMenu.Root>
                                         <ActionMenu.Item.Anchor
-                                            href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
+                                            href={`${base}/project-${project.region || (!isCloud ? 'default' : project.region)}-${project.$id}/overview/platforms`}>
                                             <span class="projectName dropdown">{project.name}</span>
                                         </ActionMenu.Item.Anchor>
                                     </ActionMenu.Root>

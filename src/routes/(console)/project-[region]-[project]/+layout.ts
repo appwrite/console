@@ -17,6 +17,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
 
     const project = await sdk.forConsole.projects.get(params.project);
 
+    if (!isCloud && !project.region) project.region = 'default';
+
     // fast path without a network call!
     let organization = (organizations as OrganizationList)?.teams?.find(
         (org) => org.$id === project.teamId
