@@ -68,7 +68,7 @@ if (isCloud) {
             external: true,
             hideOnClick: true
         },
-        show: false
+        show: true
     };
     listOfPromotions.push(optInRelationPromo, autoIncrementPromo, encryptedAttributePromo);
 }
