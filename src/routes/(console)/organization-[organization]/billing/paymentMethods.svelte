@@ -249,8 +249,9 @@
                                         </Layout.Stack>
                                     </ActionMenu.Item.Button>
                                 {/each}
+
+                                <Divider />
                             {/if}
-                            <Divider />
                             <ActionMenu.Item.Button
                                 leadingIcon={IconPlus}
                                 on:click={(e) => {
@@ -284,8 +285,9 @@
                                         </Layout.Stack>
                                     </ActionMenu.Item.Button>
                                 {/each}
+
+                                <Divider />
                             {/if}
-                            <Divider />
                             <ActionMenu.Item.Button
                                 leadingIcon={IconPlus}
                                 on:click={(e) => {
