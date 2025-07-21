@@ -4,10 +4,13 @@ import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters';
+import { buildWildcardAttributesQuery } from './document-[document]/attributes/store';
 
-export const load: PageLoad = async ({ params, depends, url, route }) => {
+export const load: PageLoad = async ({ params, depends, url, route, parent }) => {
+    const { collection } = await parent();
     depends(Dependencies.DOCUMENT); /* TODO: we could just invalidate the documents maybe*/
     depends(Dependencies.DOCUMENTS);
+
     const page = getPage(url);
     // TODO: apply pagination
     const limit = getLimit(url, route, 96 /*PAGE_LIMIT*/);
@@ -17,6 +20,7 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
 
     const paramQueries = url.searchParams.get('query');
     const parsedQueries = queryParamToMap(paramQueries || '[]');
+
     queries.set(parsedQueries);
 
     return {
@@ -30,7 +34,8 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
                 Query.limit(limit),
                 Query.offset(offset),
                 Query.orderDesc(''),
-                ...parsedQueries.values()
+                ...parsedQueries.values(),
+                ...buildWildcardAttributesQuery(collection)
             ])
     };
 };
