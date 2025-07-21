@@ -98,7 +98,7 @@
                                 </Button>
                                 <svelte:fragment slot="menu" let:toggle>
                                     <ActionMenu.Root>
-                                        {#if $canWriteFunctions}
+                                        {#if $canWriteFunctions && activeDeployment.sourceSize !== 0}
                                             <ActionMenu.Item.Button
                                                 trailingIcon={IconRefresh}
                                                 on:click={() => {

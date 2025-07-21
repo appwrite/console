@@ -56,7 +56,9 @@
                 </Button>
             {/if}
 
-            <Button secondary on:click={() => (showRedeploy = true)}>Redeploy</Button>
+            {#if deployment?.sourceSize !== 0}
+                <Button secondary on:click={() => (showRedeploy = true)}>Redeploy</Button>
+            {/if}
             <DeploymentActionMenu
                 inCard
                 {deployment}
