@@ -100,9 +100,9 @@
                         analyticsSource="database_documents" />
 
                     <!-- TODO: not yet implemented -->
-                    <Button icon secondary>
-                        <Icon icon={IconSearch} slot="start" />
-                    </Button>
+                    <!--                    <Button icon secondary>-->
+                    <!--                        <Icon icon={IconSearch} slot="start" />-->
+                    <!--                    </Button>-->
                 </Layout.Stack>
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     <Button

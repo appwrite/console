@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty, PaginationWithLimit } from '$lib/components';
+    import { PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { columns, showCreate } from './store';
@@ -7,8 +7,9 @@
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
     import { canWriteCollections } from '$lib/stores/roles';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Card, Empty, Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { base } from '$app/paths';
 
     export let data: PageData;
 </script>
@@ -40,11 +41,28 @@
             offset={data.offset}
             total={data.collections.total} />
     {:else}
-        <Empty
-            single
-            allowCreate={$canWriteCollections}
-            href="https://appwrite.io/docs/products/databases/collections"
-            target="collection"
-            on:click={() => ($showCreate = true)} />
+        <Card.Base padding="none">
+            <Empty title="Create your first table" src={`${base}/images/empty-database-light.svg`}>
+                <span slot="description">
+                    Create and manage structured data effortlessly, with the flexibility and control
+                    your app needs.
+                </span>
+                <span slot="actions">
+                    <Button
+                        external
+                        text
+                        event="empty_documentation"
+                        ariaLabel={`create collection`}>Documentation</Button>
+
+                    <Button
+                        secondary
+                        on:click={() => {
+                            $showCreate = true;
+                        }}>
+                        Create collection
+                    </Button>
+                </span>
+            </Empty>
+        </Card.Base>
     {/if}
 </Container>

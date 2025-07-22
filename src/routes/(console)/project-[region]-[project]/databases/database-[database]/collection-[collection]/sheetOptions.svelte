@@ -98,7 +98,7 @@
     }
 </script>
 
-<Popover let:toggle padding="none" placement="bottom" portal>
+<Popover let:toggle padding="none" placement="bottom-start" portal>
     {@render children(toggle)}
 
     <svelte:fragment slot="tooltip" let:hide>
