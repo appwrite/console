@@ -11,12 +11,14 @@
     import type { Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { row } from './store';
     import { table, type Columns } from '../store';
     import ColumnItem from './columnItem.svelte';
     import { isRelationship, isRelationshipToMany } from './columns/store';
     import { deepClone } from '$lib/helpers/object';
 
+    export let data;
+
+    const row = data.row;
     const databaseId = page.params.database;
     const tableId = page.params.table;
     const rowId = page.params.row;
@@ -31,12 +33,12 @@
             '$updatedAt'
         ];
 
-        const filteredKeys = Object.keys($row).filter((key) => {
+        const filteredKeys = Object.keys(row).filter((key) => {
             return !prohibitedKeys.includes(key);
         });
 
         const result = filteredKeys.reduce((obj, key) => {
-            obj[key] = $row[key];
+            obj[key] = row[key];
             return obj;
         }, {});
 
@@ -66,36 +68,42 @@
         }
     }
 
-    function compareColumns(column: Columns, $work: Models.Row, $row: Models.Row) {
+    function compareColumns(column: Columns, related: Models.Row, row: Models.Row) {
         if (!column) {
             return false;
         }
 
-        const workColumn = $work?.[column.key];
-        const docColumn = $row?.[column.key];
+        const rowColumn = row?.[column.key];
+        const relatedColumn = related?.[column.key];
+
+        // undefined for a second, not sure why!
+        if (rowColumn === undefined || relatedColumn === undefined) {
+            return false;
+        }
 
         if (column.array) {
-            return !symmetricDifference(Array.from(workColumn), Array.from(docColumn)).length;
+            return !symmetricDifference(Array.from(relatedColumn), Array.from(rowColumn)).length;
         }
 
         if (isRelationship(column)) {
             if (isRelationshipToMany(column as Models.ColumnRelationship)) {
-                const workIds = workColumn.map((doc: string | Record<string, unknown>) =>
+                const workIds = relatedColumn.map((doc: string | Record<string, unknown>) =>
                     typeof doc === 'string' ? doc : doc.$id
                 );
 
-                const relatedIds = docColumn.map((doc: string | Record<string, unknown>) =>
+                const relatedIds = rowColumn.map((doc: string | Record<string, unknown>) =>
                     typeof doc === 'string' ? doc : doc.$id
                 );
                 return !symmetricDifference(workIds, relatedIds).length;
             } else {
-                const workId = typeof workColumn === 'string' ? workColumn : workColumn?.$id;
-                const relatedId = typeof docColumn === 'string' ? docColumn : docColumn?.$id;
+                const workId =
+                    typeof relatedColumn === 'string' ? relatedColumn : relatedColumn?.$id;
+                const relatedId = typeof rowColumn === 'string' ? rowColumn : rowColumn?.$id;
 
                 return workId === relatedId;
             }
         }
-        return workColumn === docColumn;
+        return relatedColumn === rowColumn;
     }
 </script>
 
@@ -116,7 +124,7 @@
 
                 <svelte:fragment slot="actions">
                     <Button
-                        disabled={compareColumns(column, $work, $row)}
+                        disabled={compareColumns(column, $work, row)}
                         on:click={() => updateData()}>Update</Button>
                 </svelte:fragment>
             </CardGrid>
