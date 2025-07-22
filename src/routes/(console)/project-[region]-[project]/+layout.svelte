@@ -42,7 +42,6 @@
         {
             label: 'Go to Auth',
             callback: () => {
-                $project.region ??= 'default';
                 goto(`${base}/project-${$project.region}-${$project.$id}/auth`);
             },
             keys: ['g', 'a'],
@@ -51,7 +50,6 @@
         {
             label: 'Go to Databases',
             callback: () => {
-                $project.region ??= 'default';
                 goto(`${base}/project-${$project.region}-${$project.$id}/databases`);
             },
             keys: ['g', 'd'],
@@ -61,7 +59,6 @@
         {
             label: 'Go to Functions',
             callback: () => {
-                $project.region ??= 'default';
                 goto(`${base}/project-${$project.region}-${$project.$id}/functions`);
             },
             keys: ['g', 'f'],
@@ -71,7 +68,6 @@
         {
             label: 'Go to Messaging',
             callback: () => {
-                $project.region ??= 'default';
                 goto(`${base}/project-${$project.region}-${$project.$id}/messaging`);
             },
             keys: ['g', 'm'],
@@ -81,7 +77,6 @@
         {
             label: 'Go to Storage',
             callback: () => {
-                $project.region ??= 'default';
                 goto(`${base}/project-${$project.region}-${$project.$id}/storage`);
             },
             keys: ['g', 's'],
@@ -91,7 +86,6 @@
         {
             label: 'Go to Settings',
             callback: () => {
-                $project.region ??= 'default';
                 goto(`${base}/project-${$project.region}-${$project.$id}/settings`);
             },
             keys: ['g', 'e'],
@@ -101,7 +95,6 @@
         {
             label: 'Go to Sites',
             callback: () => {
-                $project.region ??= 'default';
                 goto(`${base}/project-${$project.region}-${$project.$id}/sites`);
             },
             keys: ['g', 'i'],
@@ -111,7 +104,6 @@
         {
             label: 'Go to Overview',
             callback: () => {
-                $project.region ??= 'default';
                 goto(`${base}/project-${$project.region}-${$project.$id}`);
             },
             keys: ['g', 'o'],

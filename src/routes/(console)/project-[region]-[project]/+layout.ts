@@ -16,7 +16,6 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.PROJECT);
 
     const project = await sdk.forConsole.projects.get(params.project);
-
     project.region ??= 'default';
 
     // fast path without a network call!
