@@ -8,7 +8,7 @@
     export let title: string;
     export let columns: Writable<Column[]>;
     export let view: View;
-    export let isCustomCollection = false;
+    export let isCustomTable = false;
     export let hideView = false;
     export let hideColumns = false;
     export let allowNoColumns = false;
@@ -17,13 +17,7 @@
 <header class="grid-header">
     <Typography.Title size="m">{title}</Typography.Title>
     <div class="u-flex u-gap-16 u-contents-mobile">
-        <ViewSelector
-            {view}
-            {columns}
-            {isCustomCollection}
-            {hideView}
-            {hideColumns}
-            {allowNoColumns} />
+        <ViewSelector {view} {columns} {isCustomTable} {hideView} {hideColumns} {allowNoColumns} />
         <div class="grid-header-col-2">
             <slot />
         </div>
