@@ -103,7 +103,9 @@
         isLoadingProjects = true;
         // null on non-org/project path like `onboarding`.
         loadedProjects = (await projects) ?? loadedProjects;
-        // Fallback logic removed; handled in loader
+        for (const project of loadedProjects.projects) {
+            project.region ??= 'default';
+        }
         isLoadingProjects = false;
 
         const createProjectItem = {
