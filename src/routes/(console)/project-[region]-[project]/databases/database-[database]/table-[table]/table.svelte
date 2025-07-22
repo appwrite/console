@@ -162,7 +162,7 @@
         { id: '$updated', width: 200 }
     ]}>
     <svelte:fragment slot="header" let:root>
-        <Table.Header.Cell column="$id" {root}>Document ID</Table.Header.Cell>
+        <Table.Header.Cell column="$id" {root}>Row ID</Table.Header.Cell>
         {#each $tableColumns as column}
             <Table.Header.Cell column={column.id} {root}>{column.title}</Table.Header.Cell>
         {/each}
