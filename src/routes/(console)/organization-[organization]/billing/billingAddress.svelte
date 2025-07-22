@@ -102,6 +102,7 @@
                 </Layout.Stack>
             </Card.Base>
         {:else}
+            {@const hasBillingAddresses = $addressList.billingAddresses.length}
             <Card.Base>
                 <Layout.Stack justifyContent="center" alignItems="center" gap="m">
                     <Popover let:toggle padding="none" placement="bottom-start">
@@ -121,7 +122,9 @@
                                     <span>{address.country}</span>
                                 </ActionMenu.Item.Button>
                             {/each}
-                            <Divider />
+                            {#if hasBillingAddresses}
+                                <Divider />
+                            {/if}
                             <ActionMenu.Item.Button
                                 leadingIcon={IconPlus}
                                 on:click={() => (showCreate = true)}>

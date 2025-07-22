@@ -22,7 +22,7 @@
     },
     "dependencies": {
         "@ai-sdk/svelte": "^1.1.24",
-        "@appwrite.io/console": "https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@8836b0c",
+        "@appwrite.io/console": "https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@935b30f",
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "^2.0.0-RC.1",
         "@appwrite.io/pink-legacy": "^1.0.3",
@@ -57,20 +57,20 @@
         "@sveltejs/vite-plugin-svelte": "^5.0.3",
         "@testing-library/dom": "^10.4.0",
         "@testing-library/jest-dom": "^6.6.3",
-        "@testing-library/svelte": "^5.2.4",
+        "@testing-library/svelte": "^5.2.8",
         "@testing-library/user-event": "^14.6.1",
         "@types/deep-equal": "^1.0.4",
         "@types/prismjs": "^1.26.5",
         "@types/remarkable": "^2.0.8",
         "@typescript-eslint/eslint-plugin": "^8.28.0",
         "@typescript-eslint/parser": "^8.28.0",
-        "@vitest/ui": "^3.0.9",
+        "@vitest/ui": "^3.2.4",
         "color": "^5.0.0",
-        "eslint": "^9.23.0",
+        "eslint": "^9.31.0",
         "eslint-config-prettier": "^10.1.0",
         "eslint-plugin-svelte": "^3.3.3",
         "globals": "^16.0.0",
-        "jsdom": "^26.0.0",
+        "jsdom": "^26.1.0",
         "kleur": "^4.1.5",
         "prettier": "^3.5.3",
         "prettier-plugin-svelte": "^3.3.3",
@@ -94,5 +94,5 @@
             "svelte-preprocess"
         ]
     },
-    "packageManager": "pnpm@10.7.0+sha512.6b865ad4b62a1d9842b61d674a393903b871d9244954f652b8842c2b553c72176b278f64c463e52d40fff8aba385c235c8c9ecf5cc7de4fd78b8bb6d49633ab6"
+    "packageManager": "pnpm@10.13.1"
 }
