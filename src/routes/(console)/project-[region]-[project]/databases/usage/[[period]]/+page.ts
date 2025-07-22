@@ -8,5 +8,5 @@ export const load: PageLoad = async ({ params }) => {
         ? params.period
         : DatabaseUsageRange.ThirtyDays;
 
-    return sdk.forProject(params.region, params.project).databases.getDatabaseUsage(period);
+    return sdk.forProject(params.region, params.project).databases.listUsage(period);
 };
