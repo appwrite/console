@@ -12,7 +12,7 @@
     import CancelDeploymentModal from '../cancelDeploymentModal.svelte';
     import RedeployModal from '../../../redeployModal.svelte';
     import ActivateDeploymentModal from '../../../activateDeploymentModal.svelte';
-    import { Accordion } from '@appwrite.io/pink-svelte';
+    import { Accordion, Tooltip } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
     import LogsTimer from '../../../(components)/logsTimer.svelte';
     import { invalidate } from '$app/navigation';
@@ -56,9 +56,17 @@
                 </Button>
             {/if}
 
-            {#if deployment?.sourceSize !== 0}
-                <Button secondary on:click={() => (showRedeploy = true)}>Redeploy</Button>
-            {/if}
+            <Tooltip disabled={deployment?.sourceSize !== 0} placement={'bottom'}>
+                <div>
+                    <Button
+                        secondary
+                        disabled={deployment?.sourceSize === 0}
+                        on:click={() => (showRedeploy = true)}>
+                        Redeploy
+                    </Button>
+                </div>
+                <div slot="tooltip">Source is empty</div>
+            </Tooltip>
             <DeploymentActionMenu
                 inCard
                 {deployment}

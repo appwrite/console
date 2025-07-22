@@ -20,7 +20,8 @@
         FloatingActionBar,
         Icon,
         Status,
-        Table
+        Table,
+        Tooltip
     } from '@appwrite.io/pink-svelte';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
@@ -149,18 +150,23 @@
 
                     <svelte:fragment slot="menu" let:toggle>
                         <ActionMenu.Root>
-                            {#if deployment.sourceSize !== 0}
-                                <ActionMenu.Item.Button
-                                    trailingIcon={IconRefresh}
-                                    on:click={() => {
-                                        selectedDeployment = deployment;
-                                        showRedeploy = true;
-                                        toggle();
-                                        trackEvent(Click.FunctionsRedeployClick);
-                                    }}>
-                                    Redeploy
-                                </ActionMenu.Item.Button>
-                            {/if}
+                            <Tooltip disabled={deployment.sourceSize !== 0} placement={'bottom'}>
+                                <div>
+                                    <ActionMenu.Item.Button
+                                        trailingIcon={IconRefresh}
+                                        disabled={deployment.sourceSize === 0}
+                                        on:click={() => {
+                                            selectedDeployment = deployment;
+                                            showRedeploy = true;
+                                            toggle();
+                                            trackEvent(Click.FunctionsRedeployClick);
+                                        }}
+                                        style="width: 100%">
+                                        Redeploy
+                                    </ActionMenu.Item.Button>
+                                </div>
+                                <div slot="tooltip">Source is empty</div>
+                            </Tooltip>
                             {#if deployment.status === 'ready' && deployment.$id !== $func.deploymentId}
                                 <ActionMenu.Item.Button
                                     trailingIcon={IconLightningBolt}
