@@ -98,8 +98,7 @@
             } else {
                 const workId =
                     typeof relatedColumn === 'string' ? relatedColumn : relatedColumn?.$id;
-                const relatedId =
-                    typeof rowColumn === 'string' ? rowColumn : rowColumn?.$id;
+                const relatedId = typeof rowColumn === 'string' ? rowColumn : rowColumn?.$id;
 
                 return workId === relatedId;
             }
