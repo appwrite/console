@@ -38,7 +38,7 @@
     ].filter((tab) => !tab.disabled);
 </script>
 
-<Cover>
+<Cover expanded>
     <svelte:fragment slot="header">
         <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/databases`}>
             {$database.name}

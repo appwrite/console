@@ -221,8 +221,7 @@
     }
 
     .upload-box-content {
-        min-width: 400px;
-        max-width: 100vw;
+        width: 304px;
     }
 
     .upload-box-button {

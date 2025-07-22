@@ -12,11 +12,13 @@
     let {
         column,
         state,
-        onSort = () => {}
+        onSort = () => {},
+        disabled = false
     }: {
         column: string;
-        onSort: (query: string[]) => void | Promise<void>;
-        state: Writable<{ column: string | null; direction: SortDirection }>;
+        disabled?: boolean;
+        onSort?: (query: string[]) => void | Promise<void>;
+        state?: Writable<{ column: string | null; direction: SortDirection }>;
     } = $props();
 
     function sort() {
@@ -29,27 +31,27 @@
                 ? 'default'
                 : 'asc';
 
-        state.set({
+        state?.set({
             direction: nextDir,
             column: nextDir === 'default' ? null : column
         });
 
         if (nextDir === 'default') {
-            onSort([]);
+            onSort?.([]);
         } else if (nextDir === 'asc') {
-            onSort([Query.orderAsc(column)]);
+            onSort?.([Query.orderAsc(column)]);
         } else {
-            onSort([Query.orderDesc(column)]);
+            onSort?.([Query.orderDesc(column)]);
         }
     }
 </script>
 
-<Button extraCompact on:click={sort} class="hoverable-compact">
+<Button extraCompact on:click={sort} class="hoverable-compact" {disabled}>
     <Icon
         size="s"
-        icon={$state.column !== column || $state.direction === 'default'
+        icon={$state?.column !== column || $state?.direction === 'default'
             ? IconSelector
-            : $state.direction === 'asc'
+            : $state?.direction === 'asc'
               ? IconChevronUp
               : IconChevronDown}
         color="--fgcolor-neutral-weak" />
@@ -73,6 +75,12 @@
         &:active {
             background-color: var(--bgcolor-neutral-tertiary);
             border: var(--border-width-s) solid var(--bgcolor-neutral-tertiary);
+        }
+
+        &:disabled {
+            & :global(i) {
+                --icon-fill: var(--fgcolor-neutral-secondary) !important;
+            }
         }
     }
 </style>

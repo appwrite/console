@@ -18,7 +18,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { IconPlus, IconSearch } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import EmptySheet from './layout/emptySheet.svelte';
     import CreateRecord from './createRecord.svelte';
@@ -83,17 +83,28 @@
     <Container expanded style="background: var(--bgcolor-neutral-primary)">
         <Layout.Stack direction="column" gap="xl">
             <Layout.Stack direction="row" justifyContent="space-between">
-                <Filters
-                    query={data.query}
-                    columns={filterColumns}
-                    disabled={!(hasAttributes && hasValidAttributes)}
-                    analyticsSource="database_documents" />
-                <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+                <Layout.Stack direction="row" gap="s">
                     <ViewSelector
+                        onlyIcon
+                        ui="new"
                         view={data.view}
-                        columns={filterColumns}
+                        {columns}
                         hideView
                         isCustomCollection />
+
+                    <Filters
+                        onlyIcon
+                        query={data.query}
+                        columns={filterColumns}
+                        disabled={!(hasAttributes && hasValidAttributes)}
+                        analyticsSource="database_documents" />
+
+                    <!-- TODO: not yet implemented -->
+                    <Button icon secondary>
+                        <Icon icon={IconSearch} slot="start" />
+                    </Button>
+                </Layout.Stack>
+                <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     <Button
                         secondary
                         event={Click.DatabaseImportCsv}

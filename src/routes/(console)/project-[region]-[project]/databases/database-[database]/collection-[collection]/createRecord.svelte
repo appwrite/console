@@ -103,45 +103,47 @@
 
 {#if $createDocument}
     <div class="sheet-container">
-    <!-- TODO: add a ID badge-->
-    <SideSheet
-        spaced
-        title={`${existingData ? 'Duplicate' : 'Create'} record`}
-        bind:show={showSheet}
-        closeOnBlur={false}
-        submit={{
-            text: 'Create',
-            disabled: isSubmitting,
-            onClick: () => create()
-        }}>
-        <Layout.Stack gap="xxl">
-            <AttributeForm
-                bind:formValues={$createDocument.document}
-                attributes={$createDocument.attributes}
-                bind:customId={$createDocument.id} />
+        <!-- TODO: add a ID badge-->
+        <SideSheet
+            spaced
+            title={`${existingData ? 'Duplicate' : 'Create'} record`}
+            bind:show={showSheet}
+            closeOnBlur={false}
+            submit={{
+                text: 'Create',
+                disabled: isSubmitting,
+                onClick: () => create()
+            }}>
+            <Layout.Stack gap="xxl">
+                <AttributeForm
+                    bind:formValues={$createDocument.document}
+                    attributes={$createDocument.attributes}
+                    bind:customId={$createDocument.id} />
 
-            <Layout.Stack gap="xl">
-                <Typography.Text>
-                    Choose which permission scopes to grant your application. It is best practice to
-                    allow only the permissions you need to meet your project goals.
-                </Typography.Text>
-                {#if collection.documentSecurity}
-                    <Alert.Inline status="info">
-                        <svelte:fragment slot="title">Document security is enabled</svelte:fragment>
-                        Users will be able to access this document if they have been granted
-                        <b>either document or collection permissions</b>.
-                    </Alert.Inline>
-                    <Permissions bind:permissions={$createDocument.permissions} />
-                {:else}
-                    <Alert.Inline status="info">
-                        <svelte:fragment slot="title"
-                            >Document security is disabled</svelte:fragment>
-                        If you want to assign document permissions, navigate to Collection settings and
-                        enable document security. Otherwise, only collection permissions will be used.
-                    </Alert.Inline>
-                {/if}
+                <Layout.Stack gap="xl">
+                    <Typography.Text>
+                        Choose which permission scopes to grant your application. It is best
+                        practice to allow only the permissions you need to meet your project goals.
+                    </Typography.Text>
+                    {#if collection.documentSecurity}
+                        <Alert.Inline status="info">
+                            <svelte:fragment slot="title"
+                                >Document security is enabled</svelte:fragment>
+                            Users will be able to access this document if they have been granted
+                            <b>either document or collection permissions</b>.
+                        </Alert.Inline>
+                        <Permissions bind:permissions={$createDocument.permissions} />
+                    {:else}
+                        <Alert.Inline status="info">
+                            <svelte:fragment slot="title"
+                                >Document security is disabled</svelte:fragment>
+                            If you want to assign document permissions, navigate to Collection settings
+                            and enable document security. Otherwise, only collection permissions will
+                            be used.
+                        </Alert.Inline>
+                    {/if}
+                </Layout.Stack>
             </Layout.Stack>
-        </Layout.Stack>
-    </SideSheet>
-</div>
+        </SideSheet>
+    </div>
 {/if}

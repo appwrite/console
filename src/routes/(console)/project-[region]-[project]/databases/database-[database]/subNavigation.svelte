@@ -1,10 +1,10 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { showCreate } from '../store';
+    import { showCreate } from './store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
-    import { Icon, Sidebar, Navbar, Layout, Link, ActionMenu } from '@appwrite.io/pink-svelte';
+    import { Icon, Sidebar, Navbar, Layout, Link } from '@appwrite.io/pink-svelte';
     import {
         IconChevronDown,
         IconDatabase,
@@ -13,6 +13,8 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { BottomSheet } from '$lib/components';
+    import Button from '$lib/elements/forms/button.svelte';
+    import type { Models } from '@appwrite.io/console';
 
     let data = $derived(page.data) as PageData;
     let region = $derived(page.params.region);
@@ -20,12 +22,14 @@
     let databaseId = $derived(page.params.database);
     let collectionId = $derived(page.params.collection);
 
+    const collections = $derived(data.collections);
+
     const sortedCollections = $derived.by(() =>
-        data?.allCollections?.collections?.slice().sort((a, b) => a.name.localeCompare(b.name))
+        collections?.collections?.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
 
     const selectedCollection = $derived.by(() =>
-        sortedCollections?.find((collection) => collection.$id === collectionId)
+        sortedCollections?.find((collection: Models.Collection) => collection.$id === collectionId)
     );
 
     let openBottomSheet = $state(false);
@@ -48,7 +52,7 @@
                 {data.database?.name}
             </a>
             <div class="collection-content">
-                {#if data?.allCollections?.total}
+                {#if collections?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-8">
                         {#each sortedCollections as collection}
                             {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
@@ -69,18 +73,32 @@
                             </li>
                         {/each}
                     </ul>
+                {:else}
+                    <Layout.Stack gap="m">
+                        <Layout.Stack
+                            gap="m"
+                            direction="row"
+                            class="u-margin-inline-start-8 u-margin-block-start-8">
+                            <div style="border-left: 1px solid var(--border-neutral, #ededf0)">
+                            </div>
+                            No tables yet
+                        </Layout.Stack>
+                    </Layout.Stack>
                 {/if}
+
+                <Layout.Stack gap="m" alignItems="center" direction="row">
+                    <Icon icon={IconPlus} size="s" />
+
+                    <Button
+                        compact
+                        on:click={() => {
+                            $showCreate = true;
+                            $showSubNavigation = false;
+                        }}>
+                        Create collection
+                    </Button>
+                </Layout.Stack>
             </div>
-            <ActionMenu.Root noPadding width="167">
-                <ActionMenu.Item.Button
-                    on:click={() => {
-                        $showCreate = true;
-                        $showSubNavigation = false;
-                    }}
-                    leadingIcon={IconPlus}>
-                    Create collection
-                </ActionMenu.Item.Button>
-            </ActionMenu.Root>
         </section>
     </Sidebar.Base>
 {:else}

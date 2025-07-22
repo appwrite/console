@@ -26,6 +26,8 @@
         margin-block: var(--base-32);
 
         &.expanded {
+            max-width: unset;
+            margin-inline: 2.75rem;
             padding-inline-end: 0 !important;
             margin-block: var(--base-8) !important;
         }

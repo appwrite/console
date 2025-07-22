@@ -60,7 +60,7 @@
 </script>
 
 <div style:margin-top={$isTabletViewport ? '48px' : 0}>
-    <Cover>
+    <Cover expanded>
         <svelte:fragment slot="header">
             <CoverTitle
                 href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`}>

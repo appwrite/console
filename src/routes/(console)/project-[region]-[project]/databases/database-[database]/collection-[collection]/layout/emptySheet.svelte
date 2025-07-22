@@ -10,6 +10,7 @@
     import type { Column } from '$lib/helpers/types';
     import { IconCalendar, IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { SortButton } from '$lib/components';
 
     type Mode = 'records' | 'columns' | 'indexes';
 
@@ -37,14 +38,14 @@
                 id: '$id',
                 title: 'ID',
                 type: 'string',
-                width: 200,
+                width: 180,
                 icon: IconFingerPrint
             },
             ...middle,
             {
                 id: 'actions',
                 title: '',
-                width: 555,
+                width: 555 * 1.5,
                 draggable: false,
                 type: 'string',
                 icon: IconPlus
@@ -52,9 +53,6 @@
             {
                 id: 'empty',
                 title: '',
-                width: 40,
-                isAction: true,
-                draggable: false,
                 type: 'string'
             }
         ];
@@ -66,7 +64,7 @@
                 id: '$createdAt',
                 title: 'Created',
                 type: 'datetime',
-                width: { min: 180 },
+                width: 180,
                 draggable: false,
                 icon: IconCalendar
             },
@@ -74,7 +72,7 @@
                 id: '$updatedAt',
                 title: 'Updated',
                 type: 'datetime',
-                width: { min: 180 },
+                width: 180,
                 draggable: false,
                 icon: IconCalendar
             }
@@ -84,7 +82,7 @@
                 id: 'indexed',
                 title: 'Indexed',
                 type: 'boolean',
-                width: { min: 180 },
+                width: 180,
                 draggable: false,
                 isAction: false
             },
@@ -92,7 +90,7 @@
                 id: 'default',
                 title: 'Default',
                 type: 'string',
-                width: { min: 180 },
+                width: 180,
                 draggable: false,
                 isAction: false
             }
@@ -102,7 +100,7 @@
                 id: 'type',
                 title: 'Type',
                 type: 'string',
-                width: { min: 150 },
+                width: 180,
                 draggable: false,
                 isAction: false
             },
@@ -110,7 +108,7 @@
                 id: 'attributes',
                 title: 'Columns',
                 type: 'string',
-                width: { min: 200 },
+                width: 180,
                 draggable: false,
                 isAction: false
             }
@@ -133,8 +131,17 @@
                         <Button.Button icon variant="extra-compact">
                             <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                         </Button.Button>
-                    {:else}
+                    {:else if column.id === 'actions' || column.id === 'empty'}
                         {column.title}
+                    {:else}
+                        <Layout.Stack
+                            gap="xs"
+                            direction="row"
+                            alignItems="center"
+                            alignContent="center">
+                            {column.title}
+                            <SortButton disabled column={column.id} />
+                        </Layout.Stack>
                     {/if}
                 </Spreadsheet.Header.Cell>
             {/each}
@@ -194,6 +201,11 @@
         & :global(.spreadsheet-container) {
             overflow-x: hidden;
             overflow-y: hidden;
+
+            // hides the last columns left border, as per design
+            & :global([role='rowheader'] [role='cell']:nth-last-child(2) [role='presentation']) {
+                display: none;
+            }
         }
 
         & :global([data-select='true']) {

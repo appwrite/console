@@ -1,6 +1,7 @@
 import { get } from 'svelte/store';
 import { user } from '$lib/stores/user';
 import { sdk } from '$lib/stores/sdk';
+import { page } from '$app/state';
 
 const userPreferences = () => get(user)?.prefs;
 
@@ -18,6 +19,10 @@ export function updateSidebarState(state: 'closed' | 'open' | 'icons') {
 }
 
 export function getSidebarState(): 'open' | 'icons' {
+    // for spreadsheet
+    const isInDatabases = page.route.id?.includes('database-[database]');
+    if (isInDatabases) return 'icons';
+
     const currentPrefs = userPreferences();
     if (currentPrefs && currentPrefs.sidebarState) {
         if (currentPrefs.sidebarState === 'open' || currentPrefs.sidebarState === 'icons') {
