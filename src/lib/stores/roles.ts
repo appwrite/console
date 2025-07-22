@@ -19,13 +19,15 @@ export const canWritePlatforms = derived(scopes, ($scopes) => $scopes.includes('
 export const canWriteTargets = derived(scopes, ($scopes) => $scopes.includes('targets.write'));
 export const canWriteUsers = derived(scopes, ($scopes) => $scopes.includes('users.write'));
 export const canWriteTeams = derived(scopes, ($scopes) => $scopes.includes('teams.write'));
-export const canWriteCollections = derived(scopes, ($scopes) =>
-    $scopes.includes('collections.write')
-);
+export const canWriteTables = derived(scopes, ($scopes) => {
+    return $scopes.includes('collections.write') || $scopes.includes('tables.write');
+});
 export const canWriteSites = derived(scopes, ($scopes) => $scopes.includes('sites.write'));
 export const canWriteDomains = derived(scopes, ($scopes) => $scopes.includes('domains.write')); //TODO: check if correct
 
-export const canWriteDocuments = derived(scopes, ($scopes) => $scopes.includes('documents.write'));
+export const canWriteRows = derived(scopes, ($scopes) => {
+    return $scopes.includes('documents.write') || $scopes.includes('rows.write');
+});
 export const canWriteExecutions = derived(scopes, ($scopes) =>
     $scopes.includes('executions.write')
 );
