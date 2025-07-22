@@ -113,7 +113,6 @@
 
         if (loadedProjects.total > 1 && selectedOrg) {
             const projectLinks = loadedProjects.projects.slice(0, 4).map((project) => {
-                project.region ??= 'default';
                 return {
                     name: project.name,
                     href: `${base}/project-${project.region}-${project.$id}/overview/platforms`
@@ -344,7 +343,7 @@
                                 <div use:melt={$itemProjects}>
                                     <ActionMenu.Root>
                                         <ActionMenu.Item.Anchor
-                                            href={`${base}/project-${(project.region ??= 'default')}-${project.$id}/overview/platforms`}>
+                                            href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
                                             <span class="projectName dropdown">{project.name}</span>
                                         </ActionMenu.Item.Anchor>
                                     </ActionMenu.Root>
