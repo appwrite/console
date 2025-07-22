@@ -82,6 +82,7 @@
             const database = await sdk
                 .forProject(page.params.region, page.params.project)
                 .databases.create(databaseId, name);
+
             await createPolicies(databaseId);
 
             showCreate = false;

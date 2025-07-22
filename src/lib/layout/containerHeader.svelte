@@ -35,6 +35,7 @@
     let showDropdown = false;
 
     // TODO: remove the default billing limits when backend is updated with billing code
+    // TODO: @itznotabug - check with @abnegate, what do we do here? this is billing!
     const { bandwidth, documents, storage, users, executions } = $organization?.billingLimits ?? {
         bandwidth: 1,
         documents: 1,
@@ -42,6 +43,8 @@
         users: 1,
         executions: 1
     };
+
+    // TODO: @itznotabug - check with @abnegate, what do we do here? this is billing!
     const limitedServices = [
         { name: 'bandwidth', value: bandwidth },
         { name: 'documents', value: documents },
