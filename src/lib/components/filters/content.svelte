@@ -8,8 +8,8 @@
         InputSelectCheckbox,
         InputDateTime
     } from '$lib/elements/forms';
-    import { createEventDispatcher, onMount } from 'svelte';
-    import { operators, addFilter, queries, type TagValue } from './store';
+    import { onMount } from 'svelte';
+    import { operators, addFilter, queries, tags } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { TagList } from '.';
@@ -35,14 +35,7 @@
         }));
 
     $: operator = operatorKey ? operators[operatorKey] : null;
-    $: {
-        columnId;
-        operatorKey = null;
-    }
-
     $: isDisabled = !operator;
-
-    let localTags: TagValue[] = [];
 
     onMount(() => {
         value = column?.array ? [] : null;
@@ -62,12 +55,6 @@
             queries.apply();
         }
     }
-
-    const dispatch = createEventDispatcher<{
-        clear: void;
-        apply: { applied: number };
-    }>();
-    dispatch('apply', { applied: localTags.length });
 </script>
 
 <div>
@@ -151,10 +138,10 @@
         {/if}
     </form>
 
-    {#if !singleCondition}
+    {#if !singleCondition && $tags.length > 0}
         <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
             <TagList
-                tags={localTags}
+                tags={$tags}
                 on:remove={(e) => {
                     queries.removeFilter(e.detail);
                     queries.apply();
