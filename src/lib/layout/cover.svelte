@@ -3,7 +3,7 @@
 
     export let size: 'small' | 'medium' | 'large' | 'xl' = null;
     export let blocksize = '152px';
-    export let expanded: boolean = true;
+    export let expanded: boolean = false;
 
     $: style = size
         ? `--p-container-max-size: var(--container-max-size, var(--container-size-${size}))`

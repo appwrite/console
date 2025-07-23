@@ -7,19 +7,21 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
-    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
 
-    export let showCreate = false;
+    let {
+        showCreate = $bindable(false)
+    }: {
+        showCreate: boolean;
+    } = $props();
 
     const databaseId = page.params.database;
     const dispatch = createEventDispatcher();
 
-    let name = '';
-    let id: string = null;
-    let showCustomId = true;
-    let error: string;
+    let name = $state('');
+    let id: string = $state(null);
+    let touchedId = $state(false);
+    let error: string = $state(null);
 
     const create = async () => {
         error = null;
@@ -27,7 +29,9 @@
             const collection = await sdk
                 .forProject(page.params.region, page.params.project)
                 .databases.createCollection(databaseId, id ? id : ID.unique(), name);
+
             showCreate = false;
+
             dispatch('created', collection);
             addNotification({
                 type: 'success',
@@ -43,12 +47,29 @@
         }
     };
 
-    $: if (!showCreate) {
-        error = null;
-        showCustomId = false;
-        id = null;
-        name = '';
+    function toIdFormat(str: string): string {
+        return str
+            .toLowerCase()
+            .replace(/[^a-z0-9\-_. ]+/g, '')
+            .replace(/ /g, '_')
+            .replace(/^-+/, '')
+            .replace(/\.+$/, '')
+            .replace(/_{2,}/g, '_')
+            .slice(0, 36); // max length
     }
+
+    $effect(() => {
+        if (!touchedId && name) {
+            id = toIdFormat(name);
+        }
+
+        if (!showCreate) {
+            name = '';
+            id = null;
+            error = null;
+            touchedId = false;
+        }
+    });
 </script>
 
 <Modal title="Create collection" size="m" bind:show={showCreate} onSubmit={create} bind:error>
@@ -58,18 +79,22 @@
         placeholder="Enter collection name"
         bind:value={name}
         autofocus
-        required />
+        required
+        on:input={() => {
+            if (!touchedId) id = toIdFormat(name);
+        }} />
 
-    {#if !showCustomId}
-        <div>
-            <Tag
-                size="s"
-                on:click={() => {
-                    showCustomId = true;
-                }}><Icon icon={IconPencil} /> Collection ID</Tag>
-        </div>
-    {/if}
-    <CustomId autofocus bind:show={showCustomId} name="Collection" bind:id />
+    <CustomId
+        show
+        bind:id
+        autofocus={false}
+        name="Collection"
+        on:input={() => {
+            if (!touchedId) {
+                touchedId = true;
+                console.log(touchedId);
+            }
+        }} />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

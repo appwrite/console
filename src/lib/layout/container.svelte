@@ -1,8 +1,12 @@
 <script lang="ts">
     import { Layout } from '@appwrite.io/pink-svelte';
 
-    export let overlapCover = false;
+    // TODO: needs better props
+
     export let expanded = false;
+    export let slotSpacing = false;
+    export let overlapCover = false;
+    export let paddingInlineEnd = true;
     export let size: 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl' = null;
 
     $: style = size
@@ -11,7 +15,12 @@
 </script>
 
 <div style:container-type="inline-size" class:overlap-cover={overlapCover} {...$$restProps}>
-    <div class="console-container" class:expanded {style}>
+    <div
+        class="console-container"
+        class:slotSpacing
+        class:paddingInlineEnd={!paddingInlineEnd}
+        class:expanded
+        {style}>
         <Layout.Stack gap="l">
             <slot />
         </Layout.Stack>
@@ -30,6 +39,20 @@
             margin-inline: 2.75rem;
             padding-inline-end: 0 !important;
             margin-block: var(--base-8) !important;
+
+            &:first-child {
+                margin-inline: 2.75rem;
+            }
+
+            &.slotSpacing {
+                padding-block-start: var(--base-32) !important;
+            }
+        }
+
+        &.paddingInlineEnd {
+            @media (min-width: 1024px) {
+                padding-inline-end: 2.75rem !important;
+            }
         }
 
         @media (min-width: 360px) {

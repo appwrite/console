@@ -1,33 +1,20 @@
 <script lang="ts">
     import { PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container, ResponsiveContainerHeader } from '$lib/layout';
-    import { columns, showCreate } from './store';
+    import { Container } from '$lib/layout';
+    import { showCreate } from './store';
     import Table from './table.svelte';
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
-    import { canWriteCollections } from '$lib/stores/roles';
-    import { Card, Empty, Icon } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Card, Empty } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
+    import { app } from '$lib/stores/app';
+    import { canWriteCollections } from '$lib/stores/roles';
 
     export let data: PageData;
 </script>
 
-<Container>
-    <ResponsiveContainerHeader
-        bind:view={data.view}
-        {columns}
-        hasSearch
-        searchPlaceholder="Search by name or ID">
-        {#if $canWriteCollections}
-            <Button on:click={() => ($showCreate = true)} event="create_collection">
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create collection
-            </Button>
-        {/if}
-    </ResponsiveContainerHeader>
-
+<Container expanded slotSpacing paddingInlineEnd={false}>
     {#if data.collections.total}
         {#if data.view === 'grid'}
             <Grid {data} bind:showCreate={$showCreate} />
@@ -42,7 +29,11 @@
             total={data.collections.total} />
     {:else}
         <Card.Base padding="none">
-            <Empty title="Create your first table" src={`${base}/images/empty-database-light.svg`}>
+            <Empty
+                title="Create your first table"
+                src={$app.themeInUse === 'dark'
+                    ? `${base}/images/empty-database-dark.svg`
+                    : `${base}/images/empty-database-light.svg`}>
                 <span slot="description">
                     Create and manage structured data effortlessly, with the flexibility and control
                     your app needs.
@@ -54,13 +45,15 @@
                         event="empty_documentation"
                         ariaLabel={`create collection`}>Documentation</Button>
 
-                    <Button
-                        secondary
-                        on:click={() => {
-                            $showCreate = true;
-                        }}>
-                        Create collection
-                    </Button>
+                    {#if $canWriteCollections}
+                        <Button
+                            secondary
+                            on:click={() => {
+                                $showCreate = true;
+                            }}>
+                            Create collection
+                        </Button>
+                    {/if}
                 </span>
             </Empty>
         </Card.Base>
