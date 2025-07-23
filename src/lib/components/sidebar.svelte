@@ -101,7 +101,7 @@
     <Sidebar.Base
         {...$$props}
         bind:state
-        on:resize={(event) => updateSidebarState(event.detail)}
+        on:resize={(event) => updateSidebarState($page, event.detail)}
         resizable>
         <div slot="top">
             <div class="only-mobile-tablet top">
