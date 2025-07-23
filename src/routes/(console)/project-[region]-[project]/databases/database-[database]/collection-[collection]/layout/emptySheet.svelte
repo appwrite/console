@@ -39,6 +39,8 @@
                 title: 'ID',
                 type: 'string',
                 width: 180,
+                draggable: false,
+                resizable: false,
                 icon: IconFingerPrint
             },
             ...middle,
@@ -47,12 +49,15 @@
                 title: '',
                 width: 555 * 1.5,
                 draggable: false,
+                resizable: false,
                 type: 'string',
                 icon: IconPlus
             },
             {
                 id: 'empty',
                 title: '',
+                draggable: false,
+                resizable: false,
                 type: 'string'
             }
         ];
@@ -66,6 +71,7 @@
                 type: 'datetime',
                 width: 180,
                 draggable: false,
+                resizable: false,
                 icon: IconCalendar
             },
             {
@@ -74,6 +80,7 @@
                 type: 'datetime',
                 width: 180,
                 draggable: false,
+                resizable: false,
                 icon: IconCalendar
             }
         ),
@@ -84,6 +91,7 @@
                 type: 'boolean',
                 width: 180,
                 draggable: false,
+                resizable: false,
                 isAction: false
             },
             {
@@ -92,6 +100,7 @@
                 type: 'string',
                 width: 180,
                 draggable: false,
+                resizable: false,
                 isAction: false
             }
         ),
@@ -102,6 +111,7 @@
                 type: 'string',
                 width: 180,
                 draggable: false,
+                resizable: false,
                 isAction: false
             },
             {
@@ -110,6 +120,7 @@
                 type: 'string',
                 width: 180,
                 draggable: false,
+                resizable: false,
                 isAction: false
             }
         )
