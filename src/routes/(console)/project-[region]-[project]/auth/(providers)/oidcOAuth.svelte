@@ -78,18 +78,21 @@
         label="Client ID"
         autofocus={true}
         placeholder="Enter ID"
-        bind:value={appId} />
+        bind:value={appId}
+        required />
     <InputPassword
         id="secret"
         label="Client Secret"
         placeholder="Enter Client Secret"
         minlength={0}
-        bind:value={clientSecret} />
+        bind:value={clientSecret}
+        required />
     <InputText
         id="well-known-endpoint"
         label="Well-Known Endpoint"
         placeholder="https://example.com/.well-known/openid-configuration"
-        bind:value={wellKnownEndpoint} />
+        bind:value={wellKnownEndpoint}
+        required />
     <InputText
         id="authorization-endpoint"
         label="Authorization Endpoint"
@@ -115,9 +118,12 @@
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
-            disabled={secret === provider.secret &&
-                enabled === provider.enabled &&
-                appId === provider.appId}
+            disabled={!appId ||
+                !clientSecret ||
+                !wellKnownEndpoint ||
+                (secret === provider.secret &&
+                    enabled === provider.enabled &&
+                    appId === provider.appId)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>

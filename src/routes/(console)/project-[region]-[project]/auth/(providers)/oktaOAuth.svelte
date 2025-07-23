@@ -66,23 +66,27 @@
         label="Client ID"
         autofocus={true}
         placeholder="Enter ID"
-        bind:value={appId} />
+        bind:value={appId}
+        required />
     <InputPassword
         id="secret"
         label="Client Secret"
         placeholder="Enter Client Secret"
         minlength={0}
-        bind:value={clientSecret} />
+        bind:value={clientSecret}
+        required />
     <InputText
         id="domain"
         label="Okta Domain"
         placeholder="dev-1337.okta.com"
-        bind:value={oktaDomain} />
+        bind:value={oktaDomain}
+        required />
     <InputText
         id="serverID"
         label="Authorization Server ID"
         placeholder="default"
-        bind:value={authorizationServerId} />
+        bind:value={authorizationServerId}
+        required />
 
     <Alert.Inline status="info">
         To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
@@ -93,9 +97,13 @@
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
-            disabled={secret === provider.secret &&
-                enabled === provider.enabled &&
-                appId === provider.appId}
+            disabled={!appId ||
+                !clientSecret ||
+                !oktaDomain ||
+                !authorizationServerId ||
+                (secret === provider.secret &&
+                    enabled === provider.enabled &&
+                    appId === provider.appId)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>

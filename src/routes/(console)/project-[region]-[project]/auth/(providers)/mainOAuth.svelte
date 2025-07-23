@@ -55,13 +55,15 @@
         label="App ID"
         autofocus={true}
         placeholder="Enter ID"
-        bind:value={appId} />
+        bind:value={appId}
+        required />
     <InputPassword
         id="secret"
         label="App Secret"
         placeholder="Enter App Secret"
         minlength={0}
-        bind:value={secret} />
+        bind:value={secret}
+        required />
     <Alert.Inline status="info">
         To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
     </Alert.Inline>
@@ -71,9 +73,11 @@
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
-            disabled={secret === provider.secret &&
-                enabled === provider.enabled &&
-                appId === provider.appId}
+            disabled={!appId ||
+                !secret ||
+                (secret === provider.secret &&
+                    enabled === provider.enabled &&
+                    appId === provider.appId)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>
