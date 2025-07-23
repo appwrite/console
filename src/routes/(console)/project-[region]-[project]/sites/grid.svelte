@@ -38,8 +38,8 @@
             .storage.getFilePreview(
                 'screenshots',
                 fileId,
-                undefined,
-                undefined,
+                1024,
+                576,
                 undefined,
                 undefined,
                 undefined,
