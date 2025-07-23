@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import { user } from '$lib/stores/user';
 import { sdk } from '$lib/stores/sdk';
-import { page } from '$app/state';
+import type { Page } from '@sveltejs/kit';
 
 const userPreferences = () => get(user)?.prefs;
 
@@ -18,7 +18,7 @@ export function updateSidebarState(state: 'closed' | 'open' | 'icons') {
     }
 }
 
-export function getSidebarState(): 'open' | 'icons' {
+export function getSidebarState(page: Page): 'open' | 'icons' {
     // for spreadsheet
     const isInDatabases = page.route.id?.includes('database-[database]');
     if (isInDatabases) return 'icons';

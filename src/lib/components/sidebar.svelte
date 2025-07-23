@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { fade } from 'svelte/transition';
-    import { page } from '$app/state';
+    import { page } from '$app/stores';
     import { app } from '$lib/stores/app';
+    import { fade } from 'svelte/transition';
     import {
         Icon,
         Sidebar,
@@ -71,7 +71,7 @@
         }
     }
 
-    $: state = $isTabletViewport ? 'closed' : getSidebarState();
+    $: state = $isTabletViewport ? 'closed' : getSidebarState($page);
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth', category: 'build' },
@@ -89,7 +89,7 @@
     ];
 
     const isSelected = (service: string): boolean => {
-        return page.route.id?.includes(service);
+        return $page.route.id?.includes(service);
     };
 </script>
 

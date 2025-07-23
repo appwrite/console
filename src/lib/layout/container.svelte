@@ -41,7 +41,7 @@
             margin-block: var(--base-8) !important;
 
             &:first-child {
-                margin-inline: 2.75rem;
+                margin-inline: 4rem;
             }
 
             &.slotSpacing {
