@@ -82,25 +82,33 @@
         }
     });
 
+    $effect(() => {
+        if (selectedFramework) {
+            if (!selectedFramework.adapters.some((a) => a.key === adapter)) {
+                adapter = selectedFramework.adapters[0].key as Adapter;
+                site.adapter = adapter;
+            }
+            if (specs && specs.specifications?.length) {
+                if (!specs.specifications.some((s) => s.slug === site.specification)) {
+                    site.specification = specs.specifications[0].slug;
+                }
+            }
+        }
+    });
+
     async function update() {
         let adptr = selectedFramework.adapters.find((a) => a.key === adapter);
         if (!adptr?.key && selectedFramework.adapters?.length) {
             adapter = selectedFramework.adapters[0].key as Adapter;
             adptr = selectedFramework.adapters[0];
+            site.adapter = adapter;
         }
-        let specToSend = site?.specification;
-        if (!specToSend && specs && specs.specifications?.length) {
-            specToSend = specs.specifications[0].slug;
-            site.specification = specToSend;
-        }
-        if (
-            specs &&
-            specs.specifications?.length &&
-            !specs.specifications.some((s) => s.slug === specToSend)
-        ) {
-            specToSend = specs.specifications[0].slug;
-            site.specification = specToSend;
-        }
+        // only allow enabled specsification for it
+        const enabledSpecs = specs?.specifications?.filter((s) => s.enabled) ?? [];
+        let specToSend = enabledSpecs.some((s) => s.slug === site.specification)
+            ? site.specification
+            : enabledSpecs[0]?.slug;
+        site.specification = specToSend;
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
