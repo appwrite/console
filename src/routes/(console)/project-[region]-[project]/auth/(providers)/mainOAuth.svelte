@@ -71,11 +71,9 @@
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
-            disabled={!appId ||
-                !secret ||
-                (appId === provider.appId &&
-                    secret === provider.secret &&
-                    enabled === provider.enabled)}
+            disabled={secret === provider.secret &&
+                enabled === provider.enabled &&
+                appId === provider.appId}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>
