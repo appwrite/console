@@ -28,12 +28,11 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import EmptySheet from '../layout/emptySheet.svelte';
     import SpreadsheetContainer from '../layout/spreadsheet.svelte';
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import SideSheet from '../layout/sidesheet.svelte';
     import { flags } from '$lib/flags';
     import type { PageData } from './$types';
+    import { showCreateAttributeSheet } from '../store';
 
     let {
         data
@@ -201,9 +200,7 @@
                 primary: {
                     text: 'Create columns',
                     onClick: async () => {
-                        await goto(
-                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/attributes`
-                        );
+                        $showCreateAttributeSheet = true;
                     }
                 }
             }} />

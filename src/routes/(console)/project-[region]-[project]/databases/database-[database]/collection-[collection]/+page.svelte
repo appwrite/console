@@ -9,7 +9,13 @@
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
     import { Icon, Layout, Divider } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
-    import { collection, columns, isCsvImportInProgress, showRecordsCreateSheet } from './store';
+    import {
+        collection,
+        columns,
+        isCsvImportInProgress,
+        showRecordsCreateSheet,
+        showCreateAttributeSheet
+    } from './store';
     import SpreadSheet from './spreadsheet.svelte';
     import { writable } from 'svelte/store';
     import FilePicker from '$lib/components/filePicker.svelte';
@@ -18,17 +24,20 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { IconPlus, IconSearch } from '@appwrite.io/pink-icons-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import EmptySheet from './layout/emptySheet.svelte';
     import CreateRecord from './createRecord.svelte';
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
+    import SideSheet from './layout/sidesheet.svelte';
+    import CreateAttribute from './createAttribute.svelte';
+    import { type Option } from './attributes/store';
 
     export let data: PageData;
 
     let showImportCSV = false;
     const filterColumns = writable<Column[]>([]);
+    let createAttribute: CreateAttribute;
+    let selectedOption: Option['name'] = 'String';
 
     $: selected = preferences.getCustomCollectionColumns(page.params.collection);
 
@@ -185,9 +194,7 @@
                     primary: {
                         text: 'Create column',
                         onClick: async () => {
-                            await goto(
-                                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/attributes`
-                            );
+                            $showCreateAttributeSheet = true;
                         }
                     }
                 }} />
@@ -212,3 +219,17 @@
     collection={$collection}
     bind:showSheet={$showRecordsCreateSheet.show}
     bind:existingData={$showRecordsCreateSheet.document} />
+
+<SideSheet
+    title="Insert column"
+    bind:show={$showCreateAttributeSheet}
+    submit={{
+        text: 'Insert',
+        onClick: async () => await createAttribute?.submit(),
+        disabled: !selectedOption
+    }}>
+    <CreateAttribute
+        showCreate={$showCreateAttributeSheet}
+        bind:selectedOption
+        bind:this={createAttribute} />
+</SideSheet>

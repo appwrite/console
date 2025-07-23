@@ -14,14 +14,13 @@
         Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import CreateAttribute from '../createAttribute.svelte';
     import { isRelationship, isString } from '../document-[document]/attributes/store';
     import FailedModal from '../failedModal.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
     import { attributes, type Attributes, indexes, isCsvImportInProgress } from '../store';
     import Delete from './deleteAttribute.svelte';
     import EditAttribute from './edit.svelte';
-    import { attributeOptions, type Option } from './store';
+    import { attributeOptions } from './store';
     import {
         IconArrowSmRight,
         IconDotsHorizontal,
@@ -41,11 +40,10 @@
     import SideSheet from '../layout/sidesheet.svelte';
     import SpreadsheetContainer from '../layout/spreadsheet.svelte';
     import EmptySheet from '../layout/emptySheet.svelte';
+    import { showCreateAttributeSheet } from '../store';
 
     let showDropdown = [];
-    let selectedOption: Option['name'] = 'String';
     let selectedAttribute: Attributes = null;
-    let showCreate = false;
     let showDelete = false;
     let showCreateIndex = false;
     let showFailed = false;
@@ -54,7 +52,6 @@
     let showEdit = false;
     let createIndex: CreateIndex;
     let editAttribute: EditAttribute;
-    let createAttribute: CreateAttribute;
 
     const attributeFormatIcon = {
         ip: IconLocationMarker,
@@ -89,7 +86,7 @@
                 size="s"
                 secondary
                 disabled={$isCsvImportInProgress}
-                on:click={() => (showCreate = true)}
+                on:click={() => ($showCreateAttributeSheet = true)}
                 event="create_attribute">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create column
@@ -273,22 +270,11 @@
             showActions={$canWriteCollections}
             actions={{
                 primary: {
-                    onClick: () => (showCreate = true)
+                    onClick: () => ($showCreateAttributeSheet = true)
                 }
             }} />
     {/if}
 </div>
-
-<SideSheet
-    title="Insert column"
-    bind:show={showCreate}
-    submit={{
-        text: 'Insert',
-        onClick: async () => await createAttribute.submit(),
-        disabled: !selectedOption
-    }}>
-    <CreateAttribute {showCreate} bind:selectedOption bind:this={createAttribute} />
-</SideSheet>
 
 {#if showDelete}
     <Delete bind:showDelete {selectedAttribute} />

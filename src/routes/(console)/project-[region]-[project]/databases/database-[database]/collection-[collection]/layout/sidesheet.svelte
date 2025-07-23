@@ -19,7 +19,7 @@
             | {
                   text: string;
                   disabled?: boolean;
-                  onClick: () => void | Promise<void>;
+                  onClick?: () => void | Promise<void>;
               }
             | undefined;
         children?: Snippet;

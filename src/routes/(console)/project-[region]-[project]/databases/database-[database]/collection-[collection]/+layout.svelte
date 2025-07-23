@@ -202,10 +202,10 @@
 
 <slot />
 
-{#if $createAttributeArgs.showCreate}
-    <CreateAttribute {...$createAttributeArgs} />
-{/if}
+<!--{#if $createAttributeArgs.showCreate}-->
+<!--    <CreateAttribute {...$createAttributeArgs} />-->
+<!--{/if}-->
 
-{#if $showCreateIndex}
-    <CreateIndex bind:showCreateIndex={$showCreateIndex} />
-{/if}
+<!--{#if $showCreateIndex}-->
+<!--    <CreateIndex bind:showCreateIndex={$showCreateIndex} />-->
+<!--{/if}-->

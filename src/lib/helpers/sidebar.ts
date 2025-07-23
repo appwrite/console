@@ -8,7 +8,7 @@ const userPreferences = () => get(user)?.prefs;
 // for spreadsheet, closed with icons
 const isInDatabasesRoute = (page: Page) => {
     return page.route.id?.includes('databases/database-[database]');
-}
+};
 
 export function updateSidebarState(page: Page, state: 'closed' | 'open' | 'icons') {
     if (isInDatabasesRoute(page)) return;

@@ -67,3 +67,5 @@ export const sortState = writable({
     column: null as string,
     direction: 'default' as SortDirection
 });
+
+export const showCreateAttributeSheet = writable(false);
