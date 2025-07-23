@@ -52,7 +52,7 @@
     </svelte:fragment>
     <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
     <InputText
-        id="appID"
+        id="clientID"
         label="Client ID"
         autofocus={true}
         placeholder="Enter ID"
@@ -66,7 +66,7 @@
         bind:value={clientSecret}
         required />
     <InputText
-        id="auth0Domain"
+        id="domain"
         label="Auth0 Domain"
         placeholder="your-tenant.auth0.com"
         bind:value={auth0Domain}
