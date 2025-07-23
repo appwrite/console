@@ -15,13 +15,7 @@
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { page } from '$app/state';
 
-    let {
-        site,
-        frameworks
-    }: {
-        site: Models.Site;
-        frameworks: Models.Framework[];
-    } = $props();
+    let { site, frameworks, specs } = $props();
 
     let frameworkKey = $state(site.framework);
     let installCommand = $state(site?.installCommand);
@@ -94,6 +88,19 @@
             adapter = selectedFramework.adapters[0].key as Adapter;
             adptr = selectedFramework.adapters[0];
         }
+        let specToSend = site?.specification;
+        if (!specToSend && specs && specs.specifications?.length) {
+            specToSend = specs.specifications[0].slug;
+            site.specification = specToSend;
+        }
+        if (
+            specs &&
+            specs.specifications?.length &&
+            !specs.specifications.some((s) => s.slug === specToSend)
+        ) {
+            specToSend = specs.specifications[0].slug;
+            site.specification = specToSend;
+        }
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
@@ -115,7 +122,7 @@
                     site.providerBranch || undefined,
                     site.providerSilentMode || undefined,
                     site.providerRootDirectory || undefined,
-                    site?.specification || undefined
+                    specToSend || undefined
                 );
             await invalidate(Dependencies.SITE);
             addNotification({
