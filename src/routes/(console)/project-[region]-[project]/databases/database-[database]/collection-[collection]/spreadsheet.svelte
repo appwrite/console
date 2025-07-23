@@ -23,7 +23,8 @@
         columns,
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
-        sortState
+        sortState,
+        showCreateAttributeSheet
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -380,9 +381,7 @@
         bind:selectedRows
         bind:columns={$columns}
         emptyCells={emptyCellsCount}
-        bottomActionClick={() => {
-            // do something
-        }}>
+        bottomActionClick={() => (showRecordsCreateSheet.show = true)}>
         <svelte:fragment slot="header" let:root>
             {#each $columns as column (column.id)}
                 {#if column.isAction}
@@ -390,7 +389,7 @@
                         <Button.Button
                             icon
                             variant="extra-compact"
-                            on:click={() => (showRecordsCreateSheet.show = true)}>
+                            on:click={() => ($showCreateAttributeSheet = true)}>
                             <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                         </Button.Button>
                     </Spreadsheet.Header.Cell>
