@@ -92,22 +92,25 @@
         label="Well-Known Endpoint"
         placeholder="https://example.com/.well-known/openid-configuration"
         bind:value={wellKnownEndpoint}
-        required />
+        required={!authorizationEndpoint && !tokenEndpoint && !userinfoEndpoint} />
     <InputText
         id="authorization-endpoint"
         label="Authorization Endpoint"
         placeholder="https://example.com/authorize"
-        bind:value={authorizationEndpoint} />
+        bind:value={authorizationEndpoint}
+        required={!wellKnownEndpoint} />
     <InputText
         id="token-endpoint"
         label="Token Endpoint"
         placeholder="https://example.com/token"
-        bind:value={tokenEndpoint} />
+        bind:value={tokenEndpoint}
+        required={!wellKnownEndpoint} />
     <InputText
         id="userinfo-endpoint"
         label="User Info Endpoint"
         placeholder="https://example.com/userinfo"
-        bind:value={userinfoEndpoint} />
+        bind:value={userinfoEndpoint}
+        required={!wellKnownEndpoint} />
 
     <Alert.Inline status="info">
         To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
@@ -120,7 +123,8 @@
         <Button
             disabled={!appId ||
                 !clientSecret ||
-                !wellKnownEndpoint ||
+                (!wellKnownEndpoint &&
+                    (!authorizationEndpoint || !tokenEndpoint || !userinfoEndpoint)) ||
                 (secret === provider.secret &&
                     enabled === provider.enabled &&
                     appId === provider.appId)}
