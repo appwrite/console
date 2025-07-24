@@ -2,9 +2,9 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { CardContainer, GridItem1, Id } from '$lib/components';
-    import { canWriteTables } from '$lib/stores/roles';
+    import { Pill } from '$lib/elements';
+    import { canWriteCollections } from '$lib/stores/roles';
     import type { PageData } from './$types';
-    import { Badge } from '@appwrite.io/pink-svelte';
     export let data: PageData;
     export let showCreate = false;
     const projectId = page.params.project;
@@ -12,20 +12,20 @@
 </script>
 
 <CardContainer
-    disableEmpty={!$canWriteTables}
-    total={data.tables.total}
+    disableEmpty={!$canWriteCollections}
+    total={data.collections.total}
     on:click={() => (showCreate = true)}
-    event="table">
-    {#each data.tables.tables as table}
+    event="collection">
+    {#each data.collections.collections as collection}
         <GridItem1
-            href={`${base}/project-${page.params.region}-${projectId}/databases/database-${databaseId}/table-${table.$id}`}>
-            <svelte:fragment slot="title">{table.name}</svelte:fragment>
+            href={`${base}/project-${page.params.region}-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
+            <svelte:fragment slot="title">{collection.name}</svelte:fragment>
             <svelte:fragment slot="status">
-                {#if !table.enabled}
-                    <Badge variant="secondary" content="disabled" />
+                {#if !collection.enabled}
+                    <Pill>disabled</Pill>
                 {/if}</svelte:fragment>
 
-            <Id value={table.$id}>{table.$id}</Id>
+            <Id value={collection.$id}>{collection.$id}</Id>
         </GridItem1>
     {/each}
 </CardContainer>

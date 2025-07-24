@@ -9,7 +9,7 @@ const initialFormData = {
     },
     databases: {
         root: false,
-        rows: false
+        documents: false
     },
     functions: {
         root: false,
@@ -45,19 +45,18 @@ export const ResourcesFriendly = {
     'environment-variable': { singular: 'Environment Variable', plural: 'Environment Variables' },
     deployment: { singular: 'Deployment', plural: 'Deployments' },
     database: { singular: 'Database', plural: 'Databases' },
-    table: { singular: 'Table', plural: 'Tables' },
+    collection: { singular: 'Collection', plural: 'Collections' },
     index: { singular: 'Index', plural: 'Indexes' },
-    column: { singular: 'Column', plural: 'Columns' },
-    row: { singular: 'Row', plural: 'Rows' }
+    attribute: { singular: 'Attribute', plural: 'Attributes' },
+    document: { singular: 'Document', plural: 'Documents' }
 };
 
 const resources = Object.keys(ResourcesFriendly);
 
 type Resource = (typeof resources)[number];
 
-// @todo: @itznotabug - check if other resources are correct and work fine!
 export const providerResources: Record<Provider, Resource[]> = {
-    appwrite: [...resources], // new terminology, others are ok?
+    appwrite: [...resources],
     supabase: [
         'user',
         'database',
@@ -92,12 +91,12 @@ export const migrationFormToResources = (
     }
     if (formData.databases.root) {
         addResource('database');
-        addResource('table');
-        addResource('column');
-        addResource('columnIndex');
+        addResource('collection');
+        addResource('attribute');
+        addResource('index');
     }
-    if (formData.databases.rows) {
-        addResource('row');
+    if (formData.databases.documents) {
+        addResource('document');
     }
     if (formData.functions.root) {
         addResource('function');
@@ -151,8 +150,8 @@ export const resourcesToMigrationForm = (
     if (resources.includes('database')) {
         formData.databases.root = true;
     }
-    if (includesAll(resources, ['table', 'column', 'row'])) {
-        formData.databases.rows = true;
+    if (includesAll(resources, ['collection', 'attribute', 'document'])) {
+        formData.databases.documents = true;
     }
     if (resources.includes('function') && isVersionAtLeast(version, '1.4.0')) {
         formData.functions.root = true;

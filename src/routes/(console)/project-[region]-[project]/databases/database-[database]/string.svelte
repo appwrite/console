@@ -5,15 +5,15 @@
 
     export async function submitString(
         databaseId: string,
-        tableId: string,
+        collectionId: string,
         key: string,
-        data: Partial<Models.ColumnString>
+        data: Partial<Models.AttributeString>
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.createStringColumn(
+            .databases.createStringAttribute(
                 databaseId,
-                tableId,
+                collectionId,
                 key,
                 data.size,
                 data.required,
@@ -23,15 +23,15 @@
     }
     export async function updateString(
         databaseId: string,
-        tableId: string,
-        data: Partial<Models.ColumnString>,
+        collectionId: string,
+        data: Partial<Models.AttributeString>,
         originalKey?: string
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.updateStringColumn(
+            .databases.updateStringAttribute(
                 databaseId,
-                tableId,
+                collectionId,
                 originalKey,
                 data.required,
                 data.default,
@@ -42,10 +42,10 @@
 </script>
 
 <script lang="ts">
-    import { createConservative } from '$lib/helpers/stores';
     import { InputChoice, InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
+    import { createConservative } from '$lib/helpers/stores';
 
-    export let data: Partial<Models.ColumnString> = {
+    export let data: Partial<Models.AttributeString> = {
         required: false,
         size: 0,
         default: null,
@@ -67,7 +67,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.ColumnString>>({
+    } = createConservative<Partial<Models.AttributeString>>({
         required: false,
         array: false,
         ...data

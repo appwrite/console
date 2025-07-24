@@ -13,7 +13,6 @@
     import Delete from '../delete.svelte';
     import { database } from '../store';
     import { Query } from '@appwrite.io/console';
-    import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
 
     let showDelete = false;
     let showError: false | 'name' | 'email' | 'password' = false;
@@ -25,10 +24,10 @@
         databaseName ??= $database.name;
     });
 
-    async function loadTableCount() {
+    async function loadCollectionCount() {
         const { total } = await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.list($database.$id, [Query.limit(1)]);
+            .databases.listCollections($database.$id, [Query.limit(1)]);
         return total;
     }
 
@@ -96,21 +95,21 @@
 
         <CardGrid>
             <svelte:fragment slot="title">Delete database</svelte:fragment>
-            The database will be permanently deleted, including all tables within it. This action is
-            irreversible.
+            The database will be permanently deleted, including all collections within it. This action
+            is irreversible.
             <svelte:fragment slot="aside">
                 <BoxAvatar>
                     <svelte:fragment slot="title">
-                        <Layout.Stack direction="column" gap="xxs">
-                            <h6 class="u-bold u-trim-1">{$database.name}</h6>
-                            <Layout.Stack direction="row" gap="s">
-                                {#await loadTableCount()}
-                                    <Skeleton variant="line" width="100%" height={19.5} />
-                                {:then count}
-                                    {count} {count === 1 ? 'Table' : 'Tables'}
-                                {/await}
-                            </Layout.Stack>
-                        </Layout.Stack>
+                        <h6 class="u-bold u-trim-1">{$database.name}</h6>
+                        <span class="u-flex u-gap-8">
+                            {#await loadCollectionCount()}
+                                <div class="loader is-small"></div>
+                            {:then count}
+                                {count}
+                            {/await}
+
+                            Collections
+                        </span>
                     </svelte:fragment>
                 </BoxAvatar>
             </svelte:fragment>

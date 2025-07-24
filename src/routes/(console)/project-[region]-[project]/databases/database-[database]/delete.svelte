@@ -18,17 +18,17 @@
     let confirmedDeletion = false;
 
     let error = null;
-    let isLoadingRowsCount = false;
+    let isLoadingDocumentsCount = false;
 
-    $: tableItems = [];
-    let tables: Models.TableList = null;
+    $: collectionItems = [];
+    let collections: Models.CollectionList = null;
 
     function buildQueries(): string[] {
         const queries = [Query.orderDesc('$updatedAt')];
 
-        if (tableItems.length > 0) {
+        if (collectionItems.length > 0) {
             queries.push(Query.limit(25));
-            queries.push(Query.offset(tableItems.length));
+            queries.push(Query.offset(collectionItems.length));
         } else {
             queries.push(Query.limit(3));
         }
@@ -36,32 +36,32 @@
         return queries;
     }
 
-    async function listTables() {
+    async function listCollections() {
         // let's just wait...
-        if (isLoadingRowsCount) return;
+        if (isLoadingDocumentsCount) return;
 
-        isLoadingRowsCount = true;
+        isLoadingDocumentsCount = true;
 
         try {
             const queries = buildQueries();
 
-            tables = await sdk
+            collections = await sdk
                 .forProject(page.params.region, page.params.project)
-                .tables.list(databaseId, queries);
+                .databases.listCollections(databaseId, queries);
 
-            const tablePromises = tables.tables.map(async (table) => {
+            const collectionPromises = collections.collections.map(async (collection) => {
                 return {
-                    id: table.$id,
-                    name: table.name,
-                    updatedAt: table.$updatedAt
+                    id: collection.$id,
+                    name: collection.name,
+                    updatedAt: collection.$updatedAt
                 };
             });
 
-            tableItems = [...tableItems, ...(await Promise.all(tablePromises))];
+            collectionItems = [...collectionItems, ...(await Promise.all(collectionPromises))];
         } catch (err) {
             error = true;
         } finally {
-            isLoadingRowsCount = false;
+            isLoadingDocumentsCount = false;
         }
     }
 
@@ -88,24 +88,24 @@
 
     /* reset data on modal close */
     $: if (!showDelete) {
-        tables = null;
-        tableItems = [];
+        collections = null;
+        collectionItems = [];
     } else {
-        listTables();
+        listCollections();
     }
 </script>
 
 <Modal title="Delete database" bind:show={showDelete} onSubmit={handleDelete}>
     <p class="text" slot="description">
-        {#if tableItems.length > 0}
-            The following tables and all data associated with <b>{$database.name}</b>, will be
+        {#if collectionItems.length > 0}
+            The following collections and all data associated with <b>{$database.name}</b>, will be
             permanently deleted.
         {:else}
             Are you sure you want to delete <b>{$database.name}</b>?
         {/if}
     </p>
 
-    {#if isLoadingRowsCount}
+    {#if isLoadingDocumentsCount}
         <div class="u-flex u-main-center">
             <Spinner />
         </div>
@@ -113,36 +113,36 @@
         <p class="text">
             Are you sure you want to delete <b>{$database.name}</b>?
         </p>
-    {:else if tableItems.length > 0}
+    {:else if collectionItems.length > 0}
         <div class="u-flex-vertical u-gap-16">
             <Table.Root columns={2} let:root>
                 <svelte:fragment slot="header" let:root>
-                    <Table.Header.Cell {root}>Table</Table.Header.Cell>
+                    <Table.Header.Cell {root}>Collection</Table.Header.Cell>
                     <Table.Header.Cell {root}>Last Updated</Table.Header.Cell>
                 </svelte:fragment>
-                {#each tableItems as table}
+                {#each collectionItems as collection}
                     <Table.Row.Base {root}>
-                        <Table.Cell {root}>{table.name}</Table.Cell>
-                        <Table.Cell {root}>{toLocaleDate(table.updatedAt)}</Table.Cell>
+                        <Table.Cell {root}>{collection.name}</Table.Cell>
+                        <Table.Cell {root}>{toLocaleDate(collection.updatedAt)}</Table.Cell>
                     </Table.Row.Base>
                 {/each}
             </Table.Root>
 
-            {#if tableItems.length < tables.total}
+            {#if collectionItems.length < collections.total}
                 <div class="u-flex u-gap-16 u-cross-center">
-                    <button class="u-underline" on:click={listTables} type="button">
+                    <button class="u-underline" on:click={listCollections} type="button">
                         Show more
                     </button>
 
-                    {#if isLoadingRowsCount}
+                    {#if isLoadingDocumentsCount}
                         <div class="loader is-small"></div>
                     {/if}
                 </div>
-            {:else if tableItems.length > 25}
+            {:else if collectionItems.length > 25}
                 <button
                     class="u-underline"
                     on:click={() => {
-                        tableItems = tableItems.slice(0, 3);
+                        collectionItems = collectionItems.slice(0, 3);
                     }}
                     type="button">
                     Show less
@@ -151,7 +151,7 @@
         </div>
     {/if}
 
-    {#if !isLoadingRowsCount}
+    {#if !isLoadingDocumentsCount}
         <p class="text" data-private>
             <b>
                 Once deleted, this database and its backups cannot be restored. This action is
@@ -162,7 +162,7 @@
         <div class="input-check-box-friction">
             <InputCheckbox
                 required
-                id="delete_database"
+                id="delete_policy"
                 bind:checked={confirmedDeletion}
                 label="I understand and confirm" />
         </div>

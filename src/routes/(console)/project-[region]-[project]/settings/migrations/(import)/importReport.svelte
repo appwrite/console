@@ -18,10 +18,9 @@
 
     const dispatch = createEventDispatcher();
 
-    // TODO: @itznotabug - check what needs to be changed here. we might need to do dual stuff to manage backwards compat?
     const labelMap = {
         users: { root: 'Users', teams: 'Include teams' },
-        databases: { root: 'Databases', rows: 'Include rows' },
+        databases: { root: 'Databases', documents: 'Include documents' },
         functions: {
             root: 'Functions',
             env: 'Include environment variables',
@@ -36,8 +35,8 @@
             teams: 'Import all teams and the team memberships of your users'
         },
         databases: {
-            root: 'Import all databases, including tables, indexes and columns',
-            rows: 'Import all rows inside tables'
+            root: 'Import all databases, including collections, indexes and attributes',
+            documents: 'Import all documents inside collections'
         },
         functions: {
             root: 'Import all functions and their active deployment',

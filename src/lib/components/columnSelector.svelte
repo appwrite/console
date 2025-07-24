@@ -8,18 +8,19 @@
 
     let {
         columns,
-        isCustomTable = false,
+        isCustomCollection = false,
         allowNoColumns = false,
         children
     }: {
         columns: Writable<Column[]>;
-        isCustomTable?: boolean;
+        isCustomCollection?: boolean;
         allowNoColumns?: boolean;
         children: Snippet<[toggle: () => void, selectedColumnsNumber: number]>;
     } = $props();
 
     let maxHeight = $state('none');
     let containerRef = $state<HTMLElement>(null);
+    const collectionId = $derived(page.params.collection);
 
     const calcMaxHeight = () => {
         if (containerRef) {
@@ -34,16 +35,16 @@
     const saveColumnPreferences = () => {
         const shownColumns = $columns.filter((n) => n.hide === true).map((n) => n.id);
 
-        if (isCustomTable) {
-            preferences.setCustomTableColumns(page.params.table, shownColumns);
+        if (isCustomCollection) {
+            preferences.setCustomCollectionColumns(collectionId, shownColumns);
         } else {
             preferences.setColumns(shownColumns);
         }
     };
 
     onMount(() => {
-        if (isCustomTable) {
-            const shownColumns = preferences.getCustomTableColumns(page.params.table);
+        if (isCustomCollection) {
+            const shownColumns = preferences.getCustomCollectionColumns(collectionId);
 
             columns.update((n) =>
                 n.map((column) => {

@@ -38,9 +38,9 @@ export enum Dependencies {
     MEMBERSHIPS = 'dependency:memberships',
     DATABASE = 'dependency:database',
     DATABASES = 'dependency:databases',
-    TABLE = 'dependency:table',
-    ROW = 'dependency:row',
-    ROWS = 'dependency:rows',
+    COLLECTION = 'dependency:collection',
+    DOCUMENT = 'dependency:document',
+    DOCUMENTS = 'dependency:documents',
     BUCKET = 'dependency:bucket',
     FILE = 'dependency:file',
     FILE_TOKENS = 'dependency:file_tokens',
@@ -64,7 +64,7 @@ export enum Dependencies {
     WEBHOOK = 'dependency:webhook',
     WEBHOOKS = 'dependency:webhooks',
     MIGRATIONS = 'dependency:migrations',
-    TABLES = 'dependency:tables',
+    COLLECTIONS = 'dependency:collections',
     BACKUPS = 'dependency:backups',
     RUNTIMES = 'dependency:runtimes',
     CONSOLE_VARIABLES = 'dependency:console_variables',
@@ -92,8 +92,6 @@ export const defaultScopes: string[] = [
     'teams.write',
     'documents.read',
     'documents.write',
-    'rows.read',
-    'rows.write',
     'files.read',
     'files.write',
     'projects.read',
@@ -113,8 +111,6 @@ export const defaultScopes: string[] = [
     'databases.write',
     'collections.read',
     'collections.write',
-    'tables.read',
-    'tables.write',
     'buckets.read',
     'buckets.write',
     'functions.read',
@@ -145,9 +141,6 @@ export const defaultScopes: string[] = [
 
 export const defaultRoles: string[] = ['owner'];
 
-// TODO: remove old terminology scopes.
-// these are kept for backwards compatibility with keys and events that already exists.
-// for the new ones, we use the new terminology.
 export const scopes: {
     scope: string;
     description: string;
@@ -209,18 +202,6 @@ export const scopes: {
         icon: 'database'
     },
     {
-        scope: 'tables.read',
-        description: "Access to read your project's database tables",
-        category: 'Database',
-        icon: 'database'
-    },
-    {
-        scope: 'tables.write',
-        description: "Access to create, update, and delete your project's database tables",
-        category: 'Database',
-        icon: 'database'
-    },
-    {
         scope: 'attributes.read',
         description: "Access to read your project's database collection's attributes",
         category: 'Database',
@@ -230,18 +211,6 @@ export const scopes: {
         scope: 'attributes.write',
         description:
             "Access to create, update, and delete your project's database collection's attributes",
-        category: 'Database',
-        icon: 'database'
-    },
-    {
-        scope: 'columns.read',
-        description: "Access to read your project's database table's columns",
-        category: 'Database',
-        icon: 'database'
-    },
-    {
-        scope: 'columns.write',
-        description: "Access to create, update, and delete your project's database table's columns",
         category: 'Database',
         icon: 'database'
     },
@@ -267,18 +236,6 @@ export const scopes: {
     {
         scope: 'documents.write',
         description: "Access to create, update, and delete your project's database documents",
-        category: 'Database',
-        icon: 'database'
-    },
-    {
-        scope: 'rows.read',
-        description: "Access to read your project's database rows",
-        category: 'Database',
-        icon: 'database'
-    },
-    {
-        scope: 'rows.write',
-        description: "Access to create, update, and delete your project's database rows",
         category: 'Database',
         icon: 'database'
     },
@@ -473,7 +430,7 @@ export type EventResource = {
 
 export type EventAction = {
     name: string;
-    columns?: string[];
+    attributes?: string[];
 };
 
 export const eventServices: Array<EventService> = [
@@ -491,11 +448,11 @@ export const eventServices: Array<EventService> = [
         name: 'databases',
         resources: [
             {
-                name: 'tables',
+                name: 'collections',
                 actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
             },
             {
-                name: 'rows',
+                name: 'documents',
                 actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
             }
         ],
@@ -522,7 +479,7 @@ export const eventServices: Array<EventService> = [
                 name: 'memberships',
                 actions: [
                     { name: 'create' },
-                    { name: 'update', columns: ['status'] },
+                    { name: 'update', attributes: ['status'] },
                     { name: 'delete' }
                 ]
             }
@@ -538,7 +495,7 @@ export const eventServices: Array<EventService> = [
         ],
         actions: [
             { name: 'create' },
-            { name: 'update', columns: ['email', 'name', 'password', 'status', 'prefs'] },
+            { name: 'update', attributes: ['email', 'name', 'password', 'status', 'prefs'] },
             { name: 'delete' }
         ]
     },

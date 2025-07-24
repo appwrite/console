@@ -6,8 +6,8 @@
 
     export let data;
 
-    $: total = data.tablesTotal;
-    $: count = data.tables;
+    $: total = data.collectionsTotal;
+    $: count = data.collections;
 
     $: reads = data.databaseReads;
     $: readsTotal = data.databaseReadsTotal;
@@ -23,8 +23,8 @@
             {total}
             {count}
             countMetadata={{
-                legend: 'Tables',
-                title: 'Total tables'
+                legend: 'Collections',
+                title: 'Total collections'
             }} />
 
         <UsageMultiple

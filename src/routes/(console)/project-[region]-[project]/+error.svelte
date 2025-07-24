@@ -6,7 +6,6 @@
     import { capitalize } from '$lib/helpers/string';
     import { currentPlan } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-
     function getResource(id: string) {
         id = id.replace('/(console)/project-[region]-[project]/', '');
         let parts = id.split('/');
@@ -40,7 +39,6 @@
             >{'status' in page.error
                 ? page.error.status || 'Invalid Argument'
                 : 'Invalid Argument'}</Typography.Title>
-
-        <Typography.Title>{page.error.message}</Typography.Title>
+        <p class="body-text-2 u-bold u-margin-block-start-4">{page.error.message}</p>
     {/if}
 </Container>
