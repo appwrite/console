@@ -499,7 +499,7 @@
                                                             size="s"
                                                             event="empty_documentation"
                                                             href="https://appwrite.io/docs/products/storage/upload-download"
-                                                            ariaLabel="upload download"
+                                                            ariaLabel="create document"
                                                             >Documentation</Button>
                                                         <Button
                                                             secondary
@@ -526,7 +526,7 @@
                                             size="s"
                                             event="empty_documentation"
                                             href="https://appwrite.io/docs/products/storage/buckets"
-                                            ariaLabel="create buckets">Documentation</Button>
+                                            ariaLabel="create document">Documentation</Button>
 
                                         <Button
                                             secondary

@@ -20,11 +20,7 @@ type TeamPreferences = {
 
 type PreferencesStore = {
     [key: string]: Preferences;
-    // kept for backwards compatibility
     collections?: {
-        [key: string]: Preferences['columns'];
-    };
-    tables?: {
         [key: string]: Preferences['columns'];
     };
     displayNames?: {
@@ -110,8 +106,8 @@ function createPreferences() {
                 }
             );
         },
-        getCustomTableColumns: (tableId: string): Preferences['columns'] => {
-            return preferences?.tables?.[tableId] ?? preferences?.collections?.[tableId] ?? [];
+        getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
+            return preferences?.collections?.[collectionId] ?? [];
         },
         setLimit: (limit: Preferences['limit']) =>
             updateAndSync((n) => {
@@ -152,15 +148,14 @@ function createPreferences() {
 
                 return n;
             }),
-        setCustomTableColumns: (tableId: string, columns: Preferences['columns']) =>
+        setCustomCollectionColumns: (collectionId: string, columns: Preferences['columns']) =>
             updateAndSync((n) => {
-                n ??= {};
-                n.collections ??= {};
-                n.tables ??= {};
+                if (!n?.collections?.[collectionId]) {
+                    n ??= {};
+                    n.collections ??= {};
+                }
 
-                n.tables[tableId] = Array.from(new Set(columns));
-                // let's not double save
-                // n.collections[tableId] = Array.from(new Set(columns));
+                n.collections[collectionId] = Array.from(new Set(columns));
                 return n;
             }),
         loadTeamPrefs: async (id: string) => {
@@ -177,7 +172,7 @@ function createPreferences() {
         },
         setDisplayNames: async (
             orgId: string,
-            tableId: string,
+            collectionId: string,
             names: TeamPreferences['names']
         ) => {
             let teamPrefs: Models.Preferences;
@@ -188,7 +183,7 @@ function createPreferences() {
                 }
 
                 teamPrefs = n;
-                n.displayNames[tableId] = names;
+                n.displayNames[collectionId] = names;
 
                 return n;
             });

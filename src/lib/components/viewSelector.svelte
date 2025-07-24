@@ -9,14 +9,14 @@
 
     export let columns: Writable<Column[]>;
     export let view: View;
-    export let isCustomTable = false;
+    export let isCustomCollection = false;
     export let hideView = false;
     export let hideColumns = false;
     export let allowNoColumns = false;
 </script>
 
 {#if !hideColumns && view === View.Table}
-    <ColumnSelector {columns} {isCustomTable} {allowNoColumns}>
+    <ColumnSelector {columns} {isCustomCollection} {allowNoColumns}>
         {#snippet children(toggle, selectedColumnsNumber)}
             <Button.Button
                 size="s"

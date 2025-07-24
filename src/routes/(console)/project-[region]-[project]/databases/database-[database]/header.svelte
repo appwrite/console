@@ -13,8 +13,8 @@
     const tabs = [
         {
             href: path,
-            title: 'Tables',
-            event: 'tables',
+            title: 'Collections',
+            event: 'collections',
             hasChildren: true
         },
         {
