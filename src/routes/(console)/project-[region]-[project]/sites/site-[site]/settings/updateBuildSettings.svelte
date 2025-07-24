@@ -15,7 +15,15 @@
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { page } from '$app/state';
 
-    let { site, frameworks, specs } = $props();
+    let {
+        site,
+        frameworks,
+        specs
+    }: {
+        site: Models.Site;
+        frameworks: Models.Framework[];
+        specs: Models.SpecificationList;
+    } = $props();
 
     let frameworkKey = $state(site.framework);
     let installCommand = $state(site?.installCommand);

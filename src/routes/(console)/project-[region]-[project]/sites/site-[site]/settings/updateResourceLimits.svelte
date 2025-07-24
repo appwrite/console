@@ -65,14 +65,6 @@
         value: spec.slug,
         disabled: !spec.enabled
     }));
-
-    $: {
-        const enabledSpecs = specs?.specifications?.filter((s) => s.enabled) ?? [];
-        if (!enabledSpecs.some((s) => s.slug === specification)) {
-            specification = enabledSpecs[0]?.slug;
-            site.specification = specification;
-        }
-    }
 </script>
 
 <Form onSubmit={updateLogging}>
