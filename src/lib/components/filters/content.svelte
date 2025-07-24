@@ -17,7 +17,6 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         value = $bindable(null),
         columns,
         columnId = $bindable(null),
