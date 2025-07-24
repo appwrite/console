@@ -16,6 +16,7 @@ type Preferences = {
 
 type TeamPreferences = {
     names?: string[];
+    order?: string[];
 };
 
 type PreferencesStore = {
@@ -25,6 +26,9 @@ type PreferencesStore = {
     };
     displayNames?: {
         [key: string]: TeamPreferences['names'];
+    };
+    columnOrder?: {
+        [key: string]: TeamPreferences['order'];
     };
 } & { hideAiDisclaimer?: boolean };
 
@@ -184,6 +188,32 @@ function createPreferences() {
 
                 teamPrefs = n;
                 n.displayNames[collectionId] = names;
+
+                return n;
+            });
+
+            await sdk.forConsole.teams.updatePrefs(orgId, teamPrefs);
+        },
+
+        getColumnOrder(collectionId: string): TeamPreferences['order'] {
+            return preferences?.columnOrder[collectionId] ?? [];
+        },
+
+        async saveColumnOrder(
+            orgId: string,
+            collectionId: string,
+            columnIds: TeamPreferences['order']
+        ) {
+            let teamPrefs: Models.Preferences;
+
+            await updateAndSync((n) => {
+                if (!n?.columnOrder) {
+                    n ??= {};
+                    n.columnOrder ??= {};
+                }
+
+                teamPrefs = n;
+                n.columnOrder[collectionId] = columnIds;
 
                 return n;
             });

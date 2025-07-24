@@ -18,6 +18,7 @@
     let error: string;
     let checked = false;
 
+    // TODO: sync the columnsOrder here as well.
     async function handleDelete() {
         try {
             await sdk

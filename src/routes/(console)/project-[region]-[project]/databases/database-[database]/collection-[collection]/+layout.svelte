@@ -19,7 +19,12 @@
     import { Dependencies } from '$lib/constants';
     import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { collection, databaseColumnSheetOptions, databaseRowSheetOptions, showCreateAttributeSheet } from './store';
+    import {
+        collection,
+        databaseColumnSheetOptions,
+        databaseRowSheetOptions,
+        showCreateAttributeSheet
+    } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateAttribute from './createAttribute.svelte';
     import { writable } from 'svelte/store';

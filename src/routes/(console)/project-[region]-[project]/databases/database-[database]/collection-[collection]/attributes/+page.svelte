@@ -17,7 +17,13 @@
     import { isRelationship, isString } from '../document-[document]/attributes/store';
     import FailedModal from '../failedModal.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
-    import { attributes, type Attributes, indexes, isCsvImportInProgress } from '../store';
+    import {
+        attributes,
+        type Attributes,
+        indexes,
+        isCsvImportInProgress,
+        reorderItems
+    } from '../store';
     import Delete from './deleteAttribute.svelte';
     import EditAttribute from './edit.svelte';
     import { attributeOptions } from './store';
@@ -34,7 +40,7 @@
         IconLockClosed,
         IconFingerPrint
     } from '@appwrite.io/pink-icons-svelte';
-    import { type ComponentProps, onDestroy } from 'svelte';
+    import { type ComponentProps, onDestroy, onMount } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import CsvDisabled from '../csvDisabled.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -43,9 +49,11 @@
     import EmptySheet from '../layout/emptySheet.svelte';
     import { showCreateAttributeSheet } from '../store';
     import { type Models } from '@appwrite.io/console';
+    import { preferences } from '$lib/stores/preferences';
+    import { page } from '$app/state';
 
     const updatedAttributes = $derived.by(() => {
-        return [
+        const baseAttrs = [
             {
                 key: '$id',
                 type: 'string',
@@ -84,6 +92,8 @@
                 system: boolean;
             }
         ];
+
+        return reorderItems(baseAttrs, columnsOrder);
     });
 
     let error = $state('');
@@ -92,6 +102,9 @@
     let showDelete = $state(false);
     let showCreateIndex = $state(false);
     let selectedAttribute: Attributes = $state(null);
+
+    let columnsOrder = $state([]);
+    const collectionId = page.params.collection;
 
     let showEdit = $state(false);
     let createIndex: CreateIndex;
@@ -121,6 +134,10 @@
     const emptyCellsCount = $derived(
         $attributes.length >= emptyCellsLimit ? 0 : emptyCellsLimit - $attributes.length
     );
+
+    onMount(() => {
+        columnsOrder = preferences.getColumnOrder(collectionId);
+    });
 
     onDestroy(() => ($showCreateAttributeSheet = false));
 </script>

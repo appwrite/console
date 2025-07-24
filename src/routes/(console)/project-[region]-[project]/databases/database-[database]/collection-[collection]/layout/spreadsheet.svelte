@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-
     let spreadsheetHeight = '75vh';
     let spreadsheetWrapper: HTMLDivElement;
 
@@ -10,7 +8,7 @@
         spreadsheetHeight = window.innerHeight - rect.top + 'px';
     }
 
-    onMount(resizeSheet);
+    resizeSheet();
 </script>
 
 <svelte:window on:resize={resizeSheet} />

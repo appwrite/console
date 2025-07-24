@@ -24,7 +24,8 @@
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
         sortState,
-        showCreateAttributeSheet
+        showCreateAttributeSheet,
+        reorderItems
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -72,6 +73,8 @@
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
 
+    let columnsOrder = [];
+
     let displayNames = {};
     let showRelationships = false;
     let relationshipData: Partial<Models.Document>[];
@@ -81,9 +84,19 @@
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
+        columnsOrder = preferences.getColumnOrder(collectionId);
     });
 
     onDestroy(() => ($showCreateAttributeSheet = false));
+
+    function saveColumnsOrder(newOrder: string[]) {
+        preferences
+            .saveColumnOrder(data.organization.$id ?? data.project.teamId, collectionId, newOrder)
+            .then(() => {
+                columnsOrder = newOrder;
+                columns.set(reorderItems($columns, columnsOrder));
+            });
+    }
 
     function formatArray(array: unknown[]) {
         if (array.length === 0) return '[ ]';
@@ -270,13 +283,24 @@
                     $databaseColumnSheetOptions.column.key
                 );
 
+            if (columnsOrder.includes($databaseColumnSheetOptions.column.key)) {
+                const updatedOrder = columnsOrder.filter(
+                    (id) => id !== $databaseColumnSheetOptions.column.key
+                );
+                saveColumnsOrder(updatedOrder);
+                columnsOrder = updatedOrder;
+            }
+
             trackEvent(Submit.AttributeDelete);
             addNotification({
                 type: 'success',
                 message: 'Attribute deleted'
             });
+
             invalidate(Dependencies.COLLECTION);
             invalidate(Dependencies.DOCUMENTS);
+
+            $databaseColumnSheetOptions.column = null;
         } catch (error) {
             addNotification({ type: 'error', message: error.message });
             trackError(error, Submit.AttributeDelete);
@@ -380,7 +404,10 @@
         bind:selectedRows
         bind:columns={$columns}
         emptyCells={emptyCellsCount}
-        bottomActionClick={() => (showRecordsCreateSheet.show = true)}>
+        bottomActionClick={() => (showRecordsCreateSheet.show = true)}
+        on:columnsSwap={(order) => {
+            saveColumnsOrder(order.detail);
+        }}>
         <svelte:fragment slot="header" let:root>
             {#each $columns as column (column.id)}
                 {#if column.isAction}

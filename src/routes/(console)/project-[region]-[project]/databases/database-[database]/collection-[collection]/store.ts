@@ -69,3 +69,22 @@ export const sortState = writable({
 });
 
 export const showCreateAttributeSheet = writable(false);
+
+export function reorderItems<T extends { id: string } | { key: string }>(
+    items: T[],
+    order: string[] = []
+): T[] {
+    if (!order.length) return items;
+
+    const getItemId = (item: T): string => {
+        return 'id' in item ? item.id : item.key;
+    };
+
+    const itemMap = Object.fromEntries(items.map((item) => [getItemId(item), item]));
+    const orderSet = new Set(order);
+
+    return [
+        ...(order.map((id) => itemMap[id]).filter(Boolean) as T[]),
+        ...items.filter((item) => !orderSet.has(getItemId(item)))
+    ];
+}
