@@ -1,7 +1,8 @@
 <script lang="ts">
     import { Alert, DropList } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
-    import { Link, Pill } from '$lib/elements';
+    import { Link } from '$lib/elements';
+    import { Badge } from '@appwrite.io/pink-svelte';
     import {
         checkForProjectLimitation,
         checkForUsageFees,
@@ -124,13 +125,19 @@
         {#if isCloud && isLimited}
             <DropList bind:show={showDropdown} width="16">
                 {#if hasProjectLimitation}
-                    <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info"></span>{total}/{limit} created
-                    </Pill>
+                    <Badge
+                        variant="secondary"
+                        color="pink-2"
+                        on:click={() => (showDropdown = !showDropdown)}
+                        style="cursor:pointer;"
+                        content={`ⓘ ${total}/${limit} created`} />
                 {:else if $organization?.billingPlan !== BillingPlan.SCALE}
-                    <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info"></span>Limits applied
-                    </Pill>
+                    <Badge
+                        variant="secondary"
+                        color="pink-2"
+                        on:click={() => (showDropdown = !showDropdown)}
+                        style="cursor:pointer;"
+                        content="ⓘ Limits applied" />
                 {/if}
                 <svelte:fragment slot="list">
                     <slot name="tooltip" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
