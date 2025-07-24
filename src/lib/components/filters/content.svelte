@@ -17,6 +17,7 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         value = $bindable(null),
         columns,
         columnId = $bindable(null),
@@ -24,7 +25,8 @@
         operatorKey = $bindable(null),
         singleCondition = false
     }: {
-        value?: string | number | string[] | null;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        value?: any;
         columns: Writable<Column[]>;
         columnId?: string | null;
         arrayValues?: string[];
@@ -34,36 +36,23 @@
 
     let columnsArray = $derived($columns);
     let column = $derived(columnsArray.find((c) => c.id === columnId));
-
-    let operatorsForColumn = $derived(() => {
+    let operatorsForColumn = $derived.by(() => {
         if (!column?.type) return [];
         return Object.entries(operators)
             .filter(([, v]) => v.types.includes(column.type))
             .map(([k]) => ({ label: k, value: k }));
     });
-
     let operator = $derived(operatorKey ? operators[operatorKey] : null);
     let isDisabled = $derived(!operator);
     let appliedTags = $derived($tags);
-
-    let columnOptions = $derived(() =>
-        columnsArray
-            .filter((c) => c.filter !== false)
-            .map((c) => ({
-                label: c.title,
-                value: c.id
-            }))
+    let columnOptions = $derived.by(() =>
+        columnsArray.filter((c) => c.filter !== false).map((c) => ({ label: c.title, value: c.id }))
     );
-
-    let enumOptions = $derived(() => {
+    let enumOptions = $derived.by(() => {
         if (!column?.elements) return [];
-        return column.elements.map((e) => ({
-            label: e?.label ?? e,
-            value: e?.value ?? e
-        }));
+        return column.elements.map((e) => ({ label: e?.label ?? e, value: e?.value ?? e }));
     });
-
-    let enumOptionsWithChecked = $derived(() => {
+    let enumOptionsWithChecked = $derived.by(() => {
         if (!column?.elements) return [];
         return column.elements.map((e) => ({
             label: e?.label ?? e,
@@ -100,13 +89,13 @@
         <Layout.Stack gap="s" direction="row" alignItems="flex-start">
             <InputSelect
                 id="column"
-                options={columnOptions()}
+                options={columnOptions}
                 placeholder="Select column"
                 bind:value={columnId} />
             <InputSelect
                 id="operator"
                 disabled={!column}
-                options={operatorsForColumn()}
+                options={operatorsForColumn}
                 placeholder="Select operator"
                 bind:value={operatorKey} />
         </Layout.Stack>
@@ -117,7 +106,7 @@
                         name="value"
                         bind:tags={arrayValues}
                         placeholder="Select value"
-                        options={enumOptionsWithChecked()}>
+                        options={enumOptionsWithChecked}>
                     </InputSelectCheckbox>
                 {:else}
                     <InputTags
@@ -131,14 +120,11 @@
                     {#if column.format === 'enum'}
                         <InputSelect
                             id="value"
-                            bind:value={value as string}
+                            bind:value
                             placeholder="Select value"
-                            options={enumOptions()} />
+                            options={enumOptions} />
                     {:else if column.type === 'integer' || column.type === 'double'}
-                        <InputNumber
-                            id="value"
-                            bind:value={value as number}
-                            placeholder="Enter value" />
+                        <InputNumber id="value" bind:value placeholder="Enter value" />
                     {:else if column.type === 'boolean'}
                         <InputSelect
                             id="value"
@@ -148,16 +134,13 @@
                                 { label: 'True', value: true },
                                 { label: 'False', value: false }
                             ]}
-                            bind:value={value as unknown as boolean} />
+                            bind:value />
                     {:else if column.type === 'datetime'}
                         {#key value}
-                            <InputDateTime id="value" bind:value={value as string} step={60} />
+                            <InputDateTime id="value" bind:value step={60} />
                         {/key}
                     {:else}
-                        <InputText
-                            id="value"
-                            bind:value={value as string}
-                            placeholder="Enter value" />
+                        <InputText id="value" bind:value placeholder="Enter value" />
                     {/if}
                 </ul>
             {/if}
