@@ -4,7 +4,14 @@
     import { preferences } from '$lib/stores/preferences';
     import { onMount, type Snippet } from 'svelte';
     import type { Column } from '$lib/helpers/types';
-    import { ActionMenu, Divider, Layout, Popover, Selector } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Badge,
+        Divider,
+        Layout,
+        Popover,
+        Selector
+    } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
 
     let {
@@ -172,7 +179,7 @@
 <svelte:window on:resize={calcMaxHeight} />
 
 {#if $columns?.length}
-    {@const placement = isNewStyle ? undefined : 'bottom-end'}
+    {@const placement = isNewStyle ? 'bottom-start' : 'bottom-end'}
     <Popover let:toggle {placement} padding="none">
         {@render children(toggle, selectedColumnsNumber)}
         <svelte:fragment slot="tooltip">
@@ -201,20 +208,31 @@
                         </Layout.Stack>
                     {/if}
 
-                    {#each filteredColumns as column}
-                        {#if !column?.exclude}
-                            <ActionMenu.Item.Button
-                                on:click={() => toggleColumn(column)}
-                                disabled={allowNoColumns
-                                    ? false
-                                    : visibleRealColumns.length <= 1 && !column.hide}>
-                                <Layout.Stack direction="row" gap="s">
-                                    <Selector.Checkbox size="s" checked={!column.hide} />
-                                    {column.title}
-                                </Layout.Stack>
-                            </ActionMenu.Item.Button>
-                        {/if}
-                    {/each}
+                    <Layout.Stack
+                        gap="none"
+                        direction="column"
+                        style="height: 145px; overflow: scroll;">
+                        {#each filteredColumns as column}
+                            {#if !column?.exclude}
+                                <ActionMenu.Item.Button
+                                    on:click={() => toggleColumn(column)}
+                                    disabled={allowNoColumns
+                                        ? false
+                                        : visibleRealColumns.length <= 1 && !column.hide}>
+                                    <Layout.Stack direction="row" gap="s">
+                                        <Selector.Checkbox size="s" checked={!column.hide} />
+                                        {column.title}
+                                        {#if isNewStyle && column.isPrimary}
+                                            <Badge
+                                                content="Primary key"
+                                                size="xs"
+                                                variant="secondary" />
+                                        {/if}
+                                    </Layout.Stack>
+                                </ActionMenu.Item.Button>
+                            {/if}
+                        {/each}
+                    </Layout.Stack>
                 </ActionMenu.Root>
             </div>
         </svelte:fragment>

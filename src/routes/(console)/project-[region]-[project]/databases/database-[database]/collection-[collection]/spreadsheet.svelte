@@ -173,7 +173,8 @@
                 draggable: false,
                 type: 'string',
                 icon: IconFingerPrint,
-                isEditable: false
+                isEditable: false,
+                isPrimary: true
             },
             {
                 id: '$createdAt',
@@ -410,6 +411,14 @@
                                     alignItems="center"
                                     alignContent="center">
                                     {column.title}
+
+                                    {#if column.isPrimary}
+                                        <Badge
+                                            content="Primary key"
+                                            size="xs"
+                                            variant="secondary" />
+                                    {/if}
+
                                     <SortButton
                                         onSort={sort}
                                         column={column.id}

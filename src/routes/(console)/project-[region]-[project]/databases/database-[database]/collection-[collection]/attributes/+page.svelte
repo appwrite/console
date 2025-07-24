@@ -31,7 +31,8 @@
         IconSwitchHorizontal,
         IconTrash,
         IconViewList,
-        IconLockClosed
+        IconLockClosed,
+        IconFingerPrint
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentProps } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -41,15 +42,46 @@
     import SpreadsheetContainer from '../layout/spreadsheet.svelte';
     import EmptySheet from '../layout/emptySheet.svelte';
     import { showCreateAttributeSheet } from '../store';
+    import { type Models } from '@appwrite.io/console';
 
-    let showDropdown = [];
-    let selectedAttribute: Attributes = null;
-    let showDelete = false;
-    let showCreateIndex = false;
-    let showFailed = false;
-    let error = '';
+    const updatedAttributes = $derived.by(() => {
+        return [
+            {
+                key: '$id',
+                type: 'string',
+                required: true,
+                name: 'ID'
+            } as Models.AttributeString & {
+                name: string;
+            },
+            ...$attributes,
+            {
+                key: '$createdAt',
+                type: 'datetime',
+                required: true,
+                name: 'createdAt'
+            } as Models.AttributeDatetime & {
+                name: string;
+            },
+            {
+                key: '$updatedAt',
+                type: 'datetime',
+                required: true,
+                name: 'updatedAt'
+            } as Models.AttributeDatetime & {
+                name: string;
+            }
+        ];
+    });
 
-    let showEdit = false;
+    let error = $state('');
+    let showDropdown = $state([]);
+    let showFailed = $state(false);
+    let showDelete = $state(false);
+    let showCreateIndex = $state(false);
+    let selectedAttribute: Attributes = $state(null);
+
+    let showEdit = $state(false);
     let createIndex: CreateIndex;
     let editAttribute: EditAttribute;
 
@@ -73,10 +105,10 @@
         }
     }
 
-    const emptyCellsLimit = $isSmallViewport ? 14 : 16;
-
-    $: emptyCellsCount =
-        $attributes.length >= emptyCellsLimit ? 0 : emptyCellsLimit - $attributes.length;
+    const emptyCellsLimit = $derived($isSmallViewport ? 14 : 16);
+    const emptyCellsCount = $derived(
+        $attributes.length >= emptyCellsLimit ? 0 : emptyCellsLimit - $attributes.length
+    );
 </script>
 
 <Container expanded style="background: var(--bgcolor-neutral-primary)">
@@ -96,10 +128,11 @@
 </Container>
 
 <div class="databases-spreadsheet">
-    {#if $attributes.length}
+    {#if updatedAttributes.length}
         <SpreadsheetContainer>
             <Spreadsheet.Root
                 let:root
+                allowSelection
                 height="100%"
                 emptyCells={emptyCellsCount}
                 columns={[
@@ -118,7 +151,7 @@
                     <Spreadsheet.Header.Cell column="actions" {root} />
                 </svelte:fragment>
 
-                {#each $attributes as attribute, index}
+                {#each updatedAttributes as attribute, index}
                     {@const option = attributeOptions.find(
                         (option) => option.type === attribute.type
                     )}
@@ -134,17 +167,31 @@
                                 {:else if 'format' in attribute && attribute.format}
                                     {@const icon = attributeFormatIcon[attribute?.format]}
                                     <Icon {icon} size="s" />
+                                {:else if attribute.key === '$id'}
+                                    <Icon icon={IconFingerPrint} size="s" />
                                 {:else}
                                     <Icon icon={option.icon} size="s" />
                                 {/if}
+
                                 <Layout.Stack direction="row" alignItems="center" gap="s">
                                     <Layout.Stack
                                         inline
                                         direction="row"
                                         alignItems="center"
                                         gap="xxs">
-                                        <span class="text u-trim-1" data-private
-                                            >{attribute.key}</span>
+                                        <span class="text u-trim-1" data-private>
+                                            {#if attribute.key === '$id' || attribute.key === '$createdAt' || attribute.key === '$updatedAt'}
+                                                {attribute['name']}
+                                                {#if attribute.key === '$id'}
+                                                    <Badge
+                                                        size="xs"
+                                                        variant="secondary"
+                                                        content="Primary key" />
+                                                {/if}
+                                            {:else}
+                                                {attribute.key}
+                                            {/if}
+                                        </span>
                                         {#if isString(attribute) && attribute.encrypt}
                                             <Tooltip>
                                                 <Icon
@@ -258,7 +305,7 @@
                         alignItems="center"
                         justifyContent="space-between">
                         <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
-                            {$attributes.length} columns
+                            {updatedAttributes.length} columns
                         </Typography.Text>
                     </Layout.Stack>
                 </svelte:fragment>
