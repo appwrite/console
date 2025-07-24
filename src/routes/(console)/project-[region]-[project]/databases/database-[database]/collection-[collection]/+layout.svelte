@@ -19,7 +19,7 @@
     import { Dependencies } from '$lib/constants';
     import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { collection } from './store';
+    import { collection, databaseColumnSheetOptions, databaseRowSheetOptions, showCreateAttributeSheet } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateAttribute from './createAttribute.svelte';
     import { writable } from 'svelte/store';
@@ -28,10 +28,16 @@
     import { database } from '../store';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { page } from '$app/state';
-    import CreateIndex from './indexes/createIndex.svelte';
     import { base } from '$app/paths';
     import { canWriteCollections } from '$lib/stores/roles';
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
+    import SideSheet from './layout/sidesheet.svelte';
+    import EditDocument from './editDocument.svelte';
+    import EditAttribute from './attributes/edit.svelte';
+
+    let editDocument: EditDocument;
+    let createAttribute: CreateAttribute;
+    let selectedOption: Option['name'] = 'String';
 
     onMount(() => {
         return realtime
@@ -202,10 +208,41 @@
 
 <slot />
 
-<!--{#if $createAttributeArgs.showCreate}-->
-<!--    <CreateAttribute {...$createAttributeArgs} />-->
-<!--{/if}-->
+<SideSheet
+    title="Insert column"
+    bind:show={$showCreateAttributeSheet}
+    submit={{
+        text: 'Insert',
+        onClick: async () => await createAttribute?.submit(),
+        disabled: !selectedOption
+    }}>
+    <CreateAttribute
+        showCreate={$showCreateAttributeSheet}
+        bind:selectedOption
+        bind:this={createAttribute} />
+</SideSheet>
 
-<!--{#if $showCreateIndex}-->
-<!--    <CreateIndex bind:showCreateIndex={$showCreateIndex} />-->
-<!--{/if}-->
+<SideSheet
+    title={$databaseColumnSheetOptions.title}
+    bind:show={$databaseColumnSheetOptions.show}
+    submit={{
+        text: 'Update',
+        disabled: $databaseColumnSheetOptions.disableSubmit,
+        onClick: () => $databaseColumnSheetOptions.submitAction()
+    }}>
+    <EditAttribute
+        isModal={false}
+        showEdit={$databaseColumnSheetOptions.isEdit}
+        selectedAttribute={$databaseColumnSheetOptions.column} />
+</SideSheet>
+
+<SideSheet
+    title={$databaseRowSheetOptions.title}
+    bind:show={$databaseRowSheetOptions.show}
+    submit={{
+        text: 'Update',
+        disabled: editDocument?.isDisabled(),
+        onClick: async () => await editDocument?.update()
+    }}>
+    <EditDocument bind:document={$databaseRowSheetOptions.document} bind:this={editDocument} />
+</SideSheet>

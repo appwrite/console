@@ -260,7 +260,7 @@
         position: fixed;
 
         @media (min-width: 1024px) {
-            left: 55%; /* TODO: if both sidebars open, use 55%, else 50% */
+            left: 52.5%;
             bottom: 40%;
         }
     }

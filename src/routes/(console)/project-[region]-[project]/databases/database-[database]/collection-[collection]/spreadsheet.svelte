@@ -10,7 +10,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import { type Models, Query } from '@appwrite.io/console';
-    import { type ComponentType, onMount } from 'svelte';
+    import { type ComponentType, onDestroy, onMount } from 'svelte';
     import type { PageData } from './$types';
     import {
         isRelationship,
@@ -58,9 +58,6 @@
         IconViewList
     } from '@appwrite.io/pink-icons-svelte';
     import SheetOptions from './sheetOptions.svelte';
-    import EditDocument from './editDocument.svelte';
-    import SideSheet from './layout/sidesheet.svelte';
-    import EditAttribute from './attributes/edit.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import SpreadsheetContainer from './layout/spreadsheet.svelte';
     import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
@@ -79,13 +76,14 @@
     let showRelationships = false;
     let relationshipData: Partial<Models.Document>[];
     let selectedRelationship: Models.AttributeRelationship = null;
-    let editDocument: EditDocument;
 
     $: documents = data.documents;
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
     });
+
+    onDestroy(() => ($showCreateAttributeSheet = false));
 
     function formatArray(array: unknown[]) {
         if (array.length === 0) return '[ ]';
@@ -672,31 +670,6 @@
         is irreversible.
     </p>
 </Confirm>
-
-<SideSheet
-    title={$databaseColumnSheetOptions.title}
-    bind:show={$databaseColumnSheetOptions.show}
-    submit={{
-        text: 'Update',
-        disabled: $databaseColumnSheetOptions.disableSubmit,
-        onClick: () => $databaseColumnSheetOptions.submitAction()
-    }}>
-    <EditAttribute
-        isModal={false}
-        showEdit={$databaseColumnSheetOptions.isEdit}
-        selectedAttribute={$databaseColumnSheetOptions.column} />
-</SideSheet>
-
-<SideSheet
-    title={$databaseRowSheetOptions.title}
-    bind:show={$databaseRowSheetOptions.show}
-    submit={{
-        text: 'Update',
-        disabled: editDocument?.isDisabled(),
-        onClick: async () => await editDocument?.update()
-    }}>
-    <EditDocument bind:document={$databaseRowSheetOptions.document} bind:this={editDocument} />
-</SideSheet>
 
 <style lang="scss">
     .floating-action-bar {

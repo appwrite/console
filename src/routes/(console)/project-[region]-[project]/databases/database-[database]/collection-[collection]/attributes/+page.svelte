@@ -34,7 +34,7 @@
         IconLockClosed,
         IconFingerPrint
     } from '@appwrite.io/pink-icons-svelte';
-    import type { ComponentProps } from 'svelte';
+    import { type ComponentProps, onDestroy } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import CsvDisabled from '../csvDisabled.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -50,26 +50,38 @@
                 key: '$id',
                 type: 'string',
                 required: true,
-                name: 'ID'
+                name: 'ID',
+                selectable: false,
+                system: true
             } as Models.AttributeString & {
                 name: string;
+                selectable: boolean;
+                system: boolean;
             },
             ...$attributes,
             {
                 key: '$createdAt',
                 type: 'datetime',
                 required: true,
-                name: 'createdAt'
+                name: 'createdAt',
+                selectable: false,
+                system: true
             } as Models.AttributeDatetime & {
                 name: string;
+                selectable: boolean;
+                system: boolean;
             },
             {
                 key: '$updatedAt',
                 type: 'datetime',
                 required: true,
-                name: 'updatedAt'
+                name: 'updatedAt',
+                selectable: false,
+                system: true
             } as Models.AttributeDatetime & {
                 name: string;
+                selectable: boolean;
+                system: boolean;
             }
         ];
     });
@@ -109,6 +121,8 @@
     const emptyCellsCount = $derived(
         $attributes.length >= emptyCellsLimit ? 0 : emptyCellsLimit - $attributes.length
     );
+
+    onDestroy(() => ($showCreateAttributeSheet = false));
 </script>
 
 <Container expanded style="background: var(--bgcolor-neutral-primary)">
@@ -118,7 +132,9 @@
                 size="s"
                 secondary
                 disabled={$isCsvImportInProgress}
-                on:click={() => ($showCreateAttributeSheet = true)}
+                on:click={() => {
+                    $showCreateAttributeSheet = true;
+                }}
                 event="create_attribute">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create column
@@ -155,7 +171,7 @@
                     {@const option = attributeOptions.find(
                         (option) => option.type === attribute.type
                     )}
-                    <Spreadsheet.Row.Base {root}>
+                    <Spreadsheet.Row.Base {root} select={attribute['system'] ? 'disabled' : true}>
                         <Spreadsheet.Cell column="key" {root} isEditable={false}>
                             <Layout.Stack direction="row" alignItems="center">
                                 {#if isRelationship(attribute)}
@@ -255,16 +271,18 @@
                                         <Icon icon={IconDotsHorizontal} size="s" />
                                     </Button>
                                     <ActionMenu.Root slot="tooltip" let:toggle>
-                                        <ActionMenu.Item.Button
-                                            leadingIcon={IconPencil}
-                                            on:click={(event) => {
-                                                toggle(event);
-                                                showEdit = true;
-                                                selectedAttribute = attribute;
-                                                showDropdown[index] = false;
-                                            }}>
-                                            Update
-                                        </ActionMenu.Item.Button>
+                                        {#if !attribute['system']}
+                                            <ActionMenu.Item.Button
+                                                leadingIcon={IconPencil}
+                                                on:click={(event) => {
+                                                    toggle(event);
+                                                    showEdit = true;
+                                                    selectedAttribute = attribute;
+                                                    showDropdown[index] = false;
+                                                }}>
+                                                Update
+                                            </ActionMenu.Item.Button>
+                                        {/if}
                                         {#if !isRelationship(attribute)}
                                             <ActionMenu.Item.Button
                                                 leadingIcon={IconPlus}
@@ -277,7 +295,7 @@
                                                 Create index
                                             </ActionMenu.Item.Button>
                                         {/if}
-                                        {#if attribute.status !== 'processing'}
+                                        {#if attribute.status !== 'processing' && !attribute['system']}
                                             <ActionMenu.Item.Button
                                                 status="danger"
                                                 leadingIcon={IconTrash}

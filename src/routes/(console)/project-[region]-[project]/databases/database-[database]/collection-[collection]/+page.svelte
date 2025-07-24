@@ -28,16 +28,12 @@
     import type { Models } from '@appwrite.io/console';
     import EmptySheet from './layout/emptySheet.svelte';
     import CreateRecord from './createRecord.svelte';
-    import SideSheet from './layout/sidesheet.svelte';
-    import CreateAttribute from './createAttribute.svelte';
-    import { type Option } from './attributes/store';
+    import { onDestroy } from 'svelte';
 
     export let data: PageData;
 
     let showImportCSV = false;
     const filterColumns = writable<Column[]>([]);
-    let createAttribute: CreateAttribute;
-    let selectedOption: Option['name'] = 'String';
 
     $: selected = preferences.getCustomCollectionColumns(page.params.collection);
 
@@ -86,6 +82,8 @@
             $isCsvImportInProgress = false;
         }
     }
+
+    onDestroy(() => ($showCreateAttributeSheet = false));
 </script>
 
 {#key page.params.collection}
@@ -219,17 +217,3 @@
     collection={$collection}
     bind:showSheet={$showRecordsCreateSheet.show}
     bind:existingData={$showRecordsCreateSheet.document} />
-
-<SideSheet
-    title="Insert column"
-    bind:show={$showCreateAttributeSheet}
-    submit={{
-        text: 'Insert',
-        onClick: async () => await createAttribute?.submit(),
-        disabled: !selectedOption
-    }}>
-    <CreateAttribute
-        showCreate={$showCreateAttributeSheet}
-        bind:selectedOption
-        bind:this={createAttribute} />
-</SideSheet>

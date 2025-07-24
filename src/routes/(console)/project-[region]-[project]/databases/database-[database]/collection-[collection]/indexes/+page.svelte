@@ -24,7 +24,7 @@
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type ComponentProps, onMount } from 'svelte';
+    import { type ComponentProps, onDestroy, onMount } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import EmptySheet from '../layout/emptySheet.svelte';
     import SpreadsheetContainer from '../layout/spreadsheet.svelte';
@@ -80,6 +80,8 @@
             columns = columns.filter((col) => col.id !== 'lengths');
         }
     });
+
+    onDestroy(() => ($showCreateAttributeSheet = false));
 </script>
 
 <Container expanded style="background: var(--bgcolor-neutral-primary)">
