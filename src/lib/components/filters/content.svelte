@@ -24,7 +24,8 @@
         operatorKey = $bindable(null),
         singleCondition = false
     }: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // We cast to any to not cause type errors in the input components
+        /* eslint  @typescript-eslint/no-explicit-any: 'off' */
         value?: any;
         columns: Writable<Column[]>;
         columnId?: string | null;
