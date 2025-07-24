@@ -8,7 +8,7 @@
         InputSelectCheckbox,
         InputDateTime
     } from '$lib/elements/forms';
-    import { onMount } from 'svelte';
+    import { onMount, createEventDispatcher } from 'svelte';
     import { operators, addFilter, queries, tags } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
@@ -16,26 +16,61 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
-    // We cast to any to not cause type errors in the input components
-    /* eslint  @typescript-eslint/no-explicit-any: 'off' */
-    export let value: any = null;
-    export let columns: Writable<Column[]>;
-    export let columnId: string | null = null;
-    export let arrayValues: string[] = [];
-    export let operatorKey: string | null = null;
-    export let singleCondition = false;
+    let {
+        value = $bindable(null),
+        columns,
+        columnId = $bindable(null),
+        arrayValues = $bindable([]),
+        operatorKey = $bindable(null),
+        singleCondition = false
+    }: {
+        value?: string | number | string[] | null;
+        columns: Writable<Column[]>;
+        columnId?: string | null;
+        arrayValues?: string[];
+        operatorKey?: string | null;
+        singleCondition?: boolean;
+    } = $props();
 
-    $: column = $columns.find((c) => c.id === columnId) as Column;
+    let columnsArray = $derived($columns);
+    let column = $derived(columnsArray.find((c) => c.id === columnId));
 
-    $: operatorsForColumn = Object.entries(operators)
-        .filter(([, v]) => v.types.includes(column?.type))
-        .map(([k]) => ({
-            label: k,
-            value: k
+    let operatorsForColumn = $derived(() => {
+        if (!column?.type) return [];
+        return Object.entries(operators)
+            .filter(([, v]) => v.types.includes(column.type))
+            .map(([k]) => ({ label: k, value: k }));
+    });
+
+    let operator = $derived(operatorKey ? operators[operatorKey] : null);
+    let isDisabled = $derived(!operator);
+    let appliedTags = $derived($tags);
+
+    let columnOptions = $derived(() =>
+        columnsArray
+            .filter((c) => c.filter !== false)
+            .map((c) => ({
+                label: c.title,
+                value: c.id
+            }))
+    );
+
+    let enumOptions = $derived(() => {
+        if (!column?.elements) return [];
+        return column.elements.map((e) => ({
+            label: e?.label ?? e,
+            value: e?.value ?? e
         }));
+    });
 
-    $: operator = operatorKey ? operators[operatorKey] : null;
-    $: isDisabled = !operator;
+    let enumOptionsWithChecked = $derived(() => {
+        if (!column?.elements) return [];
+        return column.elements.map((e) => ({
+            label: e?.label ?? e,
+            value: e?.value ?? e,
+            checked: arrayValues.includes(e?.value ?? e)
+        }));
+    });
 
     onMount(() => {
         value = column?.array ? [] : null;
@@ -45,12 +80,15 @@
         }
     });
 
+    const dispatch = createEventDispatcher<{ clear: void; apply: { applied: number } }>();
+
     function addFilterAndReset() {
-        addFilter($columns, columnId, operatorKey, value, arrayValues);
+        addFilter(columnsArray, columnId, operatorKey, value, arrayValues);
         columnId = null;
         operatorKey = null;
         value = null;
         arrayValues = [];
+        dispatch('apply', { applied: appliedTags.length });
         if (singleCondition) {
             queries.apply();
         }
@@ -62,18 +100,13 @@
         <Layout.Stack gap="s" direction="row" alignItems="flex-start">
             <InputSelect
                 id="column"
-                options={$columns
-                    .filter((c) => c.filter !== false)
-                    .map((c) => ({
-                        label: c.title,
-                        value: c.id
-                    }))}
+                options={columnOptions()}
                 placeholder="Select column"
                 bind:value={columnId} />
             <InputSelect
                 id="operator"
                 disabled={!column}
-                options={operatorsForColumn}
+                options={operatorsForColumn()}
                 placeholder="Select operator"
                 bind:value={operatorKey} />
         </Layout.Stack>
@@ -84,11 +117,7 @@
                         name="value"
                         bind:tags={arrayValues}
                         placeholder="Select value"
-                        options={column?.elements?.map((e) => ({
-                            label: e?.label ?? e,
-                            value: e?.value ?? e,
-                            checked: arrayValues.includes(e?.value ?? e)
-                        }))}>
+                        options={enumOptionsWithChecked()}>
                     </InputSelectCheckbox>
                 {:else}
                     <InputTags
@@ -102,14 +131,14 @@
                     {#if column.format === 'enum'}
                         <InputSelect
                             id="value"
-                            bind:value
+                            bind:value={value as string}
                             placeholder="Select value"
-                            options={column?.elements?.map((e) => ({
-                                label: e?.label ?? e,
-                                value: e?.value ?? e
-                            }))} />
+                            options={enumOptions()} />
                     {:else if column.type === 'integer' || column.type === 'double'}
-                        <InputNumber id="value" bind:value placeholder="Enter value" />
+                        <InputNumber
+                            id="value"
+                            bind:value={value as number}
+                            placeholder="Enter value" />
                     {:else if column.type === 'boolean'}
                         <InputSelect
                             id="value"
@@ -118,14 +147,17 @@
                             options={[
                                 { label: 'True', value: true },
                                 { label: 'False', value: false }
-                            ].filter(Boolean)}
-                            bind:value />
+                            ]}
+                            bind:value={value as unknown as boolean} />
                     {:else if column.type === 'datetime'}
                         {#key value}
-                            <InputDateTime id="value" bind:value step={60} />
+                            <InputDateTime id="value" bind:value={value as string} step={60} />
                         {/key}
                     {:else}
-                        <InputText id="value" bind:value placeholder="Enter value" />
+                        <InputText
+                            id="value"
+                            bind:value={value as string}
+                            placeholder="Enter value" />
                     {/if}
                 </ul>
             {/if}
@@ -138,10 +170,10 @@
         {/if}
     </form>
 
-    {#if !singleCondition && $tags.length > 0}
+    {#if !singleCondition && appliedTags.length > 0}
         <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
             <TagList
-                tags={$tags}
+                tags={appliedTags}
                 on:remove={(e) => {
                     queries.removeFilter(e.detail);
                     queries.apply();
