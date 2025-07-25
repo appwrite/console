@@ -26,6 +26,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import RetryDomainModal from '$routes/(console)/organization-[organization]/domains/retryDomainModal.svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     export let data;
 
@@ -34,6 +36,10 @@
     let showPresetModal = false;
     let showImportModal = false;
     let selectedPreset = '';
+
+    async function reloadDomainData() {
+        await Promise.all([invalidate(Dependencies.DOMAIN), invalidate(Dependencies.DOMAINS)]);
+    }
 
     async function downloadRecords() {
         try {
@@ -149,5 +155,8 @@
 {/if}
 
 {#if showRetry}
-    <RetryDomainModal bind:show={showRetry} selectedDomain={data.domain} />
+    <RetryDomainModal
+        bind:show={showRetry}
+        selectedDomain={data.domain}
+        on:verified={reloadDomainData} />
 {/if}
