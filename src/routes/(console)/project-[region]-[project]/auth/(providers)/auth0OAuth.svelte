@@ -56,18 +56,21 @@
         label="Client ID"
         autofocus={true}
         placeholder="Enter ID"
-        bind:value={appId} />
+        bind:value={appId}
+        required />
     <InputPassword
         id="secret"
         label="Client Secret"
         placeholder="Enter Client Secret"
         minlength={0}
-        bind:value={clientSecret} />
+        bind:value={clientSecret}
+        required />
     <InputText
         id="domain"
         label="Auth0 Domain"
-        placeholder="Your Auth0 domain"
-        bind:value={auth0Domain} />
+        placeholder="your-tenant.auth0.com"
+        bind:value={auth0Domain}
+        required />
     <Alert.Inline status="info">
         To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
     </Alert.Inline>
@@ -77,10 +80,12 @@
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
-            disabled={(secret === provider.secret &&
-                enabled === provider.enabled &&
-                appId === provider.appId) ||
-                !(appId && clientSecret && auth0Domain)}
+            disabled={!appId ||
+                !clientSecret ||
+                !auth0Domain ||
+                (secret === provider.secret &&
+                    enabled === provider.enabled &&
+                    appId === provider.appId)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>
