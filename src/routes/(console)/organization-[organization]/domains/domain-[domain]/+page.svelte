@@ -26,6 +26,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import RetryDomainModal from '$routes/(console)/organization-[organization]/domains/retryDomainModal.svelte';
+    import { invalidateAll } from '$app/navigation';
 
     export let data;
 
@@ -36,7 +37,6 @@
     let selectedPreset = '';
 
     async function reloadDomainData() {
-        const { invalidateAll } = await import('$app/navigation');
         await invalidateAll();
     }
 
