@@ -45,6 +45,7 @@
         JavascriptFrameworkIcon
     } from './components/index';
     import { extendedHostnameRegex } from '$lib/helpers/string';
+    import { project } from "../../store";
 
     export let key;
 
@@ -57,6 +58,7 @@
     const projectId = page.params.project;
 
     const updateConfigCode = (prefix = '') => `${prefix}APPWRITE_PROJECT_ID = "${projectId}"
+${prefix}APPWRITE_PROJECT_NAME= "${$project.name}"
 ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
     type FrameworkType = {
