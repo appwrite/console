@@ -344,10 +344,9 @@
                     </Table.Row.Base>
                 {/each}
             </Table.Root>
-            <Layout.Stack gap="m" direction="column">
+            <Layout.Stack gap="l" direction="column">
                 <Alert.Inline status="info"
                     >To change the selection edit the relationship settings.</Alert.Inline>
-
                 <ul>
                     <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
                         Delete document from <span data-private>{$collection.name}</span>
