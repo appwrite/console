@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, BoxAvatar, Alert } from '$lib/components';
+    import { CardGrid, BoxAvatar } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
@@ -14,6 +14,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { collection } from '../../store';
     import { page } from '$app/stores';
+    import { Alert } from '@appwrite.io/pink-svelte';
 
     let showDelete = false;
     let permissions = $doc?.$permissions;
@@ -85,27 +86,23 @@
         <svelte:fragment slot="aside">
             {#if $collection.documentSecurity}
                 {#if showPermissionAlert}
-                    <Alert type="info" dismissible on:dismiss={() => (showPermissionAlert = false)}>
-                        <svelte:fragment slot="title">Document security is enabled</svelte:fragment>
-                        <p class="text">
-                            Users will be able to access this document if they have been granted <b
-                                >either document or collection permissions.
-                            </b>
-                        </p>
-                    </Alert>
+                    <Alert.Inline
+                        status="info"
+                        title="Document security is enabled"
+                        dismissible
+                        on:dismiss={() => (showPermissionAlert = false)}>
+                        Users will be able to access this document if they have been granted <b
+                            >either document or collection permissions.</b>
+                    </Alert.Inline>
                 {/if}
                 {#if permissions}
                     <Permissions bind:permissions />
                 {/if}
             {:else}
-                <Alert type="info">
-                    <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
-                    <p class="text">
-                        If you want to assign document permissions. Go to Collection settings and
-                        enable document security. Otherwise, only collection permissions will be
-                        used.
-                    </p>
-                </Alert>
+                <Alert.Inline status="info" title="Document security is disabled">
+                    If you want to assign document permissions. Go to Collection settings and enable
+                    document security. Otherwise, only collection permissions will be used.
+                </Alert.Inline>
             {/if}
         </svelte:fragment>
 
