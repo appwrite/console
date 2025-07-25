@@ -10,6 +10,7 @@
     import { Link } from '$lib/elements';
     import { consoleVariables } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
+    import { createEventDispatcher } from 'svelte';
 
     let {
         show = $bindable(),
@@ -18,6 +19,8 @@
         show: boolean;
         selectedDomain: Models.Domain;
     } = $props();
+
+    const dispatch = createEventDispatcher();
 
     const nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',') ?? [
         'ns1.appwrite.io',
@@ -35,6 +38,7 @@
                     type: 'success',
                     message: `${selectedDomain.domain} has been verified`
                 });
+                dispatch('verified');
             } else {
                 error =
                     'Domain verification failed. Please check your domain settings or try again later';

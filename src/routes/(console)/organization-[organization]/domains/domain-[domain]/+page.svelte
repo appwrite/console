@@ -35,6 +35,11 @@
     let showImportModal = false;
     let selectedPreset = '';
 
+    async function reloadDomainData() {
+        const { invalidateAll } = await import('$app/navigation');
+        await invalidateAll();
+    }
+
     async function downloadRecords() {
         try {
             const zone = await sdk.forConsole.domains.getZone(data.domain.$id);
@@ -149,5 +154,8 @@
 {/if}
 
 {#if showRetry}
-    <RetryDomainModal bind:show={showRetry} selectedDomain={data.domain} />
+    <RetryDomainModal
+        bind:show={showRetry}
+        selectedDomain={data.domain}
+        on:verified={reloadDomainData} />
 {/if}
