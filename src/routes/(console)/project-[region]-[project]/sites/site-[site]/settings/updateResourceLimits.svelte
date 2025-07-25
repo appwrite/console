@@ -19,8 +19,6 @@
     let specification = site.specification;
     let originalSpecification = site.specification;
 
-    $: originalSpecification = site.specification;
-
     async function updateLogging() {
         try {
             await sdk
