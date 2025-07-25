@@ -16,17 +16,17 @@
     let show = false;
 
     async function loadBranches() {
+        const repo = await sdk
+            .forProject(page.params.region, page.params.project)
+            .vcs.getRepository(installationId, repositoryId);
+
+        branch = repo.defaultBranch ?? 'main';
+
         const { branches } = await sdk
             .forProject(page.params.region, page.params.project)
             .vcs.listRepositoryBranches(installationId, repositoryId);
-        const sorted = sortBranches(branches);
-        branch = sorted[0]?.name ?? null;
 
-        if (!branch) {
-            branch = 'main';
-        }
-
-        return sorted;
+        return sortBranches(branches);
     }
 </script>
 
