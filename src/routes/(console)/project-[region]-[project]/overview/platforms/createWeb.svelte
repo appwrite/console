@@ -132,7 +132,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
         },
         {
             key: 'js',
-            label: 'Javascript',
+            label: 'JavaScript',
             icon: JavascriptFrameworkIcon,
             smallIcon: IconJs,
             portNumber: 5173,
