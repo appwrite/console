@@ -7,8 +7,9 @@
     <Layout.Stack height="calc(182 / 16 * 1rem)" justifyContent="space-between">
         <Layout.Stack direction="row">
             <Layout.Stack gap="xs">
-                <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary"
-                    ><slot name="eyebrow" /></Typography.Caption>
+                <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                    <slot name="eyebrow" />
+                </Typography.Caption>
                 <Typography.Title size="s" truncate><slot name="title" /></Typography.Title>
                 <div>
                     <slot name="subtitle" />
