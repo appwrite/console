@@ -26,6 +26,7 @@
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
+    import { project } from '../../store';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -37,9 +38,11 @@
         '\ngit clone https://github.com/appwrite/starter-for-flutter\ncd starter-for-flutter\n';
 
     const updateConfigCode = isCloud
-        ? `static const String APPWRITE_PROJECT_ID = "${projectId}"`
-        : `static const String APPWRITE_PROJECT_ID = "${projectId}"
-static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
+        ? `APPWRITE_PROJECT_ID = "${projectId}"
+APPWRITE_PROJECT_NAME= "${$project.name}"`
+        : `APPWRITE_PROJECT_ID = "${projectId}"
+APPWRITE_PROJECT_NAME= "${$project.name}"
+APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
 
     export let platform: PlatformType = PlatformType.Flutterandroid;
@@ -276,7 +279,7 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
                     </div>
 
                     <Typography.Text variant="m-500"
-                        >2. Open the file <InlineCode size="s" code="lib/constants/appwrite.dart" />
+                        >2. Copy the file <InlineCode size="s" code=".env.example" />, rename it to <InlineCode size="s" code=".env" />
                         and update the configuration settings.</Typography.Text>
 
                     <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
