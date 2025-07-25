@@ -86,8 +86,21 @@
 
     function handleSelect(action: HeaderCellAction | RowCellAction, hide: () => void) {
         hide();
-        onSelect(action);
         $databaseColumnSheetOptions.column = column;
+
+        if (action === 'column-left') {
+            $databaseColumnSheetOptions.direction = {
+                neighbour: column?.key,
+                to: 'left'
+            };
+        } else if (action === 'column-right') {
+            $databaseColumnSheetOptions.direction = {
+                neighbour: column?.key,
+                to: 'right'
+            };
+        }
+
+        onSelect(action);
     }
 
     function shouldShow(item: MenuItem) {

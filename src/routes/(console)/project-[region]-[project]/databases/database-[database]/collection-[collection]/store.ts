@@ -27,6 +27,10 @@ export const attributes = derived(
 export const indexes = derived(page, ($page) => $page.data.collection.indexes as Models.Index[]);
 
 export const columns = writable<Column[]>([]);
+export const columnsOrder = writable<string[]>([]);
+export const columnsWidth = writable<{
+    [columnId: string]: { fixed: number | { min: number }; resized: number };
+}>();
 
 export const isCsvImportInProgress = writable(false);
 
@@ -37,6 +41,7 @@ type DatabaseSheetOptions = {
     isEdit?: boolean;
     disableSubmit?: boolean;
     submitAction?: () => Promise<void>;
+    direction?: ColumnDirection;
 };
 
 export const databaseColumnSheetOptions = writable<DatabaseSheetOptions>({
@@ -45,7 +50,8 @@ export const databaseColumnSheetOptions = writable<DatabaseSheetOptions>({
     column: null,
     isEdit: false,
     disableSubmit: false,
-    submitAction: null
+    submitAction: null,
+    direction: null
 });
 
 export const databaseRowSheetOptions = writable<
@@ -68,7 +74,30 @@ export const sortState = writable({
     direction: 'default' as SortDirection
 });
 
-export const showCreateAttributeSheet = writable(false);
+export type ColumnDirection = {
+    neighbour: string;
+    to: 'left' | 'right';
+};
+
+export type CreateAttribute = {
+    show: boolean;
+    column?: string;
+    title: string;
+    direction?: ColumnDirection;
+    onDone?: () => void;
+    columns?: Column[];
+    columnsOrder?: string[];
+};
+
+export const showCreateAttributeSheet = writable<CreateAttribute>({
+    show: false,
+    column: null,
+    title: 'Insert column',
+    direction: null,
+    onDone: null,
+    columns: null,
+    columnsOrder: null
+});
 
 export function reorderItems<T extends { id: string } | { key: string }>(
     items: T[],

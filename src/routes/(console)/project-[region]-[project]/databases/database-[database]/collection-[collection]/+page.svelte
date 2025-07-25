@@ -83,7 +83,7 @@
         }
     }
 
-    onDestroy(() => ($showCreateAttributeSheet = false));
+    onDestroy(() => ($showCreateAttributeSheet.show = false));
 </script>
 
 {#key page.params.collection}
@@ -174,6 +174,7 @@
             {:else}
                 <EmptySheet
                     mode="records"
+                    customColumns={$columns}
                     showActions={$canWriteDocuments}
                     actions={{
                         primary: {
@@ -192,7 +193,7 @@
                     primary: {
                         text: 'Create column',
                         onClick: async () => {
-                            $showCreateAttributeSheet = true;
+                            $showCreateAttributeSheet.show = true;
                         }
                     }
                 }} />

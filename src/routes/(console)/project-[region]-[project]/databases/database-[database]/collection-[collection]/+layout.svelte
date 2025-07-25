@@ -21,8 +21,11 @@
     import { onMount } from 'svelte';
     import {
         collection,
+        columns,
+        columnsOrder,
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
+        reorderItems,
         showCreateAttributeSheet
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
@@ -214,17 +217,26 @@
 <slot />
 
 <SideSheet
-    title="Insert column"
-    bind:show={$showCreateAttributeSheet}
+    title={$showCreateAttributeSheet.title}
+    bind:show={$showCreateAttributeSheet.show}
     submit={{
         text: 'Insert',
-        onClick: async () => await createAttribute?.submit(),
+        onClick: async () => {
+            await createAttribute?.submit();
+        },
         disabled: !selectedOption
     }}>
     <CreateAttribute
-        showCreate={$showCreateAttributeSheet}
         bind:selectedOption
-        bind:this={createAttribute} />
+        bind:this={createAttribute}
+        showCreate={$showCreateAttributeSheet.show}
+        direction={$showCreateAttributeSheet.direction}
+        columns={$showCreateAttributeSheet.columns}
+        columnsOrder={$showCreateAttributeSheet.columnsOrder}
+        onColumnsReorder={(newOrder) => {
+            columnsOrder.set(newOrder);
+            columns.set(reorderItems($columns, $columnsOrder));
+        }} />
 </SideSheet>
 
 <SideSheet

@@ -139,7 +139,7 @@
         columnsOrder = preferences.getColumnOrder(collectionId);
     });
 
-    onDestroy(() => ($showCreateAttributeSheet = false));
+    onDestroy(() => ($showCreateAttributeSheet.show = false));
 </script>
 
 <Container expanded style="background: var(--bgcolor-neutral-primary)">
@@ -150,7 +150,7 @@
                 secondary
                 disabled={$isCsvImportInProgress}
                 on:click={() => {
-                    $showCreateAttributeSheet = true;
+                    $showCreateAttributeSheet.show = true;
                 }}
                 event="create_attribute">
                 <Icon icon={IconPlus} slot="start" size="s" />
@@ -352,7 +352,7 @@
             showActions={$canWriteCollections}
             actions={{
                 primary: {
-                    onClick: () => ($showCreateAttributeSheet = true)
+                    onClick: () => ($showCreateAttributeSheet.show = true)
                 }
             }} />
     {/if}

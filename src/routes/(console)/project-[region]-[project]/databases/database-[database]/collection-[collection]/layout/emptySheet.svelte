@@ -1,5 +1,6 @@
 <script lang="ts">
     import {
+        Badge,
         Button,
         Icon,
         Layout,
@@ -24,6 +25,7 @@
 
     export let mode: Mode;
     export let showActions: boolean = true;
+    export let customColumns: Column[] = [];
     export let title: string | undefined = undefined;
     export let actions:
         | {
@@ -41,13 +43,14 @@
                 width: 180,
                 draggable: false,
                 resizable: false,
+                isPrimary: true,
                 icon: IconFingerPrint
             },
             ...middle,
             {
                 id: 'actions',
                 title: '',
-                width: 555 * 1.5,
+                width: customColumns.length ? 555 : 555 * 1.5,
                 draggable: false,
                 resizable: false,
                 type: 'string',
@@ -65,6 +68,13 @@
 
     const columnsMap: ColumnsMap = {
         records: makeColumns(
+            // TODO: improve.
+            ...customColumns.map((col) => {
+                col.width = { min: 180 };
+                col.draggable = false;
+                col.resizable = false;
+                return col;
+            }),
             {
                 id: '$createdAt',
                 title: 'Created',
@@ -84,6 +94,7 @@
                 icon: IconCalendar
             }
         ),
+        // TODO: fixed, 3 columns
         columns: makeColumns(
             {
                 id: 'indexed',
@@ -104,6 +115,7 @@
                 isAction: false
             }
         ),
+        // TODO: fixed, 3 columns
         indexes: makeColumns(
             {
                 id: 'type',
@@ -151,6 +163,11 @@
                             alignItems="center"
                             alignContent="center">
                             {column.title}
+
+                            {#if column.isPrimary}
+                                <Badge content="Primary key" size="xs" variant="secondary" />
+                            {/if}
+
                             <SortButton disabled column={column.id} />
                         </Layout.Stack>
                     {/if}
@@ -260,7 +277,7 @@
         position: fixed;
 
         @media (min-width: 1024px) {
-            left: 52.5%;
+            left: 50%;
             bottom: 40%;
         }
     }

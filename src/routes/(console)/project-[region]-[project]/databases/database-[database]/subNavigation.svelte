@@ -86,7 +86,8 @@
                     </Layout.Stack>
                 {/if}
 
-                <Layout.Stack gap="m" alignItems="center" direction="row">
+                <!-- TODO: refer designs for spacing and stuff -->
+                <Layout.Stack gap="xs" alignItems="center" direction="row">
                     <Icon icon={IconPlus} size="s" />
 
                     <Button

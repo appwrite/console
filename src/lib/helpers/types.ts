@@ -12,6 +12,7 @@ export type PinkColumn = {
               min: number;
           }
         | number;
+    minimumWidth?: number;
     hide?: boolean;
 };
 

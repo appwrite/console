@@ -25,7 +25,9 @@
         databaseRowSheetOptions,
         sortState,
         showCreateAttributeSheet,
-        reorderItems
+        reorderItems,
+        columnsOrder,
+        columnsWidth
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -63,6 +65,7 @@
     import SpreadsheetContainer from './layout/spreadsheet.svelte';
     import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
     import { copy } from '$lib/helpers/copy';
+    import { debounce } from '$lib/helpers/debounce';
 
     export let data: PageData;
     export let showRecordsCreateSheet: {
@@ -73,8 +76,6 @@
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
 
-    let columnsOrder = [];
-
     let displayNames = {};
     let showRelationships = false;
     let relationshipData: Partial<Models.Document>[];
@@ -84,18 +85,22 @@
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
-        columnsOrder = preferences.getColumnOrder(collectionId);
+        columnsOrder.set(preferences.getColumnOrder(collectionId));
+        columnsWidth.set(preferences.getColumnWidths(collectionId));
     });
 
-    onDestroy(() => ($showCreateAttributeSheet = false));
+    onDestroy(() => ($showCreateAttributeSheet.show = false));
 
-    function saveColumnsOrder(newOrder: string[]) {
-        preferences
-            .saveColumnOrder(data.organization.$id ?? data.project.teamId, collectionId, newOrder)
-            .then(() => {
-                columnsOrder = newOrder;
-                columns.set(reorderItems($columns, columnsOrder));
-            });
+    function saveColumnsOrder(newOrder: string[], update: boolean = true) {
+        if (update) {
+            columnsOrder.set(newOrder);
+        }
+
+        preferences.saveColumnOrder(
+            data.organization.$id ?? data.project.teamId,
+            collectionId,
+            newOrder
+        );
     }
 
     function formatArray(array: unknown[]) {
@@ -160,16 +165,28 @@
         }
     }
 
+    function getColumnWidth(
+        columnId: string,
+        defaultWidth: number | { min: number }
+    ): number | { min: number; max?: number } {
+        const savedWidth = $columnsWidth[columnId];
+        if (!savedWidth) return defaultWidth;
+
+        return savedWidth.resized;
+    }
+
     $: selected = preferences.getCustomCollectionColumns(page.params.collection);
 
-    $: {
+    const minimumWidth = 168;
+    $: if ($collection.attributes && $columnsOrder && $columnsWidth) {
         const baseColumns = $collection.attributes.map((attribute) => ({
             id: attribute.key,
             title: attribute.key,
             type: attribute.type as ColumnType,
             hide: !!selected?.includes(attribute.key),
             array: attribute?.array,
-            width: { min: 168 },
+            width: getColumnWidth(attribute.key, { min: minimumWidth }),
+            minimumWidth: minimumWidth,
             draggable: true,
             icon: getAppropriateIcon(attribute.type),
             format: 'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
@@ -180,7 +197,8 @@
             {
                 id: '$id',
                 title: 'ID',
-                width: 200,
+                width: getColumnWidth('$id', 200),
+                minimumWidth: 200,
                 draggable: false,
                 type: 'string',
                 icon: IconFingerPrint,
@@ -190,7 +208,8 @@
             {
                 id: '$createdAt',
                 title: 'createdAt',
-                width: { min: 200 },
+                width: getColumnWidth('$createdAt', { min: 200 }),
+                minimumWidth: 200,
                 draggable: true,
                 type: 'datetime',
                 icon: IconCalendar,
@@ -199,7 +218,8 @@
             {
                 id: '$updatedAt',
                 title: 'updatedAt',
-                width: { min: 200 },
+                width: getColumnWidth('$updatedAt', { min: 200 }),
+                minimumWidth: 200,
                 draggable: true,
                 type: 'datetime',
                 icon: IconCalendar,
@@ -208,21 +228,27 @@
             {
                 id: 'actions',
                 title: '',
-                width: 40,
+                width: getColumnWidth('actions', 40),
                 isAction: true,
                 draggable: false,
                 type: 'string',
+                resizable: false,
                 isEditable: false
             }
         ];
 
-        columns.set([
-            staticColumns[0],
-            ...baseColumns,
-            staticColumns[1],
-            staticColumns[2],
-            staticColumns[3]
-        ]);
+        columns.set(
+            reorderItems(
+                [
+                    staticColumns[0],
+                    ...baseColumns,
+                    staticColumns[1],
+                    staticColumns[2],
+                    staticColumns[3]
+                ],
+                $columnsOrder
+            )
+        );
     }
 
     let loading = false;
@@ -274,6 +300,7 @@
 
     async function handleColumnDelete() {
         showColumnDelete = false;
+
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
@@ -283,12 +310,11 @@
                     $databaseColumnSheetOptions.column.key
                 );
 
-            if (columnsOrder.includes($databaseColumnSheetOptions.column.key)) {
-                const updatedOrder = columnsOrder.filter(
+            if ($columnsOrder.includes($databaseColumnSheetOptions.column.key)) {
+                const updatedOrder = $columnsOrder.filter(
                     (id) => id !== $databaseColumnSheetOptions.column.key
                 );
-                saveColumnsOrder(updatedOrder);
-                columnsOrder = updatedOrder;
+                saveColumnsOrder(updatedOrder, false);
             }
 
             trackEvent(Submit.AttributeDelete);
@@ -343,15 +369,18 @@
             }
 
             if (action === 'column-left' || action === 'column-right') {
-                $databaseColumnSheetOptions.show = true;
-                $databaseColumnSheetOptions.title = 'New column';
+                const { to, neighbour } = $databaseColumnSheetOptions.direction;
+
+                $showCreateAttributeSheet.show = true;
+                $showCreateAttributeSheet.title = `Insert column to the ${to} of ${neighbour}`;
+                $showCreateAttributeSheet.direction = $databaseColumnSheetOptions.direction;
+                $showCreateAttributeSheet.columns = $columns;
+                $showCreateAttributeSheet.columnsOrder = $columnsOrder;
             }
 
             if (action === 'delete') {
                 showColumnDelete = true;
             }
-
-            $databaseColumnSheetOptions.column = null;
         } else if (type === 'row') {
             if (action === 'update') {
                 $databaseRowSheetOptions.show = true;
@@ -393,6 +422,18 @@
         data.documents.documents.length >= emptyCellsLimit
             ? 0
             : emptyCellsLimit - data.documents.documents.length;
+
+    const saveColumnsWidth = debounce((column: { columnId: string; newWidth: number }) => {
+        const fixedWidth =
+            $columns.find((col) => col.id === column.columnId)?.width ?? column.newWidth;
+
+        preferences.saveColumnWidths(data.organization.$id ?? data.project.teamId, collectionId, {
+            [column.columnId]: {
+                fixed: fixedWidth,
+                resized: Math.ceil(column.newWidth)
+            }
+        });
+    }, 1000);
 </script>
 
 <SpreadsheetContainer>
@@ -407,6 +448,9 @@
         bottomActionClick={() => (showRecordsCreateSheet.show = true)}
         on:columnsSwap={(order) => {
             saveColumnsOrder(order.detail);
+        }}
+        on:columnsResize={(resize) => {
+            saveColumnsWidth(resize.detail);
         }}>
         <svelte:fragment slot="header" let:root>
             {#each $columns as column (column.id)}
@@ -415,7 +459,7 @@
                         <Button.Button
                             icon
                             variant="extra-compact"
-                            on:click={() => ($showCreateAttributeSheet = true)}>
+                            on:click={() => ($showCreateAttributeSheet.show = true)}>
                             <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                         </Button.Button>
                     </Spreadsheet.Header.Cell>

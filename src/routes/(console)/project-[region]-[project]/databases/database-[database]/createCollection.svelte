@@ -92,7 +92,6 @@
         on:input={() => {
             if (!touchedId) {
                 touchedId = true;
-                console.log(touchedId);
             }
         }} />
 

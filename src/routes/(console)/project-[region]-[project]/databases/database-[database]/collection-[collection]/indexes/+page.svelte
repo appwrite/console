@@ -81,7 +81,7 @@
         }
     });
 
-    onDestroy(() => ($showCreateAttributeSheet = false));
+    onDestroy(() => ($showCreateAttributeSheet.show = false));
 </script>
 
 <Container expanded style="background: var(--bgcolor-neutral-primary)">
@@ -202,7 +202,7 @@
                 primary: {
                     text: 'Create columns',
                     onClick: async () => {
-                        $showCreateAttributeSheet = true;
+                        $showCreateAttributeSheet.show = true;
                     }
                 }
             }} />

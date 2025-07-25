@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import type { Attributes } from './store';
+    import { type Attributes, type ColumnDirection } from './store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Layout } from '@appwrite.io/pink-svelte';
@@ -8,13 +8,25 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { option, attributeOptions, type Option } from './attributes/store';
+    import type { Column } from '$lib/helpers/types';
+    import { preferences } from '$lib/stores/preferences';
 
     let {
+        direction = null,
         showCreate = false,
-        selectedOption = $bindable('String')
+        columns = $bindable(null),
+        columnId = $bindable(null),
+        columnsOrder = $bindable(null),
+        selectedOption = $bindable('String'),
+        onColumnsReorder = null
     }: {
         showCreate: boolean;
+        columnId?: string;
+        columns?: Column[];
+        columnsOrder?: string[];
+        direction: ColumnDirection;
         selectedOption: Option['name'];
+        onColumnsReorder?: (newOrder: string[]) => void;
     } = $props();
 
     const databaseId = page.params.database;
@@ -31,9 +43,45 @@
         attributeOptions.find((option) => option.name === selectedOption).component
     );
 
+    function insertColumnInOrder() {
+        if (!direction || !direction.neighbour || !key) return;
+
+        const currentOrder = columnsOrder?.length
+            ? columnsOrder
+            : columns?.map((col) => col.id) || [];
+        const neighbourIndex = currentOrder.indexOf(direction.neighbour);
+
+        let newOrder: string[];
+
+        if (neighbourIndex === -1) {
+            newOrder = [...currentOrder, key];
+        } else {
+            const insertIndex = direction.to === 'left' ? neighbourIndex : neighbourIndex + 1;
+            newOrder = [
+                ...currentOrder.slice(0, insertIndex),
+                key,
+                ...currentOrder.slice(insertIndex)
+            ];
+        }
+
+        preferences.saveColumnOrder(
+            page.data.organization.$id ?? page.data.project.teamId,
+            collectionId,
+            newOrder
+        );
+
+        onColumnsReorder?.(newOrder);
+
+        return newOrder;
+    }
+
     export async function submit() {
         try {
             await $option.create(databaseId, collectionId, key, data);
+            columnId = key;
+            if (direction) {
+                insertColumnInOrder();
+            }
             await invalidate(Dependencies.COLLECTION);
 
             addNotification({
