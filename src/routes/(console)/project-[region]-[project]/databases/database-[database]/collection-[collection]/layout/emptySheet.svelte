@@ -8,150 +8,112 @@
         Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import type { Column } from '$lib/helpers/types';
+
     import { IconCalendar, IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
+    import type { Column } from '$lib/helpers/types';
 
-    type Mode = 'records' | 'columns' | 'indexes';
+    type Mode = 'records' | 'indexes';
 
-    type Action = {
+    interface Action {
         text?: string;
         disabled?: boolean;
         onClick?: () => void;
-    };
+    }
 
-    let {
+    const {
         mode,
         showActions = true,
         customColumns = [],
-        title = undefined,
-        actions = undefined
-    }: {
+        title,
+        actions
+    } = $props<{
         mode: Mode;
         showActions?: boolean;
         customColumns?: Column[];
-        title?: string | undefined;
-        actions?:
-            | {
-                  primary?: Action;
-                  random?: Action;
-              }
-            | undefined;
-    } = $props();
+        title?: string;
+        actions?: {
+            primary?: Action;
+            random?: Action;
+        };
+    }>();
 
-    function makeColumns(...middle: Column[]): Column[] {
-        return [
-            {
-                id: '$id',
-                title: 'ID',
-                type: 'string',
-                width: 180,
-                draggable: false,
-                resizable: false,
-                isPrimary: true,
-                icon: IconFingerPrint
-            },
-            ...middle,
-            {
-                id: 'actions',
-                title: '',
-                width: customColumns.length ? 555 : 555 * 1.5,
-                draggable: false,
-                resizable: false,
-                type: 'string',
-                icon: IconPlus
-            },
+    const baseColProps = { draggable: false, resizable: false };
+
+    const getCustomColumns = (): Column[] =>
+        customColumns.map((col: Column) => ({
+            ...baseColProps,
+            width: 180,
+            ...col
+        }));
+
+    const getRecordsColumns = (): Column[] => [
+        {
+            id: '$id',
+            title: 'ID',
+            type: 'string',
+            width: 180,
+            isPrimary: true,
+            icon: IconFingerPrint,
+            ...baseColProps
+        },
+        ...getCustomColumns(),
+        {
+            id: '$createdAt',
+            title: 'Created',
+            type: 'datetime',
+            width: 180,
+            icon: IconCalendar,
+            ...baseColProps
+        },
+        {
+            id: '$updatedAt',
+            title: 'Updated',
+            type: 'datetime',
+            width: 180,
+            icon: IconCalendar,
+            ...baseColProps
+        },
+        {
+            id: 'actions',
+            title: '',
+            type: 'string',
+            icon: IconPlus,
+            width: customColumns.length ? 555 : 832,
+            ...baseColProps
+        },
+        {
+            id: 'empty',
+            title: '',
+            type: 'string',
+            ...baseColProps
+        }
+    ];
+
+    const getIndexesColumns = (): Column[] =>
+        [
+            { id: 'key', title: 'Key', icon: null, isPrimary: false },
+            { id: 'type', title: 'Type', icon: null, isPrimary: false },
+            { id: 'columns', title: 'Columns', icon: null, isPrimary: false },
             {
                 id: 'empty',
                 title: '',
-                draggable: false,
-                resizable: false,
-                type: 'string'
+                width: 40,
+                isAction: true,
+                isPrimary: false
             }
-        ];
-    }
+        ] as Column[];
 
-    function getCustomColumns() {
-        return customColumns.map((col) => ({
-            ...col,
-            width: 180,
-            draggable: false,
-            resizable: false
-        }));
-    }
-
-    const columnsMap: Record<Mode, Column[]> = $derived.by(() => ({
-        records: makeColumns(
-            ...getCustomColumns(),
-            {
-                id: '$createdAt',
-                title: 'Created',
-                type: 'datetime',
-                width: 180,
-                draggable: false,
-                resizable: false,
-                icon: IconCalendar
-            },
-            {
-                id: '$updatedAt',
-                title: 'Updated',
-                type: 'datetime',
-                width: 180,
-                draggable: false,
-                resizable: false,
-                icon: IconCalendar
-            }
-        ),
-        columns: makeColumns(
-            {
-                id: 'indexed',
-                title: 'Indexed',
-                type: 'boolean',
-                width: 180,
-                draggable: false,
-                resizable: false,
-                isAction: false
-            },
-            {
-                id: 'default',
-                title: 'Default',
-                type: 'string',
-                width: 180,
-                draggable: false,
-                resizable: false,
-                isAction: false
-            }
-        ),
-        indexes: makeColumns(
-            {
-                id: 'type',
-                title: 'Type',
-                type: 'string',
-                width: 180,
-                draggable: false,
-                resizable: false,
-                isAction: false
-            },
-            {
-                id: 'attributes',
-                title: 'Columns',
-                type: 'string',
-                width: 180,
-                draggable: false,
-                resizable: false,
-                isAction: false
-            }
-        )
-    }));
-
-    const spreadsheetColumns = $derived(columnsMap[mode]);
+    const spreadsheetColumns = $derived(
+        mode === 'records' ? getRecordsColumns() : getIndexesColumns()
+    );
 </script>
 
-<div class="spreadsheet-container-outer">
+<div class="spreadsheet-container-outer" data-mode={mode}>
     <Spreadsheet.Root
         allowSelection
-        emptyCells={20}
+        emptyCells={12}
         height="fit-content"
         columns={spreadsheetColumns}>
         <svelte:fragment slot="header" let:root>
@@ -226,21 +188,48 @@
 <style lang="scss">
     .spreadsheet-container-outer {
         width: 100%;
-        overflow: hidden;
         position: fixed;
+        overflow: hidden;
+
+        &[data-mode='indexes'] {
+            position: relative;
+
+            & :global(.spreadsheet-container) {
+                max-height: 70vh;
+                overflow-y: hidden;
+
+                @media (max-width: 768px) {
+                    height: 50vh;
+                }
+            }
+        }
 
         @media (max-width: 768px) {
             position: unset;
         }
 
+        &[data-mode='records']
+            :global([role='rowheader'] [role='cell']:nth-last-child(2) [role='presentation']) {
+            display: none;
+        }
+
+        &[data-mode='indexes'] {
+            & :global([role='rowheader'] [role='cell']:nth-last-child(1)) {
+                pointer-events: none;
+
+                & :global(button) {
+                    opacity: 0.5;
+                }
+            }
+
+            & :global([role='cell']:nth-last-child(1) [role='presentation']) {
+                display: none;
+            }
+        }
+
         & :global(.spreadsheet-container) {
             overflow-x: hidden;
             overflow-y: hidden;
-
-            // hides the last columns left border, as per design
-            & :global([role='rowheader'] [role='cell']:nth-last-child(2) [role='presentation']) {
-                display: none;
-            }
         }
 
         & :global([data-select='true']) {
