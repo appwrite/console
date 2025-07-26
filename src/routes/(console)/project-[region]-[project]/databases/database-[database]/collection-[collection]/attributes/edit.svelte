@@ -8,10 +8,11 @@
     import { Button, InputText } from '$lib/elements/forms';
     import deepEqual from 'deep-equal';
     import { addNotification } from '$lib/stores/notifications';
-    import { type Attributes, databaseColumnSheetOptions } from '../store';
+    import { type Attributes, columnsOrder, databaseColumnSheetOptions } from '../store';
     import { attributeOptions, type Option } from './store';
     import { onMount } from 'svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
+    import { preferences } from '$lib/stores/preferences';
 
     export let isModal = true;
     export let showEdit = false;
@@ -60,6 +61,20 @@
             });
 
             showEdit = false;
+            const oldKey = originalKey;
+            const newKey = selectedAttribute.key;
+
+            if (oldKey !== newKey && $columnsOrder.includes(oldKey)) {
+                const updatedOrder = $columnsOrder.map((id) => (id === oldKey ? newKey : id));
+                columnsOrder.set(updatedOrder);
+
+                await preferences.saveColumnOrder(
+                    page.data.organization.$id ?? page.data.project.teamId,
+                    page.params.collection,
+                    updatedOrder
+                );
+            }
+
             trackEvent(Submit.AttributeUpdate);
 
             if (!isModal) {

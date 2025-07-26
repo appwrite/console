@@ -358,6 +358,7 @@
 
     async function onSelectSheetOption(
         action: HeaderCellAction | RowCellAction,
+        columnId: string,
         type: 'header' | 'row',
         document: Models.Document | null = null
     ) {
@@ -379,6 +380,14 @@
 
             if (action === 'delete') {
                 showColumnDelete = true;
+            }
+
+            if (action === 'sort-asc') {
+                sortState.set({ column: columnId, direction: 'asc' });
+                await sort([Query.orderAsc(columnId)]);
+            } else if (action === 'sort-desc') {
+                sortState.set({ column: columnId, direction: 'desc' });
+                await sort([Query.orderDesc(columnId)]);
             }
         } else if (type === 'row') {
             if (action === 'update') {
@@ -469,8 +478,10 @@
                 {:else}
                     <SheetOptions
                         type="header"
+                        columnId={column.id}
                         column={$attributes.find((attr) => attr.key === column.id)}
-                        onSelect={(option) => onSelectSheetOption(option, 'header')}>
+                        onSelect={(option, columnId) =>
+                            onSelectSheetOption(option, columnId, 'header')}>
                         {#snippet children(toggle)}
                             <Spreadsheet.Header.Cell
                                 {root}
@@ -523,7 +534,8 @@
                             <SheetOptions
                                 type="row"
                                 column={$attributes.find((attr) => attr.key === columnId)}
-                                onSelect={(option) => onSelectSheetOption(option, 'row', document)}>
+                                onSelect={(option) =>
+                                    onSelectSheetOption(option, 'row', null, document)}>
                                 {#snippet children(toggle)}
                                     <Button.Button icon variant="extra-compact" on:click={toggle}>
                                         <Icon

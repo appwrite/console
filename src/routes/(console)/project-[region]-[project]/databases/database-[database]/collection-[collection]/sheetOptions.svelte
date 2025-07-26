@@ -74,13 +74,15 @@
 
     let {
         column,
+        columnId = null,
         children,
         onSelect,
         type
     }: {
         column: Attributes;
+        columnId?: string;
         type: 'header' | 'row';
-        onSelect: (option: HeaderCellAction | RowCellAction) => void;
+        onSelect: (option: HeaderCellAction | RowCellAction, columnId: string) => void;
         children: Snippet<[toggle: (event: Event) => void]>;
     } = $props();
 
@@ -90,24 +92,44 @@
 
         if (action === 'column-left') {
             $databaseColumnSheetOptions.direction = {
-                neighbour: column?.key,
+                neighbour: columnId,
                 to: 'left'
             };
         } else if (action === 'column-right') {
             $databaseColumnSheetOptions.direction = {
-                neighbour: column?.key,
+                neighbour: columnId,
                 to: 'right'
             };
         }
 
-        onSelect(action);
+        onSelect(action, columnId);
     }
 
-    function shouldShow(item: MenuItem) {
-        if (item.action === 'sort-asc' || item.action === 'sort-desc') {
-            return internalColumns.includes(column?.key);
+    function shouldShow(item: MenuItem): boolean {
+        const isSystemColumn = internalColumns.includes(columnId);
+
+        if (type === 'header') {
+            if (['delete', 'update', 'duplicate-header'].includes(item.action) && isSystemColumn) {
+                return false;
+            }
         }
+
         return true;
+    }
+
+    function cleanMenu(items: MenuItem[]): MenuItem[] {
+        const visible = items.filter((item) => item.divider || shouldShow(item));
+
+        return visible.filter((item, i, arr) => {
+            const prev = arr[i - 1];
+            const next = arr[i + 1];
+
+            if (item.divider) {
+                return prev && !prev.divider && next && !next.divider;
+            }
+
+            return true;
+        });
     }
 </script>
 
@@ -115,7 +137,7 @@
     {@render children(toggle)}
 
     <svelte:fragment slot="tooltip" let:hide>
-        {@const menuItems = type === 'header' ? headerMenuItems : rowMenuItems}
+        {@const menuItems = cleanMenu(type === 'header' ? headerMenuItems : rowMenuItems)}
 
         <ActionMenu.Root width="180px">
             {#each menuItems as item, index (index)}
