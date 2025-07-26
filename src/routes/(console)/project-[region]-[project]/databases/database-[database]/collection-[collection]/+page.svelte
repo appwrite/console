@@ -14,7 +14,8 @@
         columns,
         isCsvImportInProgress,
         showRecordsCreateSheet,
-        showCreateAttributeSheet
+        showCreateAttributeSheet,
+        type Attributes
     } from './store';
     import SpreadSheet from './spreadsheet.svelte';
     import { writable } from 'svelte/store';
@@ -35,10 +36,11 @@
     let showImportCSV = false;
     const filterColumns = writable<Column[]>([]);
 
-    $: selected = preferences.getCustomCollectionColumns(page.params.collection);
-
-    $: columns.set(
-        $collection.attributes.map((attribute) => ({
+    function createColumnsFromAttributes(
+        attributes: Attributes[],
+        selected: string[] = []
+    ): Column[] {
+        return attributes.map((attribute) => ({
             id: attribute.key,
             title: attribute.key,
             type: attribute.type as ColumnType,
@@ -46,10 +48,16 @@
             array: attribute?.array,
             format: 'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
             elements: 'elements' in attribute ? attribute.elements : null
-        }))
-    );
+        }));
+    }
 
-    $: filterColumns.set([...$columns.filter((column) => !column.isAction)]);
+    $: selected = preferences.getCustomCollectionColumns(page.params.collection);
+
+    $: if ($collection.attributes) {
+        const freshColumns = createColumnsFromAttributes($collection.attributes, selected);
+        columns.set(freshColumns);
+        filterColumns.set(freshColumns.filter((column) => !column.isAction));
+    }
 
     $: hasAttributes = !!$collection.attributes.length;
     $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
@@ -174,7 +182,7 @@
             {:else}
                 <EmptySheet
                     mode="records"
-                    customColumns={$columns}
+                    customColumns={createColumnsFromAttributes($collection.attributes, selected)}
                     showActions={$canWriteDocuments}
                     actions={{
                         primary: {

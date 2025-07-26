@@ -15,24 +15,30 @@
 
     type Mode = 'records' | 'columns' | 'indexes';
 
-    type ColumnsMap = Record<Mode, Column[]>;
-
     type Action = {
         text?: string;
         disabled?: boolean;
         onClick?: () => void;
     };
 
-    export let mode: Mode;
-    export let showActions: boolean = true;
-    export let customColumns: Column[] = [];
-    export let title: string | undefined = undefined;
-    export let actions:
-        | {
-              primary?: Action;
-              random?: Action;
-          }
-        | undefined = undefined;
+    let {
+        mode,
+        showActions = true,
+        customColumns = [],
+        title = undefined,
+        actions = undefined
+    }: {
+        mode: Mode;
+        showActions?: boolean;
+        customColumns?: Column[];
+        title?: string | undefined;
+        actions?:
+            | {
+                  primary?: Action;
+                  random?: Action;
+              }
+            | undefined;
+    } = $props();
 
     function makeColumns(...middle: Column[]): Column[] {
         return [
@@ -66,15 +72,18 @@
         ];
     }
 
-    const columnsMap: ColumnsMap = {
+    function getCustomColumns() {
+        return customColumns.map((col) => ({
+            ...col,
+            width: 180,
+            draggable: false,
+            resizable: false
+        }));
+    }
+
+    const columnsMap: Record<Mode, Column[]> = $derived.by(() => ({
         records: makeColumns(
-            // TODO: improve.
-            ...customColumns.map((col) => {
-                col.width = { min: 180 };
-                col.draggable = false;
-                col.resizable = false;
-                return col;
-            }),
+            ...getCustomColumns(),
             {
                 id: '$createdAt',
                 title: 'Created',
@@ -94,7 +103,6 @@
                 icon: IconCalendar
             }
         ),
-        // TODO: fixed, 3 columns
         columns: makeColumns(
             {
                 id: 'indexed',
@@ -115,7 +123,6 @@
                 isAction: false
             }
         ),
-        // TODO: fixed, 3 columns
         indexes: makeColumns(
             {
                 id: 'type',
@@ -136,9 +143,9 @@
                 isAction: false
             }
         )
-    };
+    }));
 
-    $: spreadsheetColumns = columnsMap[mode];
+    const spreadsheetColumns = $derived(columnsMap[mode]);
 </script>
 
 <div class="spreadsheet-container-outer">
@@ -192,7 +199,7 @@
                             size="s"
                             variant="secondary"
                             disabled={actions?.primary?.disabled}
-                            on:click={actions?.primary?.onClick}>
+                            onclick={actions?.primary?.onClick}>
                             <Icon icon={IconPlus} size="s" />
                             {actions?.primary?.text ?? `Create ${mode}`}
                         </Button.Button>
@@ -203,7 +210,7 @@
                                     size="s"
                                     variant="secondary"
                                     disabled={actions?.random?.disabled}
-                                    on:click={actions?.random?.onClick}>
+                                    onclick={actions?.random?.onClick}>
                                     {actions?.random?.text ?? `Generate random data`}
                                 </Button.Button>
                                 <span slot="tooltip">Yet to be added</span>

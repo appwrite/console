@@ -6,8 +6,8 @@
     import { Layout } from '@appwrite.io/pink-svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { option, attributeOptions, type Option } from './attributes/store';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { attributeOptions, option, type Option } from './attributes/store';
     import type { Column } from '$lib/helpers/types';
     import { preferences } from '$lib/stores/preferences';
 
@@ -44,24 +44,63 @@
     );
 
     function insertColumnInOrder() {
-        if (!direction || !direction.neighbour || !key) return;
+        if (!key) return;
 
         const currentOrder = columnsOrder?.length
             ? columnsOrder
             : columns?.map((col) => col.id) || [];
-        const neighbourIndex = currentOrder.indexOf(direction.neighbour);
 
         let newOrder: string[];
 
-        if (neighbourIndex === -1) {
-            newOrder = [...currentOrder, key];
-        } else {
-            const insertIndex = direction.to === 'left' ? neighbourIndex : neighbourIndex + 1;
+        if (!direction || !direction.neighbour) {
+            // Find the actions column position
+            const actionsIndex = currentOrder.indexOf('actions');
+            const beforeActionsOrder =
+                actionsIndex !== -1 ? currentOrder.slice(0, actionsIndex) : currentOrder;
+
+            const lastTwo = beforeActionsOrder.slice(-2);
+            const hasTimestampColumnsAtEnd =
+                lastTwo.length === 2 &&
+                lastTwo.includes('$createdAt') &&
+                lastTwo.includes('$updatedAt');
+
+            let insertIndex: number;
+
+            if (hasTimestampColumnsAtEnd) {
+                insertIndex = Math.min(
+                    currentOrder.indexOf('$createdAt'),
+                    currentOrder.indexOf('$updatedAt')
+                );
+            } else {
+                // Insert at the end, but before actions
+                insertIndex = actionsIndex !== -1 ? actionsIndex : currentOrder.length;
+            }
+
             newOrder = [
                 ...currentOrder.slice(0, insertIndex),
                 key,
                 ...currentOrder.slice(insertIndex)
             ];
+        } else {
+            const neighbourIndex = currentOrder.indexOf(direction.neighbour);
+
+            if (neighbourIndex === -1) {
+                const actionsIndex = currentOrder.indexOf('actions');
+                const insertIndex = actionsIndex !== -1 ? actionsIndex : currentOrder.length;
+
+                newOrder = [
+                    ...currentOrder.slice(0, insertIndex),
+                    key,
+                    ...currentOrder.slice(insertIndex)
+                ];
+            } else {
+                const insertIndex = direction.to === 'left' ? neighbourIndex : neighbourIndex + 1;
+                newOrder = [
+                    ...currentOrder.slice(0, insertIndex),
+                    key,
+                    ...currentOrder.slice(insertIndex)
+                ];
+            }
         }
 
         preferences.saveColumnOrder(
@@ -71,17 +110,16 @@
         );
 
         onColumnsReorder?.(newOrder);
-
         return newOrder;
     }
 
     export async function submit() {
         try {
             await $option.create(databaseId, collectionId, key, data);
+
             columnId = key;
-            if (direction) {
-                insertColumnInOrder();
-            }
+            insertColumnInOrder();
+
             await invalidate(Dependencies.COLLECTION);
 
             addNotification({

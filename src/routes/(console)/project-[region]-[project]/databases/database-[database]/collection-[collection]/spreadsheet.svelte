@@ -370,12 +370,11 @@
 
             if (action === 'column-left' || action === 'column-right') {
                 const { to, neighbour } = $databaseColumnSheetOptions.direction;
-
-                $showCreateAttributeSheet.show = true;
                 $showCreateAttributeSheet.title = `Insert column to the ${to} of ${neighbour}`;
                 $showCreateAttributeSheet.direction = $databaseColumnSheetOptions.direction;
                 $showCreateAttributeSheet.columns = $columns;
                 $showCreateAttributeSheet.columnsOrder = $columnsOrder;
+                $showCreateAttributeSheet.show = true;
             }
 
             if (action === 'delete') {
@@ -459,7 +458,11 @@
                         <Button.Button
                             icon
                             variant="extra-compact"
-                            on:click={() => ($showCreateAttributeSheet.show = true)}>
+                            on:click={() => {
+                                $showCreateAttributeSheet.show = true;
+                                $showCreateAttributeSheet.columns = $columns;
+                                $showCreateAttributeSheet.columnsOrder = $columnsOrder;
+                            }}>
                             <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                         </Button.Button>
                     </Spreadsheet.Header.Cell>
