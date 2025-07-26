@@ -105,6 +105,7 @@
                         view={data.view}
                         {columns}
                         hideView
+                        showAnyway
                         isCustomCollection />
 
                     <Filters

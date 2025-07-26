@@ -15,15 +15,17 @@
     export let hideView = false;
     export let hideColumns = false;
     export let allowNoColumns = false;
+    export let showAnyway = false;
 </script>
 
 {#if !hideColumns && view === View.Table}
-    <ColumnSelector {columns} {isCustomCollection} {allowNoColumns} {ui}>
+    <ColumnSelector {columns} {isCustomCollection} {allowNoColumns} {ui} {showAnyway}>
         {#snippet children(toggle, selectedColumnsNumber)}
             <Button.Button
                 size="s"
                 icon={onlyIcon}
                 variant="secondary"
+                disabled={!$columns.length && showAnyway}
                 badge={onlyIcon ? undefined : selectedColumnsNumber.toString()}
                 on:click={toggle}>
                 <Icon slot="start" icon={IconViewBoards} />

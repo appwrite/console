@@ -19,12 +19,14 @@
         isCustomCollection = false,
         ui = 'legacy',
         allowNoColumns = false,
+        showAnyway = false,
         children
     }: {
         columns: Writable<Column[]>;
         isCustomCollection?: boolean;
         allowNoColumns?: boolean;
         ui?: 'legacy' | 'new';
+        showAnyway?: boolean;
         children: Snippet<[toggle: () => void, selectedColumnsNumber: number]>;
     } = $props();
 
@@ -178,7 +180,7 @@
 
 <svelte:window on:resize={calcMaxHeight} />
 
-{#if $columns?.length}
+{#if $columns?.length || showAnyway}
     {@const placement = isNewStyle ? 'bottom-start' : 'bottom-end'}
     <Popover let:toggle {placement} padding="none">
         {@render children(toggle, selectedColumnsNumber)}
