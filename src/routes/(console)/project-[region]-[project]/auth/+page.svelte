@@ -159,7 +159,7 @@
             name="Users"
             limit={data.limit}
             offset={data.offset}
-            total={data.users.total} />
+            total={data.total} />
     {:else if data.search}
         <EmptySearch target="users" hidePagination>
             <Button

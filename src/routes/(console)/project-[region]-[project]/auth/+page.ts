@@ -15,13 +15,26 @@ export const load: PageLoad = async ({ url, route, params }) => {
         showCreateUser.set(true);
     }
 
+    const sdkInstance = sdk.forProject(params.region, params.project);
+
+    // Fetch paginated users
+    const users = await sdkInstance.users.list(
+        [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+        search
+    );
+
+    // Separate call to get accurate total count
+    const totalUsers = await sdkInstance.users.list(
+        [Query.limit(1)], // Fetch minimal data
+        search
+    );
+
     return {
         offset,
         limit,
         search,
         page,
-        users: await sdk
-            .forProject(params.region, params.project)
-            .users.list([Query.limit(limit), Query.offset(offset), Query.orderDesc('')], search)
+        users,
+        total: totalUsers.total // Use accurate total count
     };
 };
