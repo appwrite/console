@@ -28,7 +28,8 @@
         reorderItems,
         columnsOrder,
         columnsWidth,
-        randomDataModalState, spreadsheetLoading
+        randomDataModalState,
+        spreadsheetLoading
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -132,14 +133,7 @@
             formattedColumn = `${column}`;
         }
 
-        return {
-            value:
-                formattedColumn.length > 20
-                    ? `${formattedColumn.slice(0, 20)}...`
-                    : formattedColumn,
-            truncated: formattedColumn.length > 20,
-            whole: `${formattedColumn.slice(0, 100)}...`
-        };
+        return formattedColumn;
     }
 
     function getAppropriateIcon(type: string): ComponentType {
@@ -199,7 +193,7 @@
                 id: '$id',
                 title: 'ID',
                 width: getColumnWidth('$id', 200),
-                minimumWidth: 200,
+                minimumWidth: 225,
                 draggable: false,
                 type: 'string',
                 icon: IconFingerPrint,
@@ -523,9 +517,10 @@
                         {root}
                         column={columnId}
                         {isEditable}
-                        value={columnId.includes('$') || formatted.value === 'null'
+                        value={columnId.includes('$') || formatted === 'null'
                             ? undefined
-                            : formatted.value}>
+                            : formatted
+                            }>
                         {#if columnId === '$id'}
                             <Id value={document.$id}>{document.$id}</Id>
                         {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
@@ -606,27 +601,26 @@
                                                 copy={false}
                                                 variant="secret"
                                                 isVisible={false}
-                                                text={formatted.value} />
+                                                text={formatted} />
                                         </button>
-                                    {:else if formatted.truncated}
-                                        <Tooltip placement="bottom" disabled={!formatted.truncated}>
-                                            <Typography.Text truncate
-                                                >{formatted.value}</Typography.Text>
+                                    {:else if formatted.length > 20}
+                                        <Tooltip placement="bottom">
+                                            <Typography.Text truncate>
+                                                {formatted}
+                                            </Typography.Text>
                                             <span
-                                                let:showing
                                                 slot="tooltip"
                                                 style:white-space="pre-wrap"
-                                                style:word-break="break-all">
-                                                {#if showing}
-                                                    {formatted.whole}
-                                                {/if}
+                                                style:word-break="break-word">
+                                                {formatted}
                                             </span>
                                         </Tooltip>
-                                    {:else if formatted.value === 'null'}
+                                    {:else if formatted === 'null'}
                                         <Badge variant="secondary" content="NULL" size="xs" />
                                     {:else}
-                                        <Typography.Text truncate
-                                            >{formatted.value}</Typography.Text>
+                                        <Typography.Text truncate>
+                                            {formatted}
+                                        </Typography.Text>
                                     {/if}
                                 {/if}
                             {/if}

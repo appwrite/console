@@ -57,39 +57,48 @@
                         {#each sortedCollections as collection}
                             {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
                             {@const isSelected = collectionId === collection.$id}
-                            <li class:is-selected={isSelected}>
-                                <a
-                                    class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
-                                    {href}>
-                                    <Icon
-                                        icon={IconTable}
-                                        size="s"
-                                        color={isSelected
-                                            ? '--fgcolor-neutral-tertiary'
-                                            : '--fgcolor-neutral-weak'} />
-                                    <span class="text collection-name" data-private
-                                        >{collection.name}</span>
-                                </a>
-                            </li>
+
+                            <Layout.Stack gap="m" direction="row" alignItems="center">
+                                <div
+                                    style:border-left="1px solid var(--border-neutral, #ededf0)"
+                                    style:height="1rem">
+                                </div>
+
+                                <li class:is-selected={isSelected} style:width="100%">
+                                    <a
+                                        class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
+                                        {href}>
+                                        <Icon
+                                            icon={IconTable}
+                                            size="s"
+                                            color={isSelected
+                                                ? '--fgcolor-neutral-tertiary'
+                                                : '--fgcolor-neutral-weak'} />
+                                        <span class="text collection-name" data-private
+                                            >{collection.name}</span>
+                                    </a>
+                                </li>
+                            </Layout.Stack>
                         {/each}
                     </ul>
                 {:else}
-                    <Layout.Stack gap="m">
+                    <div style:padding-block="0.75rem">
                         <Layout.Stack
                             gap="m"
                             direction="row"
+                            alignItems="center"
                             class="u-margin-inline-start-8 u-margin-block-start-8">
-                            <div style="border-left: 1px solid var(--border-neutral, #ededf0)">
+                            <div
+                                style:border-left="1px solid var(--border-neutral, #ededf0)"
+                                style:height="1rem">
                             </div>
                             No tables yet
                         </Layout.Stack>
-                    </Layout.Stack>
+                    </div>
                 {/if}
 
-                <!-- TODO: refer designs for spacing and stuff -->
-                <Layout.Stack gap="xs" alignItems="center" direction="row">
+                <Layout.Stack alignItems="center" direction="row" style="gap: 3px;">
                     <Icon icon={IconPlus} size="s" />
-
                     <Button
                         compact
                         on:click={() => {
@@ -171,6 +180,7 @@
     .collection-content {
         flex: 1;
         overflow-y: auto;
+        overflow-x: hidden;
         min-height: 0;
         margin-bottom: auto;
         padding-bottom: 16px;
@@ -199,7 +209,6 @@
     }
 
     .drop-list {
-        border-left: 1px solid var(--border-neutral, #ededf0);
         flex: 1;
         padding-left: 4px;
         font-size: var(--font-size-sm);
@@ -207,6 +216,7 @@
 
         .is-selected,
         li:hover {
+            width: 100%;
             color: var(--fgcolor-neutral-primary);
             border-radius: var(--border-radius-xs, 4px);
             background: var(--bgcolor-neutral-secondary);

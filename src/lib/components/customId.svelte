@@ -12,7 +12,7 @@
         id = $bindable(null),
         autofocus = true,
         isProject = false,
-        required = true,
+        required = true
     }: {
         show: boolean;
         name: string;
@@ -34,8 +34,6 @@
         if (show) {
             trackEvent(Click.ShowCustomIdClick);
         }
-
-        console.log(id);
     });
 </script>
 

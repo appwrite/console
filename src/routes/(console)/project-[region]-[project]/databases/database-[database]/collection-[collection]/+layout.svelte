@@ -241,6 +241,9 @@
             }
         }
 
+        /* let the attributes be processed! */
+        await sleep(1250);
+
         try {
             const documents = generateFakeDocuments(attributes, $randomDataModalState.value);
             await sdk

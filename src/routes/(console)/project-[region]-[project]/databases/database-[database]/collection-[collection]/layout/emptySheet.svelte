@@ -1,12 +1,5 @@
 <script lang="ts">
-    import {
-        Badge,
-        Button,
-        Icon,
-        Layout,
-        Spreadsheet,
-        Typography
-    } from '@appwrite.io/pink-svelte';
+    import { Badge, Button, Icon, Layout, Spreadsheet, Typography } from '@appwrite.io/pink-svelte';
 
     import { IconCalendar, IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -116,8 +109,7 @@
         emptyCells={12}
         height="fit-content"
         columns={spreadsheetColumns}
-        loading={$spreadsheetLoading}
-    >
+        loading={$spreadsheetLoading}>
         <svelte:fragment slot="header" let:root>
             {#each spreadsheetColumns as column (column.id)}
                 <Spreadsheet.Header.Cell {root} column={column.id} icon={column.icon ?? undefined}>
