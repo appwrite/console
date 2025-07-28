@@ -122,3 +122,5 @@ export const randomDataModalState = writable({
     show: false,
     value: 25 // initial value!
 });
+
+export const spreadsheetLoading = writable(false);

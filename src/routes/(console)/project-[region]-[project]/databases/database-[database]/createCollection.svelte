@@ -87,6 +87,7 @@
     <CustomId
         show
         bind:id
+        required={false}
         autofocus={false}
         name="Collection"
         on:input={() => {

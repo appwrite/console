@@ -137,6 +137,8 @@
     }
 
     $effect(() => {
+        columnId; /* silences lint check, variable not read */
+
         // correct view
         if (selectedOption) {
             $option = attributeOptions.find((option) => option.name === selectedOption);

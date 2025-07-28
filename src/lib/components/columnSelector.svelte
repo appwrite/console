@@ -195,16 +195,17 @@
                                 bind:value={search} />
 
                             <Layout.Stack
+                                gap="s"
                                 direction="row"
                                 alignItems="center"
                                 style="padding-block-end: 0.5rem">
-                                <Button icon extraCompact on:click={selectAll}>Select all</Button>
+                                <Button size="xs" icon extraCompact on:click={selectAll}>Select all</Button>
 
                                 <div style:height="1rem">
                                     <Divider vertical />
                                 </div>
 
-                                <Button icon extraCompact on:click={deselectAll}
+                                <Button size="xs" icon extraCompact on:click={deselectAll}
                                     >Deselect all</Button>
                             </Layout.Stack>
                         </Layout.Stack>

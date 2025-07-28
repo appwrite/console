@@ -12,6 +12,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
+    import { spreadsheetLoading } from '../store';
 
     type Mode = 'records' | 'indexes';
 
@@ -114,7 +115,9 @@
         allowSelection
         emptyCells={12}
         height="fit-content"
-        columns={spreadsheetColumns}>
+        columns={spreadsheetColumns}
+        loading={$spreadsheetLoading}
+    >
         <svelte:fragment slot="header" let:root>
             {#each spreadsheetColumns as column (column.id)}
                 <Spreadsheet.Header.Cell {root} column={column.id} icon={column.icon ?? undefined}>

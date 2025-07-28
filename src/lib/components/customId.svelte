@@ -11,13 +11,15 @@
         name,
         id = $bindable(null),
         autofocus = true,
-        isProject = false
+        isProject = false,
+        required = true,
     }: {
         show: boolean;
         name: string;
         id: string;
         autofocus?: boolean;
         isProject?: boolean;
+        required?: boolean;
     } = $props();
 
     $effect(() => {
@@ -32,6 +34,8 @@
         if (show) {
             trackEvent(Click.ShowCustomIdClick);
         }
+
+        console.log(id);
     });
 </script>
 
@@ -59,7 +63,7 @@
             {#if isProject}
                 <InputProjectId on:input bind:value={id} {autofocus} />
             {:else}
-                <InputId required on:input bind:value={id} {autofocus} />
+                <InputId {required} on:input bind:value={id} {autofocus} />
             {/if}
         </Layout.Stack>
     </Card.Base>

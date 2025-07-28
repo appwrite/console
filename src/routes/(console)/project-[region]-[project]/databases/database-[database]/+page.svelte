@@ -35,8 +35,7 @@
                     ? `${base}/images/empty-database-dark.svg`
                     : `${base}/images/empty-database-light.svg`}>
                 <span slot="description">
-                    Create and manage structured data effortlessly, with the flexibility and control
-                    your app needs.
+                    Create, organize, and query structured data with Tables.
                 </span>
                 <span slot="actions">
                     <Button

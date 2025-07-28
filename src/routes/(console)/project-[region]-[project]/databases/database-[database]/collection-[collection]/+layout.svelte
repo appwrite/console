@@ -29,7 +29,8 @@
         databaseRowSheetOptions,
         randomDataModalState,
         reorderItems,
-        showCreateAttributeSheet
+        showCreateAttributeSheet,
+        spreadsheetLoading
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateAttribute from './createAttribute.svelte';
@@ -48,6 +49,7 @@
     import { Button, Seekbar } from '$lib/elements/forms';
     import { generateFakeDocuments, generateAttributes } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
+    import { sleep } from '$lib/helpers/promises';
 
     let editDocument: EditDocument;
     let createAttribute: CreateAttribute;
@@ -216,6 +218,7 @@
     });
 
     async function createFakeData() {
+        $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
         let attributes = $collection.attributes;
@@ -233,7 +236,7 @@
                     type: 'error',
                     message: e.message
                 });
-
+                $spreadsheetLoading = false;
                 return;
             }
         }
@@ -256,6 +259,10 @@
                 message: e.message
             });
         }
+
+        /* api is too fast! */
+        await sleep(1250);
+        $spreadsheetLoading = false;
     }
 </script>
 
@@ -314,7 +321,7 @@
 </SideSheet>
 
 <Dialog title="Generate random data" bind:open={$randomDataModalState.show}>
-    <Layout.Stack gap="xl">
+    <Layout.Stack style="gap: 28px;">
         <Typography.Text>
             Select how many random records to generate for testing. This won't delete or replace
             your existing records.

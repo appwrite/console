@@ -28,7 +28,7 @@
         reorderItems,
         columnsOrder,
         columnsWidth,
-        randomDataModalState
+        randomDataModalState, spreadsheetLoading
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -252,7 +252,6 @@
         );
     }
 
-    let loading = false;
     let showColumnDelete = false;
     let selectedRows: string[] = [];
 
@@ -260,11 +259,11 @@
     let selectedDocumentForDelete: Models.Document['$id'] | null = null;
 
     async function sort(query: string[]) {
-        loading = true;
+        $spreadsheetLoading = true;
         documents = await sdk
             .forProject(page.params.region, page.params.project)
             .databases.listDocuments(databaseId, collectionId, query);
-        loading = false;
+        $spreadsheetLoading = false;
     }
 
     async function handleDelete() {
@@ -448,11 +447,11 @@
 <SpreadsheetContainer>
     <Spreadsheet.Root
         let:root
-        {loading}
         height="100%"
         allowSelection
         bind:selectedRows
         bind:columns={$columns}
+        loading={$spreadsheetLoading}
         emptyCells={emptyCellsCount}
         bottomActionClick={() => (showRecordsCreateSheet.show = true)}
         on:columnsSwap={(order) => {

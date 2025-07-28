@@ -52,7 +52,6 @@
             );
 
             trackEvent(Submit.AttributeDelete);
-            invalidate(Dependencies.COLLECTION);
             addNotification({
                 type: 'success',
                 message:
@@ -61,6 +60,7 @@
                         : `${selectedAttributes.length} attributes have been deleted`
             });
 
+            await invalidate(Dependencies.COLLECTION);
             showDelete = false;
             selectedAttribute = [];
         } catch (e) {
