@@ -1,4 +1,6 @@
 <script lang="ts" context="module">
+    import { writable } from 'svelte/store';
+
     const createAttributeArgs = writable({
         showCreate: false,
         selectedOption: null as Option['name'] | null
@@ -17,7 +19,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { realtime } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import {
         collection,
@@ -25,16 +27,16 @@
         columnsOrder,
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
+        randomDataModalState,
         reorderItems,
         showCreateAttributeSheet
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateAttribute from './createAttribute.svelte';
-    import { writable } from 'svelte/store';
     import type { Option } from './attributes/store';
     import { CreateAttributePanel } from '$lib/commandCenter/panels';
     import { database } from '../store';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import { project } from '../../../store';
     import { page } from '$app/state';
     import { base } from '$app/paths';
     import { canWriteCollections } from '$lib/stores/roles';
@@ -42,6 +44,10 @@
     import SideSheet from './layout/sidesheet.svelte';
     import EditDocument from './editDocument.svelte';
     import EditAttribute from './attributes/edit.svelte';
+    import { Dialog, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Button, Seekbar } from '$lib/elements/forms';
+    import { generateFakeDocuments, generateAttributes } from '$lib/helpers/faker';
+    import { addNotification } from '$lib/stores/notifications';
 
     let editDocument: EditDocument;
     let createAttribute: CreateAttribute;
@@ -208,6 +214,49 @@
         collections: 800,
         indexes: 700
     });
+
+    async function createFakeData() {
+        $randomDataModalState.show = false;
+
+        let attributes = $collection.attributes;
+        if (!attributes.length) {
+            try {
+                attributes = await generateAttributes(
+                    $project,
+                    page.params.database,
+                    page.params.collection
+                );
+
+                await invalidate(Dependencies.COLLECTION);
+            } catch (e) {
+                addNotification({
+                    type: 'error',
+                    message: e.message
+                });
+
+                return;
+            }
+        }
+
+        try {
+            const documents = generateFakeDocuments(attributes, $randomDataModalState.value);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .databases.createDocuments(page.params.database, page.params.collection, documents);
+
+            addNotification({
+                type: 'success',
+                message: 'Random data added successfully'
+            });
+
+            await invalidate(Dependencies.DOCUMENTS);
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
+    }
 </script>
 
 <svelte:head>
@@ -263,3 +312,21 @@
     }}>
     <EditDocument bind:document={$databaseRowSheetOptions.document} bind:this={editDocument} />
 </SideSheet>
+
+<Dialog title="Generate random data" bind:open={$randomDataModalState.show}>
+    <Layout.Stack gap="xl">
+        <Typography.Text>
+            Select how many random records to generate for testing. This won't delete or replace
+            your existing records.
+        </Typography.Text>
+
+        <Seekbar max={100} breakpointCount={5} bind:value={$randomDataModalState.value} />
+    </Layout.Stack>
+
+    <svelte:fragment slot="footer">
+        <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
+            <Button text on:click={() => ($randomDataModalState.show = false)}>Cancel</Button>
+            <Button on:click={createFakeData}>Create</Button>
+        </Layout.Stack>
+    </svelte:fragment>
+</Dialog>

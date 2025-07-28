@@ -167,16 +167,13 @@
                         </Button.Button>
 
                         {#if mode === 'records'}
-                            <Tooltip>
-                                <Button.Button
-                                    size="s"
-                                    variant="secondary"
-                                    disabled={actions?.random?.disabled}
-                                    onclick={actions?.random?.onClick}>
-                                    {actions?.random?.text ?? `Generate random data`}
-                                </Button.Button>
-                                <span slot="tooltip">Yet to be added</span>
-                            </Tooltip>
+                            <Button.Button
+                                size="s"
+                                variant="secondary"
+                                disabled={actions?.random?.disabled}
+                                onclick={actions?.random?.onClick}>
+                                {actions?.random?.text ?? `Generate random data`}
+                            </Button.Button>
                         {/if}
                     </Layout.Stack>
                 {/if}

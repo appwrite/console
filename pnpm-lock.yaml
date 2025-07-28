@@ -26,6 +26,9 @@ importers:
       '@appwrite.io/pink-svelte':
         specifier: https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@99ee9f5
         version: https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@99ee9f5(svelte@5.25.3)
+      '@faker-js/faker':
+        specifier: ^9.9.0
+        version: 9.9.0
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -585,6 +588,10 @@ packages:
   '@eslint/plugin-kit@0.3.3':
     resolution: {integrity: sha512-1+WqvgNMhmlAambTvT3KPtCl/Ibr68VldY2XY40SL1CE0ZXiakFR/cbTspaF5HsnpDMvcYYoJHfl4980NBjGag==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@faker-js/faker@9.9.0':
+    resolution: {integrity: sha512-OEl393iCOoo/z8bMezRlJu+GlRGlsKbUAN7jKB6LhnKoqKve5DXRpalbItIIcwnCjs1k/FOPjFzcA6Qn+H+YbA==}
+    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
 
   '@floating-ui/core@1.6.9':
     resolution: {integrity: sha512-uMXCuQ3BItDUbAMhIXw7UPXRfAlOAvZzdK9BWpE60MCn+Svt3aLn9jsPTi/WNGlRUu2uI0v5S7JiIUsbsvh3fw==}
@@ -3949,6 +3956,8 @@ snapshots:
     dependencies:
       '@eslint/core': 0.15.1
       levn: 0.4.1
+
+  '@faker-js/faker@9.9.0': {}
 
   '@floating-ui/core@1.6.9':
     dependencies:

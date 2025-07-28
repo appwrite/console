@@ -117,3 +117,8 @@ export function reorderItems<T extends { id: string } | { key: string }>(
         ...items.filter((item) => !orderSet.has(getItemId(item)))
     ];
 }
+
+export const randomDataModalState = writable({
+    show: false,
+    value: 25 // initial value!
+});

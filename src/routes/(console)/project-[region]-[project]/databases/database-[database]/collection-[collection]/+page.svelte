@@ -15,7 +15,8 @@
         isCsvImportInProgress,
         showRecordsCreateSheet,
         showCreateAttributeSheet,
-        type Attributes
+        type Attributes,
+        randomDataModalState
     } from './store';
     import SpreadSheet from './spreadsheet.svelte';
     import { writable } from 'svelte/store';
@@ -190,6 +191,11 @@
                             onClick: () => {
                                 $showRecordsCreateSheet.show = true;
                             }
+                        },
+                        random: {
+                            onClick: () => {
+                                $randomDataModalState.show = true;
+                            }
                         }
                     }} />
             {/if}
@@ -203,6 +209,11 @@
                         text: 'Create column',
                         onClick: async () => {
                             $showCreateAttributeSheet.show = true;
+                        }
+                    },
+                    random: {
+                        onClick: () => {
+                            $randomDataModalState.show = true;
                         }
                     }
                 }} />

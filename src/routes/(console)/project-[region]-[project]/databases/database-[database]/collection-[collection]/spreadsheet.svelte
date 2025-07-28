@@ -27,7 +27,8 @@
         showCreateAttributeSheet,
         reorderItems,
         columnsOrder,
-        columnsWidth
+        columnsWidth,
+        randomDataModalState
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -649,7 +650,11 @@
                 </Typography.Text>
 
                 <div style:margin-right="var(--space-6)">
-                    <Button.Button variant="extra-compact">Generate random data</Button.Button>
+                    <Button.Button
+                        variant="extra-compact"
+                        on:click={() => {
+                            $randomDataModalState.show = true;
+                        }}>Generate random data</Button.Button>
                 </div>
             </Layout.Stack>
         </svelte:fragment>
