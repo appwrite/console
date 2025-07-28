@@ -23,13 +23,24 @@
 
     async function updatePermissions() {
         try {
+            const {
+                $id,
+                $collectionId,
+                $databaseId,
+                $createdAt,
+                $updatedAt,
+                $permissions,
+                $sequence,
+                ...dataOnly
+            } = $doc;
+
             await sdk
                 .forProject($page.params.region, $page.params.project)
                 .databases.updateDocument(
                     $doc.$databaseId,
                     $doc.$collectionId,
                     $doc.$id,
-                    $doc.data,
+                    dataOnly,
                     permissions
                 );
             await invalidate(Dependencies.DOCUMENT);
