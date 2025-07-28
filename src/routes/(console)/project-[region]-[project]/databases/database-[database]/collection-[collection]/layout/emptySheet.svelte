@@ -5,7 +5,6 @@
         Icon,
         Layout,
         Spreadsheet,
-        Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
 
