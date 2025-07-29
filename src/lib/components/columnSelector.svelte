@@ -185,10 +185,10 @@
     <Popover let:toggle {placement} padding="none">
         {@render children(toggle, selectedColumnsNumber)}
         <svelte:fragment slot="tooltip">
-            <div style:max-height={maxHeight} style:overflow="scroll" bind:this={containerRef}>
+            <div bind:this={containerRef} class="actions-menu-wrapper" style:max-height={maxHeight}>
                 <ActionMenu.Root>
                     {#if isNewStyle}
-                        <Layout.Stack gap="m">
+                        <Layout.Stack gap="xs">
                             <ActionMenu.Item.Input
                                 id="columns"
                                 placeholder="Search"
@@ -199,7 +199,8 @@
                                 direction="row"
                                 alignItems="center"
                                 style="padding-block-end: 0.5rem">
-                                <Button size="xs" icon extraCompact on:click={selectAll}>Select all</Button>
+                                <Button size="xs" icon extraCompact on:click={selectAll}
+                                    >Select all</Button>
 
                                 <div style:height="1rem">
                                     <Divider vertical />
@@ -211,10 +212,7 @@
                         </Layout.Stack>
                     {/if}
 
-                    <Layout.Stack
-                        gap="none"
-                        direction="column"
-                        style="height: 145px; overflow: scroll;">
+                    <Layout.Stack gap="none" direction="column" class="filter-modal-actions-menu">
                         {#each filteredColumns as column}
                             {#if !column?.exclude}
                                 <ActionMenu.Item.Button
@@ -241,3 +239,21 @@
         </svelte:fragment>
     </Popover>
 {/if}
+
+<style lang="scss">
+    .actions-menu-wrapper {
+        overflow: scroll;
+        margin-bottom: -0.35rem;
+
+        & :global(.filter-modal-actions-menu) {
+            overflow: scroll;
+            max-height: 150px;
+            padding-bottom: unset;
+            margin-bottom: -0.5rem;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+    }
+</style>

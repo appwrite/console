@@ -519,8 +519,7 @@
                         {isEditable}
                         value={columnId.includes('$') || formatted === 'null'
                             ? undefined
-                            : formatted
-                            }>
+                            : formatted}>
                         {#if columnId === '$id'}
                             <Id value={document.$id}>{document.$id}</Id>
                         {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
