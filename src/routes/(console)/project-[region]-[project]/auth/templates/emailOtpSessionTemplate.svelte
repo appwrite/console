@@ -20,10 +20,10 @@
             isUpdating = true;
         }, 1000);
         try {
-            const template = await loadEmailTemplate(projectId, 'magicSession', locale);
+            const template = await loadEmailTemplate(projectId, 'otpSession', locale);
             emailTemplate.set(template);
             $baseEmailTemplate = { ...$emailTemplate };
-            trackEvent(Submit.EmailChangeLocale, { locale, type: 'magicSession' });
+            trackEvent(Submit.EmailChangeLocale, { locale, type: 'otpSession' });
         } catch (error) {
             trackError(error, Submit.EmailChangeLocale);
             addNotification({
@@ -44,7 +44,7 @@
         <EmailTemplate {loading} {isUpdating}>
             <Id value={'{{user}}'}>{'{{user}}'}</Id>
             <Id value={'{{project}}'}>{'{{project}}'}</Id>
-            <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>
+            <Id value={'{{otp}}'}>{'{{otp}}'}</Id>
 
             <!-- START: for client info -->
             <Id value={'{{agentClient}}'}>{'{{agentClient}}'}</Id>

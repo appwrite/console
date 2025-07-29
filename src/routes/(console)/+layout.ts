@@ -37,6 +37,9 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
                 Query.equal('teamId', currentOrgId),
                 Query.limit(1000) // Get all projects for organization
             ]);
+            for (const project of projects.projects) {
+                project.region ??= 'default';
+            }
         } catch (e) {
             // Handle error silently - projects might not be accessible
             projects = {};
