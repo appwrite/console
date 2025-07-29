@@ -2,11 +2,11 @@
     import { Empty, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
-    import { tableViewColumns, showCreate } from './store';
+    import { columns, showCreate } from './store';
     import Table from './table.svelte';
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
-    import { canWriteTables } from '$lib/stores/roles';
+    import { canWriteCollections } from '$lib/stores/roles';
     import { Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
@@ -16,18 +16,18 @@
 <Container>
     <ResponsiveContainerHeader
         bind:view={data.view}
-        columns={tableViewColumns}
+        {columns}
         hasSearch
         searchPlaceholder="Search by name or ID">
-        {#if $canWriteTables}
-            <Button on:click={() => ($showCreate = true)} event="create_table">
+        {#if $canWriteCollections}
+            <Button on:click={() => ($showCreate = true)} event="create_collection">
                 <Icon icon={IconPlus} slot="start" size="s" />
-                Create table
+                Create collection
             </Button>
         {/if}
     </ResponsiveContainerHeader>
 
-    {#if data.tables.total}
+    {#if data.collections.total}
         {#if data.view === 'grid'}
             <Grid {data} bind:showCreate={$showCreate} />
         {:else}
@@ -35,16 +35,16 @@
         {/if}
 
         <PaginationWithLimit
-            name="Tables"
+            name="Collections"
             limit={data.limit}
             offset={data.offset}
-            total={data.tables.total} />
+            total={data.collections.total} />
     {:else}
         <Empty
             single
-            allowCreate={$canWriteTables}
-            href="https://appwrite.io/docs/products/databases/tables"
-            target="table"
+            allowCreate={$canWriteCollections}
+            href="https://appwrite.io/docs/products/databases/collections"
+            target="collection"
             on:click={() => ($showCreate = true)} />
     {/if}
 </Container>

@@ -57,7 +57,6 @@
     }
 
     function updateOrAddItem(payload: Payload) {
-        // todo: @itznotabug - might need a change to $table?
         const { $id, status, $collection, policyId } = payload;
         if ($collection === 'archives' && policyId !== null) {
             return;
@@ -118,9 +117,9 @@
     }
 
     function backupName(item: BackupArchive | BackupRestoration, key: string) {
-        const column = key === 'archives' ? '$createdAt' : 'startedAt';
+        const attribute = key === 'archives' ? '$createdAt' : 'startedAt';
 
-        return toLocaleDate(item[column]);
+        return toLocaleDate(item[attribute]);
     }
 
     onMount(() => {

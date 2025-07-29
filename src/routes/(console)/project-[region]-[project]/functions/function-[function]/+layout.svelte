@@ -24,7 +24,10 @@
         return realtime
             .forProject(page.params.region, page.params.project)
             .subscribe<Models.Deployment>('console', (message) => {
-                if (previousStatus === message.payload.status) {
+                if (
+                    message.payload.status !== 'ready' &&
+                    previousStatus === message.payload.status
+                ) {
                     return;
                 }
                 previousStatus = message.payload.status;

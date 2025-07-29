@@ -8,13 +8,13 @@
         registerSearchers,
         updateCommandGroupRanks
     } from '$lib/commandCenter';
-    import { tablesSearcher } from '$lib/commandCenter/searchers';
+    import { collectionsSearcher } from '$lib/commandCenter/searchers';
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
-    import CreateTable from './createTable.svelte';
+    import CreateCollection from './createCollection.svelte';
     import { showCreate } from './store';
-    import { TablesPanel } from '$lib/commandCenter/panels';
-    import { canWriteTables, canWriteDatabases } from '$lib/stores/roles';
+    import { CollectionsPanel } from '$lib/commandCenter/panels';
+    import { canWriteCollections, canWriteDatabases } from '$lib/stores/roles';
     import { showCreateBackup, showCreatePolicy } from './backups/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { currentPlan } from '$lib/stores/organization';
@@ -23,17 +23,17 @@
     const project = page.params.project;
     const databaseId = page.params.database;
 
-    async function handleCreate(event: CustomEvent<Models.Table>) {
+    async function handleCreate(event: CustomEvent<Models.Collection>) {
         $showCreate = false;
         await invalidate(Dependencies.DATABASE);
         await goto(
-            `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/table-${event.detail.$id}`
+            `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/collection-${event.detail.$id}`
         );
     }
 
     $: $registerCommands([
         {
-            label: 'Create table',
+            label: 'Create collection',
             callback() {
                 $showCreate = true;
                 if (!page.url.pathname.endsWith(databaseId)) {
@@ -43,7 +43,7 @@
                 }
             },
             keys: page.url.pathname.endsWith(databaseId) ? ['c'] : ['c', 'c'],
-            disabled: page.url.pathname.includes('table-') || !$canWriteTables,
+            disabled: page.url.pathname.includes('collection-') || !$canWriteCollections,
             group: 'databases',
             icon: IconPlus
         },
@@ -80,14 +80,14 @@
             disabled: !isCloud || !$currentPlan.backupsEnabled
         },
         {
-            label: 'Go to tables',
+            label: 'Go to collections',
             callback() {
                 goto(
                     `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}`
                 );
             },
             disabled:
-                page.url.pathname.endsWith(databaseId) || page.url.pathname.includes('table-'),
+                page.url.pathname.endsWith(databaseId) || page.url.pathname.includes('collection-'),
             keys: ['g', 'c'],
             group: 'databases'
         },
@@ -98,7 +98,8 @@
                     `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/usage`
                 );
             },
-            disabled: page.url.pathname.includes('/usage') || page.url.pathname.includes('table-'),
+            disabled:
+                page.url.pathname.includes('/usage') || page.url.pathname.includes('collection-'),
             keys: ['g', 'u'],
             group: 'databases'
         },
@@ -110,7 +111,7 @@
                 );
             },
             disabled:
-                page.url.pathname.includes('/backups') || page.url.pathname.includes('table-'),
+                page.url.pathname.includes('/backups') || page.url.pathname.includes('collection-'),
             keys: ['g', 'b'],
             group: 'databases'
         },
@@ -123,24 +124,24 @@
             },
             disabled:
                 page.url.pathname.includes('/settings') ||
-                page.url.pathname.includes('table-') ||
+                page.url.pathname.includes('collection-') ||
                 !$canWriteDatabases,
             keys: ['g', 's'],
             group: 'databases'
         },
         {
-            label: 'Find tables',
+            label: 'Find collections',
             callback: () => {
-                addSubPanel(TablesPanel);
+                addSubPanel(CollectionsPanel);
             },
             group: 'databases',
             rank: -1
         }
     ]);
 
-    $registerSearchers(tablesSearcher);
+    $registerSearchers(collectionsSearcher);
 
-    $: $updateCommandGroupRanks({ tables: 10 });
+    $: $updateCommandGroupRanks({ collections: 10 });
 </script>
 
 <svelte:head>
@@ -149,4 +150,4 @@
 
 <slot />
 
-<CreateTable bind:showCreate={$showCreate} on:created={handleCreate} />
+<CreateCollection bind:showCreate={$showCreate} on:created={handleCreate} />

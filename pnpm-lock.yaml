@@ -12,8 +12,8 @@ importers:
         specifier: ^1.1.24
         version: 1.1.24(svelte@5.25.3)(zod@3.24.3)
       '@appwrite.io/console':
-        specifier: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@935b30f
-        version: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@935b30f
+        specifier: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@2289
+        version: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@2289
       '@appwrite.io/pink-icons':
         specifier: 0.25.0
         version: 0.25.0
@@ -257,8 +257,8 @@ packages:
   '@analytics/type-utils@0.6.2':
     resolution: {integrity: sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg==}
 
-  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@935b30f':
-    resolution: {tarball: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@935b30f}
+  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@2289':
+    resolution: {tarball: https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@2289}
     version: 1.9.0
 
   '@appwrite.io/pink-icons-svelte@2.0.0-RC.1':
@@ -2544,8 +2544,8 @@ packages:
   loupe@3.1.3:
     resolution: {integrity: sha512-kkIp7XSkP78ZxJEsSxW3712C6teJVoeHHwgo9zJ380de7IYyJ2ISlxojcH2pC5OFLewESmnRi/+XCDIEEVyoug==}
 
-  loupe@3.1.4:
-    resolution: {integrity: sha512-wJzkKwJrheKtknCOKNEtDK4iqg/MxmZheEMtSTYvnzRdEYaZzmgH976nenp8WdJRdx5Vc1X/9MO0Oszl6ezeXg==}
+  loupe@3.2.0:
+    resolution: {integrity: sha512-2NCfZcT5VGVNX9mSZIxLRkEAegDGBpuQZBy13desuHeVORmBDyAET4TkJr4SjqQy3A8JDofMN6LpkK8Xcm/dlw==}
 
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
@@ -3646,7 +3646,7 @@ snapshots:
 
   '@analytics/type-utils@0.6.2': {}
 
-  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@935b30f': {}
+  '@appwrite.io/console@https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@2289': {}
 
   '@appwrite.io/pink-icons-svelte@2.0.0-RC.1(svelte@5.25.3)':
     dependencies:
@@ -5037,7 +5037,7 @@ snapshots:
   '@vitest/utils@3.2.4':
     dependencies:
       '@vitest/pretty-format': 3.2.4
-      loupe: 3.1.4
+      loupe: 3.2.0
       tinyrainbow: 2.0.0
 
   '@vue/compiler-core@3.5.13':
@@ -6177,7 +6177,7 @@ snapshots:
 
   loupe@3.1.3: {}
 
-  loupe@3.1.4: {}
+  loupe@3.2.0: {}
 
   lru-cache@10.4.3: {}
 

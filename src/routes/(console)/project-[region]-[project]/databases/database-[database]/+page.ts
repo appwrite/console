@@ -5,16 +5,15 @@ import type { PageLoad } from './$types';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
 
 export const load: PageLoad = async ({ params, url, route, depends }) => {
-    depends(Dependencies.TABLES);
+    depends(Dependencies.COLLECTIONS);
     const page = getPage(url);
     const search = getSearch(url);
     const limit = getLimit(url, route, CARD_LIMIT);
     const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
-
-    const tables = await sdk
+    const collections = await sdk
         .forProject(params.region, params.project)
-        .tables.list(
+        .databases.listCollections(
             params.database,
             [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
             search || undefined
@@ -25,6 +24,6 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
         limit,
         search,
         view,
-        tables
+        collections
     };
 };
