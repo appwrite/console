@@ -23,12 +23,10 @@
     import { onMount } from 'svelte';
     import {
         collection,
-        columns,
         columnsOrder,
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
         randomDataModalState,
-        reorderItems,
         showCreateAttributeSheet,
         showCreateIndexSheet,
         spreadsheetLoading
@@ -298,7 +296,7 @@
         columnsOrder={$showCreateAttributeSheet.columnsOrder}
         onColumnsReorder={(newOrder) => {
             columnsOrder.set(newOrder);
-            columns.set(reorderItems($columns, $columnsOrder));
+            // columns.set(reorderItems($columns, $columnsOrder));
         }} />
 </SideSheet>
 

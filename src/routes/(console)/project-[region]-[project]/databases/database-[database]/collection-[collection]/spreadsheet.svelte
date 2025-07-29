@@ -452,224 +452,232 @@
             }
         });
     }, 1000);
+
+    $: reInitSpreadsheetKey = $collection.attributes.length;
 </script>
 
 <SpreadsheetContainer>
-    <Spreadsheet.Root
-        let:root
-        height="100%"
-        allowSelection
-        bind:selectedRows
-        bind:columns={$columns}
-        loading={$spreadsheetLoading}
-        emptyCells={emptyCellsCount}
-        keyboardNavigation
-        bottomActionClick={() => (showRecordsCreateSheet.show = true)}
-        on:columnsSwap={(order) => {
-            saveColumnsOrder(order.detail);
-        }}
-        on:columnsResize={(resize) => {
-            saveColumnsWidth(resize.detail);
-        }}>
-        <svelte:fragment slot="header" let:root>
-            {#each $columns as column (column.id)}
-                {#if column.isAction}
-                    <Spreadsheet.Header.Cell column="actions" {root}>
-                        <Button.Button
-                            icon
-                            variant="extra-compact"
-                            on:click={() => {
-                                $showCreateAttributeSheet.show = true;
-                                $showCreateAttributeSheet.column = null;
-                                $showCreateAttributeSheet.columns = $columns;
-                                $showCreateAttributeSheet.title = 'Insert column';
-                                $showCreateAttributeSheet.columnsOrder = $columnsOrder;
-                            }}>
-                            <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
-                        </Button.Button>
-                    </Spreadsheet.Header.Cell>
-                {:else}
-                    <SheetOptions
-                        type="header"
-                        columnId={column.id}
-                        column={$attributes.find((attr) => attr.key === column.id)}
-                        onSelect={(option, columnId) =>
-                            onSelectSheetOption(option, columnId, 'header')}>
-                        {#snippet children(toggle)}
-                            <Spreadsheet.Header.Cell
-                                {root}
-                                column={column.id}
-                                icon={column.icon ?? IconText}
-                                on:contextmenu={toggle}>
-                                <Layout.Stack
-                                    gap="xs"
-                                    direction="row"
-                                    alignItems="center"
-                                    alignContent="center">
-                                    {column.title}
+    {#key reInitSpreadsheetKey}
+        <Spreadsheet.Root
+            let:root
+            height="100%"
+            allowSelection
+            bind:selectedRows
+            bind:columns={$columns}
+            loading={$spreadsheetLoading}
+            emptyCells={emptyCellsCount}
+            keyboardNavigation
+            bottomActionClick={() => (showRecordsCreateSheet.show = true)}
+            on:columnsSwap={(order) => {
+                saveColumnsOrder(order.detail);
+            }}
+            on:columnsResize={(resize) => {
+                saveColumnsWidth(resize.detail);
+            }}>
+            <svelte:fragment slot="header" let:root>
+                {#each $columns as column (column.id)}
+                    {#if column.isAction}
+                        <Spreadsheet.Header.Cell column="actions" {root}>
+                            <Button.Button
+                                icon
+                                variant="extra-compact"
+                                on:click={() => {
+                                    $showCreateAttributeSheet.show = true;
+                                    $showCreateAttributeSheet.column = null;
+                                    $showCreateAttributeSheet.columns = $columns;
+                                    $showCreateAttributeSheet.title = 'Insert column';
+                                    $showCreateAttributeSheet.columnsOrder = $columnsOrder;
+                                }}>
+                                <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
+                            </Button.Button>
+                        </Spreadsheet.Header.Cell>
+                    {:else}
+                        <SheetOptions
+                            type="header"
+                            columnId={column.id}
+                            column={$attributes.find((attr) => attr.key === column.id)}
+                            onSelect={(option, columnId) =>
+                                onSelectSheetOption(option, columnId, 'header')}>
+                            {#snippet children(toggle)}
+                                <Spreadsheet.Header.Cell
+                                    {root}
+                                    column={column.id}
+                                    icon={column.icon ?? IconText}
+                                    on:contextmenu={toggle}>
+                                    <Layout.Stack
+                                        gap="xs"
+                                        direction="row"
+                                        alignItems="center"
+                                        alignContent="center">
+                                        {column.title}
 
-                                    {#if column.isPrimary}
-                                        <Badge
-                                            content="Primary key"
-                                            size="xs"
-                                            variant="secondary" />
-                                    {/if}
+                                        {#if column.isPrimary}
+                                            <Badge
+                                                content="Primary key"
+                                                size="xs"
+                                                variant="secondary" />
+                                        {/if}
 
-                                    <SortButton
-                                        onSort={sort}
-                                        column={column.id}
-                                        state={sortState} />
-                                </Layout.Stack>
-                            </Spreadsheet.Header.Cell>
-                        {/snippet}
-                    </SheetOptions>
-                {/if}
-            {/each}
-        </svelte:fragment>
+                                        <SortButton
+                                            onSort={sort}
+                                            column={column.id}
+                                            state={sortState} />
+                                    </Layout.Stack>
+                                </Spreadsheet.Header.Cell>
+                            {/snippet}
+                        </SheetOptions>
+                    {/if}
+                {/each}
+            </svelte:fragment>
 
-        {#each documents.documents as document, index (document.$id)}
-            <!-- TODO: add `value` for user attributes -->
-            <Spreadsheet.Row.Base {root} id={document.$id} {index}>
-                {#each $columns as { id: columnId, isEditable } (columnId)}
-                    {@const formatted = formatColumn(document[columnId])}
-                    <Spreadsheet.Cell
-                        {root}
-                        {isEditable}
-                        column={columnId}
-                        value={columnId.includes('$') || formatted === 'null'
-                            ? undefined
-                            : formatted}>
-                        {#if columnId === '$id'}
-                            <Id value={document.$id} tooltipPortal>{document.$id}</Id>
-                        {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
-                            <DualTimeView time={document[columnId]} />
-                        {:else if columnId === 'actions'}
-                            <SheetOptions
-                                type="row"
-                                column={$attributes.find((attr) => attr.key === columnId)}
-                                onSelect={(option) =>
-                                    onSelectSheetOption(option, 'row', null, document)}>
-                                {#snippet children(toggle)}
-                                    <Button.Button icon variant="extra-compact" on:click={toggle}>
-                                        <Icon
-                                            icon={IconDotsHorizontal}
-                                            color="--fgcolor-neutral-primary" />
-                                    </Button.Button>
-                                {/snippet}
-                            </SheetOptions>
-                        {:else}
-                            {@const attr = $attributes.find((n) => n.key === columnId)}
-                            {#if attr}
-                                {#if isRelationship(attr)}
-                                    {@const args = displayNames?.[attr.relatedCollection] ?? [
-                                        '$id'
-                                    ]}
-                                    {#if !isRelationshipToMany(attr)}
-                                        {#if document[columnId]}
-                                            {@const related = document[columnId]}
-                                            <Link.Button
-                                                variant="muted"
-                                                on:click={(e) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    goto(
-                                                        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection/${attr.relatedCollection}/document/${related.$id}`
-                                                    );
-                                                }}>
-                                                {#each args as arg, i}
-                                                    {#if arg !== undefined}
-                                                        {#if i}&nbsp;|{/if}
-                                                        <span class="text" data-private
-                                                            >{related?.[arg]}</span>
-                                                    {/if}
-                                                {/each}
-                                            </Link.Button>
+            {#each documents.documents as document, index (document.$id)}
+                <!-- TODO: add `value` for user attributes -->
+                <Spreadsheet.Row.Base {root} id={document.$id} {index}>
+                    {#each $columns as { id: columnId, isEditable } (columnId)}
+                        {@const formatted = formatColumn(document[columnId])}
+                        <Spreadsheet.Cell
+                            {root}
+                            {isEditable}
+                            column={columnId}
+                            value={columnId.includes('$') || formatted === 'null'
+                                ? undefined
+                                : formatted}>
+                            {#if columnId === '$id'}
+                                <Id value={document.$id} tooltipPortal>{document.$id}</Id>
+                            {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
+                                <DualTimeView time={document[columnId]} />
+                            {:else if columnId === 'actions'}
+                                <SheetOptions
+                                    type="row"
+                                    column={$attributes.find((attr) => attr.key === columnId)}
+                                    onSelect={(option) =>
+                                        onSelectSheetOption(option, 'row', null, document)}>
+                                    {#snippet children(toggle)}
+                                        <Button.Button
+                                            icon
+                                            variant="extra-compact"
+                                            on:click={toggle}>
+                                            <Icon
+                                                icon={IconDotsHorizontal}
+                                                color="--fgcolor-neutral-primary" />
+                                        </Button.Button>
+                                    {/snippet}
+                                </SheetOptions>
+                            {:else}
+                                {@const attr = $attributes.find((n) => n.key === columnId)}
+                                {#if attr}
+                                    {#if isRelationship(attr)}
+                                        {@const args = displayNames?.[attr.relatedCollection] ?? [
+                                            '$id'
+                                        ]}
+                                        {#if !isRelationshipToMany(attr)}
+                                            {#if document[columnId]}
+                                                {@const related = document[columnId]}
+                                                <Link.Button
+                                                    variant="muted"
+                                                    on:click={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        goto(
+                                                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection/${attr.relatedCollection}/document/${related.$id}`
+                                                        );
+                                                    }}>
+                                                    {#each args as arg, i}
+                                                        {#if arg !== undefined}
+                                                            {#if i}&nbsp;|{/if}
+                                                            <span class="text" data-private
+                                                                >{related?.[arg]}</span>
+                                                        {/if}
+                                                    {/each}
+                                                </Link.Button>
+                                            {:else}
+                                                <span class="text">n/a</span>
+                                            {/if}
                                         {:else}
-                                            <span class="text">n/a</span>
+                                            {@const itemsNum = document[columnId]?.length}
+                                            <Button.Button
+                                                variant="extra-compact"
+                                                disabled={!itemsNum}
+                                                badge={itemsNum ?? 0}
+                                                on:click={(e) => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    relationshipData = document[columnId];
+                                                    showRelationships = true;
+                                                    selectedRelationship = attr;
+                                                }}>
+                                                Items
+                                            </Button.Button>
                                         {/if}
                                     {:else}
-                                        {@const itemsNum = document[columnId]?.length}
-                                        <Button.Button
-                                            variant="extra-compact"
-                                            disabled={!itemsNum}
-                                            badge={itemsNum ?? 0}
-                                            on:click={(e) => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                relationshipData = document[columnId];
-                                                showRelationships = true;
-                                                selectedRelationship = attr;
-                                            }}>
-                                            Items
-                                        </Button.Button>
-                                    {/if}
-                                {:else}
-                                    {@const value = document[columnId]}
-                                    {@const formatted = formatColumn(document[columnId])}
-                                    {@const isDatetimeAttribute = attr.type === 'datetime'}
-                                    {@const isEncryptedAttribute = isString(attr) && attr.encrypt}
-                                    {#if isDatetimeAttribute}
-                                        <DualTimeView time={value}>
-                                            <span slot="title">Timestamp</span>
-                                            {toLocaleDateTime(value, true)}
-                                        </DualTimeView>
-                                    {:else if isEncryptedAttribute}
-                                        <button on:click={(e) => e.preventDefault()}>
-                                            <InteractiveText
-                                                copy={false}
-                                                variant="secret"
-                                                isVisible={false}
-                                                text={formatted} />
-                                        </button>
-                                    {:else if formatted.length > 20}
-                                        <Tooltip placement="bottom" portal>
+                                        {@const value = document[columnId]}
+                                        {@const formatted = formatColumn(document[columnId])}
+                                        {@const isDatetimeAttribute = attr.type === 'datetime'}
+                                        {@const isEncryptedAttribute =
+                                            isString(attr) && attr.encrypt}
+                                        {#if isDatetimeAttribute}
+                                            <DualTimeView time={value}>
+                                                <span slot="title">Timestamp</span>
+                                                {toLocaleDateTime(value, true)}
+                                            </DualTimeView>
+                                        {:else if isEncryptedAttribute}
+                                            <button on:click={(e) => e.preventDefault()}>
+                                                <InteractiveText
+                                                    copy={false}
+                                                    variant="secret"
+                                                    isVisible={false}
+                                                    text={formatted} />
+                                            </button>
+                                        {:else if formatted.length > 20}
+                                            <Tooltip placement="bottom" portal>
+                                                <Typography.Text truncate>
+                                                    {formatted}
+                                                </Typography.Text>
+                                                <span
+                                                    slot="tooltip"
+                                                    style:white-space="pre-wrap"
+                                                    style:word-break="break-word">
+                                                    {formatted}
+                                                </span>
+                                            </Tooltip>
+                                        {:else if formatted === 'null'}
+                                            <Badge variant="secondary" content="NULL" size="xs" />
+                                        {:else}
                                             <Typography.Text truncate>
                                                 {formatted}
                                             </Typography.Text>
-                                            <span
-                                                slot="tooltip"
-                                                style:white-space="pre-wrap"
-                                                style:word-break="break-word">
-                                                {formatted}
-                                            </span>
-                                        </Tooltip>
-                                    {:else if formatted === 'null'}
-                                        <Badge variant="secondary" content="NULL" size="xs" />
-                                    {:else}
-                                        <Typography.Text truncate>
-                                            {formatted}
-                                        </Typography.Text>
+                                        {/if}
                                     {/if}
                                 {/if}
                             {/if}
-                        {/if}
-                    </Spreadsheet.Cell>
-                {/each}
-            </Spreadsheet.Row.Base>
-        {/each}
+                        </Spreadsheet.Cell>
+                    {/each}
+                </Spreadsheet.Row.Base>
+            {/each}
 
-        <svelte:fragment slot="footer">
-            <Layout.Stack
-                direction="row"
-                alignContent="center"
-                alignItems="center"
-                justifyContent="space-between">
-                <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
-                    {selectedRows.length
-                        ? `${selectedRows.length} records selected`
-                        : `${documents.documents.length} records`}
-                </Typography.Text>
+            <svelte:fragment slot="footer">
+                <Layout.Stack
+                    direction="row"
+                    alignContent="center"
+                    alignItems="center"
+                    justifyContent="space-between">
+                    <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
+                        {selectedRows.length
+                            ? `${selectedRows.length} records selected`
+                            : `${documents.documents.length} records`}
+                    </Typography.Text>
 
-                <div style:margin-right="var(--space-6)">
-                    <Button.Button
-                        variant="extra-compact"
-                        on:click={() => {
-                            $randomDataModalState.show = true;
-                        }}>Generate random data</Button.Button>
-                </div>
-            </Layout.Stack>
-        </svelte:fragment>
-    </Spreadsheet.Root>
+                    <div style:margin-right="var(--space-6)">
+                        <Button.Button
+                            variant="extra-compact"
+                            on:click={() => {
+                                $randomDataModalState.show = true;
+                            }}>Generate random data</Button.Button>
+                    </div>
+                </Layout.Stack>
+            </svelte:fragment>
+        </Spreadsheet.Root>
+    {/key}
 
     {#if selectedRows.length > 0}
         <div class="floating-action-bar">
