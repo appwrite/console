@@ -81,7 +81,7 @@ export type ColumnDirection = {
 
 export type CreateAttribute = {
     show: boolean;
-    column?: string;
+    column?: Attributes;
     title: string;
     direction?: ColumnDirection;
     onDone?: () => void;
@@ -97,6 +97,14 @@ export const showCreateAttributeSheet = writable<CreateAttribute>({
     onDone: null,
     columns: null,
     columnsOrder: null
+});
+
+export const showCreateIndexSheet = writable<{
+    show: boolean;
+    column?: string;
+}>({
+    show: false,
+    column: null
 });
 
 export function reorderItems<T extends { id: string } | { key: string }>(

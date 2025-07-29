@@ -14,6 +14,7 @@
     let {
         direction = null,
         showCreate = false,
+        column = null,
         columns = $bindable(null),
         columnId = $bindable(null),
         columnsOrder = $bindable(null),
@@ -21,6 +22,7 @@
         onColumnsReorder = null
     }: {
         showCreate: boolean;
+        column?: Attributes;
         columnId?: string;
         columns?: Column[];
         columnsOrder?: string[];
@@ -32,11 +34,12 @@
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
 
-    let key: string = $state(null);
+    let key: string = $state(column?.key ?? null);
     let data: Partial<Attributes> = $state({
-        required: false,
-        array: false,
-        default: null
+        required: column?.required ?? false,
+        array: column?.array ?? false,
+        default: column?.default ?? null,
+        ...column
     });
 
     let AttributeComponent = $derived(

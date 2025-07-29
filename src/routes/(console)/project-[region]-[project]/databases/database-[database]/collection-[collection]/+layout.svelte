@@ -30,6 +30,7 @@
         randomDataModalState,
         reorderItems,
         showCreateAttributeSheet,
+        showCreateIndexSheet,
         spreadsheetLoading
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
@@ -50,7 +51,9 @@
     import { generateFakeDocuments, generateAttributes } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
     import { sleep } from '$lib/helpers/promises';
+    import CreateIndex from './indexes/createIndex.svelte';
 
+    let createIndex: CreateIndex;
     let editDocument: EditDocument;
     let createAttribute: CreateAttribute;
     let selectedOption: Option['name'] = 'String';
@@ -288,6 +291,7 @@
     <CreateAttribute
         bind:selectedOption
         bind:this={createAttribute}
+        column={$showCreateAttributeSheet.column}
         showCreate={$showCreateAttributeSheet.show}
         direction={$showCreateAttributeSheet.direction}
         columns={$showCreateAttributeSheet.columns}
@@ -321,6 +325,19 @@
         onClick: async () => await editDocument?.update()
     }}>
     <EditDocument bind:document={$databaseRowSheetOptions.document} bind:this={editDocument} />
+</SideSheet>
+
+<SideSheet
+    title="Create index"
+    bind:show={$showCreateIndexSheet.show}
+    submit={{
+        text: 'Create',
+        onClick: async () => await createIndex.create()
+    }}>
+    <CreateIndex
+        bind:this={createIndex}
+        bind:showCreateIndex={$showCreateIndexSheet.show}
+        externalAttributeKey={$showCreateIndexSheet.column} />
 </SideSheet>
 
 <Dialog title="Generate random data" bind:open={$randomDataModalState.show}>

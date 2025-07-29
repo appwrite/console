@@ -17,13 +17,13 @@
     } from '@appwrite.io/pink-svelte';
     import { isRelationship, isString } from '../document-[document]/attributes/store';
     import FailedModal from '../failedModal.svelte';
-    import CreateIndex from '../indexes/createIndex.svelte';
     import {
         attributes,
         type Attributes,
         indexes,
         isCsvImportInProgress,
-        reorderItems
+        reorderItems,
+        showCreateIndexSheet
     } from '../store';
     import Delete from './deleteAttribute.svelte';
     import EditAttribute from './edit.svelte';
@@ -101,14 +101,12 @@
     let showFailed = $state(false);
     let showDelete = $state(false);
     let selectedAttributes = $state([]);
-    let showCreateIndex = $state(false);
     let selectedAttribute: Attributes = $state(null);
 
     let columnsOrder = $state([]);
     const collectionId = page.params.collection;
 
     let showEdit = $state(false);
-    let createIndex: CreateIndex;
     let editAttribute: EditAttribute;
 
     const attributeFormatIcon = {
@@ -300,9 +298,9 @@
                                             leadingIcon={IconPlus}
                                             on:click={(event) => {
                                                 toggle(event);
-                                                selectedAttribute = attribute;
-                                                showCreateIndex = true;
                                                 showDropdown[index] = false;
+                                                $showCreateIndexSheet.show = true;
+                                                $showCreateIndexSheet.column = attribute.key;
                                             }}>
                                             Create index
                                         </ActionMenu.Item.Button>
@@ -379,19 +377,6 @@
         onClick: async () => await editAttribute.submit()
     }}>
     <EditAttribute showEdit isModal={false} {selectedAttribute} bind:this={editAttribute} />
-</SideSheet>
-
-<SideSheet
-    title="Create index"
-    bind:show={showCreateIndex}
-    submit={{
-        text: 'Create',
-        onClick: async () => await createIndex.create()
-    }}>
-    <CreateIndex
-        bind:showCreateIndex
-        externalAttribute={selectedAttribute}
-        bind:this={createIndex} />
 </SideSheet>
 
 {#if showFailed}

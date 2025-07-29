@@ -10,13 +10,13 @@
     import { sdk } from '$lib/stores/sdk';
     import { IndexType } from '@appwrite.io/console';
     import { isRelationship } from '../document-[document]/attributes/store';
-    import { type Attributes, collection, indexes } from '../store';
+    import { collection, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { flags } from '$lib/flags';
 
     export let showCreateIndex = false;
-    export let externalAttribute: Attributes = null;
+    export let externalAttributeKey: string = null;
 
     const databaseId = page.params.database;
 
@@ -52,8 +52,8 @@
     }
 
     function initialize() {
-        attributeList = externalAttribute
-            ? [{ value: externalAttribute.key, order: 'ASC', length: null }]
+        attributeList = externalAttributeKey
+            ? [{ value: externalAttributeKey, order: 'ASC', length: null }]
             : [{ value: '', order: 'ASC', length: null }];
         selectedType = IndexType.Key;
         key = `index_${$indexes.length + 1}`;

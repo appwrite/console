@@ -29,7 +29,8 @@
         columnsOrder,
         columnsWidth,
         randomDataModalState,
-        spreadsheetLoading
+        spreadsheetLoading,
+        showCreateIndexSheet
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -383,6 +384,21 @@
                 sortState.set({ column: columnId, direction: 'desc' });
                 await sort([Query.orderDesc(columnId)]);
             }
+
+            if (action === 'create-index') {
+                $showCreateIndexSheet.show = true;
+                $showCreateIndexSheet.column = columnId;
+            }
+
+            if (action === 'duplicate-header') {
+                $showCreateAttributeSheet.title = `Duplicate column`;
+                $showCreateAttributeSheet.column = $attributes.find(
+                    (attr) => attr.key === columnId
+                );
+                $showCreateAttributeSheet.columns = $columns;
+                $showCreateAttributeSheet.columnsOrder = $columnsOrder;
+                $showCreateAttributeSheet.show = true;
+            }
         } else if (type === 'row') {
             if (action === 'update') {
                 $databaseRowSheetOptions.show = true;
@@ -464,7 +480,9 @@
                             variant="extra-compact"
                             on:click={() => {
                                 $showCreateAttributeSheet.show = true;
+                                $showCreateAttributeSheet.column = null;
                                 $showCreateAttributeSheet.columns = $columns;
+                                $showCreateAttributeSheet.title = 'Insert column';
                                 $showCreateAttributeSheet.columnsOrder = $columnsOrder;
                             }}>
                             <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
