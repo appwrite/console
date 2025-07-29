@@ -35,8 +35,9 @@
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
     import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
-    import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
+    import { isTabletViewport, isSmallViewport, isDesktopViewport } from '$lib/stores/viewport';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
 
     import type { HTMLAttributes } from 'svelte/elements';
     import type { Models } from '@appwrite.io/console';
@@ -353,7 +354,10 @@
 </div>
 
 {#if subNavigation}
-    <div class="sub-navigation" class:icons={state === 'icons'}>
+    <div
+        class="sub-navigation"
+        class:icons={state === 'icons'}
+        style:--banner-spacing={$isDesktopViewport && $bannerSpacing ? $bannerSpacing : undefined}>
         <svelte:component this={subNavigation} />
     </div>
 {/if}
@@ -590,8 +594,9 @@
 
     .sub-navigation {
         margin-top: 48px;
+
         @media (min-width: 1024px) {
-            margin-top: 0;
+            margin-top: var(--banner-spacing, 0px);
             width: 400px;
             height: calc(100vh - 48px);
             display: flex;
@@ -603,8 +608,8 @@
             transition: width 0.2s linear;
 
             &.icons {
-                width: 266px;
                 transition: width 0.3s linear;
+                width: var(--banner-spacing, 266px);
             }
         }
     }

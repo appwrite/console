@@ -15,6 +15,7 @@
     import { BottomSheet } from '$lib/components';
     import Button from '$lib/elements/forms/button.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
 
     let data = $derived(page.data) as PageData;
     let region = $derived(page.params.region);
@@ -42,75 +43,78 @@
 </script>
 
 <svelte:window on:resize={onResize} />
-{#if !$isTabletViewport}
-    <Sidebar.Base state="open" resizable={false}>
-        <section class="list-container" slot="top" style:width="100%">
-            <a
-                href={`${base}/project-${region}-${project}/databases/database-${databaseId}`}
-                class="database-name u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile is-selected">
-                <Icon icon={IconDatabase} size="s" color="--fgcolor-neutral-weak" />
-                {data.database?.name}
-            </a>
-            <div class="collection-content">
-                {#if collections?.total}
-                    <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-8">
-                        {#each sortedCollections as collection}
-                            {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
-                            {@const isSelected = collectionId === collection.$id}
 
-                            <Layout.Stack gap="m" direction="row" alignItems="center">
+{#if !$isTabletViewport}
+    <div class="side-bar-base-wrapper" style:--banner-spacing={$bannerSpacing}>
+        <Sidebar.Base state="open" resizable={false}>
+            <section class="list-container" slot="top" style:width="100%">
+                <a
+                    href={`${base}/project-${region}-${project}/databases/database-${databaseId}`}
+                    class="database-name u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile is-selected">
+                    <Icon icon={IconDatabase} size="s" color="--fgcolor-neutral-weak" />
+                    {data.database?.name}
+                </a>
+                <div class="collection-content">
+                    {#if collections?.total}
+                        <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-8">
+                            {#each sortedCollections as collection}
+                                {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
+                                {@const isSelected = collectionId === collection.$id}
+
+                                <Layout.Stack gap="m" direction="row" alignItems="center">
+                                    <div
+                                        style:border-left="1px solid var(--border-neutral, #ededf0)"
+                                        style:height="1rem">
+                                    </div>
+
+                                    <li class:is-selected={isSelected} style:width="100%">
+                                        <a
+                                            class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
+                                            {href}>
+                                            <Icon
+                                                icon={IconTable}
+                                                size="s"
+                                                color={isSelected
+                                                    ? '--fgcolor-neutral-tertiary'
+                                                    : '--fgcolor-neutral-weak'} />
+                                            <span class="text collection-name" data-private
+                                                >{collection.name}</span>
+                                        </a>
+                                    </li>
+                                </Layout.Stack>
+                            {/each}
+                        </ul>
+                    {:else}
+                        <div style:padding-block="0.75rem">
+                            <Layout.Stack
+                                gap="m"
+                                direction="row"
+                                alignItems="center"
+                                class="u-margin-inline-start-8 u-margin-block-start-8">
                                 <div
                                     style:border-left="1px solid var(--border-neutral, #ededf0)"
                                     style:height="1rem">
                                 </div>
-
-                                <li class:is-selected={isSelected} style:width="100%">
-                                    <a
-                                        class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
-                                        {href}>
-                                        <Icon
-                                            icon={IconTable}
-                                            size="s"
-                                            color={isSelected
-                                                ? '--fgcolor-neutral-tertiary'
-                                                : '--fgcolor-neutral-weak'} />
-                                        <span class="text collection-name" data-private
-                                            >{collection.name}</span>
-                                    </a>
-                                </li>
+                                No tables yet
                             </Layout.Stack>
-                        {/each}
-                    </ul>
-                {:else}
-                    <div style:padding-block="0.75rem">
-                        <Layout.Stack
-                            gap="m"
-                            direction="row"
-                            alignItems="center"
-                            class="u-margin-inline-start-8 u-margin-block-start-8">
-                            <div
-                                style:border-left="1px solid var(--border-neutral, #ededf0)"
-                                style:height="1rem">
-                            </div>
-                            No tables yet
-                        </Layout.Stack>
-                    </div>
-                {/if}
+                        </div>
+                    {/if}
 
-                <Layout.Stack alignItems="center" direction="row" style="gap: 3px;">
-                    <Icon icon={IconPlus} size="s" />
-                    <Button
-                        compact
-                        on:click={() => {
-                            $showCreate = true;
-                            $showSubNavigation = false;
-                        }}>
-                        Create collection
-                    </Button>
-                </Layout.Stack>
-            </div>
-        </section>
-    </Sidebar.Base>
+                    <Layout.Stack alignItems="center" direction="row" style="gap: 3px;">
+                        <Icon icon={IconPlus} size="s" />
+                        <Button
+                            compact
+                            on:click={() => {
+                                $showCreate = true;
+                                $showSubNavigation = false;
+                            }}>
+                            Create collection
+                        </Button>
+                    </Layout.Stack>
+                </div>
+            </section>
+        </Sidebar.Base>
+    </div>
 {:else}
     <Navbar.Base>
         <div slot="left">
@@ -163,6 +167,12 @@
 {/if}
 
 <style lang="scss">
+    .side-bar-base-wrapper {
+        & :global(nav) {
+            margin-top: var(--banner-spacing);
+        }
+    }
+
     .list-container {
         display: flex;
         flex-direction: column;
