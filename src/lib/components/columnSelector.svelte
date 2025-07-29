@@ -181,13 +181,14 @@
 <svelte:window on:resize={calcMaxHeight} />
 
 {#if $columns?.length || showAnyway}
+    {@const showActions = $columns.length > 1}
     {@const placement = isNewStyle ? 'bottom-start' : 'bottom-end'}
     <Popover let:toggle {placement} padding="none">
         {@render children(toggle, selectedColumnsNumber)}
         <svelte:fragment slot="tooltip">
             <div bind:this={containerRef} class="actions-menu-wrapper" style:max-height={maxHeight}>
                 <ActionMenu.Root>
-                    {#if isNewStyle}
+                    {#if isNewStyle && showActions}
                         <Layout.Stack gap="xs">
                             <ActionMenu.Item.Input
                                 id="columns"
@@ -212,7 +213,10 @@
                         </Layout.Stack>
                     {/if}
 
-                    <Layout.Stack gap="none" direction="column" class="filter-modal-actions-menu">
+                    <Layout.Stack
+                        gap="none"
+                        direction="column"
+                        class="filter-modal-actions-menu {showActions ? 'has-actions' : ''}">
                         {#each filteredColumns as column}
                             {#if !column?.exclude}
                                 <ActionMenu.Item.Button
@@ -249,7 +253,10 @@
             overflow: scroll;
             max-height: 150px;
             padding-bottom: unset;
-            margin-bottom: -0.5rem;
+
+            &.has-actions {
+                margin-bottom: -0.5rem;
+            }
 
             &::-webkit-scrollbar {
                 display: none;
