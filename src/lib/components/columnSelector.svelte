@@ -245,7 +245,8 @@
 {/if}
 
 <style lang="scss">
-    .actions-menu-wrapper {
+     /* global because its on a tooltip slot, nested */
+    :global(.actions-menu-wrapper) {
         overflow: scroll;
         margin-bottom: -0.35rem;
 

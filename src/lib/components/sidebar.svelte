@@ -35,7 +35,7 @@
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
     import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
-    import { isTabletViewport, isSmallViewport, isDesktopViewport } from '$lib/stores/viewport';
+    import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
 
