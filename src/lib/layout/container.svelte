@@ -7,6 +7,7 @@
     export let slotSpacing = false;
     export let overlapCover = false;
     export let paddingInlineEnd = true;
+    export let databasesScreen = false;
     export let size: 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl' = null;
 
     $: style = size
@@ -20,6 +21,7 @@
         class:slotSpacing
         class:paddingInlineEnd={!paddingInlineEnd}
         class:expanded
+        class:databasesScreen
         {style}>
         <Layout.Stack gap="l">
             <slot />
@@ -52,6 +54,13 @@
         &.paddingInlineEnd {
             @media (min-width: 1024px) {
                 padding-inline-end: 2.75rem !important;
+            }
+        }
+
+        &.databasesScreen {
+            @media (min-width: 1440px) {
+                min-width: 1070px;
+                max-width: 1144px;
             }
         }
 

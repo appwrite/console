@@ -9,13 +9,15 @@
     import UpdateStatus from './updateStatus.svelte';
 </script>
 
-<Container>
-    {#if $collection}
-        <UpdateStatus />
-        <UpdateName />
-        <DisplayName />
-        <UpdatePermissions />
-        <UpdateSecurity />
-        <DangerZone />
-    {/if}
-</Container>
+<div class="wide-screen-wrapper databases-spreadsheet">
+    <Container expanded slotSpacing databasesScreen>
+        {#if $collection}
+            <UpdateStatus />
+            <UpdateName />
+            <DisplayName />
+            <UpdatePermissions />
+            <UpdateSecurity />
+            <DangerZone />
+        {/if}
+    </Container>
+</div>

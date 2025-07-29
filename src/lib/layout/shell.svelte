@@ -245,6 +245,14 @@
         }
     }
 
+    :global(main:has(.wide-screen-wrapper)) {
+        @media (min-width: 1728px) {
+            .main-content {
+                padding-left: 255px;
+            }
+        }
+    }
+
     .overlay {
         position: fixed;
         width: 100vw;

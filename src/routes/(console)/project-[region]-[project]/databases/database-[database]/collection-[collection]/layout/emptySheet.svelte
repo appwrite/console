@@ -5,7 +5,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
-    import { spreadsheetLoading } from '../store';
+    import { columns, columnsOrder, showCreateAttributeSheet, spreadsheetLoading } from '../store';
 
     type Mode = 'records' | 'indexes';
 
@@ -112,29 +112,51 @@
         loading={$spreadsheetLoading}>
         <svelte:fragment slot="header" let:root>
             {#each spreadsheetColumns as column (column.id)}
-                <Spreadsheet.Header.Cell {root} column={column.id} icon={column.icon ?? undefined}>
-                    {#if column.isAction}
-                        <Button.Button icon variant="extra-compact">
-                            <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
-                        </Button.Button>
-                    {:else if column.id === 'actions' || column.id === 'empty'}
-                        {column.title}
-                    {:else}
-                        <Layout.Stack
-                            gap="xs"
-                            direction="row"
-                            alignItems="center"
-                            alignContent="center">
+                {@const columnActionsById = column.id === 'actions'}
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
+                <div
+                    role="button"
+                    tabindex="0"
+                    style:cursor={columnActionsById ? 'pointer' : null}
+                    onclick={() => {
+                        if (columnActionsById && mode === 'records') {
+                            $showCreateAttributeSheet.show = true;
+                            $showCreateAttributeSheet.columns = $columns;
+                            $showCreateAttributeSheet.columnsOrder = $columnsOrder;
+                        }
+                    }}>
+                    <Spreadsheet.Header.Cell
+                        {root}
+                        column={column.id}
+                        icon={column.icon ?? undefined}>
+                        {#if column.isAction}
+                            <Button.Button
+                                icon
+                                variant="extra-compact"
+                                on:click={() => {
+                                    console.log('dank');
+                                }}>
+                                <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
+                            </Button.Button>
+                        {:else if column.id === 'actions' || column.id === 'empty'}
                             {column.title}
+                        {:else}
+                            <Layout.Stack
+                                gap="xs"
+                                direction="row"
+                                alignItems="center"
+                                alignContent="center">
+                                {column.title}
 
-                            {#if column.isPrimary}
-                                <Badge content="Primary key" size="xs" variant="secondary" />
-                            {/if}
+                                {#if column.isPrimary}
+                                    <Badge content="Primary key" size="xs" variant="secondary" />
+                                {/if}
 
-                            <SortButton disabled column={column.id} />
-                        </Layout.Stack>
-                    {/if}
-                </Spreadsheet.Header.Cell>
+                                <SortButton disabled column={column.id} />
+                            </Layout.Stack>
+                        {/if}
+                    </Spreadsheet.Header.Cell>
+                </div>
             {/each}
         </svelte:fragment>
     </Spreadsheet.Root>
@@ -199,9 +221,10 @@
             position: unset;
         }
 
-        &[data-mode='records']
-            :global([role='rowheader'] [role='cell']:nth-last-child(2) [role='presentation']) {
-            display: none;
+        &[data-mode='records'] {
+            & :global([role='rowheader'] [role='cell']:nth-last-child(2) [role='presentation']) {
+                display: none;
+            }
         }
 
         &[data-mode='indexes'] {

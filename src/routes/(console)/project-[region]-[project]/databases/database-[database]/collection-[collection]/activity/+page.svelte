@@ -5,4 +5,6 @@
     export let data: PageData;
 </script>
 
-<Activity {...data} />
+<div class="wide-screen-wrapper databases-spreadsheet">
+    <Activity {...data} databasesScreen />
+</div>

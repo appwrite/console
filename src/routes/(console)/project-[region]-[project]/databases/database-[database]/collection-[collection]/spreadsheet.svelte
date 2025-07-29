@@ -192,7 +192,7 @@
             {
                 id: '$id',
                 title: 'ID',
-                width: getColumnWidth('$id', 200),
+                width: getColumnWidth('$id', 225),
                 minimumWidth: 225,
                 draggable: false,
                 type: 'string',
@@ -447,6 +447,7 @@
         bind:columns={$columns}
         loading={$spreadsheetLoading}
         emptyCells={emptyCellsCount}
+        keyboardNavigation
         bottomActionClick={() => (showRecordsCreateSheet.show = true)}
         on:columnsSwap={(order) => {
             saveColumnsOrder(order.detail);
@@ -508,20 +509,20 @@
             {/each}
         </svelte:fragment>
 
-        {#each documents.documents as document (document.$id)}
+        {#each documents.documents as document, index (document.$id)}
             <!-- TODO: add `value` for user attributes -->
-            <Spreadsheet.Row.Base {root} id={document.$id}>
+            <Spreadsheet.Row.Base {root} id={document.$id} {index}>
                 {#each $columns as { id: columnId, isEditable } (columnId)}
                     {@const formatted = formatColumn(document[columnId])}
                     <Spreadsheet.Cell
                         {root}
-                        column={columnId}
                         {isEditable}
+                        column={columnId}
                         value={columnId.includes('$') || formatted === 'null'
                             ? undefined
                             : formatted}>
                         {#if columnId === '$id'}
-                            <Id value={document.$id}>{document.$id}</Id>
+                            <Id value={document.$id} tooltipPortal>{document.$id}</Id>
                         {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
                             <DualTimeView time={document[columnId]} />
                         {:else if columnId === 'actions'}
@@ -603,7 +604,7 @@
                                                 text={formatted} />
                                         </button>
                                     {:else if formatted.length > 20}
-                                        <Tooltip placement="bottom">
+                                        <Tooltip placement="bottom" portal>
                                             <Typography.Text truncate>
                                                 {formatted}
                                             </Typography.Text>

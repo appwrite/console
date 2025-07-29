@@ -9,6 +9,7 @@
     export let event: string = null;
     export let eventContext = 'click_id_tag';
     export let tooltipDisabled = false;
+    export let tooltipPortal = false;
     export let copyText: string = 'Click to copy';
 
     let content = copyText;
@@ -34,7 +35,7 @@
     //TODO: remove this component
 </script>
 
-<Tooltip disabled={tooltipDisabled}>
+<Tooltip disabled={tooltipDisabled} portal={tooltipPortal}>
     <span
         data-private
         style:display="inline-flex"
