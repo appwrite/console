@@ -57,7 +57,10 @@
                 .vcs.listRepositoryBranches($installation.$id, selectedRepository);
 
             const sorted = sortBranches(branchList.branches);
-            branch = sorted[0]?.name ?? null;
+
+            branch = sorted.find((b) => b.name === site.providerBranch)
+                ? site.providerBranch
+                : (sorted[0]?.name ?? null);
 
             if (!branch) {
                 branch = 'main';

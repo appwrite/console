@@ -119,7 +119,7 @@
                             >here</a
                         >.
                     </p>
-                    <Layout.Stack direction="row">
+                    <Layout.Stack direction="row" wrap="wrap">
                         <slot />
                     </Layout.Stack>
                 {/if}

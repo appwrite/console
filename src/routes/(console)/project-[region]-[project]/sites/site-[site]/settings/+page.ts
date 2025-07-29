@@ -33,6 +33,11 @@ export const load = async ({ params, depends, parent }) => {
         }
     });
 
+    const enabledSpecs = specificationsList?.specifications?.filter((s) => s.enabled) ?? [];
+    if (!enabledSpecs.some((s) => s.slug === site.specification)) {
+        site.specification = enabledSpecs[0]?.slug;
+    }
+
     return {
         site,
         frameworks,

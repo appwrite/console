@@ -60,7 +60,10 @@
     {#key data.site.providerRepositoryId}
         <UpdateRepository site={data.site} installations={data.installations} />
     {/key}
-    <UpdateBuildSettings site={data.site} frameworks={data.frameworks.frameworks} />
+    <UpdateBuildSettings
+        site={data.site}
+        frameworks={data.frameworks.frameworks}
+        specs={data.specificationsList} />
     <UpdateRuntimeSettings site={data.site} frameworks={data.frameworks.frameworks} />
     <UpdateVariables
         {sdkCreateVariable}
