@@ -29,15 +29,21 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         preferences.organization ??
         (organizations.teams.length > 0 ? organizations.teams[0].$id : undefined);
 
-    let projects: Models.Project[] = [];
-    
+    // Load projects for the current organization if one is selected
+    let projects = null;
     if (currentOrgId) {
-        const orgProjects = await sdk.forConsole.projects.list([
-            Query.equal('teamId', currentOrgId),
-            Query.limit(5),
-            Query.orderDesc('$updatedAt')
-        ]);
-        projects = orgProjects.projects.length > 0 ? orgProjects.projects : [];
+        try {
+            projects = await sdk.forConsole.projects.list([
+                Query.equal('teamId', currentOrgId),
+                Query.limit(1000) // Get all projects for organization
+            ]);
+            for (const project of projects.projects) {
+                project.region ??= 'default';
+            }
+        } catch (e) {
+            // Handle error silently - projects might not be accessible
+            projects = {};
+        }
     }
 
     return {
@@ -49,7 +55,8 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         currentOrgId,
         organizations,
         consoleVariables,
-        version: versionData?.version ?? null
+        version: versionData?.version ?? null,
+        projects
     };
 };
 

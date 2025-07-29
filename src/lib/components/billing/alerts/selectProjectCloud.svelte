@@ -9,21 +9,27 @@
     import { Dependencies } from '$lib/constants';
     import { billingProjectsLimitDate } from '$lib/stores/billing';
     import { page } from '$app/state';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
+    import { currentPlan } from '$lib/stores/organization';
 
-    export let showSelectProject: boolean;
-    export let selectedProjects: Array<string> = [];
+    let {
+        showSelectProject = $bindable(false),
+        selectedProjects = $bindable([])
+    }: {
+        showSelectProject: boolean;
+        selectedProjects: string[];
+    } = $props();
 
-    let projects: Array<Models.Project> = [];
-    let error: string | null = null;
+    let projects = $state<Array<Models.Project>>([]);
+    let error = $state<string | null>(null);
 
     onMount(() => {
         projects = page.data.projects?.projects || [];
     });
 
-    let projectsToArchive: Array<Models.Project> = [];
-
-    $: projectsToArchive = projects.filter((project) => !selectedProjects.includes(project.$id));
+    let projectsToArchive = $derived(
+        projects.filter((project) => !selectedProjects.includes(project.$id))
+    );
 
     async function updateSelected() {
         try {
@@ -40,6 +46,26 @@
         } catch (e) {
             error = e.message;
         }
+    }
+
+    function formatProjectsToArchive() {
+        let result = '';
+
+        projectsToArchive.forEach((project, index) => {
+            const text = `${index === 0 ? '' : ' '}<b>${project.name}</b> `;
+            result += text;
+
+            if (index < projectsToArchive.length - 1) {
+                if (index == projectsToArchive.length - 2) {
+                    result += 'and ';
+                }
+                if (index < projectsToArchive.length - 2) {
+                    result += ', ';
+                }
+            }
+        });
+
+        return result;
     }
 </script>
 
@@ -67,23 +93,17 @@
             </Table.Row.Base>
         {/each}
     </Table.Root>
-    {#if selectedProjects.length > 2}
+    {#if selectedProjects.length > $currentPlan?.projects}
         <div class="u-text-warning u-mb-4">
-            You can only select two projects. Please deselect others to continue.
+            You can only select {$currentPlan?.projects} projects. Please deselect others to continue.
         </div>
     {/if}
-    {#if selectedProjects.length === 2}
+    {#if selectedProjects.length === $currentPlan?.projects}
         <Alert.Inline
             status="warning"
-            title={`${projects.length - selectedProjects.length} projects will be archived on ${billingProjectsLimitDate}`}>
+            title={`${projects.length - selectedProjects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
             <span>
-                {#each projectsToArchive as project, index}
-                    {@const text = `${index === 0 ? '' : ' '}<b>${project.name}</b> `}
-                    {@html text}{#if index < projectsToArchive.length - 1}{#if index == projectsToArchive.length - 2}
-                            and
-                        {/if}{#if index < projectsToArchive.length - 2},
-                        {/if}{/if}
-                {/each}
+                {@html formatProjectsToArchive()}
                 will be archived.
             </span>
         </Alert.Inline>
@@ -91,6 +111,7 @@
     <svelte:fragment slot="footer">
         <Button.Button size="s" variant="secondary" on:click={() => (showSelectProject = false)}
             >Cancel</Button.Button>
-        <Button.Button size="s" disabled={selectedProjects.length !== 2}>Save</Button.Button>
+        <Button.Button size="s" disabled={selectedProjects.length !== $currentPlan?.projects}
+            >Save</Button.Button>
     </svelte:fragment>
 </Modal>

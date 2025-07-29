@@ -35,7 +35,7 @@
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
     import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
-    import { isTabletViewport } from '$lib/stores/viewport';
+    import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
     import type { HTMLAttributes } from 'svelte/elements';
@@ -79,8 +79,18 @@
         { name: 'Functions', icon: IconLightningBolt, slug: 'functions', category: 'build' },
         { name: 'Messaging', icon: IconChatBubble, slug: 'messaging', category: 'build' },
         { name: 'Storage', icon: IconFolder, slug: 'storage', category: 'build' },
-        { name: 'Sites', icon: IconGlobeAlt, slug: 'sites', category: 'deploy', badge: 'New' }
+        {
+            name: 'Sites',
+            icon: IconGlobeAlt,
+            slug: 'sites',
+            category: 'deploy',
+            badge: 'Early access'
+        }
     ];
+
+    const isSelected = (service: string): boolean => {
+        return page.route.id?.includes(service);
+    };
 </script>
 
 <div
@@ -145,7 +155,7 @@
                         <a
                             href={`/console/project-${project.region}-${project.$id}/overview/platforms`}
                             class="link"
-                            class:active={page.url.pathname.includes('overview')}
+                            class:active={isSelected('overview')}
                             on:click={() => {
                                 trackEvent(Click.MenuOverviewClick);
                                 sideBarIsOpen = false;
@@ -175,7 +185,7 @@
                             <a
                                 href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
-                                class:active={page.url.pathname.includes(projectOption.slug)}
+                                class:active={isSelected(projectOption.slug)}
                                 on:click={() => {
                                     trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;
@@ -206,7 +216,7 @@
                             <a
                                 href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
-                                class:active={page.url.pathname.includes(projectOption.slug)}
+                                class:active={isSelected(projectOption.slug)}
                                 on:click={() => {
                                     trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;
@@ -251,7 +261,7 @@
                         </Tooltip>
                     </div>
                 </Layout.Stack>
-            {:else}
+            {:else if $isSmallViewport}
                 <div class="action-buttons">
                     <Layout.Stack direction="column" gap="s">
                         <DropList show={$feedback.show} scrollable>
@@ -278,7 +288,6 @@
                                     trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
                                 }}>
                                 <span>Support</span>
-
                                 <svelte:fragment slot="other">
                                     <MobileSupportModal bind:show={$showSupportModal}
                                     ></MobileSupportModal>
@@ -299,8 +308,7 @@
                             on:click={() => {
                                 trackEvent('click_menu_settings');
                             }}
-                            class:active={page.url.pathname.includes('/settings') &&
-                                !page.url.pathname.includes('sites')}
+                            class:active={isSelected('/settings') && !isSelected('sites')}
                             ><span class="link-icon"><Icon icon={IconCog} size="s" /></span><span
                                 class:no-text={state === 'icons'}
                                 class:has-text={state === 'open'}
@@ -311,43 +319,33 @@
                 </div>
             {/if}
 
-            {#if project}
-                <div class="only-mobile">
-                    <div class="action-buttons">
-                        <Layout.Stack direction="column" gap="s">
-                            <DropList show={$feedback.show} scrollable>
-                                <Button.Button
-                                    variant="secondary"
-                                    size="s"
-                                    on:click={() => {
-                                        toggleFeedback();
-                                        trackEvent('click_menu_feedback', { source: 'side_nav' });
-                                    }}
-                                    ><span>Feedback</span>
-                                </Button.Button>
-                                <svelte:fragment slot="other">
-                                    <MobileFeedbackModal />
-                                </svelte:fragment>
-                            </DropList>
+            {#if project && $isSmallViewport}
+                <div class="action-buttons">
+                    <Layout.Stack direction="column" gap="s">
+                        <DropList show={$feedback.show} scrollable>
+                            <Button.Button
+                                variant="secondary"
+                                size="s"
+                                on:click={() => {
+                                    toggleFeedback();
+                                    trackEvent('click_menu_feedback', { source: 'side_nav' });
+                                }}
+                                ><span>Feedback</span>
+                            </Button.Button>
+                        </DropList>
 
-                            <DropList show={$showSupportModal} scrollable>
-                                <Button.Button
-                                    variant="secondary"
-                                    size="s"
-                                    on:click={() => {
-                                        $showSupportModal = true;
-                                        trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
-                                    }}>
-                                    <span>Support</span>
-
-                                    <svelte:fragment slot="other">
-                                        <MobileSupportModal bind:show={$showSupportModal}
-                                        ></MobileSupportModal>
-                                    </svelte:fragment>
-                                </Button.Button>
-                            </DropList>
-                        </Layout.Stack>
-                    </div>
+                        <DropList show={$showSupportModal} scrollable>
+                            <Button.Button
+                                variant="secondary"
+                                size="s"
+                                on:click={() => {
+                                    $showSupportModal = true;
+                                    trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
+                                }}>
+                                <span>Support</span>
+                            </Button.Button>
+                        </DropList>
+                    </Layout.Stack>
                 </div>
             {/if}
         </div>

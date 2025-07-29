@@ -24,7 +24,6 @@
     import { base } from '$app/paths';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
-    import { flags } from '$lib/flags';
 
     export let data: PageData;
 
@@ -35,12 +34,13 @@
     const filterColumns = writable<Column[]>([]);
 
     $: selected = preferences.getCustomCollectionColumns(page.params.collection);
+
     $: columns.set(
         $collection.attributes.map((attribute) => ({
             id: attribute.key,
             title: attribute.key,
             type: attribute.type as ColumnType,
-            show: selected?.includes(attribute.key) ?? true,
+            hide: !!selected?.includes(attribute.key),
             array: attribute?.array,
             format: 'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
             elements: 'elements' in attribute ? attribute.elements : null
@@ -95,20 +95,18 @@
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Filters
                     query={data.query}
-                    {columns}
+                    columns={filterColumns}
                     disabled={!(hasAttributes && hasValidAttributes)}
                     analyticsSource="database_documents" />
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    <ViewSelector view={data.view} {columns} hideView />
-                    {#if flags.showCsvImport(data)}
-                        <Button
-                            secondary
-                            event={Click.DatabaseImportCsv}
-                            disabled={!(hasAttributes && hasValidAttributes)}
-                            on:click={() => (showImportCSV = true)}>
-                            Import CSV
-                        </Button>
-                    {/if}
+                    <ViewSelector view={data.view} {columns} hideView isCustomCollection />
+                    <Button
+                        secondary
+                        event={Click.DatabaseImportCsv}
+                        disabled={!(hasAttributes && hasValidAttributes)}
+                        on:click={() => (showImportCSV = true)}>
+                        Import CSV
+                    </Button>
                     {#if !$isSmallViewport}
                         <Button
                             disabled={!(hasAttributes && hasValidAttributes)}

@@ -37,8 +37,9 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
-    import { regions as regionsStore } from '$lib/stores/organization';
+    import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
+    import { toLocaleDate } from '$lib/helpers/date';
 
     export let data;
 
@@ -122,17 +123,16 @@
 
     function isSetToArchive(project: Models.Project): boolean {
         if (!isCloud) return false;
-        if(!data.organization.projects) return false;
         if (data.organization.projects?.length === 0) return false;
         if (!project || !project.$id) return false;
-        return !data.organization.projects.includes(project.$id);
+        return !data.organization.projects?.includes(project.$id);
     }
 
     function formatName(name: string, limit: number = 19) {
         return name ? (name.length > limit ? `${name.slice(0, limit)}...` : name) : '-';
     }
 
-    $: projectsToArchive = data.projects.projects?.filter(
+    $: projectsToArchive = data.projects.projects.filter(
         (project) => !data.organization.projects?.includes(project.$id)
     );
 </script>
@@ -164,9 +164,9 @@
         </DropList>
     </div>
 
-    {#if isCloud && data.organization.projects?.length > 0 && $canWriteProjects}
+    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects}
         <Alert.Inline
-            title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${billingProjectsLimitDate}`}>
+            title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
             <Typography.Text>
                 {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
                     {@html text}{index == projectsToArchive.length - 2
@@ -276,4 +276,5 @@
 <CreateProjectCloud
     projects={data.projects.total}
     bind:showCreateProjectCloud
-    regions={$regionsStore.regions} />
+    regions={$regionsStore.regions}
+    teamId={page.params.organization} />

@@ -9,7 +9,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/overview/keys`}>
+        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/overview/api-keys`}>
             {$key?.name}
         </CoverTitle>
     </svelte:fragment>

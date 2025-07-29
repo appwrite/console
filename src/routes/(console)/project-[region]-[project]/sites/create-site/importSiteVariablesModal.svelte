@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import Alert from '$lib/components/alert.svelte';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -75,9 +75,9 @@
                 </Layout.Stack>
             </Upload.Dropzone>
             {#if variables?.length > 0}
-                <Alert type="info" dismissible>
+                <Alert.Inline status="info" dismissible>
                     This action can create and update variables but can not delete them.
-                </Alert>
+                </Alert.Inline>
             {/if}
         </Layout.Stack>
         <Selector.Checkbox

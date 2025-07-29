@@ -77,6 +77,7 @@
             id="domain"
             bind:value={domainName}
             required
+            autofocus
             placeholder="appwrite.example.com" />
     </Form>
 

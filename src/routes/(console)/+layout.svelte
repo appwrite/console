@@ -297,7 +297,7 @@
         if (currentOrganizationId === org.$id) return;
         if (isCloud) {
             currentOrganizationId = org.$id;
-            checkForProjectsLimit(org, data.projects?.length || 0);
+            checkForProjectsLimit(org, data.projects?.projects?.length || 0);
             checkForEnterpriseTrial(org);
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
@@ -318,15 +318,19 @@
 
     $: checkForUsageLimits($organization);
 
-    $: projects = sdk.forConsole.projects.list([
-        Query.equal(
-            'teamId',
-            // id from page params ?? id from store ?? id from preferences
-            page.params.organization ?? currentOrganizationId ?? data.currentOrgId
-        ),
-        Query.limit(5),
-        Query.orderDesc('$updatedAt')
-    ]);
+    $: isOnOnboarding = page.route?.id?.includes('/(console)/onboarding');
+
+    $: projects = isOnOnboarding
+        ? null
+        : sdk.forConsole.projects.list([
+              Query.equal(
+                  'teamId',
+                  // id from page params ?? id from store ?? id from preferences
+                  page.params.organization ?? currentOrganizationId ?? data.currentOrgId
+              ),
+              Query.limit(5),
+              Query.orderDesc('$updatedAt')
+          ]);
 
     $: if ($requestedMigration) {
         openMigrationWizard();

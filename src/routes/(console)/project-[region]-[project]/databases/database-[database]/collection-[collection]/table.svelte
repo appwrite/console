@@ -3,14 +3,15 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert, Confirm, Id } from '$lib/components';
+    import { Confirm, Id } from '$lib/components';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';
     import { Button as ConsoleButton, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { afterUpdate, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import type { PageData } from './$types';
     import {
         isRelationship,
@@ -28,39 +29,25 @@
         Badge,
         FloatingActionBar,
         InteractiveText,
-        Typography
+        Typography,
+        Layout
     } from '@appwrite.io/pink-svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-    import { flags } from '$lib/flags';
 
     export let data: PageData;
 
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
+
+    let displayNames = {};
     let showRelationships = false;
     let selectedRelationship: Models.AttributeRelationship = null;
     let relationshipData: Partial<Models.Document>[];
-    let displayNames = {};
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
-        updateMaxWidth();
     });
-
-    afterUpdate(() => updateMaxWidth());
-
-    function updateMaxWidth() {
-        const tableCells = Array.from(document.querySelectorAll('.less-width-truncated'));
-
-        const visibleColumnsCount = $columns.filter((col) => !col.hide).length;
-        const newMaxWidth = Math.max(50 - (visibleColumnsCount - 1) * 5, 25);
-
-        tableCells.forEach((cell) => {
-            const cellItem = cell as HTMLElement;
-            cellItem.style.maxWidth = `${newMaxWidth}vw`;
-        });
-    }
 
     function formatArray(array: unknown[]) {
         if (array.length === 0) return '[ ]';
@@ -108,7 +95,7 @@
                 id: attribute.key,
                 title: attribute.key,
                 type: attribute.type as ColumnType,
-                show: selected?.includes(attribute.key) ?? true,
+                hide: !!selected?.includes(attribute.key),
                 array: attribute?.array,
                 width: { min: 168 },
                 format:
@@ -169,8 +156,6 @@
     ) as Models.AttributeRelationship[];
 
     let checked = false;
-
-    const showEncrypt = flags.showAttributeEncrypt(data);
 </script>
 
 <Table.Root
@@ -262,7 +247,7 @@
                                     <span slot="title">Timestamp</span>
                                     {toLocaleDateTime(datetime, true)}
                                 </DualTimeView>
-                            {:else if isEncryptedAttribute && showEncrypt}
+                            {:else if isEncryptedAttribute}
                                 <button on:click={(e) => e.preventDefault()}>
                                     <InteractiveText
                                         copy={false}
@@ -359,15 +344,15 @@
                     </Table.Row.Base>
                 {/each}
             </Table.Root>
-            <div class="u-flex u-flex-vertical u-gap-16">
-                <Alert>To change the selection edit the relationship settings.</Alert>
-
+            <Layout.Stack gap="l" direction="column">
+                <Alert.Inline status="info"
+                    >To change the selection edit the relationship settings.</Alert.Inline>
                 <ul>
                     <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
                         Delete document from <span data-private>{$collection.name}</span>
                     </InputChoice>
                 </ul>
-            </div>
+            </Layout.Stack>
         {:else}
             <p class="u-bold">This action is irreversible.</p>
         {/if}
@@ -375,8 +360,12 @@
 </Confirm>
 
 <style>
-    .floating-action-bar :global(div:first-of-type) {
-        /* 50% > 60% because we have sub-navigation */
-        left: calc(60% - var(--p-floating-action-bar-width) / 2);
+    .floating-action-bar {
+        position: fixed;
+
+        :global(div:first-of-type) {
+            /* 50% > 60% because we have sub-navigation */
+            left: calc(60% - var(--p-floating-action-bar-width) / 2);
+        }
     }
 </style>

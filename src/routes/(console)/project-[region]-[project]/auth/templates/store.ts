@@ -5,8 +5,9 @@ import type { Models } from '@appwrite.io/console';
 // component imports
 import Email2FaTemplate from './email2FATemplate.svelte';
 import EmailInviteTemplate from './emailInviteTemplate.svelte';
-import EmailRecoveryTemplate from './emailRecoveryTemplate.svelte';
 import EmailMagicUrlTemplate from './emailMagicUrlTemplate.svelte';
+import EmailRecoveryTemplate from './emailRecoveryTemplate.svelte';
+import EmailOtpSessionTemplate from './emailOtpSessionTemplate.svelte';
 import EmailVerificationTemplate from './emailVerificationTemplate.svelte';
 import EmailSessionAlertTemplate from './emailSessionAlertTemplate.svelte';
 
@@ -62,7 +63,7 @@ export const templates = [
         key: 'otpSession',
         title: 'OTP session',
         description: 'Send an email to users that sign in with a email OTP.',
-        component: EmailMagicUrlTemplate
+        component: EmailOtpSessionTemplate
     },
     {
         key: 'recovery',

@@ -51,7 +51,7 @@
     import { base } from '$app/paths';
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
-    import { isTabletViewport } from '$lib/stores/viewport';
+    import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system.js';
     import { user } from '$lib/stores/user';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -166,20 +166,22 @@
                         >Upgrade</Button.Anchor>
                 {/if}
 
-                <DropList show={$feedback.show} class="extended-width">
-                    <Button.Button
-                        type="button"
-                        variant="compact"
-                        on:click={() => {
-                            toggleFeedback();
-                            trackEvent(Click.FeedbackSubmitClick, { source: 'top_nav' });
-                        }}
-                        >Feedback
-                    </Button.Button>
-                    <svelte:fragment slot="other">
-                        <Feedback />
-                    </svelte:fragment>
-                </DropList>
+                {#if !$isSmallViewport}
+                    <DropList show={$feedback.show} class="extended-width">
+                        <Button.Button
+                            type="button"
+                            variant="compact"
+                            on:click={() => {
+                                toggleFeedback();
+                                trackEvent(Click.FeedbackSubmitClick, { source: 'top_nav' });
+                            }}
+                            >Feedback
+                        </Button.Button>
+                        <svelte:fragment slot="other">
+                            <Feedback />
+                        </svelte:fragment>
+                    </DropList>
+                {/if}
                 <DropList
                     noArrow
                     scrollable

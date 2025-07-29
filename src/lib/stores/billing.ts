@@ -69,7 +69,7 @@ export const roles = [
 
 export const teamStatusReadonly = 'readonly';
 export const billingLimitOutstandingInvoice = 'outstanding_invoice';
-export const billingProjectsLimitDate = '[date]'
+export const billingProjectsLimitDate = '2024-09-01';
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
@@ -289,6 +289,7 @@ export function checkForEnterpriseTrial(org: Organization) {
 }
 
 export function calculateEnterpriseTrial(org: Organization) {
+    if (!org || !org.billingNextInvoiceDate) return 0;
     const endDate = new Date(org.billingNextInvoiceDate);
     const startDate = new Date(org.billingCurrentInvoiceDate);
     const today = new Date();
@@ -316,16 +317,16 @@ export function calculateTrialDay(org: Organization) {
     return days;
 }
 
-export function checkForProjectsLimit(org: Organization, projects: number) {
+export async function checkForProjectsLimit(org: Organization, projects: number) {
     if (!isCloud) return;
     if (!org || !projects) return;
-    const plan = get(plansInfo)?.get(org.billingPlan);
+    const plan = await sdk.forConsole.billing.getOrganizationPlan(org.$id);
     if (!plan) return;
     if (plan.$id !== BillingPlan.FREE) return;
     if (!org.projects) return;
     if (org.projects.length > 0) return;
 
-    if (projects > plan.projects) {
+    if (plan.projects > 0 && projects > plan.projects) {
         headerAlert.add({
             id: 'projectsLimitReached',
             component: ProjectsLimit,
@@ -379,7 +380,9 @@ export async function checkForUsageLimit(org: Organization) {
     const plan = get(currentPlan);
     const membersOverflow =
         // nested null checks needed: GitHub Education plan have empty addons.
-        members > plan.addons.seats?.limit ? members - (plan.addons.seats?.limit || members) : 0;
+        members > plan?.addons?.seats?.limit
+            ? members - (plan?.addons?.seats?.limit || members)
+            : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);

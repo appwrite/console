@@ -12,6 +12,7 @@
 <InputSelect
     {id}
     {label}
+    bind:value
     {optionalText}
     placeholder="Select a value"
     required={attribute.required}
@@ -19,5 +20,4 @@
         !attribute.required && { label: 'NULL', value: null },
         { label: 'True', value: true },
         { label: 'False', value: false }
-    ].filter(Boolean)}
-    bind:value />
+    ].filter(Boolean)} />

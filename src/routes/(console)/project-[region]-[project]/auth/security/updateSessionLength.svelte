@@ -7,15 +7,17 @@
     import { createTimeUnitPair } from '$lib/helpers/unit';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { project } from '../../store';
+    import { project as projectStore } from '../../store';
     import { Layout } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
-    const { value, unit, baseValue, units } = createTimeUnitPair($project?.authDuration);
-    const options = units.map((v) => ({ label: v.name, value: v.name }));
+    const project = $derived($projectStore ?? page.data?.project);
+    const { value, unit, baseValue, units } = $derived(createTimeUnitPair(project?.authDuration));
+    const options = $derived(units.map((v) => ({ label: v.name, value: v.name })));
 
     async function updateSessionLength() {
         try {
-            await sdk.forConsole.projects.updateAuthDuration($project.$id, $baseValue);
+            await sdk.forConsole.projects.updateAuthDuration(project.$id, $baseValue);
             await invalidate(Dependencies.PROJECT);
 
             addNotification({
@@ -43,7 +45,7 @@
         </Layout.Stack>
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        <Button disabled={$baseValue === $project.authDuration} on:click={updateSessionLength}>
+        <Button disabled={$baseValue === project.authDuration} on:click={updateSessionLength}>
             Update
         </Button>
     </svelte:fragment>
