@@ -357,7 +357,7 @@
     <div
         class="sub-navigation"
         class:icons={state === 'icons'}
-        style:--banner-spacing={$isDesktopViewport && $bannerSpacing ? $bannerSpacing : undefined}>
+        style:--banner-spacing={$bannerSpacing ? $bannerSpacing : undefined}>
         <svelte:component this={subNavigation} />
     </div>
 {/if}
@@ -608,8 +608,19 @@
             transition: width 0.2s linear;
 
             &.icons {
+                width: 266px;
                 transition: width 0.3s linear;
-                width: var(--banner-spacing, 266px);
+
+                & :global(nav) {
+                    margin-top: var(--banner-spacing);
+                }
+            }
+        }
+
+        /* when in small or tablet viewport and there's a banner */
+        @media (max-width: 1023px) {
+            & :global(header) {
+                margin-top: var(--banner-spacing);
             }
         }
     }

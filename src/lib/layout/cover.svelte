@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Layout } from '@appwrite.io/pink-svelte';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     export let size: 'small' | 'medium' | 'large' | 'xl' = null;
     export let blocksize = '152px';
@@ -8,9 +9,15 @@
     $: style = size
         ? `--p-container-max-size: var(--container-max-size, var(--container-size-${size}))`
         : '';
+
+    $: marginTop = expanded && $isTabletViewport ? '48px' : undefined;
 </script>
 
-<div class="top-cover-console" style:block-size={blocksize}>
+<div
+    class:expanded
+    class="top-cover-console"
+    style:block-size={blocksize}
+    style:margin-top={marginTop}>
     <div class="cover-container" {style} class:expanded>
         <Layout.Stack direction="row" alignItems="baseline">
             <slot name="header" />
