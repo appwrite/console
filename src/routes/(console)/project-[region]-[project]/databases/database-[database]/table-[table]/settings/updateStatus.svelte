@@ -19,7 +19,7 @@
         enabled ??= $table.enabled;
     });
 
-    async function toggleCollection() {
+    async function toggleTable() {
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
@@ -63,6 +63,6 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button disabled={enabled === $table.enabled} on:click={toggleCollection}>Update</Button>
+        <Button disabled={enabled === $table.enabled} on:click={toggleTable}>Update</Button>
     </svelte:fragment>
 </CardGrid>

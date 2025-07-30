@@ -14,26 +14,26 @@
     <CsvDisabled>
         <Button size="s" disabled>
             <Icon icon={IconPlus} slot="start" size="s" />
-            Create attribute
+            Create column
         </Button>
     </CsvDisabled>
 {:else}
     <Popover let:toggle padding="none" placement="bottom-start">
         <slot {toggle}>
-            <Button on:click={toggle} event="create_attribute">
+            <Button on:click={toggle} event="create_column">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create column
             </Button>
         </slot>
         <ActionMenu.Root slot="tooltip">
-            {#each columnOptions as attribute}
+            {#each columnOptions as column}
                 <ActionMenu.Item.Button
-                    leadingIcon={attribute.icon}
+                    leadingIcon={column.icon}
                     on:click={() => {
-                        selectedOption = attribute.name;
+                        selectedOption = column.name;
                         showCreate = true;
                     }}>
-                    {attribute.name}
+                    {column.name}
                 </ActionMenu.Item.Button>
             {/each}
         </ActionMenu.Root>

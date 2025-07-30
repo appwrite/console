@@ -159,8 +159,8 @@
                         </Layout.Stack>
                     </button>
                     <Typography.Text color="--fgcolor-neutral-tertiary">
-                        Protect attribute against data leaks for best privacy compliance. Encrypted
-                        attributes cannot be queried.
+                        Protect column against data leaks for best privacy compliance. Encrypted
+                        columns cannot be queried.
                     </Typography.Text>
                 </Layout.Stack>
 

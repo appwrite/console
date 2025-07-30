@@ -45,17 +45,17 @@
         'restrict' = 'Row cannot be deleted'
     }
 
-    $: relColumns = $columns?.filter(
-        (attribute) =>
-            isRelationship(attribute) &&
+    $: relatedColumns = $columns?.filter(
+        (column) =>
+            isRelationship(column) &&
             // One-to-One are always included
-            (attribute.relationType === 'oneToOne' ||
+            (column.relationType === 'oneToOne' ||
                 // One-to-Many: Only if parent is deleted
-                (attribute.relationType === 'oneToMany' && attribute.side === 'parent') ||
+                (column.relationType === 'oneToMany' && column.side === 'parent') ||
                 // Many-to-One: Only include if child is deleted
-                (attribute.relationType === 'manyToOne' && attribute.side === 'child') ||
+                (column.relationType === 'manyToOne' && column.side === 'child') ||
                 // Many-to-Many: Only include if the parent is being deleted
-                (isRelationshipToMany(attribute) && attribute.side === 'parent'))
+                (isRelationshipToMany(column) && column.side === 'parent'))
     ) as Models.ColumnRelationship[];
 </script>
 
@@ -64,7 +64,7 @@
         Are you sure you want to delete <b>the row from <span data-private>{$table.name}</span></b>?
     </p>
 
-    {#if relColumns?.length}
+    {#if relatedColumns?.length}
         <p class="text">This row contains the following relationships:</p>
         <Table.Root
             let:root
@@ -78,23 +78,23 @@
                 <Table.Header.Cell column="setting" {root}>Setting</Table.Header.Cell>
                 <Table.Header.Cell column="desc" {root} />
             </svelte:fragment>
-            {#each relColumns as attr}
+            {#each relatedColumns as column}
                 <Table.Row.Base {root}>
                     <Table.Cell column="relations" {root}>
                         <span class="u-flex u-cross-center u-gap-8">
-                            {#if attr.twoWay}
+                            {#if column.twoWay}
                                 <span class="icon-switch-horizontal"></span>
                             {:else}
                                 <span class="icon-arrow-sm-right"></span>
                             {/if}
-                            <Trim>{attr.key}</Trim>
+                            <Trim>{column.key}</Trim>
                         </span>
                     </Table.Cell>
                     <Table.Cell column="setting" {root}>
-                        {attr.onDelete}
+                        {column.onDelete}
                     </Table.Cell>
                     <Table.Cell column="desc" {root}>
-                        {Deletion[attr.onDelete]}
+                        {Deletion[column.onDelete]}
                     </Table.Cell>
                 </Table.Row.Base>
             {/each}
@@ -109,6 +109,6 @@
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button danger submit disabled={relColumns?.length && !checked}>Delete</Button>
+        <Button danger submit disabled={relatedColumns?.length && !checked}>Delete</Button>
     </svelte:fragment>
 </Confirm>

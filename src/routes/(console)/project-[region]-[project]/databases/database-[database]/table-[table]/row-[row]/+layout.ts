@@ -7,8 +7,8 @@ import type { Columns } from '../store';
 import { buildWildcardColumnsQuery } from './columns/store';
 
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
-    depends(Dependencies.ROW);
     const { table } = await parent();
+    depends(Dependencies.ROW);
 
     const row = await sdk
         .forProject(params.region, params.project)

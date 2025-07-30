@@ -22,7 +22,7 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    type CreateDocument = {
+    type CreateRow = {
         id?: string;
         row: object;
         permissions: string[];
@@ -44,7 +44,7 @@
             columns: availableColumns
         };
 
-        return writable<CreateDocument>({ ...initial });
+        return writable<CreateRow>({ ...initial });
     }
 
     const createRow = createRowWritable();
@@ -66,7 +66,7 @@
                 type: 'success'
             });
             trackEvent(Submit.RowCreate, {
-                customId: !!$createRow.id // todo: @itznotabug - change store name
+                customId: !!$createRow.id
             });
             goto(
                 `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/row-${$id}`

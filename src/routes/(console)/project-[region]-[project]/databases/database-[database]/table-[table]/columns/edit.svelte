@@ -53,7 +53,7 @@
     }
 
     $: onShow(showEdit);
-    $: title = `Update ${columnOptions.find((v) => v.name === option.name)?.sentenceName ?? ''} attribute`;
+    $: title = `Update ${columnOptions.find((v) => v.name === option.name)?.sentenceName ?? ''} column`;
 
     function onShow(show: boolean) {
         if (show) {

@@ -17,13 +17,7 @@
 <header class="grid-header">
     <Typography.Title size="m">{title}</Typography.Title>
     <div class="u-flex u-gap-16 u-contents-mobile">
-        <ViewSelector
-            {view}
-            {columns}
-            {isCustomTable}
-            {hideView}
-            {hideColumns}
-            {allowNoColumns} />
+        <ViewSelector {view} {columns} {isCustomTable} {hideView} {hideColumns} {allowNoColumns} />
         <div class="grid-header-col-2">
             <slot />
         </div>

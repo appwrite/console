@@ -37,7 +37,7 @@
     let displayNames = {};
     let showRelationships = false;
     let selectedRelationship: Models.ColumnRelationship = null;
-    let relationshipData: Partial<Models.Document>[];
+    let relationshipData: Partial<Models.Row>[];
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
@@ -135,17 +135,17 @@
         'restrict' = 'Row cannot be deleted'
     }
 
-    $: relAttributes = $columns?.filter(
-        (attribute) =>
-            isRelationship(attribute) &&
+    $: relatedColumns = $columns?.filter(
+        (column) =>
+            isRelationship(column) &&
             // One-to-One are always included
-            (attribute.relationType === 'oneToOne' ||
+            (column.relationType === 'oneToOne' ||
                 // One-to-Many: Only if parent is deleted
-                (attribute.relationType === 'oneToMany' && attribute.side === 'parent') ||
+                (column.relationType === 'oneToMany' && column.side === 'parent') ||
                 // Many-to-One: Only include if child is deleted
-                (attribute.relationType === 'manyToOne' && attribute.side === 'child') ||
+                (column.relationType === 'manyToOne' && column.side === 'child') ||
                 // Many-to-Many: Only include if the parent is being deleted
-                (isRelationshipToMany(attribute) && attribute.side === 'parent'))
+                (isRelationshipToMany(column) && column.side === 'parent'))
     ) as Models.ColumnRelationship[];
 
     let checked = false;
@@ -233,14 +233,14 @@
                         {:else}
                             {@const datetime = row[id]}
                             {@const formatted = formatColumn(row[id])}
-                            {@const isDatetimeAttribute = column.type === 'datetime'}
-                            {@const isEncryptedAttribute = isString(column) && column.encrypt}
-                            {#if isDatetimeAttribute}
+                            {@const isDatetimeColumn = column.type === 'datetime'}
+                            {@const isEncryptedColumn = isString(column) && column.encrypt}
+                            {#if isDatetimeColumn}
                                 <DualTimeView time={datetime}>
                                     <span slot="title">Timestamp</span>
                                     {toLocaleDateTime(datetime, true)}
                                 </DualTimeView>
-                            {:else if isEncryptedAttribute}
+                            {:else if isEncryptedColumn}
                                 <button on:click={(e) => e.preventDefault()}>
                                     <InteractiveText
                                         copy={false}
@@ -303,7 +303,7 @@
         Are you sure you want to delete <b>{selectedRows.length}</b>
         {selectedRows.length > 1 ? 'rows' : 'row'}?
 
-        {#if relAttributes?.length}
+        {#if relatedColumns?.length}
             <Table.Root
                 let:root
                 columns={[
@@ -316,7 +316,7 @@
                     <Table.Header.Cell column="setting" {root}>Setting</Table.Header.Cell>
                     <Table.Header.Cell column="desc" {root} />
                 </svelte:fragment>
-                {#each relAttributes as attr}
+                {#each relatedColumns as attr}
                     <Table.Row.Base {root}>
                         <Table.Cell column="relation" {root}>
                             <span class="u-flex u-cross-center u-gap-8">

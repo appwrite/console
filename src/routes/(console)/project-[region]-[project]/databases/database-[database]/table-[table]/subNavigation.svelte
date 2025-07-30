@@ -24,9 +24,7 @@
         data?.allTables?.tables?.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
 
-    const selectedTable = $derived.by(() =>
-        sortedTables?.find((collection) => collection.$id === tableId)
-    );
+    const selectedTable = $derived.by(() => sortedTables?.find((table) => table.$id === tableId));
 
     let openBottomSheet = $state(false);
 
@@ -111,11 +109,11 @@
         bind:isOpen={openBottomSheet}
         menu={{
             top: {
-                items: sortedTables.slice(0, 10).map((collection) => {
+                items: sortedTables.slice(0, 10).map((table) => {
                     return {
-                        name: collection.name,
+                        name: table.name,
                         leadingIcon: IconTable,
-                        href: `${base}/project-${region}-${project}/databases/database-${databaseId}/table-${collection.$id}`
+                        href: `${base}/project-${region}-${project}/databases/database-${databaseId}/table-${table.$id}`
                     };
                 })
             },

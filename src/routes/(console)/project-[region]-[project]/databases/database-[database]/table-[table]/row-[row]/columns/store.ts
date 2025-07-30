@@ -1,5 +1,5 @@
-import { type Models, Query } from '@appwrite.io/console';
 import type { Columns } from '../../store';
+import { type Models, Query } from '@appwrite.io/console';
 
 export function isRelationshipToMany(column: Models.ColumnRelationship) {
     if (!column) return false;

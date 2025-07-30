@@ -2,13 +2,13 @@
     import { writable } from 'svelte/store';
     import type { Option } from './columns/store';
 
-    const createAttributeArgs = writable({
+    const createColumnArgs = writable({
         showCreate: false,
         selectedOption: null as Option['name'] | null
     });
 
     export const initCreateColumn = (option: Option['name']) => {
-        createAttributeArgs.set({ showCreate: true, selectedOption: option });
+        createColumnArgs.set({ showCreate: true, selectedOption: option });
     };
 
     const showCreateIndex = writable(false);
@@ -24,7 +24,7 @@
     import { onMount } from 'svelte';
     import { table } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import CreateAttribute from './createColumn.svelte';
+    import CreateColumn from './createColumn.svelte';
     import { CreateColumnPanel } from '$lib/commandCenter/panels';
     import { database } from '../store';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
@@ -204,8 +204,8 @@
 
 <slot />
 
-{#if $createAttributeArgs.showCreate}
-    <CreateAttribute {...$createAttributeArgs} />
+{#if $createColumnArgs.showCreate}
+    <CreateColumn {...$createColumnArgs} />
 {/if}
 
 {#if $showCreateIndex}

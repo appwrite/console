@@ -1,7 +1,7 @@
 import { page } from '$app/stores';
-import { derived, writable } from 'svelte/store';
+import type { Column } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
-import type { Column as TableColumn } from '$lib/helpers/types';
+import { derived, writable } from 'svelte/store';
 
 export type Columns =
     | Models.ColumnBoolean
@@ -20,8 +20,8 @@ type Table = Omit<Models.Table, 'columns'> & {
 
 export const table = derived(page, ($page) => $page.data.table as Table);
 export const columns = derived(page, ($page) => $page.data.table.columns as Columns[]);
-export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.ColumnIndex[]);
+export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.Index[]);
 
-export const tableColumns = writable<TableColumn[]>([]);
+export const tableColumns = writable<Column[]>([]);
 
 export const isCsvImportInProgress = writable(false);

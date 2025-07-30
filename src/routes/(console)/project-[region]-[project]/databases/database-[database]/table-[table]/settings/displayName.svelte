@@ -64,7 +64,7 @@
             }));
     }
 
-    const addAttributeDisabled = $derived(
+    const addColumnDisabled = $derived(
         names?.length >= 5 || (names?.length && !names[names?.length - 1])
     );
 
@@ -117,12 +117,12 @@
                     {/each}
                 {/if}
 
-                <!-- show only when options don't have all the attributes -->
+                <!-- show only when options don't have all the columns -->
                 {#if !hasExhaustedOptions}
                     <div>
                         <Button
                             compact
-                            disabled={addAttributeDisabled}
+                            disabled={addColumnDisabled}
                             on:click={() => {
                                 names[names.length] = null;
                                 names = names;

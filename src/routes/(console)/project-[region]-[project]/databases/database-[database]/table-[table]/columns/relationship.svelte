@@ -108,8 +108,8 @@
 
     function updateKeyName() {
         if (!editing) {
-            const collection = tableList.tables.find((n) => n.$id === data.relatedTable);
-            data.key = camelize(collection.name);
+            const table = tableList.tables.find((n) => n.$id === data.relatedTable);
+            data.key = camelize(table.name);
         }
     }
 
