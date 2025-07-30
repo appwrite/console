@@ -47,7 +47,7 @@
 
             tables = await sdk
                 .forProject(page.params.region, page.params.project)
-                .tables.list(databaseId, queries);
+                .grids.listTables(databaseId, queries);
 
             const tablePromises = tables.tables.map(async (table) => {
                 return {

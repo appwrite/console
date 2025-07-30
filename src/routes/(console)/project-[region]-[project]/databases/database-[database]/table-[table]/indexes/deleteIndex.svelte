@@ -20,7 +20,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .tables.deleteIndex(databaseId, $table.$id, selectedIndex.key);
+                .grids.deleteIndex(databaseId, $table.$id, selectedIndex.key);
             await invalidate(Dependencies.TABLE);
             showDelete = false;
             addNotification({

@@ -27,7 +27,7 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         query,
         rows: await sdk
             .forProject(params.region, params.project)
-            .tables.listRows(params.database, params.table, [
+            .grids.listRows(params.database, params.table, [
                 Query.limit(limit),
                 Query.offset(offset),
                 Query.orderDesc(''),

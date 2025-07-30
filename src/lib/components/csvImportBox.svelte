@@ -75,7 +75,7 @@
             try {
                 const table = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .tables.get(databaseId, tableId);
+                    .grids.getTable(databaseId, tableId);
                 tableName = table.name;
             } catch {
                 tableName = null;

@@ -28,7 +28,7 @@
         const promises = selectedTables.map((tableId) =>
             sdk
                 .forProject(page.params.region, page.params.project)
-                .tables.delete(databaseId, tableId)
+                .grids.deleteTable(databaseId, tableId)
         );
         try {
             await Promise.all(promises);

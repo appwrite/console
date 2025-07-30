@@ -21,7 +21,7 @@
 
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.createRelationshipColumn(
+            .grids.createRelationshipColumn(
                 databaseId,
                 tableId,
                 data.relatedTable,
@@ -45,7 +45,7 @@
 
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.updateRelationshipColumn(
+            .grids.updateRelationshipColumn(
                 databaseId,
                 tableId,
                 originalKey,
@@ -97,7 +97,7 @@
         const queries = [Query.limit(100)];
         return sdk
             .forProject(page.params.region, page.params.project)
-            .tables.list(databaseId, queries, search);
+            .grids.listTables(databaseId, queries, search);
     }
 
     const debouncedFetchTables = debounce(async () => {

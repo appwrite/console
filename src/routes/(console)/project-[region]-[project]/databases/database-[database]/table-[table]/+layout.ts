@@ -10,11 +10,11 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.TABLE);
 
     const [table, allTables] = await Promise.all([
-        sdk.forProject(params.region, params.project).tables.get(params.database, params.table),
+        sdk.forProject(params.region, params.project).grids.getTable(params.database, params.table),
 
         sdk
             .forProject(params.region, params.project)
-            .tables.list(params.database, [Query.orderDesc(''), Query.limit(100)])
+            .grids.listTables(params.database, [Query.orderDesc(''), Query.limit(100)])
     ]);
 
     return {

@@ -14,7 +14,7 @@ export const load: PageLoad = async ({ params, url, route }) => {
         limit,
         logs: await sdk
             .forProject(params.region, params.project)
-            .tables.listLogs(params.database, params.table, [
+            .grids.listTableLogs(params.database, params.table, [
                 Query.limit(limit),
                 Query.offset(offset)
             ])

@@ -53,7 +53,7 @@
         try {
             const { $id } = await sdk
                 .forProject(page.params.region, page.params.project)
-                .tables.createRow(
+                .grids.createRow(
                     page.params.database,
                     page.params.table,
                     $createRow.id ?? ID.unique(),

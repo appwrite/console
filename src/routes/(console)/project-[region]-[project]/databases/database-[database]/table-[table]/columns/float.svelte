@@ -11,7 +11,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.createFloatColumn(
+            .grids.createFloatColumn(
                 databaseId,
                 tableId,
                 key,
@@ -31,7 +31,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.updateFloatColumn(
+            .grids.updateFloatColumn(
                 databaseId,
                 tableId,
                 originalKey,

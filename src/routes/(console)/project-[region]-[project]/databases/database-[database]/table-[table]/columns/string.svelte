@@ -11,7 +11,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.createStringColumn(
+            .grids.createStringColumn(
                 databaseId,
                 tableId,
                 key,
@@ -30,7 +30,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.updateStringColumn(
+            .grids.updateStringColumn(
                 databaseId,
                 tableId,
                 originalKey,

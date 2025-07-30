@@ -11,7 +11,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.createDatetimeColumn(
+            .grids.createDatetimeColumn(
                 databaseId,
                 tableId,
                 key,
@@ -29,7 +29,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.updateDatetimeColumn(
+            .grids.updateDatetimeColumn(
                 databaseId,
                 tableId,
                 originalKey,

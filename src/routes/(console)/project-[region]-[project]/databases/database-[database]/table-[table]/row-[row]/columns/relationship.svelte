@@ -63,7 +63,7 @@
 
         return await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.listRows(databaseId, column.relatedTable, queries);
+            .grids.listRows(databaseId, column.relatedTable, queries);
     }
 
     function getAvailableOptions(excludeIndex?: number) {

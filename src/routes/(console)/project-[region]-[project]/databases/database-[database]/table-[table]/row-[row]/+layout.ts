@@ -12,13 +12,13 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
 
     const row = await sdk
         .forProject(params.region, params.project)
-        .tables.getRow(params.database, params.table, params.row, buildWildcardColumnsQuery(table));
+        .grids.getRow(params.database, params.table, params.row, buildWildcardColumnsQuery(table));
 
     /**
      * Sanitize DateTime to remove UTC Timezone section.
      */
-    table.columns.forEach((column) => {
-        const { type, key, array } = column as unknown as Columns;
+    table.columns.forEach((column: Columns) => {
+        const { type, key, array } = column;
         if (type === 'datetime') {
             if (array) {
                 row[key] = row[key].map((n: string) => {

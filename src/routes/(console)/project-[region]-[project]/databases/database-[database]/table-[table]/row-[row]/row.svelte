@@ -50,7 +50,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .tables.updateRow(databaseId, tableId, rowId, $work, $work.$permissions);
+                .grids.updateRow(databaseId, tableId, rowId, $work, $work.$permissions);
             await invalidate(Dependencies.ROW);
 
             currentRow = JSON.stringify($work);

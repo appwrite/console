@@ -8,7 +8,7 @@ export const tablesSearcher = (async (query: string) => {
     const databaseId = page.params.database;
     const { tables } = await sdk
         .forProject(page.params.region, page.params.project)
-        .tables.list(databaseId);
+        .grids.listTables(databaseId);
 
     return tables
         .filter((table) => table.name.toLowerCase().includes(query.toLowerCase()))

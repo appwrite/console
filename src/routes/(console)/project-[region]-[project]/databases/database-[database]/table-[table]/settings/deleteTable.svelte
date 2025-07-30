@@ -19,7 +19,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .tables.delete(databaseId, $table.$id);
+                .grids.deleteTable(databaseId, $table.$id);
             await invalidate(Dependencies.DATABASE);
             showDelete = false;
             addNotification({

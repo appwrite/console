@@ -26,7 +26,7 @@
         try {
             const table = await sdk
                 .forProject(page.params.region, page.params.project)
-                .tables.create(databaseId, id ? id : ID.unique(), name);
+                .grids.createTable(databaseId, id ? id : ID.unique(), name);
 
             showCreate = false;
 

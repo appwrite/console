@@ -107,7 +107,7 @@
         const promises = selectedRows.map((rowId) =>
             sdk
                 .forProject(page.params.region, page.params.project)
-                .tables.deleteRow(databaseId, tableId, rowId)
+                .grids.deleteRow(databaseId, tableId, rowId)
         );
         try {
             await Promise.all(promises);

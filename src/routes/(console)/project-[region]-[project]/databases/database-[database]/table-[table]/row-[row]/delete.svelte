@@ -20,7 +20,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .tables.deleteRow(databaseId, page.params.table, page.params.row);
+                .grids.deleteRow(databaseId, page.params.table, page.params.row);
             showDelete = false;
             addNotification({
                 type: 'success',

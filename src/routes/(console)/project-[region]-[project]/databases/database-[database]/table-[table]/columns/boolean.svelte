@@ -11,7 +11,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.createBooleanColumn(
+            .grids.createBooleanColumn(
                 databaseId,
                 tableId,
                 key,
@@ -28,7 +28,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.updateBooleanColumn(
+            .grids.updateBooleanColumn(
                 databaseId,
                 tableId,
                 originalKey,

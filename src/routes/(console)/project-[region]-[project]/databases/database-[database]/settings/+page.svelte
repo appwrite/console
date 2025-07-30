@@ -28,7 +28,7 @@
     async function loadTableCount() {
         const { total } = await sdk
             .forProject(page.params.region, page.params.project)
-            .tables.list($database.$id, [Query.limit(1)]);
+            .grids.listTables($database.$id, [Query.limit(1)]);
         return total;
     }
 

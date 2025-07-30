@@ -51,7 +51,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .tables.updateRow(databaseId, tableId, rowId, $work, $work.$permissions);
+                .grids.updateRow(databaseId, tableId, rowId, $work, $work.$permissions);
 
             invalidate(Dependencies.ROW);
             trackEvent(Submit.RowUpdate);

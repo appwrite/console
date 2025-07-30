@@ -21,7 +21,7 @@ import {
     Vcs,
     Sites,
     Tokens,
-    Tables,
+    Grids,
     Domains
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
@@ -124,7 +124,7 @@ const sdkForProject = {
     proxy: new Proxy(clientProject),
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
-    tables: new Tables(clientProject)
+    grids: new Grids(clientProject)
 };
 
 export const realtime = {

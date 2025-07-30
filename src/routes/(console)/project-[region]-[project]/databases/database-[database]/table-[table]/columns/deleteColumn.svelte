@@ -23,7 +23,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .tables.deleteColumn(databaseId, $table.$id, selectedColumn.key);
+                .grids.deleteColumn(databaseId, $table.$id, selectedColumn.key);
 
             showDelete = false;
             addNotification({
