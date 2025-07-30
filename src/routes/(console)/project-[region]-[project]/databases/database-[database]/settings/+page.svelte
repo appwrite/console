@@ -42,7 +42,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.update(page.params.database, databaseName);
+                .grids.updateDatabase(page.params.database, databaseName);
             await invalidate(Dependencies.DATABASE);
             addNotification({
                 message: 'Name has been updated',

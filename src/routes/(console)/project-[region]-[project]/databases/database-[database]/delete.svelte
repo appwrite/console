@@ -69,7 +69,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.delete(databaseId);
+                .grids.deleteDatabase(databaseId);
             showDelete = false;
             addNotification({
                 type: 'success',

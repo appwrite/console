@@ -25,13 +25,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .grids.updateRow(
-                    $row.$databaseId,
-                    $row.$tableId,
-                    $row.$id,
-                    $row.data,
-                    permissions
-                );
+                .grids.updateRow($row.$databaseId, $row.$tableId, $row.$id, $row.data, permissions);
             await invalidate(Dependencies.ROW);
             arePermsDisabled = true;
             addNotification({

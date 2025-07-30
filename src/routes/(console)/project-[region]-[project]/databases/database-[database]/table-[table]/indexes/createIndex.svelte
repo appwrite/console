@@ -75,15 +75,14 @@
         }
 
         try {
-            await sdk.forProject(page.params.region, page.params.project)
-                .grids.createIndex(
-                    databaseId,
-                    $table.$id,
-                    key,
-                    selectedType,
-                    columnList.map((a) => a.value),
-                    columnList.map((a) => a.order),
-                    columnList.map((a) => (a.length ? Number(a.length) : null))
+            await sdk.forProject(page.params.region, page.params.project).grids.createIndex(
+                databaseId,
+                $table.$id,
+                key,
+                selectedType,
+                columnList.map((a) => a.value),
+                columnList.map((a) => a.order),
+                columnList.map((a) => (a.length ? Number(a.length) : null))
             );
 
             await Promise.allSettled([

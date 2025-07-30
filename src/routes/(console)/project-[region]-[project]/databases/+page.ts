@@ -50,7 +50,7 @@ async function fetchDatabasesAndBackups(
 
     const databases = await sdk
         .forProject(params.region, params.project)
-        .databases.list(
+        .grids.listDatabases(
             [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
             search || undefined
         );
