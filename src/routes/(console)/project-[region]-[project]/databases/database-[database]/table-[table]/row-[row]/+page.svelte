@@ -53,7 +53,7 @@
                 .forProject(page.params.region, page.params.project)
                 .grids.updateRow(databaseId, tableId, rowId, $work, $work.$permissions);
 
-            invalidate(Dependencies.ROW);
+            await invalidate(Dependencies.ROW);
             trackEvent(Submit.RowUpdate);
             addNotification({
                 message: 'Row has been updated',

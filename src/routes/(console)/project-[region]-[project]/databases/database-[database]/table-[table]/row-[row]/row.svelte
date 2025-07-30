@@ -51,8 +51,8 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .grids.updateRow(databaseId, tableId, rowId, $work, $work.$permissions);
-            await invalidate(Dependencies.ROW);
 
+            await invalidate(Dependencies.ROW);
             currentRow = JSON.stringify($work);
             trackEvent(Submit.RowUpdate);
             disableUpdate = true;
