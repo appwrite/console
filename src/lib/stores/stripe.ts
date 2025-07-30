@@ -1,4 +1,4 @@
-import type { Appearance, Stripe, StripeElement, StripeElements } from '@stripe/stripe-js';
+import type { Appearance, PaymentMethod, Stripe, StripeElement, StripeElements } from '@stripe/stripe-js';
 import { sdk } from './sdk';
 import { app } from './app';
 import { get, writable } from 'svelte/store';
@@ -83,21 +83,28 @@ export async function submitStripeCard(name: string, organizationId?: string) {
                     billing_details: {
                         name
                     }
-                }
+                },
+                expand: ['payment_method']
             },
             redirect: 'if_required'
         });
 
+        console.log(setupIntent);
         if (error) {
             const e = new Error(error.message);
             trackError(e, Submit.PaymentMethodCreate);
             throw e;
         }
 
+
         if (setupIntent && setupIntent.status === 'succeeded') {
+            if ((setupIntent.payment_method as PaymentMethod).card.country === 'US') {
+                // need to get state
+                return setupIntent.payment_method as PaymentMethod;
+            }
             const method = await sdk.forConsole.billing.setPaymentMethod(
                 paymentMethod.$id,
-                setupIntent.payment_method,
+                (setupIntent.payment_method as PaymentMethod).id,
                 name
             );
             paymentElement.destroy();
@@ -109,6 +116,31 @@ export async function submitStripeCard(name: string, organizationId?: string) {
             trackError(e, Submit.PaymentMethodCreate);
             throw e.message;
         }
+    } catch (e) {
+        trackError(e, Submit.PaymentMethodCreate);
+        throw e;
+    }
+}
+
+export async function setPaymentMethod(providerMethodId: string, name: string, state: string) {
+    if(!paymentMethod) {
+        addNotification({
+            title: 'Error',
+            message: 'No payment method found. Please try again.',
+            type: 'error'
+        });
+        return;
+    }
+    try {
+        const method = await sdk.forConsole.billing.setPaymentMethod(
+            paymentMethod.$id,
+            providerMethodId,
+            name
+        );
+        paymentElement.destroy();
+        isStripeInitialized.set(false);
+        trackEvent(Submit.PaymentMethodCreate);
+        return method;
     } catch (e) {
         trackError(e, Submit.PaymentMethodCreate);
         throw e;
@@ -156,9 +188,8 @@ export async function confirmSetup(
 
     const { setupIntent, error } = await get(stripe).confirmCardSetup(clientSecret, {
         payment_method: paymentMethodId,
-        return_url: `${baseUrl}${
-            urlRoute ?? `organization-${get(organization).$id}/billing?clientSecret=${clientSecret}`
-        }`
+        return_url: `${baseUrl}${urlRoute ?? `organization-${get(organization).$id}/billing?clientSecret=${clientSecret}`
+            }`
     });
 
     if (error) {

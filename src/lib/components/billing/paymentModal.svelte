@@ -2,12 +2,14 @@
     import { FakeModal } from '$lib/components';
     import { InputText, Button } from '$lib/elements/forms';
     import { createEventDispatcher, onMount } from 'svelte';
-    import { initializeStripe, submitStripeCard } from '$lib/stores/stripe';
+    import { initializeStripe, setPaymentMethod, submitStripeCard } from '$lib/stores/stripe';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/state';
     import { Spinner } from '@appwrite.io/pink-svelte';
+    import type { PaymentMethod } from '@stripe/stripe-js';
+    import StatePicker from './statePicker.svelte';
 
     export let show = false;
 
@@ -16,10 +18,36 @@
     let name: string;
     let error: string;
     let modal: FakeModal;
+    let showState: boolean = false;
+    let state: string = '';
+    let paymentMethod: PaymentMethod | null = null;
 
     async function handleSubmit() {
         try {
+            if (showState && !state) {
+                throw Error('Please select a state');
+            }
+
+            if (showState) {
+                const card = await setPaymentMethod(paymentMethod.id, name, state);
+                modal.closeModal();
+                await invalidate(Dependencies.PAYMENT_METHODS);
+                dispatch('submit', card);
+                addNotification({
+                    type: 'success',
+                    message: 'A new payment method has been added to your account'
+                });
+                return;
+            }
+
             const card = await submitStripeCard(name, page?.params?.organization ?? null);
+            if (card && typeof card !== 'string') {
+                if ((card as PaymentMethod).card.country === 'US') {
+                    paymentMethod = card as PaymentMethod;
+                    showState = true;
+                    return;
+                }
+            }
             modal.closeModal();
             await invalidate(Dependencies.PAYMENT_METHODS);
             dispatch('submit', card);
@@ -87,13 +115,19 @@
                 <Spinner />
             </div>
         {/if}
-
-        <div
-            style:display={isLoading ? 'none' : 'initial'}
-            class="stripe-element"
-            bind:this={element}>
-            <!-- Stripe will create form elements here -->
-        </div>
+        {#if showState}
+            <div class="state-element">
+                <!-- input select for state picker -->
+                <StatePicker card={paymentMethod} bind:state />
+            </div>
+        {:else}
+            <div
+                style:display={isLoading ? 'none' : 'initial'}
+                class="stripe-element"
+                bind:this={element}>
+                <!-- Stripe will create form elements here -->
+            </div>
+        {/if}
     </div>
     <slot name="end"></slot>
     <svelte:fragment slot="footer">
@@ -106,6 +140,14 @@
     .aw-stripe-container {
         display: flex;
         min-height: 245px;
+
+        .state-element {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
 
         .stripe-element {
             width: 100%;
