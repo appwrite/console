@@ -9,13 +9,13 @@
     import { Card, Empty } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
-    import { canWriteCollections } from '$lib/stores/roles';
+    import { canWriteTables } from '$lib/stores/roles';
 
     export let data: PageData;
 </script>
 
 <Container expanded slotSpacing paddingInlineEnd={false}>
-    {#if data.collections.total}
+    {#if data.tables.total}
         {#if data.view === 'grid'}
             <Grid {data} bind:showCreate={$showCreate} />
         {:else}
@@ -23,10 +23,10 @@
         {/if}
 
         <PaginationWithLimit
-            name="Collections"
+            name="Tables"
             limit={data.limit}
             offset={data.offset}
-            total={data.collections.total} />
+            total={data.tables.total} />
     {:else}
         <Card.Base padding="none">
             <Empty
@@ -38,19 +38,16 @@
                     Create, organize, and query structured data with Tables.
                 </span>
                 <span slot="actions">
-                    <Button
-                        external
-                        text
-                        event="empty_documentation"
-                        ariaLabel={`create collection`}>Documentation</Button>
+                    <Button external text event="empty_documentation" ariaLabel={`create table`}
+                        >Documentation</Button>
 
-                    {#if $canWriteCollections}
+                    {#if $canWriteTables}
                         <Button
                             secondary
                             on:click={() => {
                                 $showCreate = true;
                             }}>
-                            Create collection
+                            Create table
                         </Button>
                     {/if}
                 </span>

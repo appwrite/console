@@ -16,14 +16,14 @@
 
     let {
         columns,
-        isCustomCollection = false,
+        isCustomTable = false,
         ui = 'legacy',
         allowNoColumns = false,
         showAnyway = false,
         children
     }: {
         columns: Writable<Column[]>;
-        isCustomCollection?: boolean;
+        isCustomTable?: boolean;
         allowNoColumns?: boolean;
         ui?: 'legacy' | 'new';
         showAnyway?: boolean;
@@ -44,7 +44,6 @@
 
     let maxHeight = $state('none');
     let containerRef = $state<HTMLElement>(null);
-    const collectionId = $derived(page.params.collection);
     const isNewStyle = ui === 'new';
 
     const calcMaxHeight = () => {
@@ -60,16 +59,16 @@
     const saveColumnPreferences = () => {
         const shownColumns = $columns.filter((n) => n.hide === true).map((n) => n.id);
 
-        if (isCustomCollection) {
-            preferences.setCustomCollectionColumns(collectionId, shownColumns);
+        if (isCustomTable) {
+            preferences.setCustomTableColumns(page.params.table, shownColumns);
         } else {
             preferences.setColumns(shownColumns);
         }
     };
 
     onMount(() => {
-        if (isCustomCollection) {
-            const shownColumns = preferences.getCustomCollectionColumns(collectionId);
+        if (isCustomTable) {
+            const shownColumns = preferences.getCustomTableColumns(page.params.table);
 
             columns.update((n) =>
                 n.map((column) => {
@@ -244,8 +243,9 @@
     </Popover>
 {/if}
 
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
-     /* global because its on a tooltip slot, nested */
+    /* global because its on a tooltip slot, nested */
     :global(.actions-menu-wrapper) {
         overflow: scroll;
         margin-bottom: -0.35rem;

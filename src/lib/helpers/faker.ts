@@ -1,32 +1,26 @@
 import { faker } from '@faker-js/faker';
-import type { Attributes } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/collection-[collection]/store';
+import type { Columns } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/store';
 import type { Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 
-export async function generateAttributes(
+export async function generateColumns(
     project: Models.Project,
     databaseId: string,
     collectionId: string
-): Promise<Attributes[]> {
+): Promise<Columns[]> {
     const client = sdk.forProject(project.region, project.$id);
 
     return await Promise.all([
-        client.databases.createStringAttribute(databaseId, collectionId, 'name', 255, false),
-        client.databases.createEmailAttribute(databaseId, collectionId, 'email', false),
-        client.databases.createIntegerAttribute(databaseId, collectionId, 'age', false, 0, 150),
-        client.databases.createStringAttribute(databaseId, collectionId, 'city', 100, false),
-        client.databases.createStringAttribute(
-            databaseId,
-            collectionId,
-            'description',
-            1000,
-            false
-        ),
-        client.databases.createBooleanAttribute(databaseId, collectionId, 'active', false)
+        client.grids.createStringColumn(databaseId, collectionId, 'name', 255, false),
+        client.grids.createEmailColumn(databaseId, collectionId, 'email', false),
+        client.grids.createIntegerColumn(databaseId, collectionId, 'age', false, 0, 150),
+        client.grids.createStringColumn(databaseId, collectionId, 'city', 100, false),
+        client.grids.createStringColumn(databaseId, collectionId, 'description', 1000, false),
+        client.grids.createBooleanColumn(databaseId, collectionId, 'active', false)
     ]);
 }
 
-export function generateFakeDocuments(columns: Attributes[], count: number): object[] {
+export function generateFakeRecords(columns: Columns[], count: number): object[] {
     if (count <= 0) return [];
 
     const filteredColumns = columns.filter((col) => col.type !== 'relationship');
@@ -46,7 +40,7 @@ export function generateFakeDocuments(columns: Attributes[], count: number): obj
         const document: object = {};
 
         for (const column of filteredColumns) {
-            document[column.key] = generateValueForAttribute(column);
+            document[column.key] = generateValueForColumn(column);
         }
 
         return document;
@@ -75,23 +69,23 @@ function generateStringValue(key: string, maxLength: number): string {
     return text.length <= maxLength ? text : text.substring(0, maxLength);
 }
 
-function generateValueForAttribute(attribute: Attributes): string | number | boolean | null {
+function generateValueForColumn(attribute: Columns): string | number | boolean | null {
     switch (attribute.type) {
         case 'string': {
-            const stringAttr = attribute as Models.AttributeString;
+            const stringAttr = attribute as Models.ColumnString;
             const maxLength = Math.min(stringAttr.size ?? 255, 1000);
             return generateStringValue(attribute.key, maxLength);
         }
 
         case 'integer': {
-            const intAttr = attribute as Models.AttributeInteger;
+            const intAttr = attribute as Models.ColumnInteger;
             const min = intAttr.min ?? 0;
             const max = intAttr.max ?? 1000000;
             return faker.number.int({ min, max });
         }
 
         case 'float': {
-            const floatAttr = attribute as Models.AttributeFloat;
+            const floatAttr = attribute as Models.ColumnFloat;
             const min = floatAttr.min ?? 0;
             const max = floatAttr.max ?? 1000000;
             const precision = 2;
@@ -121,7 +115,7 @@ function generateValueForAttribute(attribute: Attributes): string | number | boo
         }
 
         case 'enum': {
-            const enumAttr = attribute as Models.AttributeEnum;
+            const enumAttr = attribute as Models.ColumnEnum;
             if (enumAttr.elements && enumAttr.elements.length > 0) {
                 return faker.helpers.arrayElement(enumAttr.elements);
             }

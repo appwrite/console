@@ -17,19 +17,20 @@
     import type { Models } from '@appwrite.io/console';
 
     let data = $derived(page.data) as PageData;
+
     let region = $derived(page.params.region);
     let project = $derived(page.params.project);
+    let tableId = $derived(page.params.table);
     let databaseId = $derived(page.params.database);
-    let collectionId = $derived(page.params.collection);
 
-    const collections = $derived(data.collections);
+    const tables = $derived(data.tables);
 
-    const sortedCollections = $derived.by(() =>
-        collections?.collections?.slice().sort((a, b) => a.name.localeCompare(b.name))
+    const sortedTables = $derived.by(() =>
+        tables?.tables?.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
 
-    const selectedCollection = $derived.by(() =>
-        sortedCollections?.find((collection: Models.Collection) => collection.$id === collectionId)
+    const selectedTable = $derived.by(() =>
+        sortedTables?.find((table: Models.Table) => table.$id === tableId)
     );
 
     let openBottomSheet = $state(false);
@@ -53,11 +54,11 @@
                 {data.database?.name}
             </a>
             <div class="collection-content">
-                {#if collections?.total}
+                {#if tables?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-8">
-                        {#each sortedCollections as collection}
-                            {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
-                            {@const isSelected = collectionId === collection.$id}
+                        {#each sortedTables as table}
+                            {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/table-${table.$id}`}
+                            {@const isSelected = tableId === table.$id}
 
                             <Layout.Stack gap="m" direction="row" alignItems="center">
                                 <div
@@ -76,7 +77,7 @@
                                                 ? '--fgcolor-neutral-tertiary'
                                                 : '--fgcolor-neutral-weak'} />
                                         <span class="text collection-name" data-private
-                                            >{collection.name}</span>
+                                            >{table.name}</span>
                                     </a>
                                 </li>
                             </Layout.Stack>
@@ -106,7 +107,7 @@
                             $showCreate = true;
                             $showSubNavigation = false;
                         }}>
-                        Create collection
+                        Create table
                     </Button>
                 </Layout.Stack>
             </div>
@@ -128,7 +129,7 @@
                     onclick={() => {
                         openBottomSheet = !openBottomSheet;
                     }}>
-                    <span class="orgName">{selectedCollection?.name}</span>
+                    <span class="orgName">{selectedTable?.name}</span>
                     <Icon icon={IconChevronDown} size="s" />
                 </button>
             </Layout.Stack>
@@ -140,20 +141,20 @@
         bind:isOpen={openBottomSheet}
         menu={{
             top: {
-                items: sortedCollections.slice(0, 10).map((collection) => {
+                items: sortedTables.slice(0, 10).map((table) => {
                     return {
-                        name: collection.name,
+                        name: table.name,
                         leadingIcon: IconTable,
-                        href: `${base}/project-${region}-${project}/databases/database-${databaseId}/collection-${collection.$id}`
+                        href: `${base}/project-${region}-${project}/databases/database-${databaseId}/table-${table.$id}`
                     };
                 })
             },
             bottom:
-                sortedCollections.length > 10
+                sortedTables.length > 10
                     ? {
                           items: [
                               {
-                                  name: 'All collections',
+                                  name: 'All tables',
                                   leadingIcon: IconTable,
                                   href: `${base}/project-${region}-${project}/databases/database-${databaseId}`
                               }

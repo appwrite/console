@@ -8,70 +8,74 @@
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
-    import { canWriteCollections } from '$lib/stores/roles';
+    import { canWriteTables } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
     import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
-    import { columns } from './store';
+    import { tableViewColumns } from './store';
     import Confirm from '$lib/components/confirm.svelte';
 
     export let data: PageData;
     const databaseId = page.params.database;
 
-    let selectedRows: string[] = [];
-    let showDelete = false;
     let deleting = false;
+    let showDelete = false;
+    let selectedTables: string[] = [];
 
     async function handleDelete() {
         showDelete = false;
 
-        const promises = selectedRows.map((collectionId) =>
+        const promises = selectedTables.map((tableId) =>
             sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.deleteCollection(databaseId, collectionId)
+                .grids.deleteTable(databaseId, tableId)
         );
         try {
             await Promise.all(promises);
-            trackEvent(Submit.CollectionDelete);
+            trackEvent(Submit.TableDelete);
             addNotification({
                 type: 'success',
-                message: `${selectedRows.length} collection${selectedRows.length > 1 ? 's' : ''} deleted`
+                message: `${selectedTables.length} table${selectedTables.length > 1 ? 's' : ''} deleted`
             });
-            invalidate(Dependencies.COLLECTIONS);
+            invalidate(Dependencies.TABLES);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.CollectionDelete);
+            trackError(error, Submit.TableDelete);
         } finally {
-            selectedRows = [];
+            selectedTables = [];
             showDelete = false;
         }
     }
 </script>
 
-<Table.Root columns={$columns} allowSelection={$canWriteCollections} bind:selectedRows let:root>
+<Table.Root
+    columns={$tableViewColumns}
+    allowSelection={$canWriteTables}
+    bind:selectedRows={selectedTables}
+    let:root>
     <svelte:fragment slot="header" let:root>
-        {#each $columns as { id, title }}
+        {#each $tableViewColumns as { id, title }}
             <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
-    {#each data.collections.collections as collection (collection.$id)}
+    {#each data.tables.tables as table (table.$id)}
         <Table.Row.Link
             {root}
-            id={collection.$id}
-            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collection.$id}`}>
-            {#each $columns as column}
+            id={table.$id}
+            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${table.$id}`}>
+            {#each $tableViewColumns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
-                        {#key $columns}
-                            <Id value={collection.$id}>{collection.$id}</Id>
+                        {#key $tableViewColumns}
+                            <Id value={table.$id}>{table.$id}</Id>
                         {/key}
                     {:else if column.id === 'name'}
-                        {collection.name}
+                        {table.name}
                     {:else}
-                        {toLocaleDateTime(collection[column.id])}
+                        {toLocaleDateTime(table[column.id])}
                     {/if}
                 </Table.Cell>
             {/each}
@@ -79,29 +83,25 @@
     {/each}
 </Table.Root>
 
-{#if selectedRows.length > 0}
+{#if selectedTables.length > 0}
     <FloatingActionBar>
         <svelte:fragment slot="start">
-            <Badge content={selectedRows.length.toString()} />
+            <Badge content={selectedTables.length.toString()} />
             <span>
-                {selectedRows.length > 1 ? 'collections' : 'collection'}
+                {selectedTables.length > 1 ? 'tables' : 'table'}
                 selected
             </span>
         </svelte:fragment>
         <svelte:fragment slot="end">
-            <Button text on:click={() => (selectedRows = [])}>Cancel</Button>
+            <Button text on:click={() => (selectedTables = [])}>Cancel</Button>
             <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
         </svelte:fragment>
     </FloatingActionBar>
 {/if}
 
-<Confirm
-    title="Delete collections"
-    bind:open={showDelete}
-    onSubmit={handleDelete}
-    disabled={deleting}>
+<Confirm title="Delete tables" bind:open={showDelete} onSubmit={handleDelete} disabled={deleting}>
     <Typography.Text>
-        Are you sure you want to delete <b>{selectedRows.length}</b>
-        {selectedRows.length > 1 ? 'collections' : 'collection'}?
+        Are you sure you want to delete <b>{selectedTables.length}</b>
+        {selectedTables.length > 1 ? 'tables' : 'table'}?
     </Typography.Text>
 </Confirm>
