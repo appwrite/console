@@ -14,7 +14,7 @@
         IconTrash,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Icon } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Icon, Tooltip } from '@appwrite.io/pink-svelte';
 
     export let selectedDeployment: Models.Deployment;
     export let deployment: Models.Deployment;
@@ -55,17 +55,24 @@
     </Button>
     <svelte:fragment slot="menu" let:toggle>
         <ActionMenu.Root>
-            {#if !inCard && selectedDeployment?.sourceSize !== 0}
-                <ActionMenu.Item.Button
-                    leadingIcon={IconRefresh}
-                    on:click={(e) => {
-                        e.preventDefault();
-                        selectedDeployment = deployment;
-                        showRedeploy = true;
-                        toggle();
-                    }}>
-                    Redeploy
-                </ActionMenu.Item.Button>
+            {#if !inCard}
+                <Tooltip disabled={selectedDeployment?.sourceSize !== 0} placement={'bottom'}>
+                    <div>
+                        <ActionMenu.Item.Button
+                            leadingIcon={IconRefresh}
+                            disabled={selectedDeployment?.sourceSize === 0}
+                            on:click={(e) => {
+                                e.preventDefault();
+                                selectedDeployment = deployment;
+                                showRedeploy = true;
+                                toggle();
+                            }}
+                            style="width: 100%">
+                            Redeploy
+                        </ActionMenu.Item.Button>
+                    </div>
+                    <div slot="tooltip">Source is empty</div>
+                </Tooltip>
             {/if}
             {#if deployment?.status === 'ready' && deployment?.$id !== activeDeployment}
                 <ActionMenu.Item.Button

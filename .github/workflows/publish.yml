@@ -39,7 +39,7 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=cloud"
-                      "PUBLIC_CONSOLE_FEATURE_FLAGS="
+                      "PUBLIC_CONSOLE_FEATURE_FLAGS=sites"
                       "PUBLIC_APPWRITE_MULTI_REGION=true"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY }}"

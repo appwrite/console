@@ -103,6 +103,9 @@
         isLoadingProjects = true;
         // null on non-org/project path like `onboarding`.
         loadedProjects = (await projects) ?? loadedProjects;
+        for (const project of loadedProjects.projects) {
+            project.region ??= 'default';
+        }
         isLoadingProjects = false;
 
         const createProjectItem = {
@@ -112,10 +115,12 @@
         };
 
         if (loadedProjects.total > 1 && selectedOrg) {
-            const projectLinks = loadedProjects.projects.slice(0, 4).map((project) => ({
-                name: project.name,
-                href: `${base}/project-${project.region}-${project.$id}/overview/platforms`
-            }));
+            const projectLinks = loadedProjects.projects.slice(0, 4).map((project) => {
+                return {
+                    name: project.name,
+                    href: `${base}/project-${project.region}-${project.$id}/overview/platforms`
+                };
+            });
 
             if (loadedProjects.projects.length > 4) {
                 projectLinks.push({
