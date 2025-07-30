@@ -269,6 +269,11 @@
         await sleep(1250);
         $spreadsheetLoading = false;
     }
+
+    $: if (!$randomDataModalState.show) {
+        // reset value to 25 default!
+        $randomDataModalState.value = 25;
+    }
 </script>
 
 <svelte:head>

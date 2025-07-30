@@ -126,6 +126,7 @@
                     onclick={() => {
                         if (columnActionsById && mode === 'records') {
                             $showCreateAttributeSheet.show = true;
+                            $showCreateAttributeSheet.title = 'Insert column';
                             $showCreateAttributeSheet.columns = $tableColumns;
                             $showCreateAttributeSheet.columnsOrder = $columnsOrder;
                         }
@@ -227,7 +228,7 @@
         }
 
         &[data-mode='records'] {
-            & :global([role='rowheader'] [role='cell']:nth-last-child(2) [role='presentation']) {
+            & :global([role='rowheader'] :nth-last-child(2) [role='presentation']) {
                 display: none;
             }
         }
@@ -239,10 +240,6 @@
                 & :global(button) {
                     opacity: 0.5;
                 }
-            }
-
-            & :global([role='cell']:nth-last-child(1) [role='presentation']) {
-                display: none;
             }
         }
 

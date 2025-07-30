@@ -367,7 +367,7 @@
 {#if selectedColumn}
     <DeleteColumn bind:showDelete {selectedColumn} />
 {:else if selectedColumns && selectedColumns.length}
-    <DeleteColumn bind:showDelete bind:selectedColumn />
+    <DeleteColumn bind:showDelete bind:selectedColumn={selectedColumns} />
 {/if}
 
 <SideSheet

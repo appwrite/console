@@ -439,7 +439,7 @@
         });
     }, 1000);
 
-    $: reInitSpreadsheetKey = $table.columns.length;
+    $: reInitSpreadsheetKey = `${$table.columns.length}#${$columnsOrder.length}`;
 </script>
 
 <SpreadsheetContainer>

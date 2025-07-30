@@ -17,7 +17,7 @@
     const currentYear = new Date().getFullYear();
 
     // for spreadsheet ui
-    const hideFooter = $derived(page.route.id?.includes('collection-[collection]'));
+    const hideFooter = $derived(page.route.id?.includes('table-[table]'));
 </script>
 
 <footer class:hide={hideFooter}>
