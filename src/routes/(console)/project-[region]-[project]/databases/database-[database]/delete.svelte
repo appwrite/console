@@ -18,17 +18,17 @@
     let confirmedDeletion = false;
 
     let error = null;
-    let isLoadingDocumentsCount = false;
+    let isLoadingRowsCount = false;
 
-    $: collectionItems = [];
-    let collections: Models.CollectionList = null;
+    $: tableItems = [];
+    let tables: Models.TableList = null;
 
     function buildQueries(): string[] {
         const queries = [Query.orderDesc('$updatedAt')];
 
-        if (collectionItems.length > 0) {
+        if (tableItems.length > 0) {
             queries.push(Query.limit(25));
-            queries.push(Query.offset(collectionItems.length));
+            queries.push(Query.offset(tableItems.length));
         } else {
             queries.push(Query.limit(3));
         }
@@ -36,32 +36,32 @@
         return queries;
     }
 
-    async function listCollections() {
+    async function listTables() {
         // let's just wait...
-        if (isLoadingDocumentsCount) return;
+        if (isLoadingRowsCount) return;
 
-        isLoadingDocumentsCount = true;
+        isLoadingRowsCount = true;
 
         try {
             const queries = buildQueries();
 
-            collections = await sdk
+            tables = await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.listCollections(databaseId, queries);
+                .grids.listTables(databaseId, queries);
 
-            const collectionPromises = collections.collections.map(async (collection) => {
+            const tablePromises = tables.tables.map(async (table) => {
                 return {
-                    id: collection.$id,
-                    name: collection.name,
-                    updatedAt: collection.$updatedAt
+                    id: table.$id,
+                    name: table.name,
+                    updatedAt: table.$updatedAt
                 };
             });
 
-            collectionItems = [...collectionItems, ...(await Promise.all(collectionPromises))];
+            tableItems = [...tableItems, ...(await Promise.all(tablePromises))];
         } catch (err) {
             error = true;
         } finally {
-            isLoadingDocumentsCount = false;
+            isLoadingRowsCount = false;
         }
     }
 
@@ -69,7 +69,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .databases.delete(databaseId);
+                .grids.deleteDatabase(databaseId);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -88,24 +88,24 @@
 
     /* reset data on modal close */
     $: if (!showDelete) {
-        collections = null;
-        collectionItems = [];
+        tables = null;
+        tableItems = [];
     } else {
-        listCollections();
+        listTables();
     }
 </script>
 
 <Modal title="Delete database" bind:show={showDelete} onSubmit={handleDelete}>
     <p class="text" slot="description">
-        {#if collectionItems.length > 0}
-            The following collections and all data associated with <b>{$database.name}</b>, will be
+        {#if tableItems.length > 0}
+            The following tables and all data associated with <b>{$database.name}</b>, will be
             permanently deleted.
         {:else}
             Are you sure you want to delete <b>{$database.name}</b>?
         {/if}
     </p>
 
-    {#if isLoadingDocumentsCount}
+    {#if isLoadingRowsCount}
         <div class="u-flex u-main-center">
             <Spinner />
         </div>
@@ -113,36 +113,36 @@
         <p class="text">
             Are you sure you want to delete <b>{$database.name}</b>?
         </p>
-    {:else if collectionItems.length > 0}
+    {:else if tableItems.length > 0}
         <div class="u-flex-vertical u-gap-16">
             <Table.Root columns={2} let:root>
                 <svelte:fragment slot="header" let:root>
-                    <Table.Header.Cell {root}>Collection</Table.Header.Cell>
+                    <Table.Header.Cell {root}>Table</Table.Header.Cell>
                     <Table.Header.Cell {root}>Last Updated</Table.Header.Cell>
                 </svelte:fragment>
-                {#each collectionItems as collection}
+                {#each tableItems as table}
                     <Table.Row.Base {root}>
-                        <Table.Cell {root}>{collection.name}</Table.Cell>
-                        <Table.Cell {root}>{toLocaleDate(collection.updatedAt)}</Table.Cell>
+                        <Table.Cell {root}>{table.name}</Table.Cell>
+                        <Table.Cell {root}>{toLocaleDate(table.updatedAt)}</Table.Cell>
                     </Table.Row.Base>
                 {/each}
             </Table.Root>
 
-            {#if collectionItems.length < collections.total}
+            {#if tableItems.length < tables.total}
                 <div class="u-flex u-gap-16 u-cross-center">
-                    <button class="u-underline" on:click={listCollections} type="button">
+                    <button class="u-underline" on:click={listTables} type="button">
                         Show more
                     </button>
 
-                    {#if isLoadingDocumentsCount}
+                    {#if isLoadingRowsCount}
                         <div class="loader is-small"></div>
                     {/if}
                 </div>
-            {:else if collectionItems.length > 25}
+            {:else if tableItems.length > 25}
                 <button
                     class="u-underline"
                     on:click={() => {
-                        collectionItems = collectionItems.slice(0, 3);
+                        tableItems = tableItems.slice(0, 3);
                     }}
                     type="button">
                     Show less
@@ -151,7 +151,7 @@
         </div>
     {/if}
 
-    {#if !isLoadingDocumentsCount}
+    {#if !isLoadingRowsCount}
         <p class="text" data-private>
             <b>
                 Once deleted, this database and its backups cannot be restored. This action is
@@ -162,7 +162,7 @@
         <div class="input-check-box-friction">
             <InputCheckbox
                 required
-                id="delete_policy"
+                id="delete_database"
                 bind:checked={confirmedDeletion}
                 label="I understand and confirm" />
         </div>

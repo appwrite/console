@@ -10,6 +10,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     return {
         header: Header,
         breadcrumbs: Breadcrumbs,
-        database: await sdk.forProject(params.region, params.project).databases.get(params.database)
+        database: await sdk
+            .forProject(params.region, params.project)
+            .grids.getDatabase(params.database)
     };
 };
