@@ -29,7 +29,7 @@
                     $doc.$databaseId,
                     $doc.$collectionId,
                     $doc.$id,
-                    $doc.data,
+                    $doc,
                     permissions
                 );
             await invalidate(Dependencies.DOCUMENT);
