@@ -219,6 +219,7 @@
                         {#if isSetToArchive(project)}
                             <Tag
                                 size="s"
+                                style="white-space: nowrap;"
                                 on:click={(event) => {
                                     event.preventDefault();
                                     showSelectProject = true;
