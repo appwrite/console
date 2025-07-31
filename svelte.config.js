@@ -26,7 +26,7 @@ const config = {
             precompress: true
         }),
         paths: {
-            base: process.env.PREVIEW ? undefined : '/console'
+            base: process.env.PREVIEW ? '' : '/console'
         }
     },
     vitePlugin: {
