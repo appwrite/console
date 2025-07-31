@@ -161,7 +161,7 @@
                                         href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
                                         Download PDF
                                     </ActionMenu.Item.Anchor>
-                                    {#if status === 'overdue' || status === 'failed'}
+                                    {#if status === 'overdue' || status === 'failed' || status === 'abandoned'}
                                         <ActionMenu.Item.Button
                                             leadingIcon={IconRefresh}
                                             on:click={() => {
