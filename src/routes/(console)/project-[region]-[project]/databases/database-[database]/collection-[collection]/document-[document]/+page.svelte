@@ -47,24 +47,13 @@
 
     async function updateData() {
         try {
-            const {
-                $id,
-                $collectionId,
-                $databaseId,
-                $createdAt,
-                $updatedAt,
-                $permissions,
-                $sequence,
-                ...dataOnly
-            } = $work;
-
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .databases.updateDocument(
                     databaseId,
                     collectionId,
                     documentId,
-                    dataOnly,
+                    $work,
                     $work.$permissions
                 );
 

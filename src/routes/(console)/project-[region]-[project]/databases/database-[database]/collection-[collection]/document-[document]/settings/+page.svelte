@@ -13,7 +13,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { collection } from '../../store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Alert } from '@appwrite.io/pink-svelte';
 
     let showDelete = false;
@@ -23,24 +23,15 @@
 
     async function updatePermissions() {
         try {
-            const {
-                $id,
-                $collectionId,
-                $databaseId,
-                $createdAt,
-                $updatedAt,
-                $permissions,
-                $sequence,
-                ...dataOnly
-            } = $doc;
+            const { $databaseId, $collectionId, $id: documentId } = $doc;
 
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .databases.updateDocument(
-                    $doc.$databaseId,
-                    $doc.$collectionId,
-                    $doc.$id,
-                    dataOnly,
+                    $databaseId,
+                    $collectionId,
+                    documentId,
+                    undefined,
                     permissions
                 );
             await invalidate(Dependencies.DOCUMENT);
