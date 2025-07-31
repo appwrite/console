@@ -8,11 +8,14 @@ import { page } from '$app/state';
 import { user } from '$lib/stores/user';
 import deepEqual from 'deep-equal';
 
-type Preferences = {
+type ConsolePreferences = {
     limit?: number;
     view?: View;
     columns?: string[];
-};
+} /* support a strict + flexible preference type for TS compatibility */ & Record<
+    string,
+    string | number | boolean | object | null | unknown
+>;
 
 type TeamPreferences = {
     names?: string[];
@@ -20,14 +23,14 @@ type TeamPreferences = {
     widths?: { [columnId: string]: { fixed: number | { min: number }; resized: number } };
 };
 
-type PreferencesStore = {
-    [key: string]: Preferences;
+type ConsolePreferencesStore = {
+    [key: string]: ConsolePreferences;
     // kept for backwards compatibility
     collections?: {
-        [key: string]: Preferences['columns'];
+        [key: string]: ConsolePreferences['columns'];
     };
     tables?: {
-        [key: string]: Preferences['columns'];
+        [key: string]: ConsolePreferences['columns'];
     };
     displayNames?: {
         [key: string]: TeamPreferences['names'];
@@ -40,7 +43,7 @@ type PreferencesStore = {
     };
 } & { hideAiDisclaimer?: boolean };
 
-async function updateConsolePreferences(store: PreferencesStore): Promise<void> {
+async function updateConsolePreferences(store: ConsolePreferencesStore): Promise<void> {
     const currentPreferences = get(user)?.prefs ?? (await sdk.forConsole.account.getPrefs());
     if (!currentPreferences?.console || Array.isArray(currentPreferences.console)) {
         currentPreferences.console = {};
@@ -55,9 +58,9 @@ async function updateConsolePreferences(store: PreferencesStore): Promise<void> 
 }
 
 function createPreferences() {
-    const { subscribe, set, update } = writable<PreferencesStore>({});
-    let preferences: PreferencesStore = {};
-    let teamPreferences: PreferencesStore = {};
+    const { subscribe, set, update } = writable<ConsolePreferencesStore>({});
+    let preferences: ConsolePreferencesStore = {};
+    let teamPreferences: ConsolePreferencesStore = {};
 
     if (browser) {
         // fresh fetch.
@@ -97,9 +100,9 @@ function createPreferences() {
     /**
      * Update the local store and then synchronizes them on user prefs.
      */
-    function updateAndSync(callback: (prefs: PreferencesStore) => void): Promise<void> {
-        let oldPrefsSnapshot: PreferencesStore;
-        let newPrefsSnapshot: PreferencesStore;
+    function updateAndSync(callback: (prefs: ConsolePreferencesStore) => void): Promise<void> {
+        let oldPrefsSnapshot: ConsolePreferencesStore;
+        let newPrefsSnapshot: ConsolePreferencesStore;
 
         update((currentPrefs) => {
             oldPrefsSnapshot = structuredClone(currentPrefs);
@@ -120,7 +123,7 @@ function createPreferences() {
         subscribe,
         set,
         update,
-        get: (route?: Page['route']): Preferences => {
+        get: (route?: Page['route']): ConsolePreferences => {
             const parsedRoute = route ?? page.route;
             return (
                 preferences?.[parsedRoute.id] ?? {
@@ -130,10 +133,10 @@ function createPreferences() {
                 }
             );
         },
-        getCustomTableColumns: (tableId: string): Preferences['columns'] => {
+        getCustomTableColumns: (tableId: string): ConsolePreferences['columns'] => {
             return preferences?.tables?.[tableId] ?? preferences?.collections?.[tableId] ?? [];
         },
-        setLimit: (limit: Preferences['limit']) =>
+        setLimit: (limit: ConsolePreferences['limit']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
 
@@ -146,7 +149,7 @@ function createPreferences() {
 
                 return n;
             }),
-        setView: (view: Preferences['view']) =>
+        setView: (view: ConsolePreferences['view']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
 
@@ -159,7 +162,7 @@ function createPreferences() {
 
                 return n;
             }),
-        setColumns: (columns: Preferences['columns']) =>
+        setColumns: (columns: ConsolePreferences['columns']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
 
@@ -172,7 +175,9 @@ function createPreferences() {
 
                 return n;
             }),
-        setCustomTableColumns: (tableId: string, columns: Preferences['columns']) =>
+        setCustomTableColumns: (tableId: string,
+            columns: ConsolePreferences['columns']
+        ) =>
             updateAndSync((n) => {
                 n ??= {};
                 n.tables ??= {};

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, BoxAvatar, Alert } from '$lib/components';
+    import { CardGrid, BoxAvatar } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
@@ -14,6 +14,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { table } from '../../store';
     import { page } from '$app/state';
+    import { Alert } from '@appwrite.io/pink-svelte';
 
     let showDelete = false;
     let permissions = $row?.$permissions;
@@ -23,9 +24,11 @@
 
     async function updatePermissions() {
         try {
+            const { $databaseId, $tableId, $id: rowId } = $row;
+
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .grids.updateRow($row.$databaseId, $row.$tableId, $row.$id, $row, permissions);
+                .grids.updateRow($databaseId, $tableId, rowId, undefined, permissions);
 
             await invalidate(Dependencies.ROW);
             arePermsDisabled = true;
@@ -81,26 +84,23 @@
         <svelte:fragment slot="aside">
             {#if $table.rowSecurity}
                 {#if showPermissionAlert}
-                    <Alert type="info" dismissible on:dismiss={() => (showPermissionAlert = false)}>
-                        <svelte:fragment slot="title">Row security is enabled</svelte:fragment>
-                        <p class="text">
-                            Users will be able to access this row if they have been granted <b
-                                >either row or table permissions.
-                            </b>
-                        </p>
-                    </Alert>
+                    <Alert.Inline
+                        status="info"
+                        title="Row security is enabled"
+                        dismissible
+                        on:dismiss={() => (showPermissionAlert = false)}>
+                        Users will be able to access this row if they have been granted <b
+                            >either row or table permissions.</b>
+                    </Alert.Inline>
                 {/if}
                 {#if permissions}
                     <Permissions bind:permissions />
                 {/if}
             {:else}
-                <Alert type="info">
-                    <svelte:fragment slot="title">Row security is disabled</svelte:fragment>
-                    <p class="text">
-                        If you want to assign row permissions. Go to Table settings and enable row
-                        security. Otherwise, only table permissions will be used.
-                    </p>
-                </Alert>
+                <Alert.Inline status="info" title="Document security is disabled">
+                    If you want to assign row permissions. Go to Table settings and enable
+                    row security. Otherwise, only table permissions will be used.
+                </Alert.Inline>
             {/if}
         </svelte:fragment>
 
