@@ -89,7 +89,6 @@ export async function submitStripeCard(name: string, organizationId?: string) {
             redirect: 'if_required'
         });
 
-        console.log(setupIntent);
         if (error) {
             const e = new Error(error.message);
             trackError(e, Submit.PaymentMethodCreate);
