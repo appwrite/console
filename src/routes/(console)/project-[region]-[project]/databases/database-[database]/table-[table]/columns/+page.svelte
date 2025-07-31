@@ -128,7 +128,7 @@
         }
     }
 
-    const emptyCellsLimit = $derived($isSmallViewport ? 14 : 16);
+    const emptyCellsLimit = $derived($isSmallViewport ? 14 : 17);
     const emptyCellsCount = $derived(
         updatedColumnsForSheet.length >= emptyCellsLimit
             ? 0

@@ -16,7 +16,8 @@
         Layout,
         Link,
         Popover,
-        Spreadsheet, Typography
+        Spreadsheet,
+        Typography
     } from '@appwrite.io/pink-svelte';
     import {
         IconDotsHorizontal,
@@ -84,7 +85,7 @@
 
     onDestroy(() => ($showCreateAttributeSheet.show = false));
 
-    const emptyCellsLimit = $derived($isSmallViewport ? 14 : 16);
+    const emptyCellsLimit = $derived($isSmallViewport ? 14 : 17);
     const emptyCellsCount = $derived(
         data.table.indexes.length >= emptyCellsLimit
             ? 0
