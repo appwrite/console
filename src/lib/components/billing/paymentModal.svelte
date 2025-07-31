@@ -138,14 +138,6 @@
         display: flex;
         min-height: 245px;
 
-        .state-element {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
         .stripe-element {
             width: 100%;
         }

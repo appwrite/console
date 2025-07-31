@@ -9,7 +9,7 @@
     export let card: PaymentMethod | null = null;
 </script>
 
-<Layout.Stack direction="column" gap="s">
+<Layout.Stack direction="column" gap="m">
     {#if card}
         <Card.Base variant="secondary" padding="s">
             <Layout.Stack direction="row" alignItems="center" gap="s">
