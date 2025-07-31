@@ -26,7 +26,7 @@ const config = {
             precompress: true
         }),
         paths: {
-            base: process.env.SVELTEKIT_BASE ? process.env.SVELTEKIT_BASE : '/console'
+            base: process.env.SVELTEKIT_BASE || '/console'
         }
     },
     vitePlugin: {
