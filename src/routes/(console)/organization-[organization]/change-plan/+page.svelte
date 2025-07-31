@@ -262,8 +262,8 @@
         }
     }
 
-    $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan?.order;
-    $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan?.order;
+    $: isUpgrade = $plansInfo.get(selectedPlan)?.order > $currentPlan?.order;
+    $: isDowngrade = $plansInfo.get(selectedPlan)?.order < $currentPlan?.order;
     $: isButtonDisabled = $organization?.billingPlan === selectedPlan;
 </script>
 
