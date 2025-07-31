@@ -175,9 +175,7 @@ function createPreferences() {
 
                 return n;
             }),
-        setCustomTableColumns: (tableId: string,
-            columns: ConsolePreferences['columns']
-        ) =>
+        setCustomTableColumns: (tableId: string, columns: ConsolePreferences['columns']) =>
             updateAndSync((n) => {
                 n ??= {};
                 n.tables ??= {};

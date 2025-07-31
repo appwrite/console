@@ -98,8 +98,8 @@
                 {/if}
             {:else}
                 <Alert.Inline status="info" title="Document security is disabled">
-                    If you want to assign row permissions. Go to Table settings and enable
-                    row security. Otherwise, only table permissions will be used.
+                    If you want to assign row permissions. Go to Table settings and enable row
+                    security. Otherwise, only table permissions will be used.
                 </Alert.Inline>
             {/if}
         </svelte:fragment>

@@ -27,7 +27,7 @@ export function isString(column: Columns): column is Models.ColumnString {
 export function buildWildcardColumnsQuery(table: Models.Table | null = null): string[] {
     return [
         ...(table?.columns
-            ?.filter((col) => isRelationship(col))
+            ?.filter((col) => col.status === 'available' && isRelationship(col))
             ?.map((col) => Query.select([`${col.key}.*`])) ?? []),
 
         Query.select(['*'])
