@@ -23,9 +23,11 @@
                 .users.updateEmailVerification($user.$id, !$user.emailVerification);
             await invalidate(Dependencies.USER);
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    !$user.emailVerification ? 'unverified' : 'verified'
-                }`,
+                message: `${$user.name || $user.email || $user.phone || 'The account'}${(
+                    $user.name || $user.email || $user.phone || 'The account'
+                ).endsWith('s')
+                    ? "'"
+                    : "'s"} email has been ${!$user.emailVerification ? 'unverified' : 'verified'}`,
                 type: 'success'
             });
             trackEvent(Submit.UserUpdateVerificationEmail);
@@ -45,9 +47,11 @@
                 .users.updatePhoneVerification($user.$id, !$user.phoneVerification);
             await invalidate(Dependencies.USER);
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.phoneVerification ? 'unverified' : 'verified'
-                }`,
+                message: `${$user.name || $user.email || $user.phone || 'The account'}${(
+                    $user.name || $user.email || $user.phone || 'The account'
+                ).endsWith('s')
+                    ? "'"
+                    : "'s"} phone has been ${!$user.phoneVerification ? 'unverified' : 'verified'}`,
                 type: 'success'
             });
             trackEvent(Submit.UserUpdateVerificationPhone);
