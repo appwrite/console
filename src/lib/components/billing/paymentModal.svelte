@@ -101,34 +101,33 @@
     bind:error
     onSubmit={handleSubmit}>
     <slot />
-    <InputText
-        id="name"
-        required
-        autofocus={true}
-        bind:value={name}
-        label="Cardholder name"
-        placeholder="Cardholder name" />
-
-    <div class="aw-stripe-container" data-private>
-        {#if isLoading}
-            <div class="loader-element">
-                <Spinner />
-            </div>
-        {/if}
-        {#if showState}
-            <div class="state-element">
-                <!-- input select for state picker -->
-                <StatePicker card={paymentMethod} bind:state />
-            </div>
-        {:else}
+    {#if showState}
+        <div class="state-element">
+            <!-- input select for state picker -->
+            <StatePicker card={paymentMethod} bind:state />
+        </div>
+    {:else}
+        <InputText
+            id="name"
+            required
+            autofocus={true}
+            bind:value={name}
+            label="Cardholder name"
+            placeholder="Cardholder name" />
+        <div class="aw-stripe-container" data-private>
+            {#if isLoading}
+                <div class="loader-element">
+                    <Spinner />
+                </div>
+            {/if}
             <div
                 style:display={isLoading ? 'none' : 'initial'}
                 class="stripe-element"
                 bind:this={element}>
                 <!-- Stripe will create form elements here -->
             </div>
-        {/if}
-    </div>
+        </div>
+    {/if}
     <slot name="end"></slot>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
