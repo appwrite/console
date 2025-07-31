@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { states } from './state.ts';
+    import { states } from './state';
     import { InputSelect } from '$lib/elements/forms';
     import type { PaymentMethod } from '@stripe/stripe-js';
     import { Alert, Card, Layout, Typography } from '@appwrite.io/pink-svelte';
