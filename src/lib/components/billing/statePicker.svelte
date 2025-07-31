@@ -9,7 +9,7 @@
     export let card: PaymentMethod | null = null;
 </script>
 
-<div class="state-picker-container">
+<Layout.Stack direction="column" gap="s">
     {#if card}
         <Card.Base variant="secondary" padding="s">
             <Layout.Stack direction="row" alignItems="center" gap="s">
@@ -32,6 +32,7 @@
 
     <InputSelect
         bind:value={state}
+        required
         label="State"
         placeholder="Select a state"
         id="state-picker"
@@ -40,12 +41,4 @@
             value: state.abbreviation,
             id: state.abbreviation.toLowerCase()
         }))} />
-</div>
-
-<style>
-    .state-picker-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-</style>
+</Layout.Stack>
