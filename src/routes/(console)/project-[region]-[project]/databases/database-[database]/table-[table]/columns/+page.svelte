@@ -130,7 +130,9 @@
 
     const emptyCellsLimit = $derived($isSmallViewport ? 14 : 16);
     const emptyCellsCount = $derived(
-        $columns.length >= emptyCellsLimit ? 0 : emptyCellsLimit - $columns.length
+        updatedColumnsForSheet.length >= emptyCellsLimit
+            ? 0
+            : emptyCellsLimit - updatedColumnsForSheet.length
     );
 
     onMount(() => {

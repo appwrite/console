@@ -6,7 +6,7 @@
     import { Cover, CoverTitle } from '$lib/layout';
     import { canWriteTables } from '$lib/stores/roles';
     import { table } from './store';
-    import { isTabletViewport } from '$lib/stores/viewport';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
 
     const databaseId = $derived(page.params.database);
 
@@ -56,7 +56,7 @@
     );
 </script>
 
-<div style:margin-top={$isTabletViewport ? '48px' : 0}>
+<div style:margin-top={$isTabletViewport && !$isSmallViewport ? '48px' : 0}>
     <Cover expanded>
         <svelte:fragment slot="header">
             <CoverTitle

@@ -1,5 +1,13 @@
 <script lang="ts">
-    import { Badge, Button, Icon, Layout, Spreadsheet, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Button,
+        Icon,
+        Layout,
+        Skeleton,
+        Spreadsheet,
+        Typography
+    } from '@appwrite.io/pink-svelte';
 
     import { IconCalendar, IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -106,15 +114,21 @@
     const spreadsheetColumns = $derived(
         mode === 'records' ? getRecordsColumns() : getIndexesColumns()
     );
+
+    const emptyCells = $derived($isSmallViewport ? 14 : 17);
+    const fixedHeight = $derived($isSmallViewport ? '60.75vh' : '74.75vh');
 </script>
 
 <div class="spreadsheet-container-outer" data-mode={mode}>
     <Spreadsheet.Root
+        {emptyCells}
         allowSelection
-        emptyCells={12}
-        height="fit-content"
+        height={fixedHeight}
         columns={spreadsheetColumns}
-        loading={$spreadsheetLoading}>
+        loading={$spreadsheetLoading}
+        bottomActionClick={() => {
+            /* @ignore: only for showing the `+` button on footer */
+        }}>
         <svelte:fragment slot="header" let:root>
             {#each spreadsheetColumns as column (column.id)}
                 {@const columnActionsById = column.id === 'actions'}
@@ -165,43 +179,55 @@
                 </div>
             {/each}
         </svelte:fragment>
+
+        <svelte:fragment slot="footer">
+            <Layout.Stack
+                direction="row"
+                alignContent="center"
+                alignItems="center"
+                justifyContent="space-between">
+                <Skeleton variant="line" height={18} width={125} />
+            </Layout.Stack>
+        </svelte:fragment>
     </Spreadsheet.Root>
 
-    <div class="spreadsheet-fade-bottom">
-        <div class="empty-actions">
-            <Layout.Stack gap="xl" alignItems="center">
-                <Typography.Title>{title ?? `You have no ${mode} yet`}</Typography.Title>
+    {#if !$spreadsheetLoading}
+        <div class="spreadsheet-fade-bottom">
+            <div class="empty-actions">
+                <Layout.Stack gap="xl" alignItems="center">
+                    <Typography.Title>{title ?? `You have no ${mode} yet`}</Typography.Title>
 
-                {#if showActions}
-                    <Layout.Stack
-                        inline
-                        alignItems="center"
-                        direction={$isSmallViewport ? 'column' : 'row'}
-                        gap="s">
-                        <Button.Button
-                            icon
-                            size="s"
-                            variant="secondary"
-                            disabled={actions?.primary?.disabled}
-                            onclick={actions?.primary?.onClick}>
-                            <Icon icon={IconPlus} size="s" />
-                            {actions?.primary?.text ?? `Create ${mode}`}
-                        </Button.Button>
-
-                        {#if mode === 'records'}
+                    {#if showActions}
+                        <Layout.Stack
+                            inline
+                            alignItems="center"
+                            direction={$isSmallViewport ? 'column' : 'row'}
+                            gap="s">
                             <Button.Button
+                                icon
                                 size="s"
                                 variant="secondary"
-                                disabled={actions?.random?.disabled}
-                                onclick={actions?.random?.onClick}>
-                                {actions?.random?.text ?? `Generate random data`}
+                                disabled={actions?.primary?.disabled}
+                                onclick={actions?.primary?.onClick}>
+                                <Icon icon={IconPlus} size="s" />
+                                {actions?.primary?.text ?? `Create ${mode}`}
                             </Button.Button>
-                        {/if}
-                    </Layout.Stack>
-                {/if}
-            </Layout.Stack>
+
+                            {#if mode === 'records'}
+                                <Button.Button
+                                    size="s"
+                                    variant="secondary"
+                                    disabled={actions?.random?.disabled}
+                                    onclick={actions?.random?.onClick}>
+                                    {actions?.random?.text ?? `Generate random data`}
+                                </Button.Button>
+                            {/if}
+                        </Layout.Stack>
+                    {/if}
+                </Layout.Stack>
+            </div>
         </div>
-    </div>
+    {/if}
 </div>
 
 <style lang="scss">

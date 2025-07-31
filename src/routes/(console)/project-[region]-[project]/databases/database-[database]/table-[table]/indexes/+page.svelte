@@ -16,7 +16,7 @@
         Layout,
         Link,
         Popover,
-        Spreadsheet
+        Spreadsheet, Typography
     } from '@appwrite.io/pink-svelte';
     import {
         IconDotsHorizontal,
@@ -33,6 +33,7 @@
     import { flags } from '$lib/flags';
     import type { PageData } from './$types';
     import { showCreateAttributeSheet } from '../store';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     let {
         data
@@ -82,6 +83,13 @@
     });
 
     onDestroy(() => ($showCreateAttributeSheet.show = false));
+
+    const emptyCellsLimit = $derived($isSmallViewport ? 14 : 16);
+    const emptyCellsCount = $derived(
+        data.table.indexes.length >= emptyCellsLimit
+            ? 0
+            : emptyCellsLimit - data.table.indexes.length
+    );
 </script>
 
 <Container expanded style="background: var(--bgcolor-neutral-primary)">
@@ -106,7 +114,9 @@
                 <Spreadsheet.Root
                     let:root
                     {columns}
+                    height="100%"
                     allowSelection
+                    emptyCells={emptyCellsCount}
                     bind:selectedRows={selectedIndexes}>
                     <svelte:fragment slot="header" let:root>
                         <Spreadsheet.Header.Cell column="key" {root}>Key</Spreadsheet.Header.Cell>
@@ -121,6 +131,7 @@
                         {/if}
                         <Spreadsheet.Header.Cell column="actions" {root} />
                     </svelte:fragment>
+
                     {#each data.table.indexes as index}
                         <Spreadsheet.Row.Base {root} id={index.key}>
                             <Spreadsheet.Cell column="key" {root} isEditable={false}>
@@ -182,6 +193,18 @@
                             </Spreadsheet.Cell>
                         </Spreadsheet.Row.Base>
                     {/each}
+
+                    <svelte:fragment slot="footer">
+                        <Layout.Stack
+                            direction="row"
+                            alignContent="center"
+                            alignItems="center"
+                            justifyContent="space-between">
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
+                                {data.table.indexes.length} columns
+                            </Typography.Text>
+                        </Layout.Stack>
+                    </svelte:fragment>
                 </Spreadsheet.Root>
             </SpreadsheetContainer>
         {:else}
