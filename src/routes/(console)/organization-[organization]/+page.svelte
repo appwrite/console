@@ -26,6 +26,7 @@
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
     import { Badge, Icon, Typography, Alert, Tag, Tooltip } from '@appwrite.io/pink-svelte';
+    import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
     import {
         IconAndroid,
         IconApple,
@@ -115,6 +116,7 @@
     };
     onMount(async () => {
         checkPricingRefAndRedirect(page.url.searchParams);
+        updateViewport();
     });
 
     function findRegion(project: Models.Project) {
@@ -129,7 +131,9 @@
     }
 
     function formatName(name: string, limit: number = 19) {
-        return name ? (name.length > limit ? `${name.slice(0, limit)}...` : name) : '-';
+        const mobileLimit = 12;
+        const actualLimit = $isSmallViewport ? mobileLimit : limit;
+        return name ? (name.length > actualLimit ? `${name.slice(0, actualLimit)}...` : name) : '-';
     }
 
     $: projectsToArchive = data.projects.projects.filter(
@@ -195,9 +199,7 @@
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
-                {@const formatted = isSetToArchive(project)
-                    ? formatName(project.name)
-                    : project.name}
+                {@const formatted = formatName(project.name)}
                 <GridItem1
                     href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
                     <svelte:fragment slot="eyebrow">
