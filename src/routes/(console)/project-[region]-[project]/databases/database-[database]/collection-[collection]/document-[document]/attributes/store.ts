@@ -29,7 +29,7 @@ export function buildWildcardAttributesQuery(
 ): string[] {
     return [
         ...(collection?.attributes
-            ?.filter((attr) => isRelationship(attr))
+            ?.filter((attr) => attr.status === 'available' && isRelationship(attr))
             ?.map((attr) => Query.select([`${attr.key}.*`])) ?? []),
 
         Query.select(['*'])
