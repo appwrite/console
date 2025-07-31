@@ -130,7 +130,7 @@
     }
 
     function formatName(name: string, limit: number = 19) {
-        const mobileLimit = 12;
+        const mobileLimit = 16;
         const actualLimit = $isSmallViewport ? mobileLimit : limit;
         return name ? (name.length > actualLimit ? `${name.slice(0, actualLimit)}...` : name) : '-';
     }
@@ -198,7 +198,9 @@
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
-                {@const formatted = formatName(project.name)}
+                {@const formatted = isSetToArchive(project)
+                    ? formatName(project.name)
+                    : project.name}
                 <GridItem1
                     href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
                     <svelte:fragment slot="eyebrow">
