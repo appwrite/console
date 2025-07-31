@@ -5,6 +5,7 @@
     import type { Column } from '$lib/helpers/types';
     import { IconViewBoards } from '@appwrite.io/pink-icons-svelte';
     import { Button, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import type { Writable } from 'svelte/store';
 
     let {
@@ -35,7 +36,7 @@
         {#if !hideColumns && $columns?.length}
             <Layout.Stack gap="xs">
                 <Typography.Text>Columns</Typography.Text>
-                <ColumnSelector {columns} {isCustomCollection}>
+                <ColumnSelector {columns} {isCustomCollection} portal={$isSmallViewport}>
                     {#snippet children(toggle, selectedColumnsNumber)}
                         <Button.Button
                             size="s"
