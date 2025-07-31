@@ -26,7 +26,7 @@
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
     import { Badge, Icon, Typography, Alert, Tag, Tooltip } from '@appwrite.io/pink-svelte';
-    import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAndroid,
         IconApple,
@@ -116,7 +116,6 @@
     };
     onMount(async () => {
         checkPricingRefAndRedirect(page.url.searchParams);
-        updateViewport();
     });
 
     function findRegion(project: Models.Project) {
