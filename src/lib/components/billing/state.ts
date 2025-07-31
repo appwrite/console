@@ -1,4 +1,4 @@
-export const states = [
+export const states: Array<{ name: string; abbreviation: string }> = [
     {
         "name": "Alabama",
         "abbreviation": "AL"
