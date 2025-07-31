@@ -62,16 +62,12 @@ async function fetchDatabasesAndBackups(
     await Promise.all(
         // TODO: backend should allow `Query.select` for perf!
         databases.databases.map(async ({ $id }) => {
-            try {
-                const res = await projectSDK.grids.listTables($id, [
-                    Query.limit(1),
-                    Query.orderDesc('')
-                ]);
+            const res = await projectSDK.grids.listTables($id, [
+                Query.limit(1),
+                Query.orderDesc('')
+            ]);
 
-                tables[$id] = res.tables?.[0]?.$id ?? null;
-            } catch (e) {
-                // @ignore
-            }
+            tables[$id] = res.tables?.[0]?.$id ?? null;
         })
     );
 
