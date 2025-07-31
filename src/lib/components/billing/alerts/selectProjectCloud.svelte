@@ -24,7 +24,7 @@
     let error = $state<string | null>(null);
 
     onMount(() => {
-        projects = page.data.projects?.projects || [];
+        projects = page.data.allProjects?.projects || [];
     });
 
     let projectsToArchive = $derived(
