@@ -85,7 +85,11 @@
 </script>
 
 <div>
-    <form on:submit|preventDefault={addFilterAndReset}>
+    <form
+        onsubmit={(e) => {
+            e.preventDefault();
+            addFilterAndReset();
+        }}>
         <Layout.Stack gap="s" direction="row" alignItems="flex-start">
             <InputSelect
                 id="column"
