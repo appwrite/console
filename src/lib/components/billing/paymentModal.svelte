@@ -102,7 +102,6 @@
     onSubmit={handleSubmit}>
     <slot />
     {#if showState}
-        <!-- input select for state picker -->
         <StatePicker card={paymentMethod} bind:state />
     {:else}
         <InputText
