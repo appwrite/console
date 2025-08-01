@@ -219,7 +219,7 @@
                                     variant="secondary"
                                     disabled={actions?.random?.disabled}
                                     onclick={actions?.random?.onClick}>
-                                    {actions?.random?.text ?? `Generate random data`}
+                                    {actions?.random?.text ?? `Generate sample data`}
                                 </Button.Button>
                             {/if}
                         </Layout.Stack>

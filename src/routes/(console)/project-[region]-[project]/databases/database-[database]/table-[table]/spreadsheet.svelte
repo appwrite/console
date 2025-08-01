@@ -659,7 +659,7 @@
                             variant="extra-compact"
                             on:click={() => {
                                 $randomDataModalState.show = true;
-                            }}>Generate random data</Button.Button>
+                            }}>Generate sample data</Button.Button>
                     </div>
                 </Layout.Stack>
             </svelte:fragment>

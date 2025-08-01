@@ -254,7 +254,7 @@
 
             addNotification({
                 type: 'success',
-                message: 'Random data added successfully'
+                message: 'Sample data added successfully'
             });
 
             await invalidate(Dependencies.ROWS);
@@ -345,11 +345,11 @@
         externalColumnKey={$showCreateIndexSheet.column} />
 </SideSheet>
 
-<Dialog title="Generate random data" bind:open={$randomDataModalState.show}>
+<Dialog title="Generate sample data" bind:open={$randomDataModalState.show}>
     <Layout.Stack style="gap: 28px;">
         <Typography.Text>
-            Select how many random records to generate for testing. This won't delete or replace
-            your existing records.
+            Select how many sample rows to generate for testing. This won't delete or replace your
+            existing rows.
         </Typography.Text>
 
         <Seekbar max={100} breakpointCount={5} bind:value={$randomDataModalState.value} />
