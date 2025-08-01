@@ -77,11 +77,13 @@
         columnId = null,
         children,
         onSelect,
+        onVisibilityChanged,
         type
     }: {
         column: Columns;
         columnId?: string;
         type: 'header' | 'row';
+        onVisibilityChanged?: (visible: boolean) => void;
         onSelect: (option: HeaderCellAction | RowCellAction, columnId: string) => void;
         children: Snippet<[toggle: (event: Event) => void]>;
     } = $props();
@@ -136,6 +138,13 @@
             return true;
         });
     }
+
+    let htmlSpanElement = $state<HTMLSpanElement | null>(null);
+
+    $effect(() => {
+        const visible = htmlSpanElement !== null;
+        onVisibilityChanged?.(visible);
+    });
 </script>
 
 <Popover let:toggle padding="none" placement="bottom-start" portal>
@@ -143,6 +152,9 @@
 
     <svelte:fragment slot="tooltip" let:hide>
         {@const menuItems = cleanMenu(type === 'header' ? headerMenuItems : rowMenuItems)}
+
+        <!-- hacky, i know! -->
+        <span bind:this={htmlSpanElement}> </span>
 
         <ActionMenu.Root width="180px">
             {#each menuItems as item, index (index)}

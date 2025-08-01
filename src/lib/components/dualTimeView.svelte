@@ -11,6 +11,7 @@
     import { menuOpen } from '$lib/components/menu/store';
 
     export let time: string | null = null;
+    export let canShowPopover: boolean = true;
     export let placement: ComponentProps<Popover>['placement'] = 'bottom';
 
     function timeDifference(dateString: string): string {
@@ -79,7 +80,7 @@
     <Popover let:show let:hide {placement} portal>
         <button
             on:mouseenter={() => {
-                if (!$menuOpen) {
+                if (!$menuOpen && canShowPopover) {
                     setTimeout(show, 150);
                 }
             }}

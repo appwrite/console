@@ -455,6 +455,8 @@
     }, 1000);
 
     $: reInitSpreadsheetKey = `${$table.columns.length}#${$columnsOrder.length}`;
+
+    $: canShowDatetimePopover = true;
 </script>
 
 <SpreadsheetContainer>
@@ -549,13 +551,18 @@
                             {:else if columnId === '$id'}
                                 <Id value={row.$id} tooltipPortal>{row.$id}</Id>
                             {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
-                                <DualTimeView time={row[columnId]} />
+                                <DualTimeView
+                                    time={row[columnId]}
+                                    canShowPopover={canShowDatetimePopover} />
                             {:else if columnId === 'actions'}
                                 <SheetOptions
                                     type="row"
                                     column={$columns.find((col) => col.key === columnId)}
                                     onSelect={(option) =>
-                                        onSelectSheetOption(option, null, 'row', row)}>
+                                        onSelectSheetOption(option, null, 'row', row)}
+                                    onVisibilityChanged={(visible) => {
+                                        canShowDatetimePopover = !visible;
+                                    }}>
                                     {#snippet children(toggle)}
                                         <Button.Button
                                             icon
