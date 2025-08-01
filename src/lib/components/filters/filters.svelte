@@ -126,6 +126,7 @@
         <Button
             secondary
             icon={onlyIcon}
+            class={onlyIcon ? 'width-fix' : undefined}
             on:click={(event) => {
                 toggle(event);
                 trackEvent(Click.FilterApplyClick, { source: analyticsSource });
@@ -250,3 +251,10 @@
         </svelte:fragment>
     </Modal>
 </div>
+
+<style>
+    :global(.width-fix) {
+        width: 32px;
+        height: 32px;
+    }
+</style>

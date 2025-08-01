@@ -122,7 +122,6 @@
                     <!--                    </Button>-->
                 </Layout.Stack>
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    <ViewSelector view={data.view} columns={tableColumns} hideView isCustomTable />
                     <Button
                         secondary
                         event={Click.DatabaseImportCsv}

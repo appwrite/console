@@ -25,6 +25,7 @@
                 size="s"
                 icon={onlyIcon}
                 variant="secondary"
+                class={onlyIcon ? 'width-fix' : undefined}
                 disabled={!$columns.length && showAnyway}
                 badge={onlyIcon ? undefined : selectedColumnsNumber.toString()}
                 on:click={toggle}>
@@ -37,3 +38,10 @@
 {#if !hideView}
     <ViewToggle bind:view />
 {/if}
+
+<style>
+    :global(.width-fix) {
+        width: 32px;
+        height: 32px;
+    }
+</style>
