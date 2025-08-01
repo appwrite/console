@@ -49,8 +49,8 @@
 
     const headerMenuItems: MenuItem[] = [
         { label: 'Update', icon: IconPencil, action: 'update' },
-        { label: 'Insert column left', icon: IconArrowLeft, action: 'column-left' },
-        { label: 'Insert column right', icon: IconArrowRight, action: 'column-right' },
+        { label: 'Create column left', icon: IconArrowLeft, action: 'column-left' },
+        { label: 'Create column right', icon: IconArrowRight, action: 'column-right' },
         { label: 'Duplicate', icon: IconDuplicate, action: 'duplicate-header' },
         { divider: true },
         { label: 'Create index', icon: IconPencil, action: 'create-index' },

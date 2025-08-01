@@ -371,7 +371,7 @@
 
             if (action === 'column-left' || action === 'column-right') {
                 const { to, neighbour } = $databaseColumnSheetOptions.direction;
-                $showCreateAttributeSheet.title = `Insert column to the ${to} of ${neighbour}`;
+                $showCreateAttributeSheet.title = `Create column to the ${to} of ${neighbour}`;
                 $showCreateAttributeSheet.direction = $databaseColumnSheetOptions.direction;
                 $showCreateAttributeSheet.columns = $tableColumns;
                 $showCreateAttributeSheet.columnsOrder = $columnsOrder;
@@ -488,7 +488,7 @@
                                     $showCreateAttributeSheet.show = true;
                                     $showCreateAttributeSheet.column = null;
                                     $showCreateAttributeSheet.columns = $tableColumns;
-                                    $showCreateAttributeSheet.title = 'Insert column';
+                                    $showCreateAttributeSheet.title = 'Create column';
                                     $showCreateAttributeSheet.columnsOrder = $columnsOrder;
                                 }}>
                                 <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />

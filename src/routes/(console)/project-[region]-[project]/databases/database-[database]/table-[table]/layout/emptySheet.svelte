@@ -150,7 +150,7 @@
                     onclick={() => {
                         if (columnActionsById && mode === 'rows') {
                             $showCreateAttributeSheet.show = true;
-                            $showCreateAttributeSheet.title = 'Insert column';
+                            $showCreateAttributeSheet.title = 'Create column';
                             $showCreateAttributeSheet.columns = $tableColumns;
                             $showCreateAttributeSheet.columnsOrder = $columnsOrder;
                         }

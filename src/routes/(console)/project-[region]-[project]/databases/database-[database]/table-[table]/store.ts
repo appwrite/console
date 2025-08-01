@@ -90,7 +90,7 @@ export type CreateAttribute = {
 export const showCreateAttributeSheet = writable<CreateAttribute>({
     show: false,
     column: null,
-    title: 'Insert column',
+    title: 'Create column',
     direction: null,
     onDone: null,
     columns: null,
