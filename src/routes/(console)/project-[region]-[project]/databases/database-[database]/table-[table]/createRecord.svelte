@@ -11,6 +11,8 @@
     import { ID, type Models } from '@appwrite.io/console';
     import { Alert, Layout, Typography } from '@appwrite.io/pink-svelte';
     import SideSheet from './layout/sidesheet.svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     let {
         table,
@@ -81,6 +83,7 @@
             trackEvent(Submit.RowCreate, {
                 customId: !!$createRow.id
             });
+            await invalidate(Dependencies.ROW);
         } catch (error) {
             addNotification({
                 message: error.message,

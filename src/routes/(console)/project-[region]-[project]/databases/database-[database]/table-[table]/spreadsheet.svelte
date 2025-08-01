@@ -247,7 +247,7 @@
     let selectedRows: string[] = [];
 
     let showDelete = false;
-    let selectedDocumentForDelete: Models.Row['$id'] | null = null;
+    let selectedRowForDelete: Models.Row['$id'] | null = null;
 
     async function sort(query: string[]) {
         $spreadsheetLoading = true;
@@ -260,12 +260,10 @@
     async function handleDelete() {
         showDelete = false;
         try {
-            if (selectedDocumentForDelete) {
+            if (selectedRowForDelete) {
                 await sdk
                     .forProject(page.params.region, page.params.project)
-                    .grids.deleteRow(databaseId, tableId, selectedDocumentForDelete);
-
-                selectedDocumentForDelete = null;
+                    .grids.deleteRow(databaseId, tableId, selectedRowForDelete);
             } else {
                 await sdk
                     .forProject(page.params.region, page.params.project)
@@ -277,7 +275,13 @@
                 type: 'success',
                 message: `${selectedRows.length} document${selectedRows.length > 1 ? 's' : ''} deleted`
             });
-            invalidate(Dependencies.ROWS);
+
+            if (selectedRowForDelete) {
+                await invalidate(Dependencies.ROW);
+                selectedRowForDelete = null;
+            } else {
+                await invalidate(Dependencies.ROWS);
+            }
         } catch (error) {
             addNotification({ type: 'error', message: error.message });
             trackError(error, Submit.RowDelete);
@@ -309,7 +313,6 @@
             });
 
             invalidate(Dependencies.TABLE);
-            invalidate(Dependencies.ROWS);
 
             $databaseColumnSheetOptions.column = null;
         } catch (error) {
@@ -417,7 +420,7 @@
 
             if (action === 'delete') {
                 showDelete = true;
-                selectedDocumentForDelete = row.$id;
+                selectedRowForDelete = row.$id;
             }
         }
     }
@@ -693,7 +696,7 @@
     title={selectedRows.length === 1 ? 'Delete Row' : 'Delete Rows'}
     bind:open={showDelete}
     onSubmit={handleDelete}>
-    {@const isSingle = selectedDocumentForDelete !== null}
+    {@const isSingle = selectedRowForDelete !== null}
 
     <div>
         {#if isSingle}
