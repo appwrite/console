@@ -778,8 +778,8 @@
     <p>Are you sure you want to delete "<b>{$databaseColumnSheetOptions.column.key}</b>"?</p>
 
     <p>
-        This will permanently remove all data stored in this column across all rows. This action
-        is irreversible.
+        This will permanently remove all data stored in this column across all rows. This action is
+        irreversible.
     </p>
 </Confirm>
 

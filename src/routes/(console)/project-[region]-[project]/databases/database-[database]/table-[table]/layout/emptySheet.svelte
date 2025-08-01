@@ -123,9 +123,7 @@
             }
         ] as Column[];
 
-    const spreadsheetColumns = $derived(
-        mode === 'rows' ? getRowColumns() : getIndexesColumns()
-    );
+    const spreadsheetColumns = $derived(mode === 'rows' ? getRowColumns() : getIndexesColumns());
 
     const emptyCells = $derived($isSmallViewport ? 14 : 17);
     const fixedHeight = $derived($isSmallViewport ? '60.75vh' : '74.75vh');
