@@ -25,6 +25,7 @@
     import ConnectionLine from './components/ConnectionLine.svelte';
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
+    import { project } from '../../store';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -36,6 +37,7 @@
         '\ngit clone https://github.com/appwrite/starter-for-react-native\ncd starter-for-react-native\n';
 
     const updateConfigCode = `EXPO_PUBLIC_APPWRITE_PROJECT_ID=${projectId}
+EXPO_PUBLIC_APPWRITE_PROJECT_NAME="${$project.name}"
 EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}`;
 
     export let platform: PlatformType = PlatformType.Reactnativeandroid;
