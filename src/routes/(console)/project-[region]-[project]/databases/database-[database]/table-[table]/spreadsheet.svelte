@@ -187,6 +187,17 @@
 
         const staticColumns: Column[] = [
             {
+                id: '$sequence',
+                width: 150,
+                minimumWidth: 150,
+                draggable: false,
+                type: 'integer',
+                icon: IconHashtag,
+                isEditable: false,
+                isPrimary: true,
+                resizable: false
+            },
+            {
                 id: '$id',
                 title: 'ID',
                 width: getColumnWidth('$id', 225),
@@ -195,7 +206,7 @@
                 type: 'string',
                 icon: IconFingerPrint,
                 isEditable: false,
-                isPrimary: true
+                isPrimary: false
             },
             {
                 id: '$createdAt',
@@ -233,10 +244,11 @@
             reorderItems(
                 [
                     staticColumns[0],
-                    ...baseColumns,
                     staticColumns[1],
+                    ...baseColumns,
                     staticColumns[2],
-                    staticColumns[3]
+                    staticColumns[3],
+                    staticColumns[4]
                 ],
                 $columnsOrder
             )
@@ -531,7 +543,10 @@
                             value={columnId.includes('$') || formatted === 'null'
                                 ? undefined
                                 : formatted}>
-                            {#if columnId === '$id'}
+                            {#if columnId === '$sequence'}
+                                <Id value={row.$sequence.toString()} tooltipPortal
+                                    >{row.$sequence}</Id>
+                            {:else if columnId === '$id'}
                                 <Id value={row.$id} tooltipPortal>{row.$id}</Id>
                             {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
                                 <DualTimeView time={row[columnId]} />

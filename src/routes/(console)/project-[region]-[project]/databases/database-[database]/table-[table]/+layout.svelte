@@ -269,7 +269,7 @@
         }
 
         /* api is too fast! */
-        await sleep(1250);
+        // await sleep(1250);
         $spreadsheetLoading = false;
     }
 </script>

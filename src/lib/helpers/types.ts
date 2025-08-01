@@ -39,7 +39,7 @@ const columnTypes = [
 ] as const;
 export type ColumnType = (typeof columnTypes)[number];
 export type Column = PinkColumn & {
-    title: string;
+    title?: string;
     type: ColumnType;
     filter?: boolean;
     array?: boolean;

@@ -45,7 +45,7 @@
     }
 
     // Only allow sort for these columns
-    const internalColumns = ['$id', '$createdAt', '$updatedAt'];
+    const internalColumns = ['$sequence', '$id', '$createdAt', '$updatedAt'];
 
     const headerMenuItems: MenuItem[] = [
         { label: 'Update', icon: IconPencil, action: 'update' },
@@ -106,9 +106,14 @@
     }
 
     function shouldShow(item: MenuItem): boolean {
+        const isSequence = columnId === '$sequence';
         const isSystemColumn = internalColumns.includes(columnId);
 
         if (type === 'header') {
+            if (isSequence) {
+                return ['sort-asc', 'sort-desc'].includes(item.action ?? '');
+            }
+
             if (['delete', 'update', 'duplicate-header'].includes(item.action) && isSystemColumn) {
                 return false;
             }

@@ -54,6 +54,17 @@
     const updatedColumnsForSheet = $derived.by(() => {
         const baseAttrs = [
             {
+                key: '$sequence',
+                type: 'integer',
+                required: true,
+                selectable: false,
+                system: true
+            } as Models.AttributeString & {
+                name: string;
+                selectable: boolean;
+                system: boolean;
+            },
+            {
                 key: '$id',
                 type: 'string',
                 required: true,
@@ -208,9 +219,9 @@
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Layout.Stack inline direction="row" alignItems="center" gap="xxs">
                                     <span class="text u-trim-1" data-private>
-                                        {#if column.key === '$id' || column.key === '$createdAt' || column.key === '$updatedAt'}
+                                        {#if column.key === '$id' || column.key === '$sequence' || column.key === '$createdAt' || column.key === '$updatedAt'}
                                             {column['name']}
-                                            {#if column.key === '$id'}
+                                            {#if column.key === '$sequence'}
                                                 <Badge
                                                     size="xs"
                                                     variant="secondary"
@@ -276,7 +287,7 @@
                                     <Icon icon={IconDotsHorizontal} size="s" />
                                 </Button>
                             </CsvDisabled>
-                        {:else}
+                        {:else if column.key !== '$sequence'}
                             <!-- TODO: no portal, rather see if we can fix the cell -->
                             <Popover let:toggle padding="none" placement="bottom-end" portal>
                                 <Button text icon ariaLabel="more options" on:click={toggle}>

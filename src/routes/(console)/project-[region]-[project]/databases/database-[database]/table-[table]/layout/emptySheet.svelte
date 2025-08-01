@@ -9,7 +9,12 @@
         Typography
     } from '@appwrite.io/pink-svelte';
 
-    import { IconCalendar, IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconCalendar,
+        IconFingerPrint,
+        IconHashtag,
+        IconPlus
+    } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
@@ -56,11 +61,18 @@
 
     const getRecordsColumns = (): Column[] => [
         {
+            id: '$sequence',
+            type: 'string',
+            width: 150,
+            isPrimary: true,
+            icon: IconHashtag,
+            ...baseColProps
+        },
+        {
             id: '$id',
             title: 'ID',
             type: 'string',
             width: 180,
-            isPrimary: true,
             icon: IconFingerPrint,
             ...baseColProps
         },
