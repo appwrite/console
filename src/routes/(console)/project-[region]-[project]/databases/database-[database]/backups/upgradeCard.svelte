@@ -22,6 +22,13 @@
     const message = isCloud
         ? "Upgrade now to unlock Appwrite's backups."
         : "Sign up now to access Appwrite's backups.";
+
+    const isDark = $app.themeInUse === 'dark';
+
+    const themeClass = isDark ? 'u-only-dark' : 'u-only-light';
+    const mobileImg = isDark ? EmptyDarkMobile : EmptyLightMobile;
+    const desktopImg = isDark ? EmptyDark : EmptyLight;
+    const tabletImg = isDark ? EmptyDarkTablet : EmptyLightTablet;
 </script>
 
 <div>
@@ -30,52 +37,32 @@
             <div
                 style:--p-file-preview-border-color="transparent"
                 class="is-full-cover-image is-full-width-mobile u-height-100-percent">
-                <div class="is-only-mobile u-width-full-line u-height-100-percent">
-                    {#if $app.themeInUse === 'dark'}
-                        <img
-                            height="137px"
-                            src={EmptyDarkMobile}
-                            class="placeholder u-image-object-fit-contain u-only-dark u-width-full-line u-height-100-percent"
-                            alt="Mock Numbers Example" />
-                    {:else}
-                        <img
-                            height="137px"
-                            src={EmptyLightMobile}
-                            class="placeholder u-image-object-fit-contain u-only-light u-width-full-line u-height-100-percent"
-                            alt="Mock Numbers Example" />
-                    {/if}
+                <!-- mobile -->
+                <div
+                    style:min-height="172px"
+                    class="is-only-mobile u-width-full-line u-height-100-percent">
+                    <img
+                        src={mobileImg}
+                        style:width="100vw"
+                        class="placeholder u-image-object-fit-contain {themeClass}"
+                        alt="Mock Numbers Example" />
                 </div>
-
+                <!-- tablet -->
+                <div style:min-height="140px" class="is-tablet">
+                    <img
+                        src={tabletImg}
+                        style:width="100vw"
+                        class="u-image-object-fit-contain {themeClass}"
+                        alt="Backups Example" />
+                </div>
+                <!-- desktop -->
                 <div class="is-not-mobile">
-                    {#if $app.themeInUse === 'dark'}
-                        <img
-                            src={EmptyDark}
-                            height="102px"
-                            class="u-image-object-fit-contain u-block u-only-dark"
-                            alt="Backups Example" />
-                    {:else}
-                        <img
-                            src={EmptyLight}
-                            height="102px"
-                            class="u-image-object-fit-contain u-only-light"
-                            alt="Backups Example" />
-                    {/if}
-                </div>
-
-                <div class="is-tablet">
-                    {#if $app.themeInUse === 'dark'}
-                        <img
-                            src={EmptyDarkTablet}
-                            height="102px"
-                            class="u-image-object-fit-contain u-block u-only-dark"
-                            alt="Backups Example" />
-                    {:else}
-                        <img
-                            src={EmptyLightTablet}
-                            height="102px"
-                            class="u-image-object-fit-contain u-only-light"
-                            alt="Backups Example" />
-                    {/if}
+                    <img
+                        height="102"
+                        width="178"
+                        src={desktopImg}
+                        class="u-image-object-fit-contain {themeClass}"
+                        alt="Backups Example" />
                 </div>
             </div>
             <Layout.Stack direction="row" alignItems="center" wrap="wrap">
@@ -115,7 +102,7 @@
         display: none;
     }
 
-    @media (min-width: 768px) {
+    @media (min-width: 1260px) {
         .upgrade-description {
             padding-inline-end: 16ch;
         }
