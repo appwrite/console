@@ -44,6 +44,10 @@
 
             &:first-child {
                 margin-inline: 4rem;
+
+                @media (max-width: 768px) {
+                    margin-inline: 1rem;
+                }
             }
 
             &.slotSpacing {

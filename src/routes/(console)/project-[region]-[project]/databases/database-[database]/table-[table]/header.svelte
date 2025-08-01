@@ -6,7 +6,6 @@
     import { Cover, CoverTitle } from '$lib/layout';
     import { canWriteTables } from '$lib/stores/roles';
     import { table } from './store';
-    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
 
     const databaseId = $derived(page.params.database);
 
@@ -56,27 +55,25 @@
     );
 </script>
 
-<div style:margin-top={$isTabletViewport && !$isSmallViewport ? '48px' : 0}>
-    <Cover expanded>
-        <svelte:fragment slot="header">
-            <CoverTitle
-                href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`}>
-                {$table?.name}
-            </CoverTitle>
-            {#key $table?.$id}
-                <Id value={$table?.$id}>{$table?.$id}</Id>
-            {/key}
-        </svelte:fragment>
+<Cover expanded>
+    <svelte:fragment slot="header">
+        <CoverTitle
+            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`}>
+            {$table?.name}
+        </CoverTitle>
+        {#key $table?.$id}
+            <Id value={$table?.$id}>{$table?.$id}</Id>
+        {/key}
+    </svelte:fragment>
 
-        <Tabs>
-            {#each tabs as tab}
-                <Tab
-                    href={tab.href}
-                    selected={isTabSelected(tab, page.url.pathname, path, tabs)}
-                    event={tab.event}>
-                    {tab.title}
-                </Tab>
-            {/each}
-        </Tabs>
-    </Cover>
-</div>
+    <Tabs>
+        {#each tabs as tab}
+            <Tab
+                href={tab.href}
+                selected={isTabSelected(tab, page.url.pathname, path, tabs)}
+                event={tab.event}>
+                {tab.title}
+            </Tab>
+        {/each}
+    </Tabs>
+</Cover>

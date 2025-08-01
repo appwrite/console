@@ -395,12 +395,12 @@
             }
 
             if (action === 'duplicate-row') {
-                showRecordsCreateSheet.show = true;
                 showRecordsCreateSheet.row = row;
+                showRecordsCreateSheet.show = true;
             }
 
             if (action === 'copy-json') {
-                const stringified = JSON.stringify(document, null, 2);
+                const stringified = JSON.stringify(row, null, 2);
                 try {
                     await copy(stringified);
                     addNotification({
@@ -537,7 +537,7 @@
                                     type="row"
                                     column={$columns.find((col) => col.key === columnId)}
                                     onSelect={(option) =>
-                                        onSelectSheetOption(option, 'row', null, row)}>
+                                        onSelectSheetOption(option, null, 'row', row)}>
                                     {#snippet children(toggle)}
                                         <Button.Button
                                             icon

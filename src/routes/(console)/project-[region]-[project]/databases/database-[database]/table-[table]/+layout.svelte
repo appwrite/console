@@ -321,6 +321,7 @@
 </SideSheet>
 
 <SideSheet
+    spaced
     title={$databaseRowSheetOptions.title}
     bind:show={$databaseRowSheetOptions.show}
     submit={{

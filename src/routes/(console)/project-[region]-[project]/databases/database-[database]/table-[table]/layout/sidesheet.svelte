@@ -42,7 +42,7 @@
                     await submit?.onClick();
                     show = false;
                 }}>
-                <Layout.Stack gap="xl">
+                <Layout.Stack gap="xl" class="sheet-content">
                     {@render children?.()}
                 </Layout.Stack>
 
@@ -79,6 +79,11 @@
                 margin-top: 6rem;
             }
         }
+
+        & :global(.sheet-content) {
+            overflow-y: auto;
+            padding-bottom: 5rem;
+        }
     }
 
     .sheet-footer {
@@ -86,6 +91,7 @@
         right: 0;
         bottom: 0;
         position: absolute;
+        background: var(--bgcolor-neutral-primary);
 
         & .sheet-footer-actions {
             padding-inline: var(--space-8);
