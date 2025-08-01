@@ -1,5 +1,5 @@
 <script lang="ts">
-    let spreadsheetHeight = '75vh';
+    let spreadsheetHeight = '74.5vh';
     let spreadsheetWrapper: HTMLDivElement;
 
     function resizeSheet() {
