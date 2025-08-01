@@ -101,7 +101,7 @@
         <!-- TODO: add a ID badge-->
         <SideSheet
             spaced
-            title={`${existingData ? 'Duplicate' : 'Create'} record`}
+            title={`${existingData ? 'Duplicate' : 'Create'} row`}
             bind:show={showSheet}
             closeOnBlur={false}
             submit={{

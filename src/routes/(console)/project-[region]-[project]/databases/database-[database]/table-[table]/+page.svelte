@@ -183,7 +183,7 @@
                 </EmptySearch>
             {:else}
                 <EmptySheet
-                    mode="records"
+                    mode="rows"
                     customColumns={createTableColumns($table.columns, selected)}
                     showActions={$canWriteRows}
                     actions={{
@@ -201,7 +201,7 @@
             {/if}
         {:else}
             <EmptySheet
-                mode="records"
+                mode="rows"
                 title="You have no columns yet"
                 showActions={$canWriteTables}
                 actions={{

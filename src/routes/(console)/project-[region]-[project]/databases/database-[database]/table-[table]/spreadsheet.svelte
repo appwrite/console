@@ -406,7 +406,7 @@
             if (action === 'update') {
                 $databaseRowSheetOptions.show = true;
                 $databaseRowSheetOptions.row = row;
-                $databaseRowSheetOptions.title = 'Update record';
+                $databaseRowSheetOptions.title = 'Update row';
             }
 
             if (action === 'duplicate-row') {
@@ -665,8 +665,8 @@
                     justifyContent="space-between">
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
                         {selectedRows.length
-                            ? `${selectedRows.length} records selected`
-                            : `${rows.rows.length} records`}
+                            ? `${selectedRows.length} rows selected`
+                            : `${rows.rows.length} rows`}
                     </Typography.Text>
 
                     <div style:margin-right="var(--space-6)">
@@ -778,7 +778,7 @@
     <p>Are you sure you want to delete "<b>{$databaseColumnSheetOptions.column.key}</b>"?</p>
 
     <p>
-        This will permanently remove all data stored in this column across all records. This action
+        This will permanently remove all data stored in this column across all rows. This action
         is irreversible.
     </p>
 </Confirm>

@@ -25,7 +25,7 @@
         spreadsheetLoading
     } from '../store';
 
-    type Mode = 'records' | 'indexes';
+    type Mode = 'rows' | 'indexes';
 
     interface Action {
         text?: string;
@@ -59,7 +59,7 @@
             ...col
         }));
 
-    const getRecordsColumns = (): Column[] => [
+    const getRowColumns = (): Column[] => [
         {
             id: '$sequence',
             type: 'string',
@@ -124,7 +124,7 @@
         ] as Column[];
 
     const spreadsheetColumns = $derived(
-        mode === 'records' ? getRecordsColumns() : getIndexesColumns()
+        mode === 'rows' ? getRowColumns() : getIndexesColumns()
     );
 
     const emptyCells = $derived($isSmallViewport ? 14 : 17);
@@ -150,7 +150,7 @@
                     tabindex="0"
                     style:cursor={columnActionsById ? 'pointer' : null}
                     onclick={() => {
-                        if (columnActionsById && mode === 'records') {
+                        if (columnActionsById && mode === 'rows') {
                             $showCreateAttributeSheet.show = true;
                             $showCreateAttributeSheet.title = 'Insert column';
                             $showCreateAttributeSheet.columns = $tableColumns;
@@ -225,7 +225,7 @@
                                 {actions?.primary?.text ?? `Create ${mode}`}
                             </Button.Button>
 
-                            {#if mode === 'records'}
+                            {#if mode === 'rows'}
                                 <Button.Button
                                     size="s"
                                     variant="secondary"
@@ -265,7 +265,7 @@
             position: unset;
         }
 
-        &[data-mode='records'] {
+        &[data-mode='rows'] {
             & :global([role='rowheader'] :nth-last-child(2) [role='presentation']) {
                 display: none;
             }
