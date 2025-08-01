@@ -10,6 +10,7 @@
     export let logs: Models.LogList;
     export let offset = 0;
     export let limit = 0;
+    export let databasesScreen = false;
 
     const columns: PinkColumn[] = [
         { id: 'user' },
@@ -20,55 +21,58 @@
     ];
 </script>
 
-<Container>
+<!-- TODO: only the databases page -->
+<Container expanded={databasesScreen} slotSpacing={databasesScreen} {databasesScreen}>
     {#if logs.total}
-        <Table.Root {columns} let:root>
-            <svelte:fragment slot="header" let:root>
-                <Table.Header.Cell column="user" {root}>User</Table.Header.Cell>
-                <Table.Header.Cell column="event" {root}>Event</Table.Header.Cell>
-                <Table.Header.Cell column="location" {root}>Location</Table.Header.Cell>
-                <Table.Header.Cell column="ip" {root}>IP</Table.Header.Cell>
-                <Table.Header.Cell column="date" {root}>Date</Table.Header.Cell>
-            </svelte:fragment>
-            {#each logs.logs as log}
-                <Table.Row.Base {root}>
-                    <Table.Cell column="user" {root}>
-                        <Layout.Stack direction="row" alignItems="center">
-                            {#if log.userEmail}
-                                {#if log.userName}
-                                    <AvatarInitials size="xs" name={log.userName} />
-                                    <Trim>{log.userName}</Trim>
+        <div>
+            <Table.Root {columns} let:root>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="user" {root}>User</Table.Header.Cell>
+                    <Table.Header.Cell column="event" {root}>Event</Table.Header.Cell>
+                    <Table.Header.Cell column="location" {root}>Location</Table.Header.Cell>
+                    <Table.Header.Cell column="ip" {root}>IP</Table.Header.Cell>
+                    <Table.Header.Cell column="date" {root}>Date</Table.Header.Cell>
+                </svelte:fragment>
+                {#each logs.logs as log}
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="user" {root}>
+                            <Layout.Stack direction="row" alignItems="center">
+                                {#if log.userEmail}
+                                    {#if log.userName}
+                                        <AvatarInitials size="xs" name={log.userName} />
+                                        <Trim>{log.userName}</Trim>
+                                    {:else}
+                                        <AvatarInitials size="xs" name={log.userEmail} />
+                                        <Trim>{log.userEmail}</Trim>
+                                    {/if}
                                 {:else}
-                                    <AvatarInitials size="xs" name={log.userEmail} />
-                                    <Trim>{log.userEmail}</Trim>
+                                    <div class="avatar is-size-small">
+                                        <span class="icon-anonymous" aria-hidden="true"></span>
+                                    </div>
+                                    <span class="text u-trim">{log.userName ?? 'Anonymous'}</span>
                                 {/if}
+                            </Layout.Stack>
+                        </Table.Cell>
+                        <Table.Cell column="event" {root}>
+                            {log.event}
+                        </Table.Cell>
+                        <Table.Cell column="location" {root}>
+                            {#if log.countryCode !== '--'}
+                                {log.countryName}
                             {:else}
-                                <div class="avatar is-size-small">
-                                    <span class="icon-anonymous" aria-hidden="true"></span>
-                                </div>
-                                <span class="text u-trim">{log.userName ?? 'Anonymous'}</span>
+                                Unknown
                             {/if}
-                        </Layout.Stack>
-                    </Table.Cell>
-                    <Table.Cell column="event" {root}>
-                        {log.event}
-                    </Table.Cell>
-                    <Table.Cell column="location" {root}>
-                        {#if log.countryCode !== '--'}
-                            {log.countryName}
-                        {:else}
-                            Unknown
-                        {/if}
-                    </Table.Cell>
-                    <Table.Cell column="ip" {root}>
-                        {log.ip}
-                    </Table.Cell>
-                    <Table.Cell column="date" {root}>
-                        {toLocaleDateTime(log.time)}
-                    </Table.Cell>
-                </Table.Row.Base>
-            {/each}
-        </Table.Root>
+                        </Table.Cell>
+                        <Table.Cell column="ip" {root}>
+                            {log.ip}
+                        </Table.Cell>
+                        <Table.Cell column="date" {root}>
+                            {toLocaleDateTime(log.time)}
+                        </Table.Cell>
+                    </Table.Row.Base>
+                {/each}
+            </Table.Root>
+        </div>
 
         <PaginationWithLimit name="Logs" {limit} {offset} total={logs.total} />
     {:else}

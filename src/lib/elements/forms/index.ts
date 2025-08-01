@@ -30,3 +30,4 @@ export { default as InputTime } from './inputTime.svelte';
 export { default as InputDigits } from './inputDigits.svelte';
 export { default as InputSelectCheckbox } from './inputSelectCheckbox.svelte';
 export { default as InputFilePicker } from './inputFilePicker.svelte';
+export { default as Seekbar } from './Seekbar.svelte';

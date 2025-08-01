@@ -48,10 +48,11 @@
 
     export let value: string;
     export let event: string = null;
+    export let tooltipPortal = false;
 </script>
 
 {#key value}
-    <Copy {value} {event}>
+    <Copy {value} {event} {tooltipPortal}>
         <Tag size="xs" variant="code">
             <Icon icon={IconDuplicate} size="s" slot="start" />
             <span

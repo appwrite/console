@@ -134,7 +134,7 @@
                                 <Typography.Title>
                                     {formatNum($usage.documentsTotal ?? 0)}
                                 </Typography.Title>
-                                <Typography.Text>Documents</Typography.Text>
+                                <Typography.Text>Rows</Typography.Text>
                             </div>
                         </div>
                     </Card.Link>
