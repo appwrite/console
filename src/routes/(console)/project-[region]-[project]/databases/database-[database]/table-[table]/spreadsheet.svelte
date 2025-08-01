@@ -673,7 +673,7 @@
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
                         {selectedRows.length
                             ? `${selectedRows.length} rows selected`
-                            : `${rows.rows.length} rows`}
+                            : `${rows.total} rows`}
                     </Typography.Text>
 
                     <div style:margin-right="var(--space-6)">
