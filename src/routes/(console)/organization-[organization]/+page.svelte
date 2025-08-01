@@ -16,12 +16,12 @@
         PaginationWithLimit
     } from '$lib/components';
     import { goto } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent, Click } from '$lib/actions/analytics';
     import { sdk } from '$lib/stores/sdk';
     import { loading } from '$routes/store';
     import { ID, Region, type Models } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[region]-[project]/settings/migrations/(import)';
-    import { billingProjectsLimitDate, readOnly } from '$lib/stores/billing';
+    import { billingProjectsLimitDate, readOnly, upgradeURL } from '$lib/stores/billing';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
@@ -183,6 +183,18 @@
             <svelte:fragment slot="actions">
                 <Button secondary size="s" on:click={() => (showSelectProject = true)}>
                     Manage projects
+                </Button>
+                <Button
+                    secondary
+                    size="s"
+                    href={$upgradeURL}
+                    on:click={() => {
+                        trackEvent(Click.OrganizationClickUpgrade, {
+                            from: 'button',
+                            source: 'projects_archive_alert'
+                        });
+                    }}>
+                    Upgrade to Pro
                 </Button>
             </svelte:fragment>
         </Alert.Inline>
