@@ -57,6 +57,7 @@
                 key: '$sequence',
                 type: 'integer',
                 required: true,
+                name: 'Sequence',
                 selectable: false,
                 system: true
             } as Models.AttributeString & {

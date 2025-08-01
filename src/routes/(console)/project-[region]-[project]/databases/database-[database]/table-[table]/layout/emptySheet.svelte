@@ -62,8 +62,9 @@
     const getRowColumns = (): Column[] => [
         {
             id: '$sequence',
+            title: 'Sequence',
             type: 'string',
-            width: 150,
+            width: 225,
             isPrimary: true,
             icon: IconHashtag,
             ...baseColProps

@@ -188,8 +188,9 @@
         const staticColumns: Column[] = [
             {
                 id: '$sequence',
-                width: 150,
-                minimumWidth: 150,
+                title: 'Sequence',
+                width: 225,
+                minimumWidth: 225,
                 draggable: false,
                 type: 'integer',
                 icon: IconHashtag,
