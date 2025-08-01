@@ -263,16 +263,14 @@
                 type: 'error',
                 message: e.message
             });
+        } finally {
+            // reset value to 25 default!
+            $randomDataModalState.value = 25;
         }
 
         /* api is too fast! */
         await sleep(1250);
         $spreadsheetLoading = false;
-    }
-
-    $: if (!$randomDataModalState.show) {
-        // reset value to 25 default!
-        $randomDataModalState.value = 25;
     }
 </script>
 
