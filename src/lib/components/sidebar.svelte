@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { fade } from 'svelte/transition';
-    import { page } from '$app/state';
+    import { page } from '$app/stores';
     import { app } from '$lib/stores/app';
+    import { fade } from 'svelte/transition';
     import {
         Icon,
         Sidebar,
@@ -35,8 +35,9 @@
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
     import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
-    import { isTabletViewport } from '$lib/stores/viewport';
+    import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
 
     import type { HTMLAttributes } from 'svelte/elements';
     import type { Models } from '@appwrite.io/console';
@@ -71,7 +72,7 @@
         }
     }
 
-    $: state = $isTabletViewport ? 'closed' : getSidebarState();
+    $: state = $isTabletViewport ? 'closed' : getSidebarState($page);
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth', category: 'build' },
@@ -79,8 +80,18 @@
         { name: 'Functions', icon: IconLightningBolt, slug: 'functions', category: 'build' },
         { name: 'Messaging', icon: IconChatBubble, slug: 'messaging', category: 'build' },
         { name: 'Storage', icon: IconFolder, slug: 'storage', category: 'build' },
-        { name: 'Sites', icon: IconGlobeAlt, slug: 'sites', category: 'deploy', badge: 'New' }
+        {
+            name: 'Sites',
+            icon: IconGlobeAlt,
+            slug: 'sites',
+            category: 'deploy',
+            badge: 'Early access'
+        }
     ];
+
+    const isSelected = (service: string): boolean => {
+        return $page.route.id?.includes(service);
+    };
 </script>
 
 <div
@@ -91,7 +102,7 @@
     <Sidebar.Base
         {...$$props}
         bind:state
-        on:resize={(event) => updateSidebarState(event.detail)}
+        on:resize={(event) => updateSidebarState($page, event.detail)}
         resizable>
         <div slot="top">
             <div class="only-mobile-tablet top">
@@ -143,9 +154,9 @@
                 <Layout.Stack direction="column" gap="s">
                     <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.region}-${project.$id}/overview`}
+                            href={`/console/project-${project.region}-${project.$id}/overview/platforms`}
                             class="link"
-                            class:active={page.url.pathname.includes('overview')}
+                            class:active={isSelected('overview')}
                             on:click={() => {
                                 trackEvent(Click.MenuOverviewClick);
                                 sideBarIsOpen = false;
@@ -175,7 +186,7 @@
                             <a
                                 href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
-                                class:active={page.url.pathname.includes(projectOption.slug)}
+                                class:active={isSelected(projectOption.slug)}
                                 on:click={() => {
                                     trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;
@@ -206,7 +217,7 @@
                             <a
                                 href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
-                                class:active={page.url.pathname.includes(projectOption.slug)}
+                                class:active={isSelected(projectOption.slug)}
                                 on:click={() => {
                                     trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;
@@ -251,7 +262,7 @@
                         </Tooltip>
                     </div>
                 </Layout.Stack>
-            {:else}
+            {:else if $isSmallViewport}
                 <div class="action-buttons">
                     <Layout.Stack direction="column" gap="s">
                         <DropList show={$feedback.show} scrollable>
@@ -278,7 +289,6 @@
                                     trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
                                 }}>
                                 <span>Support</span>
-
                                 <svelte:fragment slot="other">
                                     <MobileSupportModal bind:show={$showSupportModal}
                                     ></MobileSupportModal>
@@ -299,8 +309,7 @@
                             on:click={() => {
                                 trackEvent('click_menu_settings');
                             }}
-                            class:active={page.url.pathname.includes('/settings') &&
-                                !page.url.pathname.includes('sites')}
+                            class:active={isSelected('/settings') && !isSelected('sites')}
                             ><span class="link-icon"><Icon icon={IconCog} size="s" /></span><span
                                 class:no-text={state === 'icons'}
                                 class:has-text={state === 'open'}
@@ -311,43 +320,33 @@
                 </div>
             {/if}
 
-            {#if project}
-                <div class="only-mobile">
-                    <div class="action-buttons">
-                        <Layout.Stack direction="column" gap="s">
-                            <DropList show={$feedback.show} scrollable>
-                                <Button.Button
-                                    variant="secondary"
-                                    size="s"
-                                    on:click={() => {
-                                        toggleFeedback();
-                                        trackEvent('click_menu_feedback', { source: 'side_nav' });
-                                    }}
-                                    ><span>Feedback</span>
-                                </Button.Button>
-                                <svelte:fragment slot="other">
-                                    <MobileFeedbackModal />
-                                </svelte:fragment>
-                            </DropList>
+            {#if project && $isSmallViewport}
+                <div class="action-buttons">
+                    <Layout.Stack direction="column" gap="s">
+                        <DropList show={$feedback.show} scrollable>
+                            <Button.Button
+                                variant="secondary"
+                                size="s"
+                                on:click={() => {
+                                    toggleFeedback();
+                                    trackEvent('click_menu_feedback', { source: 'side_nav' });
+                                }}
+                                ><span>Feedback</span>
+                            </Button.Button>
+                        </DropList>
 
-                            <DropList show={$showSupportModal} scrollable>
-                                <Button.Button
-                                    variant="secondary"
-                                    size="s"
-                                    on:click={() => {
-                                        $showSupportModal = true;
-                                        trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
-                                    }}>
-                                    <span>Support</span>
-
-                                    <svelte:fragment slot="other">
-                                        <MobileSupportModal bind:show={$showSupportModal}
-                                        ></MobileSupportModal>
-                                    </svelte:fragment>
-                                </Button.Button>
-                            </DropList>
-                        </Layout.Stack>
-                    </div>
+                        <DropList show={$showSupportModal} scrollable>
+                            <Button.Button
+                                variant="secondary"
+                                size="s"
+                                on:click={() => {
+                                    $showSupportModal = true;
+                                    trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
+                                }}>
+                                <span>Support</span>
+                            </Button.Button>
+                        </DropList>
+                    </Layout.Stack>
                 </div>
             {/if}
         </div>
@@ -355,7 +354,10 @@
 </div>
 
 {#if subNavigation}
-    <div class="sub-navigation" class:icons={state === 'icons'}>
+    <div
+        class="sub-navigation"
+        class:icons={state === 'icons'}
+        style:--banner-spacing={$bannerSpacing ? $bannerSpacing : undefined}>
         <svelte:component this={subNavigation} />
     </div>
 {/if}
@@ -592,8 +594,9 @@
 
     .sub-navigation {
         margin-top: 48px;
+
         @media (min-width: 1024px) {
-            margin-top: 0;
+            margin-top: var(--banner-spacing, 0px);
             width: 400px;
             height: calc(100vh - 48px);
             display: flex;
@@ -607,6 +610,17 @@
             &.icons {
                 width: 266px;
                 transition: width 0.3s linear;
+
+                & :global(nav) {
+                    margin-top: var(--banner-spacing);
+                }
+            }
+        }
+
+        /* when in small or tablet viewport and there's a banner */
+        @media (max-width: 1023px) {
+            & :global(header) {
+                margin-top: var(--banner-spacing);
             }
         }
     }

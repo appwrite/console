@@ -1,3 +1,4 @@
+import type { ComponentType } from 'svelte';
 import type { Writable } from 'svelte/store';
 
 export type PinkColumn = {
@@ -11,6 +12,7 @@ export type PinkColumn = {
               min: number;
           }
         | number;
+    minimumWidth?: number;
     hide?: boolean;
 };
 
@@ -37,7 +39,7 @@ const columnTypes = [
 ] as const;
 export type ColumnType = (typeof columnTypes)[number];
 export type Column = PinkColumn & {
-    title: string;
+    title?: string;
     type: ColumnType;
     filter?: boolean;
     array?: boolean;
@@ -45,6 +47,14 @@ export type Column = PinkColumn & {
     exclude?: boolean;
     elements?: string[] | { value: string | number; label: string }[];
     encrypt?: boolean;
+    icon?: ComponentType;
+    isPrimary?: boolean;
+    isEditable?: boolean;
+    fixed?: boolean;
+    resizable?: boolean;
+    draggable?: boolean;
+    resizedWidth?: number;
+    isAction?: boolean;
 };
 
 export function isValueOfStringEnum<T extends Record<string, string>>(
@@ -60,7 +70,8 @@ export type TableRootProp = {
     selectedAll: boolean;
     selectedNone: boolean;
     selectedSome: boolean;
-    columns: Record<PinkColumn['id'], PinkColumn>;
+    columns: Array<PinkColumn> | number;
+    columnsMap: Record<PinkColumn['id'], PinkColumn>;
     toggle: (id: string) => void;
     toggleAll: () => void;
     addAvailableId: (id: string) => void;

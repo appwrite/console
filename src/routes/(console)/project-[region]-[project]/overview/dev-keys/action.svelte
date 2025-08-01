@@ -13,20 +13,15 @@
     import { page } from '$app/state';
     import { showDevKeysCreateModal } from '$routes/(console)/project-[region]-[project]/overview/store';
 
+    let name = '';
+    let expire = null;
     let isSubmitting = false;
-    let name = '',
-        expire = '';
-
     const projectId = page.params.project;
 
     async function create() {
         try {
             isSubmitting = true;
-            const { $id } = await sdk.forConsole.projects.createDevKey(
-                projectId,
-                name,
-                expire || undefined
-            );
+            const { $id } = await sdk.forConsole.projects.createDevKey(projectId, name, expire);
 
             $showDevKeysCreateModal = false;
             trackEvent(Submit.DevKeyCreate);

@@ -151,6 +151,10 @@ export type CreditList = {
     total: number;
 };
 
+export type AvailableCredit = {
+    available: number;
+};
+
 export type Aggregation = {
     $id: string;
     /**
@@ -309,6 +313,7 @@ export type Plan = {
     webhooks: number;
     users: number;
     teams: number;
+    projects: number;
     databases: number;
     databasesAllowEncrypt: boolean;
     buckets: number;
@@ -588,6 +593,25 @@ export class Billing {
         );
     }
 
+    async updateSelectedProjects(
+        organizationId: string,
+        projects: string[]
+    ): Promise<Organization> {
+        const path = `/organizations/${organizationId}/projects`;
+        const params = {
+            projects
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async setOrganizationPaymentMethod(
         organizationId: string,
         paymentMethodId: string
@@ -851,6 +875,20 @@ export class Billing {
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async getAvailableCredit(organizationId: string): Promise<AvailableCredit> {
+        const path = `/organizations/${organizationId}/credits/available`;
+        const params = {};
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
             uri,
             {
                 'content-type': 'application/json'

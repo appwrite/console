@@ -34,6 +34,7 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     billingInvoiceId: string;
     status: string;
     remarks: string;
+    projects: string[];
 };
 
 export type OrganizationList = {
@@ -41,6 +42,7 @@ export type OrganizationList = {
     total: number;
 };
 
+// TODO: @itznotabug - check with @abnegate, what do we do here? this is billing!
 export type BillingLimits = {
     bandwidth: number;
     documents: number;
@@ -60,5 +62,4 @@ export const organizationList = derived(
 export const organization = derived(page, ($page) => $page.data?.organization as Organization);
 export const currentPlan = derived(page, ($page) => $page.data?.currentPlan as Plan);
 export const members = derived(page, ($page) => $page.data.members as Models.MembershipList);
-
 export const regions = writable<Models.ConsoleRegionList>({ total: 0, regions: [] });

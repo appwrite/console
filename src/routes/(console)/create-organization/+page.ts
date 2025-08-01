@@ -5,8 +5,9 @@ import type { Coupon } from '$lib/sdk/billing';
 import type { Organization } from '$lib/stores/organization';
 
 export const load: PageLoad = async ({ url, parent, depends }) => {
-    depends(Dependencies.CREATE_ORGANIZATION);
     const { organizations } = await parent();
+    depends(Dependencies.ORGANIZATIONS);
+
     const [coupon, paymentMethods] = await Promise.all([
         getCoupon(url),
         sdk.forConsole.billing.listPaymentMethods()
@@ -15,6 +16,7 @@ export const load: PageLoad = async ({ url, parent, depends }) => {
     const hasFreeOrganizations = organizations.teams?.some(
         (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
     );
+
     if (plan === BillingPlan.FREE && hasFreeOrganizations) {
         plan = BillingPlan.PRO;
     }

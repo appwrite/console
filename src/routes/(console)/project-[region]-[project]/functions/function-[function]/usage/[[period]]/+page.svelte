@@ -9,6 +9,12 @@
     $: count = data.executions;
     $: gbHoursTotal = data.executionsMbSecondsTotal / 1000 / 3600;
     $: mbSecondsCount = data.executionsMbSeconds;
+    $: gbHoursCount = data.executionsMbSeconds
+        ?.map((metric) => ({
+            ...metric,
+            value: metric.value / 1000 / 3600
+        }))
+        .filter(({ value }) => value);
 </script>
 
 <Container>
@@ -33,7 +39,7 @@
                     title: 'Total GB hours'
                 }}
                 total={gbHoursTotal}
-                count={mbSecondsCount} />
+                count={gbHoursCount} />
         {/if}
     </Layout.Stack>
 </Container>

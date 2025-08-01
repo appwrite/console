@@ -6,7 +6,7 @@
     import { onMount } from 'svelte';
     import { Accordion, Table } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
-    import type { PageData } from './$types';
+    import type { UsageProjectInfo } from '../../store';
 
     type Metric =
         | 'users'
@@ -22,10 +22,10 @@
 
     type DatabaseOperationMetric = Extract<Metric, 'databasesReads' | 'databasesWrites'>;
 
-    export let data: PageData;
     export let projects: OrganizationUsage['projects'];
     export let metric: Metric | undefined = undefined;
     export let estimate: Estimate | undefined = undefined;
+    export let usageProjects: Record<string, UsageProjectInfo> = {};
     export let databaseOperationMetric: DatabaseOperationMetric[] | undefined = undefined;
 
     function getMetricTitle(metric: Metric): string {
@@ -38,13 +38,9 @@
     }
 
     function getProjectUsageLink(projectId: string): string {
-        const region = data.projects[projectId]?.region ?? 'fra';
+        const region = usageProjects[projectId]?.region ?? 'default';
         return `${base}/project-${region}-${projectId}/settings/usage`;
     }
-
-    // function getProjectName(projectId: string): string {
-    //     return data.projects[projectId]?.name ?? 'Unknown';
-    // }
 
     function groupByProject(
         metric: Metric | undefined,
@@ -119,7 +115,7 @@
                 { id: 'reads', hide: !databaseOperationMetric },
                 { id: 'writes', hide: !databaseOperationMetric },
                 { id: 'metric', hide: !!databaseOperationMetric },
-                { id: 'costs' }
+                { id: 'costs', hide: true }
             ]}
             let:root>
             <svelte:fragment slot="header" let:root>
@@ -138,7 +134,7 @@
                 {#if !$canSeeProjects}
                     <Table.Row.Base {root}>
                         <Table.Cell column="project" {root}>
-                            {data.projects[project.projectId]?.name ?? 'Unknown'}
+                            {usageProjects[project.projectId]?.name ?? 'Unknown'}
                         </Table.Cell>
                         <Table.Cell column="reads" {root}>
                             {format(project.databasesReads ?? 0)}
@@ -156,7 +152,7 @@
                 {:else}
                     <Table.Row.Link href={getProjectUsageLink(project.projectId)} {root}>
                         <Table.Cell column="project" {root}>
-                            {data.projects[project.projectId]?.name ?? 'Unknown'}
+                            {usageProjects[project.projectId]?.name ?? 'Unknown'}
                         </Table.Cell>
                         <Table.Cell column="reads" {root}>
                             {format(project.databasesReads ?? 0)}

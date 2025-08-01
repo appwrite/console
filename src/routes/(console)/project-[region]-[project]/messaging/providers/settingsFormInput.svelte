@@ -24,8 +24,7 @@
         APNSProviderParams
     } from './store';
     import TooltipPopover from './tooltipPopover.svelte';
-    import { Icon, Tooltip, Upload, Layout, Typography } from '@appwrite.io/pink-svelte';
-    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { Upload, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { InvalidFileType, removeFile } from '$lib/helpers/files';
     import { addNotification } from '$lib/stores/notifications';
 
@@ -44,21 +43,9 @@
         | FCMProviderParams
         | APNSProviderParams
     >;
-    const popover = input.popover ? PopoverContent : null;
-    const popoverProps = getPopoverProps(input);
-
-    function getPopoverProps(input: ProviderInput) {
-        if (!input.popover) {
-            return {};
-        }
-        return {
-            lines: input.popover,
-            image: input.popoverImage
-        };
-    }
 
     function handleInvalid(e: CustomEvent) {
-        const reason = e.detail.reason;
+        const reason = e.detail?.reason ?? '';
 
         if (reason === InvalidFileType.EXTENSION) {
             addNotification({
@@ -72,6 +59,14 @@
             });
         }
     }
+
+    $: popover = input.popover ? PopoverContent : null;
+    $: popoverProps = !input.popover
+        ? {}
+        : {
+              lines: input.popover,
+              image: input.popoverImage
+          };
 </script>
 
 {#if input.type === 'text'}
@@ -122,25 +117,15 @@
 {:else if input.type === 'file'}
     <Upload.Dropzone
         on:invalid={handleInvalid}
-        extensions={['json']}
+        extensions={input.allowedFileExtensions}
         bind:files={files[input.name]}
         maxSize={10000000}
         required={!input.optional}>
-        <Layout.Stack alignItems="center" gap="s">
-            <Layout.Stack alignItems="center" gap="s">
-                <Layout.Stack alignItems="center" justifyContent="center" direction="row" gap="s">
-                    <Typography.Text variant="l-500">
-                        Drag and drop service account JSON here or click to upload
-                    </Typography.Text>
-                    <Tooltip>
-                        <Layout.Stack alignItems="center" justifyContent="center" inline>
-                            <Icon icon={IconInfo} size="s" />
-                        </Layout.Stack>
-                        <svelte:fragment slot="tooltip">Only .json files allowed</svelte:fragment>
-                    </Tooltip>
-                </Layout.Stack>
-                <Typography.Caption variant="400">Max file size 10MB</Typography.Caption>
-            </Layout.Stack>
+        <Layout.Stack alignItems="center" justifyContent="center" direction="row" gap="xxs">
+            <Typography.Text variant="l-500">
+                Drag and drop your {input.label} here or click to upload
+            </Typography.Text>
+            <TooltipPopover {popover} {popoverProps} tooltip={input.tooltip} />
         </Layout.Stack>
     </Upload.Dropzone>
     {#if files[input.name]?.length}

@@ -6,32 +6,28 @@
     import { Button, Form, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization, currentPlan } from '$lib/stores/organization';
+    import { type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Link } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
     import BudgetAlert from './budgetAlert.svelte';
+    import type { Plan } from '$lib/sdk/billing';
 
-    let capActive = false;
-    let budget: number;
-
-    onMount(() => {
-        budget = $organization?.billingBudget;
-        capActive = $organization?.billingBudget !== null;
-    });
+    export let currentPlan: Plan;
+    export let organization: Organization;
+    let capActive = organization?.billingBudget !== null;
+    let budget = organization.billingBudget;
 
     async function updateBudget() {
         try {
             await sdk.forConsole.billing.updateBudget(
-                $organization.$id,
+                organization.$id,
                 budget,
-                $organization.budgetAlerts
+                organization.budgetAlerts
             );
             await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',
-                isHtml: true,
-                message: `<span>Budget cap enabled for <b>${$organization.name}</b></span>`
+                message: `Budget cap enabled for ${organization.name}`
             });
             trackEvent(Submit.BudgetCapUpdate, {
                 budget: capActive ? budget : undefined
@@ -56,7 +52,7 @@
         Restrict your resource usage by setting a budget cap. Cap usage is reset at the beginning of
         each billing cycle.
         <svelte:fragment slot="aside">
-            {#if !$currentPlan.budgeting}
+            {#if !currentPlan.budgeting}
                 <Alert.Inline status="info" title="Budget caps are a Pro plan feature">
                     Upgrade to a Pro plan to set a budget cap for your organization. For more
                     information on what you can do with a Pro plan,
@@ -65,7 +61,7 @@
                         target="_blank"
                         rel="noopener noreferrer">view our pricing guide.</Link.Anchor>
                 </Alert.Inline>
-            {:else if !$currentPlan.budgetCapEnabled}
+            {:else if !currentPlan.budgetCapEnabled}
                 <Alert.Inline status="info" title="Budget cap disabled">
                     Budget caps are not supported on your current plan. For more information, please
                     reach out to your customer success manager.
@@ -93,7 +89,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if organization?.billingPlan === BillingPlan.FREE}
                 <Button
                     secondary
                     href={$upgradeURL}
@@ -106,10 +102,10 @@
                     >Upgrade to Pro
                 </Button>
             {:else}
-                <Button disabled={$organization?.billingBudget === budget} submit>Update</Button>
+                <Button disabled={organization?.billingBudget === budget} submit>Update</Button>
             {/if}
         </svelte:fragment>
     </CardGrid>
 </Form>
 
-<BudgetAlert alertsEnabled={capActive && budget > 0} />
+<BudgetAlert {organization} {currentPlan} alertsEnabled={capActive && budget > 0} />

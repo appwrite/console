@@ -5,15 +5,15 @@
 
     export async function submitString(
         databaseId: string,
-        collectionId: string,
+        tableId: string,
         key: string,
-        data: Partial<Models.AttributeString>
+        data: Partial<Models.ColumnString>
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.createStringAttribute(
+            .grids.createStringColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 key,
                 data.size,
                 data.required,
@@ -23,15 +23,15 @@
     }
     export async function updateString(
         databaseId: string,
-        collectionId: string,
-        data: Partial<Models.AttributeString>,
+        tableId: string,
+        data: Partial<Models.ColumnString>,
         originalKey?: string
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .databases.updateStringAttribute(
+            .grids.updateStringColumn(
                 databaseId,
-                collectionId,
+                tableId,
                 originalKey,
                 data.required,
                 data.default,
@@ -42,10 +42,10 @@
 </script>
 
 <script lang="ts">
-    import { InputChoice, InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
     import { createConservative } from '$lib/helpers/stores';
+    import { InputChoice, InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
 
-    export let data: Partial<Models.AttributeString> = {
+    export let data: Partial<Models.ColumnString> = {
         required: false,
         size: 0,
         default: null,
@@ -67,7 +67,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.AttributeString>>({
+    } = createConservative<Partial<Models.ColumnString>>({
         required: false,
         array: false,
         ...data
@@ -104,9 +104,9 @@
         bind:value={data.default} />
 {/if}
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
-    Indicate whether this is a required attribute
+    Indicate whether this is a required column
 </InputChoice>
 <InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
-    Indicate whether this attribute should act as an array, with the default value set as an empty
+    Indicate whether this column should act as an array, with the default value set as an empty
     array.
 </InputChoice>

@@ -15,7 +15,6 @@
     } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
-    import { columns } from './store';
     import { regionalProtocol } from '../../store';
 
     let {
@@ -27,11 +26,21 @@
     let showDelete = $state(false);
     let showRetry = $state(false);
     let selectedDomain: Models.ProxyRule = $state(null);
+
+    const columns = [
+        {
+            id: 'domain',
+            title: 'Domain',
+            type: 'string',
+            format: 'string',
+            width: { min: 200, max: 550 }
+        }
+    ];
 </script>
 
-<Table.Root columns={[...$columns, { id: 'actions', width: 40 }]} let:root>
+<Table.Root columns={[...columns, { id: 'actions', width: 40 }]} let:root>
     <svelte:fragment slot="header" let:root>
-        {#each $columns as { id, title }}
+        {#each columns as { id, title }}
             <Table.Header.Cell column={id} {root}>
                 {title}
             </Table.Header.Cell>
@@ -40,7 +49,7 @@
     </svelte:fragment>
     {#each domains.rules as domain}
         <Table.Row.Base {root}>
-            {#each $columns as column}
+            {#each columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === 'domain'}
                         <Layout.Stack direction="row" gap="xs">
@@ -53,15 +62,11 @@
                                 </Typography.Text>
                             </Link>
                             {#if domain.status === 'verifying'}
-                                <Badge
-                                    variant="secondary"
-                                    type="warning"
-                                    content="Verifying"
-                                    size="s" />
+                                <Badge variant="secondary" content="Verifying" size="s" />
                             {:else if domain.status !== 'verified'}
                                 <Badge
                                     variant="secondary"
-                                    type="error"
+                                    type="warning"
                                     content="Verification failed"
                                     size="s" />
                             {/if}

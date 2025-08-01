@@ -83,14 +83,16 @@
     let path = '/';
     let method = ExecutionMethod.GET;
     let body = '';
-    let headers: [string, string][] = [[null, '']];
+    let headers: [string, string][] = [['', '']];
 
     async function handleSubmit() {
         try {
             const headersObject = {};
 
             for (const [name, value] of headers) {
-                headersObject[name] = value;
+                if (name && name.trim() !== '') {
+                    headersObject[name] = value;
+                }
             }
 
             await sdk
@@ -134,7 +136,8 @@
     $: dateTime = new Date(`${date}T${time}`);
 
     $: filteredKeyList = keyList.filter((key) => {
-        const name = last(headers)[0];
+        const lastHeader = last(headers);
+        const name = lastHeader ? lastHeader[0] : '';
         if (!name) return true;
         return key.value.toLowerCase().includes(name?.toLowerCase());
     });

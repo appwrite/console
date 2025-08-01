@@ -12,11 +12,15 @@
         Badge
     } from '@appwrite.io/pink-svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
+    import { page } from '$app/state';
 
     const currentYear = new Date().getFullYear();
+
+    // for spreadsheet ui
+    const hideFooter = $derived(page.route.id?.includes('table-[table]'));
 </script>
 
-<footer>
+<footer class:hide={hideFooter}>
     <Divider />
     <Layout.Stack direction={$isSmallViewport ? 'column-reverse' : 'row'}>
         <Layout.Stack
@@ -161,6 +165,10 @@
         flex-direction: column;
         gap: var(--gap-l);
         margin-inline: 2rem;
+
+        &.hide {
+            display: none;
+        }
     }
 
     :global(main:has(.sub-navigation)) footer {

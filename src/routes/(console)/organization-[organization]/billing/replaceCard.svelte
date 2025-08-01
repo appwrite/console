@@ -3,7 +3,7 @@
     import { FakeModal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { organization } from '$lib/stores/organization';
+    import type { Organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
     import { submitStripeCard } from '$lib/stores/stripe';
     import { onMount } from 'svelte';
@@ -12,22 +12,22 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PaymentBoxes } from '$lib/components/billing';
 
+    export let organization: Organization;
     export let show = false;
     export let isBackup = false;
-    let methods: PaymentList;
-    let selectedPaymentMethodId: string;
+    export let methods: PaymentList;
+
     let name: string;
     let error: string;
+    let selectedPaymentMethodId: string;
 
     onMount(async () => {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
-
-        if (!$organization.paymentMethodId && !$organization.backupPaymentMethodId) {
+        if (!organization.paymentMethodId && !organization.backupPaymentMethodId) {
             selectedPaymentMethodId = methods?.total ? methods.paymentMethods[0].$id : null;
         } else {
             selectedPaymentMethodId = isBackup
-                ? $organization.backupPaymentMethodId
-                : $organization.paymentMethodId;
+                ? organization.backupPaymentMethodId
+                : organization.paymentMethodId;
             // If the selected payment method does not belong to the current user, select the first one.
             if (
                 methods?.total &&
@@ -41,7 +41,7 @@
     async function handleSubmit() {
         try {
             if (selectedPaymentMethodId === '$new') {
-                const method = await submitStripeCard(name, $organization.$id);
+                const method = await submitStripeCard(name, organization.$id);
                 selectedPaymentMethodId = method.$id;
             }
             isBackup
@@ -69,7 +69,7 @@
     async function addPaymentMethod(paymentMethodId: string) {
         try {
             await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                $organization.$id,
+                organization.$id,
                 paymentMethodId
             );
         } catch (e) {
@@ -80,7 +80,7 @@
     async function addBackupPaymentMethod(paymentMethodId: string) {
         try {
             await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
-                $organization.$id,
+                organization.$id,
                 paymentMethodId
             );
         } catch (e) {
@@ -98,18 +98,18 @@
         methods={filteredMethods}
         bind:name
         bind:group={selectedPaymentMethodId}
-        defaultMethod={$organization?.paymentMethodId}
-        backupMethod={$organization?.backupPaymentMethodId}
+        defaultMethod={organization?.paymentMethodId}
+        backupMethod={organization?.backupPaymentMethodId}
         disabledCondition={isBackup
-            ? $organization.paymentMethodId
-            : $organization.backupPaymentMethodId} />
+            ? organization.paymentMethodId
+            : organization.backupPaymentMethodId} />
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
         <Button
             secondary
             submit
             disabled={selectedPaymentMethodId ===
-                (isBackup ? $organization.backupPaymentMethodId : $organization.paymentMethodId)}>
+                (isBackup ? organization.backupPaymentMethodId : organization.paymentMethodId)}>
             Save
         </Button>
     </svelte:fragment>

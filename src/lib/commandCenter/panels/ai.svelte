@@ -27,7 +27,7 @@
     const examples = [
         'How to add platform in the console?',
         'How can I manage users, permissions, and access control in Appwrite?',
-        'How can I set up database collections and documents in Appwrite?',
+        'How can I set up database tables and rows in Appwrite?',
         'How do I configure and manage server-side functions in Appwrite?',
         'How to add custom domain in the console?'
     ];
@@ -148,7 +148,12 @@
           })}
     clearOnCallback={false}
     on:keydown={(e) => {
-        if (e.detail.key !== 'Escape') {
+        const showingExamples = !$isLoading && !answer;
+        if (e.detail.key === 'Enter' && $input.trim()) {
+            e.detail.cancel();
+            return;
+        }
+        if (e.detail.key !== 'Escape' && !showingExamples) {
             e.detail.cancel();
         }
     }}
@@ -302,14 +307,26 @@
             }
         }
 
-        :global(.answer ul),
-        :global(.answer ol) {
-            gap: 1rem;
+        :global(.answer ul) {
+            padding-inline-start: 1rem;
+            list-style-type: disc;
             display: grid;
+            gap: 1rem;
+        }
+
+        :global(.answer ol) {
+            padding-inline-start: 1.1rem;
+            list-style-type: decimal;
+            display: grid;
+            gap: 1rem;
         }
 
         :global(.answer a) {
             text-decoration: underline;
+        }
+
+        :global(.answer a:hover) {
+            opacity: 0.8;
         }
     }
 

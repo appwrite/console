@@ -11,17 +11,28 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
 
-    export let methods: PaymentList;
     export let value: string;
     export let taxId = '';
+    export let methods: PaymentList;
 
     let showTaxId = false;
     let showPaymentModal = false;
 
     async function cardSaved(event: CustomEvent<PaymentMethodData>) {
         value = event.detail.$id;
-        invalidate(Dependencies.UPGRADE_PLAN);
-        invalidate(Dependencies.CREATE_ORGANIZATION);
+
+        if (value) {
+            methods = {
+                ...methods,
+                total: methods.total + 1,
+                paymentMethods: [...methods.paymentMethods, event.detail]
+            };
+        }
+
+        await Promise.all([
+            invalidate(Dependencies.UPGRADE_PLAN),
+            invalidate(Dependencies.ORGANIZATION)
+        ]);
     }
 
     onMount(() => {

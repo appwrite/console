@@ -5,6 +5,7 @@
     import { Alert, Layout, Modal } from '@appwrite.io/pink-svelte';
 
     export let show = false;
+    export let autoClose = true;
     export let error: string = null;
     export let dismissible = true;
     export let size: 's' | 'm' | 'l' = 'm';
@@ -17,7 +18,7 @@
     let alert: HTMLElement;
 
     beforeNavigate(() => {
-        show = false;
+        if (autoClose) show = false;
     });
 
     $: $disableCommands(show);

@@ -4,8 +4,8 @@
     import Footer from '$lib/layout/footer.svelte';
     import Shell from '$lib/layout/shell.svelte';
     import { app } from '$lib/stores/app';
-    import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
     import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
+    import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { afterUpdate, onMount } from 'svelte';
     import { loading } from '$routes/store';
@@ -18,6 +18,7 @@
         checkForMarkedForDeletion,
         checkForMissingPaymentMethod,
         checkForNewDevUpgradePro,
+        checkForProjectsLimit,
         checkForUsageLimit,
         checkPaymentAuthorizationRequired,
         paymentExpired,
@@ -54,7 +55,10 @@
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
-    import type { NavbarProject } from '$lib/components/navbar.svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { Query } from '@appwrite.io/console';
+
+    export let data: LayoutData;
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -63,20 +67,7 @@
             .join(' ');
     }
 
-    const isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
-
-    export let data: LayoutData;
-
-    $: loadedProjects = data.projects.map((project) => {
-        return {
-            name: project?.name,
-            $id: project.$id,
-            isSelected: project.$id === page.params.project,
-            region: project.region,
-            platformCount: project.platforms.length,
-            pingCount: project.pingCount
-        };
-    }) satisfies NavbarProject[];
+    $: isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
 
     $: isOnSettingsLayout = $project?.$id
         ? page.url.pathname.includes(`project-${$project.region}-${$project.$id}/settings`)
@@ -263,6 +254,7 @@
             rank: -1
         }
     ]);
+
     onMount(async () => {
         loading.set(false);
         if (!localStorage.getItem('feedbackElapsed')) {
@@ -305,6 +297,7 @@
         if (currentOrganizationId === org.$id) return;
         if (isCloud) {
             currentOrganizationId = org.$id;
+            checkForProjectsLimit(org, data.allProjects?.projects?.length || 0);
             checkForEnterpriseTrial(org);
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
@@ -324,6 +317,20 @@
     }
 
     $: checkForUsageLimits($organization);
+
+    $: isOnOnboarding = page.route?.id?.includes('/(console)/onboarding');
+
+    $: projects = isOnOnboarding
+        ? null
+        : sdk.forConsole.projects.list([
+              Query.equal(
+                  'teamId',
+                  // id from page params ?? id from store ?? id from preferences
+                  page.params.organization ?? currentOrganizationId ?? data.currentOrgId
+              ),
+              Query.limit(5),
+              Query.orderDesc('$updatedAt')
+          ]);
 
     $: if ($requestedMigration) {
         openMigrationWizard();
@@ -345,7 +352,7 @@
         !page.url.pathname.includes('/console/onboarding')}
     showHeader={!page.url.pathname.includes('/console/onboarding/create-project')}
     showFooter={!page.url.pathname.includes('/console/onboarding/create-project')}
-    {loadedProjects}
+    {projects}
     selectedProject={page.data?.project}>
     <!--    <Header slot="header" />-->
     <slot />

@@ -12,40 +12,34 @@ export const load: PageLoad = async ({ url, depends, params }) => {
         runtimes: url.searchParams.getAll('runtime')
     };
 
-    let { templates } = await sdk
+    const { templates: allTemplates } = await sdk
         .forProject(params.region, params.project)
         .functions.listTemplates(undefined, undefined, 100);
 
-    const [runtimes, useCases] = templates.reduce(
-        ([rt, uc], next) => {
-            next.runtimes.forEach((runtime) => rt.add(runtime.name));
-            next.useCases.forEach((useCase) => uc.add(useCase));
-            return [rt, uc];
-        },
-        [new Set<string>(), new Set<string>()]
-    );
+    const runtimes = new Set<string>();
+    const useCases = new Set<string>();
 
-    templates = templates.filter((template) => {
+    for (const template of allTemplates) {
+        template.runtimes.forEach((r) => runtimes.add(r.name));
+        template.useCases.forEach((u) => useCases.add(u));
+    }
+
+    const filterUseCasesLower = filter.useCases.map((u) => u.toLowerCase());
+
+    const templates = allTemplates.filter((template) => {
         if (
             filter.runtimes.length > 0 &&
             !template.runtimes.some((n) => filter.runtimes.includes(n.name))
         ) {
             return false;
         }
-
-        const filterLowerCases = filter.useCases.map((n) => n.toLowerCase());
         if (
             filter.useCases.length > 0 &&
-            !template.useCases.some((n) => filterLowerCases.includes(n.toLowerCase()))
+            !template.useCases.some((u) => filterUseCasesLower.includes(u.toLowerCase()))
         ) {
             return false;
         }
-
-        if (search) {
-            return template.name.toLowerCase().includes(search.toLowerCase());
-        } else {
-            return true;
-        }
+        return search ? template.name.toLowerCase().includes(search.toLowerCase()) : true;
     });
 
     return {
@@ -53,7 +47,6 @@ export const load: PageLoad = async ({ url, depends, params }) => {
         runtimes,
         useCases,
         search,
-        templates,
-        functions: await sdk.forProject(params.region, params.project).functions.list()
+        templates
     };
 };

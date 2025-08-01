@@ -21,18 +21,20 @@ export const load: PageLoad = async ({ url, route, depends, params, parent }) =>
     // already loaded by parent.
     const { currentPlan } = await parent();
 
-    const { databases, policies, lastBackups } = await fetchDatabasesAndBackups(
+    const { databases, tables, policies, lastBackups } = await fetchDatabasesAndBackups(
         limit,
         offset,
         params,
         search,
         currentPlan
     );
+
     return {
         offset,
         limit,
         view,
         search,
+        tables,
         policies,
         databases,
         lastBackups
@@ -48,12 +50,26 @@ async function fetchDatabasesAndBackups(
 ) {
     const backupsEnabled = currentPlan?.backupsEnabled ?? true;
 
-    const databases = await sdk
-        .forProject(params.region, params.project)
-        .databases.list(
-            [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
-            search || undefined
-        );
+    const projectSDK = sdk.forProject(params.region, params.project);
+
+    const databases = await projectSDK.grids.listDatabases(
+        [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        search || undefined
+    );
+
+    const tables: Record<string, string | null> = {};
+
+    await Promise.all(
+        // TODO: backend should allow `Query.select` for perf!
+        databases.databases.map(async ({ $id }) => {
+            const res = await projectSDK.grids.listTables($id, [
+                Query.limit(1),
+                Query.orderDesc('')
+            ]);
+
+            tables[$id] = res.tables?.[0]?.$id ?? null;
+        })
+    );
 
     let lastBackups: Record<string, string>, policies: Record<string, BackupPolicy[]>;
 
@@ -64,7 +80,7 @@ async function fetchDatabasesAndBackups(
         ]);
     }
 
-    return { databases, policies, lastBackups };
+    return { databases, tables, policies, lastBackups };
 }
 
 async function fetchPolicies(databases: Models.DatabaseList, params: RouteParams) {

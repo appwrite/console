@@ -14,17 +14,13 @@
     import { BuildRuntime, Framework, ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import Configuration from '../configuration.svelte';
-    import { buildVerboseDomain } from '../store';
-    import {
-        project,
-        regionalConsoleVariables
-    } from '$routes/(console)/project-[region]-[project]/store';
-    import { organization } from '$lib/stores/organization';
+    import { regionalConsoleVariables } from '../../../store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { InvalidFileType, removeFile } from '$lib/helpers/files';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
+    import Domain from '../domain.svelte';
 
     export let data;
     let showExitModal = false;
@@ -34,7 +30,8 @@
 
     let name = 'My website';
     let id = ID.unique();
-    let domain = `${id}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`;
+    let domain = data.domain;
+    let domainIsValid = true;
     let framework: Models.Framework =
         data.frameworks.frameworks?.find((f) => f.key === 'other') ??
         data.frameworks.frameworks?.[0];
@@ -54,13 +51,13 @@
 
     async function create() {
         try {
-            domain = await buildVerboseDomain(
-                $regionalConsoleVariables._APP_DOMAIN_SITES,
-                name,
-                $organization.name,
-                $project.name,
-                id
-            );
+            if (!domainIsValid) {
+                addNotification({
+                    type: 'error',
+                    message: 'Domain is not valid'
+                });
+                return;
+            }
 
             const fr = Object.values(Framework).find((f) => f === framework.key);
             const buildRuntime = Object.values(BuildRuntime).find(
@@ -138,7 +135,7 @@
     }
 
     function handleInvalid(e: CustomEvent) {
-        const reason = e.detail.reason;
+        const reason = e.detail?.reason ?? '';
         if (reason === InvalidFileType.EXTENSION) {
             addNotification({
                 type: 'error',
@@ -212,9 +209,11 @@
                                         >Only .tar.gz files allowed</svelte:fragment>
                                 </Tooltip>
                             </Layout.Stack>
-                            <Typography.Caption variant="400"
-                                >Max file size: {readableMaxSize.value +
-                                    readableMaxSize.unit}</Typography.Caption>
+                            {#if maxSize > 0}
+                                <Typography.Caption variant="400"
+                                    >Max file size: {readableMaxSize.value +
+                                        readableMaxSize.unit}</Typography.Caption>
+                            {/if}
                         </Layout.Stack>
                     </Layout.Stack>
                 </Upload.Dropzone>
@@ -233,6 +232,8 @@
                 bind:selectedFramework={framework}
                 bind:variables
                 frameworks={data.frameworks.frameworks} />
+
+            <Domain bind:domain bind:domainIsValid />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

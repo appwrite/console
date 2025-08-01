@@ -3,6 +3,7 @@ import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
+import SubNavigation from './subNavigation.svelte';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.DATABASE);
@@ -10,6 +11,9 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     return {
         header: Header,
         breadcrumbs: Breadcrumbs,
-        database: await sdk.forProject(params.region, params.project).databases.get(params.database)
+        subNavigation: SubNavigation,
+        database: await sdk
+            .forProject(params.region, params.project)
+            .grids.getDatabase(params.database)
     };
 };
