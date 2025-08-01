@@ -285,7 +285,7 @@
             trackEvent(Submit.RowDelete);
             addNotification({
                 type: 'success',
-                message: `${selectedRows.length} document${selectedRows.length > 1 ? 's' : ''} deleted`
+                message: `${selectedRows.length ? selectedRows.length : 1} row${selectedRows.length > 1 ? 's' : ''} deleted`
             });
 
             if (selectedRowForDelete) {
