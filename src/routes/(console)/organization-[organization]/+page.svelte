@@ -185,7 +185,7 @@
                     Manage projects
                 </Button>
                 <Button
-                    primary
+                    submit
                     size="s"
                     href={$upgradeURL}
                     on:click={() => {
