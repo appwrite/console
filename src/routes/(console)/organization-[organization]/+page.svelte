@@ -26,6 +26,7 @@
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
     import { Badge, Icon, Typography, Alert, Tag, Tooltip } from '@appwrite.io/pink-svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAndroid,
         IconApple,
@@ -129,7 +130,9 @@
     }
 
     function formatName(name: string, limit: number = 19) {
-        return name ? (name.length > limit ? `${name.slice(0, limit)}...` : name) : '-';
+        const mobileLimit = 16;
+        const actualLimit = $isSmallViewport ? mobileLimit : limit;
+        return name ? (name.length > actualLimit ? `${name.slice(0, actualLimit)}...` : name) : '-';
     }
 
     $: projectsToArchive = data.projects.projects.filter(
@@ -164,7 +167,7 @@
         </DropList>
     </div>
 
-    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects}
+    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && data.projects.total > 2 && $canWriteProjects}
         <Alert.Inline
             title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
             <Typography.Text>
@@ -219,6 +222,7 @@
                         {#if isSetToArchive(project)}
                             <Tag
                                 size="s"
+                                style="white-space: nowrap;"
                                 on:click={(event) => {
                                     event.preventDefault();
                                     showSelectProject = true;
