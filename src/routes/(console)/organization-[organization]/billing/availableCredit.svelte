@@ -14,7 +14,7 @@
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { upgradeURL } from '$lib/stores/billing';
-    import { Pill } from '$lib/elements';
+
     import { Alert, Badge, Icon, Link, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
@@ -152,7 +152,7 @@
                                 {#if credit.status === 'expired'}
                                     <Tooltip>
                                         <span>
-                                            <Pill>Expired</Pill>
+                                            <Badge variant="secondary" content="Expired" />
                                         </span>
                                         <span slot="tooltip"
                                             >{toLocaleDate(credit.expiration)}</span>

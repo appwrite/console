@@ -13,7 +13,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
     import { isCloud } from '$lib/system';
-    import { Pill } from '$lib/elements';
+    import { Badge } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
     import { daysLeftInTrial, plansInfo, tierToPlan } from '$lib/stores/billing';
@@ -75,8 +75,10 @@
                             {#if organization?.billingPlan === BillingPlan.FREE || organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                                 <Tooltip>
                                     <div class="u-flex u-cross-center">
-                                        <Pill class="eyebrow-heading-3"
-                                            >{tierToPlan(organization?.billingPlan)?.name}</Pill>
+                                        <Badge
+                                            variant="secondary"
+                                            content={tierToPlan(organization?.billingPlan)?.name}
+                                            class="eyebrow-heading-3" />
                                     </div>
                                     <span slot="tooltip"
                                         >You are limited to 1 free organization per account</span>
@@ -85,7 +87,10 @@
                             {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
                                 <Tooltip>
                                     <div class="u-flex u-cross-center">
-                                        <Pill class="eyebrow-heading-3">TRIAL</Pill>
+                                        <Badge
+                                            class="eyebrow-heading-3"
+                                            variant="secondary"
+                                            content="TRIAL" />
                                     </div>
                                     <span slot="tooltip"
                                         >{`Your trial ends on ${toLocaleDate(
