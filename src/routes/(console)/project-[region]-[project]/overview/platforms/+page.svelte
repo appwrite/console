@@ -124,7 +124,7 @@
         <svelte:fragment slot="header" let:root>
             <Table.Header.Cell {root}>Name</Table.Header.Cell>
             <Table.Header.Cell {root}>Platform type</Table.Header.Cell>
-            <Table.Header.Cell {root}>App identifier</Table.Header.Cell>
+            <Table.Header.Cell {root}>Identifier</Table.Header.Cell>
             <Table.Header.Cell {root}>Last updated</Table.Header.Cell>
         </svelte:fragment>
         {#each data.platforms.platforms as platform}
