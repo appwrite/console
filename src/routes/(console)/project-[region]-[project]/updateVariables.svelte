@@ -38,6 +38,7 @@
     import { page } from '$app/state';
     import UpdateVariablesModal from './updateVariablesModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
+    import DeleteVariableModal from './deleteVariableModal.svelte';
 
     export let variableList: Models.VariableList;
     export let globalVariableList: Models.VariableList | undefined = undefined;
@@ -64,6 +65,7 @@
     let showEditorModal = false;
     let showUpdate = false;
     let showSecretModal = false;
+    let showDeleteModal = false;
     let offset = 0;
     const limit = 10;
 
@@ -402,7 +404,8 @@
                                                 status="danger"
                                                 trailingIcon={IconTrash}
                                                 on:click={async (e) => {
-                                                    handleVariableDeleted(variable);
+                                                    selectedVar = variable;
+                                                    showDeleteModal = true;
                                                     toggle(e);
                                                 }}>
                                                 Delete
@@ -479,4 +482,11 @@
         {sdkUpdateVariable}
         {variableList}
         bind:show={showVariablesUpload} />
+{/if}
+
+{#if showDeleteModal}
+    <DeleteVariableModal
+        bind:show={showDeleteModal}
+        {selectedVar}
+        onDelete={handleVariableDeleted} />
 {/if}
