@@ -62,6 +62,7 @@
     import SheetOptions from './sheetOptions.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import SpreadsheetContainer from './layout/spreadsheet.svelte';
+    import EditCellRow from './editRowCell.svelte';
     import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
     import { copy } from '$lib/helpers/copy';
     import { debounce } from '$lib/helpers/debounce';
@@ -79,6 +80,8 @@
     let showRelationships = false;
     let relationshipData: Partial<Models.Row>[];
     let selectedRelationship: Models.ColumnRelationship = null;
+
+    let rowsBeingUpdated: Record<string, boolean> = {};
 
     $: rows = data.rows;
 
@@ -438,11 +441,6 @@
         }
     }
 
-    const emptyCellsLimit = $isSmallViewport ? 12 : 18;
-
-    $: emptyCellsCount =
-        data.rows.rows.length >= emptyCellsLimit ? 0 : emptyCellsLimit - data.rows.rows.length;
-
     const saveColumnsWidth = debounce((column: { columnId: string; newWidth: number }) => {
         const fixedWidth =
             $tableColumns.find((col) => col.id === column.columnId)?.width ?? column.newWidth;
@@ -454,6 +452,43 @@
             }
         });
     }, 1000);
+
+    // TODO: should be fixed at the sdk level!
+    const SYSTEM_KEYS = new Set(['$tableId', '$databaseId']);
+
+    async function updateRow(row: Models.Row) {
+        rowsBeingUpdated[row.$id] = true;
+        try {
+            // TODO: should be fixed at the sdk level!
+            const onlyData = Object.fromEntries(
+                Object.entries(row).filter(([key]) => !SYSTEM_KEYS.has(key))
+            );
+
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .grids.updateRow(databaseId, tableId, row.$id, onlyData, row.$permissions);
+
+            invalidate(Dependencies.ROW);
+            trackEvent(Submit.RowUpdate);
+            addNotification({
+                message: 'Row has been updated',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+            trackError(error, Submit.RowUpdatePermissions);
+        } finally {
+            rowsBeingUpdated[row.$id] = false;
+        }
+    }
+
+    const emptyCellsLimit = $isSmallViewport ? 12 : 18;
+
+    $: emptyCellsCount =
+        data.rows.rows.length >= emptyCellsLimit ? 0 : emptyCellsLimit - data.rows.rows.length;
 
     $: reInitSpreadsheetKey = `${$table.columns.length}#${$columnsOrder.length}`;
 
@@ -535,10 +570,11 @@
             </svelte:fragment>
 
             {#each rows.rows as row, index (row.$id)}
-                <!-- TODO: add `value` for user attributes -->
-                <Spreadsheet.Row.Base {root} id={row.$id} {index}>
+                {@const isUpdatingRow = rowsBeingUpdated[row.$id]}
+                <Spreadsheet.Row.Base {root} id={row.$id} {index} disabled={isUpdatingRow}>
                     {#each $tableColumns as { id: columnId, isEditable } (columnId)}
                         {@const formatted = formatColumn(row[columnId])}
+                        {@const rowColumn = $columns.find((col) => col.key === columnId)}
                         <Spreadsheet.Cell
                             {root}
                             {isEditable}
@@ -558,7 +594,7 @@
                             {:else if columnId === 'actions'}
                                 <SheetOptions
                                     type="row"
-                                    column={$columns.find((col) => col.key === columnId)}
+                                    column={rowColumn}
                                     onSelect={(option) =>
                                         onSelectSheetOption(option, null, 'row', row)}
                                     onVisibilityChanged={(visible) => {
@@ -575,91 +611,94 @@
                                         </Button.Button>
                                     {/snippet}
                                 </SheetOptions>
-                            {:else}
-                                {@const col = $columns.find((n) => n.key === columnId)}
-                                {#if col}
-                                    {#if isRelationship(col)}
-                                        {@const args = displayNames?.[col.relatedTable] ?? ['$id']}
-                                        {#if !isRelationshipToMany(col)}
-                                            {#if row[columnId]}
-                                                {@const related = row[columnId]}
-                                                <Link.Button
-                                                    variant="muted"
-                                                    on:click={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        // TODO: open sheet maybes
-                                                        goto(
-                                                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table/${col.relatedTable}/row/${related.$id}`
-                                                        );
-                                                    }}>
-                                                    {#each args as arg, i}
-                                                        {#if arg !== undefined}
-                                                            {#if i}&nbsp;|{/if}
-                                                            <span class="text" data-private
-                                                                >{related?.[arg]}</span>
-                                                        {/if}
-                                                    {/each}
-                                                </Link.Button>
-                                            {:else}
-                                                <span class="text">n/a</span>
-                                            {/if}
-                                        {:else}
-                                            {@const itemsNum = row[columnId]?.length}
-                                            <Button.Button
-                                                variant="extra-compact"
-                                                disabled={!itemsNum}
-                                                badge={itemsNum ?? 0}
-                                                on:click={(e) => {
-                                                    e.stopPropagation();
-                                                    e.preventDefault();
-                                                    relationshipData = row[columnId];
-                                                    showRelationships = true;
-                                                    selectedRelationship = col;
-                                                }}>
-                                                Items
-                                            </Button.Button>
-                                        {/if}
+                            {:else if isRelationship(rowColumn)}
+                                {@const args = displayNames?.[rowColumn.relatedTable] ?? ['$id']}
+                                {#if !isRelationshipToMany(rowColumn)}
+                                    {#if row[columnId]}
+                                        {@const related = row[columnId]}
+                                        <Link.Button
+                                            variant="muted"
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                // TODO: open sheet maybes
+                                                goto(
+                                                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table/${rowColumn.relatedTable}/row/${related.$id}`
+                                                );
+                                            }}>
+                                            {#each args as arg, i}
+                                                {#if arg !== undefined}
+                                                    {#if i}&nbsp;|{/if}
+                                                    <span class="text" data-private
+                                                        >{related?.[arg]}</span>
+                                                {/if}
+                                            {/each}
+                                        </Link.Button>
                                     {:else}
-                                        {@const value = row[columnId]}
-                                        {@const formatted = formatColumn(row[columnId])}
-                                        {@const isDatetimeAttribute = col.type === 'datetime'}
-                                        {@const isEncryptedAttribute = isString(col) && col.encrypt}
-                                        {#if isDatetimeAttribute}
-                                            <DualTimeView time={value}>
-                                                <span slot="title">Timestamp</span>
-                                                {toLocaleDateTime(value, true)}
-                                            </DualTimeView>
-                                        {:else if isEncryptedAttribute}
-                                            <button on:click={(e) => e.preventDefault()}>
-                                                <InteractiveText
-                                                    copy={false}
-                                                    variant="secret"
-                                                    isVisible={false}
-                                                    text={formatted} />
-                                            </button>
-                                        {:else if formatted.length > 20}
-                                            <Tooltip placement="bottom" portal>
-                                                <Typography.Text truncate>
-                                                    {formatted}
-                                                </Typography.Text>
-                                                <span
-                                                    slot="tooltip"
-                                                    style:white-space="pre-wrap"
-                                                    style:word-break="break-word">
-                                                    {formatted}
-                                                </span>
-                                            </Tooltip>
-                                        {:else if formatted === 'null'}
-                                            <Badge variant="secondary" content="NULL" size="xs" />
-                                        {:else}
-                                            <Typography.Text truncate>
-                                                {formatted}
-                                            </Typography.Text>
-                                        {/if}
+                                        <span class="text">n/a</span>
                                     {/if}
+                                {:else}
+                                    {@const itemsNum = row[columnId]?.length}
+                                    <Button.Button
+                                        variant="extra-compact"
+                                        disabled={!itemsNum}
+                                        badge={itemsNum ?? 0}
+                                        on:click={(e) => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            relationshipData = row[columnId];
+                                            showRelationships = true;
+                                            selectedRelationship = rowColumn;
+                                        }}>
+                                        Items
+                                    </Button.Button>
+                                {/if}
+                            {:else}
+                                {@const value = row[columnId]}
+                                {@const formatted = formatColumn(row[columnId])}
+                                {@const isDatetimeAttribute = rowColumn.type === 'datetime'}
+                                {@const isEncryptedAttribute =
+                                    isString(rowColumn) && rowColumn.encrypt}
+                                {#if isDatetimeAttribute}
+                                    <DualTimeView time={value}>
+                                        <span slot="title">Timestamp</span>
+                                        {toLocaleDateTime(value, true)}
+                                    </DualTimeView>
+                                {:else if isEncryptedAttribute}
+                                    <button on:click={(e) => e.preventDefault()}>
+                                        <InteractiveText
+                                            copy={false}
+                                            variant="secret"
+                                            isVisible={false}
+                                            text={formatted} />
+                                    </button>
+                                {:else if formatted.length > 20}
+                                    <Tooltip placement="bottom" portal>
+                                        <Typography.Text truncate>
+                                            {formatted}
+                                        </Typography.Text>
+                                        <span
+                                            slot="tooltip"
+                                            style:white-space="pre-wrap"
+                                            style:word-break="break-word">
+                                            {formatted}
+                                        </span>
+                                    </Tooltip>
+                                {:else if formatted === 'null'}
+                                    <Badge variant="secondary" content="NULL" size="xs" />
+                                {:else}
+                                    <Typography.Text truncate>
+                                        {formatted}
+                                    </Typography.Text>
                                 {/if}
                             {/if}
+
+                            <svelte:fragment slot="cell-editor">
+                                <EditCellRow
+                                    bind:row
+                                    column={rowColumn}
+                                    onRowStructureUpdate={updateRow} />
+                            </svelte:fragment>
                         </Spreadsheet.Cell>
                     {/each}
                 </Spreadsheet.Row.Base>

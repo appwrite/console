@@ -26,7 +26,7 @@
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "^2.0.0-RC.1",
         "@appwrite.io/pink-legacy": "^1.0.3",
-        "@appwrite.io/pink-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@97e114e",
+        "@appwrite.io/pink-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@da8cd99",
         "@faker-js/faker": "^9.9.0",
         "@popperjs/core": "^2.11.8",
         "@sentry/sveltekit": "^8.38.0",
@@ -84,7 +84,7 @@
         "tslib": "^2.8.1",
         "typescript": "^5.8.2",
         "typescript-eslint": "^8.30.1",
-        "vite": "^6.2.3",
+        "vite": "^7.0.6",
         "vitest": "^3.0.0"
     },
     "pnpm": {
@@ -95,5 +95,5 @@
             "svelte-preprocess"
         ]
     },
-    "packageManager": "pnpm@10.13.1"
+    "packageManager": "pnpm@10.14.0"
 }

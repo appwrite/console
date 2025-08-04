@@ -13,6 +13,7 @@
     export let optionalText: string | undefined = undefined;
     export let value: string | number | boolean | null | string[];
     export let editing = false;
+    export let limited = false;
     export let column:
         | Models.ColumnBoolean
         | Models.ColumnEmail
@@ -48,6 +49,7 @@
             {id}
             {label}
             {column}
+            {limited}
             {optionalText}
             bind:value />
     {:else}
@@ -55,6 +57,7 @@
             this={columnsTypeMap[column.type]}
             {id}
             {editing}
+            {limited}
             {label}
             {column}
             {optionalText}

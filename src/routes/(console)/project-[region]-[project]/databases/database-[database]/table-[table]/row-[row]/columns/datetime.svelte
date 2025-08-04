@@ -5,14 +5,15 @@
     export let id: string;
     export let label: string;
     export let value: string;
+    export let limited: boolean = false;
     export let column: Models.ColumnDatetime;
     export let type: 'date' | 'time' | 'datetime-local' = 'datetime-local';
+
+    $: autofocus = limited;
+    $: nullable = !limited ? !column.required : false;
+    $: if (limited) {
+        label = undefined;
+    }
 </script>
 
-<InputDateTime
-    {id}
-    {label}
-    {type}
-    bind:value
-    required={column.required}
-    nullable={!column.required} />
+<InputDateTime {id} {label} {type} bind:value {nullable} {autofocus} required={column.required} />

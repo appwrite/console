@@ -10,6 +10,7 @@
     export let formValues: object = {};
     export let label: string;
     export let editing = false;
+    export let fromSpreadsheet: boolean = false;
 
     function removeArrayItem(key: string, index: number) {
         formValues = {
@@ -65,6 +66,7 @@
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                     <Column
                         {column}
+                        limited={fromSpreadsheet}
                         id={`${column.key}-${index}`}
                         optionalText={index === 0 ? getColumnType(column) : undefined}
                         label={index === 0 ? label : ''}
@@ -87,6 +89,7 @@
         {label}
         {editing}
         {column}
+        limited={fromSpreadsheet}
         id={column.key}
         optionalText={getColumnType(column)}
         bind:value={formValues[column.key]} />

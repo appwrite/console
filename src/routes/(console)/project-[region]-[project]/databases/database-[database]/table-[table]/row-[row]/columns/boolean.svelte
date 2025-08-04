@@ -5,19 +5,48 @@
     export let id: string;
     export let label: string;
     export let value: boolean;
+    export let limited: boolean = false;
     export let column: Models.ColumnBoolean;
     export let optionalText: string | undefined = undefined;
+
+    $: if (limited) {
+        label = undefined;
+        optionalText = undefined;
+    }
+
+    const onChange = (event: CustomEvent) => {
+        if (limited) {
+            value = event.detail as boolean;
+        }
+    };
 </script>
 
-<InputSelect
-    {id}
-    {label}
-    bind:value
-    {optionalText}
-    placeholder="Select a value"
-    required={column.required}
-    options={[
-        !column.required && { label: 'NULL', value: null },
-        { label: 'True', value: true },
-        { label: 'False', value: false }
-    ].filter(Boolean)} />
+{#if limited}
+    <InputSelect
+        {id}
+        {label}
+        {value}
+        {optionalText}
+        autofocus={limited}
+        placeholder="Select a value"
+        required={column.required}
+        options={[
+            { label: 'True', value: true },
+            { label: 'False', value: false }
+        ].filter(Boolean)}
+        on:change={onChange} />
+{:else}
+    <InputSelect
+        {id}
+        {label}
+        bind:value
+        {optionalText}
+        autofocus={limited}
+        placeholder="Select a value"
+        required={column.required}
+        options={[
+            !column.required && { label: 'NULL', value: null },
+            { label: 'True', value: true },
+            { label: 'False', value: false }
+        ].filter(Boolean)} />
+{/if}

@@ -5,7 +5,14 @@
     export let id: string;
     export let label: string;
     export let value: string;
+    export let limited: boolean = false;
     export let column: Models.ColumnString;
+
+    $: autofocus = limited;
+    $: maxlength = limited ? undefined : column.size;
+
+    // TODO: do we need the nullable checkbox?
+    $: nullable = !limited ? !column.required : false;
 </script>
 
 {#if column.size >= 50}
@@ -13,17 +20,19 @@
         {id}
         {label}
         bind:value
+        {maxlength}
+        {autofocus}
         placeholder="Enter string"
-        maxlength={column.size}
         required={column.required}
-        nullable={!column.required} />
+        {nullable} />
 {:else}
     <InputText
         {id}
         {label}
         bind:value
+        {nullable}
+        {autofocus}
+        {maxlength}
         placeholder="Enter string"
-        maxlength={column.size}
-        required={column.required}
-        nullable={!column.required} />
+        required={column.required} />
 {/if}

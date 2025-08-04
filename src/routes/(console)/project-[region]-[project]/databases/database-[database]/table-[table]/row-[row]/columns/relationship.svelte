@@ -12,6 +12,7 @@
 
     export let id: string;
     export let label: string;
+    export let limited: boolean = false;
 
     export let editing = false;
     export let value: string | string[];
@@ -148,8 +149,13 @@
         (!editing && hasItems && !showInput) ||
         (editing && hasItems && relatedList.every((item) => item) && !showInput);
     $: showEmptyInput = editing && totalCount === 0 && !showInput;
+
+    $: if (limit && !isRelationshipToMany(column)) {
+        label = undefined;
+    }
 </script>
 
+<!-- TODO: Maybe show a dialog for this for spreadsheet -->
 {#if isRelationshipToMany(column)}
     <Layout.Stack gap="xxl">
         <Layout.Stack gap="m">
@@ -270,10 +276,11 @@
 {:else}
     <InputSelect
         {id}
-        {label}
         {options}
-        required={column.required}
-        placeholder={`Select ${column.key}`}
+        autofocus={limited}
         bind:value={singleRel}
+        required={column.required}
+        label={limited ? undefined : label}
+        placeholder={`Select ${column.key}`}
         on:change={() => (value = singleRel)} />
 {/if}

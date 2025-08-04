@@ -5,13 +5,18 @@
     export let id: string;
     export let label: string;
     export let value: string | null;
+    export let limited: boolean = false;
     export let column: Models.ColumnEmail;
+
+    $: autofocus = limited;
+    $: nullable = !limited ? !column.required : false;
 </script>
 
 <InputEmail
     {id}
     {label}
     bind:value
+    {nullable}
+    {autofocus}
     placeholder="Enter URL"
-    required={column.required}
-    nullable={!column.required} />
+    required={column.required} />
