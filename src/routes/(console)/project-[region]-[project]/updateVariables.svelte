@@ -38,7 +38,7 @@
     import { page } from '$app/state';
     import UpdateVariablesModal from './updateVariablesModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
-    import DeleteVariableModal from './deleteVariableModal.svelte';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let variableList: Models.VariableList;
     export let globalVariableList: Models.VariableList | undefined = undefined;
@@ -66,6 +66,7 @@
     let showUpdate = false;
     let showSecretModal = false;
     let showDeleteModal = false;
+    let deleteError: string;
     let offset = 0;
     const limit = 10;
 
@@ -136,9 +137,11 @@
         }
     }
 
-    async function handleVariableDeleted(variable: Models.Variable) {
+    async function handleVariableDeleted() {
         try {
-            await sdkDeleteVariable(variable.$id);
+            await sdkDeleteVariable(selectedVar.$id);
+            showDeleteModal = false;
+            selectedVar = null;
             addNotification({
                 type: 'success',
                 message: `${$project.name} ${
@@ -147,10 +150,7 @@
             });
             trackEvent(Submit.VariableDelete);
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+            deleteError = error.message;
             trackError(error, Submit.VariableDelete);
         }
     }
@@ -485,8 +485,11 @@
 {/if}
 
 {#if showDeleteModal}
-    <DeleteVariableModal
-        bind:show={showDeleteModal}
-        {selectedVar}
-        onDelete={handleVariableDeleted} />
+    <Confirm
+        title="Delete variable"
+        bind:open={showDeleteModal}
+        bind:error={deleteError}
+        onSubmit={handleVariableDeleted}>
+        <p>Are you sure you want to delete this variable? This action is irreversible.</p>
+    </Confirm>
 {/if}
