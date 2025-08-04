@@ -120,10 +120,11 @@
 </script>
 
 {#if data.platforms.platforms.length}
-    <Table.Root columns={3} let:root>
+    <Table.Root columns={4} let:root>
         <svelte:fragment slot="header" let:root>
             <Table.Header.Cell {root}>Name</Table.Header.Cell>
             <Table.Header.Cell {root}>Platform type</Table.Header.Cell>
+            <Table.Header.Cell {root}>App identifier</Table.Header.Cell>
             <Table.Header.Cell {root}>Last updated</Table.Header.Cell>
         </svelte:fragment>
         {#each data.platforms.platforms as platform}
@@ -136,6 +137,15 @@
                         <Icon icon={getPlatformInfo(platform.type)} />
                         {PlatformTypes[platform.type]}
                     </Layout.Stack>
+                </Table.Cell>
+                <Table.Cell {root}>
+                    {#if platform.type.includes('web') || platform.type === 'web'}
+                        {platform.hostname || '—'}
+                    {:else if platform.type.includes('android') || platform.type.includes('ios')}
+                        {platform.key || platform.hostname || '—'}
+                    {:else}
+                        {platform.key || platform.hostname || '—'}
+                    {/if}
                 </Table.Cell>
                 <Table.Cell {root}>
                     {#if platform.$updatedAt}
