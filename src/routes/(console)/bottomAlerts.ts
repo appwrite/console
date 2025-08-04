@@ -54,7 +54,7 @@ if (isCloud) {
         id: 'modal:atomic_numeric_operations_announcement',
         src: {
             dark: AtomicNumericOperationsDark,
-            light: AtomicNumericOperationsDark
+            light: AtomicNumericOperationsLight
         },
         title: 'Announcing Atomic Numeric Operations',
         message:
