@@ -38,7 +38,7 @@
     import { page } from '$app/state';
     import UpdateVariablesModal from './updateVariablesModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
-    import Confirm from '$lib/components/confirm.svelte';
+    import { Confirm } from '$lib/components';
 
     export let variableList: Models.VariableList;
     export let globalVariableList: Models.VariableList | undefined = undefined;
