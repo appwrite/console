@@ -1,4 +1,10 @@
-import type { Appearance, PaymentMethod, Stripe, StripeElement, StripeElements } from '@stripe/stripe-js';
+import type {
+    Appearance,
+    PaymentMethod,
+    Stripe,
+    StripeElement,
+    StripeElements
+} from '@stripe/stripe-js';
 import { sdk } from './sdk';
 import { app } from './app';
 import { get, writable } from 'svelte/store';
@@ -95,7 +101,6 @@ export async function submitStripeCard(name: string, organizationId?: string) {
             throw e;
         }
 
-
         if (setupIntent && setupIntent.status === 'succeeded') {
             if ((setupIntent.payment_method as PaymentMethod).card.country === 'US') {
                 // need to get state
@@ -122,7 +127,7 @@ export async function submitStripeCard(name: string, organizationId?: string) {
 }
 
 export async function setPaymentMethod(providerMethodId: string, name: string, state: string) {
-    if(!paymentMethod) {
+    if (!paymentMethod) {
         addNotification({
             title: 'Error',
             message: 'No payment method found. Please try again.',
@@ -134,7 +139,8 @@ export async function setPaymentMethod(providerMethodId: string, name: string, s
         const method = await sdk.forConsole.billing.setPaymentMethod(
             paymentMethod.$id,
             providerMethodId,
-            name
+            name,
+            state
         );
         paymentElement.destroy();
         isStripeInitialized.set(false);
@@ -187,8 +193,9 @@ export async function confirmSetup(
 
     const { setupIntent, error } = await get(stripe).confirmCardSetup(clientSecret, {
         payment_method: paymentMethodId,
-        return_url: `${baseUrl}${urlRoute ?? `organization-${get(organization).$id}/billing?clientSecret=${clientSecret}`
-            }`
+        return_url: `${baseUrl}${
+            urlRoute ?? `organization-${get(organization).$id}/billing?clientSecret=${clientSecret}`
+        }`
     });
 
     if (error) {
