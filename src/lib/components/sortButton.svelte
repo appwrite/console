@@ -17,7 +17,7 @@
     }: {
         column: string;
         disabled?: boolean;
-        onSort?: (query: string[]) => void | Promise<void>;
+        onSort?: (query: string | null) => void | Promise<void>;
         state?: Writable<{ column: string | null; direction: SortDirection }>;
     } = $props();
 
@@ -37,11 +37,11 @@
         });
 
         if (nextDir === 'default') {
-            onSort?.([]);
+            onSort?.(null);
         } else if (nextDir === 'asc') {
-            onSort?.([Query.orderAsc(column)]);
+            onSort?.(Query.orderAsc(column));
         } else {
-            onSort?.([Query.orderDesc(column)]);
+            onSort?.(Query.orderDesc(column));
         }
     }
 </script>

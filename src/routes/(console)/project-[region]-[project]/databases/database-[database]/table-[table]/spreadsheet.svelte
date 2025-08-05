@@ -265,11 +265,31 @@
     let showDelete = false;
     let selectedRowForDelete: Models.Row['$id'] | null = null;
 
-    async function sort(query: string[]) {
+    async function sort(query: string | null) {
         $spreadsheetLoading = true;
-        rows = await sdk
-            .forProject(page.params.region, page.params.project)
-            .grids.listRows(databaseId, tableId, query);
+
+        const url = new URL(page.url);
+
+        if (query === null) {
+            url.searchParams.delete('query');
+        } else {
+            // compatible with `load` func!
+            const { attribute, method } = JSON.parse(query);
+            url.searchParams.set(
+                'query',
+                JSON.stringify([
+                    [
+                        {
+                            tag: `${attribute} ${method}`,
+                            value: attribute
+                        },
+                        query
+                    ]
+                ])
+            );
+        }
+
+        await goto(`${url.pathname}${url.search}`);
         $spreadsheetLoading = false;
     }
 
@@ -388,10 +408,10 @@
 
             if (action === 'sort-asc') {
                 sortState.set({ column: columnId, direction: 'asc' });
-                await sort([Query.orderAsc(columnId)]);
+                await sort(Query.orderAsc(columnId));
             } else if (action === 'sort-desc') {
                 sortState.set({ column: columnId, direction: 'desc' });
-                await sort([Query.orderDesc(columnId)]);
+                await sort(Query.orderDesc(columnId));
             }
 
             if (action === 'create-index') {
