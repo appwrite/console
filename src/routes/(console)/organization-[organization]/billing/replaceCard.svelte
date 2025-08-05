@@ -5,12 +5,13 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
-    import { submitStripeCard } from '$lib/stores/stripe';
+    import { setPaymentMethod, submitStripeCard } from '$lib/stores/stripe';
     import { onMount } from 'svelte';
-    import type { PaymentList } from '$lib/sdk/billing';
+    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PaymentBoxes } from '$lib/components/billing';
+    import type { PaymentMethod } from '@stripe/stripe-js';
 
     export let organization: Organization;
     export let show = false;
@@ -20,6 +21,9 @@
     let name: string;
     let error: string;
     let selectedPaymentMethodId: string;
+    let showState: boolean = false;
+    let state: string = '';
+    let paymentMethod: PaymentMethod | null = null;
 
     onMount(async () => {
         if (!organization.paymentMethodId && !organization.backupPaymentMethodId) {
@@ -41,7 +45,24 @@
     async function handleSubmit() {
         try {
             if (selectedPaymentMethodId === '$new') {
-                const method = await submitStripeCard(name, organization.$id);
+                if (showState && !state) {
+                    throw Error('Please select a state');
+                }
+                let method: PaymentMethodData;
+                if (showState) {
+                    method = await setPaymentMethod(paymentMethod.id, name, state);
+                } else {
+                    const card = await submitStripeCard(name, organization.$id);
+                    if (card && Object.hasOwn(card, 'id')) {
+                        if ((card as PaymentMethod).card.country === 'US') {
+                            paymentMethod = card as PaymentMethod;
+                            showState = true;
+                            return;
+                        }
+                    } else if (card && Object.hasOwn(card, '$id')) {
+                        method = card as PaymentMethodData;
+                    }
+                }
                 selectedPaymentMethodId = method.$id;
             }
             isBackup
@@ -97,6 +118,9 @@
     <PaymentBoxes
         methods={filteredMethods}
         bind:name
+        bind:paymentMethod
+        bind:showState
+        bind:state
         bind:group={selectedPaymentMethodId}
         defaultMethod={organization?.paymentMethodId}
         backupMethod={organization?.backupPaymentMethodId}
