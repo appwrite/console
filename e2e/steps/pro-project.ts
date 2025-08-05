@@ -22,7 +22,7 @@ export async function enterCreditCard(page: Page) {
     await dialog.getByRole('button', { name: 'Add', exact: true }).click();
     await page.locator('id=state-picker').click(); // open dropdown
     await page.getByRole('option', { name: 'Alabama' }).click();
-    await page.getByRole('button', { name: 'Add', exact: true }).nth(1).click();
+    await dialog.getByRole('button', { name: 'Add', exact: true }).click();
     await dialog.waitFor({
         state: 'hidden'
     });
