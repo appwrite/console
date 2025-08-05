@@ -50,7 +50,7 @@ if (isCloud) {
         },
         show: true
     };
-    const AtomicNumericOperationsPromo: BottomModalAlertItem = {
+    const atomicNumericOperationsPromo: BottomModalAlertItem = {
         id: 'modal:atomic_numeric_operations_announcement',
         src: {
             dark: AtomicNumericOperationsDark,
