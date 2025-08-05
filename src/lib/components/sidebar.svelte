@@ -365,21 +365,7 @@
         overflow-y: visible;
         max-height: none;
     }
-    .bottom {
-        position: sticky;
-        bottom: 0;
-        background: var(--bgcolor-neutral-primary, #fff);
-        border-top: 1px solid var(--border-neutral, #ededf0);
-        padding-top: var(--space-4, 8px);
-        z-index: 10;
 
-        @media (min-width: 1024px) {
-            height: var(--base-32, 32px);
-            border-top: none;
-            padding-top: 0;
-            position: static;
-        }
-    }
     .mobile-tablet-settings {
         display: block;
         margin-top: var(--space-6, 12px);
