@@ -89,6 +89,8 @@
         displayNames = preferences.getDisplayNames();
         columnsOrder.set(preferences.getColumnOrder(tableId));
         columnsWidth.set(preferences.getColumnWidths(tableId));
+
+        sortState.set(data.currentSort);
     });
 
     onDestroy(() => ($showCreateAttributeSheet.show = false));

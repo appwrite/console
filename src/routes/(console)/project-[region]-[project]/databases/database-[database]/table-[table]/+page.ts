@@ -23,11 +23,14 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
     const parsedQueries = queryParamToMap(paramQueries || '[]');
     queries.set(parsedQueries);
 
+    const currentSort = extractSortFromQueries(parsedQueries);
+
     return {
         offset,
         limit,
         view,
         query,
+        currentSort,
         rows: await sdk
             .forProject(params.region, params.project)
             .grids.listRows(
@@ -37,6 +40,20 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
             )
     };
 };
+
+function extractSortFromQueries(parsedQueries: Map<TagValue, string>) {
+    for (const [tagValue, queryString] of parsedQueries.entries()) {
+        if (queryString.includes('orderAsc') || queryString.includes('orderDesc')) {
+            const isAsc = queryString.includes('orderAsc');
+            return {
+                column: tagValue.value,
+                direction: isAsc ? 'asc' : 'desc'
+            };
+        }
+    }
+
+    return { column: null, direction: 'default' };
+}
 
 function buildGridQueries(
     limit: number,
