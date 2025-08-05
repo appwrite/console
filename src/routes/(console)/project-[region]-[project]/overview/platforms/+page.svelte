@@ -139,9 +139,11 @@
                     </Layout.Stack>
                 </Table.Cell>
                 <Table.Cell {root}>
-                    {(platform.type.includes('web') || platform.type === 'web'
-                        ? platform.hostname
-                        : platform.key) || '—'}
+                    {#if platform.type.includes('web') || platform.type === 'web'}
+                        {platform.hostname || '—'}
+                    {:else}
+                        {platform.key || platform.hostname || '—'}
+                    {/if}
                 </Table.Cell>
                 <Table.Cell {root}>
                     {#if platform.$updatedAt}
