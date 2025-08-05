@@ -5,8 +5,8 @@ import AutoIncrementDark from '$lib/images/promos/auto-increment-dark.png';
 import AutoIncrementLight from '$lib/images/promos/auto-increment-light.png';
 import EncryptedDatabasesDark from '$lib/images/promos/encrypted-attribute-dark.png';
 import EncryptedDatabasesLight from '$lib/images/promos/encrypted-attribute-light.png';
-import OptInRelationDark from '$lib/images/promos/opt-relation-dark.png';
-import OptInRelationLight from '$lib/images/promos/opt-relation-light.png';
+import AtomicNumericOperationsDark from '$lib/images/promos/atomic-numeric-operations-dark.png';
+import AtomicNumericOperationsLight from '$lib/images/promos/atomic-numeric-operations-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -50,27 +50,31 @@ if (isCloud) {
         },
         show: true
     };
-    const optInRelationPromo: BottomModalAlertItem = {
-        id: 'modal:opt_in_relation_announcement',
+    const atomicNumericOperationsPromo: BottomModalAlertItem = {
+        id: 'modal:atomic_numeric_operations_announcement',
         src: {
-            dark: OptInRelationDark,
-            light: OptInRelationLight
+            dark: AtomicNumericOperationsDark,
+            light: AtomicNumericOperationsLight
         },
-        title: 'Introducing Opt-in relationship loading',
+        title: 'Announcing Atomic Numeric Operations',
         message:
-            'Gain full control over which related documents to fetch and drastically reduce payload sizes.',
+            'Safely update numeric fields directly on the server, without conflicts or race conditions.',
         plan: 'free',
         importance: 8,
         scope: 'project',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-opt-in-relationship-loading',
+            link: () => 'https://appwrite.io/blog/post/announcing-atomic-numeric-operations',
             external: true,
             hideOnClick: true
         },
-        show: false
+        show: true
     };
-    listOfPromotions.push(optInRelationPromo, autoIncrementPromo, encryptedAttributePromo);
+    listOfPromotions.push(
+        atomicNumericOperationsPromo,
+        autoIncrementPromo,
+        encryptedAttributePromo
+    );
 }
 
 export function addBottomModalAlerts() {
