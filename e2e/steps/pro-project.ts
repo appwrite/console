@@ -20,6 +20,8 @@ export async function enterCreditCard(page: Page) {
     await stripe.locator('id=Field-cvcInput').fill('123');
     await stripe.locator('id=Field-countryInput').selectOption('DE');
     await dialog.getByRole('button', { name: 'Add', exact: true }).click();
+    await page.locator('id=state-picker').selectOption('AS');
+    await page.getByRole('button', { name: 'Add', exact: true }).click();
     await dialog.waitFor({
         state: 'hidden'
     });
