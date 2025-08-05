@@ -5,6 +5,8 @@
     import { initializeStripe, unmountPaymentElement } from '$lib/stores/stripe';
     import { Badge, Card, Layout } from '@appwrite.io/pink-svelte';
     import type { PaymentMethodData } from '$lib/sdk/billing';
+    import type { PaymentMethod } from '@stripe/stripe-js';
+    import StatePicker from './statePicker.svelte';
 
     export let methods: PaymentMethodData[];
     export let group: string;
@@ -14,6 +16,9 @@
     export let disabledCondition: string = null;
     export let setAsDefault = false;
     export let showSetAsDefault = false;
+    export let showState = false;
+    export let paymentMethod: PaymentMethod | null = null;
+    export let state: string = '';
 
     let element: HTMLDivElement;
     let loader: HTMLDivElement;
@@ -79,25 +84,29 @@
     {/each}
     <Card.Selector title="Add new payment method" name="$new" bind:group value="$new" />
     {#if group === '$new'}
-        <InputText
-            id="name"
-            label="Cardholder name"
-            placeholder="Cardholder name"
-            bind:value={name}
-            required
-            autofocus={true} />
+        {#if showState}
+            <StatePicker card={paymentMethod} bind:state />
+        {:else}
+            <InputText
+                id="name"
+                label="Cardholder name"
+                placeholder="Cardholder name"
+                bind:value={name}
+                required
+                autofocus={true} />
 
-        <div class="aw-stripe-container" data-private>
-            <div class="loader-container" bind:this={loader}>
-                <div class="loader"></div>
+            <div class="aw-stripe-container" data-private>
+                <div class="loader-container" bind:this={loader}>
+                    <div class="loader"></div>
+                </div>
+                <div bind:this={element}></div>
             </div>
-            <div bind:this={element}></div>
-        </div>
-        {#if showSetAsDefault}
-            <InputChoice
-                bind:value={setAsDefault}
-                id="default"
-                label="Set as default payment method for this organization" />
+            {#if showSetAsDefault}
+                <InputChoice
+                    bind:value={setAsDefault}
+                    id="default"
+                    label="Set as default payment method for this organization" />
+            {/if}
         {/if}
     {/if}
 </Layout.Stack>

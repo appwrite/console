@@ -1111,7 +1111,8 @@ export class Billing {
     async setPaymentMethod(
         paymentMethodId: string,
         providerMethodId: string | PaymentMethod,
-        name: string
+        name: string,
+        state: string | undefined = undefined
     ): Promise<PaymentMethodData> {
         const path = `/account/payment-methods/${paymentMethodId}/provider`;
         const params = {
@@ -1119,6 +1120,10 @@ export class Billing {
             providerMethodId,
             name
         };
+
+        if (state !== undefined) {
+            params['state'] = state;
+        }
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'patch',
