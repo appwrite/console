@@ -90,7 +90,8 @@
         columnsOrder.set(preferences.getColumnOrder(tableId));
         columnsWidth.set(preferences.getColumnWidths(tableId));
 
-        sortState.set(data.currentSort);
+        // data.currentSort is not recognised due to type issues I assume
+        sortState.set(data['currentSort']);
     });
 
     onDestroy(() => ($showCreateAttributeSheet.show = false));
