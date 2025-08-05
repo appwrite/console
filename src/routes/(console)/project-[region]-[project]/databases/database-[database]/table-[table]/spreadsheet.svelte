@@ -26,7 +26,8 @@
         columnsWidth,
         randomDataModalState,
         spreadsheetLoading,
-        showCreateIndexSheet
+        showCreateIndexSheet,
+        type SortState
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -81,8 +82,6 @@
     let relationshipData: Partial<Models.Row>[];
     let selectedRelationship: Models.ColumnRelationship = null;
 
-    let rowsBeingUpdated: Record<string, boolean> = {};
-
     $: rows = data.rows;
 
     onMount(async () => {
@@ -90,8 +89,7 @@
         columnsOrder.set(preferences.getColumnOrder(tableId));
         columnsWidth.set(preferences.getColumnWidths(tableId));
 
-        // data.currentSort is not recognised due to type issues I assume
-        sortState.set(data['currentSort']);
+        sortState.set(data.currentSort as SortState);
     });
 
     onDestroy(() => ($showCreateAttributeSheet.show = false));
@@ -262,8 +260,8 @@
         );
     }
 
+    $: selectedRows = [];
     let showColumnDelete = false;
-    let selectedRows: string[] = [];
 
     let showDelete = false;
     let selectedRowForDelete: Models.Row['$id'] | null = null;
@@ -309,24 +307,19 @@
                     .grids.deleteRows(databaseId, tableId, [Query.equal('$id', selectedRows)]);
             }
 
+            await invalidate(Dependencies.ROWS);
             trackEvent(Submit.RowDelete);
             addNotification({
                 type: 'success',
                 message: `${selectedRows.length ? selectedRows.length : 1} row${selectedRows.length > 1 ? 's' : ''} deleted`
             });
-
-            if (selectedRowForDelete) {
-                await invalidate(Dependencies.ROW);
-                selectedRowForDelete = null;
-            } else {
-                await invalidate(Dependencies.ROWS);
-            }
         } catch (error) {
             addNotification({ type: 'error', message: error.message });
             trackError(error, Submit.RowDelete);
         } finally {
             selectedRows = [];
             showDelete = false;
+            selectedRowForDelete = null;
         }
     }
 
@@ -468,6 +461,19 @@
         const fixedWidth =
             $tableColumns.find((col) => col.id === column.columnId)?.width ?? column.newWidth;
 
+        console.log(
+            JSON.stringify(
+                {
+                    [column.columnId]: {
+                        fixed: fixedWidth,
+                        resized: Math.ceil(column.newWidth)
+                    }
+                },
+                null,
+                2
+            )
+        );
+
         preferences.saveColumnWidths(data.organization.$id ?? data.project.teamId, tableId, {
             [column.columnId]: {
                 fixed: fixedWidth,
@@ -479,8 +485,9 @@
     // TODO: should be fixed at the sdk level!
     const SYSTEM_KEYS = new Set(['$tableId', '$databaseId']);
 
-    async function updateRow(row: Models.Row) {
-        rowsBeingUpdated[row.$id] = true;
+    async function updateRow(row: Models.Row, index: number) {
+        rows.rows[index] = row as Models.DefaultRow;
+
         try {
             // TODO: should be fixed at the sdk level!
             const onlyData = Object.fromEntries(
@@ -503,8 +510,6 @@
                 type: 'error'
             });
             trackError(error, Submit.RowUpdatePermissions);
-        } finally {
-            rowsBeingUpdated[row.$id] = false;
         }
     }
 
@@ -521,21 +526,18 @@
 <SpreadsheetContainer>
     {#key reInitSpreadsheetKey}
         <Spreadsheet.Root
-            let:root
             height="100%"
             allowSelection
             bind:selectedRows
+            useVirtualizer
+            keyboardNavigation
+            rowCount={rows.rows.length}
             bind:columns={$tableColumns}
             loading={$spreadsheetLoading}
             emptyCells={emptyCellsCount}
-            keyboardNavigation
             bottomActionClick={() => (showRecordsCreateSheet.show = true)}
-            on:columnsSwap={(order) => {
-                saveColumnsOrder(order.detail);
-            }}
-            on:columnsResize={(resize) => {
-                saveColumnsWidth(resize.detail);
-            }}>
+            on:columnsSwap={(order) => saveColumnsOrder(order.detail)}
+            on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}>
             <svelte:fragment slot="header" let:root>
                 {#each $tableColumns as column (column.id)}
                     {#if column.isAction}
@@ -592,9 +594,9 @@
                 {/each}
             </svelte:fragment>
 
-            {#each rows.rows as row, index (row.$id)}
-                {@const isUpdatingRow = rowsBeingUpdated[row.$id]}
-                <Spreadsheet.Row.Base {root} id={row.$id} {index} disabled={isUpdatingRow}>
+            <svelte:fragment slot="rows" let:root let:item let:index>
+                {@const row = rows.rows[item.index]}
+                <Spreadsheet.Row.Base {root} {index} id={row?.$id} virtualItem={item}>
                     {#each $tableColumns as { id: columnId, isEditable } (columnId)}
                         {@const formatted = formatColumn(row[columnId])}
                         {@const rowColumn = $columns.find((col) => col.key === columnId)}
@@ -718,14 +720,16 @@
 
                             <svelte:fragment slot="cell-editor">
                                 <EditCellRow
-                                    bind:row
+                                    {row}
                                     column={rowColumn}
-                                    onRowStructureUpdate={updateRow} />
+                                    onRowStructureUpdate={(newRow) => {
+                                        updateRow(newRow, index);
+                                    }} />
                             </svelte:fragment>
                         </Spreadsheet.Cell>
                     {/each}
                 </Spreadsheet.Row.Base>
-            {/each}
+            </svelte:fragment>
 
             <svelte:fragment slot="footer">
                 <Layout.Stack
@@ -860,5 +864,10 @@
         z-index: 14;
         position: absolute;
         transform: translateX(-50%);
+    }
+
+    // very weird because the library already has this!
+    :global(.virtual-row:has([data-editing-mode='true'])) {
+        z-index: 1 !important;
     }
 </style>

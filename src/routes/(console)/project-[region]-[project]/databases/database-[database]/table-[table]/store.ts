@@ -67,9 +67,14 @@ export const showRecordsCreateSheet = writable({
     row: null
 });
 
-export const sortState = writable({
-    column: null as string,
-    direction: 'default' as SortDirection
+export type SortState = {
+    column?: string;
+    direction: SortDirection;
+};
+
+export const sortState = writable<SortState>({
+    column: null,
+    direction: 'default'
 });
 
 export type ColumnDirection = {

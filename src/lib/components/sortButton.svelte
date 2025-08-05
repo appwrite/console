@@ -8,6 +8,7 @@
     import { Icon } from '@appwrite.io/pink-svelte';
     import { IconChevronDown, IconChevronUp, IconSelector } from '@appwrite.io/pink-icons-svelte';
     import type { Writable } from 'svelte/store';
+    import type { SortState } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/store';
 
     let {
         column,
@@ -18,7 +19,7 @@
         column: string;
         disabled?: boolean;
         onSort?: (query: string | null) => void | Promise<void>;
-        state?: Writable<{ column: string | null; direction: SortDirection }>;
+        state?: Writable<SortState>;
     } = $props();
 
     function sort() {
