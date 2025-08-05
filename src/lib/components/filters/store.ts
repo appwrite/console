@@ -1,10 +1,10 @@
 import { goto } from '$app/navigation';
-import { derived, get, writable } from 'svelte/store';
 import { page } from '$app/stores';
 import deepEqual from 'deep-equal';
-import type { Column, ColumnType } from '$lib/helpers/types';
 import { Query } from '@appwrite.io/console';
 import { toLocaleDateTime } from '$lib/helpers/date';
+import { derived, get, writable } from 'svelte/store';
+import type { Column, ColumnType } from '$lib/helpers/types';
 
 export type TagValue = {
     tag: string;
@@ -12,8 +12,8 @@ export type TagValue = {
 };
 
 export type Operator = {
-    toTag: (attribute: string, input?: string | number | string[], type?: string) => TagValue;
-    toQuery: (attribute: string, input?: string | number | string[]) => string;
+    toTag: (column: string, input?: string | number | string[], type?: string) => TagValue;
+    toQuery: (column: string, input?: string | number | string[]) => string;
     types: ColumnType[];
     hideInput?: boolean;
 };
@@ -134,7 +134,7 @@ export enum ValidTypes {
 const operatorsDefault = new Map<
     ValidOperators,
     {
-        query: (attr: string, input: string | number | string[]) => string;
+        query: (col: string, input: string | number | string[]) => string;
         types: ColumnType[];
         hideInput?: boolean;
     }
@@ -249,8 +249,8 @@ export function generateDefaultOperators() {
     operatorsDefault.forEach((operator, operatorName) => {
         operators[operatorName] = {
             toQuery: operator.query,
-            toTag: (attribute, input = null, type = null) => {
-                return generateTag(attribute, operatorName, input, type);
+            toTag: (column, input = null, type = null) => {
+                return generateTag(column, operatorName, input, type);
             },
             types: operator.types,
             hideInput: operator.hideInput
@@ -259,24 +259,24 @@ export function generateDefaultOperators() {
     return operators;
 }
 
-export function generateTag(attribute: string, operatorName: string, input = null, type = null) {
+export function generateTag(column: string, operatorName: string, input = null, type = null) {
     if (input === null) {
         return {
             value: '',
-            tag: `**${attribute}** ${operatorName}`
+            tag: `**${column}** ${operatorName}`
         };
     } else if (Array.isArray(input) && input.length > 2) {
         return {
             value: input,
-            tag: `**${attribute}** ${operatorName} **${formatArray(input)}** `
+            tag: `**${column}** ${operatorName} **${formatArray(input)}** `
         };
     } else if (type === ValidTypes.Datetime) {
         return {
             value: input,
-            tag: `**${attribute}** ${operatorName} **${toLocaleDateTime(input.toString())}**`
+            tag: `**${column}** ${operatorName} **${toLocaleDateTime(input.toString())}**`
         };
     } else {
-        return { value: input, tag: `**${attribute}** ${operatorName} **${input}**` };
+        return { value: input, tag: `**${column}** ${operatorName} **${input}**` };
     }
 }
 

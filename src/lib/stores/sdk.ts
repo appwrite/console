@@ -5,7 +5,6 @@ import {
     Avatars,
     Client,
     Console,
-    Databases,
     Functions,
     Health,
     Locale,
@@ -21,6 +20,7 @@ import {
     Vcs,
     Sites,
     Tokens,
+    Grids,
     Domains
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
@@ -108,7 +108,6 @@ const sdkForProject = {
     account: new Account(clientProject),
     avatars: new Avatars(clientProject),
     backups: new Backups(clientProject),
-    databases: new Databases(clientProject),
     functions: new Functions(clientProject),
     health: new Health(clientProject),
     locale: new Locale(clientProject),
@@ -122,7 +121,8 @@ const sdkForProject = {
     vcs: new Vcs(clientProject),
     proxy: new Proxy(clientProject),
     migrations: new Migrations(clientProject),
-    sites: new Sites(clientProject)
+    sites: new Sites(clientProject),
+    grids: new Grids(clientProject)
 };
 
 export const realtime = {

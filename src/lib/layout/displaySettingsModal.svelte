@@ -13,14 +13,14 @@
         view = $bindable(),
         columns,
         hideColumns = false,
-        isCustomCollection = false
+        isCustomTable = false
     }: {
         show?: boolean;
         hideView?: boolean;
         view?: View;
         columns?: Writable<Column[]>;
         hideColumns?: boolean;
-        isCustomCollection?: boolean;
+        isCustomTable?: boolean;
     } = $props();
 </script>
 
@@ -35,7 +35,7 @@
         {#if !hideColumns && $columns?.length}
             <Layout.Stack gap="xs">
                 <Typography.Text>Columns</Typography.Text>
-                <ColumnSelector {columns} {isCustomCollection}>
+                <ColumnSelector {columns} {isCustomTable}>
                     {#snippet children(toggle, selectedColumnsNumber)}
                         <Button.Button
                             size="s"

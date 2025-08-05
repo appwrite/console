@@ -1,24 +1,34 @@
 <script lang="ts">
     import { Layout } from '@appwrite.io/pink-svelte';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     export let size: 'small' | 'medium' | 'large' | 'xl' = null;
     export let blocksize = '152px';
+    export let expanded: boolean = false;
 
     $: style = size
         ? `--p-container-max-size: var(--container-max-size, var(--container-size-${size}))`
         : '';
+
+    $: marginTop = expanded && $isTabletViewport ? '48px' : undefined;
 </script>
 
-<div class="top-cover-console" style:block-size={blocksize}>
-    <div class="cover-container" {style}>
+<div
+    class:expanded
+    class="top-cover-console"
+    style:block-size={blocksize}
+    style:margin-top={marginTop}>
+    <div class="cover-container" {style} class:expanded>
         <Layout.Stack direction="row" alignItems="baseline">
             <slot name="header" />
         </Layout.Stack>
-        <slot />
+        <div class:expanded-slot={expanded}>
+            <slot />
+        </div>
     </div>
 </div>
 
-<style>
+<style lang="scss">
     .top-cover-console {
         container-type: inline-size;
         padding-block-start: var(--base-32);
@@ -55,5 +65,13 @@
             margin-inline: auto;
             max-width: 1200px;
         }
+
+        &.expanded {
+            margin-inline: 1rem !important;
+        }
+    }
+
+    .expanded-slot {
+        margin-inline: 3rem !important;
     }
 </style>

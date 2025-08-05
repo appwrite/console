@@ -7,21 +7,27 @@
     import ViewToggle from './viewToggle.svelte';
     import ColumnSelector from './columnSelector.svelte';
 
+    export let onlyIcon = false;
+    export let ui: 'legacy' | 'new' = 'legacy';
     export let columns: Writable<Column[]>;
     export let view: View;
-    export let isCustomCollection = false;
+    export let isCustomTable = false;
     export let hideView = false;
     export let hideColumns = false;
     export let allowNoColumns = false;
+    export let showAnyway = false;
 </script>
 
 {#if !hideColumns && view === View.Table}
-    <ColumnSelector {columns} {isCustomCollection} {allowNoColumns}>
+    <ColumnSelector {columns} {isCustomTable} {allowNoColumns} {ui} {showAnyway}>
         {#snippet children(toggle, selectedColumnsNumber)}
             <Button.Button
                 size="s"
+                icon={onlyIcon}
                 variant="secondary"
-                badge={selectedColumnsNumber.toString()}
+                class={onlyIcon ? 'width-fix' : undefined}
+                disabled={!$columns.length && showAnyway}
+                badge={onlyIcon ? undefined : selectedColumnsNumber.toString()}
                 on:click={toggle}>
                 <Icon slot="start" icon={IconViewBoards} />
             </Button.Button>
@@ -32,3 +38,10 @@
 {#if !hideView}
     <ViewToggle bind:view />
 {/if}
+
+<style>
+    :global(.width-fix) {
+        width: 32px;
+        height: 32px;
+    }
+</style>

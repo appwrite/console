@@ -4,10 +4,11 @@ import { DatabaseUsageRange } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params }) => {
+    // TODO: @Jake, should be GridUsageRange
     const period = isValueOfStringEnum(DatabaseUsageRange, params.period)
         ? params.period
         : DatabaseUsageRange.ThirtyDays;
     return sdk
         .forProject(params.region, params.project)
-        .databases.getDatabaseUsage(params.database, period);
+        .grids.getDatabaseUsage(params.database, period);
 };
