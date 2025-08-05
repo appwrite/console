@@ -124,7 +124,7 @@
                 </Link.Button>
             </div>
         </div>
-        <div slot="middle" class:icons={state === 'icons'}>
+        <div slot="middle" class="middle-container" class:icons={state === 'icons'}>
             {#if progressCard}
                 <Tooltip placement="right" disabled={state !== 'icons'}>
                     <a
@@ -240,26 +240,27 @@
                             <span slot="tooltip">{projectOption.name}</span>
                         </Tooltip>
                     {/each}
-                    <div class="only-mobile divider">
-                        <Divider />
-                    </div>
-                    <div class="only-mobile">
-                        <Tooltip placement="right" disabled={state !== 'icons'}>
-                            <a
-                                href={`/console/project-${project.region}-${project.$id}/settings`}
-                                on:click={() => {
-                                    trackEvent('click_menu_settings');
-                                }}
-                                class="link"
-                                ><span class="link-icon"><Icon icon={IconCog} size="s" /></span
-                                ><span
-                                    class:no-text={state === 'icons'}
-                                    class:has-text={state === 'open'}
-                                    class="link-text">Settings</span
-                                ></a>
-                            <span slot="tooltip">Settings</span>
-                        </Tooltip>
-                    </div>
+                    {#if project}
+                        <div class="mobile-tablet-settings">
+                            <Tooltip placement="right" disabled={state !== 'icons'}>
+                                <a
+                                    href={`/console/project-${project.region}-${project.$id}/settings`}
+                                    on:click={() => {
+                                        trackEvent('click_menu_settings');
+                                        sideBarIsOpen = false;
+                                    }}
+                                    class="link"
+                                    class:active={false}
+                                    ><span class="link-icon"><Icon icon={IconCog} size="s" /></span
+                                    ><span
+                                        class:no-text={state === 'icons'}
+                                        class:has-text={state === 'open'}
+                                        class="link-text">Settings</span
+                                    ></a>
+                                <span slot="tooltip">Settings</span>
+                            </Tooltip>
+                        </div>
+                    {/if}
                 </Layout.Stack>
             {:else if $isSmallViewport}
                 <div class="action-buttons">
@@ -308,7 +309,7 @@
                             on:click={() => {
                                 trackEvent('click_menu_settings');
                             }}
-                            class:active={isSelected('/settings') && !isSelected('sites')}
+                            class:active={false}
                             ><span class="link-icon"><Icon icon={IconCog} size="s" /></span><span
                                 class:no-text={state === 'icons'}
                                 class:has-text={state === 'open'}
@@ -359,6 +360,43 @@
 {/if}
 
 <style lang="scss">
+    .middle-container {
+        flex: 1;
+        overflow-y: visible;
+        max-height: none;
+    }
+    .bottom {
+        position: sticky;
+        bottom: 0;
+        background: var(--bgcolor-neutral-primary, #fff);
+        border-top: 1px solid var(--border-neutral, #ededf0);
+        padding-top: var(--space-4, 8px);
+        z-index: 10;
+
+        @media (min-width: 1024px) {
+            height: var(--base-32, 32px);
+            border-top: none;
+            padding-top: 0;
+            position: static;
+        }
+    }
+    .mobile-tablet-settings {
+        display: block;
+        margin-top: var(--space-6, 12px);
+
+        &::before {
+            content: '';
+            display: block;
+            height: 1px;
+            background: var(--border-neutral, #ededf0);
+            margin-bottom: var(--space-6, 12px);
+        }
+
+        @media (min-width: 1024px) {
+            display: none;
+        }
+    }
+
     .link {
         display: flex;
         height: 32px;
@@ -576,12 +614,6 @@
         margin-block-start: var(--space-2, 4px);
         margin-block-end: var(--space-6, 12px);
         width: 100%;
-    }
-
-    .bottom {
-        @media (min-width: 1024px) {
-            height: var(--base-32, 32px);
-        }
     }
 
     :global(button.collapse) {
