@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { CardContainer, GridItem1, Id } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Badge } from '@appwrite.io/pink-svelte';
     import { canWriteCollections } from '$lib/stores/roles';
     import type { PageData } from './$types';
     export let data: PageData;
@@ -22,7 +22,7 @@
             <svelte:fragment slot="title">{collection.name}</svelte:fragment>
             <svelte:fragment slot="status">
                 {#if !collection.enabled}
-                    <Pill>disabled</Pill>
+                    <Badge variant="secondary" content="disabled" />
                 {/if}</svelte:fragment>
 
             <Id value={collection.$id}>{collection.$id}</Id>

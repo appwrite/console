@@ -4,7 +4,8 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Pill } from '$lib/elements';
+    import { Badge, Icon } from '@appwrite.io/pink-svelte';
+    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { Button, InputText, InputSelect, InputPhone } from '$lib/elements/forms';
     import InputEmail from '$lib/elements/forms/inputEmail.svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -116,10 +117,12 @@
 
     {#if !showCustomId}
         <div>
-            <Pill button on:click={() => (showCustomId = !showCustomId)}
-                ><span class="icon-pencil" aria-hidden="true"></span><span class="text">
-                    Target ID
-                </span></Pill>
+            <Badge
+                variant="secondary"
+                content="Target ID"
+                on:click={() => (showCustomId = !showCustomId)}>
+                <Icon icon={IconPencil} size="s" slot="start" />
+            </Badge>
         </div>
     {:else}
         <CustomId bind:show={showCustomId} name="Target" bind:id autofocus={false} />
