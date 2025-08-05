@@ -71,7 +71,7 @@ if (isCloud) {
         show: true
     };
     listOfPromotions.push(
-        AtomicNumericOperationsPromo,
+        atomicNumericOperationsPromo,
         autoIncrementPromo,
         encryptedAttributePromo
     );
