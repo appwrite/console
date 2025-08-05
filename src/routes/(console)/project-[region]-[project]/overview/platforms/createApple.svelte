@@ -27,6 +27,7 @@
     import { PlatformType } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import { app } from '$lib/stores/app';
+    import { project } from '../../store';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -38,8 +39,10 @@
         '\ngit clone https://github.com/appwrite/starter-for-ios\ncd starter-for-ios\n';
 
     const updateConfigCode = isCloud
-        ? `APPWRITE_PROJECT_ID: "${projectId}"`
+        ? `APPWRITE_PROJECT_ID: "${projectId}"
+APPWRITE_PROJECT_NAME: "${$project.name}"`
         : `APPWRITE_PROJECT_ID: "${projectId}"
+APPWRITE_PROJECT_NAME: "${$project.name}"
 APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
 
