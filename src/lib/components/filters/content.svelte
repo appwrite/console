@@ -65,8 +65,7 @@
         value = column?.array ? [] : null;
         if (column?.type === 'datetime') {
             const now = new Date();
-            const datetimeString = now.toISOString().slice(0, 16);
-            value = datetimeString;
+            value = now.toISOString().slice(0, 16);
         }
     });
 
