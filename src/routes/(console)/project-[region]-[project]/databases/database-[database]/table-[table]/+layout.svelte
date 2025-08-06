@@ -51,10 +51,16 @@
     import { sleep } from '$lib/helpers/promises';
     import CreateIndex from './indexes/createIndex.svelte';
 
-    let createIndex: CreateIndex;
     let editRow: EditRow;
+    let createIndex: CreateIndex;
     let createColumn: CreateColumn;
     let selectedOption: Option['name'] = 'String';
+
+    /**
+     * adding a lot of fake data will trigger the realtime below
+     * and will keep invalidating the `Dependencies.TABLE` making a lot of API noise!
+     */
+    let isWaterfallFromFaker = false;
 
     onMount(() => {
         return realtime
@@ -64,7 +70,9 @@
                     response.events.includes('databases.*.tables.*.columns.*') ||
                     response.events.includes('databases.*.tables.*.indexes.*')
                 ) {
-                    invalidate(Dependencies.TABLE);
+                    if (!isWaterfallFromFaker) {
+                        invalidate(Dependencies.TABLE);
+                    }
                 }
             });
     });
@@ -220,6 +228,8 @@
     });
 
     async function createFakeData() {
+        isWaterfallFromFaker = true;
+
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
@@ -271,6 +281,7 @@
         /* api is too fast! */
         // await sleep(1250);
         $spreadsheetLoading = false;
+        isWaterfallFromFaker = false;
     }
 </script>
 
