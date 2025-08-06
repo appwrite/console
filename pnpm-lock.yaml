@@ -18,14 +18,14 @@ importers:
         specifier: 0.25.0
         version: 0.25.0
       '@appwrite.io/pink-icons-svelte':
-        specifier: ^2.0.0-RC.1
-        version: https://try-module.cloud/module/@appwrite/%40appwrite.io%2Fpink-icons-svelte@12707b9(svelte@5.25.3)
+        specifier: https://pkg.vc/-/@appwrite/@appwrite.io/pink-icons-svelte@e6b154b
+        version: https://pkg.vc/-/@appwrite/@appwrite.io/pink-icons-svelte@e6b154b(svelte@5.25.3)
       '@appwrite.io/pink-legacy':
         specifier: ^1.0.3
         version: 1.0.3
       '@appwrite.io/pink-svelte':
-        specifier: https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@95bdb79
-        version: https://pkg.vc/-/@appwrite/%40appwrite.io%2Fpink-svelte@95bdb79(svelte@5.25.3)
+        specifier: https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@e6b154b
+        version: https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@e6b154b(svelte@5.25.3)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
