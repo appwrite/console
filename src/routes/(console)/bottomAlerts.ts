@@ -5,7 +5,8 @@ import AutoIncrementDark from '$lib/images/promos/auto-increment-dark.png';
 import AutoIncrementLight from '$lib/images/promos/auto-increment-light.png';
 import AtomicNumericOperationsDark from '$lib/images/promos/atomic-numeric-operations-dark.png';
 import AtomicNumericOperationsLight from '$lib/images/promos/atomic-numeric-operations-light.png';
-import AppwriteGeneralAvailabilty from '$lib/images/promos/appwrite-general-availability.png';
+import AppwriteGeneralAvailabiltyLight from '$lib/images/promos/appwrite-general-availability-light.png';
+import AppwriteGeneralAvailabiltyDark from '$lib/images/promos/appwrite-general-availability-dark.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -13,8 +14,8 @@ if (isCloud) {
     const appwriteGeneralAvailabiltyPromo: BottomModalAlertItem = {
         id: 'modal:appwrite_general_availability_announcement',
         src: {
-            dark: AppwriteGeneralAvailabilty,
-            light: AppwriteGeneralAvailabilty
+            dark: AppwriteGeneralAvailabiltyDark,
+            light: AppwriteGeneralAvailabiltyLight
         },
         title: 'Now Generally Available',
         message: 'After 26 months of Appwrite Cloud, we are ready to remove the beta tag.',
