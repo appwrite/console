@@ -74,7 +74,10 @@
         <Layout.Stack
             direction="row"
             justifyContent={$isSmallViewport ? 'flex-start' : 'flex-end'}
-            alignItems="center">
+            alignItems="center"
+            style={$isTabletViewport || window.innerWidth <= 1048
+                ? 'flex-wrap: wrap; gap: 0.5rem;'
+                : ''}>
             {#if isCloud}
                 {#if !$isSmallViewport}<AnimatedBadge /><Icon size="s" icon={IconCloud} />
                     {#if $version}
