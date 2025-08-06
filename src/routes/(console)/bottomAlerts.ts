@@ -3,28 +3,28 @@ import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
 import AutoIncrementDark from '$lib/images/promos/auto-increment-dark.png';
 import AutoIncrementLight from '$lib/images/promos/auto-increment-light.png';
-import EncryptedDatabasesDark from '$lib/images/promos/encrypted-attribute-dark.png';
-import EncryptedDatabasesLight from '$lib/images/promos/encrypted-attribute-light.png';
 import AtomicNumericOperationsDark from '$lib/images/promos/atomic-numeric-operations-dark.png';
 import AtomicNumericOperationsLight from '$lib/images/promos/atomic-numeric-operations-light.png';
+import AppwriteGeneralAvailabiltyLight from '$lib/images/promos/appwrite-general-availability-light.png';
+import AppwriteGeneralAvailabiltyDark from '$lib/images/promos/appwrite-general-availability-dark.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const encryptedAttributePromo: BottomModalAlertItem = {
-        id: 'modal:encrypted_attribute_announcement',
+    const appwriteGeneralAvailabiltyPromo: BottomModalAlertItem = {
+        id: 'modal:appwrite_general_availability_announcement',
         src: {
-            dark: EncryptedDatabasesDark,
-            light: EncryptedDatabasesLight
+            dark: AppwriteGeneralAvailabiltyDark,
+            light: AppwriteGeneralAvailabiltyLight
         },
-        title: 'Introducing Encrypted string attribute support',
-        message: 'Encrypt string attributes at rest, directly from the Appwrite Console.',
+        title: 'Now Generally Available',
+        message: 'After 26 months of Appwrite Cloud, we are ready to remove the beta tag.',
         plan: 'free',
         importance: 8,
-        scope: 'project',
+        scope: 'everywhere',
         cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-encrypted-string-attributes',
+            text: 'Learn more',
+            link: () => 'https://apwr.dev/ygTXfxA',
             external: true,
             hideOnClick: true
         },
@@ -71,9 +71,9 @@ if (isCloud) {
         show: true
     };
     listOfPromotions.push(
+        appwriteGeneralAvailabiltyPromo,
         atomicNumericOperationsPromo,
-        autoIncrementPromo,
-        encryptedAttributePromo
+        autoIncrementPromo
     );
 }
 
