@@ -258,8 +258,7 @@
                                     ><span
                                         class:no-text={state === 'icons'}
                                         class:has-text={state === 'open'}
-                                        class="link-text"
-                                >Settings</span
+                                        class="link-text">Settings</span
                                     ></a>
                                 <span slot="tooltip">Settings</span>
                             </Tooltip>

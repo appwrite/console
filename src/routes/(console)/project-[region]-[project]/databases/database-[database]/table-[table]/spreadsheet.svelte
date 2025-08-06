@@ -27,7 +27,8 @@
         randomDataModalState,
         spreadsheetLoading,
         showCreateIndexSheet,
-        type SortState
+        type SortState,
+        Deletion
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -67,6 +68,7 @@
     import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
     import { copy } from '$lib/helpers/copy';
     import { debounce } from '$lib/helpers/debounce';
+    import { writable } from 'svelte/store';
 
     export let data: PageData;
     export let showRecordsCreateSheet: {
@@ -74,107 +76,41 @@
         row: Models.Row | null;
     };
 
-    const databaseId = page.params.database;
+    $: rows = writable(data.rows);
     const tableId = page.params.table;
+    const databaseId = page.params.database;
 
+    const minimumWidth = 168;
+    const emptyCellsLimit = $isSmallViewport ? 12 : 18;
+    const selected = preferences.getCustomTableColumns(page.params.table);
+    const SYSTEM_KEYS = new Set([
+        '$tableId',
+        '$databaseId'
+    ]); /* TODO: should be fixed at the sdk level! */
+
+    let selectedRows = [];
     let displayNames = {};
     let showRelationships = false;
     let relationshipData: Partial<Models.Row>[];
     let selectedRelationship: Models.ColumnRelationship = null;
 
-    $: rows = data.rows;
+    let showDelete = false;
+    let showColumnDelete = false;
+    let deleteConfirmationChecked = false;
+    let selectedRowForDelete: Models.Row['$id'] | null = null;
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
         columnsOrder.set(preferences.getColumnOrder(tableId));
         columnsWidth.set(preferences.getColumnWidths(tableId));
 
+        makeTableColumns();
         sortState.set(data.currentSort as SortState);
     });
 
     onDestroy(() => ($showCreateAttributeSheet.show = false));
 
-    function saveColumnsOrder(newOrder: string[], update: boolean = true) {
-        if (update) {
-            columnsOrder.set(newOrder);
-        }
-
-        preferences.saveColumnOrder(
-            data.organization.$id ?? data.project.teamId,
-            tableId,
-            newOrder
-        );
-    }
-
-    function formatArray(array: unknown[]) {
-        if (array.length === 0) return '[ ]';
-
-        let formattedFields: string[] = [];
-        for (const item of array) {
-            if (typeof item === 'string') {
-                formattedFields.push(`"${item}"`);
-            } else {
-                formattedFields.push(`${item}`);
-            }
-        }
-
-        return `[${formattedFields.join(', ')}]`;
-    }
-
-    function formatColumn(column: unknown) {
-        let formattedColumn: string;
-
-        if (typeof column === 'string') {
-            formattedColumn = column;
-        } else if (Array.isArray(column)) {
-            formattedColumn = formatArray(column);
-        } else if (column === null) {
-            formattedColumn = 'null';
-        } else {
-            formattedColumn = `${column}`;
-        }
-
-        return formattedColumn;
-    }
-
-    function getAppropriateIcon(type: string): ComponentType {
-        switch (type) {
-            case 'string':
-                return IconText;
-            case 'float':
-            case 'integer':
-                return IconHashtag;
-            case 'boolean':
-                return IconToggle;
-            case 'datetime':
-                return IconCalendar;
-            case 'email':
-                return IconMail;
-            case 'ip':
-                return IconLocationMarker;
-            case 'url':
-                return IconLink;
-            case 'enum':
-                return IconViewList;
-            case 'relationship':
-                return IconRelationship;
-        }
-    }
-
-    function getColumnWidth(
-        columnId: string,
-        defaultWidth: number | { min: number }
-    ): number | { min: number; max?: number } {
-        const savedWidth = $columnsWidth[columnId];
-        if (!savedWidth) return defaultWidth;
-
-        return savedWidth.resized;
-    }
-
-    $: selected = preferences.getCustomTableColumns(page.params.table);
-
-    const minimumWidth = 168;
-    $: if ($table.columns && $columnsOrder && $columnsWidth) {
+    function makeTableColumns() {
         const baseColumns = $table.columns.map((col) => ({
             id: col.key,
             title: col.key,
@@ -260,11 +196,97 @@
         );
     }
 
-    $: selectedRows = [];
-    let showColumnDelete = false;
+    function getColumnWidth(
+        columnId: string,
+        defaultWidth: number | { min: number }
+    ): number | { min: number; max?: number } {
+        const savedWidth = $columnsWidth?.[columnId];
+        if (!savedWidth) return defaultWidth;
 
-    let showDelete = false;
-    let selectedRowForDelete: Models.Row['$id'] | null = null;
+        return savedWidth.resized;
+    }
+
+    function saveColumnsOrder(newOrder: string[], update: boolean = true) {
+        if (update) {
+            columnsOrder.set(newOrder);
+        }
+
+        preferences.saveColumnOrder(
+            data.organization.$id ?? data.project.teamId,
+            tableId,
+            newOrder
+        );
+    }
+
+    function saveColumnsWidth(column: { columnId: string; newWidth: number }) {
+        const fixedWidth =
+            $tableColumns.find((col) => col.id === column.columnId)?.width ?? column.newWidth;
+
+        columnsWidth.update((widths) => ({
+            ...widths,
+            [column.columnId]: {
+                fixed: fixedWidth,
+                resized: Math.ceil(column.newWidth)
+            }
+        }));
+
+        saveColumnWidthsToPreferences(column);
+    }
+
+    function formatArray(array: unknown[]) {
+        if (array.length === 0) return '[ ]';
+
+        let formattedFields: string[] = [];
+        for (const item of array) {
+            if (typeof item === 'string') {
+                formattedFields.push(`"${item}"`);
+            } else {
+                formattedFields.push(`${item}`);
+            }
+        }
+
+        return `[${formattedFields.join(', ')}]`;
+    }
+
+    function formatColumn(column: unknown) {
+        let formattedColumn: string;
+
+        if (typeof column === 'string') {
+            formattedColumn = column;
+        } else if (Array.isArray(column)) {
+            formattedColumn = formatArray(column);
+        } else if (column === null) {
+            formattedColumn = 'null';
+        } else {
+            formattedColumn = `${column}`;
+        }
+
+        return formattedColumn;
+    }
+
+    function getAppropriateIcon(type: string): ComponentType {
+        switch (type) {
+            case 'string':
+                return IconText;
+            case 'float':
+            case 'integer':
+                return IconHashtag;
+            case 'boolean':
+                return IconToggle;
+            case 'datetime':
+                return IconCalendar;
+            case 'email':
+                return IconMail;
+            case 'ip':
+                return IconLocationMarker;
+            case 'url':
+                return IconLink;
+            case 'enum':
+                return IconViewList;
+            case 'relationship':
+                return IconRelationship;
+        }
+    }
 
     async function sort(query: string | null) {
         $spreadsheetLoading = true;
@@ -355,27 +377,6 @@
         }
     }
 
-    enum Deletion {
-        'setNull' = 'Set rpw ID as NULL in all related rows',
-        'cascade' = 'All related rows will be deleted',
-        'restrict' = 'Row can not be deleted'
-    }
-
-    $: relatedColumns = $columns?.filter(
-        (attribute) =>
-            isRelationship(attribute) &&
-            // One-to-One are always included
-            (attribute.relationType === 'oneToOne' ||
-                // One-to-Many: Only if parent is deleted
-                (attribute.relationType === 'oneToMany' && attribute.side === 'parent') ||
-                // Many-to-One: Only include if child is deleted
-                (attribute.relationType === 'manyToOne' && attribute.side === 'child') ||
-                // Many-to-Many: Only include if the parent is being deleted
-                (isRelationshipToMany(attribute) && attribute.side === 'parent'))
-    ) as Models.ColumnRelationship[];
-
-    let checked = false;
-
     async function onSelectSheetOption(
         action: HeaderCellAction | RowCellAction,
         columnId: string,
@@ -457,39 +458,8 @@
         }
     }
 
-    const saveColumnsWidth = debounce((column: { columnId: string; newWidth: number }) => {
-        const fixedWidth =
-            $tableColumns.find((col) => col.id === column.columnId)?.width ?? column.newWidth;
-
-        console.log(
-            JSON.stringify(
-                {
-                    [column.columnId]: {
-                        fixed: fixedWidth,
-                        resized: Math.ceil(column.newWidth)
-                    }
-                },
-                null,
-                2
-            )
-        );
-
-        preferences.saveColumnWidths(data.organization.$id ?? data.project.teamId, tableId, {
-            [column.columnId]: {
-                fixed: fixedWidth,
-                resized: Math.ceil(column.newWidth)
-            }
-        });
-    }, 1000);
-
-    // TODO: should be fixed at the sdk level!
-    const SYSTEM_KEYS = new Set(['$tableId', '$databaseId']);
-
-    async function updateRow(row: Models.Row, index: number) {
-        rows.rows[index] = row as Models.DefaultRow;
-
+    async function updateRowContents(row: Models.Row) {
         try {
-            // TODO: should be fixed at the sdk level!
             const onlyData = Object.fromEntries(
                 Object.entries(row).filter(([key]) => !SYSTEM_KEYS.has(key))
             );
@@ -513,25 +483,53 @@
         }
     }
 
-    const emptyCellsLimit = $isSmallViewport ? 12 : 18;
+    const saveColumnWidthsToPreferences = debounce(
+        (column: { columnId: string; newWidth: number }) => {
+            const fixedWidth =
+                $tableColumns.find((col) => col.id === column.columnId)?.width ?? column.newWidth;
+
+            preferences.saveColumnWidths(data.organization.$id ?? data.project.teamId, tableId, {
+                [column.columnId]: {
+                    fixed: fixedWidth,
+                    resized: Math.ceil(column.newWidth)
+                }
+            });
+        },
+        1000
+    );
+
+    $: relatedColumns = $columns?.filter(
+        (attribute) =>
+            isRelationship(attribute) &&
+            // One-to-One are always included
+            (attribute.relationType === 'oneToOne' ||
+                // One-to-Many: Only if parent is deleted
+                (attribute.relationType === 'oneToMany' && attribute.side === 'parent') ||
+                // Many-to-One: Only include if child is deleted
+                (attribute.relationType === 'manyToOne' && attribute.side === 'child') ||
+                // Many-to-Many: Only include if the parent is being deleted
+                (isRelationshipToMany(attribute) && attribute.side === 'parent'))
+    ) as Models.ColumnRelationship[];
 
     $: emptyCellsCount =
-        data.rows.rows.length >= emptyCellsLimit ? 0 : emptyCellsLimit - data.rows.rows.length;
-
-    $: reInitSpreadsheetKey = `${$table.columns.length}#${$columnsOrder.length}`;
+        $rows.rows.length >= emptyCellsLimit ? 0 : emptyCellsLimit - $rows.rows.length;
 
     $: canShowDatetimePopover = true;
+
+    $: if ($table.columns) {
+        makeTableColumns();
+    }
 </script>
 
 <SpreadsheetContainer>
-    {#key reInitSpreadsheetKey}
+    {#key $rows.rows.length}
         <Spreadsheet.Root
             height="100%"
             allowSelection
             bind:selectedRows
             useVirtualizer
             keyboardNavigation
-            rowCount={rows.rows.length}
+            rowCount={$rows.rows.length}
             bind:columns={$tableColumns}
             loading={$spreadsheetLoading}
             emptyCells={emptyCellsCount}
@@ -595,18 +593,15 @@
             </svelte:fragment>
 
             <svelte:fragment slot="rows" let:root let:item let:index>
-                {@const row = rows.rows[item.index]}
+                {@const row = $rows.rows[item.index]}
                 <Spreadsheet.Row.Base {root} {index} id={row?.$id} virtualItem={item}>
                     {#each $tableColumns as { id: columnId, isEditable } (columnId)}
-                        {@const formatted = formatColumn(row[columnId])}
                         {@const rowColumn = $columns.find((col) => col.key === columnId)}
                         <Spreadsheet.Cell
                             {root}
                             {isEditable}
                             column={columnId}
-                            value={columnId.includes('$') || formatted === 'null'
-                                ? undefined
-                                : formatted}>
+                            value={$rows.rows[item.index][columnId]}>
                             {#if columnId === '$sequence'}
                                 <Id value={row.$sequence.toString()} tooltipPortal
                                     >{row.$sequence}</Id>
@@ -720,11 +715,9 @@
 
                             <svelte:fragment slot="cell-editor">
                                 <EditCellRow
-                                    {row}
                                     column={rowColumn}
-                                    onRowStructureUpdate={(newRow) => {
-                                        updateRow(newRow, index);
-                                    }} />
+                                    bind:row={$rows.rows[item.index]}
+                                    onRowStructureUpdate={updateRowContents} />
                             </svelte:fragment>
                         </Spreadsheet.Cell>
                     {/each}
@@ -740,7 +733,7 @@
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
                         {selectedRows.length
                             ? `${selectedRows.length} rows selected`
-                            : `${rows.total} rows`}
+                            : `${$rows.total} rows`}
                     </Typography.Text>
 
                     <div style:margin-right="var(--space-6)">
@@ -832,7 +825,11 @@
             <div class="u-flex u-flex-vertical u-gap-16">
                 <Alert>To change the selection edit the relationship settings.</Alert>
                 <ul>
-                    <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
+                    <InputChoice
+                        id="delete"
+                        label="Delete"
+                        showLabel={false}
+                        bind:value={deleteConfirmationChecked}>
                         Delete {isSingle ? 'document' : 'documents'} from
                         <span data-private>{$table.name}</span>
                     </InputChoice>
