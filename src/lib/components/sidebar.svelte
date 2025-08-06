@@ -250,7 +250,7 @@
                                         sideBarIsOpen = false;
                                     }}
                                     class="link"
-                                    class:active={false}
+                                    class:active={isSelected('/settings') && !isSelected('sites')}
                                     ><span class="link-icon"><Icon icon={IconCog} size="s" /></span
                                     ><span
                                         class:no-text={state === 'icons'}
@@ -309,7 +309,7 @@
                             on:click={() => {
                                 trackEvent('click_menu_settings');
                             }}
-                            class:active={false}
+                            class:active={isSelected('/settings') && !isSelected('sites')}
                             ><span class="link-icon"><Icon icon={IconCog} size="s" /></span><span
                                 class:no-text={state === 'icons'}
                                 class:has-text={state === 'open'}
