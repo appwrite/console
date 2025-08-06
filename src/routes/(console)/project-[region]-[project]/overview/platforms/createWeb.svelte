@@ -45,7 +45,7 @@
         JavascriptFrameworkIcon
     } from './components/index';
     import { extendedHostnameRegex } from '$lib/helpers/string';
-    import { project } from "../../store";
+    import { project } from '../../store';
 
     export let key;
 
@@ -294,11 +294,12 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                                 size="s"
                                 code="src/environments/environment.ts" />
                             to reflect the values below:</Typography.Text>
-                            {:else}
-                            <Typography.Text variant="m-500"
-                                >2. Copy the file <InlineCode size="s" code=".env.example" />, rename it to <InlineCode size="s" code=".env" />
+                    {:else}
+                        <Typography.Text variant="m-500"
+                            >2. Copy the file <InlineCode size="s" code=".env.example" />, rename it
+                            to <InlineCode size="s" code=".env" />
                             and update the configuration settings.</Typography.Text>
-                        {/if}
+                    {/if}
 
                     <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                     <div class="pink2-code-margin-fix">
