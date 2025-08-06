@@ -45,6 +45,7 @@
         JavascriptFrameworkIcon
     } from './components/index';
     import { extendedHostnameRegex } from '$lib/helpers/string';
+    import { project } from '../../store';
 
     export let key;
 
@@ -57,6 +58,7 @@
     const projectId = page.params.project;
 
     const updateConfigCode = (prefix = '') => `${prefix}APPWRITE_PROJECT_ID = "${projectId}"
+${prefix}APPWRITE_PROJECT_NAME = "${$project.name}"
 ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
     type FrameworkType = {
@@ -126,11 +128,11 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
             smallIcon: IconAngular,
             portNumber: 4200,
             runCommand: 'npm run start',
-            updateConfigCode: `appwriteEndpoint: '${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}',\nappwriteProjectId:'${projectId}'`
+            updateConfigCode: `appwriteEndpoint: '${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}',\nappwriteProjectId: '${projectId}',\nappwriteProjectName: '${$project.name}'`
         },
         {
             key: 'js',
-            label: 'Javascript',
+            label: 'JavaScript',
             icon: JavascriptFrameworkIcon,
             smallIcon: IconJs,
             portNumber: 5173,
@@ -294,11 +296,9 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                             to reflect the values below:</Typography.Text>
                     {:else}
                         <Typography.Text variant="m-500"
-                            >2. Add your Appwrite credentials to <InlineCode
-                                size="s"
-                                code=".env.example" /> then rename it to <InlineCode
-                                size="s"
-                                code=".env" /> if needed.</Typography.Text>
+                            >2. Copy the file <InlineCode size="s" code=".env.example" />, rename it
+                            to <InlineCode size="s" code=".env" />
+                            and update the configuration settings.</Typography.Text>
                     {/if}
 
                     <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
