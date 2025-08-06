@@ -2,16 +2,9 @@
     import { isCloud } from '$lib/system';
     import { version } from '$routes/(console)/store';
     import { IconCloud, IconDiscord, IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import {
-        Layout,
-        Typography,
-        Link,
-        Icon,
-        Divider,
-        Button,
-        Badge
-    } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Link, Icon, Divider, Button } from '@appwrite.io/pink-svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
+    import AnimatedBadge from '$lib/components/animatedBadge.svelte';
 
     const currentYear = new Date().getFullYear();
 </script>
@@ -74,7 +67,7 @@
                             <Divider vertical />
                         </span>
                     {/if}
-                    <Badge size="xs" variant="secondary" content="BETA" />
+                    <AnimatedBadge />
                 </Layout.Stack>
             </div>
         {/if}
@@ -83,9 +76,7 @@
             justifyContent={$isSmallViewport ? 'flex-start' : 'flex-end'}
             alignItems="center">
             {#if isCloud}
-                {#if !$isSmallViewport}<Badge size="xs" variant="secondary" content="BETA" /><Icon
-                        size="s"
-                        icon={IconCloud} />
+                {#if !$isSmallViewport}<AnimatedBadge /><Icon size="s" icon={IconCloud} />
                     {#if $version}
                         <Link.Anchor
                             size="s"
