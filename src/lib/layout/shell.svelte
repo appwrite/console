@@ -124,9 +124,18 @@
 
     const progressCard = function getProgressCard() {
         if (selectedProject && !hasOnboardingDismissed(selectedProject.$id, $user)) {
+            const { platforms, pingCount } = selectedProject;
+            let percentage = 33;
+
+            if (platforms.length > 0 && pingCount === 0) {
+                percentage = 66;
+            } else if (pingCount > 0) {
+                percentage = 100;
+            }
+
             return {
                 title: 'Get started',
-                percentage: selectedProject && selectedProject.platforms.length ? 100 : 33
+                percentage
             };
         }
 
