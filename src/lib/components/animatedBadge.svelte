@@ -1,15 +1,18 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { Badge } from '@appwrite.io/pink-svelte';
 
-    let displayText = 'BETA';
-    let currentIndex = 0;
+    let displayText = $state('BETA');
+    let currentIndex = $state(0);
+    let mounted = $state(false);
     const targetText = 'General Availability';
     const typingSpeed = 100;
     const deletingSpeed = 150;
 
-    onMount(() => {
-        startAnimation();
+    $effect(() => {
+        if (!mounted) {
+            mounted = true;
+            startAnimation();
+        }
     });
 
     function startAnimation() {
@@ -38,4 +41,4 @@
     }
 </script>
 
-<Badge size="xs" variant="secondary" content={displayText} />
+<Badge size="xs" variant="secondary" content={displayText} style="min-height: 1.5em;" />
