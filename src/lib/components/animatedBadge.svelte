@@ -41,4 +41,8 @@
     }
 </script>
 
-<Badge size="xs" variant="secondary" content={displayText} style="min-height: 1.5em;" />
+<Badge
+    size="xs"
+    variant="secondary"
+    content={displayText}
+    style="min-height: 1.5em; white-space: nowrap; padding: 0.25rem 1rem; align-items: center;" />
