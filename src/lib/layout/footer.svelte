@@ -4,7 +4,7 @@
     import { IconCloud, IconDiscord, IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Layout, Typography, Link, Icon, Divider, Button } from '@appwrite.io/pink-svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
-    import AnimatedBadge from '$lib/components/animatedBadge.svelte';
+    import { AnimatedBadge } from '$lib/components';
 
     const currentYear = new Date().getFullYear();
 </script>
