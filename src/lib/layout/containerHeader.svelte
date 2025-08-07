@@ -1,7 +1,9 @@
 <script lang="ts">
     import { DropList } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
-    import { Link, Pill } from '$lib/elements';
+    import { Link } from '$lib/elements';
+    import { Badge, Icon } from '@appwrite.io/pink-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Alert } from '@appwrite.io/pink-svelte';
     import {
         checkForProjectLimitation,
@@ -125,13 +127,19 @@
         {#if isCloud && isLimited}
             <DropList bind:show={showDropdown} width="16">
                 {#if hasProjectLimitation}
-                    <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info"></span>{total}/{limit} created
-                    </Pill>
+                    <Badge
+                        variant="secondary"
+                        content={`${total}/${limit} created`}
+                        on:click={() => (showDropdown = !showDropdown)}>
+                        <Icon icon={IconInfo} size="s" slot="start" />
+                    </Badge>
                 {:else if $organization?.billingPlan !== BillingPlan.SCALE}
-                    <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info"></span>Limits applied
-                    </Pill>
+                    <Badge
+                        variant="secondary"
+                        content="Limits applied"
+                        on:click={() => (showDropdown = !showDropdown)}>
+                        <Icon icon={IconInfo} size="s" slot="start" />
+                    </Badge>
                 {/if}
                 <svelte:fragment slot="list">
                     <slot name="tooltip" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>

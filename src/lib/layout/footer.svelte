@@ -74,7 +74,12 @@
                             <Divider vertical />
                         </span>
                     {/if}
-                    <Badge size="xs" variant="secondary" content="BETA" />
+                    <Badge
+                        size="xs"
+                        type="success"
+                        variant="secondary"
+                        content="Generally Available"
+                        style="white-space: nowrap;" />
                 </Layout.Stack>
             </div>
         {/if}
@@ -83,9 +88,15 @@
             justifyContent={$isSmallViewport ? 'flex-start' : 'flex-end'}
             alignItems="center">
             {#if isCloud}
-                {#if !$isSmallViewport}<Badge size="xs" variant="secondary" content="BETA" /><Icon
-                        size="s"
-                        icon={IconCloud} />
+                {#if !$isSmallViewport}
+                    <Badge
+                        size="xs"
+                        type="success"
+                        variant="secondary"
+                        content="Generally Available"
+                        style="white-space: nowrap;" />
+
+                    <Icon size="s" icon={IconCloud} />
                     {#if $version}
                         <Link.Anchor
                             size="s"

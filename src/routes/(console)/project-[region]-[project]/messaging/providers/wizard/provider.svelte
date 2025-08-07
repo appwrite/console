@@ -4,7 +4,8 @@
     import { CustomId, LabelCard } from '$lib/components';
     import { providers } from '../store';
     import { InputText } from '$lib/elements/forms';
-    import { Pill } from '$lib/elements';
+    import { Badge, Icon } from '@appwrite.io/pink-svelte';
+    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { Providers } from '../../provider.svelte';
     import { SmtpEncryption } from '@appwrite.io/console';
 
@@ -151,10 +152,12 @@
 
     {#if !showCustomId}
         <div>
-            <Pill button on:click={() => (showCustomId = !showCustomId)}
-                ><span class="icon-pencil" aria-hidden="true"></span><span class="text">
-                    Provider ID
-                </span></Pill>
+            <Badge
+                variant="secondary"
+                content="Provider ID"
+                on:click={() => (showCustomId = !showCustomId)}>
+                <Icon icon={IconPencil} size="s" slot="start" />
+            </Badge>
         </div>
     {:else}
         <CustomId bind:show={showCustomId} name="Provider" bind:id autofocus={false} />

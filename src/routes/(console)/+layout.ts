@@ -56,7 +56,7 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         organizations,
         consoleVariables,
         version: versionData?.version ?? null,
-        projects
+        allProjects: projects
     };
 };
 
