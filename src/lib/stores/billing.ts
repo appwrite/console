@@ -317,15 +317,24 @@ export function calculateTrialDay(org: Organization) {
     return days;
 }
 
-export async function checkForProjectsLimit(org: Organization, projects: number) {
+export async function checkForProjectsLimit(org: Organization, orgProjectCount?: number) {
     if (!isCloud) return;
-    if (!org || !projects) return;
+    if (!org) return;
     const plan = await sdk.forConsole.billing.getOrganizationPlan(org.$id);
     if (!plan) return;
     if (plan.$id !== BillingPlan.FREE) return;
     if (org.projects?.length > 0) return;
 
-    if (plan.projects > 0 && projects > plan.projects) {
+    let projectCount = orgProjectCount;
+    if (projectCount === undefined) {
+        const orgProjects = await sdk.forConsole.projects.list([
+            Query.equal('teamId', org.$id),
+            Query.limit(1000)
+        ]);
+        projectCount = orgProjects.projects.length;
+    }
+
+    if (plan.projects > 0 && projectCount > plan.projects) {
         headerAlert.add({
             id: 'projectsLimitReached',
             component: ProjectsLimit,

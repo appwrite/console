@@ -11,6 +11,7 @@
     import { page } from '$app/state';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { currentPlan } from '$lib/stores/organization';
+    import { Query } from '@appwrite.io/console';
 
     let {
         showSelectProject = $bindable(false),
@@ -23,8 +24,21 @@
     let projects = $state<Array<Models.Project>>([]);
     let error = $state<string | null>(null);
 
-    onMount(() => {
-        projects = page.data.allProjects?.projects || [];
+    onMount(async () => {
+        if (page.data.organization?.$id) {
+            try {
+                const orgProjects = await sdk.forConsole.projects.list([
+                    Query.equal('teamId', page.data.organization.$id),
+                    Query.limit(1000)
+                ]);
+                projects = orgProjects.projects;
+            } catch (e) {
+                error = 'Failed to load projects';
+                projects = [];
+            }
+        } else {
+            projects = [];
+        }
     });
 
     let projectsToArchive = $derived(
@@ -34,7 +48,7 @@
     async function updateSelected() {
         try {
             await sdk.forConsole.billing.updateSelectedProjects(
-                projects[0].teamId,
+                page.data.organization.$id,
                 selectedProjects
             );
             showSelectProject = false;
@@ -71,7 +85,8 @@
 
 <Modal bind:show={showSelectProject} title={'Manage projects'} onSubmit={updateSelected}>
     <svelte:fragment slot="description">
-        Choose which two projects to keep. Projects over the limit will be blocked after this date.
+        Choose which {$currentPlan?.projects || 2} projects to keep. Projects over the limit will be
+        blocked after this date.
     </svelte:fragment>
     {#if error}
         <Alert.Inline status="error" title="Error">{error}</Alert.Inline>

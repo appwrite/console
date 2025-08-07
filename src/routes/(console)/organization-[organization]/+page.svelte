@@ -41,6 +41,7 @@
     import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { BillingPlan } from '$lib/constants';
 
     export let data;
 
@@ -167,7 +168,7 @@
         </DropList>
     </div>
 
-    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && data.projects.total > 2 && $canWriteProjects}
+    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && data.projects.total > $currentPlan.projects && $canWriteProjects && data.organization.billingPlan === BillingPlan.FREE}
         <Alert.Inline
             title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
             <Typography.Text>
