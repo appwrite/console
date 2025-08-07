@@ -123,13 +123,12 @@
     // Reactive statements
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
 
-    $: if (editing && data.twoWay !== undefined) {
-        way = data.twoWay ? 'two' : 'one';
-    }
     $: if (!editing && way) {
         data.twoWay = way === 'two';
         if (way === 'two' && !data.twoWayKey) {
             data.twoWayKey = camelize($collection.name);
+        } else if (way === 'one') {
+            data.twoWayKey = undefined;
         }
     }
 
