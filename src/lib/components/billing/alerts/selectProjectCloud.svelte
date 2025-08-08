@@ -11,7 +11,6 @@
     import { page } from '$app/state';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { currentPlan } from '$lib/stores/organization';
-    import { Query } from '@appwrite.io/console';
 
     let {
         showSelectProject = $bindable(false),
@@ -24,21 +23,8 @@
     let projects = $state<Array<Models.Project>>([]);
     let error = $state<string | null>(null);
 
-    onMount(async () => {
-        if (page.data.organization?.$id) {
-            try {
-                const orgProjects = await sdk.forConsole.projects.list([
-                    Query.equal('teamId', page.data.organization.$id),
-                    Query.limit(1000)
-                ]);
-                projects = orgProjects.projects;
-            } catch (e) {
-                error = 'Failed to load projects';
-                projects = [];
-            }
-        } else {
-            projects = [];
-        }
+    onMount(() => {
+        projects = page.data.allProjects?.projects || [];
     });
 
     let projectsToArchive = $derived(
@@ -48,7 +34,7 @@
     async function updateSelected() {
         try {
             await sdk.forConsole.billing.updateSelectedProjects(
-                page.data.organization.$id,
+                projects[0].teamId,
                 selectedProjects
             );
             showSelectProject = false;

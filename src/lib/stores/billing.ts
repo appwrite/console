@@ -326,13 +326,7 @@ export async function checkForProjectsLimit(org: Organization, orgProjectCount?:
     if (org.projects?.length > 0) return;
 
     let projectCount = orgProjectCount;
-    if (projectCount === undefined) {
-        const orgProjects = await sdk.forConsole.projects.list([
-            Query.equal('teamId', org.$id),
-            Query.limit(1000)
-        ]);
-        projectCount = orgProjects.projects.length;
-    }
+    if (projectCount === undefined) return;
 
     if (plan.projects > 0 && projectCount > plan.projects) {
         headerAlert.add({
