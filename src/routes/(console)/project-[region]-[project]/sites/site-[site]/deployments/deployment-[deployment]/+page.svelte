@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import type { Models, RealtimeResponseEvent } from '@appwrite.io/console';
     import SiteCard from '../../../(components)/siteCard.svelte';
@@ -30,9 +30,9 @@
     let showCancel = $state(false);
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe(
-            'console',
-            async (response: RealtimeResponseEvent<Models.Deployment>) => {
+        const unsubscribe = realtime
+            .forProject(page.params.region, page.params.project)
+            .subscribe('console', async (response: RealtimeResponseEvent<Models.Deployment>) => {
                 if (
                     response.events.includes(
                         `sites.${page.params.site}.deployments.${page.params.deployment}.update`
@@ -40,8 +40,11 @@
                 ) {
                     await invalidate(Dependencies.DEPLOYMENT);
                 }
-            }
-        );
+            });
+
+        return () => {
+            unsubscribe();
+        };
     });
 </script>
 

@@ -7,7 +7,7 @@
     import Aside from '../aside.svelte';
     import Logs from '../../(components)/logs.svelte';
     import { Copy, SvgIcon } from '$lib/components';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
     import { getFrameworkIcon } from '$lib/stores/sites';
@@ -18,9 +18,9 @@
     let deployment = $state(data.deployment);
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe(
-            'console',
-            async (response: RealtimeResponseEvent<Models.Deployment>) => {
+        const unsubscribe = realtime
+            .forProject(page.params.region, page.params.project)
+            .subscribe('console', async (response: RealtimeResponseEvent<Models.Deployment>) => {
                 if (
                     response.events.includes(
                         `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
@@ -33,8 +33,11 @@
                         );
                     }
                 }
-            }
-        );
+            });
+
+        return () => {
+            unsubscribe();
+        };
     });
 </script>
 
