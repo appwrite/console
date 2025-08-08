@@ -25,6 +25,7 @@
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
+    import { project } from '../../store';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -35,9 +36,12 @@
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-android\ncd starter-for-android\n';
 
+    const baseConfig = `const val APPWRITE_PROJECT_ID = "${projectId}"
+const val APPWRITE_PROJECT_NAME = ${$project.name}`;
+
     const updateConfigCode = isCloud
-        ? `const val APPWRITE_PROJECT_ID = "${projectId}"`
-        : `const val APPWRITE_PROJECT_ID = "${projectId}"
+        ? baseConfig
+        : `${baseConfig}
 const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
 
@@ -171,10 +175,8 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
                     </div>
 
                     <Typography.Text variant="m-500"
-                        >2. Open the file <InlineCode
-                            size="s"
-                            code="data/repository/AppwriteRepository.kt" /> and update the configuration
-                        settings.</Typography.Text>
+                        >2. Open the file <InlineCode size="s" code="constants/AppwriteConfig.kt" />
+                        and update the configuration settings.</Typography.Text>
 
                     <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                     <div class="pink2-code-margin-fix">
