@@ -30,7 +30,8 @@
         randomDataModalState,
         showCreateAttributeSheet,
         showCreateIndexSheet,
-        spreadsheetLoading
+        spreadsheetLoading,
+        rowActivitySheet
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
@@ -44,6 +45,7 @@
     import SideSheet from './layout/sidesheet.svelte';
     import EditRow from './editRow.svelte';
     import EditColumn from './columns/edit.svelte';
+    import RowActivity from './rowActivity.svelte';
     import { Dialog, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
@@ -292,6 +294,7 @@
 <slot />
 
 <SideSheet
+    closeOnBlur
     title={$showCreateAttributeSheet.title}
     bind:show={$showCreateAttributeSheet.show}
     submit={{
@@ -316,6 +319,7 @@
 </SideSheet>
 
 <SideSheet
+    closeOnBlur
     title={$databaseColumnSheetOptions.title}
     bind:show={$databaseColumnSheetOptions.show}
     submit={{
@@ -331,6 +335,7 @@
 
 <SideSheet
     spaced
+    closeOnBlur
     title={$databaseRowSheetOptions.title}
     bind:show={$databaseRowSheetOptions.show}
     submit={{
@@ -342,6 +347,7 @@
 </SideSheet>
 
 <SideSheet
+    closeOnBlur
     title="Create index"
     bind:show={$showCreateIndexSheet.show}
     submit={{
@@ -352,6 +358,10 @@
         bind:this={createIndex}
         bind:showCreateIndex={$showCreateIndexSheet.show}
         externalColumnKey={$showCreateIndexSheet.column} />
+</SideSheet>
+
+<SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
+    <RowActivity />
 </SideSheet>
 
 <Dialog title="Generate sample data" bind:open={$randomDataModalState.show}>

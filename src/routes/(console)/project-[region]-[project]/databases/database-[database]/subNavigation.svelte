@@ -61,12 +61,7 @@
                             {@const isSelected = tableId === table.$id}
 
                             <Layout.Stack gap="m" direction="row" alignItems="center">
-                                <div
-                                    style:border-left="1px solid var(--border-neutral, #ededf0)"
-                                    style:height="1rem">
-                                </div>
-
-                                <li class:is-selected={isSelected} style:width="100%">
+                                <li class:is-selected={isSelected}>
                                     <a
                                         class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
                                         {href}>
@@ -213,8 +208,25 @@
     .drop-list {
         flex: 1;
         padding-left: 4px;
+        position: relative;
         font-size: var(--font-size-sm);
         color: var(--fgcolor-neutral-secondary);
+
+        &::before {
+            content: '';
+            right: 99%;
+            top: 0.2rem;
+            bottom: 0.2rem;
+            position: absolute;
+            border-left: 1px solid var(--border-neutral, #ededf0);
+        }
+
+        li {
+            position: relative;
+            overflow: hidden;
+            padding-inline-end: 0.5rem;
+            margin-inline-start: 0.5rem;
+        }
 
         .is-selected,
         li:hover {

@@ -7,10 +7,11 @@
     import Button from '$lib/elements/forms/button.svelte';
     import type { PinkColumn } from '$lib/helpers/types';
 
-    export let logs: Models.LogList;
-    export let offset = 0;
     export let limit = 0;
+    export let offset = 0;
+    export let logs: Models.LogList;
     export let databasesScreen = false;
+    export let useCreateLinkForPagination = true;
 
     const columns: PinkColumn[] = [
         { id: 'user' },
@@ -74,7 +75,13 @@
             </Table.Root>
         </div>
 
-        <PaginationWithLimit name="Logs" {limit} {offset} total={logs.total} />
+        <PaginationWithLimit
+            {limit}
+            {offset}
+            on:page
+            name="Logs"
+            total={logs.total}
+            useCreateLink={useCreateLinkForPagination} />
     {:else}
         <Card.Base padding="none">
             <Empty

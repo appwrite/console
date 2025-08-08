@@ -222,12 +222,6 @@
                                     <span class="text u-trim-1" data-private>
                                         {#if column.key === '$id' || column.key === '$sequence' || column.key === '$createdAt' || column.key === '$updatedAt'}
                                             {column['name']}
-                                            {#if column.key === '$sequence'}
-                                                <Badge
-                                                    size="xs"
-                                                    variant="secondary"
-                                                    content="Primary key" />
-                                            {/if}
                                         {:else}
                                             {column.key}
                                         {/if}

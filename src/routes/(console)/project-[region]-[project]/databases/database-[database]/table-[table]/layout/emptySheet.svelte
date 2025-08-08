@@ -64,7 +64,7 @@
             id: '$sequence',
             title: 'Sequence',
             type: 'string',
-            width: 225,
+            width: 150,
             isPrimary: true,
             icon: IconHashtag,
             ...baseColProps
@@ -178,10 +178,6 @@
                                 alignItems="center"
                                 alignContent="center">
                                 {column.title}
-
-                                {#if column.isPrimary}
-                                    <Badge content="Primary key" size="xs" variant="secondary" />
-                                {/if}
 
                                 <SortButton disabled column={column.id} />
                             </Layout.Stack>

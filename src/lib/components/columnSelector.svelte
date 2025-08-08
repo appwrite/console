@@ -226,12 +226,6 @@
                                     <Layout.Stack direction="row" gap="s">
                                         <Selector.Checkbox size="s" checked={!column.hide} />
                                         {column.title}
-                                        {#if isNewStyle && column.isPrimary}
-                                            <Badge
-                                                content="Primary key"
-                                                size="xs"
-                                                variant="secondary" />
-                                        {/if}
                                     </Layout.Stack>
                                 </ActionMenu.Item.Button>
                             {/if}

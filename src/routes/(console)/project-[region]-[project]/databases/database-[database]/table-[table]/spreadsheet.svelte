@@ -29,7 +29,8 @@
         showCreateIndexSheet,
         type SortState,
         Deletion,
-        scrollStore
+        scrollStore,
+        rowActivitySheet
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -136,8 +137,8 @@
             {
                 id: '$sequence',
                 title: 'Sequence',
-                width: 225,
-                minimumWidth: 225,
+                width: 150,
+                minimumWidth: 150,
                 draggable: false,
                 type: 'integer',
                 icon: IconHashtag,
@@ -465,6 +466,11 @@
                 showDelete = true;
                 selectedRowForDelete = row.$id;
             }
+
+            if (action === 'activity') {
+                $rowActivitySheet.row = row;
+                $rowActivitySheet.show = true;
+            }
         }
     }
 
@@ -595,13 +601,6 @@
                                         alignItems="center"
                                         alignContent="center">
                                         {column.title}
-
-                                        {#if column.isPrimary}
-                                            <Badge
-                                                content="Primary key"
-                                                size="xs"
-                                                variant="secondary" />
-                                        {/if}
 
                                         <SortButton
                                             onSort={sort}

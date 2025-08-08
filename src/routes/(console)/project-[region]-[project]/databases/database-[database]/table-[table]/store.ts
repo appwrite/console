@@ -143,3 +143,8 @@ export enum Deletion {
 }
 
 export const scrollStore = writable(null);
+
+export const rowActivitySheet = writable({
+    show: false,
+    row: null as Models.Row
+});
