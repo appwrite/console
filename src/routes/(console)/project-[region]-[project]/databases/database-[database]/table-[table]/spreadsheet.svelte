@@ -891,6 +891,11 @@
     }
 
     :global(.floating-editor) {
+        & :global(:has(textarea)) {
+            left: 0 !important;
+            margin-inline-end: 1px;
+        }
+
         & :global(textarea) {
             min-height: 85px !important;
         }
