@@ -24,7 +24,11 @@
     let error = $state<string | null>(null);
 
     onMount(() => {
-        projects = page.data.allProjects?.projects || [];
+        const currentOrgId = page.data.organization?.$id;
+        projects =
+            page.data.currentOrgId === currentOrgId
+                ? page.data.allProjects?.projects || []
+                : [];
     });
 
     let projectsToArchive = $derived(
