@@ -20,14 +20,15 @@
 
     function coerceToNumber(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
         const raw = event.currentTarget?.value ?? '';
-
         if (raw === '') {
             value = nullable ? null : (undefined as unknown as number);
             return;
         }
 
-        const parsed = step === 'any' ? Number.parseFloat(raw) : Number.parseInt(raw, 10);
-        value = Number.isNaN(parsed) ? null : parsed;
+        const parsed = Number(raw);
+        if (Number.isFinite(parsed)) {
+            value = parsed;
+        }
     }
 
     const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
