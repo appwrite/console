@@ -193,33 +193,24 @@
                     {maxSize}
                     required
                     on:invalid={handleInvalid}>
-                    <Layout.Stack alignItems="center" gap="s">
-                        <Layout.Stack alignItems="center" gap="s">
-                            <Layout.Stack
-                                alignItems="center"
-                                justifyContent="center"
-                                direction="row"
-                                gap="s">
-                                <Typography.Text variant="l-500">
-                                    Drag and drop file here or click to upload
-                                </Typography.Text>
-                                <Tooltip>
-                                    <Layout.Stack
-                                        alignItems="center"
-                                        justifyContent="center"
-                                        inline>
-                                        <Icon icon={IconInfo} size="s" />
-                                    </Layout.Stack>
-                                    <svelte:fragment slot="tooltip"
-                                        >Only .tar.gz files allowed</svelte:fragment>
-                                </Tooltip>
-                            </Layout.Stack>
-                            {#if maxSize > 0}
-                                <Typography.Caption variant="400"
-                                    >Max file size: {readableMaxSize.value +
-                                        readableMaxSize.unit}</Typography.Caption>
-                            {/if}
-                        </Layout.Stack>
+                    <Layout.Stack alignItems="center" justifyContent="center" gap="s">
+                        <Typography.Text variant="l-500" align="center" inline>
+                            Drag and drop file here or click to upload
+                            <Tooltip>
+                                <div
+                                    style="display: inline-block; vertical-align: middle;margin-top: 0.5px; line-height: 1.2; margin-left: 0.25em;">
+                                    <Icon icon={IconInfo} size="s" />
+                                </div>
+                                <svelte:fragment slot="tooltip">
+                                    Only .tar.gz files allowed
+                                </svelte:fragment>
+                            </Tooltip>
+                        </Typography.Text>
+                        {#if maxSize > 0}
+                            <Typography.Caption variant="400" align="center">
+                                Max file size: {readableMaxSize.value + readableMaxSize.unit}
+                            </Typography.Caption>
+                        {/if}
                     </Layout.Stack>
                 </Upload.Dropzone>
                 {#if files?.length}
