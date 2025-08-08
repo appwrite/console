@@ -40,7 +40,7 @@
         IconLockClosed,
         IconFingerPrint
     } from '@appwrite.io/pink-icons-svelte';
-    import { type ComponentProps, onDestroy, onMount } from 'svelte';
+    import { type ComponentProps, onDestroy, onMount, tick } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import CsvDisabled from '../csvDisabled.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -119,6 +119,7 @@
 
     let showEdit = $state(false);
     let editColumn: EditColumn;
+    let spreadsheetContainer: SpreadsheetContainer;
 
     const columnFormatIcon = {
         ip: IconLocationMarker,
@@ -152,6 +153,13 @@
     });
 
     onDestroy(() => ($showCreateAttributeSheet.show = false));
+
+    $effect(() => {
+        if (updatedColumnsForSheet) {
+            /* up-to-date height */
+            tick().then(() => spreadsheetContainer?.resizeSheet());
+        }
+    });
 </script>
 
 <Container expanded style="background: var(--bgcolor-neutral-primary)">
@@ -161,9 +169,7 @@
                 size="s"
                 secondary
                 disabled={$isCsvImportInProgress}
-                on:click={() => {
-                    $showCreateAttributeSheet.show = true;
-                }}
+                on:click={() => ($showCreateAttributeSheet.show = true)}
                 event="create_attribute">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create column
@@ -173,7 +179,7 @@
 </Container>
 
 <div class="databases-spreadsheet">
-    <SpreadsheetContainer>
+    <SpreadsheetContainer bind:this={spreadsheetContainer}>
         <Spreadsheet.Root
             let:root
             allowSelection
@@ -185,7 +191,8 @@
                 { id: 'indexed', width: { min: 150 } },
                 { id: 'default', width: { min: 200 } },
                 { id: 'actions', width: 40, isAction: true }
-            ]}>
+            ]}
+            bottomActionClick={() => ($showCreateAttributeSheet.show = true)}>
             <svelte:fragment slot="header" let:root>
                 <Spreadsheet.Header.Cell column="key" {root}>Column name</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="indexed" {root}>Indexed</Spreadsheet.Header.Cell>
@@ -341,6 +348,7 @@
                     alignItems="center"
                     justifyContent="space-between">
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
+                        <!-- there will always be 3 columns at the least -->
                         {updatedColumnsForSheet.length} columns
                     </Typography.Text>
                 </Layout.Stack>

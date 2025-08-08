@@ -25,7 +25,7 @@
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type ComponentProps, onDestroy, onMount } from 'svelte';
+    import { type ComponentProps, onDestroy, onMount, tick } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import EmptySheet from '../layout/emptySheet.svelte';
     import SpreadsheetContainer from '../layout/spreadsheet.svelte';
@@ -47,6 +47,7 @@
 
     let selectedIndexes = $state([]);
     let createIndex: CreateIndex;
+    let spreadsheetContainer: SpreadsheetContainer = $state(null);
 
     let error = $state('');
     let showFailed = $state(false);
@@ -91,6 +92,13 @@
             ? 0
             : emptyCellsLimit - data.table.indexes.length
     );
+
+    $effect(() => {
+        if (data.table.indexes) {
+            /* up-to-date height */
+            tick().then(() => spreadsheetContainer?.resizeSheet());
+        }
+    });
 </script>
 
 <Container expanded style="background: var(--bgcolor-neutral-primary)">
@@ -111,14 +119,15 @@
 <div class="databases-spreadsheet">
     {#if data.table?.columns?.length}
         {#if data.table.indexes.length}
-            <SpreadsheetContainer>
+            <SpreadsheetContainer bind:this={spreadsheetContainer}>
                 <Spreadsheet.Root
                     let:root
                     {columns}
                     height="100%"
                     allowSelection
                     emptyCells={emptyCellsCount}
-                    bind:selectedRows={selectedIndexes}>
+                    bind:selectedRows={selectedIndexes}
+                    bottomActionClick={() => (showCreateIndex = true)}>
                     <svelte:fragment slot="header" let:root>
                         <Spreadsheet.Header.Cell column="key" {root}>Key</Spreadsheet.Header.Cell>
                         <Spreadsheet.Header.Cell column="type" {root}>Type</Spreadsheet.Header.Cell>
@@ -202,7 +211,9 @@
                             alignItems="center"
                             justifyContent="space-between">
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
-                                {data.table.indexes.length} columns
+                                {@const length = data.table.indexes.length}
+                                {length}
+                                {length === 1 ? 'index' : 'indexes'}
                             </Typography.Text>
                         </Layout.Stack>
                     </svelte:fragment>

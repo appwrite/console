@@ -306,7 +306,8 @@
         justify-content: center;
 
         @media (max-width: 768px) {
-            height: 50vh;
+            top: 34.25%; /* oddly specific, ik! */
+            height: 70vh;
         }
     }
 

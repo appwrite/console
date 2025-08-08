@@ -754,8 +754,8 @@
                     justifyContent="space-between">
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
                         {selectedRows.length
-                            ? `${selectedRows.length} rows selected`
-                            : `${$rows.total} rows`}
+                            ? `${selectedRows.length} row${selectedRows.length === 1 ? '' : 's'} selected`
+                            : `${$rows.total} row${$rows.total === 1 ? '' : 's'}`}
                     </Typography.Text>
 
                     <div style:margin-right="var(--space-6)">

@@ -240,6 +240,7 @@
 
         @media (max-width: 768px) {
             .main-content {
+                width: 100%;
                 position: fixed;
             }
         }
