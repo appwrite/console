@@ -48,11 +48,13 @@
 
     export let value: string;
     export let event: string = null;
+
     export let tooltipPortal = false;
+    export let tooltipDelay: number = 0;
 </script>
 
 {#key value}
-    <Copy {value} {event} {tooltipPortal}>
+    <Copy {value} {event} {tooltipPortal} delay={tooltipDelay}>
         <Tag size="xs" variant="code">
             <Icon icon={IconDuplicate} size="s" slot="start" />
             <span

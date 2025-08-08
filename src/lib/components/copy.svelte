@@ -1,18 +1,32 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
-    import { clickOnEnter } from '$lib/helpers/a11y';
+    import type { Snippet } from 'svelte';
     import { copy } from '$lib/helpers/copy';
-    import { addNotification } from '$lib/stores/notifications';
+    import { clickOnEnter } from '$lib/helpers/a11y';
     import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { addNotification } from '$lib/stores/notifications';
 
-    export let value: string;
-    export let event: string = null;
-    export let eventContext = 'click_id_tag';
-    export let tooltipDisabled = false;
-    export let tooltipPortal = false;
-    export let copyText: string = 'Click to copy';
+    let {
+        value,
+        event = null,
+        eventContext = 'click_id_tag',
+        tooltipDisabled = false,
+        tooltipPortal = false,
+        copyText = 'Click to copy',
+        delay = 0,
+        children
+    }: {
+        value: string;
+        event?: string;
+        eventContext?: string;
+        tooltipDisabled?: boolean;
+        tooltipPortal?: boolean;
+        copyText?: string;
+        delay?: number;
+        children?: Snippet;
+    } = $props();
 
-    let content = copyText;
+    let content = $state(copyText);
 
     async function handleClick() {
         const success = await copy(value);
@@ -35,17 +49,21 @@
     //TODO: remove this component
 </script>
 
-<Tooltip disabled={tooltipDisabled} portal={tooltipPortal}>
+<Tooltip disabled={tooltipDisabled} portal={tooltipPortal} {delay}>
     <span
         data-private
         style:display="inline-flex"
         role="button"
         tabindex="0"
         style:cursor="pointer"
-        on:click|preventDefault|stopPropagation={handleClick}
-        on:keyup={clickOnEnter}
-        on:mouseenter={() => setTimeout(() => (content = copyText))}>
-        <slot />
+        onclick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handleClick();
+        }}
+        onkeyup={clickOnEnter}
+        onmouseenter={() => setTimeout(() => (content = copyText))}>
+        {@render children?.()}
     </span>
     <p slot="tooltip" let:showing>
         {#if showing}

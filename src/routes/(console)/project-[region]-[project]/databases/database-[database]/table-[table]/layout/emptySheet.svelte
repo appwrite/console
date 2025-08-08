@@ -192,13 +192,15 @@
         </svelte:fragment>
 
         <svelte:fragment slot="footer">
-            <Layout.Stack
-                direction="row"
-                alignContent="center"
-                alignItems="center"
-                justifyContent="space-between">
-                <Skeleton variant="line" height={18} width={125} />
-            </Layout.Stack>
+            {#if $spreadsheetLoading}
+                <Layout.Stack
+                    direction="row"
+                    alignContent="center"
+                    alignItems="center"
+                    justifyContent="space-between">
+                    <Skeleton variant="line" height={18} width={125} />
+                </Layout.Stack>
+            {/if}
         </svelte:fragment>
     </Spreadsheet.Root>
 
@@ -295,7 +297,7 @@
         top: 29%;
         bottom: 0;
         width: 100%;
-        height: 70vh;
+        height: 70.5vh;
         position: fixed;
         background: linear-gradient(
             180deg,

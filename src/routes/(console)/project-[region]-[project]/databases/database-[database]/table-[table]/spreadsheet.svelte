@@ -10,7 +10,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import { type Models, Query } from '@appwrite.io/console';
-    import { type ComponentType, onDestroy, onMount } from 'svelte';
+    import { type ComponentType, onDestroy, onMount, tick } from 'svelte';
     import type { PageData } from './$types';
     import { isRelationship, isRelationshipToMany, isString } from './row-[row]/columns/store';
     import {
@@ -28,7 +28,8 @@
         spreadsheetLoading,
         showCreateIndexSheet,
         type SortState,
-        Deletion
+        Deletion,
+        scrollStore
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -69,6 +70,7 @@
     import { copy } from '$lib/helpers/copy';
     import { debounce } from '$lib/helpers/debounce';
     import { writable } from 'svelte/store';
+    import { hash } from '$lib/helpers/string';
 
     export let data: PageData;
     export let showRecordsCreateSheet: {
@@ -79,6 +81,7 @@
     $: rows = writable(data.rows);
     const tableId = page.params.table;
     const databaseId = page.params.database;
+    const organizationId = data.organization.$id ?? data.project.teamId;
 
     const minimumWidth = 168;
     const emptyCellsLimit = $isSmallViewport ? 12 : 18;
@@ -94,6 +97,8 @@
     let relationshipData: Partial<Models.Row>[];
     let selectedRelationship: Models.ColumnRelationship = null;
 
+    let spreadsheetContainer: SpreadsheetContainer;
+
     let showDelete = false;
     let showColumnDelete = false;
     let deleteConfirmationChecked = false;
@@ -106,6 +111,8 @@
 
         makeTableColumns();
         sortState.set(data.currentSort as SortState);
+
+        window.scrollTo($scrollStore, 0);
     });
 
     onDestroy(() => ($showCreateAttributeSheet.show = false));
@@ -211,26 +218,26 @@
             columnsOrder.set(newOrder);
         }
 
-        preferences.saveColumnOrder(
-            data.organization.$id ?? data.project.teamId,
-            tableId,
-            newOrder
-        );
+        saveColumnOrderToPreferences(newOrder);
     }
 
-    function saveColumnsWidth(column: { columnId: string; newWidth: number }) {
-        const fixedWidth =
-            $tableColumns.find((col) => col.id === column.columnId)?.width ?? column.newWidth;
+    function saveColumnsWidth({ columnId, newWidth }: { columnId: string; newWidth: number }) {
+        const existing = $columnsWidth[columnId];
+        const fixed = existing
+            ? typeof existing?.fixed === 'number'
+                ? existing.fixed
+                : existing?.fixed?.min
+            : newWidth;
 
         columnsWidth.update((widths) => ({
             ...widths,
-            [column.columnId]: {
-                fixed: fixedWidth,
-                resized: Math.ceil(column.newWidth)
+            [columnId]: {
+                fixed,
+                resized: Math.ceil(newWidth)
             }
         }));
 
-        saveColumnWidthsToPreferences(column);
+        saveColumnWidthsToPreferences({ columnId, newWidth, fixedWidth: fixed });
     }
 
     function formatArray(array: unknown[]) {
@@ -312,7 +319,9 @@
             );
         }
 
+        spreadsheetContainer.saveGridSheetScroll();
         await goto(`${url.pathname}${url.search}`);
+        spreadsheetContainer.restoreGridSheetScroll();
         $spreadsheetLoading = false;
     }
 
@@ -357,6 +366,7 @@
                 const updatedOrder = $columnsOrder.filter(
                     (id) => id !== $databaseColumnSheetOptions.column.key
                 );
+
                 saveColumnsOrder(updatedOrder, false);
             }
 
@@ -484,19 +494,20 @@
     }
 
     const saveColumnWidthsToPreferences = debounce(
-        (column: { columnId: string; newWidth: number }) => {
-            const fixedWidth =
-                $tableColumns.find((col) => col.id === column.columnId)?.width ?? column.newWidth;
-
-            preferences.saveColumnWidths(data.organization.$id ?? data.project.teamId, tableId, {
+        (column: { columnId: string; newWidth: number; fixedWidth: number }) => {
+            preferences.saveColumnWidths(organizationId, tableId, {
                 [column.columnId]: {
-                    fixed: fixedWidth,
+                    fixed: column.fixedWidth,
                     resized: Math.ceil(column.newWidth)
                 }
             });
         },
         1000
     );
+
+    const saveColumnOrderToPreferences = debounce((newOrder: string[]) => {
+        preferences.saveColumnOrder(organizationId, tableId, newOrder);
+    }, 1000);
 
     $: relatedColumns = $columns?.filter(
         (attribute) =>
@@ -519,16 +530,26 @@
     $: if ($table.columns) {
         makeTableColumns();
     }
+
+    $: if (data.rows) {
+        /* up-to-date height */
+        tick().then(() => spreadsheetContainer?.resizeSheet());
+    }
+
+    $: spreadsheetKey = hash(
+        $rows.rows.map((row) => row.$id),
+        '#'
+    );
 </script>
 
-<SpreadsheetContainer>
-    {#key $rows.rows.length}
+<SpreadsheetContainer bind:this={spreadsheetContainer}>
+    {#key spreadsheetKey}
         <Spreadsheet.Root
             height="100%"
             allowSelection
-            bind:selectedRows
             useVirtualizer
             keyboardNavigation
+            bind:selectedRows
             rowCount={$rows.rows.length}
             bind:columns={$tableColumns}
             loading={$spreadsheetLoading}
@@ -606,7 +627,7 @@
                                 <Id value={row.$sequence.toString()} tooltipPortal
                                     >{row.$sequence}</Id>
                             {:else if columnId === '$id'}
-                                <Id value={row.$id} tooltipPortal>{row.$id}</Id>
+                                <Id value={row.$id} tooltipPortal tooltipDelay={200}>{row.$id}</Id>
                             {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
                                 <DualTimeView
                                     time={row[columnId]}
@@ -693,7 +714,7 @@
                                             text={formatted} />
                                     </button>
                                 {:else if formatted.length > 20}
-                                    <Tooltip placement="bottom" portal>
+                                    <Tooltip placement="bottom" portal disabled>
                                         <Typography.Text truncate>
                                             {formatted}
                                         </Typography.Text>
@@ -866,5 +887,15 @@
     // very weird because the library already has this!
     :global(.virtual-row:has([data-editing-mode='true'])) {
         z-index: 1 !important;
+    }
+
+    :global(.floating-editor) {
+        & :global(textarea) {
+            min-height: 85px !important;
+        }
+
+        & :global(.input:focus-within) {
+            top: 0 !important;
+        }
     }
 </style>

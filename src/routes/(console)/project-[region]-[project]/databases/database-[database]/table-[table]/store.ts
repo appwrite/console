@@ -141,3 +141,5 @@ export enum Deletion {
     'cascade' = 'All related rows will be deleted',
     'restrict' = 'Row can not be deleted'
 }
+
+export const scrollStore = writable(null);
