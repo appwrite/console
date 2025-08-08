@@ -128,7 +128,15 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
             smallIcon: IconAngular,
             portNumber: 4200,
             runCommand: 'npm run start',
-            updateConfigCode: `appwriteEndpoint: '${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}',\nappwriteProjectId: '${projectId}',\nappwriteProjectName: '${$project.name}'`
+            updateConfigCode: `export const environment: {
+  appwriteEndpoint: string;
+  appwriteProjectId: string;
+  appwriteProjectName: string;
+} = {
+  appwriteEndpoint: '${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}',
+  appwriteProjectId: '${projectId}',
+  appwriteProjectName: '${$project.name}'
+};`
         },
         {
             key: 'js',
@@ -290,7 +298,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 
                     {#if selectedFramework.key === 'angular'}
                         <Typography.Text variant="m-500"
-                            >2. Change <InlineCode
+                            >2. Replace <InlineCode
                                 size="s"
                                 code="src/environments/environment.ts" />
                             to reflect the values below:</Typography.Text>
@@ -303,7 +311,10 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 
                     <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                     <div class="pink2-code-margin-fix">
-                        <Code lang="dotenv" lineNumbers code={selectedFramework.updateConfigCode} />
+                        <Code
+                            lang={selectedFramework.key === 'angular' ? 'ts' : 'dotenv'}
+                            lineNumbers
+                            code={selectedFramework.updateConfigCode} />
                     </div>
 
                     <Typography.Text variant="m-500"
