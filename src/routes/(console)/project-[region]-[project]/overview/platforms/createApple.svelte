@@ -38,11 +38,12 @@
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-ios\ncd starter-for-ios\n';
 
+    const baseConfig = `APPWRITE_PROJECT_ID: "${projectId}"
+APPWRITE_PROJECT_NAME: "${$project.name}"`;
+
     const updateConfigCode = isCloud
-        ? `APPWRITE_PROJECT_ID: "${projectId}"
-APPWRITE_PROJECT_NAME: "${$project.name}"`
-        : `APPWRITE_PROJECT_ID: "${projectId}"
-APPWRITE_PROJECT_NAME: "${$project.name}"
+        ? baseConfig
+        : `${baseConfig}
 APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
 
