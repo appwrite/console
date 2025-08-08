@@ -484,12 +484,14 @@
                 message: 'Row has been updated',
                 type: 'success'
             });
+            return true;
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
             trackError(error, Submit.RowUpdatePermissions);
+            return false;
         }
     }
 

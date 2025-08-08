@@ -12,7 +12,7 @@
     }: {
         row: Models.Row;
         column: Columns;
-        onRowStructureUpdate?: (row: Models.Row) => void;
+        onRowStructureUpdate?: (row: Models.Row) => Promise<boolean>;
     } = $props();
 
     let original: Models.Row;
@@ -31,9 +31,14 @@
      * fire on `onDestroy` because at this point,
      * the cell editor slot fragment is closed and enter was hit!
      */
-    onDestroy(() => {
+    onDestroy(async () => {
         const hasChanged = !deepEqual(original, row);
-        if (hasChanged && onRowStructureUpdate) onRowStructureUpdate(row);
+        if (hasChanged && onRowStructureUpdate) {
+            const accepted = await onRowStructureUpdate(row);
+            if (!accepted) {
+                row = original;
+            }
+        }
     });
 </script>
 
