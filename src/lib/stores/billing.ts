@@ -325,7 +325,7 @@ export async function checkForProjectsLimit(org: Organization, orgProjectCount?:
     if (plan.$id !== BillingPlan.FREE) return;
     if (org.projects?.length > 0) return;
 
-    let projectCount = orgProjectCount;
+    const projectCount = orgProjectCount;
     if (projectCount === undefined) return;
 
     if (plan.projects > 0 && projectCount > plan.projects) {
