@@ -7,7 +7,7 @@
     import Aside from '../aside.svelte';
     import Logs from '../../(components)/logs.svelte';
     import { Copy, SvgIcon } from '$lib/components';
-    import { realtime } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
     import { getFrameworkIcon } from '$lib/stores/sites';
@@ -18,26 +18,25 @@
     let deployment = $state(data.deployment);
 
     onMount(() => {
-        const unsubscribe = realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe('console', async (response: RealtimeResponseEvent<Models.Deployment>) => {
-                if (
-                    response.events.includes(
-                        `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
-                    )
-                ) {
-                    deployment = response.payload;
-                    if (response.payload.status === 'ready') {
-                        goto(
-                            `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/finish?site=${data.site.$id}`
-                        );
+        return sdk
+            .forConsoleIn(page.params.region)
+            .client.subscribe(
+                'console',
+                async (response: RealtimeResponseEvent<Models.Deployment>) => {
+                    if (
+                        response.events.includes(
+                            `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
+                        )
+                    ) {
+                        deployment = response.payload;
+                        if (response.payload.status === 'ready') {
+                            goto(
+                                `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/finish?site=${data.site.$id}`
+                            );
+                        }
                     }
                 }
-            });
-
-        return () => {
-            unsubscribe();
-        };
+            );
     });
 </script>
 
