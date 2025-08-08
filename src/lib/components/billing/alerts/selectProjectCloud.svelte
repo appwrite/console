@@ -26,9 +26,7 @@
     onMount(() => {
         const currentOrgId = page.data.organization?.$id;
         projects =
-            page.data.currentOrgId === currentOrgId
-                ? page.data.allProjects?.projects || []
-                : [];
+            page.data.currentOrgId === currentOrgId ? page.data.allProjects?.projects || [] : [];
     });
 
     let projectsToArchive = $derived(
