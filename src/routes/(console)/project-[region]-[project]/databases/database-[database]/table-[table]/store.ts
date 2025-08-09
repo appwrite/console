@@ -148,3 +148,5 @@ export const rowActivitySheet = writable({
     show: false,
     row: null as Models.Row
 });
+
+export const expandTabs = writable(true);

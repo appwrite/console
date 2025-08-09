@@ -3,9 +3,10 @@
     import { page } from '$app/state';
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
-    import { Cover, CoverTitle } from '$lib/layout';
+    import { Cover } from '$lib/layout';
+    import AnimatedTitle from '$lib/layout/animatedTitle.svelte';
     import { canWriteTables } from '$lib/stores/roles';
-    import { table } from './store';
+    import { expandTabs, table } from './store';
 
     const databaseId = $derived(page.params.database);
 
@@ -53,27 +54,40 @@
             }
         ].filter((tab) => !tab.disabled)
     );
+
+    const link = $derived(
+        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`
+    );
 </script>
 
-<Cover expanded>
+<Cover expanded collapsed={!$expandTabs} blocksize={$expandTabs ? '152px' : '90px'} animate={true}>
     <svelte:fragment slot="header">
-        <CoverTitle
-            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`}>
+        <AnimatedTitle href={link} collapsed={!$expandTabs}>
             {$table?.name}
-        </CoverTitle>
+        </AnimatedTitle>
+
         {#key $table?.$id}
-            <Id value={$table?.$id}>{$table?.$id}</Id>
+            <Id value={$table?.$id} tooltipPlacement={$expandTabs ? undefined : 'right'}
+                >{$table?.$id}</Id>
         {/key}
     </svelte:fragment>
 
-    <Tabs>
-        {#each tabs as tab}
-            <Tab
-                href={tab.href}
-                selected={isTabSelected(tab, page.url.pathname, path, tabs)}
-                event={tab.event}>
-                {tab.title}
-            </Tab>
-        {/each}
-    </Tabs>
+    <div class="tabs-container" style:opacity={$expandTabs ? 1 : 0}>
+        <Tabs>
+            {#each tabs as tab}
+                <Tab
+                    href={tab.href}
+                    selected={isTabSelected(tab, page.url.pathname, path, tabs)}
+                    event={tab.event}>
+                    {tab.title}
+                </Tab>
+            {/each}
+        </Tabs>
+    </div>
 </Cover>
+
+<style lang="scss">
+    .tabs-container {
+        transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+</style>

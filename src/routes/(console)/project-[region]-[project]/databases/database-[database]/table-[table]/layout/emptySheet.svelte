@@ -1,6 +1,5 @@
 <script lang="ts">
     import {
-        Badge,
         Button,
         Icon,
         Layout,
@@ -22,7 +21,8 @@
         tableColumns,
         columnsOrder,
         showCreateAttributeSheet,
-        spreadsheetLoading
+        spreadsheetLoading,
+        expandTabs
     } from '../store';
 
     type Mode = 'rows' | 'indexes';
@@ -201,7 +201,7 @@
     </Spreadsheet.Root>
 
     {#if !$spreadsheetLoading}
-        <div class="spreadsheet-fade-bottom">
+        <div class="spreadsheet-fade-bottom" data-collapsed-tabs={!$expandTabs}>
             <div class="empty-actions">
                 <Layout.Stack gap="xl" alignItems="center">
                     <Typography.Title>{title ?? `You have no ${mode} yet`}</Typography.Title>
@@ -290,7 +290,6 @@
     }
 
     .spreadsheet-fade-bottom {
-        top: 29%;
         bottom: 0;
         width: 100%;
         height: 70.5vh;
@@ -304,9 +303,13 @@
         z-index: 20;
         display: flex;
         justify-content: center;
+        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+        &[data-collapsed-tabs='true'] {
+            height: 79.1vh !important;
+        }
 
         @media (max-width: 768px) {
-            top: 34.25%; /* oddly specific, ik! */
             height: 70vh;
         }
     }

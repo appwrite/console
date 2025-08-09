@@ -45,16 +45,18 @@
     import { Icon, Tag } from '@appwrite.io/pink-svelte';
     import { Copy } from '.';
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
+    import type { TooltipPlacement } from '$lib/components/copy.svelte';
 
     export let value: string;
     export let event: string = null;
 
     export let tooltipPortal = false;
     export let tooltipDelay: number = 0;
+    export let tooltipPlacement: TooltipPlacement = undefined;
 </script>
 
 {#key value}
-    <Copy {value} {event} {tooltipPortal} delay={tooltipDelay}>
+    <Copy {value} {event} {tooltipPortal} {tooltipDelay} {tooltipPlacement}>
         <Tag size="xs" variant="code">
             <Icon icon={IconDuplicate} size="s" slot="start" />
             <span

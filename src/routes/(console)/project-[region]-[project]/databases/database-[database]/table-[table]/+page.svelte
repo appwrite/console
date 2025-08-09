@@ -16,7 +16,8 @@
         showRecordsCreateSheet,
         showCreateAttributeSheet,
         type Columns,
-        randomDataModalState
+        randomDataModalState,
+        expandTabs
     } from './store';
     import SpreadSheet from './spreadsheet.svelte';
     import { writable } from 'svelte/store';
@@ -26,7 +27,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { IconChevronDown, IconChevronUp, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import EmptySheet from './layout/emptySheet.svelte';
     import CreateRecord from './createRecord.svelte';
@@ -95,7 +96,7 @@
 </script>
 
 {#key page.params.table}
-    <Container expanded style="background: var(--bgcolor-neutral-primary)">
+    <Container expanded expandHeightButton style="background: var(--bgcolor-neutral-primary)">
         <Layout.Stack direction="column" gap="xl">
             <Layout.Stack direction="row" justifyContent="space-between">
                 <!-- TODO: verify later - columns={tableColumns} -->
@@ -115,11 +116,6 @@
                         columns={filterColumns}
                         disabled={!(hasColumns && hasValidColumns)}
                         analyticsSource="database_rows" />
-
-                    <!-- TODO: not yet implemented -->
-                    <!--                    <Button icon secondary>-->
-                    <!--                        <Icon icon={IconSearch} slot="start" />-->
-                    <!--                    </Button>-->
                 </Layout.Stack>
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     <Button
@@ -137,6 +133,14 @@
                             event="create_row">
                             <Icon icon={IconPlus} slot="start" size="s" />
                             Create row
+                        </Button>
+
+                        <Button
+                            icon
+                            secondary
+                            disabled={!(hasColumns && hasValidColumns)}
+                            on:click={() => ($expandTabs = !$expandTabs)}>
+                            <Icon icon={!$expandTabs ? IconChevronDown : IconChevronUp} size="s" />
                         </Button>
                     {/if}
                 </Layout.Stack>

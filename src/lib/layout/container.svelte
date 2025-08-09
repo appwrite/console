@@ -4,6 +4,7 @@
     // TODO: needs better props
 
     export let expanded = false;
+    export let expandHeightButton = false;
     export let slotSpacing = false;
     export let overlapCover = false;
     export let paddingInlineEnd = true;
@@ -17,12 +18,13 @@
 
 <div style:container-type="inline-size" class:overlap-cover={overlapCover} {...$$restProps}>
     <div
-        class="console-container"
-        class:slotSpacing
-        class:paddingInlineEnd={!paddingInlineEnd}
+        {style}
         class:expanded
+        class:slotSpacing
         class:databasesScreen
-        {style}>
+        class:expandHeightButton
+        class="console-container"
+        class:paddingInlineEnd={!paddingInlineEnd}>
         <Layout.Stack gap="l">
             <slot />
         </Layout.Stack>
@@ -42,11 +44,26 @@
             padding-inline-end: 0 !important;
             margin-block: var(--base-8) !important;
 
+            &.expandHeightButton {
+                margin-inline-end: unset;
+                margin-inline-start: 2.75rem;
+            }
+
             &:first-child {
                 margin-inline: 4rem;
 
+                &.expandHeightButton {
+                    margin-inline: 0.5rem;
+                    margin-inline-start: 4rem;
+                }
+
                 @media (max-width: 768px) {
                     margin-inline: 1rem;
+
+                    &.expandHeightButton {
+                        margin-inline: unset;
+                        margin-inline-start: 1rem;
+                    }
                 }
             }
 

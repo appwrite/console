@@ -1,10 +1,12 @@
 <script lang="ts">
-    import type { Snippet } from 'svelte';
+    import type { ComponentProps, Snippet } from 'svelte';
     import { copy } from '$lib/helpers/copy';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { Tooltip } from '@appwrite.io/pink-svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
+
+    export type TooltipPlacement = NonNullable<ComponentProps<Tooltip>['placement']>;
 
     let {
         value,
@@ -12,8 +14,9 @@
         eventContext = 'click_id_tag',
         tooltipDisabled = false,
         tooltipPortal = false,
+        tooltipDelay = 0,
+        tooltipPlacement = undefined,
         copyText = 'Click to copy',
-        delay = 0,
         children
     }: {
         value: string;
@@ -21,8 +24,9 @@
         eventContext?: string;
         tooltipDisabled?: boolean;
         tooltipPortal?: boolean;
+        tooltipDelay?: number;
+        tooltipPlacement?: TooltipPlacement;
         copyText?: string;
-        delay?: number;
         children?: Snippet;
     } = $props();
 
@@ -49,7 +53,11 @@
     //TODO: remove this component
 </script>
 
-<Tooltip disabled={tooltipDisabled} portal={tooltipPortal} {delay}>
+<Tooltip
+    disabled={tooltipDisabled}
+    portal={tooltipPortal}
+    delay={tooltipDelay}
+    placement={tooltipPlacement}>
     <span
         data-private
         style:display="inline-flex"

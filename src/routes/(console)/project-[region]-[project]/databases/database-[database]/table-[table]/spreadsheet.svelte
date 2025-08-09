@@ -550,7 +550,7 @@
     );
 </script>
 
-<SpreadsheetContainer bind:this={spreadsheetContainer}>
+<SpreadsheetContainer observeExpand bind:this={spreadsheetContainer}>
     {#key spreadsheetKey}
         <Spreadsheet.Root
             height="100%"
@@ -896,7 +896,10 @@
             margin-inline-end: 1px;
         }
 
+        /* TODO: not good! */
         & :global(textarea) {
+            padding-inline: 9px;
+            margin-block: -2.75px;
             min-height: 85px !important;
         }
 
