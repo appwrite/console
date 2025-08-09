@@ -539,7 +539,7 @@
         makeTableColumns();
     }
 
-    $: if (data.rows) {
+    $: {
         /* up-to-date height */
         tick().then(() => spreadsheetContainer?.resizeSheet());
     }
