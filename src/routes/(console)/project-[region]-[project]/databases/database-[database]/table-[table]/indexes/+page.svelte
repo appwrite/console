@@ -76,14 +76,6 @@
         }
     }
 
-    const showLengths = flags.showIndexLengths(page.data);
-
-    onMount(() => {
-        if (!showLengths) {
-            columns = columns.filter((col) => col.id !== 'lengths');
-        }
-    });
-
     onDestroy(() => ($showCreateAttributeSheet.show = false));
 
     const emptyCellsLimit = $derived($isSmallViewport ? 14 : 17);
@@ -135,10 +127,8 @@
                             >Columns</Spreadsheet.Header.Cell>
                         <!--                        <Spreadsheet.Header.Cell column="orders" {root}-->
                         <!--                            >Orders</Spreadsheet.Header.Cell>-->
-                        {#if showLengths}
-                            <Spreadsheet.Header.Cell column="lengths" {root}
-                                >Lengths</Spreadsheet.Header.Cell>
-                        {/if}
+                        <Spreadsheet.Header.Cell column="lengths" {root}
+                            >Lengths</Spreadsheet.Header.Cell>
                         <Spreadsheet.Header.Cell column="actions" {root} />
                     </svelte:fragment>
 
@@ -173,11 +163,9 @@
                             <!--                            <Spreadsheet.Cell column="orders" {root} isEditable={false}>-->
                             <!--                                {index.orders}-->
                             <!--                            </Spreadsheet.Cell>-->
-                            {#if showLengths}
-                                <Spreadsheet.Cell column="lengths" {root} isEditable={false}>
-                                    {index.lengths}
-                                </Spreadsheet.Cell>
-                            {/if}
+                            <Spreadsheet.Cell column="lengths" {root} isEditable={false}>
+                                {index.lengths}
+                            </Spreadsheet.Cell>
                             <Spreadsheet.Cell column="actions" {root}>
                                 <Popover let:toggle padding="none" placement="bottom-end">
                                     <Button text icon ariaLabel="more options" on:click={toggle}>

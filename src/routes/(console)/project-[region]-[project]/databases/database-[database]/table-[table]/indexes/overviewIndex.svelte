@@ -10,8 +10,6 @@
     }: {
         selectedIndex: Models.ColumnIndex;
     } = $props();
-
-    const showLengths = flags.showIndexLengths(page.data);
 </script>
 
 <InputText
@@ -44,14 +42,12 @@
                 id={`value-${selectedIndex.orders[i]}`}
                 value={selectedIndex.orders[i]}
                 readonly />
-            {#if showLengths}
-                <InputText
-                    required
-                    label={i === 0 ? 'Length' : ''}
-                    id={`value-${selectedIndex.lengths[i]}`}
-                    value={selectedIndex.lengths[i]?.toString() ?? null}
-                    readonly />
-            {/if}
+            <InputText
+                required
+                label={i === 0 ? 'Length' : ''}
+                id={`value-${selectedIndex.lengths[i]}`}
+                value={selectedIndex.lengths[i]?.toString() ?? null}
+                readonly />
         </Layout.Stack>
     {/each}
 {/if}

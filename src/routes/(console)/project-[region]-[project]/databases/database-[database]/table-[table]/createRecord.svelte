@@ -62,15 +62,13 @@
         isSubmitting = true;
 
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .grids.createRow(
-                    page.params.database,
-                    page.params.table,
-                    $createRow.id ?? ID.unique(),
-                    $createRow.row,
-                    $createRow.permissions
-                );
+            await sdk.forProject(page.params.region, page.params.project).grids.createRow({
+                databaseId: page.params.database,
+                tableId: page.params.table,
+                rowId: $createRow.id ?? ID.unique(),
+                data: $createRow.row,
+                permissions: $createRow.permissions
+            });
 
             showSheet = false;
             addNotification({
@@ -111,9 +109,9 @@
             }}>
             <Layout.Stack gap="xxl">
                 <ColumnForm
-                    bind:formValues={$createRow.row}
                     columns={$createRow.columns}
-                    bind:customId={$createRow.id} />
+                    bind:customId={$createRow.id}
+                    bind:formValues={$createRow.row} />
 
                 <Layout.Stack gap="xl">
                     <Typography.Text>

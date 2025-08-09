@@ -352,7 +352,9 @@
     bind:show={$showCreateIndexSheet.show}
     submit={{
         text: 'Create',
-        onClick: async () => await createIndex.create()
+        onClick: async () => {
+            await createIndex.create();
+        }
     }}>
     <CreateIndex
         bind:this={createIndex}

@@ -13,7 +13,6 @@
     import { table, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
-    import { flags } from '$lib/flags';
 
     export let showCreateIndex = false;
     export let externalColumnKey: string = null;
@@ -24,7 +23,7 @@
     let types = [
         { value: IndexType.Key, label: 'Key' },
         { value: IndexType.Unique, label: 'Unique' },
-        { value: IndexType.Fulltext, label: 'FullText' }
+        { value: IndexType.Fulltext, label: 'Fulltext' }
     ];
 
     let selectedType = IndexType.Key;
@@ -37,8 +36,6 @@
         }));
 
     let columnList = [{ value: '', order: '', length: null }];
-
-    const showLengths = flags.showIndexLengths(page.data);
 
     function generateIndexKey() {
         let indexKeys = $indexes.map((index) => index.key);
@@ -68,6 +65,10 @@
 
     export async function create() {
         if (!(key && selectedType && !addColumnDisabled)) {
+            addNotification({
+                type: 'error',
+                message: 'Selected column key or type invalid'
+            });
             return;
         }
 
@@ -87,9 +88,11 @@
                 invalidate(Dependencies.DATABASE)
             ]);
 
-            goto(
-                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$table.$id}/indexes`
-            );
+            if (!page.route.id.includes('/indexes')) {
+                await goto(
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$table.$id}/indexes`
+                );
+            }
 
             addNotification({
                 message: 'Creating index',
@@ -114,7 +117,15 @@
     }
 </script>
 
-<InputText required id="key" label="Index Key" placeholder="Enter Key" bind:value={key} autofocus />
+<InputText
+    required
+    id="key"
+    label="Index Key"
+    pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$"
+    placeholder="Enter Key"
+    bind:value={key}
+    autofocus />
+
 <InputSelect required options={types} id="type" label="Index type" bind:value={selectedType} />
 
 <Layout.Stack gap="s">
@@ -144,7 +155,7 @@
                 bind:value={column.order}
                 placeholder="Select order" />
 
-            {#if selectedType === IndexType.Key && showLengths}
+            {#if selectedType === IndexType.Key}
                 <InputNumber
                     id={`length-${index}`}
                     label={index === 0 ? 'Length' : undefined}
