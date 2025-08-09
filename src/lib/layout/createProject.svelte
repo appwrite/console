@@ -47,7 +47,9 @@
         <Typography.Title size="l">Create your project</Typography.Title>
     {/if}
     {#if projectsLimited}
-        <Alert.Inline status="warning" title="You've reached your limit of 2 projects">
+        <Alert.Inline
+            status="warning"
+            title={`You've reached your limit of ${$currentPlan?.projects || 2} projects`}>
             Extra projects are available on paid plans for an additional fee
             <svelte:fragment slot="actions">
                 <Button
