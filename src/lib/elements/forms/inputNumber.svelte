@@ -18,6 +18,19 @@
 
     let error: string;
 
+    function coerceToNumber(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
+        const raw = event.currentTarget?.value ?? '';
+        if (raw === '') {
+            value = nullable ? null : (undefined as unknown as number);
+            return;
+        }
+
+        const parsed = Number(raw);
+        if (Number.isFinite(parsed)) {
+            value = parsed;
+        }
+    }
+
     const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
         event.preventDefault();
 
@@ -39,7 +52,7 @@
         error = event.currentTarget.validationMessage;
     };
 
-    $: if (value) {
+    $: if (value !== null && value !== undefined && !Number.isNaN(value)) {
         error = null;
     }
 </script>
@@ -61,7 +74,8 @@
     helper={error || helper}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}
-    on:input>
+    on:input={coerceToNumber}
+    on:change={coerceToNumber}>
     <svelte:fragment slot="info">
         <slot name="info" slot="info" />
     </svelte:fragment>
