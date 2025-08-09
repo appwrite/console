@@ -241,7 +241,7 @@
                             <span slot="tooltip">{projectOption.name}</span>
                         </Tooltip>
                     {/each}
-                    {#if project}
+                    {#if project && $isSmallViewport}
                         <Divider />
 
                         <div class="mobile-tablet-settings">
