@@ -48,10 +48,12 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const scopes = rolesResult?.scopes ?? defaultScopes;
 
     if (prefs?.organization !== project.teamId) {
-        sdk.forConsole.account.updatePrefs({ prefs: {
-            ...prefs,
-            organization: project.teamId
-        } });
+        sdk.forConsole.account.updatePrefs({
+            prefs: {
+                ...prefs,
+                organization: project.teamId
+            }
+        });
     }
 
     preferences.loadTeamPrefs(project.teamId);
