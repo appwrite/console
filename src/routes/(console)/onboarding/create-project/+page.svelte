@@ -30,7 +30,7 @@
             newOnboardingCompleted: true
         };
 
-        sdk.forConsole.account.updatePrefs(newPrefs);
+        sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
     }
 
     async function createProject() {

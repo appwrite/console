@@ -39,7 +39,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         }
         if (prefs.organization !== params.organization) {
             const newPrefs = { ...prefs, organization: params.organization };
-            sdk.forConsole.account.updatePrefs(newPrefs);
+            sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
         }
 
         const [organization, members, countryList, locale] = await Promise.all([
@@ -64,7 +64,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         };
     } catch (e) {
         const newPrefs = { ...prefs, organization: null };
-        sdk.forConsole.account.updatePrefs(newPrefs);
+        sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
         error(e.code, e.message);
     }
 };

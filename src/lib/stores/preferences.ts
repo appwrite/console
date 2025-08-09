@@ -54,7 +54,7 @@ async function updateConsolePreferences(store: ConsolePreferencesStore): Promise
         ...store
     };
 
-    await sdk.forConsole.account.updatePrefs(currentPreferences);
+    await sdk.forConsole.account.updatePrefs({ prefs: currentPreferences });
 }
 
 function createPreferences() {

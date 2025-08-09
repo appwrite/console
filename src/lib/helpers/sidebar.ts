@@ -21,7 +21,7 @@ export function updateSidebarState(page: Page, state: 'closed' | 'open' | 'icons
             sidebarState: state
         };
 
-        sdk.forConsole.account.updatePrefs(newPrefs);
+        sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
     }
 }
 
