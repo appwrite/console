@@ -167,7 +167,7 @@
         </DropList>
     </div>
 
-    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && data.projects.total > 2 && $canWriteProjects}
+    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && data.projects.total > $currentPlan.projects && $canWriteProjects}
         <Alert.Inline
             title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
             <Typography.Text>
