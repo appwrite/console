@@ -89,7 +89,10 @@
                 description="Need a hand? Learn more in our documentation."
                 type="secondary">
                 <svelte:fragment slot="actions">
-                    <Button external secondary href="https://appwrite.io/docs">
+                    <Button
+                        external
+                        secondary
+                        href="https://appwrite.io/docs/products/databases/databases">
                         Documentation
                     </Button>
                 </svelte:fragment>
