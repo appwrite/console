@@ -33,6 +33,7 @@
 
 <style>
     .overlap-cover {
+        z-index: 1;
         margin-block-start: -3.5rem;
     }
     :global(.console-container) {

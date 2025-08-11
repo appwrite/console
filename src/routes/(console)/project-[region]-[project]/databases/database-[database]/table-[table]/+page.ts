@@ -1,4 +1,4 @@
-import { Dependencies /*PAGE_LIMIT*/ } from '$lib/constants';
+import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
 import { getLimit, getPage, getQuery, getView, pageToOffset, View } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
 import { type Models, Query } from '@appwrite.io/console';
@@ -13,8 +13,7 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
     depends(Dependencies.ROWS);
 
     const page = getPage(url);
-    // TODO: apply pagination
-    const limit = getLimit(url, route, 96 /*PAGE_LIMIT*/);
+    const limit = getLimit(url, route, SPREADSHEET_PAGE_LIMIT);
     const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
     const query = getQuery(url);

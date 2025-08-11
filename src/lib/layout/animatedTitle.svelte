@@ -17,11 +17,10 @@
     const buttonSize = $derived(collapsed ? 'xs' : 's');
 
     const expandedSize = $derived(
-        $isSmallViewport ? 'var(--font-size-xl)' : 'var(--font-size-xxxl)'
+        $isSmallViewport ? 'var(--font-size-m)' : 'var(--font-size-xxxl)'
     );
 
-    const collapsedSize = $derived($isSmallViewport ? 'var(--font-size-l)' : 'var(--font-size-xl)');
-    const currentFontSize = $derived(collapsed ? collapsedSize : expandedSize);
+    const currentFontSize = $derived(collapsed ? 'var(--font-size-l)' : expandedSize);
 
     const currentLineHeight = $derived(collapsed ? '130%' : '140%');
     const currentLetterSpacing = $derived(collapsed ? '0' : '-0.144px');

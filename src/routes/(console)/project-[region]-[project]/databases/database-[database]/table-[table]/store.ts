@@ -3,6 +3,8 @@ import type { Column } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 import type { SortDirection } from '$lib/components';
+import { SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
+import { createSparsePagedDataStore } from '@appwrite.io/pink-svelte';
 
 export type Columns =
     | Models.ColumnBoolean
@@ -150,3 +152,7 @@ export const rowActivitySheet = writable({
 });
 
 export const expandTabs = writable(true);
+
+// Paginated rows stores
+export const paginatedRowsLoading = writable(false);
+export const paginatedRows = createSparsePagedDataStore<Models.DefaultRow>(SPREADSHEET_PAGE_LIMIT);

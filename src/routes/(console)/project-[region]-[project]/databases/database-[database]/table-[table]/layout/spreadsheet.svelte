@@ -81,8 +81,6 @@
     });
 </script>
 
-<svelte:window on:resize={resizeSheet} />
-
 <div bind:this={spreadsheetWrapper} class="spreadsheet-wrapper" style:height={spreadsheetHeight}>
     {@render children()}
 </div>

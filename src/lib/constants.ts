@@ -1,4 +1,5 @@
 export const PAGE_LIMIT = 12; // default page limit
+export const SPREADSHEET_PAGE_LIMIT = 50; // default sheet page limit
 export const CARD_LIMIT = 6; // default card limit
 export const INTERVAL = 5 * 60000; // default interval to check for feedback
 export const NEW_DEV_PRO_UPGRADE_COUPON = 'appw50';

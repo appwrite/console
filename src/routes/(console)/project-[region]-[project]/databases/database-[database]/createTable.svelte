@@ -91,7 +91,7 @@
         bind:id
         required={false}
         autofocus={false}
-        name="Collection"
+        name="Table"
         on:input={() => {
             if (!touchedId) {
                 touchedId = true;

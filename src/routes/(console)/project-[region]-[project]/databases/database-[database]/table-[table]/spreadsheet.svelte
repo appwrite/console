@@ -4,8 +4,8 @@
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, Confirm, Id, SortButton } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
-    import { Button as ConsoleButton, InputChoice } from '$lib/elements/forms';
+    import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
+    import { Button as ConsoleButton, InputChoice, InputSelect } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
@@ -29,8 +29,9 @@
         showCreateIndexSheet,
         type SortState,
         Deletion,
-        scrollStore,
-        rowActivitySheet
+        rowActivitySheet,
+        paginatedRows,
+        paginatedRowsLoading
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -70,8 +71,10 @@
     import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
     import { copy } from '$lib/helpers/copy';
     import { debounce } from '$lib/helpers/debounce';
-    import { writable } from 'svelte/store';
     import { hash } from '$lib/helpers/string';
+    import { writable } from 'svelte/store';
+    import { pageToOffset } from '$lib/helpers/load';
+    import { sleep } from '$lib/helpers/promises';
 
     export let data: PageData;
     export let showRecordsCreateSheet: {
@@ -80,6 +83,11 @@
     };
 
     $: rows = writable(data.rows);
+    $: if (rows) {
+        paginatedRows.clear();
+        paginatedRows.setPage(1, $rows.rows);
+    }
+
     const tableId = page.params.table;
     const databaseId = page.params.database;
     const organizationId = data.organization.$id ?? data.project.teamId;
@@ -100,6 +108,9 @@
 
     let spreadsheetContainer: SpreadsheetContainer;
 
+    let currentPage = 1;
+    let jumpToPageReactive = 0;
+
     let showDelete = false;
     let showColumnDelete = false;
     let deleteConfirmationChecked = false;
@@ -113,7 +124,10 @@
         makeTableColumns();
         sortState.set(data.currentSort as SortState);
 
-        window.scrollTo($scrollStore, 0);
+        if (data.rows.rows.length) {
+            paginatedRows.clear();
+            paginatedRows.setPage(1, data.rows.rows);
+        }
     });
 
     onDestroy(() => ($showCreateAttributeSheet.show = false));
@@ -330,13 +344,30 @@
         showDelete = false;
         try {
             if (selectedRowForDelete) {
-                await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .grids.deleteRow(databaseId, tableId, selectedRowForDelete);
+                await sdk.forProject(page.params.region, page.params.project).grids.deleteRow({
+                    databaseId,
+                    tableId,
+                    rowId: selectedRowForDelete
+                });
             } else {
-                await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .grids.deleteRows(databaseId, tableId, [Query.equal('$id', selectedRows)]);
+                if (selectedRows.length) {
+                    const batches: string[][] = [];
+                    for (let i = 0; i < selectedRows.length; i += 100) {
+                        batches.push(selectedRows.slice(i, i + 100));
+                    }
+
+                    await Promise.all(
+                        batches.map((batch) =>
+                            sdk
+                                .forProject(page.params.region, page.params.project)
+                                .grids.deleteRows({
+                                    databaseId,
+                                    tableId,
+                                    queries: [Query.equal('$id', batch)]
+                                })
+                        )
+                    );
+                }
             }
 
             await invalidate(Dependencies.ROWS);
@@ -501,6 +532,64 @@
         }
     }
 
+    async function loadPage(pageNumber: number): Promise<boolean> {
+        const totalPages = Math.ceil(data.rows.total / SPREADSHEET_PAGE_LIMIT);
+        if (
+            pageNumber < 1 ||
+            pageNumber === currentPage ||
+            paginatedRows.hasPage(pageNumber) ||
+            pageNumber > totalPages
+        )
+            return false;
+
+        console.log(`pageNumber: ${pageNumber}`);
+
+        $paginatedRowsLoading = true;
+        await sleep(500);
+        const loadedRows = await sdk
+            .forProject(page.params.region, page.params.project)
+            .grids.listRows({
+                databaseId,
+                tableId,
+                queries: [
+                    Query.orderDesc(''),
+                    Query.limit(SPREADSHEET_PAGE_LIMIT),
+                    Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT))
+                ]
+            });
+
+        paginatedRows.setPage(pageNumber, loadedRows.rows);
+        $paginatedRowsLoading = false;
+
+        return true;
+    }
+
+    console.log(`$paginatedRowsLoading: ${$paginatedRowsLoading}`);
+
+    async function handleGoToPage(targetPageNum: number): Promise<void> {
+        if (targetPageNum < 1 || targetPageNum > totalPages) return;
+
+        if (!paginatedRows.hasPage(targetPageNum)) {
+            paginatedRows.setMaxPage(targetPageNum);
+            $paginatedRowsLoading = true;
+
+            const loadedRows = await sdk
+                .forProject(page.params.region, page.params.project)
+                .grids.listRows({
+                    databaseId,
+                    tableId,
+                    queries: [
+                        Query.orderDesc(''),
+                        Query.limit(SPREADSHEET_PAGE_LIMIT),
+                        Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT))
+                    ]
+                });
+
+            paginatedRows.setPage(targetPageNum, loadedRows.rows);
+            $paginatedRowsLoading = false;
+        }
+    }
+
     const saveColumnWidthsToPreferences = debounce(
         (column: { columnId: string; newWidth: number; fixedWidth: number }) => {
             preferences.saveColumnWidths(organizationId, tableId, {
@@ -531,7 +620,9 @@
     ) as Models.ColumnRelationship[];
 
     $: emptyCellsCount =
-        $rows.rows.length >= emptyCellsLimit ? 0 : emptyCellsLimit - $rows.rows.length;
+        $paginatedRows.virtualLength >= emptyCellsLimit
+            ? 0
+            : emptyCellsLimit - $paginatedRows.virtualLength;
 
     $: canShowDatetimePopover = true;
 
@@ -544,10 +635,9 @@
         tick().then(() => spreadsheetContainer?.resizeSheet());
     }
 
-    $: spreadsheetKey = hash(
-        $rows.rows.map((row) => row.$id),
-        '#'
-    );
+    $: spreadsheetKey = hash($paginatedRows.items.map((item) => item.$id).toString(), '#');
+
+    $: totalPages = Math.ceil($rows.total / SPREADSHEET_PAGE_LIMIT) || 1;
 </script>
 
 <SpreadsheetContainer observeExpand bind:this={spreadsheetContainer}>
@@ -558,13 +648,22 @@
             useVirtualizer
             keyboardNavigation
             bind:selectedRows
-            rowCount={$rows.rows.length}
             bind:columns={$tableColumns}
             loading={$spreadsheetLoading}
             emptyCells={emptyCellsCount}
+            rowCount={$paginatedRows.virtualLength}
             bottomActionClick={() => (showRecordsCreateSheet.show = true)}
             on:columnsSwap={(order) => saveColumnsOrder(order.detail)}
-            on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}>
+            on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}
+            bind:currentPage
+            nextPageTriggerOffset={2}
+            paginationBufferSpace={35}
+            jumpToPageNumber={jumpToPageReactive}
+            loadingMore={$paginatedRowsLoading}
+            itemsPerPage={SPREADSHEET_PAGE_LIMIT}
+            loadNextPage={loadPage}
+            loadPreviousPage={loadPage}
+            goToPage={handleGoToPage}>
             <svelte:fragment slot="header" let:root>
                 {#each $tableColumns as column (column.id)}
                     {#if column.isAction}
@@ -615,135 +714,147 @@
             </svelte:fragment>
 
             <svelte:fragment slot="rows" let:root let:item let:index>
-                {@const row = $rows.rows[item.index]}
-                <Spreadsheet.Row.Base {root} {index} id={row?.$id} virtualItem={item}>
-                    {#each $tableColumns as { id: columnId, isEditable } (columnId)}
-                        {@const rowColumn = $columns.find((col) => col.key === columnId)}
-                        <Spreadsheet.Cell
-                            {root}
-                            {isEditable}
-                            column={columnId}
-                            value={$rows.rows[item.index][columnId]}>
-                            {#if columnId === '$sequence'}
-                                <Id value={row.$sequence.toString()} tooltipPortal
-                                    >{row.$sequence}</Id>
-                            {:else if columnId === '$id'}
-                                <Id value={row.$id} tooltipPortal tooltipDelay={200}>{row.$id}</Id>
-                            {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
-                                <DualTimeView
-                                    time={row[columnId]}
-                                    canShowPopover={canShowDatetimePopover} />
-                            {:else if columnId === 'actions'}
-                                <SheetOptions
-                                    type="row"
-                                    column={rowColumn}
-                                    onSelect={(option) =>
-                                        onSelectSheetOption(option, null, 'row', row)}
-                                    onVisibilityChanged={(visible) => {
-                                        canShowDatetimePopover = !visible;
-                                    }}>
-                                    {#snippet children(toggle)}
-                                        <Button.Button
-                                            icon
-                                            variant="extra-compact"
-                                            on:click={toggle}>
-                                            <Icon
-                                                icon={IconDotsHorizontal}
-                                                color="--fgcolor-neutral-primary" />
-                                        </Button.Button>
-                                    {/snippet}
-                                </SheetOptions>
-                            {:else if isRelationship(rowColumn)}
-                                {@const args = displayNames?.[rowColumn.relatedTable] ?? ['$id']}
-                                {#if !isRelationshipToMany(rowColumn)}
-                                    {#if row[columnId]}
-                                        {@const related = row[columnId]}
-                                        <Link.Button
-                                            variant="muted"
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                // TODO: open sheet maybes
-                                                goto(
-                                                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table/${rowColumn.relatedTable}/row/${related.$id}`
-                                                );
-                                            }}>
-                                            {#each args as arg, i}
-                                                {#if arg !== undefined}
-                                                    {#if i}&nbsp;|{/if}
-                                                    <span class="text" data-private
-                                                        >{related?.[arg]}</span>
-                                                {/if}
-                                            {/each}
-                                        </Link.Button>
+                {@const row = $paginatedRows.getItemAtVirtualIndex(index)}
+                {#if row === null}
+                    <Spreadsheet.Row.Base {root} virtualItem={item} {index} id={`loading-${index}`}>
+                        {#each $tableColumns as col}
+                            <Spreadsheet.Cell
+                                column={col.id}
+                                isEditable={false}
+                                root={{ ...root, loading: true }}
+                                id={`loading-${index}-${col.id}`} />
+                        {/each}
+                    </Spreadsheet.Row.Base>
+                {:else}
+                    <Spreadsheet.Row.Base {root} {index} id={row?.$id} virtualItem={item}>
+                        {#each $tableColumns as { id: columnId, isEditable } (columnId)}
+                            {@const rowColumn = $columns.find((col) => col.key === columnId)}
+                            <Spreadsheet.Cell {root} {isEditable} column={columnId}>
+                                {#if columnId === '$sequence'}
+                                    <Id value={row.$sequence.toString()} tooltipPortal
+                                        >{row.$sequence}</Id>
+                                {:else if columnId === '$id'}
+                                    <Id value={row.$id} tooltipPortal tooltipDelay={200}
+                                        >{row.$id}</Id>
+                                {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
+                                    <DualTimeView
+                                        time={row[columnId]}
+                                        canShowPopover={canShowDatetimePopover} />
+                                {:else if columnId === 'actions'}
+                                    <SheetOptions
+                                        type="row"
+                                        column={rowColumn}
+                                        onSelect={(option) =>
+                                            onSelectSheetOption(option, null, 'row', row)}
+                                        onVisibilityChanged={(visible) => {
+                                            canShowDatetimePopover = !visible;
+                                        }}>
+                                        {#snippet children(toggle)}
+                                            <Button.Button
+                                                icon
+                                                variant="extra-compact"
+                                                on:click={toggle}>
+                                                <Icon
+                                                    icon={IconDotsHorizontal}
+                                                    color="--fgcolor-neutral-primary" />
+                                            </Button.Button>
+                                        {/snippet}
+                                    </SheetOptions>
+                                {:else if isRelationship(rowColumn)}
+                                    {@const args = displayNames?.[rowColumn.relatedTable] ?? [
+                                        '$id'
+                                    ]}
+                                    {#if !isRelationshipToMany(rowColumn)}
+                                        {#if row[columnId]}
+                                            {@const related = row[columnId]}
+                                            <Link.Button
+                                                variant="muted"
+                                                on:click={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    // TODO: open sheet maybes
+                                                    goto(
+                                                        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table/${rowColumn.relatedTable}/row/${related.$id}`
+                                                    );
+                                                }}>
+                                                {#each args as arg, i}
+                                                    {#if arg !== undefined}
+                                                        {#if i}&nbsp;|{/if}
+                                                        <span class="text" data-private
+                                                            >{related?.[arg]}</span>
+                                                    {/if}
+                                                {/each}
+                                            </Link.Button>
+                                        {:else}
+                                            <span class="text">n/a</span>
+                                        {/if}
                                     {:else}
-                                        <span class="text">n/a</span>
+                                        {@const itemsNum = row[columnId]?.length}
+                                        <Button.Button
+                                            variant="extra-compact"
+                                            disabled={!itemsNum}
+                                            badge={itemsNum ?? 0}
+                                            on:click={(e) => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                relationshipData = row[columnId];
+                                                showRelationships = true;
+                                                selectedRelationship = rowColumn;
+                                            }}>
+                                            Items
+                                        </Button.Button>
                                     {/if}
                                 {:else}
-                                    {@const itemsNum = row[columnId]?.length}
-                                    <Button.Button
-                                        variant="extra-compact"
-                                        disabled={!itemsNum}
-                                        badge={itemsNum ?? 0}
-                                        on:click={(e) => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            relationshipData = row[columnId];
-                                            showRelationships = true;
-                                            selectedRelationship = rowColumn;
-                                        }}>
-                                        Items
-                                    </Button.Button>
-                                {/if}
-                            {:else}
-                                {@const value = row[columnId]}
-                                {@const formatted = formatColumn(row[columnId])}
-                                {@const isDatetimeAttribute = rowColumn.type === 'datetime'}
-                                {@const isEncryptedAttribute =
-                                    isString(rowColumn) && rowColumn.encrypt}
-                                {#if isDatetimeAttribute}
-                                    <DualTimeView time={value}>
-                                        <span slot="title">Timestamp</span>
-                                        {toLocaleDateTime(value, true)}
-                                    </DualTimeView>
-                                {:else if isEncryptedAttribute}
-                                    <button on:click={(e) => e.preventDefault()}>
-                                        <InteractiveText
-                                            copy={false}
-                                            variant="secret"
-                                            isVisible={false}
-                                            text={formatted} />
-                                    </button>
-                                {:else if formatted.length > 20}
-                                    <Tooltip placement="bottom" portal disabled>
+                                    {@const value = row[columnId]}
+                                    {@const formatted = formatColumn(row[columnId])}
+                                    {@const isDatetimeAttribute = rowColumn.type === 'datetime'}
+                                    {@const isEncryptedAttribute =
+                                        isString(rowColumn) && rowColumn.encrypt}
+                                    {#if isDatetimeAttribute}
+                                        <DualTimeView time={value}>
+                                            <span slot="title">Timestamp</span>
+                                            {toLocaleDateTime(value, true)}
+                                        </DualTimeView>
+                                    {:else if isEncryptedAttribute}
+                                        <button on:click={(e) => e.preventDefault()}>
+                                            <InteractiveText
+                                                copy={false}
+                                                variant="secret"
+                                                isVisible={false}
+                                                text={formatted} />
+                                        </button>
+                                    {:else if formatted.length > 20}
+                                        <Tooltip placement="bottom" portal disabled>
+                                            <Typography.Text truncate>
+                                                {formatted}
+                                            </Typography.Text>
+                                            <span
+                                                slot="tooltip"
+                                                style:white-space="pre-wrap"
+                                                style:word-break="break-word">
+                                                {formatted}
+                                            </span>
+                                        </Tooltip>
+                                    {:else if formatted === 'null'}
+                                        <Badge variant="secondary" content="NULL" size="xs" />
+                                    {:else}
                                         <Typography.Text truncate>
                                             {formatted}
                                         </Typography.Text>
-                                        <span
-                                            slot="tooltip"
-                                            style:white-space="pre-wrap"
-                                            style:word-break="break-word">
-                                            {formatted}
-                                        </span>
-                                    </Tooltip>
-                                {:else if formatted === 'null'}
-                                    <Badge variant="secondary" content="NULL" size="xs" />
-                                {:else}
-                                    <Typography.Text truncate>
-                                        {formatted}
-                                    </Typography.Text>
+                                    {/if}
                                 {/if}
-                            {/if}
 
-                            <svelte:fragment slot="cell-editor">
-                                <EditCellRow
-                                    column={rowColumn}
-                                    bind:row={$rows.rows[item.index]}
-                                    onRowStructureUpdate={updateRowContents} />
-                            </svelte:fragment>
-                        </Spreadsheet.Cell>
-                    {/each}
-                </Spreadsheet.Row.Base>
+                                <svelte:fragment slot="cell-editor">
+                                    <!-- TODO: cannot bind here as well, this is breaking -->
+                                    <EditCellRow
+                                        column={rowColumn}
+                                        row={$paginatedRows.items[index]}
+                                        onRowStructureUpdate={updateRowContents} />
+                                </svelte:fragment>
+                            </Spreadsheet.Cell>
+                        {/each}
+                    </Spreadsheet.Row.Base>
+                {/if}
             </svelte:fragment>
 
             <svelte:fragment slot="footer">
@@ -752,11 +863,48 @@
                     alignContent="center"
                     alignItems="center"
                     justifyContent="space-between">
-                    <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
-                        {selectedRows.length
-                            ? `${selectedRows.length} row${selectedRows.length === 1 ? '' : 's'} selected`
-                            : `${$rows.total} row${$rows.total === 1 ? '' : 's'}`}
-                    </Typography.Text>
+                    <Layout.Stack
+                        gap="l"
+                        direction="row"
+                        alignItems="center"
+                        alignContent="center"
+                        inline>
+                        <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
+                            <span style:white-space="nowrap">
+                                {selectedRows.length
+                                    ? `${selectedRows.length} row${selectedRows.length === 1 ? '' : 's'} selected`
+                                    : `${$rows.total} row${$rows.total === 1 ? '' : 's'}`}
+                            </span>
+                        </Typography.Text>
+
+                        <div
+                            style:height="20px"
+                            style:width="1px"
+                            style:background-color="var(--border-neutral)">
+                        </div>
+
+                        <Layout.Stack
+                            gap="xs"
+                            direction="row"
+                            alignItems="center"
+                            alignContent="center">
+                            <span style:white-space="nowrap"> Page </span>
+
+                            <InputSelect
+                                id="pagination"
+                                value={currentPage}
+                                placeholder="Page"
+                                options={Array.from({ length: totalPages }, (_, i) => ({
+                                    label: `${i + 1}`,
+                                    value: i + 1
+                                }))}
+                                on:change={(e) => (jumpToPageReactive = Number(e.detail))} />
+
+                            <span style:white-space="nowrap">
+                                out of {totalPages}
+                            </span>
+                        </Layout.Stack>
+                    </Layout.Stack>
 
                     <div style:margin-right="var(--space-6)">
                         <Button.Button

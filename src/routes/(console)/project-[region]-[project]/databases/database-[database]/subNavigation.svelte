@@ -222,8 +222,8 @@
         }
 
         li {
-            position: relative;
             overflow: hidden;
+            position: relative;
             padding-inline-end: 0.5rem;
             margin-inline-start: 0.5rem;
         }
