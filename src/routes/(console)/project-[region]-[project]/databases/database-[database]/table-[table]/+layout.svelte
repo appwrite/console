@@ -369,7 +369,7 @@
 <Dialog title="Generate sample data" bind:open={$randomDataModalState.show}>
     <Layout.Stack style="gap: 28px;">
         <Typography.Text>
-            Select how many sample rows to generate for testing. This won't delete or replace your
+            Select how many sample rows to generate for testing. This won't delete or replace any
             existing rows.
         </Typography.Text>
 
