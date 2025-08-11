@@ -14,19 +14,24 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
-    export let showCreateIndex = false;
-    export let externalColumnKey: string = null;
+    let {
+        showCreateIndex = $bindable(false),
+        externalColumnKey = null
+    }: {
+        showCreateIndex: boolean;
+        externalColumnKey?: string;
+    } = $props();
 
     const databaseId = page.params.database;
 
-    let key = '';
+    let key = $state('');
     let types = [
         { value: IndexType.Key, label: 'Key' },
         { value: IndexType.Unique, label: 'Unique' },
         { value: IndexType.Fulltext, label: 'Fulltext' }
     ];
 
-    let selectedType = IndexType.Key;
+    let selectedType = $state(IndexType.Key);
 
     let columnOptions = $table.columns
         .filter((column) => !isRelationship(column))
@@ -35,7 +40,7 @@
             label: column.key
         }));
 
-    let columnList = [{ value: '', order: '', length: null }];
+    let columnList = $state([{ value: '', order: '', length: null }]);
 
     function generateIndexKey() {
         let indexKeys = $indexes.map((index) => index.key);
@@ -56,12 +61,14 @@
         key = `index_${$indexes.length + 1}`;
     }
 
-    $: if (showCreateIndex) {
-        initialize();
-        key = generateIndexKey();
-    }
+    const addColumnDisabled = $derived(!columnList.at(-1)?.value || !columnList.at(-1)?.order);
 
-    $: addColumnDisabled = !columnList.at(-1)?.value || !columnList.at(-1)?.order;
+    $effect(() => {
+        if (showCreateIndex) {
+            initialize();
+            key = generateIndexKey();
+        }
+    });
 
     export async function create() {
         if (!(key && selectedType && !addColumnDisabled)) {
@@ -69,7 +76,7 @@
                 type: 'error',
                 message: 'Selected column key or type invalid'
             });
-            return;
+            throw new Error('Selected column key or type invalid');
         }
 
         try {
@@ -106,6 +113,7 @@
                 message: err.message
             });
             trackError(err, Submit.IndexCreate);
+            throw err;
         }
     }
 

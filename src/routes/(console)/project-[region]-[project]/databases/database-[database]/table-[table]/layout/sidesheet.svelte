@@ -39,8 +39,12 @@
         <Layout.Stack direction="column" justifyContent="space-evenly">
             <Form
                 onSubmit={async () => {
-                    await submit?.onClick();
-                    show = false;
+                    try {
+                        await submit?.onClick();
+                        show = false;
+                    } catch (error) {
+                        // error occurred, dont close the sidebar
+                    }
                 }}>
                 <Layout.Stack gap="xl" class="sheet-content">
                     {@render children?.()}
