@@ -25,6 +25,7 @@
     import ConnectionLine from './components/ConnectionLine.svelte';
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
+    import { project } from '../../store';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -36,6 +37,7 @@
         '\ngit clone https://github.com/appwrite/starter-for-react-native\ncd starter-for-react-native\n';
 
     const updateConfigCode = `EXPO_PUBLIC_APPWRITE_PROJECT_ID=${projectId}
+EXPO_PUBLIC_APPWRITE_PROJECT_NAME="${$project.name}"
 EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}`;
 
     export let platform: PlatformType = PlatformType.Reactnativeandroid;
@@ -235,7 +237,13 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
                     </div>
 
                     <Typography.Text variant="m-500"
-                        >3. Run the app on a connected device or simulator, then click the <InlineCode
+                        >3. Run the app on a connected device or simulator using <InlineCode
+                            size="s"
+                            code="npm install" /> followed by <InlineCode
+                            size="s"
+                            code={platform === PlatformType.Reactnativeios
+                                ? 'npm run ios'
+                                : 'npm run android'} />, then click the <InlineCode
                             size="s"
                             code="Send a ping" /> button to verify the setup.</Typography.Text>
                 </Layout.Stack>
