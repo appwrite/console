@@ -33,7 +33,7 @@
     let search = $state('');
     let filteredColumns = $derived(
         $columns
-            .filter((column) => !column.isAction)
+            .filter((column) => !column.isAction && column.id !== '$sequence')
             .filter(
                 (col) =>
                     !col.exclude &&

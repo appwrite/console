@@ -31,7 +31,8 @@
         showCreateAttributeSheet,
         showCreateIndexSheet,
         spreadsheetLoading,
-        rowActivitySheet
+        rowActivitySheet,
+        spreadsheetRenderKey
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
@@ -52,6 +53,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sleep } from '$lib/helpers/promises';
     import CreateIndex from './indexes/createIndex.svelte';
+    import { hash } from '$lib/helpers/string';
 
     let editRow: EditRow;
     let createIndex: CreateIndex;
@@ -258,11 +260,17 @@
         /* let the attributes be processed! */
         await sleep(1250);
 
+        let rowIds = [];
         try {
-            const records = generateFakeRecords(attributes, $randomDataModalState.value);
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .grids.createRows(page.params.database, page.params.table, records);
+            const { rows, ids } = generateFakeRecords(attributes, $randomDataModalState.value);
+
+            rowIds = ids;
+
+            await sdk.forProject(page.params.region, page.params.project).grids.createRows({
+                databaseId: page.params.database,
+                tableId: page.params.table,
+                rows
+            });
 
             addNotification({
                 type: 'success',
@@ -284,6 +292,8 @@
         // await sleep(1250);
         $spreadsheetLoading = false;
         isWaterfallFromFaker = false;
+
+        spreadsheetRenderKey.set(hash(rowIds));
     }
 </script>
 

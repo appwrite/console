@@ -69,11 +69,11 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .migrations.createCsvMigration(
-                    file.bucketId,
-                    file.$id,
-                    `${page.params.database}:${page.params.table}`
-                );
+                .migrations.createCsvMigration({
+                    bucketId: file.bucketId,
+                    fileId: file.$id,
+                    resourceId: `${page.params.database}:${page.params.table}`
+                });
 
             addNotification({
                 type: 'success',
@@ -99,7 +99,6 @@
     <Container expanded expandHeightButton style="background: var(--bgcolor-neutral-primary)">
         <Layout.Stack direction="column" gap="xl">
             <Layout.Stack direction="row" justifyContent="space-between">
-                <!-- TODO: verify later - columns={tableColumns} -->
                 <Layout.Stack direction="row" gap="s">
                     <ViewSelector
                         onlyIcon

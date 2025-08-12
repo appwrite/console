@@ -47,7 +47,7 @@
     }
 </script>
 
-<Button extraCompact on:click={sort} class="hoverable-compact" {disabled}>
+<Button extraCompact on:click={sort} class="hoverable-compact {$state?.direction}" {disabled}>
     <Icon
         size="s"
         icon={$state?.column !== column || $state?.direction === 'default'

@@ -25,6 +25,7 @@
     } = $props();
 
     let isSubmitting = $state(false);
+    let columnFormWrapper: HTMLDivElement | null = $state(null);
 
     type CreateRow = {
         id?: string;
@@ -51,12 +52,6 @@
     }
 
     let createRow = createRowWritable();
-
-    $effect(() => {
-        if (showSheet) {
-            createRow = createRowWritable();
-        }
-    });
 
     async function create() {
         isSubmitting = true;
@@ -92,6 +87,21 @@
             isSubmitting = false;
         }
     }
+
+    function focusFirstInput() {
+        const firstInput = columnFormWrapper?.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+            'input:not([disabled]):not([readonly]), textarea:not([disabled]):not([readonly])'
+        );
+
+        firstInput?.focus({ preventScroll: true });
+    }
+
+    $effect(() => {
+        if (showSheet) {
+            focusFirstInput();
+            createRow = createRowWritable();
+        }
+    });
 </script>
 
 {#if $createRow}
@@ -108,10 +118,12 @@
                 onClick: () => create()
             }}>
             <Layout.Stack gap="xxl">
-                <ColumnForm
-                    columns={$createRow.columns}
-                    bind:customId={$createRow.id}
-                    bind:formValues={$createRow.row} />
+                <div bind:this={columnFormWrapper}>
+                    <ColumnForm
+                        columns={$createRow.columns}
+                        bind:customId={$createRow.id}
+                        bind:formValues={$createRow.row} />
+                </div>
 
                 <Layout.Stack gap="xl">
                     <Typography.Text>

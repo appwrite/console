@@ -152,7 +152,7 @@ export const rowActivitySheet = writable({
 });
 
 export const expandTabs = writable(true);
+export const spreadsheetRenderKey = writable('initial');
 
-// Paginated rows stores
 export const paginatedRowsLoading = writable(false);
 export const paginatedRows = createSparsePagedDataStore<Models.DefaultRow>(SPREADSHEET_PAGE_LIMIT);

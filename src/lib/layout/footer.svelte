@@ -30,7 +30,9 @@
             inline={$isTabletViewport}
             justifyContent="flex-start">
             <Typography.Caption variant="400">
-                ⓒ {currentYear} Appwrite. All rights reserved.
+                <span style:white-space="nowrap">
+                    ⓒ {currentYear} Appwrite. All rights reserved.
+                </span>
             </Typography.Caption>
             <span class="divider-wrapper">
                 <Divider vertical />

@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { onDestroy, onMount } from 'svelte';
+    import deepEqual from 'deep-equal';
     import type { Columns } from './store';
     import type { Models } from '@appwrite.io/console';
     import ColumnItem from './row-[row]/columnItem.svelte';
-    import deepEqual from 'deep-equal';
+    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 
     let {
         column,
@@ -17,6 +17,7 @@
 
     let original: Models.Row;
     let wrapperEl: HTMLDivElement;
+    const dispatch = createEventDispatcher();
 
     onMount(() => {
         original = structuredClone(row);
@@ -37,7 +38,14 @@
             const accepted = await onRowStructureUpdate(row);
             if (!accepted) {
                 row = original;
+                dispatch('revert', original);
             }
+        }
+    });
+
+    $effect(() => {
+        if (!deepEqual(original, row)) {
+            dispatch('change', row);
         }
     });
 </script>

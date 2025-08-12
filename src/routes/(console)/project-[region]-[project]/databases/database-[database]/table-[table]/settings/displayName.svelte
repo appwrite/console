@@ -12,7 +12,6 @@
     import { page } from '$app/state';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
-    import { organization } from '$lib/stores/organization';
 
     const tableId = page.params.table;
 
@@ -30,7 +29,7 @@
             // structuredClone doesn't work
             const regularArray = [...names];
 
-            await preferences.setDisplayNames($organization.$id, tableId, regularArray);
+            await preferences.setDisplayNames(tableId, regularArray);
             names = getDisplayNames();
 
             await invalidate(Dependencies.TEAM);

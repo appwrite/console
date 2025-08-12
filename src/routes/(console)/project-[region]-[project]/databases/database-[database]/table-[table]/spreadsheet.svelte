@@ -31,7 +31,8 @@
         Deletion,
         rowActivitySheet,
         paginatedRows,
-        paginatedRowsLoading
+        paginatedRowsLoading,
+        spreadsheetRenderKey
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -53,28 +54,27 @@
     import {
         IconCalendar,
         IconDotsHorizontal,
-        IconPlus,
-        IconRelationship,
         IconFingerPrint,
         IconHashtag,
         IconLink,
         IconLocationMarker,
         IconMail,
+        IconPlus,
+        IconRelationship,
         IconText,
         IconToggle,
         IconViewList
     } from '@appwrite.io/pink-icons-svelte';
+    import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
     import SheetOptions from './sheetOptions.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import SpreadsheetContainer from './layout/spreadsheet.svelte';
-    import EditCellRow from './editRowCell.svelte';
-    import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
+    import EditRowCell from './editRowCell.svelte';
     import { copy } from '$lib/helpers/copy';
-    import { debounce } from '$lib/helpers/debounce';
-    import { hash } from '$lib/helpers/string';
     import { writable } from 'svelte/store';
     import { pageToOffset } from '$lib/helpers/load';
-    import { sleep } from '$lib/helpers/promises';
+    import { debounce } from '$lib/helpers/debounce';
+    import { hash } from '$lib/helpers/string';
 
     export let data: PageData;
     export let showRecordsCreateSheet: {
@@ -376,6 +376,14 @@
                 type: 'success',
                 message: `${selectedRows.length ? selectedRows.length : 1} row${selectedRows.length > 1 ? 's' : ''} deleted`
             });
+
+            spreadsheetRenderKey.set(
+                hash([
+                    data.rows.total.toString(),
+                    ...(selectedRows as string[]),
+                    selectedRowForDelete
+                ])
+            );
         } catch (error) {
             addNotification({ type: 'error', message: error.message });
             trackError(error, Submit.RowDelete);
@@ -533,19 +541,11 @@
     }
 
     async function loadPage(pageNumber: number): Promise<boolean> {
-        const totalPages = Math.ceil(data.rows.total / SPREADSHEET_PAGE_LIMIT);
-        if (
-            pageNumber < 1 ||
-            pageNumber === currentPage ||
-            paginatedRows.hasPage(pageNumber) ||
-            pageNumber > totalPages
-        )
+        if (pageNumber < 1 || pageNumber > totalPages || $paginatedRows.hasPage(pageNumber)) {
             return false;
-
-        console.log(`pageNumber: ${pageNumber}`);
+        }
 
         $paginatedRowsLoading = true;
-        await sleep(500);
         const loadedRows = await sdk
             .forProject(page.params.region, page.params.project)
             .grids.listRows({
@@ -564,12 +564,16 @@
         return true;
     }
 
-    console.log(`$paginatedRowsLoading: ${$paginatedRowsLoading}`);
-
     async function handleGoToPage(targetPageNum: number): Promise<void> {
+        if ($paginatedRows.hasPage(targetPageNum) || $paginatedRows.hasPage(targetPageNum + 1)) {
+            scrollToIndexOffset = 0;
+        } else {
+            scrollToIndexOffset = 16;
+        }
+
         if (targetPageNum < 1 || targetPageNum > totalPages) return;
 
-        if (!paginatedRows.hasPage(targetPageNum)) {
+        if (!$paginatedRows.hasPage(targetPageNum)) {
             paginatedRows.setMaxPage(targetPageNum);
             $paginatedRowsLoading = true;
 
@@ -635,19 +639,22 @@
         tick().then(() => spreadsheetContainer?.resizeSheet());
     }
 
-    $: spreadsheetKey = hash($paginatedRows.items.map((item) => item.$id).toString(), '#');
-
     $: totalPages = Math.ceil($rows.total / SPREADSHEET_PAGE_LIMIT) || 1;
+
+    $: rowSelection = !$spreadsheetLoading && !$paginatedRowsLoading ? true : ('disabled' as const);
+
+    $: scrollToIndexOffset = 16;
 </script>
 
 <SpreadsheetContainer observeExpand bind:this={spreadsheetContainer}>
-    {#key spreadsheetKey}
+    {#key $spreadsheetRenderKey}
         <Spreadsheet.Root
             height="100%"
             allowSelection
             useVirtualizer
             keyboardNavigation
             bind:selectedRows
+            selection={rowSelection}
             bind:columns={$tableColumns}
             loading={$spreadsheetLoading}
             emptyCells={emptyCellsCount}
@@ -656,6 +663,7 @@
             on:columnsSwap={(order) => saveColumnsOrder(order.detail)}
             on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}
             bind:currentPage
+            {scrollToIndexOffset}
             nextPageTriggerOffset={2}
             paginationBufferSpace={35}
             jumpToPageNumber={jumpToPageReactive}
@@ -716,17 +724,27 @@
             <svelte:fragment slot="rows" let:root let:item let:index>
                 {@const row = $paginatedRows.getItemAtVirtualIndex(index)}
                 {#if row === null}
-                    <Spreadsheet.Row.Base {root} virtualItem={item} {index} id={`loading-${index}`}>
+                    <Spreadsheet.Row.Base
+                        {root}
+                        virtualItem={item}
+                        {index}
+                        id={`loading-${index}`}
+                        select={rowSelection}>
                         {#each $tableColumns as col}
                             <Spreadsheet.Cell
-                                column={col.id}
-                                isEditable={false}
                                 root={{ ...root, loading: true }}
-                                id={`loading-${index}-${col.id}`} />
+                                column={col.id}
+                                id={`loading-${index}-${col.id}`}
+                                isEditable={false} />
                         {/each}
                     </Spreadsheet.Row.Base>
                 {:else}
-                    <Spreadsheet.Row.Base {root} {index} id={row?.$id} virtualItem={item}>
+                    <Spreadsheet.Row.Base
+                        {root}
+                        {index}
+                        id={row?.$id}
+                        virtualItem={item}
+                        select={rowSelection}>
                         {#each $tableColumns as { id: columnId, isEditable } (columnId)}
                             {@const rowColumn = $columns.find((col) => col.key === columnId)}
                             <Spreadsheet.Cell {root} {isEditable} column={columnId}>
@@ -845,11 +863,14 @@
                                 {/if}
 
                                 <svelte:fragment slot="cell-editor">
-                                    <!-- TODO: cannot bind here as well, this is breaking -->
-                                    <EditCellRow
+                                    <EditRowCell
                                         column={rowColumn}
-                                        row={$paginatedRows.items[index]}
-                                        onRowStructureUpdate={updateRowContents} />
+                                        row={paginatedRows.items[index]}
+                                        onRowStructureUpdate={updateRowContents}
+                                        on:change={(row) =>
+                                            paginatedRows.update(index, row.detail)}
+                                        on:revert={(row) =>
+                                            paginatedRows.update(index, row.detail)} />
                                 </svelte:fragment>
                             </Spreadsheet.Cell>
                         {/each}
@@ -945,9 +966,9 @@
 <RelationshipsModal bind:show={showRelationships} {selectedRelationship} data={relationshipData} />
 
 <Confirm
-    title={selectedRows.length === 1 ? 'Delete Row' : 'Delete Rows'}
     bind:open={showDelete}
-    onSubmit={handleDelete}>
+    onSubmit={handleDelete}
+    title={selectedRows.length === 1 ? 'Delete Row' : 'Delete Rows'}>
     {@const isSingle = selectedRowForDelete !== null}
 
     <div>

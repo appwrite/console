@@ -3,7 +3,6 @@ import type { View } from '$lib/helpers/load';
 import type { Page } from '@sveltejs/kit';
 import { get, writable } from 'svelte/store';
 import { sdk } from './sdk';
-import type { Models } from '@appwrite.io/console';
 import { page } from '$app/state';
 import { user } from '$lib/stores/user';
 import deepEqual from 'deep-equal';
@@ -88,7 +87,7 @@ function createPreferences() {
 
     async function loadTeamPreferences(orgId: string) {
         try {
-            const teamPrefs = await sdk.forConsole.teams.getPrefs(orgId);
+            const teamPrefs = await sdk.forConsole.teams.getPrefs({ teamId: orgId });
             teamPreferences = teamPrefs ?? {};
             return teamPreferences;
         } catch (error) {
@@ -189,25 +188,16 @@ function createPreferences() {
         getDisplayNames: () => {
             return preferences?.displayNames ?? {};
         },
-        setDisplayNames: async (
-            orgId: string,
-            tableId: string,
-            names: TeamPreferences['names']
-        ) => {
-            let teamPrefs: Models.Preferences;
+        setDisplayNames: async (tableId: string, names: TeamPreferences['names']) => {
             await updateAndSync((n) => {
                 if (!n?.displayNames) {
                     n ??= {};
                     n.displayNames ??= {};
                 }
 
-                teamPrefs = n;
                 n.displayNames[tableId] = names;
-
                 return n;
             });
-
-            await sdk.forConsole.teams.updatePrefs(orgId, teamPrefs);
         },
 
         getColumnOrder(collectionId: string): TeamPreferences['order'] {
@@ -225,7 +215,10 @@ function createPreferences() {
 
             teamPreferences.columnOrder[collectionId] = columnIds;
 
-            await sdk.forConsole.teams.updatePrefs(orgId, teamPreferences);
+            await sdk.forConsole.teams.updatePrefs({
+                teamId: orgId,
+                prefs: teamPreferences
+            });
         },
 
         getColumnWidths(collectionId: string): TeamPreferences['widths'] {
@@ -246,11 +239,12 @@ function createPreferences() {
                 ...width
             };
 
-            await sdk.forConsole.teams.updatePrefs(orgId, teamPreferences);
+            await sdk.forConsole.teams.updatePrefs({
+                teamId: orgId,
+                prefs: teamPreferences
+            });
         }
     };
 }
 
 export const preferences = createPreferences();
-
-export type PreferencesType = ReturnType<typeof createPreferences>;

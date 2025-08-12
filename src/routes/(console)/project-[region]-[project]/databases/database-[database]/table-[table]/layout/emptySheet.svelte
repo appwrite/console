@@ -54,9 +54,10 @@
 
     const getCustomColumns = (): Column[] =>
         customColumns.map((col: Column) => ({
-            ...baseColProps,
+            ...col,
             width: 180,
-            ...col
+            hide: false,
+            ...baseColProps
         }));
 
     const getRowColumns = (): Column[] => [
@@ -128,6 +129,10 @@
 
     const emptyCells = $derived($isSmallViewport ? 14 : 17);
     const fixedHeight = $derived($isSmallViewport ? '60.75vh' : '74.75vh');
+
+    $effect(() => {
+        console.log(JSON.stringify(spreadsheetColumns, null, 2));
+    });
 </script>
 
 <div class="spreadsheet-container-outer" data-mode={mode}>

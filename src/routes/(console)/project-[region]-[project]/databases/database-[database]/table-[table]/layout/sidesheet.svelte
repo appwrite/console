@@ -85,7 +85,7 @@
         }
 
         & :global(.sheet-content) {
-            overflow-y: auto;
+            // overflow-y: auto;
             padding-bottom: 5rem;
         }
     }

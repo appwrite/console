@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { Columns } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/store';
-import type { Models } from '@appwrite.io/console';
+import { ID, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 
 export async function generateColumns(
@@ -20,31 +20,46 @@ export async function generateColumns(
     ]);
 }
 
-export function generateFakeRecords(columns: Columns[], count: number): object[] {
-    if (count <= 0) return [];
+export function generateFakeRecords(
+    columns: Columns[],
+    count: number
+): {
+    ids: string[];
+    rows: Models.Row[];
+} {
+    if (count <= 0) return { ids: [], rows: [] };
 
     const filteredColumns = columns.filter((col) => col.type !== 'relationship');
 
-    if (filteredColumns.length === 0) {
-        return Array.from({ length: count }, () => ({
-            name: faker.person.fullName(),
-            email: faker.internet.email(),
-            age: faker.number.int({ min: 18, max: 80 }),
-            city: faker.location.city(),
-            description: faker.lorem.sentence(),
-            active: faker.datatype.boolean()
-        }));
-    }
+    const ids: string[] = [];
+    const rows: Models.Row[] = [];
 
-    return Array.from({ length: count }, () => {
-        const document: object = {};
+    for (let i = 0; i < count; i++) {
+        const id = ID.unique();
+        ids.push(id);
 
-        for (const column of filteredColumns) {
-            document[column.key] = generateValueForColumn(column);
+        let row: Record<string, string | number | boolean> = { $id: id };
+
+        if (filteredColumns.length === 0) {
+            row = {
+                $id: id,
+                name: faker.person.fullName(),
+                email: faker.internet.email(),
+                age: faker.number.int({ min: 18, max: 80 }),
+                city: faker.location.city(),
+                description: faker.lorem.sentence(),
+                active: faker.datatype.boolean()
+            };
+        } else {
+            for (const column of filteredColumns) {
+                row[column.key] = generateValueForColumn(column);
+            }
         }
 
-        return document;
-    });
+        rows.push(row as unknown as Models.Row);
+    }
+
+    return { ids, rows };
 }
 
 function generateStringValue(key: string, maxLength: number): string {
