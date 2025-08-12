@@ -61,6 +61,12 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
             trackEvent(Submit.PlatformCreate, {
                 type: 'android'
             });
+
+            addNotification({
+                type: 'success',
+                message: 'Platform created.'
+            });
+
             invalidate(Dependencies.PROJECT);
             invalidate(Dependencies.PLATFORMS);
         } catch (error) {
@@ -162,7 +168,7 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
 
         <!-- Step Two -->
         {#if isPlatformCreated}
-            <Fieldset legend="Clone starter">
+            <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
@@ -243,7 +249,7 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
                 secondary
                 disabled={isCreatingPlatform}
                 href={location.pathname}>
-                Go to dashboard
+                Skip, go to dashboard
             </Button>
         {/if}
     </svelte:fragment>

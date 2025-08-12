@@ -175,6 +175,11 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                 type: platform
             });
 
+            addNotification({
+                type: 'success',
+                message: 'Platform created.'
+            });
+
             invalidate(Dependencies.PROJECT);
             invalidate(Dependencies.PLATFORMS);
         } catch (error) {
@@ -281,7 +286,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 
         <!-- Step Three -->
         {#if isPlatformCreated && !isChangingFramework}
-            <Fieldset legend="Clone starter">
+            <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
@@ -402,7 +407,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                 secondary
                 fullWidthMobile
                 href={location.pathname}
-                disabled={isCreatingPlatform}>Go to dashboard</Button>
+                disabled={isCreatingPlatform}>Skip, go to dashboard</Button>
         {/if}
     </svelte:fragment>
 </Wizard>
