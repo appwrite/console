@@ -184,6 +184,17 @@ function createPreferences() {
                 // n.collections[tableId] = Array.from(new Set(columns));
                 return n;
             }),
+        deleteCustomTableColumns: async (tableId: string) => {
+            await updateAndSync((n) => {
+                if (!n?.tables) {
+                    n ??= {};
+                    n.tables ??= {};
+                }
+
+                delete n.tables[tableId];
+                return n;
+            });
+        },
         loadTeamPrefs: loadTeamPreferences,
         getDisplayNames: () => {
             return preferences?.displayNames ?? {};
@@ -196,6 +207,17 @@ function createPreferences() {
                 }
 
                 n.displayNames[tableId] = names;
+                return n;
+            });
+        },
+        deleteDisplayNames: async (tableId: string) => {
+            await updateAndSync((n) => {
+                if (!n?.displayNames) {
+                    n ??= {};
+                    n.displayNames ??= {};
+                }
+
+                delete n.displayNames[tableId];
                 return n;
             });
         },

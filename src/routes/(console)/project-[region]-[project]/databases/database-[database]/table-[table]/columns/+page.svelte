@@ -54,18 +54,6 @@
     const updatedColumnsForSheet = $derived.by(() => {
         const baseAttrs = [
             {
-                key: '$sequence',
-                type: 'integer',
-                required: true,
-                name: 'Sequence',
-                selectable: false,
-                system: true
-            } as Models.AttributeString & {
-                name: string;
-                selectable: boolean;
-                system: boolean;
-            },
-            {
                 key: '$id',
                 type: 'string',
                 required: true,

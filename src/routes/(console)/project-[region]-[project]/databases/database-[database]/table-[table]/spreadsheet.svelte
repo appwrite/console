@@ -149,18 +149,6 @@
 
         const staticColumns: Column[] = [
             {
-                id: '$sequence',
-                title: 'Sequence',
-                width: 150,
-                minimumWidth: 150,
-                draggable: false,
-                type: 'integer',
-                icon: IconHashtag,
-                isEditable: false,
-                isPrimary: true,
-                resizable: false
-            },
-            {
                 id: '$id',
                 title: 'ID',
                 width: getColumnWidth('$id', 225),
@@ -169,7 +157,8 @@
                 type: 'string',
                 icon: IconFingerPrint,
                 isEditable: false,
-                isPrimary: false
+                isPrimary: false,
+                hide: !!selected?.includes('$id')
             },
             {
                 id: '$createdAt',
@@ -179,7 +168,8 @@
                 draggable: true,
                 type: 'datetime',
                 icon: IconCalendar,
-                isEditable: false
+                isEditable: false,
+                hide: !!selected?.includes('$createdAt')
             },
             {
                 id: '$updatedAt',
@@ -189,7 +179,8 @@
                 draggable: true,
                 type: 'datetime',
                 icon: IconCalendar,
-                isEditable: false
+                isEditable: false,
+                hide: !!selected?.includes('$updatedAt')
             },
             {
                 id: 'actions',
@@ -203,15 +194,32 @@
             }
         ];
 
+        const groupedColumns: Column[] = [
+            staticColumns[0],
+            ...baseColumns,
+            staticColumns[1],
+            staticColumns[2],
+            staticColumns[3]
+        ];
+
+        const visibleNonAction = groupedColumns.filter((c) => !c.hide && !c.isAction);
+        if (visibleNonAction.length === 1) {
+            const only = visibleNonAction[0];
+            if (typeof only.width === 'number') {
+                only.width = {
+                    min: only.width
+                };
+            }
+        }
+
         tableColumns.set(
             reorderItems(
                 [
                     staticColumns[0],
-                    staticColumns[1],
                     ...baseColumns,
+                    staticColumns[1],
                     staticColumns[2],
-                    staticColumns[3],
-                    staticColumns[4]
+                    staticColumns[3]
                 ],
                 $columnsOrder
             )
@@ -334,9 +342,14 @@
             );
         }
 
+        // trigger ui update with randomized key!
+        spreadsheetRenderKey.set(`sorted#${Date.now()}`);
+
+        // save > navigate > restore!
         spreadsheetContainer.saveGridSheetScroll();
         await goto(`${url.pathname}${url.search}`);
         spreadsheetContainer.restoreGridSheetScroll();
+
         $spreadsheetLoading = false;
     }
 
@@ -545,6 +558,21 @@
             return false;
         }
 
+        let order = Query.orderDesc('');
+        if ($sortState?.column && $sortState?.direction) {
+            switch ($sortState.direction) {
+                case 'asc':
+                    order = Query.orderAsc($sortState.column);
+                    break;
+                case 'desc':
+                    order = Query.orderDesc($sortState.column);
+                    break;
+                case 'default':
+                    order = Query.orderDesc('');
+                    break;
+            }
+        }
+
         $paginatedRowsLoading = true;
         const loadedRows = await sdk
             .forProject(page.params.region, page.params.project)
@@ -552,7 +580,7 @@
                 databaseId,
                 tableId,
                 queries: [
-                    Query.orderDesc(''),
+                    order,
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
                     Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT))
                 ]
@@ -748,10 +776,7 @@
                         {#each $tableColumns as { id: columnId, isEditable } (columnId)}
                             {@const rowColumn = $columns.find((col) => col.key === columnId)}
                             <Spreadsheet.Cell {root} {isEditable} column={columnId}>
-                                {#if columnId === '$sequence'}
-                                    <Id value={row.$sequence.toString()} tooltipPortal
-                                        >{row.$sequence}</Id>
-                                {:else if columnId === '$id'}
+                                {#if columnId === '$id'}
                                     <Id value={row.$id} tooltipPortal tooltipDelay={200}
                                         >{row.$id}</Id>
                                 {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
@@ -867,8 +892,7 @@
                                         column={rowColumn}
                                         row={paginatedRows.items[index]}
                                         onRowStructureUpdate={updateRowContents}
-                                        on:change={(row) =>
-                                            paginatedRows.update(index, row.detail)}
+                                        on:change={(row) => paginatedRows.update(index, row.detail)}
                                         on:revert={(row) =>
                                             paginatedRows.update(index, row.detail)} />
                                 </svelte:fragment>
@@ -1070,6 +1094,11 @@
             padding-inline: 9px;
             margin-block: -2.75px;
             min-height: 85px !important;
+        }
+
+        /* TODO: not good! */
+        & :global(input) {
+            padding-inline: 8px !important;
         }
 
         & :global(.input:focus-within) {

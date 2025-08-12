@@ -4,14 +4,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { onMount, type Snippet } from 'svelte';
     import type { Column } from '$lib/helpers/types';
-    import {
-        ActionMenu,
-        Badge,
-        Divider,
-        Layout,
-        Popover,
-        Selector
-    } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Divider, Layout, Popover, Selector } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
 
     let {
