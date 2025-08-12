@@ -553,24 +553,17 @@
         }
     }
 
+    function getCorrectOrderQuery() {
+        return $sortState?.column && $sortState?.direction !== 'default'
+            ? $sortState.direction === 'asc'
+                ? Query.orderAsc($sortState.column)
+                : Query.orderDesc($sortState.column)
+            : Query.orderDesc('');
+    }
+
     async function loadPage(pageNumber: number): Promise<boolean> {
         if (pageNumber < 1 || pageNumber > totalPages || $paginatedRows.hasPage(pageNumber)) {
             return false;
-        }
-
-        let order = Query.orderDesc('');
-        if ($sortState?.column && $sortState?.direction) {
-            switch ($sortState.direction) {
-                case 'asc':
-                    order = Query.orderAsc($sortState.column);
-                    break;
-                case 'desc':
-                    order = Query.orderDesc($sortState.column);
-                    break;
-                case 'default':
-                    order = Query.orderDesc('');
-                    break;
-            }
         }
 
         $paginatedRowsLoading = true;
@@ -580,7 +573,7 @@
                 databaseId,
                 tableId,
                 queries: [
-                    order,
+                    getCorrectOrderQuery(),
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
                     Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT))
                 ]
@@ -611,7 +604,7 @@
                     databaseId,
                     tableId,
                     queries: [
-                        Query.orderDesc(''),
+                        getCorrectOrderQuery(),
                         Query.limit(SPREADSHEET_PAGE_LIMIT),
                         Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT))
                     ]
