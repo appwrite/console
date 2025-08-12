@@ -22,12 +22,16 @@
                 .forProject(page.params.region, page.params.project)
                 .users.updateEmailVerification($user.$id, !$user.emailVerification);
             await invalidate(Dependencies.USER);
+            
+            const hasName = $user.name && $user.name.trim() !== '';
+            const isVerified = !$user.emailVerification;
+            
+            const message = hasName 
+                ? `The email for ${$user.name} has been ${isVerified ? 'verified' : 'no longer verified'}`
+                : `The email has been ${isVerified ? 'verified' : 'no longer verified'}`;
+            
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'}${(
-                    $user.name || $user.email || $user.phone || 'The account'
-                ).endsWith('s')
-                    ? "'"
-                    : "'s"} email has been ${!$user.emailVerification ? 'unverified' : 'verified'}`,
+                message,
                 type: 'success'
             });
             trackEvent(Submit.UserUpdateVerificationEmail);
@@ -46,12 +50,16 @@
                 .forProject(page.params.region, page.params.project)
                 .users.updatePhoneVerification($user.$id, !$user.phoneVerification);
             await invalidate(Dependencies.USER);
+            
+            const hasName = $user.name && $user.name.trim() !== '';
+            const isVerified = !$user.phoneVerification;
+            
+            const message = hasName 
+                ? `The phone for ${$user.name} has been ${isVerified ? 'verified' : 'no longer verified'}`
+                : `The phone has been ${isVerified ? 'verified' : 'no longer verified'}`;
+            
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'}${(
-                    $user.name || $user.email || $user.phone || 'The account'
-                ).endsWith('s')
-                    ? "'"
-                    : "'s"} phone has been ${!$user.phoneVerification ? 'unverified' : 'verified'}`,
+                message,
                 type: 'success'
             });
             trackEvent(Submit.UserUpdateVerificationPhone);
