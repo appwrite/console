@@ -1,12 +1,12 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import AutoIncrementDark from '$lib/images/promos/auto-increment-dark.png';
-import AutoIncrementLight from '$lib/images/promos/auto-increment-light.png';
 import AtomicNumericOperationsDark from '$lib/images/promos/atomic-numeric-operations-dark.png';
 import AtomicNumericOperationsLight from '$lib/images/promos/atomic-numeric-operations-light.png';
 import AppwriteGeneralAvailabiltyLight from '$lib/images/promos/appwrite-general-availability-light.png';
 import AppwriteGeneralAvailabiltyDark from '$lib/images/promos/appwrite-general-availability-dark.png';
+import TablesApiLight from '$lib/images/promos/tables-api-light.png';
+import TablesApiDark from '$lib/images/promos/tables-api-dark.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -30,21 +30,21 @@ if (isCloud) {
         },
         show: true
     };
-    const autoIncrementPromo: BottomModalAlertItem = {
-        id: 'modal:auto_increment_announcement',
+    const tablesApiPromo: BottomModalAlertItem = {
+        id: 'modal:tables_api_announcement',
         src: {
-            dark: AutoIncrementDark,
-            light: AutoIncrementLight
+            dark: TablesApiDark,
+            light: TablesApiLight
         },
-        title: 'Announcing Auto-increment support',
+        title: 'Announcing the new Grids UI and more!',
         message:
-            'Get a built-in numeric identifier that increases predictably with every new document added.',
+            'This is Appwrite Databases\u2019 most significant update so far, introducing new terminology, a new UI, and a supporting Grids API.',
         plan: 'free',
         importance: 8,
         scope: 'project',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-auto-increment-support',
+            link: () => 'https://apwr.dev/E64A90f',
             external: true,
             hideOnClick: true
         },
@@ -71,9 +71,9 @@ if (isCloud) {
         show: true
     };
     listOfPromotions.push(
+        tablesApiPromo,
         appwriteGeneralAvailabiltyPromo,
-        atomicNumericOperationsPromo,
-        autoIncrementPromo
+        atomicNumericOperationsPromo
     );
 }
 
