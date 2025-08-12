@@ -298,7 +298,7 @@
     title={$showCreateAttributeSheet.title}
     bind:show={$showCreateAttributeSheet.show}
     submit={{
-        text: 'Insert',
+        text: 'Create',
         onClick: async () => {
             await createColumn?.submit();
         },

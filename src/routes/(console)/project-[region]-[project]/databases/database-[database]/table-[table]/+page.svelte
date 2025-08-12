@@ -192,6 +192,7 @@
                     showActions={$canWriteRows}
                     actions={{
                         primary: {
+                            text: 'Create row',
                             onClick: () => {
                                 $showRecordsCreateSheet.show = true;
                             }
