@@ -19,6 +19,7 @@
         Layout,
         Logs,
         Spinner,
+        Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
@@ -98,15 +99,24 @@
                     <svelte:fragment slot="menu" let:toggle>
                         <ActionMenu.Root>
                             {#if $canWriteFunctions}
-                                <ActionMenu.Item.Button
-                                    trailingIcon={IconRefresh}
-                                    on:click={() => {
-                                        showRedeploy = true;
-                                        trackEvent(Click.FunctionsRedeployClick);
-                                        toggle();
-                                    }}>
-                                    Redeploy
-                                </ActionMenu.Item.Button>
+                                <Tooltip
+                                    disabled={data.deployment.sourceSize !== 0}
+                                    placement={'bottom'}>
+                                    <div>
+                                        <ActionMenu.Item.Button
+                                            trailingIcon={IconRefresh}
+                                            disabled={data.deployment.sourceSize === 0}
+                                            on:click={() => {
+                                                showRedeploy = true;
+                                                trackEvent(Click.FunctionsRedeployClick);
+                                                toggle();
+                                            }}
+                                            style="width: 100%">
+                                            Redeploy
+                                        </ActionMenu.Item.Button>
+                                    </div>
+                                    <div slot="tooltip">Source is empty</div>
+                                </Tooltip>
                             {/if}
                             {#if !!data.deployment?.sourceSize || !!data.deployment?.sourceSize}
                                 <DownloadActionMenuItem deployment={data.deployment} {toggle} />

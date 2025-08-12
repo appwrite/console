@@ -5,7 +5,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Avatar, Empty, EmptySearch, PaginationWithLimit, SearchQuery } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Pill } from '$lib/elements';
+    import { Badge } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Container } from '$lib/layout';
@@ -129,7 +129,7 @@
                                 <span class="avatar is-size-small is-color-empty"></span>
                                 <span class="text u-trim">{file.name}</span>
                                 <div>
-                                    <Pill warning>Pending</Pill>
+                                    <Badge variant="secondary" type="warning" content="Pending" />
                                 </div>
                             </Layout.Stack>
                         </Table.Cell>

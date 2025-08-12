@@ -34,6 +34,7 @@
         offset = 0;
         search = '';
         selected.clear();
+        show = false;
     }
 
     function create() {

@@ -39,6 +39,7 @@ import { sdk } from './sdk';
 import { user } from './user';
 import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budgetLimitAlert.svelte';
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
+import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
 import EnterpriseTrial from '$routes/(console)/organization-[organization]/enterpriseTrial.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
@@ -68,6 +69,7 @@ export const roles = [
 
 export const teamStatusReadonly = 'readonly';
 export const billingLimitOutstandingInvoice = 'outstanding_invoice';
+export const billingProjectsLimitDate = '2025-09-01';
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
@@ -315,6 +317,27 @@ export function calculateTrialDay(org: Organization) {
     return days;
 }
 
+export async function checkForProjectsLimit(org: Organization, orgProjectCount?: number) {
+    if (!isCloud) return;
+    if (!org) return;
+    const plan = await sdk.forConsole.billing.getOrganizationPlan(org.$id);
+    if (!plan) return;
+    if (plan.$id !== BillingPlan.FREE) return;
+    if (org.projects?.length > 0) return;
+
+    const projectCount = orgProjectCount;
+    if (projectCount === undefined) return;
+
+    if (plan.projects > 0 && projectCount > plan.projects) {
+        headerAlert.add({
+            id: 'projectsLimitReached',
+            component: ProjectsLimit,
+            show: true,
+            importance: 12
+        });
+    }
+}
+
 export async function checkForUsageLimit(org: Organization) {
     if (org?.status === teamStatusReadonly && org?.remarks === billingLimitOutstandingInvoice) {
         headerAlert.add({
@@ -359,7 +382,9 @@ export async function checkForUsageLimit(org: Organization) {
     const plan = get(currentPlan);
     const membersOverflow =
         // nested null checks needed: GitHub Education plan have empty addons.
-        members > plan.addons.seats?.limit ? members - (plan.addons.seats?.limit || members) : 0;
+        members > plan?.addons?.seats?.limit
+            ? members - (plan?.addons?.seats?.limit || members)
+            : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);

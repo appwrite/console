@@ -1,101 +1,80 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-
-import BulkApiDark from '$lib/images/promos/bulk-api-dark.png';
-import BulkApiLight from '$lib/images/promos/bulk-api-light.png';
-
-import CSVImportDark from '$lib/images/promos/csv-import-placeholder-dark.png';
-import CSVImportLight from '$lib/images/promos/csv-import-placeholder-light.png';
-
-import DatabaseUpsertDark from '$lib/images/promos/database-upsert-dark.png';
-import DatabaseUpsertLight from '$lib/images/promos/database-upsert-light.png';
-import EncryptedDatabasesDark from '$lib/images/promos/encrypted-attribute-dark.png';
-import EncryptedDatabasesLight from '$lib/images/promos/encrypted-attribute-light.png';
+import AutoIncrementDark from '$lib/images/promos/auto-increment-dark.png';
+import AutoIncrementLight from '$lib/images/promos/auto-increment-light.png';
+import AtomicNumericOperationsDark from '$lib/images/promos/atomic-numeric-operations-dark.png';
+import AtomicNumericOperationsLight from '$lib/images/promos/atomic-numeric-operations-light.png';
+import AppwriteGeneralAvailabiltyLight from '$lib/images/promos/appwrite-general-availability-light.png';
+import AppwriteGeneralAvailabiltyDark from '$lib/images/promos/appwrite-general-availability-dark.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const csvImportPromo: BottomModalAlertItem = {
-        id: 'modal:csv_import_announcement',
+    const appwriteGeneralAvailabiltyPromo: BottomModalAlertItem = {
+        id: 'modal:appwrite_general_availability_announcement',
         src: {
-            dark: CSVImportDark,
-            light: CSVImportLight
+            dark: AppwriteGeneralAvailabiltyDark,
+            light: AppwriteGeneralAvailabiltyLight
         },
-        title: 'Introducing CSV import',
-        message:
-            "We're introducing a new way to populate your Appwrite databases: document imports from CSV files.",
+        title: 'Now Generally Available',
+        message: 'After 26 months of Appwrite Cloud, we are ready to remove the beta tag.',
         plan: 'free',
         importance: 8,
         scope: 'everywhere',
         cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-csv-imports',
+            text: 'Learn more',
+            link: () => 'https://apwr.dev/ygTXfxA',
             external: true,
             hideOnClick: true
         },
         show: true
     };
-
-    const bulkApiPromo: BottomModalAlertItem = {
-        id: 'modal:bulk_api_announcement',
+    const autoIncrementPromo: BottomModalAlertItem = {
+        id: 'modal:auto_increment_announcement',
         src: {
-            dark: BulkApiDark,
-            light: BulkApiLight
+            dark: AutoIncrementDark,
+            light: AutoIncrementLight
         },
-        title: 'Introducing Bulk API',
+        title: 'Announcing Auto-increment support',
         message:
-            'A new Appwrite Databases feature, explicitly designed to handle heavy write workloads.',
+            'Get a built-in numeric identifier that increases predictably with every new document added.',
         plan: 'free',
         importance: 8,
         scope: 'project',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-bulk-api',
+            link: () => 'https://appwrite.io/blog/post/announcing-auto-increment-support',
             external: true,
             hideOnClick: true
         },
         show: true
     };
-    const databaseUpsert: BottomModalAlertItem = {
-        id: 'modal:database_upsert_announcement',
+    const atomicNumericOperationsPromo: BottomModalAlertItem = {
+        id: 'modal:atomic_numeric_operations_announcement',
         src: {
-            dark: DatabaseUpsertDark,
-            light: DatabaseUpsertLight
+            dark: AtomicNumericOperationsDark,
+            light: AtomicNumericOperationsLight
         },
-        title: 'Introducing Database Upsert',
-        message: 'A new Appwrite Database feature, built to simplify your database interactions.',
+        title: 'Announcing Atomic Numeric Operations',
+        message:
+            'Safely update numeric fields directly on the server, without conflicts or race conditions.',
         plan: 'free',
         importance: 8,
         scope: 'project',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-database-upsert',
+            link: () => 'https://appwrite.io/blog/post/announcing-atomic-numeric-operations',
             external: true,
             hideOnClick: true
         },
         show: true
     };
-    const encryptedAttributePromo: BottomModalAlertItem = {
-        id: 'modal:encrypted_attribute_announcement',
-        src: {
-            dark: EncryptedDatabasesDark,
-            light: EncryptedDatabasesLight
-        },
-        title: 'Introducing Encrypted string attribute support',
-        message: 'Encrypt string attributes at rest, directly from the Appwrite Console.',
-        plan: 'free',
-        importance: 8,
-        scope: 'project',
-        cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-encrypted-string-attributes',
-            external: true,
-            hideOnClick: true
-        },
-        show: true
-    };
-    listOfPromotions.push(encryptedAttributePromo, databaseUpsert, bulkApiPromo, csvImportPromo);
+    listOfPromotions.push(
+        appwriteGeneralAvailabiltyPromo,
+        atomicNumericOperationsPromo,
+        autoIncrementPromo
+    );
 }
 
 export function addBottomModalAlerts() {

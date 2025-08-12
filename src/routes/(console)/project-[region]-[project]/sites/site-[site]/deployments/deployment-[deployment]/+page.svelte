@@ -12,7 +12,7 @@
     import CancelDeploymentModal from '../cancelDeploymentModal.svelte';
     import RedeployModal from '../../../redeployModal.svelte';
     import ActivateDeploymentModal from '../../../activateDeploymentModal.svelte';
-    import { Accordion } from '@appwrite.io/pink-svelte';
+    import { Accordion, Tooltip } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
     import LogsTimer from '../../../(components)/logsTimer.svelte';
     import { invalidate } from '$app/navigation';
@@ -30,18 +30,20 @@
     let showCancel = $state(false);
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe(
-            'console',
-            async (response: RealtimeResponseEvent<Models.Deployment>) => {
-                if (
-                    response.events.includes(
-                        `sites.${page.params.site}.deployments.${page.params.deployment}.update`
-                    )
-                ) {
-                    await invalidate(Dependencies.DEPLOYMENT);
+        return sdk
+            .forConsoleIn(page.params.region)
+            .client.subscribe(
+                'console',
+                async (response: RealtimeResponseEvent<Models.Deployment>) => {
+                    if (
+                        response.events.includes(
+                            `sites.${page.params.site}.deployments.${page.params.deployment}.update`
+                        )
+                    ) {
+                        await invalidate(Dependencies.DEPLOYMENT);
+                    }
                 }
-            }
-        );
+            );
     });
 </script>
 
@@ -56,7 +58,17 @@
                 </Button>
             {/if}
 
-            <Button secondary on:click={() => (showRedeploy = true)}>Redeploy</Button>
+            <Tooltip disabled={deployment?.sourceSize !== 0} placement={'bottom'}>
+                <div>
+                    <Button
+                        secondary
+                        disabled={deployment?.sourceSize === 0}
+                        on:click={() => (showRedeploy = true)}>
+                        Redeploy
+                    </Button>
+                </div>
+                <div slot="tooltip">Source is empty</div>
+            </Tooltip>
             <DeploymentActionMenu
                 inCard
                 {deployment}

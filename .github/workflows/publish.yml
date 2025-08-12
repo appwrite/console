@@ -39,7 +39,7 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=cloud"
-                      "PUBLIC_CONSOLE_FEATURE_FLAGS="
+                      "PUBLIC_CONSOLE_FEATURE_FLAGS=sites"
                       "PUBLIC_APPWRITE_MULTI_REGION=true"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY }}"
@@ -99,7 +99,7 @@ jobs:
                   password: ${{ secrets.DOCKERHUB_TOKEN }}
             - name: Extract metadata (tags, labels) for Docker
               id: meta
-              uses: docker/metadata-action@v5
+              uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
               with:
                   images: appwrite/console
                   tags: |

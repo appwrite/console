@@ -56,9 +56,17 @@
                 await goto(routeBase);
                 await invalidate(Dependencies.DOMAINS);
             } else {
-                await goto(
-                    `${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}&domain=${domain.$id}`
-                );
+                let redirect = `${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`;
+
+                if (isCloud) {
+                    /**
+                     * Domains are only on cloud!
+                     * Self-hosted instances have rules.
+                     */
+                    redirect += `&domain=${domain.$id}`;
+                }
+
+                await goto(redirect);
                 await invalidate(Dependencies.DOMAINS);
             }
         } catch (error) {

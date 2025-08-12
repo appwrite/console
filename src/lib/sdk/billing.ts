@@ -313,6 +313,7 @@ export type Plan = {
     webhooks: number;
     users: number;
     teams: number;
+    projects: number;
     databases: number;
     databasesAllowEncrypt: boolean;
     buckets: number;
@@ -580,6 +581,25 @@ export class Billing {
             organizationId,
             budget,
             alerts
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async updateSelectedProjects(
+        organizationId: string,
+        projects: string[]
+    ): Promise<Organization> {
+        const path = `/organizations/${organizationId}/projects`;
+        const params = {
+            projects
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
@@ -1091,7 +1111,8 @@ export class Billing {
     async setPaymentMethod(
         paymentMethodId: string,
         providerMethodId: string | PaymentMethod,
-        name: string
+        name: string,
+        state: string | undefined = undefined
     ): Promise<PaymentMethodData> {
         const path = `/account/payment-methods/${paymentMethodId}/provider`;
         const params = {
@@ -1099,6 +1120,10 @@ export class Billing {
             providerMethodId,
             name
         };
+
+        if (state !== undefined) {
+            params['state'] = state;
+        }
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'patch',

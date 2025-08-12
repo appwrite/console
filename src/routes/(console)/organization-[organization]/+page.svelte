@@ -16,16 +16,17 @@
         PaginationWithLimit
     } from '$lib/components';
     import { goto } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent, Click } from '$lib/actions/analytics';
     import { sdk } from '$lib/stores/sdk';
     import { loading } from '$routes/store';
     import { ID, Region, type Models } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[region]-[project]/settings/migrations/(import)';
-    import { readOnly } from '$lib/stores/billing';
+    import { billingProjectsLimitDate, readOnly, upgradeURL } from '$lib/stores/billing';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Badge, Icon, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Typography, Alert, Tag, Tooltip } from '@appwrite.io/pink-svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAndroid,
         IconApple,
@@ -37,13 +38,16 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
-    import { regions as regionsStore } from '$lib/stores/organization';
+    import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
+    import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
+    import { toLocaleDate } from '$lib/helpers/date';
 
     export let data;
 
     let showCreate = false;
     let showCreateProjectCloud = false;
     let addOrganization = false;
+    let showSelectProject = false;
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -117,7 +121,26 @@
     function findRegion(project: Models.Project) {
         return $regionsStore.regions.find((region) => region.$id === project.region);
     }
+
+    function isSetToArchive(project: Models.Project): boolean {
+        if (!isCloud) return false;
+        if (data.organization.projects?.length === 0) return false;
+        if (!project || !project.$id) return false;
+        return !data.organization.projects?.includes(project.$id);
+    }
+
+    function formatName(name: string, limit: number = 19) {
+        const mobileLimit = 16;
+        const actualLimit = $isSmallViewport ? mobileLimit : limit;
+        return name ? (name.length > actualLimit ? `${name.slice(0, actualLimit)}...` : name) : '-';
+    }
+
+    $: projectsToArchive = data.projects.projects.filter(
+        (project) => !data.organization.projects?.includes(project.$id)
+    );
 </script>
+
+<SelectProjectCloud selectedProjects={data.organization.projects || []} bind:showSelectProject />
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
@@ -144,6 +167,38 @@
         </DropList>
     </div>
 
+    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && data.projects.total > $currentPlan.projects && $canWriteProjects}
+        <Alert.Inline
+            title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
+            <Typography.Text>
+                {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
+                    {@html text}{index == projectsToArchive.length - 2
+                        ? ', and '
+                        : index < projectsToArchive.length - 1
+                          ? ', '
+                          : ''}
+                {/each}
+                will be archived
+            </Typography.Text>
+            <svelte:fragment slot="actions">
+                <Button secondary size="s" on:click={() => (showSelectProject = true)}>
+                    Manage projects
+                </Button>
+                <Button
+                    size="s"
+                    href={$upgradeURL}
+                    on:click={() => {
+                        trackEvent(Click.OrganizationClickUpgrade, {
+                            from: 'button',
+                            source: 'projects_archive_alert'
+                        });
+                    }}>
+                    Upgrade to Pro
+                </Button>
+            </svelte:fragment>
+        </Alert.Inline>
+    {/if}
+
     {#if data.projects.total}
         <CardContainer
             disableEmpty={!$canWriteProjects}
@@ -154,13 +209,36 @@
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
+                {@const formatted = isSetToArchive(project)
+                    ? formatName(project.name)
+                    : project.name}
                 <GridItem1
                     href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
                     <svelte:fragment slot="eyebrow">
                         {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
                     </svelte:fragment>
                     <svelte:fragment slot="title">
-                        {project.name}
+                        <Tooltip
+                            maxWidth={project.name.length.toString()}
+                            placement="top"
+                            disabled={!isSetToArchive(project)}>
+                            {formatted}
+                            <span slot="tooltip">
+                                {project.name}
+                            </span>
+                        </Tooltip>
+                    </svelte:fragment>
+
+                    <svelte:fragment slot="status">
+                        {#if isSetToArchive(project)}
+                            <Tag
+                                size="s"
+                                style="white-space: nowrap;"
+                                on:click={(event) => {
+                                    event.preventDefault();
+                                    showSelectProject = true;
+                                }}>Set to archive</Tag>
+                        {/if}
                     </svelte:fragment>
 
                     {#each platforms.slice(0, 2) as platform}
@@ -210,4 +288,8 @@
 
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />
-<CreateProjectCloud bind:showCreateProjectCloud regions={$regionsStore.regions} />
+<CreateProjectCloud
+    projects={data.projects.total}
+    bind:showCreateProjectCloud
+    regions={$regionsStore.regions}
+    teamId={page.params.organization} />

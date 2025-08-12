@@ -1,19 +1,39 @@
 <script lang="ts">
-    import { Layout, Typography, Input, Tag, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Input, Tag, Icon, Alert } from '@appwrite.io/pink-svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { CustomId } from '$lib/components/index.js';
     import { getFlagUrl } from '$lib/helpers/flag';
     import { isCloud } from '$lib/system.js';
+    import { currentPlan } from '$lib/stores/organization';
+    import { Button } from '$lib/elements/forms';
+    import { base } from '$app/paths';
+    import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
     import { filterRegions } from '$lib/helpers/regions';
+    import type { Snippet } from 'svelte';
 
-    export let projectName: string;
-    export let id: string;
-    export let regions: Array<Models.ConsoleRegion> = [];
-    export let region: string;
-    export let showTitle = true;
+    let {
+        projectName = $bindable(''),
+        id = $bindable(''),
+        regions = [],
+        region = $bindable(''),
+        showTitle = true,
+        projects = undefined,
+        submit
+    }: {
+        projectName: string;
+        id: string;
+        regions: Array<Models.ConsoleRegion>;
+        region: string;
+        showTitle: boolean;
+        projects?: number;
+        submit?: Snippet;
+    } = $props();
 
-    let showCustomId = false;
+    let showCustomId = $state(false);
+    let projectsLimited = $derived(
+        $currentPlan?.projects > 0 && projects && projects >= $currentPlan?.projects
+    );
 </script>
 
 <svelte:head>
@@ -26,10 +46,26 @@
     {#if showTitle}
         <Typography.Title size="l">Create your project</Typography.Title>
     {/if}
+    {#if projectsLimited}
+        <Alert.Inline
+            status="warning"
+            title={`You've reached your limit of ${$currentPlan?.projects || 2} projects`}>
+            Extra projects are available on paid plans for an additional fee
+            <svelte:fragment slot="actions">
+                <Button
+                    compact
+                    size="s"
+                    href={`${base}/organization-${page.params.organization}/billing`}
+                    external
+                    text>Upgrade</Button>
+            </svelte:fragment>
+        </Alert.Inline>
+    {/if}
     <Layout.Stack direction="column" gap="xxl">
         <Layout.Stack direction="column" gap="xxl">
             <Layout.Stack direction="column" gap="s">
                 <Input.Text
+                    disabled={projectsLimited}
                     label="Name"
                     placeholder="Project name"
                     required
@@ -49,6 +85,7 @@
             {#if isCloud && regions.length > 0}
                 <Layout.Stack gap="xs">
                     <Input.Select
+                        disabled={projectsLimited}
                         required
                         bind:value={region}
                         placeholder="Select a region"
@@ -59,5 +96,5 @@
             {/if}
         </Layout.Stack>
     </Layout.Stack>
-    <slot name="submit"></slot>
+    {@render submit?.()}
 </Layout.Stack>
