@@ -9,10 +9,11 @@
     import { Permissions } from '$lib/components/permissions';
     import type { Columns } from './store';
     import { ID, type Models } from '@appwrite.io/console';
-    import { Alert, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Alert, Layout, Typography, Selector } from '@appwrite.io/pink-svelte';
     import SideSheet from './layout/sidesheet.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { tick } from 'svelte';
 
     let {
         table,
@@ -26,6 +27,8 @@
 
     let isSubmitting = $state(false);
     let columnFormWrapper: HTMLDivElement | null = $state(null);
+    let createMore = $state(false);
+    let formResetKey = $state(0);
 
     type CreateRow = {
         id?: string;
@@ -65,18 +68,23 @@
                 permissions: $createRow.permissions
             });
 
-            showSheet = false;
             addNotification({
                 message: 'Row has been created',
                 type: 'success'
             });
 
-            // post op clear.
-            existingData = null;
             trackEvent(Submit.RowCreate, {
                 customId: !!$createRow.id
             });
             await invalidate(Dependencies.ROW);
+
+            if (createMore) {
+                createRow = createRowWritable();
+                existingData = null;
+                formResetKey += 1;
+                await tick();
+                focusFirstInput();
+            }
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -100,6 +108,8 @@
         if (showSheet) {
             focusFirstInput();
             createRow = createRowWritable();
+        } else {
+            createMore = false;
         }
     });
 </script>
@@ -115,36 +125,52 @@
             submit={{
                 text: 'Create',
                 disabled: isSubmitting,
-                onClick: () => create()
+                onClick: async () => {
+                    await create();
+                    if (createMore) {
+                        throw new Error('Keep open');
+                    }
+                }
             }}>
             <Layout.Stack gap="xxl">
-                <div bind:this={columnFormWrapper}>
-                    <ColumnForm
-                        columns={$createRow.columns}
-                        bind:customId={$createRow.id}
-                        bind:formValues={$createRow.row} />
-                </div>
+                {#key formResetKey}
+                    <div bind:this={columnFormWrapper}>
+                        <ColumnForm
+                            columns={$createRow.columns}
+                            bind:customId={$createRow.id}
+                            bind:formValues={$createRow.row} />
+                    </div>
 
-                <Layout.Stack gap="xl">
-                    <Typography.Text>
-                        Choose which permission scopes to grant your application. It is best
-                        practice to allow only the permissions you need to meet your project goals.
-                    </Typography.Text>
-                    {#if table.rowSecurity}
-                        <Alert.Inline status="info">
-                            <svelte:fragment slot="title">Row security is enabled</svelte:fragment>
-                            Users will be able to access this row if they have been granted
-                            <b>either row or table permissions</b>.
-                        </Alert.Inline>
-                        <Permissions bind:permissions={$createRow.permissions} />
-                    {:else}
-                        <Alert.Inline status="info">
-                            <svelte:fragment slot="title">Row security is disabled</svelte:fragment>
-                            If you want to assign row permissions, navigate to Table settings and enable
-                            row security. Otherwise, only table permissions will be used.
-                        </Alert.Inline>
-                    {/if}
-                </Layout.Stack>
+                    <Layout.Stack gap="xl">
+                        <Typography.Text>
+                            Choose which permission scopes to grant your application. It is best
+                            practice to allow only the permissions you need to meet your project goals.
+                        </Typography.Text>
+                        {#if table.rowSecurity}
+                            <Alert.Inline status="info">
+                                <svelte:fragment slot="title">Row security is enabled</svelte:fragment>
+                                Users will be able to access this row if they have been granted
+                                <b>either row or table permissions</b>.
+                            </Alert.Inline>
+                            <Permissions bind:permissions={$createRow.permissions} />
+                        {:else}
+                            <Alert.Inline status="info">
+                                <svelte:fragment slot="title">Row security is disabled</svelte:fragment>
+                                If you want to assign row permissions, navigate to Table settings and enable
+                                row security. Otherwise, only table permissions will be used.
+                            </Alert.Inline>
+                        {/if}
+                    </Layout.Stack>
+                {/key}
+
+                <!-- more toggle to create rows-->
+            </Layout.Stack>
+            <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Selector.Switch 
+                    id="create-more" 
+                    bind:checked={createMore} 
+                    label="Create more"
+                />
             </Layout.Stack>
         </SideSheet>
     </div>
