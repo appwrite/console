@@ -867,8 +867,7 @@
                                         column={rowColumn}
                                         row={paginatedRows.items[index]}
                                         onRowStructureUpdate={updateRowContents}
-                                        on:change={(row) =>
-                                            paginatedRows.update(index, row.detail)}
+                                        on:change={(row) => paginatedRows.update(index, row.detail)}
                                         on:revert={(row) =>
                                             paginatedRows.update(index, row.detail)} />
                                 </svelte:fragment>

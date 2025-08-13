@@ -117,6 +117,11 @@
 {#if $createRow}
     <div class="sheet-container">
         <!-- TODO: add a ID badge-->
+        {#snippet footer()}
+            <Layout.Stack inline direction="row" alignItems="center">
+                <Selector.Switch id="create-more" bind:checked={createMore} label="Create more" />
+            </Layout.Stack>
+        {/snippet}
         <SideSheet
             spaced
             title={`${existingData ? 'Duplicate' : 'Create'} row`}
@@ -131,7 +136,8 @@
                         throw new Error('Keep open');
                     }
                 }
-            }}>
+            }}
+            {footer}>
             <Layout.Stack gap="xxl">
                 {#key formResetKey}
                     <div bind:this={columnFormWrapper}>
@@ -144,33 +150,27 @@
                     <Layout.Stack gap="xl">
                         <Typography.Text>
                             Choose which permission scopes to grant your application. It is best
-                            practice to allow only the permissions you need to meet your project goals.
+                            practice to allow only the permissions you need to meet your project
+                            goals.
                         </Typography.Text>
                         {#if table.rowSecurity}
                             <Alert.Inline status="info">
-                                <svelte:fragment slot="title">Row security is enabled</svelte:fragment>
+                                <svelte:fragment slot="title"
+                                    >Row security is enabled</svelte:fragment>
                                 Users will be able to access this row if they have been granted
                                 <b>either row or table permissions</b>.
                             </Alert.Inline>
                             <Permissions bind:permissions={$createRow.permissions} />
                         {:else}
                             <Alert.Inline status="info">
-                                <svelte:fragment slot="title">Row security is disabled</svelte:fragment>
-                                If you want to assign row permissions, navigate to Table settings and enable
-                                row security. Otherwise, only table permissions will be used.
+                                <svelte:fragment slot="title"
+                                    >Row security is disabled</svelte:fragment>
+                                If you want to assign row permissions, navigate to Table settings and
+                                enable row security. Otherwise, only table permissions will be used.
                             </Alert.Inline>
                         {/if}
                     </Layout.Stack>
                 {/key}
-
-                <!-- more toggle to create rows-->
-            </Layout.Stack>
-            <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Selector.Switch 
-                    id="create-more" 
-                    bind:checked={createMore} 
-                    label="Create more"
-                />
             </Layout.Stack>
         </SideSheet>
     </div>
