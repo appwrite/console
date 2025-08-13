@@ -27,7 +27,19 @@
 
         const parsed = Number(raw);
         if (Number.isFinite(parsed)) {
-            value = parsed;
+            if (step === 1) {
+                if (!Number.isInteger(parsed)) {
+                    const lowerInt = Math.floor(parsed);
+                    const upperInt = Math.ceil(parsed);
+                    error = `Value must be an integer. Please enter a value between ${lowerInt} and ${upperInt}.`;
+                    return;
+                }
+                value = parsed;
+                error = null;
+            } else {
+                value = parsed;
+                error = null;
+            }
         }
     }
 
@@ -52,7 +64,15 @@
         error = event.currentTarget.validationMessage;
     };
 
-    $: if (value !== null && value !== undefined && !Number.isNaN(value)) {
+    $: if (
+        step === 1 &&
+        value !== null &&
+        value !== undefined &&
+        !Number.isNaN(value) &&
+        Number.isInteger(value)
+    ) {
+        error = null;
+    } else if (step !== 1 && value !== null && value !== undefined && !Number.isNaN(value)) {
         error = null;
     }
 </script>

@@ -52,13 +52,41 @@
 
     async function updateData() {
         try {
+            const processedWork = { ...$work } as Record<string, unknown>;
+            for (const attr of $collection.attributes) {
+                if (attr.type === 'integer') {
+                    const key = attr.key as keyof typeof processedWork;
+                    const val = processedWork[key] as unknown;
+                    if (attr.array && Array.isArray(val)) {
+                        processedWork[key] = (val as unknown[]).map((v) => {
+                            if (typeof v === 'number' && Number.isFinite(v))
+                                return Math.round(v as number);
+                            if (
+                                typeof v === 'string' &&
+                                v.trim() !== '' &&
+                                Number.isFinite(Number(v))
+                            )
+                                return Math.round(Number(v));
+                            return v;
+                        });
+                    } else if (typeof val === 'number' && Number.isFinite(val)) {
+                        processedWork[key] = Math.round(val as number);
+                    } else if (
+                        typeof val === 'string' &&
+                        val.trim() !== '' &&
+                        Number.isFinite(Number(val))
+                    ) {
+                        processedWork[key] = Math.round(Number(val));
+                    }
+                }
+            }
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .databases.updateDocument(
                     databaseId,
                     collectionId,
                     documentId,
-                    $work,
+                    processedWork,
                     $work.$permissions
                 );
             await invalidate(Dependencies.DOCUMENT);
