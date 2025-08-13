@@ -1,12 +1,12 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import AutoIncrementDark from '$lib/images/promos/auto-increment-dark.png';
-import AutoIncrementLight from '$lib/images/promos/auto-increment-light.png';
 import AtomicNumericOperationsDark from '$lib/images/promos/atomic-numeric-operations-dark.png';
 import AtomicNumericOperationsLight from '$lib/images/promos/atomic-numeric-operations-light.png';
 import AppwriteGeneralAvailabiltyLight from '$lib/images/promos/appwrite-general-availability-light.png';
 import AppwriteGeneralAvailabiltyDark from '$lib/images/promos/appwrite-general-availability-dark.png';
+import TimestampOverridesDark from '$lib/images/promos/timestamp-overrides-dark.png';
+import TimestampOverridesLight from '$lib/images/promos/timestamp-overrides-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -30,21 +30,21 @@ if (isCloud) {
         },
         show: true
     };
-    const autoIncrementPromo: BottomModalAlertItem = {
-        id: 'modal:auto_increment_announcement',
+    const timestampOverridesPromo: BottomModalAlertItem = {
+        id: 'modal:timestamp_overrides_announcement',
         src: {
-            dark: AutoIncrementDark,
-            light: AutoIncrementLight
+            dark: TimestampOverridesDark,
+            light: TimestampOverridesLight
         },
-        title: 'Announcing Auto-increment support',
+        title: 'Announcing Timestamp Overrides',
         message:
-            'Get a built-in numeric identifier that increases predictably with every new document added.',
+            'Move historical data into Appwrite without losing context or disrupting chronological accuracy.',
         plan: 'free',
         importance: 8,
         scope: 'project',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-auto-increment-support',
+            link: () => 'https://appwrite.io/blog/post/announcing-timestamp-overrides',
             external: true,
             hideOnClick: true
         },
@@ -71,9 +71,9 @@ if (isCloud) {
         show: true
     };
     listOfPromotions.push(
+        timestampOverridesPromo,
         appwriteGeneralAvailabiltyPromo,
-        atomicNumericOperationsPromo,
-        autoIncrementPromo
+        atomicNumericOperationsPromo
     );
 }
 
