@@ -53,13 +53,42 @@
 
     async function create() {
         try {
+            const processedDocument = { ...$createDocument.document } as Record<string, unknown>;
+            for (const attr of $createDocument.attributes) {
+                if (attr.type === 'integer') {
+                    const key = attr.key as keyof typeof processedDocument;
+                    const val = processedDocument[key] as unknown;
+                    if (attr.array && Array.isArray(val)) {
+                        processedDocument[key] = (val as unknown[]).map((v) => {
+                            if (typeof v === 'number' && Number.isFinite(v))
+                                return Math.round(v as number);
+                            if (
+                                typeof v === 'string' &&
+                                v.trim() !== '' &&
+                                Number.isFinite(Number(v))
+                            )
+                                return Math.round(Number(v));
+                            return v;
+                        });
+                    } else if (typeof val === 'number' && Number.isFinite(val)) {
+                        processedDocument[key] = Math.round(val as number);
+                    } else if (
+                        typeof val === 'string' &&
+                        val.trim() !== '' &&
+                        Number.isFinite(Number(val))
+                    ) {
+                        processedDocument[key] = Math.round(Number(val));
+                    }
+                }
+            }
+
             const { $id } = await sdk
                 .forProject(page.params.region, page.params.project)
                 .databases.createDocument(
                     page.params.database,
                     page.params.collection,
                     $createDocument.id ?? ID.unique(),
-                    $createDocument.document,
+                    processedDocument,
                     $createDocument.permissions
                 );
 

@@ -9,6 +9,13 @@
         key: string,
         data: Partial<Models.AttributeInteger>
     ) {
+        const min = data.min !== null && data.min !== undefined ? Math.round(data.min) : undefined;
+        const max = data.max !== null && data.max !== undefined ? Math.round(data.max) : undefined;
+        const defaultValue =
+            data.default !== null && data.default !== undefined
+                ? Math.round(data.default)
+                : undefined;
+
         await sdk
             .forProject(page.params.region, page.params.project)
             .databases.createIntegerAttribute(
@@ -16,9 +23,9 @@
                 collectionId,
                 key,
                 data.required,
-                data.min,
-                data.max,
-                data.default,
+                min,
+                max,
+                defaultValue,
                 data.array
             );
     }
@@ -29,6 +36,13 @@
         data: Partial<Models.AttributeInteger>,
         originalKey?: string
     ) {
+        const min = data.min !== null && data.min !== undefined ? Math.round(data.min) : data.min;
+        const max = data.max !== null && data.max !== undefined ? Math.round(data.max) : data.max;
+        const defaultValue =
+            data.default !== null && data.default !== undefined
+                ? Math.round(data.default)
+                : data.default;
+
         await sdk
             .forProject(page.params.region, page.params.project)
             .databases.updateIntegerAttribute(
@@ -36,9 +50,9 @@
                 collectionId,
                 originalKey,
                 data.required,
-                data.default,
-                Math.abs(data.min) > Number.MAX_SAFE_INTEGER ? undefined : data.min,
-                Math.abs(data.max) > Number.MAX_SAFE_INTEGER ? undefined : data.max,
+                defaultValue,
+                Math.abs(min) > Number.MAX_SAFE_INTEGER ? undefined : min,
+                Math.abs(max) > Number.MAX_SAFE_INTEGER ? undefined : max,
                 data.key !== originalKey ? data.key : undefined
             );
     }
@@ -90,12 +104,14 @@
         label="Min"
         placeholder="Enter size"
         bind:value={data.min}
+        step={1}
         required={editing} />
     <InputNumber
         id="max"
         label="Max"
         placeholder="Enter size"
         bind:value={data.max}
+        step={1}
         required={editing} />
 </Layout.Stack>
 <InputNumber
@@ -105,6 +121,7 @@
     min={data.min}
     max={data.max}
     bind:value={data.default}
+    step={1}
     disabled={data.required || data.array}
     nullable={!data.required && !data.array} />
 <Selector.Checkbox
