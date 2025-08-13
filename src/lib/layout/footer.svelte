@@ -11,7 +11,7 @@
         Button,
         Badge
     } from '@appwrite.io/pink-svelte';
-    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     const currentYear = new Date().getFullYear();
 </script>
@@ -23,7 +23,6 @@
             direction="row"
             alignItems="center"
             gap={$isSmallViewport ? 'm' : 'l'}
-            inline={$isTabletViewport}
             justifyContent="flex-start">
             <Typography.Caption variant="400">
                 ⓒ {currentYear} Appwrite. All rights reserved.
@@ -58,10 +57,15 @@
             direction="row"
             justifyContent={$isSmallViewport ? 'flex-start' : 'flex-end'}
             alignItems="center"
-            wrap="wrap">
+            wrap={$isSmallViewport ? 'wrap' : 'normal'}>
             {#if !$isSmallViewport}
                 {#if isCloud}
-                    <Badge size="xs" variant="secondary" content="BETA" />
+                    <Badge
+                        size="xs"
+                        type="success"
+                        variant="secondary"
+                        content="Generally Available"
+                        style="white-space: nowrap;" />
                     <Icon size="s" icon={IconCloud} />
                 {/if}
 
@@ -72,7 +76,8 @@
                         href="https://github.com/appwrite/appwrite/releases"
                         aria-label="Appwrite releases on Github"
                         target="_blank"
-                        rel="noreferrer">
+                        rel="noreferrer"
+                        style="white-space: nowrap;">
                         Version {$version}
                     </Link.Anchor>
                     <span class="divider-wrapper">
@@ -135,12 +140,18 @@
                         href="https://github.com/appwrite/appwrite/releases"
                         aria-label="Appwrite releases on Github"
                         target="_blank"
-                        rel="noreferrer">
+                        rel="noreferrer"
+                        style="white-space: nowrap;">
                         Version {$version}
                     </Link.Anchor>
                     {#if isCloud}
                         <Icon size="s" icon={IconCloud} />
-                        <Badge size="xs" variant="secondary" content="BETA" />
+                        <Badge
+                            size="xs"
+                            type="success"
+                            variant="secondary"
+                            content="Generally Available"
+                            style="white-space: nowrap;" />
                     {/if}
                 {/if}
             {/if}
@@ -166,8 +177,5 @@
             margin-inline-start: -1.5rem;
             margin-inline-end: 2rem;
         }
-    }
-    .extra-margin {
-        margin-block-start: var(--space-2, 4px);
     }
 </style>
