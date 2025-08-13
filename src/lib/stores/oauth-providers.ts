@@ -8,7 +8,7 @@ import Main from '$routes/(console)/project-[region]-[project]/auth/(providers)/
 import Microsoft from '$routes/(console)/project-[region]-[project]/auth/(providers)/microsoftOAuth.svelte';
 import Oidc from '$routes/(console)/project-[region]-[project]/auth/(providers)/oidcOAuth.svelte';
 import Okta from '$routes/(console)/project-[region]-[project]/auth/(providers)/oktaOAuth.svelte';
-
+import Kakao from '$routes/(console)/project-[region]-[project]/auth/(providers)/kakaoOAuth.svelte';
 export type Provider = {
     name: string;
     icon: string;
@@ -124,6 +124,12 @@ export const oAuthProviders: Record<string, Provider> = {
         icon: 'google',
         docs: 'https://support.google.com/googleapi/answer/6158849',
         component: Google
+    },
+    kakao: {
+        name: 'Kakao',
+        icon: 'kakao',
+        docs: 'https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api',
+        component: Kakao
     },
     linkedin: {
         name: 'LinkedIn',
