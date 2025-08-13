@@ -32,7 +32,7 @@
         rowActivitySheet,
         paginatedRows,
         paginatedRowsLoading,
-        spreadsheetRenderKey
+        spreadsheetRenderKey, expandTabs
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -120,6 +120,7 @@
         displayNames = preferences.getDisplayNames();
         columnsOrder.set(preferences.getColumnOrder(tableId));
         columnsWidth.set(preferences.getColumnWidths(tableId));
+        expandTabs.set(preferences.isTableHeaderExpanded(tableId));
 
         makeTableColumns();
         sortState.set(data.currentSort as SortState);
@@ -586,12 +587,6 @@
     }
 
     async function handleGoToPage(targetPageNum: number): Promise<void> {
-        if ($paginatedRows.hasPage(targetPageNum) || $paginatedRows.hasPage(targetPageNum + 1)) {
-            scrollToIndexOffset = 0;
-        } else {
-            scrollToIndexOffset = 16;
-        }
-
         if (targetPageNum < 1 || targetPageNum > totalPages) return;
 
         if (!$paginatedRows.hasPage(targetPageNum)) {
@@ -664,7 +659,9 @@
 
     $: rowSelection = !$spreadsheetLoading && !$paginatedRowsLoading ? true : ('disabled' as const);
 
-    $: scrollToIndexOffset = 16;
+    expandTabs.subscribe((expanded) => {
+        preferences.setTableHeaderExpanded(tableId, expanded);
+    })
 </script>
 
 <SpreadsheetContainer observeExpand bind:this={spreadsheetContainer}>
@@ -684,7 +681,6 @@
             on:columnsSwap={(order) => saveColumnsOrder(order.detail)}
             on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}
             bind:currentPage
-            {scrollToIndexOffset}
             nextPageTriggerOffset={2}
             paginationBufferSpace={35}
             jumpToPageNumber={jumpToPageReactive}
