@@ -4,7 +4,14 @@
     import { preferences } from '$lib/stores/preferences';
     import { onMount, type Snippet } from 'svelte';
     import type { Column } from '$lib/helpers/types';
-    import { ActionMenu, Divider, Layout, Popover, Selector } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Divider,
+        Layout,
+        Popover,
+        Selector,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
 
     let {
@@ -87,7 +94,7 @@
 
     let selectedColumnsNumber = $derived(
         $columns.reduce((acc, column) => {
-            if (column.hide) return acc;
+            if (column.hide || column.isAction) return acc;
 
             return ++acc;
         }, 0)
@@ -187,21 +194,29 @@
                                 placeholder="Search"
                                 bind:value={search} />
 
-                            <Layout.Stack
-                                gap="s"
-                                direction="row"
-                                alignItems="center"
-                                style="padding-block-end: 0.5rem">
-                                <Button size="xs" icon extraCompact on:click={selectAll}
-                                    >Select all</Button>
+                            {#if filteredColumns.length > 0}
+                                <Layout.Stack
+                                    gap="s"
+                                    direction="row"
+                                    alignItems="center"
+                                    style="padding-block-end: 0.5rem">
+                                    <Button size="xs" icon extraCompact on:click={selectAll}
+                                        >Select all</Button>
 
-                                <div style:height="1rem">
-                                    <Divider vertical />
+                                    <div style:height="1rem">
+                                        <Divider vertical />
+                                    </div>
+
+                                    <Button size="xs" icon extraCompact on:click={deselectAll}
+                                        >Deselect all</Button>
+                                </Layout.Stack>
+                            {:else}
+                                <div style:padding-inline="0.6rem">
+                                    <Typography.Text>
+                                        No column named "{search}" was found
+                                    </Typography.Text>
                                 </div>
-
-                                <Button size="xs" icon extraCompact on:click={deselectAll}
-                                    >Deselect all</Button>
-                            </Layout.Stack>
+                            {/if}
                         </Layout.Stack>
                     {/if}
 

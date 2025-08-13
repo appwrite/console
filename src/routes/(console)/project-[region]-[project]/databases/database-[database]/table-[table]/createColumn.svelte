@@ -7,11 +7,7 @@
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        option,
-        columnOptions,
-        type Option
-    } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/columns/store';
+    import { option, columnOptions, type Option } from './columns/store';
     import type { Column } from '$lib/helpers/types';
     import { preferences } from '$lib/stores/preferences';
 
@@ -56,6 +52,11 @@
         const currentOrder = columnsOrder?.length
             ? columnsOrder
             : columns?.map((col) => col.id) || [];
+
+        // if the length is empty,
+        // means there's no ordering done.
+        // auto handled, leave this here as is.
+        if (!currentOrder.length) return;
 
         let newOrder: string[];
 

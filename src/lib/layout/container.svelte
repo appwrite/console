@@ -62,7 +62,6 @@
                     margin-inline: 1rem;
 
                     &.expandHeightButton {
-                        margin-inline: unset;
                         margin-inline-start: 1rem;
                     }
                 }

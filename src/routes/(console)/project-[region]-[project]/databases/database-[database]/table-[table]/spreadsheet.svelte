@@ -32,7 +32,8 @@
         rowActivitySheet,
         paginatedRows,
         paginatedRowsLoading,
-        spreadsheetRenderKey, expandTabs
+        spreadsheetRenderKey,
+        expandTabs
     } from './store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -118,9 +119,6 @@
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
-        columnsOrder.set(preferences.getColumnOrder(tableId));
-        columnsWidth.set(preferences.getColumnWidths(tableId));
-        expandTabs.set(preferences.isTableHeaderExpanded(tableId));
 
         makeTableColumns();
         sortState.set(data.currentSort as SortState);
@@ -661,7 +659,7 @@
 
     expandTabs.subscribe((expanded) => {
         preferences.setTableHeaderExpanded(tableId, expanded);
-    })
+    });
 </script>
 
 <SpreadsheetContainer observeExpand bind:this={spreadsheetContainer}>
@@ -699,8 +697,8 @@
                                 on:click={() => {
                                     $showCreateAttributeSheet.show = true;
                                     $showCreateAttributeSheet.column = null;
-                                    $showCreateAttributeSheet.columns = $tableColumns;
                                     $showCreateAttributeSheet.title = 'Create column';
+                                    $showCreateAttributeSheet.columns = $tableColumns;
                                     $showCreateAttributeSheet.columnsOrder = $columnsOrder;
                                 }}>
                                 <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
@@ -940,13 +938,15 @@
                         </Layout.Stack>
                     </Layout.Stack>
 
-                    <div style:margin-right="var(--space-6)">
-                        <Button.Button
-                            variant="extra-compact"
-                            on:click={() => {
-                                $randomDataModalState.show = true;
-                            }}>Generate sample data</Button.Button>
-                    </div>
+                    {#if !$isSmallViewport}
+                        <div style:margin-right="var(--space-6)">
+                            <Button.Button
+                                variant="extra-compact"
+                                on:click={() => {
+                                    $randomDataModalState.show = true;
+                                }}>Generate sample data</Button.Button>
+                        </div>
+                    {/if}
                 </Layout.Stack>
             </svelte:fragment>
         </Spreadsheet.Root>

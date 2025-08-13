@@ -4,6 +4,7 @@
     import {
         ActionMenu,
         Badge,
+        Divider,
         FloatingActionBar,
         Icon,
         Layout,
@@ -176,6 +177,7 @@
             bind:selectedRows={selectedColumns}
             columns={[
                 { id: 'key', width: { min: 200 } },
+                { id: 'size', width: { min: 200 } },
                 { id: 'indexed', width: { min: 150 } },
                 { id: 'default', width: { min: 200 } },
                 { id: 'actions', width: 40, isAction: true }
@@ -183,6 +185,7 @@
             bottomActionClick={() => ($showCreateAttributeSheet.show = true)}>
             <svelte:fragment slot="header" let:root>
                 <Spreadsheet.Header.Cell column="key" {root}>Column name</Spreadsheet.Header.Cell>
+                <Spreadsheet.Header.Cell column="size" {root}>Size</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="indexed" {root}>Indexed</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="default" {root}
                     >Default value</Spreadsheet.Header.Cell>
@@ -218,7 +221,7 @@
                                         {#if column.key === '$id' || column.key === '$sequence' || column.key === '$createdAt' || column.key === '$updatedAt'}
                                             {column['name']}
                                         {:else}
-                                            {column.key}
+                                            {column.key} {column.array ? '[]' : undefined}
                                         {/if}
                                     </span>
                                     {#if isString(column) && column.encrypt}
@@ -251,6 +254,15 @@
                                 {/if}
                             </Layout.Stack>
                         </Layout.Stack>
+                    </Spreadsheet.Cell>
+                    <Spreadsheet.Cell column="size" {root} isEditable={false}>
+                        {#if column.type === 'string'}
+                            {column.size /* or length */}
+                        {:else if column.type === 'integer' || column.type === 'double'}
+                            Min: {column.min} Max: {column.max}
+                        {:else}
+                            -
+                        {/if}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="indexed" {root} isEditable={false}>
                         {@const isIndexed = $indexes.some((index) =>
@@ -309,6 +321,10 @@
                                         </ActionMenu.Item.Button>
                                     {/if}
                                     {#if column.status !== 'processing' && !column['system']}
+                                        <div style:padding-block="0.25rem">
+                                            <Divider />
+                                        </div>
+
                                         <ActionMenu.Item.Button
                                             status="danger"
                                             leadingIcon={IconTrash}
@@ -353,7 +369,7 @@
                         <Layout.Stack direction="row" alignItems="center" gap="m">
                             <Badge content={selectedColumns.length.toString()} />
                             <span style:font-size="14px">
-                                {selectedColumns.length > 1 ? 'attributes' : 'attribute'}
+                                {selectedColumns.length > 1 ? 'columns' : 'column'}
                                 selected
                             </span>
                         </Layout.Stack>

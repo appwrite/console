@@ -27,7 +27,7 @@
                 variant="secondary"
                 class={onlyIcon ? 'width-fix' : undefined}
                 disabled={!$columns.length && showAnyway}
-                badge={onlyIcon ? undefined : selectedColumnsNumber.toString()}
+                badge={selectedColumnsNumber.toString()}
                 on:click={toggle}>
                 <Icon slot="start" icon={IconViewBoards} />
             </Button.Button>

@@ -32,7 +32,9 @@
         showCreateIndexSheet,
         spreadsheetLoading,
         rowActivitySheet,
-        spreadsheetRenderKey
+        spreadsheetRenderKey,
+        columnsWidth,
+        expandTabs
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
@@ -54,6 +56,7 @@
     import { sleep } from '$lib/helpers/promises';
     import CreateIndex from './indexes/createIndex.svelte';
     import { hash } from '$lib/helpers/string';
+    import { preferences } from '$lib/stores/preferences';
 
     let editRow: EditRow;
     let createIndex: CreateIndex;
@@ -66,7 +69,13 @@
      */
     let isWaterfallFromFaker = false;
 
+    const tableId = page.params.table;
+
     onMount(() => {
+        columnsOrder.set(preferences.getColumnOrder(tableId));
+        columnsWidth.set(preferences.getColumnWidths(tableId));
+        expandTabs.set(preferences.isTableHeaderExpanded(tableId));
+
         return realtime
             .forProject(page.params.region, page.params.project)
             .subscribe(['project', 'console'], (response) => {
@@ -304,6 +313,7 @@
 <slot />
 
 <SideSheet
+    spaced
     closeOnBlur
     title={$showCreateAttributeSheet.title}
     bind:show={$showCreateAttributeSheet.show}
@@ -329,6 +339,7 @@
 </SideSheet>
 
 <SideSheet
+    spaced
     closeOnBlur
     title={$databaseColumnSheetOptions.title}
     bind:show={$databaseColumnSheetOptions.show}
@@ -357,6 +368,7 @@
 </SideSheet>
 
 <SideSheet
+    spaced
     closeOnBlur
     title="Create index"
     bind:show={$showCreateIndexSheet.show}

@@ -21,6 +21,7 @@
     );
 
     const currentFontSize = $derived(collapsed ? 'var(--font-size-l)' : expandedSize);
+    // const currentFontSize = $derived(collapsed ? 'var(--font-size-l)' : 'var(--font-size-xxxl)');
 
     const currentLineHeight = $derived(collapsed ? '130%' : '140%');
     const currentLetterSpacing = $derived(collapsed ? '0' : '-0.144px');

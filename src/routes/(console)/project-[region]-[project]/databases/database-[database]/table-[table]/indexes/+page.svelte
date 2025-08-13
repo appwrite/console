@@ -11,6 +11,7 @@
     import {
         ActionMenu,
         Badge,
+        Divider,
         FloatingActionBar,
         Icon,
         Layout,
@@ -167,7 +168,7 @@
                                 {index.lengths}
                             </Spreadsheet.Cell>
                             <Spreadsheet.Cell column="actions" {root}>
-                                <Popover let:toggle padding="none" placement="bottom-end">
+                                <Popover let:toggle padding="none" placement="bottom-end" portal>
                                     <Button text icon ariaLabel="more options" on:click={toggle}>
                                         <Icon icon={IconDotsHorizontal} size="s" />
                                     </Button>
@@ -178,6 +179,11 @@
                                                 selectedIndex = index;
                                                 showOverview = true;
                                             }}>Overview</ActionMenu.Item.Button>
+
+                                        <div style:padding-block="0.25rem">
+                                            <Divider />
+                                        </div>
+
                                         <ActionMenu.Item.Button
                                             status="danger"
                                             leadingIcon={IconTrash}

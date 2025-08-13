@@ -45,9 +45,13 @@
             onSort?.(Query.orderDesc(column));
         }
     }
+
+    const direction = $derived(
+        $state?.column === column && $state?.direction !== 'default' ? $state?.direction : ''
+    );
 </script>
 
-<Button extraCompact on:click={sort} class="hoverable-compact {$state?.direction}" {disabled}>
+<Button extraCompact on:click={sort} class="hoverable-compact {direction}" {disabled}>
     <Icon
         size="s"
         icon={$state?.column !== column || $state?.direction === 'default'
@@ -82,6 +86,14 @@
             & :global(i) {
                 --icon-fill: var(--fgcolor-neutral-secondary) !important;
             }
+        }
+    }
+
+    :global(.hoverable-compact.asc),
+    :global(.hoverable-compact.desc) {
+        background-color: var(--bgcolor-neutral-secondary) !important;
+        & :global(i) {
+            --icon-fill: var(--fgcolor-neutral-secondary) !important;
         }
     }
 </style>

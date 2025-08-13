@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { invalidate } from '$app/navigation';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
@@ -13,6 +12,7 @@
     import { table, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     let {
         showCreateIndex = $bindable(false),
@@ -95,12 +95,6 @@
                 invalidate(Dependencies.DATABASE)
             ]);
 
-            if (!page.route.id.includes('/indexes')) {
-                await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$table.$id}/indexes`
-                );
-            }
-
             addNotification({
                 message: 'Creating index',
                 type: 'success'
@@ -138,7 +132,8 @@
 
 <Layout.Stack gap="s">
     {#each columnList as column, index}
-        <Layout.Stack direction="row">
+        {@const direction = $isSmallViewport ? 'column' : 'row'}
+        <Layout.Stack {direction}>
             <InputSelect
                 required
                 options={[
@@ -171,17 +166,31 @@
                     bind:value={column.length} />
             {/if}
 
-            <Layout.Stack direction="row" alignItems="flex-end" inline>
-                <Button
-                    icon
-                    secondary
-                    disabled={columnList.length <= 1}
-                    on:click={() => {
-                        columnList = remove(columnList, index);
-                    }}>
-                    <Icon icon={IconX} size="s" />
-                </Button>
-            </Layout.Stack>
+            {#if $isSmallViewport}
+                <div style:margin-top="0.25rem">
+                    <Button
+                        text
+                        secondary
+                        disabled={columnList.length <= 1}
+                        on:click={() => {
+                            columnList = remove(columnList, index);
+                        }}>
+                        Remove
+                    </Button>
+                </div>
+            {:else}
+                <div style:margin-top="2.05rem">
+                    <Button
+                        icon
+                        secondary
+                        disabled={columnList.length <= 1}
+                        on:click={() => {
+                            columnList = remove(columnList, index);
+                        }}>
+                        <Icon icon={IconX} size="s" />
+                    </Button>
+                </div>
+            {/if}
         </Layout.Stack>
     {/each}
     <div>

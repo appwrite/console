@@ -56,12 +56,17 @@
             <div class="collection-content">
                 {#if tables?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-8">
-                        {#each sortedTables as table}
+                        {#each sortedTables as table, index}
                             {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/table-${table.$id}`}
                             {@const isSelected = tableId === table.$id}
+                            {@const isFirst = index === 0}
+                            {@const isLast = index === sortedTables.length - 1}
 
                             <Layout.Stack gap="m" direction="row" alignItems="center">
-                                <li class:is-selected={isSelected}>
+                                <li
+                                    class:is-last={isLast}
+                                    class:is-first={isFirst}
+                                    class:is-selected={isSelected}>
                                     <a
                                         class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
                                         {href}>
@@ -219,6 +224,22 @@
             bottom: 0.2rem;
             position: absolute;
             border-left: 1px solid var(--border-neutral, #ededf0);
+        }
+
+        // first item
+        &:has(li.is-first)::before {
+            top: 0.9rem;
+        }
+
+        // last item
+        &:has(li.is-last)::before {
+            bottom: 0.9rem;
+        }
+
+        // the only item
+        &:has(li.is-first.is-last)::before {
+            top: 0.6rem;
+            bottom: 0.6rem;
         }
 
         li {

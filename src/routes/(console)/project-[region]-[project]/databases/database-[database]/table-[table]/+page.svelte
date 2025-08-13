@@ -147,9 +147,9 @@
             {#if $isSmallViewport}
                 <Button
                     secondary
+                    event="create_row"
                     disabled={!(hasColumns && hasValidColumns)}
-                    on:click={() => ($showRecordsCreateSheet.show = true)}
-                    event="create_row">
+                    on:click={() => ($showRecordsCreateSheet.show = true)}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create row
                 </Button>

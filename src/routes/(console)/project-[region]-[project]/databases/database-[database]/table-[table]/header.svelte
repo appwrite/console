@@ -7,6 +7,7 @@
     import AnimatedTitle from '$lib/layout/animatedTitle.svelte';
     import { canWriteTables } from '$lib/stores/roles';
     import { expandTabs, table } from './store';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     const databaseId = $derived(page.params.database);
 
@@ -62,17 +63,19 @@
 
 <Cover expanded collapsed={!$expandTabs} blocksize={$expandTabs ? '152px' : '90px'} animate={true}>
     <svelte:fragment slot="header">
-        <AnimatedTitle href={link} collapsed={!$expandTabs}>
-            {$table?.name}
-        </AnimatedTitle>
+        <Layout.Stack direction="row" alignContent="center" alignItems="center" inline>
+            <AnimatedTitle href={link} collapsed={!$expandTabs}>
+                {$table?.name}
+            </AnimatedTitle>
 
-        {#key $table?.$id}
-            <Id value={$table?.$id} tooltipPlacement={$expandTabs ? undefined : 'right'}
-                >{$table?.$id}</Id>
-        {/key}
+            {#key $table?.$id}
+                <Id value={$table?.$id} tooltipPlacement={$expandTabs ? undefined : 'right'}
+                    >{$table?.$id}</Id>
+            {/key}
+        </Layout.Stack>
     </svelte:fragment>
 
-    <div class="tabs-container" style:opacity={$expandTabs ? 1 : 0}>
+    <div class="tabs-container" class:collapsed={!$expandTabs}>
         <Tabs>
             {#each tabs as tab}
                 <Tab
@@ -88,6 +91,15 @@
 
 <style lang="scss">
     .tabs-container {
+        opacity: 1;
         transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+        &.collapsed {
+            opacity: 0;
+
+            & :global([role='tab']) {
+                cursor: default;
+            }
+        }
     }
 </style>

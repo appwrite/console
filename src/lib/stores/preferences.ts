@@ -281,7 +281,7 @@ function createPreferences() {
         },
 
         isTableHeaderExpanded(tableId: string): boolean {
-            return preferences.tableHeaderExpanded?.[tableId] ?? true
+            return preferences.tableHeaderExpanded?.[tableId] ?? true;
         },
 
         async setTableHeaderExpanded(tableId: string, expanded: boolean) {

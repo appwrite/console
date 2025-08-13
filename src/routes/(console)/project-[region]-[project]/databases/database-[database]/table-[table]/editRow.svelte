@@ -11,6 +11,7 @@
     import { table, type Columns } from './store';
     import ColumnItem from './row-[row]/columnItem.svelte';
     import { isRelationship, isRelationshipToMany } from './row-[row]/columns/store';
+    import { Layout } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
 
     const tableId = page.params.table;
@@ -23,6 +24,7 @@
     } = $props();
 
     let work = $state<Writable<Models.Row> | null>(null);
+    let columnFormWrapper = $state<HTMLElement | null>(null);
 
     function initWork() {
         const prohibitedKeys = [
@@ -47,7 +49,10 @@
     }
 
     $effect(() => {
-        if (row) work = initWork();
+        if (row) {
+            work = initWork();
+            focusFirstInput();
+        }
     });
 
     function compareAttributes(column: Columns, $work: Models.Row, $doc: Models.Row) {
@@ -110,11 +115,23 @@
 
         return $table.columns.every((attribute) => compareAttributes(attribute, $work, row));
     }
+
+    function focusFirstInput() {
+        const firstInput = columnFormWrapper?.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+            'input:not([disabled]):not([readonly]), textarea:not([disabled]):not([readonly])'
+        );
+
+        firstInput?.focus({ preventScroll: true });
+    }
 </script>
 
 {#if $table.columns?.length && work}
-    {#each $table.columns as column}
-        {@const label = column.key}
-        <ColumnItem {column} bind:formValues={$work} {label} editing />
-    {/each}
+    <div bind:this={columnFormWrapper}>
+        <Layout.Stack direction="column" gap="l">
+            {#each $table.columns as column}
+                {@const label = column.key}
+                <ColumnItem {column} bind:formValues={$work} {label} editing />
+            {/each}
+        </Layout.Stack>
+    </div>
 {/if}
