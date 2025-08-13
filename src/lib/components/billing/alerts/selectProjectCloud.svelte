@@ -24,7 +24,9 @@
     let error = $state<string | null>(null);
 
     onMount(() => {
-        projects = page.data.projects?.projects || [];
+        const currentOrgId = page.data.organization?.$id;
+        projects =
+            page.data.currentOrgId === currentOrgId ? page.data.allProjects?.projects || [] : [];
     });
 
     let projectsToArchive = $derived(
@@ -71,7 +73,8 @@
 
 <Modal bind:show={showSelectProject} title={'Manage projects'} onSubmit={updateSelected}>
     <svelte:fragment slot="description">
-        Choose which two projects to keep. Projects over the limit will be blocked after this date.
+        Choose which {$currentPlan?.projects || 2} projects to keep. Projects over the limit will be
+        blocked after this date.
     </svelte:fragment>
     {#if error}
         <Alert.Inline status="error" title="Error">{error}</Alert.Inline>
