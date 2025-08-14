@@ -3,8 +3,9 @@
     import { base } from '$app/paths';
     import { AvatarInitials } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import DeleteMembership from '../deleteMembership.svelte';
+    import DeleteAllMemberships from '../deleteAllMemberships.svelte';
     import type { Models } from '@appwrite.io/console';
     import { trackEvent } from '$lib/actions/analytics';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -14,12 +15,20 @@
 
     let selectedMembership: Models.Membership;
     let showDelete = false;
+    let showDeleteAll = false;
 
     const region = page.params.region;
     const project = page.params.project;
 </script>
 
 <Container>
+    <ContainerHeader title="Memberships">
+        {#if data.memberships.total}
+            <Button secondary on:click={() => (showDeleteAll = true)}>
+                <span class="text">Delete All</span>
+            </Button>
+        {/if}
+    </ContainerHeader>
     {#if data.memberships.total}
         <Table.Root
             let:root
@@ -86,3 +95,4 @@
 </Container>
 
 <DeleteMembership {selectedMembership} bind:showDelete />
+<DeleteAllMemberships bind:showDeleteAll />

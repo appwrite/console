@@ -15,6 +15,9 @@
     import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
     import Confirm from '$lib/components/confirm.svelte';
     import { page } from '$app/state';
+    import DeleteAllIdentities from '../deleteAllIdentities.svelte';
+
+    let showDeleteAll = false;
 
     export let columns: Column[];
     export let data: PageData;
@@ -118,3 +121,5 @@
         {selectedIds.length > 1 ? 'identities' : 'identity'}?
     </Typography.Text>
 </Confirm>
+
+<DeleteAllIdentities bind:showDeleteAll />
