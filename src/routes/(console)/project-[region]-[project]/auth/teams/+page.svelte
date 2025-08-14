@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
     export let showCreateTeam = writable(false);
+    export let showDeleteAllTeams = writable(false);
 </script>
 
 <script lang="ts">
@@ -13,6 +14,7 @@
         PaginationWithLimit
     } from '$lib/components';
     import Create from '../createTeam.svelte';
+    import DeleteAllTeams from './deleteAllTeams.svelte';
     import { goto } from '$app/navigation';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -38,6 +40,11 @@
             <SearchQuery placeholder="Search by name" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            {#if data.teams.total}
+                <Button secondary on:click={() => ($showDeleteAllTeams = true)} size="s">
+                    <span class="text">Delete All</span>
+                </Button>
+            {/if}
             <Button on:mousedown={() => ($showCreateTeam = true)} event="create_user" size="s">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create team
@@ -94,3 +101,4 @@
 </Container>
 
 <Create bind:showCreate={$showCreateTeam} on:created={teamCreated} />
+<DeleteAllTeams bind:showDeleteAll={$showDeleteAllTeams} />
