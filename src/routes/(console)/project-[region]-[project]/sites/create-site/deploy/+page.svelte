@@ -115,6 +115,39 @@
         }
     }
 
+    async function fetchLatestGitHubTag(): Promise<string | null> {
+        try {
+            const tagsResponse = await fetch(
+                `https://api.github.com/repos/${data.repository.owner}/${data.repository.name}/tags`
+            );
+            
+            if (!tagsResponse.ok) {
+                addNotification({
+                    type: 'error',
+                    message: 'Failed to fetch tags from GitHub.'
+                });
+                return null;
+            }
+            
+            const tags = await tagsResponse.json();
+            if (tags.length === 0) {
+                addNotification({
+                    type: 'error',
+                    message: 'No tags found in repository. Please create a tag before deploying.'
+                });
+                return null;
+            }
+            
+            return tags[0].name;
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: 'Failed to fetch tags from GitHub: ' + error.message
+            });
+            return null;
+        }
+    }
+
     async function create() {
         if (!domainIsValid) {
             addNotification({
@@ -162,37 +195,10 @@
             );
             await Promise.all(promises);
 
-            // Fetch tags from GitHub API
-            let latestTag = '';
-            try {
-                const tagsResponse = await fetch(
-                    `https://api.github.com/repos/${data.repository.owner}/${data.repository.name}/tags`
-                );
-                if (tagsResponse.ok) {
-                    const tags = await tagsResponse.json();
-                    if (tags.length > 0) {
-                        latestTag = tags[0].name;
-                    } else {
-                        addNotification({
-                            type: 'error',
-                            message:
-                                'No tags found in repository. Please create a tag before deploying.'
-                        });
-                        return;
-                    }
-                } else {
-                    addNotification({
-                        type: 'error',
-                        message: 'Failed to fetch tags from GitHub.'
-                    });
-                    return;
-                }
-            } catch (error) {
-                addNotification({
-                    type: 'error',
-                    message: 'Failed to fetch tags from GitHub: ' + error.message
-                });
-                return;
+            // Fetch latest tag from GitHub
+            const latestTag = await fetchLatestGitHubTag();
+            if (!latestTag) {
+                return; // Error already handled in helper function
             }
 
             // Create deployment from GitHub repository using the latest tag
