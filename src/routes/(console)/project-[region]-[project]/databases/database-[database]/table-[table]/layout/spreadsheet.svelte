@@ -26,7 +26,7 @@
     }
 
     /** adjust height to fill remaining viewport space */
-    export function resizeSheet(): void {
+    export function resizeSheet(fromResize: boolean = false): void {
         if (!spreadsheetWrapper) return;
 
         clearTimeout(resizeTimeout);
@@ -36,7 +36,7 @@
             base = window.innerHeight - rect.top;
 
             let headerHeightDiff = 0;
-            if (observeExpand && !isFirstMount) {
+            if (observeExpand && !isFirstMount && !fromResize) {
                 /**
                  * 16px from padding top
                  * 08px from padding bottom
@@ -80,6 +80,8 @@
         unsubscribeExpandTabs?.();
     });
 </script>
+
+<svelte:window on:resize={() => resizeSheet(true)} />
 
 <div bind:this={spreadsheetWrapper} class="spreadsheet-wrapper" style:height={spreadsheetHeight}>
     {@render children()}
