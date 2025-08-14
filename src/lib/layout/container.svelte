@@ -53,6 +53,7 @@
             &.expandHeightButton {
                 margin-inline-end: unset;
                 margin-inline-start: 2.75rem;
+                padding-inline-end: 0.5rem !important;
             }
 
             &:first-child {

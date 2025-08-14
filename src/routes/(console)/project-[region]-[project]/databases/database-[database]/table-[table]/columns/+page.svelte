@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
+    import { Container } from '$lib/layout';
     import {
         ActionMenu,
         Badge,
@@ -116,7 +117,7 @@
         enum: IconViewList
     };
 
-    const emptyCellsLimit = $derived($isSmallViewport ? 16 : 18);
+    const emptyCellsLimit = $derived($isSmallViewport ? 14 : 17);
     const emptyCellsCount = $derived(
         updatedColumnsForSheet.length >= emptyCellsLimit
             ? 0
@@ -161,6 +162,25 @@
         }
     });
 </script>
+
+<Container
+    expanded
+    expandHeightButton={$isSmallViewport}
+    style="background: var(--bgcolor-neutral-primary)">
+    <Layout.Stack direction="row" justifyContent="flex-end">
+        {#if updatedColumnsForSheet}
+            <Button
+                size="s"
+                secondary
+                disabled={$isCsvImportInProgress}
+                on:click={() => ($showCreateAttributeSheet.show = true)}
+                event="create_attribute">
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create column
+            </Button>
+        {/if}
+    </Layout.Stack>
+</Container>
 
 <div class="databases-spreadsheet">
     <SpreadsheetContainer bind:this={spreadsheetContainer}>
@@ -255,7 +275,9 @@
                             </Layout.Stack>
                             {@const minMaxSize = getMinMaxSizeForColumn(column)}
                             {#if minMaxSize}
-                                <Badge size="xs" content={minMaxSize} variant="secondary" />
+                                <Typography.Caption variant="400">
+                                    {minMaxSize}
+                                </Typography.Caption>
                             {/if}
                         </Layout.Stack>
                     </Spreadsheet.Cell>

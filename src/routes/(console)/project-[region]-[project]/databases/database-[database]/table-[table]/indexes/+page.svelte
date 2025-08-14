@@ -26,13 +26,11 @@
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type ComponentProps, onDestroy, onMount, tick } from 'svelte';
+    import { type ComponentProps, onDestroy, tick } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import EmptySheet from '../layout/emptySheet.svelte';
     import SpreadsheetContainer from '../layout/spreadsheet.svelte';
-    import { page } from '$app/state';
     import SideSheet from '../layout/sidesheet.svelte';
-    import { flags } from '$lib/flags';
     import type { PageData } from './$types';
     import { showCreateAttributeSheet } from '../store';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -93,6 +91,24 @@
         }
     });
 </script>
+
+<Container
+    expanded
+    expandHeightButton={$isSmallViewport}
+    style="background: var(--bgcolor-neutral-primary)">
+    <Layout.Stack direction="row" justifyContent="flex-end">
+        {#if $canWriteTables}
+            <Button
+                secondary
+                event="create_index"
+                disabled={!$table?.columns?.length}
+                on:click={() => (showCreateIndex = true)}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create index
+            </Button>
+        {/if}
+    </Layout.Stack>
+</Container>
 
 <div class="databases-spreadsheet">
     {#if data.table?.columns?.length}
