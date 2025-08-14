@@ -43,6 +43,9 @@ type ConsolePreferencesStore = {
     columnWidths?: {
         [key: string]: TeamPreferences['widths'];
     };
+    miscellaneous?: {
+        [key: string]: string | number | boolean;
+    };
 } & { hideAiDisclaimer?: boolean };
 
 async function updateConsolePreferences(store: ConsolePreferencesStore): Promise<void> {
@@ -292,6 +295,22 @@ function createPreferences() {
                 }
 
                 n.tableHeaderExpanded[tableId] = expanded;
+                return n;
+            });
+        },
+
+        getKey<T>(key: string, _default: T): T {
+            return (preferences?.miscellaneous?.[key] ?? _default) as T;
+        },
+
+        async setKey(key: string, value: string | number | boolean) {
+            await updateAndSync((n) => {
+                if (!n?.miscellaneous) {
+                    n ??= {};
+                    n.miscellaneous ??= {};
+                }
+
+                n.miscellaneous[key] = value;
                 return n;
             });
         }

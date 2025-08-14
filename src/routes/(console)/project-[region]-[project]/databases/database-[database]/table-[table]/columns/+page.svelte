@@ -275,7 +275,9 @@
                             </Layout.Stack>
                             {@const minMaxSize = getMinMaxSizeForColumn(column)}
                             {#if minMaxSize}
-                                <Typography.Caption variant="400">
+                                <Typography.Caption
+                                    variant="400"
+                                    color="--fgcolor-neutral-tertiary">
                                     {minMaxSize}
                                 </Typography.Caption>
                             {/if}

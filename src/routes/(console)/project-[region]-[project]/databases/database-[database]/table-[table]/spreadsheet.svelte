@@ -264,18 +264,14 @@
     }
 
     function formatArray(array: unknown[]) {
-        if (array.length === 0) return '[ ]';
+        if (array.length === 0) return 'Empty';
 
         let formattedFields: string[] = [];
         for (const item of array) {
-            if (typeof item === 'string') {
-                formattedFields.push(`"${item}"`);
-            } else {
-                formattedFields.push(`${item}`);
-            }
+            formattedFields.push(`${item}`);
         }
 
-        return `[${formattedFields.join(', ')}]`;
+        return `${formattedFields.join(', ')}`;
     }
 
     function formatColumn(column: unknown) {
@@ -341,9 +337,6 @@
                 ])
             );
         }
-
-        // trigger ui update with randomized key!
-        spreadsheetRenderKey.set(`sorted#${Date.now()}`);
 
         // save > navigate > restore!
         spreadsheetContainer.saveGridSheetScroll();
@@ -532,9 +525,13 @@
                 Object.entries(row).filter(([key]) => !SYSTEM_KEYS.has(key))
             );
 
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .grids.updateRow(databaseId, tableId, row.$id, onlyData, row.$permissions);
+            await sdk.forProject(page.params.region, page.params.project).grids.updateRow({
+                databaseId,
+                tableId,
+                rowId: row.$id,
+                data: onlyData,
+                permissions: row.$permissions
+            });
 
             invalidate(Dependencies.ROW);
             trackEvent(Submit.RowUpdate);
@@ -742,8 +739,8 @@
                 {#if row === null}
                     <Spreadsheet.Row.Base
                         {root}
-                        virtualItem={item}
                         {index}
+                        virtualItem={item}
                         id={`loading-${index}`}
                         select={rowSelection}>
                         {#each $tableColumns as col}
@@ -838,6 +835,7 @@
                                 {:else}
                                     {@const value = row[columnId]}
                                     {@const formatted = formatColumn(row[columnId])}
+                                    {@const isEmptyArray = formatted === 'Empty'}
                                     {@const isDatetimeAttribute = rowColumn.type === 'datetime'}
                                     {@const isEncryptedAttribute =
                                         isString(rowColumn) && rowColumn.encrypt}
@@ -868,6 +866,8 @@
                                         </Tooltip>
                                     {:else if formatted === 'null'}
                                         <Badge variant="secondary" content="NULL" size="xs" />
+                                    {:else if isEmptyArray}
+                                        <Badge variant="secondary" content={formatted} size="xs" />
                                     {:else}
                                         <Typography.Text truncate>
                                             {formatted}
@@ -1087,7 +1087,7 @@
         }
 
         /* TODO: not good! */
-        & :global(input) {
+        & :global(input[type='text']) {
             padding-inline: 8px !important;
         }
 

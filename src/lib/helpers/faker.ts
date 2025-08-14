@@ -149,7 +149,7 @@ function generateSingleValue(column: Columns): string | number | boolean | null 
                         return faker.internet.url();
                     }
                 }
-                return ''
+                return '';
             } else {
                 const stringAttr = column as Models.ColumnString;
                 const maxLength = Math.min(stringAttr.size ?? 255, 1000);
