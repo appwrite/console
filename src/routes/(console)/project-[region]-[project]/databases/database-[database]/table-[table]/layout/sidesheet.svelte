@@ -9,7 +9,8 @@
         spaced = false,
         closeOnBlur = false,
         submit,
-        children = null
+        children = null,
+        footer = null
     }: {
         show: boolean;
         title: string;
@@ -23,6 +24,7 @@
               }
             | undefined;
         children?: Snippet;
+        footer?: Snippet | null;
     } = $props();
 </script>
 
@@ -56,10 +58,16 @@
                             <Divider />
 
                             <div class="sheet-footer-actions">
-                                <Layout.Stack gap="m" direction="row" justifyContent="flex-end">
+                                <Layout.Stack
+                                    gap="m"
+                                    direction="row"
+                                    justifyContent="flex-end"
+                                    alignItems="center">
+                                    {#if footer}
+                                        {@render footer?.()}
+                                    {/if}
                                     <Button size="s" secondary on:click={() => (show = false)}
                                         >Cancel</Button>
-
                                     <Button size="s" submit disabled={submit.disabled}>
                                         {submit.text}
                                     </Button>
