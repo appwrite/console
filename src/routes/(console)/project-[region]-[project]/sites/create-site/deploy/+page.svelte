@@ -73,6 +73,17 @@
         // Check if custom commands were provided via URL
         hasCustomCommands = !!(installCommand || buildCommand || outputDirectory);
 
+        // If no custom commands, auto-fill from framework defaults
+        if (!hasCustomCommands && data.frameworks) {
+            const fw = data.frameworks.frameworks.find((f) => f.key === framework);
+            if (fw && fw.adapters && fw.adapters.length > 0) {
+                const adapter = fw.adapters[0];
+                installCommand = adapter.installCommand || '';
+                buildCommand = adapter.buildCommand || '';
+                outputDirectory = adapter.outputDirectory || '';
+            }
+        }
+
         // Initialize environment variables from query params
         if (data.envKeys.length > 0) {
             variables = data.envKeys.map((key) => ({ key, value: '', secret: false }));
