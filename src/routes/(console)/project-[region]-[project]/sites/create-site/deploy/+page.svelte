@@ -2,7 +2,6 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { page as pageStore } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
@@ -20,6 +19,7 @@
     } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconExternalLink, IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { writable } from 'svelte/store';
+    import { onMount } from 'svelte';
     import Domain from '../domain.svelte';
     import { Adapter, BuildRuntime, Framework, ID } from '@appwrite.io/console';
     import { CustomId } from '$lib/components';
@@ -35,58 +35,65 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    // Default values
-    let name = data.repository.name;
-    let id = ID.unique();
-    let domain = data.repository.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    // State variables
+    let name = '';
+    let id = '';
+    let domain = '';
     let domainIsValid = true;
-    // Get URL params
-    const urlParams = new URLSearchParams($pageStore.url.search);
-    const preset = urlParams.get('preset') || 'nextjs';
-
-    // Map preset string to Framework enum
-    const presetMap = {
-        nextjs: Framework.Nextjs,
-        react: Framework.React,
-        vue: Framework.Vue,
-        nuxt: Framework.Nuxt,
-        sveltekit: Framework.Sveltekit,
-        astro: Framework.Astro,
-        vite: Framework.Vite,
-        other: Framework.Other
-    };
-    let framework = presetMap[preset.toLowerCase()] || Framework.Nextjs;
+    let framework: Framework = Framework.Nextjs;
     let branch = '';
     let rootDir = '';
     let variables: Array<{ key: string; value: string; secret: boolean }> = [];
+    let installCommand = '';
+    let buildCommand = '';
+    let outputDirectory = '';
 
-    // Build configuration - use from URL params or defaults
-    let installCommand = urlParams.get('install') || '';
-    let buildCommand = urlParams.get('build') || '';
-    let outputDirectory = urlParams.get('output') || '';
+    // Track if we have custom commands from URL
+    let hasCustomCommands = false;
 
-    // Initialize environment variables from query params
-    if (data.envKeys.length > 0) {
-        variables = data.envKeys.map((key) => ({ key, value: '', secret: false }));
-    }
+    onMount(() => {
+        // Initialize default values
+        name = data.repository.name;
+        id = ID.unique();
+        domain = data.repository.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
 
-    // Framework options
-    const frameworkOptions = [
-        { key: Framework.Nextjs, name: 'Next.js', buildRuntime: BuildRuntime.Node210 },
-        { key: Framework.React, name: 'React', buildRuntime: BuildRuntime.Node210 },
-        { key: Framework.Vue, name: 'Vue', buildRuntime: BuildRuntime.Node210 },
-        { key: Framework.Nuxt, name: 'Nuxt', buildRuntime: BuildRuntime.Node210 },
-        { key: Framework.Sveltekit, name: 'SvelteKit', buildRuntime: BuildRuntime.Node210 },
-        { key: Framework.Astro, name: 'Astro', buildRuntime: BuildRuntime.Node210 },
-        { key: Framework.Vite, name: 'Vite', buildRuntime: BuildRuntime.Node210 },
-        { key: Framework.Other, name: 'Other', buildRuntime: BuildRuntime.Static1 }
-    ];
+        // Get URL params
+        const preset = page.url.searchParams.get('preset') || 'nextjs';
+
+        // Map preset string to Framework enum
+        framework = (Object.values(Framework) as string[]).includes(preset.toLowerCase())
+            ? (preset.toLowerCase() as Framework)
+            : Framework.Nextjs;
+
+        // Build configuration - use from URL params or defaults
+        installCommand = page.url.searchParams.get('install') || '';
+        buildCommand = page.url.searchParams.get('build') || '';
+        outputDirectory = page.url.searchParams.get('output') || '';
+
+        // Check if custom commands were provided via URL
+        hasCustomCommands = !!(installCommand || buildCommand || outputDirectory);
+
+        // Initialize environment variables from query params
+        if (data.envKeys.length > 0) {
+            variables = data.envKeys.map((key) => ({ key, value: '', secret: false }));
+        }
+    });
+
+    // Framework options - dynamically generate from enum
+    const frameworkOptions = Object.values(Framework).map((fw) => ({
+        key: fw,
+        name:
+            fw === Framework.Nextjs
+                ? 'Next.js'
+                : fw === Framework.Sveltekit
+                  ? 'SvelteKit'
+                  : fw.charAt(0).toUpperCase() + fw.slice(1),
+        buildRuntime: fw === Framework.Other ? BuildRuntime.Static1 : BuildRuntime.Node210
+    }));
 
     $: selectedFramework = frameworkOptions.find((f) => f.key === framework) || frameworkOptions[0];
 
     // Update build commands when framework changes (only if not provided via URL)
-    const hasCustomCommands =
-        urlParams.get('install') || urlParams.get('build') || urlParams.get('output');
     $: if (framework && data.frameworks && !hasCustomCommands) {
         const fw = data.frameworks.frameworks.find((f) => f.key === framework);
         if (fw && fw.adapters && fw.adapters.length > 0) {
