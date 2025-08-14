@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
     import {
         ActionMenu,
         Badge,
@@ -117,6 +116,17 @@
         enum: IconViewList
     };
 
+    const emptyCellsLimit = $derived($isSmallViewport ? 16 : 18);
+    const emptyCellsCount = $derived(
+        updatedColumnsForSheet.length >= emptyCellsLimit
+            ? 0
+            : emptyCellsLimit - updatedColumnsForSheet.length
+    );
+
+    onMount(() => {
+        columnsOrder = preferences.getColumnOrder(tableId);
+    });
+
     function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {
         switch (status) {
             case 'processing':
@@ -130,16 +140,17 @@
         }
     }
 
-    const emptyCellsLimit = $derived($isSmallViewport ? 14 : 17);
-    const emptyCellsCount = $derived(
-        updatedColumnsForSheet.length >= emptyCellsLimit
-            ? 0
-            : emptyCellsLimit - updatedColumnsForSheet.length
-    );
-
-    onMount(() => {
-        columnsOrder = preferences.getColumnOrder(tableId);
-    });
+    function getMinMaxSizeForColumn(column: Columns): string | undefined {
+        if (column.type === 'string' && !column['format'] && column.key !== '$id') {
+            const stringColumn = column as Models.ColumnString;
+            return `Size: ${stringColumn.size}`;
+        } else if (column.type === 'integer' || column.type === 'double') {
+            const numbersColumn = column as Models.ColumnInteger | Models.ColumnFloat;
+            return `Min: ${numbersColumn.min}, Max: ${numbersColumn.max}`;
+        } else {
+            return undefined;
+        }
+    }
 
     onDestroy(() => ($showCreateAttributeSheet.show = false));
 
@@ -151,22 +162,6 @@
     });
 </script>
 
-<Container expanded style="background: var(--bgcolor-neutral-primary)">
-    <Layout.Stack direction="row" justifyContent="flex-end">
-        {#if updatedColumnsForSheet}
-            <Button
-                size="s"
-                secondary
-                disabled={$isCsvImportInProgress}
-                on:click={() => ($showCreateAttributeSheet.show = true)}
-                event="create_attribute">
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create column
-            </Button>
-        {/if}
-    </Layout.Stack>
-</Container>
-
 <div class="databases-spreadsheet">
     <SpreadsheetContainer bind:this={spreadsheetContainer}>
         <Spreadsheet.Root
@@ -176,8 +171,8 @@
             emptyCells={emptyCellsCount}
             bind:selectedRows={selectedColumns}
             columns={[
-                { id: 'key', width: { min: 200 } },
-                { id: 'size', width: { min: 200 } },
+                // more size until we decide if we want a new column!
+                { id: 'key', width: { min: $isSmallViewport ? 250 : 200 } },
                 { id: 'indexed', width: { min: 150 } },
                 { id: 'default', width: { min: 200 } },
                 { id: 'actions', width: 40, isAction: true }
@@ -185,7 +180,6 @@
             bottomActionClick={() => ($showCreateAttributeSheet.show = true)}>
             <svelte:fragment slot="header" let:root>
                 <Spreadsheet.Header.Cell column="key" {root}>Column name</Spreadsheet.Header.Cell>
-                <Spreadsheet.Header.Cell column="size" {root}>Size</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="indexed" {root}>Indexed</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="default" {root}
                     >Default value</Spreadsheet.Header.Cell>
@@ -199,70 +193,71 @@
                     column['system'] || column.type === 'relationship' ? 'disabled' : true}
                 <Spreadsheet.Row.Base {root} select={isSelectable} id={column.key}>
                     <Spreadsheet.Cell column="key" {root} isEditable={false}>
-                        <Layout.Stack direction="row" alignItems="center">
-                            {#if isRelationship(column)}
-                                <Icon
-                                    size="s"
-                                    icon={column?.twoWay
-                                        ? IconSwitchHorizontal
-                                        : IconArrowSmRight} />
-                            {:else if 'format' in column && column.format}
-                                {@const icon = columnFormatIcon[column?.format]}
-                                <Icon {icon} size="s" />
-                            {:else if column.key === '$id'}
-                                <Icon icon={IconFingerPrint} size="s" />
-                            {:else}
-                                <Icon icon={option.icon} size="s" />
-                            {/if}
+                        <Layout.Stack direction="row" justifyContent="space-between">
+                            <Layout.Stack direction="row" alignItems="center" inline>
+                                {#if isRelationship(column)}
+                                    <Icon
+                                        size="s"
+                                        icon={column?.twoWay
+                                            ? IconSwitchHorizontal
+                                            : IconArrowSmRight} />
+                                {:else if 'format' in column && column.format}
+                                    {@const icon = columnFormatIcon[column?.format]}
+                                    <Icon {icon} size="s" />
+                                {:else if column.key === '$id'}
+                                    <Icon icon={IconFingerPrint} size="s" />
+                                {:else}
+                                    <Icon icon={option.icon} size="s" />
+                                {/if}
 
-                            <Layout.Stack direction="row" alignItems="center" gap="s">
-                                <Layout.Stack inline direction="row" alignItems="center" gap="xxs">
-                                    <span class="text u-trim-1" data-private>
-                                        {#if column.key === '$id' || column.key === '$sequence' || column.key === '$createdAt' || column.key === '$updatedAt'}
-                                            {column['name']}
-                                        {:else}
-                                            {column.key} {column.array ? '[]' : undefined}
+                                <Layout.Stack direction="row" alignItems="center" gap="s">
+                                    <Layout.Stack
+                                        inline
+                                        direction="row"
+                                        alignItems="center"
+                                        gap="xxs">
+                                        <span class="text u-trim-1" data-private>
+                                            {#if column.key === '$id' || column.key === '$sequence' || column.key === '$createdAt' || column.key === '$updatedAt'}
+                                                {column['name']}
+                                            {:else}
+                                                {column.key} {column.array ? '[]' : undefined}
+                                            {/if}
+                                        </span>
+                                        {#if isString(column) && column.encrypt}
+                                            <Tooltip>
+                                                <Icon
+                                                    size="s"
+                                                    icon={IconLockClosed}
+                                                    color="--fgcolor-neutral-tertiary" />
+                                                <div slot="tooltip">Encrypted</div>
+                                            </Tooltip>
                                         {/if}
-                                    </span>
-                                    {#if isString(column) && column.encrypt}
-                                        <Tooltip>
-                                            <Icon
-                                                size="s"
-                                                icon={IconLockClosed}
-                                                color="--fgcolor-neutral-tertiary" />
-                                            <div slot="tooltip">Encrypted</div>
-                                        </Tooltip>
+                                    </Layout.Stack>
+                                    {#if column.status !== 'available'}
+                                        <Badge
+                                            size="s"
+                                            variant="secondary"
+                                            content={column.status}
+                                            type={getColumnStatusBadge(column.status)} />
+                                        {#if column.error}
+                                            <Link.Button
+                                                variant="muted"
+                                                on:click={(e) => {
+                                                    e.preventDefault();
+                                                    error = column.error;
+                                                    showFailed = true;
+                                                }}>Details</Link.Button>
+                                        {/if}
+                                    {:else if column.required}
+                                        <Badge size="xs" variant="secondary" content="required" />
                                     {/if}
                                 </Layout.Stack>
-                                {#if column.status !== 'available'}
-                                    <Badge
-                                        size="s"
-                                        variant="secondary"
-                                        content={column.status}
-                                        type={getColumnStatusBadge(column.status)} />
-                                    {#if column.error}
-                                        <Link.Button
-                                            variant="muted"
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                error = column.error;
-                                                showFailed = true;
-                                            }}>Details</Link.Button>
-                                    {/if}
-                                {:else if column.required}
-                                    <Badge size="xs" variant="secondary" content="required" />
-                                {/if}
                             </Layout.Stack>
+                            {@const minMaxSize = getMinMaxSizeForColumn(column)}
+                            {#if minMaxSize}
+                                <Badge size="xs" content={minMaxSize} variant="secondary" />
+                            {/if}
                         </Layout.Stack>
-                    </Spreadsheet.Cell>
-                    <Spreadsheet.Cell column="size" {root} isEditable={false}>
-                        {#if column.type === 'string'}
-                            {column.size /* or length */}
-                        {:else if column.type === 'integer' || column.type === 'double'}
-                            Min: {column.min} Max: {column.max}
-                        {:else}
-                            -
-                        {/if}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="indexed" {root} isEditable={false}>
                         {@const isIndexed = $indexes.some((index) =>

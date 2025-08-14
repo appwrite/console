@@ -6,6 +6,7 @@
     import { IconViewBoards } from '@appwrite.io/pink-icons-svelte';
     import ViewToggle from './viewToggle.svelte';
     import ColumnSelector from './columnSelector.svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     export let onlyIcon = false;
     export let ui: 'legacy' | 'new' = 'legacy';
@@ -25,7 +26,7 @@
                 size="s"
                 icon={onlyIcon}
                 variant="secondary"
-                class={onlyIcon ? 'width-fix' : undefined}
+                class={onlyIcon && !$isSmallViewport ? 'width-fix' : undefined}
                 disabled={!$columns.length && showAnyway}
                 badge={selectedColumnsNumber.toString()}
                 on:click={toggle}>

@@ -31,12 +31,12 @@
 </script>
 
 <div
+    class:animate
     class:expanded
     class:collapsed={animate && collapsed}
-    class:animate
     class="top-cover-console"
-    style:block-size={animatedBlocksize}
     style:margin-top={marginTop}
+    style:block-size={animatedBlocksize}
     style:padding-block-start={headerPaddingTop}
     style:padding-block-end={headerPaddingBottom}>
     <div
@@ -91,18 +91,22 @@
         @media (min-width: 360px) {
             margin-inline: 1rem;
         }
+
         @media (min-width: 1024px) {
             margin-inline: auto;
             max-width: calc(944px - 11rem);
         }
+
         @media (min-width: 1280px) {
             margin-inline: auto;
             max-width: 1000px;
         }
+
         @media (min-width: 1440px) {
             margin-inline: auto;
             max-width: 1144px;
         }
+
         @media (min-width: 1728px) {
             margin-inline: auto;
             max-width: 1200px;
@@ -119,5 +123,8 @@
 
     .expanded-slot {
         margin-inline: 3rem !important;
+        @media (max-width: 768px) {
+            margin-inline: 0 !important;
+        }
     }
 </style>

@@ -94,21 +94,6 @@
     });
 </script>
 
-<Container expanded style="background: var(--bgcolor-neutral-primary)">
-    <Layout.Stack direction="row" justifyContent="flex-end">
-        {#if $canWriteTables}
-            <Button
-                secondary
-                event="create_index"
-                disabled={!$table?.columns?.length}
-                on:click={() => (showCreateIndex = true)}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create index
-            </Button>
-        {/if}
-    </Layout.Stack>
-</Container>
-
 <div class="databases-spreadsheet">
     {#if data.table?.columns?.length}
         {#if data.table.indexes.length}

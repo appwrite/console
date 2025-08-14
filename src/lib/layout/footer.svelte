@@ -16,8 +16,10 @@
 
     const currentYear = new Date().getFullYear();
 
-    // for spreadsheet ui
-    const hideFooter = $derived(page.route.id?.includes('table-[table]'));
+    const hideFooter = $derived.by(() => {
+        const endings = ['table-[table]', 'table-[table]/columns', 'table-[table]/indexes'];
+        return endings.some((end) => page.route.id?.endsWith(end));
+    });
 </script>
 
 <footer class:hide={hideFooter}>
@@ -175,10 +177,15 @@
 
     :global(main:has(.sub-navigation)) footer {
         @media (min-width: 1024px) {
-            margin-inline-start: -1.5rem;
             margin-inline-end: 2rem;
+            margin-inline-start: -1.5rem;
         }
     }
+
+    :global(main:has(.wide-screen-wrapper)) footer {
+        margin-inline-start: 2rem !important;
+    }
+
     .extra-margin {
         margin-block-start: var(--space-2, 4px);
     }

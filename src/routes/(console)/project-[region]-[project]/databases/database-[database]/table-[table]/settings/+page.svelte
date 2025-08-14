@@ -9,7 +9,7 @@
     import UpdateStatus from './updateStatus.svelte';
 </script>
 
-<div class="wide-screen-wrapper databases-spreadsheet">
+<div class="wide-screen-wrapper databases-spreadsheet" style:padding-bottom="1rem">
     <Container expanded slotSpacing databasesScreen>
         {#if $table}
             <UpdateStatus />

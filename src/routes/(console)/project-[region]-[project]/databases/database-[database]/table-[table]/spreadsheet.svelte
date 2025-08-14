@@ -76,6 +76,7 @@
     import { pageToOffset } from '$lib/helpers/load';
     import { debounce } from '$lib/helpers/debounce';
     import { hash } from '$lib/helpers/string';
+    import { abbreviateNumber } from '$lib/helpers/numbers';
 
     export let data: PageData;
     export let showRecordsCreateSheet: {
@@ -905,7 +906,7 @@
                             <span style:white-space="nowrap">
                                 {selectedRows.length
                                     ? `${selectedRows.length} row${selectedRows.length === 1 ? '' : 's'} selected`
-                                    : `${$rows.total} row${$rows.total === 1 ? '' : 's'}`}
+                                    : `${abbreviateNumber($rows.total)} row${$rows.total === 1 ? '' : 's'}`}
                             </span>
                         </Typography.Text>
 

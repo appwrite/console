@@ -310,8 +310,12 @@
             height: 79.1vh !important;
         }
 
-        @media (max-width: 768px) {
-            height: 70vh;
+        @media (max-width: 1024px) {
+            height: 76vh;
+        }
+
+        @media (min-width: 1024px) {
+            height: 80.35vh;
         }
     }
 
