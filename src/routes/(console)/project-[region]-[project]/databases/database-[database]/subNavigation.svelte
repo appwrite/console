@@ -4,7 +4,7 @@
     import { showCreate } from './store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
-    import { Icon, Sidebar, Navbar, Layout, Link } from '@appwrite.io/pink-svelte';
+    import { Icon, Sidebar, Navbar, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import {
         IconChevronDown,
         IconDatabase,
@@ -55,14 +55,14 @@
             </a>
             <div class="collection-content">
                 {#if tables?.total}
-                    <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-8">
+                    <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
                         {#each sortedTables as table, index}
                             {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/table-${table.$id}`}
                             {@const isSelected = tableId === table.$id}
                             {@const isFirst = index === 0}
                             {@const isLast = index === sortedTables.length - 1}
 
-                            <Layout.Stack gap="m" direction="row" alignItems="center">
+                            <Layout.Stack gap="s" direction="row" alignItems="center">
                                 <li
                                     class:is-last={isLast}
                                     class:is-first={isFirst}
@@ -99,7 +99,10 @@
                     </div>
                 {/if}
 
-                <Layout.Stack alignItems="center" direction="row" style="gap: 3px;">
+                <Layout.Stack
+                    alignItems="center"
+                    direction="row"
+                    style="gap: 3px; margin-block-start: 8px;">
                     <Icon icon={IconPlus} size="s" />
                     <Button
                         compact
@@ -120,18 +123,18 @@
                 <Icon icon={IconDatabase} size="s" color="--neutral-300" />
                 <Link.Anchor
                     href={`${base}/project-${region}-${project}/databases/database-${databaseId}`}
-                    variant="quiet-muted">{data.database.name}</Link.Anchor>
+                    variant="quiet-muted">
+                    {data.database.name}
+                </Link.Anchor>
+
                 <span style:margin-left="8px">/</span>
-                <button
-                    type="button"
-                    class="trigger"
-                    aria-label="Open collections"
-                    onclick={() => {
-                        openBottomSheet = !openBottomSheet;
-                    }}>
-                    <span class="orgName">{selectedTable?.name}</span>
+
+                <Button text extraCompact on:click={() => (openBottomSheet = !openBottomSheet)}>
+                    <Typography.Text variant="m-400">
+                        {selectedTable?.name}
+                    </Typography.Text>
                     <Icon icon={IconChevronDown} size="s" />
-                </button>
+                </Button>
             </Layout.Stack>
         </div>
     </Navbar.Base>
@@ -166,17 +169,16 @@
 
 <style lang="scss">
     .list-container {
-        display: flex;
-        flex-direction: column;
         height: 100%;
+        display: flex;
         min-height: 0;
+        flex-direction: column;
     }
 
     .database-name {
+        margin-block-end: 8px;
         font-size: var(--font-size-sm);
         color: var(--fgcolor-neutral-secondary);
-
-        margin-block-end: 2px;
     }
 
     .collection-content {
@@ -212,6 +214,7 @@
 
     .drop-list {
         flex: 1;
+        gap: 8px;
         padding-left: 4px;
         position: relative;
         font-size: var(--font-size-sm);
@@ -228,12 +231,12 @@
 
         // first item
         &:has(li.is-first)::before {
-            top: 0.9rem;
+            top: 0.8rem;
         }
 
         // last item
         &:has(li.is-last)::before {
-            bottom: 0.9rem;
+            bottom: 0.85rem;
         }
 
         // the only item

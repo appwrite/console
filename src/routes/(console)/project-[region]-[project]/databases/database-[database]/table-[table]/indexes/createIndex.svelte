@@ -182,6 +182,7 @@
                 <div style:margin-top="2.05rem">
                     <Button
                         icon
+                        size="s"
                         secondary
                         disabled={columnList.length <= 1}
                         on:click={() => {
