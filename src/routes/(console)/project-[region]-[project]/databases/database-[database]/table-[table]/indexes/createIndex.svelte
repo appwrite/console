@@ -179,7 +179,7 @@
                     </Button>
                 </div>
             {:else}
-                <div style:margin-top="2.05rem">
+                <div style:margin-top="27.6px" class="x-button-holder">
                     <Button
                         icon
                         size="s"
@@ -201,3 +201,10 @@
         </Button>
     </div>
 </Layout.Stack>
+
+<style lang="scss">
+    .x-button-holder :global(button) {
+        width: 34px;
+        height: 34px;
+    }
+</style>
