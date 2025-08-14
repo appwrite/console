@@ -229,6 +229,8 @@
     <!-- CSVs can be text/plain or text/csv sometimes! -->
     <FilePicker
         {onSelect}
+        showLocalFileBucket={true}
+        localFileBucketTitle="Upload CSV file"
         mimeTypeQuery="text/"
         allowedExtension="csv"
         bind:show={showImportCSV}

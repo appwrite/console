@@ -17,6 +17,7 @@
         Card,
         Divider,
         Empty,
+        Icon,
         Layout,
         Modal,
         Selector,
@@ -24,11 +25,12 @@
         Table,
         ToggleButton,
         Tooltip,
-        Typography
+        Typography,
+        Upload
     } from '@appwrite.io/pink-svelte';
     import Form from '$lib/elements/forms/form.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
+    import { IconInfo, IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
     import { showCreateBucket } from '$routes/(console)/project-[region]-[project]/storage/+page.svelte';
 
     export let show: boolean;
@@ -40,7 +42,10 @@
     export let gridImageDimensions: { imageHeight?: number; imageWidth?: number } = {
         imageHeight: 148
     };
-
+    export let showLocalFileBucket: boolean = false;
+    export let localFileBucketTitle = 'Upload local file';
+    let localFileBucketSelected = true;
+    let localFile: FileList = null;
     let search = writable('');
     let searchEnabled = false;
     let fileSelector: HTMLInputElement;
@@ -51,7 +56,11 @@
         selectedBucket = currentBucket?.$id;
     });
 
-    function onSubmit() {
+    async function onSubmit() {
+        // since local needs to be uploaded first
+        if (localFileBucketSelected) {
+            await uploadFile();
+        }
         onSelect(currentFile);
         closeModal();
     }
@@ -68,12 +77,21 @@
     async function uploadFile() {
         try {
             uploading = true;
-            const file = await sdk
-                .forProject(page.params.region, page.params.project)
-                .storage.createFile(selectedBucket, ID.unique(), fileSelector.files[0], [
-                    Permission.read(Role.any())
-                ]);
-            search.set($search === null ? '' : null);
+            let file = null;
+            if (localFileBucketSelected) {
+                file = await sdk
+                    .forConsoleIn(page.params.region)
+                    .storage.createFile('default', ID.unique(), localFile[0], [
+                        Permission.read(Role.any())
+                    ]);
+            } else {
+                file = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .storage.createFile(selectedBucket, ID.unique(), fileSelector.files[0], [
+                        Permission.read(Role.any())
+                    ]);
+                search.set($search === null ? '' : null);
+            }
             selectFile(file);
         } catch (e) {
             console.error(e);
@@ -82,7 +100,16 @@
         }
     }
 
+    function selectLocalBucket() {
+        localFileBucketSelected = true;
+        selectBucket(null);
+    }
+
     function selectBucket(bucket: Models.Bucket | null) {
+        if (bucket) {
+            localFileBucketSelected = false;
+            localFile = null;
+        }
         search.set('');
         currentBucket = bucket;
         selectedBucket = bucket?.$id ?? null;
@@ -91,8 +118,10 @@
 
     function selectFile(file: Models.File) {
         currentFile = file;
-        selectedBucket = currentFile.bucketId;
-        selectedFile = currentFile.$id;
+        if (!localFileBucketSelected) {
+            selectedBucket = currentFile.bucketId;
+            selectedFile = currentFile.$id;
+        }
     }
 
     function resetFile() {
@@ -176,6 +205,17 @@
         <Layout.Stack direction={$isSmallViewport ? 'column' : 'row'} height="50vh" gap="none">
             <!-- min-width to avoid a layout-shift -->
             <aside>
+                {#if showLocalFileBucket}
+                    <div class="action-menu-holder">
+                        <ActionMenu.Root width="180px">
+                            <div class="action-button" class:active-item={localFileBucketSelected}>
+                                <ActionMenu.Item.Button on:click={selectLocalBucket}>
+                                    Local file
+                                </ActionMenu.Item.Button>
+                            </div>
+                        </ActionMenu.Root>
+                    </div>
+                {/if}
                 {#if !$isSmallViewport}
                     <Typography.Caption variant="500">Buckets</Typography.Caption>
                 {/if}
@@ -221,7 +261,8 @@
                         <div class="action-menu-holder">
                             <ActionMenu.Root width="180px">
                                 {#each response.buckets as bucket}
-                                    {@const isSelected = bucket.$id === selectedBucket}
+                                    {@const isSelected =
+                                        !localFileBucketSelected && bucket.$id === selectedBucket}
                                     <div class="action-button" class:active-item={isSelected}>
                                         <ActionMenu.Item.Button
                                             on:click={() => selectBucket(bucket)}>
@@ -229,8 +270,16 @@
                                         </ActionMenu.Item.Button>
                                     </div>
                                 {:else}
-                                    <ActionMenu.Item.Button
-                                        >No buckets found</ActionMenu.Item.Button>
+                                    <Button
+                                        secondary
+                                        on:click={async () => {
+                                            await goto(
+                                                `${base}/project-${page.params.region}-${page.params.project}/storage`
+                                            );
+                                            $showCreateBucket = true;
+                                        }}>
+                                        Create bucket
+                                    </Button>
                                 {/each}
                             </ActionMenu.Root>
                         </div>
@@ -241,141 +290,161 @@
             <div style:padding-inline-start="1rem" style:opacity={$isSmallViewport ? 0 : 1}>
                 <Divider vertical />
             </div>
-
-            <div class="files-section">
-                <Layout.Stack gap="l">
-                    {#if $isSmallViewport}
-                        <Button
-                            secondary
-                            disabled={uploading}
-                            on:click={() => fileSelector.click()}>
-                            <input
-                                type="file"
-                                tabindex="-1"
-                                class="u-hide"
-                                accept={extension}
-                                on:change={uploadFile}
-                                bind:this={fileSelector} />
-                            {#if uploading}
-                                <div class="loader is-small"></div>
-                                <span>Uploading</span>
-                            {:else}
-                                <span class="icon-upload" aria-hidden="true"></span>
-                                <span>Upload</span>
-                            {/if}
-                        </Button>
-                    {/if}
-
-                    {#await buckets then response}
-                        {#if response?.total}
-                            {#if currentBucket}
-                                <Layout.Stack>
-                                    {#if !$isSmallViewport}
-                                        {#key currentBucket?.$id}
-                                            <Layout.Stack direction="row" alignItems="center">
-                                                <Typography.Title size="s"
-                                                    >{currentBucket?.name}</Typography.Title>
-                                                <Id value={currentBucket?.$id} event="bucket">
-                                                    {currentBucket?.$id}
-                                                </Id>
+            {#if localFileBucketSelected}
+                <div class="files-section">
+                    <Layout.Stack gap="xxl">
+                        <Typography.Title size="s">{localFileBucketTitle}</Typography.Title>
+                        <Upload.Dropzone bind:files={localFile} extensions={[allowedExtension]}>
+                            <Layout.Stack alignItems="center" gap="s">
+                                <Layout.Stack alignItems="center" gap="s">
+                                    <Layout.Stack
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        direction="row"
+                                        gap="s">
+                                        <Typography.Text variant="l-500">
+                                            Drag and drop files here or click to upload
+                                        </Typography.Text>
+                                        <Tooltip>
+                                            <Layout.Stack
+                                                alignItems="center"
+                                                justifyContent="center"
+                                                inline>
+                                                <Icon icon={IconInfo} size="s" />
                                             </Layout.Stack>
-                                        {/key}
-                                    {/if}
-                                    <Layout.Stack direction="row" alignItems="center">
-                                        <InputSearch
-                                            placeholder="Search files"
-                                            bind:value={$search}
-                                            disabled={!searchEnabled} />
-                                        <ToggleButton
-                                            bind:active={view}
-                                            buttons={[
-                                                {
-                                                    id: 'list',
-                                                    label: 'list view',
-                                                    disabled: !searchEnabled,
-                                                    icon: IconViewList
-                                                },
-                                                {
-                                                    id: 'grid',
-                                                    label: 'grid view',
-                                                    disabled: !searchEnabled,
-                                                    icon: IconViewGrid
-                                                }
-                                            ]} />
-                                        {#if !$isSmallViewport}
-                                            <Button
-                                                secondary
-                                                disabled={uploading}
-                                                on:click={() => fileSelector.click()}>
-                                                <input
-                                                    type="file"
-                                                    tabindex="-1"
-                                                    class="u-hide"
-                                                    accept={extension}
-                                                    on:change={uploadFile}
-                                                    bind:this={fileSelector} />
-                                                {#if uploading}
-                                                    <div class="loader is-small"></div>
-                                                    <span>Uploading</span>
-                                                {:else}
-                                                    <span class="icon-upload" aria-hidden="true"
-                                                    ></span>
-                                                    <span>Upload</span>
-                                                {/if}
-                                            </Button>
-                                        {/if}
+                                            <svelte:fragment slot="tooltip"
+                                                >{allowedExtension} files are allowed</svelte:fragment>
+                                        </Tooltip>
                                     </Layout.Stack>
+                                    <Typography.Caption variant="400"
+                                        >Max file size: 10MB</Typography.Caption>
                                 </Layout.Stack>
+                            </Layout.Stack>
+                        </Upload.Dropzone>
+                        {#if localFile}
+                            <Upload.List
+                                files={Array.from(localFile).map((f) => {
+                                    return {
+                                        ...f,
+                                        name: f.name,
+                                        size: f.size,
+                                        extension: f.type,
+                                        removable: true
+                                    };
+                                })}
+                                on:remove={() => (localFile = null)} />
+                        {/if}
+                    </Layout.Stack>
+                </div>
+            {:else}
+                <div class="files-section">
+                    <Layout.Stack gap="l">
+                        {#if $isSmallViewport}
+                            <Button
+                                secondary
+                                disabled={uploading}
+                                on:click={() => fileSelector.click()}>
+                                <input
+                                    type="file"
+                                    tabindex="-1"
+                                    class="u-hide"
+                                    accept={extension}
+                                    on:change={uploadFile}
+                                    bind:this={fileSelector} />
+                                {#if uploading}
+                                    <div class="loader is-small"></div>
+                                    <span>Uploading</span>
+                                {:else}
+                                    <span class="icon-upload" aria-hidden="true"></span>
+                                    <span>Upload</span>
+                                {/if}
+                            </Button>
+                        {/if}
 
-                                {#if files}
-                                    {#await files}
-                                        <Layout.Stack
-                                            justifyContent="center"
-                                            alignContent="center"
-                                            alignItems="center"
-                                            gap="xl"
-                                            height="100%">
-                                            <Spinner size="l" />
-                                            <span>Loading files...</span>
+                        {#await buckets then response}
+                            {#if response?.total}
+                                {#if currentBucket}
+                                    <Layout.Stack>
+                                        {#if !$isSmallViewport}
+                                            {#key currentBucket?.$id}
+                                                <Layout.Stack direction="row" alignItems="center">
+                                                    <Typography.Title size="s"
+                                                        >{currentBucket?.name}</Typography.Title>
+                                                    <Id value={currentBucket?.$id} event="bucket">
+                                                        {currentBucket?.$id}
+                                                    </Id>
+                                                </Layout.Stack>
+                                            {/key}
+                                        {/if}
+                                        <Layout.Stack direction="row" alignItems="center">
+                                            <InputSearch
+                                                placeholder="Search files"
+                                                bind:value={$search}
+                                                disabled={!searchEnabled} />
+                                            <ToggleButton
+                                                bind:active={view}
+                                                buttons={[
+                                                    {
+                                                        id: 'list',
+                                                        label: 'list view',
+                                                        disabled: !searchEnabled,
+                                                        icon: IconViewList
+                                                    },
+                                                    {
+                                                        id: 'grid',
+                                                        label: 'grid view',
+                                                        disabled: !searchEnabled,
+                                                        icon: IconViewGrid
+                                                    }
+                                                ]} />
+                                            {#if !$isSmallViewport}
+                                                <Button
+                                                    secondary
+                                                    disabled={uploading}
+                                                    on:click={() => fileSelector.click()}>
+                                                    <input
+                                                        type="file"
+                                                        tabindex="-1"
+                                                        class="u-hide"
+                                                        accept={extension}
+                                                        on:change={uploadFile}
+                                                        bind:this={fileSelector} />
+                                                    {#if uploading}
+                                                        <div class="loader is-small"></div>
+                                                        <span>Uploading</span>
+                                                    {:else}
+                                                        <span class="icon-upload" aria-hidden="true"
+                                                        ></span>
+                                                        <span>Upload</span>
+                                                    {/if}
+                                                </Button>
+                                            {/if}
                                         </Layout.Stack>
-                                    {:then response}
-                                        {#if response?.files?.length}
-                                            {#if view === 'grid'}
-                                                {#if $isSmallViewport}
-                                                    <Layout.Stack gap="l">
-                                                        {#each response?.files as file}
-                                                            <Card.Selector
-                                                                radius="s"
-                                                                name="files"
-                                                                padding="xxs"
-                                                                imageHeight={32}
-                                                                imageWidth={32}
-                                                                imageRadius="xs"
-                                                                bind:group={selectedFile}
-                                                                title={truncatedFilename(file, 14)}
-                                                                value={file.$id}
-                                                                src={getPreview(
-                                                                    currentBucket.$id,
-                                                                    file.$id,
-                                                                    360
-                                                                )}
-                                                                on:click={() => selectFile(file)} />
-                                                        {/each}
-                                                    </Layout.Stack>
-                                                {:else}
-                                                    <Layout.Grid
-                                                        columnsXXS={1}
-                                                        columnsXS={2}
-                                                        columnsS={3}
-                                                        columns={4}>
-                                                        {#each response?.files as file}
-                                                            <div class="image-selector">
+                                    </Layout.Stack>
+
+                                    {#if files}
+                                        {#await files}
+                                            <Layout.Stack
+                                                justifyContent="center"
+                                                alignContent="center"
+                                                alignItems="center"
+                                                gap="xl"
+                                                height="100%">
+                                                <Spinner size="l" />
+                                                <span>Loading files...</span>
+                                            </Layout.Stack>
+                                        {:then response}
+                                            {#if response?.files?.length}
+                                                {#if view === 'grid'}
+                                                    {#if $isSmallViewport}
+                                                        <Layout.Stack gap="l">
+                                                            {#each response?.files as file}
                                                                 <Card.Selector
                                                                     radius="s"
                                                                     name="files"
                                                                     padding="xxs"
-                                                                    imageWidth={gridImageDimensions.imageWidth}
-                                                                    imageHeight={gridImageDimensions.imageHeight}
+                                                                    imageHeight={32}
+                                                                    imageWidth={32}
                                                                     imageRadius="xs"
                                                                     bind:group={selectedFile}
                                                                     title={truncatedFilename(
@@ -390,166 +459,188 @@
                                                                     )}
                                                                     on:click={() =>
                                                                         selectFile(file)} />
-                                                            </div>
-                                                        {/each}
-                                                    </Layout.Grid>
-                                                {/if}
-                                            {/if}
-                                            {#if view === 'list'}
-                                                <Table.Root
-                                                    let:root
-                                                    columns={[
-                                                        { id: 'filename', width: { min: 225 } },
-                                                        { id: 'id', width: { min: 200 } },
-                                                        { id: 'type', width: { min: 100 } },
-                                                        { id: 'size', width: { min: 120 } },
-                                                        { id: 'created', width: { min: 140 } }
-                                                    ]}>
-                                                    <svelte:fragment slot="header" let:root>
-                                                        <Table.Header.Cell column="filename" {root}>
-                                                            Filename
-                                                        </Table.Header.Cell>
-                                                        <Table.Header.Cell column="id" {root}>
-                                                            ID
-                                                        </Table.Header.Cell>
-                                                        <Table.Header.Cell column="type" {root}>
-                                                            Type
-                                                        </Table.Header.Cell>
-                                                        <Table.Header.Cell column="size" {root}>
-                                                            Size
-                                                        </Table.Header.Cell>
-                                                        <Table.Header.Cell column="created" {root}>
-                                                            Created
-                                                        </Table.Header.Cell>
-                                                    </svelte:fragment>
-                                                    {#each response?.files as file (file.$id)}
-                                                        <Table.Row.Button
-                                                            {root}
-                                                            on:click={() => selectFile(file)}>
-                                                            <Table.Cell column="filename" {root}>
-                                                                <div
-                                                                    class="u-inline-flex u-cross-center u-gap-12">
-                                                                    <Selector.Radio
-                                                                        size="s"
-                                                                        name="file"
+                                                            {/each}
+                                                        </Layout.Stack>
+                                                    {:else}
+                                                        <Layout.Grid
+                                                            columnsXXS={1}
+                                                            columnsXS={2}
+                                                            columnsS={3}
+                                                            columns={4}>
+                                                            {#each response?.files as file}
+                                                                <div class="image-selector">
+                                                                    <Card.Selector
+                                                                        radius="s"
+                                                                        name="files"
+                                                                        padding="xxs"
+                                                                        imageWidth={gridImageDimensions.imageWidth}
+                                                                        imageHeight={gridImageDimensions.imageHeight}
+                                                                        imageRadius="xs"
+                                                                        bind:group={selectedFile}
+                                                                        title={truncatedFilename(
+                                                                            file,
+                                                                            14
+                                                                        )}
                                                                         value={file.$id}
-                                                                        bind:group={selectedFile} />
-
-                                                                    <div class="preview-block">
-                                                                        <img
-                                                                            alt={file.name}
-                                                                            src={getPreview(
-                                                                                currentBucket.$id,
-                                                                                file.$id
-                                                                            )} />
-                                                                    </div>
-
-                                                                    <Tooltip
-                                                                        disabled={file.name.length <
-                                                                            15}
-                                                                        maxWidth="fit-content">
-                                                                        <Typography.Text truncate>
-                                                                            {truncatedFilename(
-                                                                                file
-                                                                            )}
-                                                                        </Typography.Text>
-
-                                                                        <span slot="tooltip">
-                                                                            {file.name}
-                                                                        </span>
-                                                                    </Tooltip>
+                                                                        src={getPreview(
+                                                                            currentBucket.$id,
+                                                                            file.$id,
+                                                                            360
+                                                                        )}
+                                                                        on:click={() =>
+                                                                            selectFile(file)} />
                                                                 </div>
-                                                            </Table.Cell>
-                                                            <Table.Cell column="id" {root}>
-                                                                <Id value={file.$id}>{file.$id}</Id>
-                                                            </Table.Cell>
-                                                            <Table.Cell column="type" {root}>
-                                                                {file.mimeType}
-                                                            </Table.Cell>
-                                                            <Table.Cell column="size" {root}>
-                                                                {calculateSize(file.sizeOriginal)}
-                                                            </Table.Cell>
-                                                            <Table.Cell column="created" {root}>
-                                                                <DualTimeView
-                                                                    time={file.$createdAt} />
-                                                            </Table.Cell>
-                                                        </Table.Row.Button>
-                                                    {/each}
-                                                </Table.Root>
+                                                            {/each}
+                                                        </Layout.Grid>
+                                                    {/if}
+                                                {/if}
+                                                {#if view === 'list'}
+                                                    <Table.Root
+                                                        let:root
+                                                        columns={[
+                                                            { id: 'filename', width: { min: 225 } },
+                                                            { id: 'id', width: { min: 200 } },
+                                                            { id: 'type', width: { min: 100 } },
+                                                            { id: 'size', width: { min: 120 } },
+                                                            { id: 'created', width: { min: 140 } }
+                                                        ]}>
+                                                        <svelte:fragment slot="header" let:root>
+                                                            <Table.Header.Cell
+                                                                column="filename"
+                                                                {root}>
+                                                                Filename
+                                                            </Table.Header.Cell>
+                                                            <Table.Header.Cell column="id" {root}>
+                                                                ID
+                                                            </Table.Header.Cell>
+                                                            <Table.Header.Cell column="type" {root}>
+                                                                Type
+                                                            </Table.Header.Cell>
+                                                            <Table.Header.Cell column="size" {root}>
+                                                                Size
+                                                            </Table.Header.Cell>
+                                                            <Table.Header.Cell
+                                                                column="created"
+                                                                {root}>
+                                                                Created
+                                                            </Table.Header.Cell>
+                                                        </svelte:fragment>
+                                                        {#each response?.files as file (file.$id)}
+                                                            <Table.Row.Button
+                                                                {root}
+                                                                on:click={() => selectFile(file)}>
+                                                                <Table.Cell
+                                                                    column="filename"
+                                                                    {root}>
+                                                                    <div
+                                                                        class="u-inline-flex u-cross-center u-gap-12">
+                                                                        <Selector.Radio
+                                                                            size="s"
+                                                                            name="file"
+                                                                            value={file.$id}
+                                                                            bind:group={
+                                                                                selectedFile
+                                                                            } />
+
+                                                                        <div class="preview-block">
+                                                                            <img
+                                                                                alt={file.name}
+                                                                                src={getPreview(
+                                                                                    currentBucket.$id,
+                                                                                    file.$id
+                                                                                )} />
+                                                                        </div>
+
+                                                                        <Tooltip
+                                                                            disabled={file.name
+                                                                                .length < 15}
+                                                                            maxWidth="fit-content">
+                                                                            <Typography.Text
+                                                                                truncate>
+                                                                                {truncatedFilename(
+                                                                                    file
+                                                                                )}
+                                                                            </Typography.Text>
+
+                                                                            <span slot="tooltip">
+                                                                                {file.name}
+                                                                            </span>
+                                                                        </Tooltip>
+                                                                    </div>
+                                                                </Table.Cell>
+                                                                <Table.Cell column="id" {root}>
+                                                                    <Id value={file.$id}
+                                                                        >{file.$id}</Id>
+                                                                </Table.Cell>
+                                                                <Table.Cell column="type" {root}>
+                                                                    {file.mimeType}
+                                                                </Table.Cell>
+                                                                <Table.Cell column="size" {root}>
+                                                                    {calculateSize(
+                                                                        file.sizeOriginal
+                                                                    )}
+                                                                </Table.Cell>
+                                                                <Table.Cell column="created" {root}>
+                                                                    <DualTimeView
+                                                                        time={file.$createdAt} />
+                                                                </Table.Cell>
+                                                            </Table.Row.Button>
+                                                        {/each}
+                                                    </Table.Root>
+                                                {/if}
+                                            {:else if $search}
+                                                <EmptySearch
+                                                    hidePages
+                                                    hidePagination
+                                                    bind:search={$search}
+                                                    target="files">
+                                                    <Button
+                                                        secondary
+                                                        on:click={() => ($search = '')}>
+                                                        Clear search
+                                                    </Button>
+                                                </EmptySearch>
+                                            {:else}
+                                                <Card.Base padding="none">
+                                                    <Empty
+                                                        title="No files found within this bucket."
+                                                        description="Need a hand? Learn more in our documentation.">
+                                                        <slot name="actions" slot="actions">
+                                                            <Button
+                                                                text
+                                                                external
+                                                                size="s"
+                                                                event="empty_documentation"
+                                                                href="https://appwrite.io/docs/products/storage/upload-download"
+                                                                ariaLabel="create document"
+                                                                >Documentation</Button>
+                                                            <Button
+                                                                secondary
+                                                                disabled={uploading}
+                                                                on:click={() =>
+                                                                    fileSelector.click()}
+                                                                >Upload file
+                                                            </Button>
+                                                        </slot>
+                                                    </Empty>
+                                                </Card.Base>
                                             {/if}
-                                        {:else if $search}
-                                            <EmptySearch
-                                                hidePages
-                                                hidePagination
-                                                bind:search={$search}
-                                                target="files">
-                                                <Button secondary on:click={() => ($search = '')}>
-                                                    Clear search
-                                                </Button>
-                                            </EmptySearch>
-                                        {:else}
-                                            <Card.Base padding="none">
-                                                <Empty
-                                                    title="No files found within this bucket."
-                                                    description="Need a hand? Learn more in our documentation.">
-                                                    <slot name="actions" slot="actions">
-                                                        <Button
-                                                            text
-                                                            external
-                                                            size="s"
-                                                            event="empty_documentation"
-                                                            href="https://appwrite.io/docs/products/storage/upload-download"
-                                                            ariaLabel="upload download"
-                                                            >Documentation</Button>
-                                                        <Button
-                                                            secondary
-                                                            disabled={uploading}
-                                                            on:click={() => fileSelector.click()}
-                                                            >Upload file
-                                                        </Button>
-                                                    </slot>
-                                                </Empty>
-                                            </Card.Base>
-                                        {/if}
-                                    {/await}
+                                        {/await}
+                                    {/if}
                                 {/if}
                             {/if}
-                        {:else}
-                            <Card.Base padding="none">
-                                <Empty
-                                    title="No buckets found"
-                                    description="Need a hand? Learn more in our documentation.">
-                                    <slot name="actions" slot="actions">
-                                        <Button
-                                            text
-                                            external
-                                            size="s"
-                                            event="empty_documentation"
-                                            href="https://appwrite.io/docs/products/storage/buckets"
-                                            ariaLabel="create buckets">Documentation</Button>
-
-                                        <Button
-                                            secondary
-                                            on:click={async () => {
-                                                await goto(
-                                                    `${base}/project-${page.params.region}-${page.params.project}/storage`
-                                                );
-                                                $showCreateBucket = true;
-                                            }}>
-                                            Create bucket
-                                        </Button>
-                                    </slot>
-                                </Empty>
-                            </Card.Base>
-                        {/if}
-                    {/await}
-                </Layout.Stack>
-            </div></Layout.Stack>
-
+                        {/await}
+                    </Layout.Stack>
+                </div>
+            {/if}
+        </Layout.Stack>
         <svelte:fragment slot="footer">
             <Layout.Stack direction="row" justifyContent="flex-end">
                 <Button text on:click={closeModal}>Cancel</Button>
-                <Button submit disabled={selectedBucket === null || selectedFile === null}
+                <Button
+                    submit
+                    disabled={(selectedBucket === null && localFileBucketSelected === false) ||
+                        (selectedFile === null && localFile === null)}
                     >Select
                 </Button>
             </Layout.Stack>
