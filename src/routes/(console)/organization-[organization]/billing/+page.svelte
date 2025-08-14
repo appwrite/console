@@ -132,7 +132,9 @@
         availableCredit={data?.availableCredit}
         currentPlan={data?.currentPlan}
         currentAggregation={data?.billingAggregation}
-        currentInvoice={data?.billingInvoice} />
+        currentInvoice={data?.billingInvoice}
+        organizationUsage={data?.organizationUsage}
+        usageProjects={data?.usageProjects} />
     <PaymentHistory />
     <PaymentMethods organization={data?.organization} methods={data?.paymentMethods} />
     <BillingAddress

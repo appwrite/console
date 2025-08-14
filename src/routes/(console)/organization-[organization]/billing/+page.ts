@@ -5,6 +5,9 @@ import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
+import { Query } from '@appwrite.io/console';
+import type { UsageProjectInfo } from '../store';
+import type { OrganizationUsage } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ parent, depends }) => {
     const { organization, scopes, currentPlan, countryList, locale } = await parent();
@@ -57,15 +60,26 @@ export const load: PageLoad = async ({ parent, depends }) => {
               organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))
         : false;
 
-    const [paymentMethods, addressList, billingAddress, availableCredit] = await Promise.all([
-        sdk.forConsole.billing.listPaymentMethods(),
-        sdk.forConsole.billing.listAddresses(),
-        billingAddressPromise,
-        areCreditsSupported ? sdk.forConsole.billing.getAvailableCredit(organization.$id) : null
-    ]);
+    const [paymentMethods, addressList, billingAddress, availableCredit, organizationUsage] =
+        await Promise.all([
+            sdk.forConsole.billing.listPaymentMethods(),
+            sdk.forConsole.billing.listAddresses(),
+            billingAddressPromise,
+            areCreditsSupported
+                ? sdk.forConsole.billing.getAvailableCredit(organization.$id)
+                : null,
+            sdk.forConsole.billing.listUsage(
+                organization.$id,
+                organization.billingCurrentInvoiceDate,
+                organization.billingNextInvoiceDate
+            )
+        ]);
 
     // make number
     const credits = availableCredit ? availableCredit.available : null;
+
+    // Get project information for usage display
+    const usageProjects = organizationUsage ? await getUsageProjects(organizationUsage) : {};
 
     return {
         paymentMethods,
@@ -76,6 +90,36 @@ export const load: PageLoad = async ({ parent, depends }) => {
         billingInvoice,
         areCreditsSupported,
         countryList,
-        locale
+        locale,
+        organizationUsage,
+        usageProjects
     };
 };
+
+// Get project names and regions for usage display
+async function getUsageProjects(
+    usage: OrganizationUsage
+): Promise<Record<string, UsageProjectInfo>> {
+    const projects: Record<string, UsageProjectInfo> = {};
+    const limit = 100;
+    const requests = [];
+
+    for (let index = 0; index < usage.projects.length; index += limit) {
+        const chunkIds = usage.projects.slice(index, index + limit).map((p) => p.projectId);
+        requests.push(
+            sdk.forConsole.projects.list([Query.limit(limit), Query.equal('$id', chunkIds)])
+        );
+    }
+
+    const responses = await Promise.all(requests);
+    for (const response of responses) {
+        for (const project of response.projects) {
+            projects[project.$id] = {
+                name: project.name,
+                region: project.region
+            };
+        }
+    }
+
+    return projects;
+}
