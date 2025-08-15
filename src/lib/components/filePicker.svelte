@@ -38,7 +38,7 @@
     export let allowedExtension: string = '*';
     export let selectedBucket: string = null;
     export let selectedFile: string = null;
-    export let onSelect: (e: Models.File) => void;
+    export let onSelect: (e: Models.File, localFile:boolean) => void;
     export let gridImageDimensions: { imageHeight?: number; imageWidth?: number } = {
         imageHeight: 148
     };
@@ -61,7 +61,7 @@
         if (localFileBucketSelected) {
             await uploadFile();
         }
-        onSelect(currentFile);
+        onSelect(currentFile,localFileBucketSelected);
         closeModal();
     }
 
