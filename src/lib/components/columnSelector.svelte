@@ -62,9 +62,8 @@
         const shownColumns = $columns.filter((n) => n.hide === true).map((n) => n.id);
 
         if (isCustomTable) {
-            preferences.setCustomTableColumns(page.params.table, shownColumns).then(() => {
-                onPreferencesUpdated?.();
-            });
+            onPreferencesUpdated?.();
+            preferences.setCustomTableColumns(page.params.table, shownColumns);
         } else {
             preferences.setColumns(shownColumns);
         }

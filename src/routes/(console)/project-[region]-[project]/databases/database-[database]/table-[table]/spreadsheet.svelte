@@ -96,7 +96,6 @@
 
     const minimumWidth = 168;
     const emptyCellsLimit = $isSmallViewport ? 12 : 18;
-    const selected = preferences.getCustomTableColumns(page.params.table);
     const SYSTEM_KEYS = new Set([
         '$tableId',
         '$databaseId'
@@ -133,6 +132,8 @@
     onDestroy(() => ($showCreateAttributeSheet.show = false));
 
     function makeTableColumns() {
+        const selected = preferences.getCustomTableColumns(page.params.table);
+
         const baseColumns = $table.columns.map((col) => ({
             id: col.key,
             title: col.key,
@@ -185,12 +186,13 @@
             {
                 id: 'actions',
                 title: '',
-                width: getColumnWidth('actions', 40),
+                width: 40,
                 isAction: true,
                 draggable: false,
                 type: 'string',
                 resizable: false,
-                isEditable: false
+                isEditable: false,
+                hide: false
             }
         ];
 
@@ -198,11 +200,12 @@
             staticColumns[0],
             ...baseColumns,
             staticColumns[1],
-            staticColumns[2],
-            staticColumns[3]
+            staticColumns[2]
         ];
 
-        const visibleNonAction = groupedColumns.filter((c) => !c.hide && !c.isAction);
+        const actionsColumn = staticColumns[3];
+
+        const visibleNonAction = groupedColumns.filter((c) => !c.hide);
         if (visibleNonAction.length === 1) {
             const only = visibleNonAction[0];
             if (typeof only.width === 'number') {
@@ -212,18 +215,10 @@
             }
         }
 
-        tableColumns.set(
-            reorderItems(
-                [
-                    staticColumns[0],
-                    ...baseColumns,
-                    staticColumns[1],
-                    staticColumns[2],
-                    staticColumns[3]
-                ],
-                $columnsOrder
-            )
-        );
+        const reorderedNonActions = reorderItems(groupedColumns, $columnsOrder);
+        const finalColumns = [...reorderedNonActions, actionsColumn];
+
+        tableColumns.set(finalColumns);
     }
 
     function getColumnWidth(
@@ -240,6 +235,8 @@
         if (update) {
             columnsOrder.set(newOrder);
         }
+
+        makeTableColumns();
 
         saveColumnOrderToPreferences(newOrder);
     }
@@ -404,9 +401,11 @@
         showColumnDelete = false;
 
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .grids.deleteColumn(databaseId, tableId, $databaseColumnSheetOptions.column.key);
+            await sdk.forProject(page.params.region, page.params.project).grids.deleteColumn({
+                databaseId,
+                tableId,
+                key: $databaseColumnSheetOptions.column.key
+            });
 
             if ($columnsOrder.includes($databaseColumnSheetOptions.column.key)) {
                 const updatedOrder = $columnsOrder.filter(

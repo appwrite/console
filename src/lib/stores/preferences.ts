@@ -191,8 +191,6 @@ function createPreferences() {
                 n.tables ??= {};
 
                 n.tables[tableId] = Array.from(new Set(columns));
-                // let's not double save
-                // n.collections[tableId] = Array.from(new Set(columns));
                 return n;
             }),
 
@@ -238,8 +236,8 @@ function createPreferences() {
             });
         },
 
-        getColumnOrder(collectionId: string): TeamPreferences['order'] {
-            return teamPreferences?.columnOrder?.[collectionId] ?? [];
+        getColumnOrder(tableId: string): TeamPreferences['order'] {
+            return teamPreferences?.columnOrder?.[tableId] ?? [];
         },
 
         async saveColumnOrder(
