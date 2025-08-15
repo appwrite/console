@@ -119,6 +119,8 @@
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
+        columnsOrder.set(preferences.getColumnOrder(tableId));
+        columnsWidth.set(preferences.getColumnWidths(tableId));
 
         makeTableColumns();
         sortState.set(data.currentSort as SortState);
@@ -132,13 +134,13 @@
     onDestroy(() => ($showCreateAttributeSheet.show = false));
 
     function makeTableColumns() {
-        const selected = preferences.getCustomTableColumns(page.params.table);
+        const selectedColumnsToHide = preferences.getCustomTableColumns(tableId);
 
         const baseColumns = $table.columns.map((col) => ({
             id: col.key,
             title: col.key,
             type: col.type as ColumnType,
-            hide: !!selected?.includes(col.key),
+            hide: !!selectedColumnsToHide?.includes(col.key),
             array: col?.array,
             width: getColumnWidth(col.key, { min: minimumWidth }),
             minimumWidth: minimumWidth,
@@ -159,7 +161,7 @@
                 icon: IconFingerPrint,
                 isEditable: false,
                 isPrimary: false,
-                hide: !!selected?.includes('$id')
+                hide: !!selectedColumnsToHide?.includes('$id')
             },
             {
                 id: '$createdAt',
@@ -170,7 +172,7 @@
                 type: 'datetime',
                 icon: IconCalendar,
                 isEditable: false,
-                hide: !!selected?.includes('$createdAt')
+                hide: !!selectedColumnsToHide?.includes('$createdAt')
             },
             {
                 id: '$updatedAt',
@@ -181,7 +183,7 @@
                 type: 'datetime',
                 icon: IconCalendar,
                 isEditable: false,
-                hide: !!selected?.includes('$updatedAt')
+                hide: !!selectedColumnsToHide?.includes('$updatedAt')
             },
             {
                 id: 'actions',
@@ -235,8 +237,6 @@
         if (update) {
             columnsOrder.set(newOrder);
         }
-
-        makeTableColumns();
 
         saveColumnOrderToPreferences(newOrder);
     }
@@ -582,6 +582,7 @@
     }
 
     async function handleGoToPage(targetPageNum: number): Promise<void> {
+        jumpToPageReactive = 0;
         if (targetPageNum < 1 || targetPageNum > totalPages) return;
 
         if (!$paginatedRows.hasPage(targetPageNum)) {

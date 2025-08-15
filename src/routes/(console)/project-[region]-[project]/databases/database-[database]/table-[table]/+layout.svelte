@@ -72,8 +72,6 @@
     const tableId = page.params.table;
 
     onMount(() => {
-        columnsOrder.set(preferences.getColumnOrder(tableId));
-        columnsWidth.set(preferences.getColumnWidths(tableId));
         expandTabs.set(preferences.isTableHeaderExpanded(tableId));
 
         return realtime
