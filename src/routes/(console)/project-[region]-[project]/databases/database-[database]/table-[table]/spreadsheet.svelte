@@ -749,8 +749,7 @@
                         virtualItem={item}
                         select={rowSelection}
                         showSelectOnHover
-                        valueWithoutHover={row.$sequence}
-                    >
+                        valueWithoutHover={row.$sequence}>
                         {#each $tableColumns as { id: columnId, isEditable } (columnId)}
                             {@const rowColumn = $columns.find((col) => col.key === columnId)}
                             <Spreadsheet.Cell {root} {isEditable} column={columnId}>
