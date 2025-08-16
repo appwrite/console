@@ -60,6 +60,7 @@
 
     export function restoreGridSheetScroll(): void {
         if (initSpreadsheetGridContainer() && spreadsheetGridContainer.scrollWidth > 0) {
+            spreadsheetGridContainer.scrollTop = 0;
             spreadsheetGridContainer.scrollLeft = $scrollStore;
         }
     }
