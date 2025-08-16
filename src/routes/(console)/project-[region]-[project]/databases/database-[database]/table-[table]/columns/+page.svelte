@@ -102,6 +102,7 @@
     let showDelete = $state(false);
     let selectedColumns = $state([]);
     let selectedColumn: Columns = $state(null);
+    let columnIndexMap: Record<string, boolean> = $state({});
 
     let columnsOrder = $state([]);
     const tableId = page.params.table;
@@ -159,6 +160,18 @@
         if (updatedColumnsForSheet) {
             /* up-to-date height */
             tick().then(() => spreadsheetContainer?.resizeSheet());
+        }
+    });
+
+    $effect(() => {
+        if (!$showCreateIndexSheet.show && $showCreateIndexSheet.column) {
+            const columnKey = $showCreateIndexSheet.column;
+
+            const isActuallyIndexed = $indexes.some((index) => index.columns.includes(columnKey));
+
+            if (!isActuallyIndexed) {
+                columnIndexMap[columnKey] = false;
+            }
         }
     });
 </script>
@@ -284,10 +297,25 @@
                         </Layout.Stack>
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="indexed" {root} isEditable={false}>
-                        {@const isIndexed = $indexes.some((index) =>
+                        {@const isActuallyIndexed = $indexes.some((index) =>
                             index.columns.includes(column.key)
                         )}
-                        <Selector.Checkbox size="s" checked={isIndexed} disabled />
+
+                        {@const checked = isActuallyIndexed || !!columnIndexMap[column.key]}
+
+                        <Selector.Checkbox
+                            size="s"
+                            {checked}
+                            disabled={isActuallyIndexed}
+                            on:change={(e) => {
+                                if (!isActuallyIndexed) {
+                                    if (e.detail) {
+                                        columnIndexMap[column.key] = true;
+                                        $showCreateIndexSheet.show = true;
+                                        $showCreateIndexSheet.column = column.key;
+                                    }
+                                }
+                            }} />
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="default" {root} isEditable={false}>
                         {@const _default =
