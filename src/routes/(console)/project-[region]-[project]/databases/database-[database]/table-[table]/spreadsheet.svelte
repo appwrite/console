@@ -207,16 +207,6 @@
 
         const actionsColumn = staticColumns[3];
 
-        const visibleNonAction = groupedColumns.filter((c) => !c.hide);
-        if (visibleNonAction.length === 1) {
-            const only = visibleNonAction[0];
-            if (typeof only.width === 'number') {
-                only.width = {
-                    min: only.width
-                };
-            }
-        }
-
         const reorderedNonActions = reorderItems(groupedColumns, $columnsOrder);
         const finalColumns = [...reorderedNonActions, actionsColumn];
 
@@ -878,7 +868,7 @@
                                 <svelte:fragment slot="cell-editor">
                                     <EditRowCell
                                         column={rowColumn}
-                                        row={paginatedRows.items[index]}
+                                        row={paginatedRows.getItemAtVirtualIndex(index)}
                                         onRowStructureUpdate={updateRowContents}
                                         on:change={(row) => paginatedRows.update(index, row.detail)}
                                         on:revert={(row) =>
@@ -985,65 +975,65 @@
     title={selectedRows.length === 1 ? 'Delete Row' : 'Delete Rows'}>
     {@const isSingle = selectedRowForDelete !== null}
 
-    <div>
+    <p>
         {#if isSingle}
-            Are you sure you want to delete this document from <b>{$table.name}</b>?
+            Are you sure you want to delete this row from <b>{$table.name}</b>?
         {:else}
             Are you sure you want to delete <b>{selectedRows.length}</b>
             {selectedRows.length > 1 ? 'rows' : 'row'} from <b>{$table.name}</b>?
         {/if}
+    </p>
 
-        {#if relatedColumns?.length}
-            <Table.Root
-                let:root
-                columns={[
-                    { id: 'relation', width: 150 },
-                    { id: 'setting', width: 150 },
-                    { id: 'desc' }
-                ]}>
-                <svelte:fragment slot="header" let:root>
-                    <Table.Header.Cell column="relation" {root}>Relation</Table.Header.Cell>
-                    <Table.Header.Cell column="setting" {root}>Setting</Table.Header.Cell>
-                    <Table.Header.Cell column="desc" {root} />
-                </svelte:fragment>
-                {#each relatedColumns as attr}
-                    <Table.Row.Base {root}>
-                        <Table.Cell column="relation" {root}>
-                            <span class="u-flex u-cross-center u-gap-8">
-                                {#if attr.twoWay}
-                                    <span class="icon-switch-horizontal"></span>
-                                {:else}
-                                    <span class="icon-arrow-sm-right"></span>
-                                {/if}
-                                <span data-private>{attr.key}</span>
-                            </span>
-                        </Table.Cell>
-                        <Table.Cell column="setting" {root}>
-                            {attr.onDelete}
-                        </Table.Cell>
-                        <Table.Cell column="desc" {root}>
-                            {Deletion[attr.onDelete]}
-                        </Table.Cell>
-                    </Table.Row.Base>
-                {/each}
-            </Table.Root>
-            <div class="u-flex u-flex-vertical u-gap-16">
-                <Alert>To change the selection edit the relationship settings.</Alert>
-                <ul>
-                    <InputChoice
-                        id="delete"
-                        label="Delete"
-                        showLabel={false}
-                        bind:value={deleteConfirmationChecked}>
-                        Delete {isSingle ? 'document' : 'documents'} from
-                        <span data-private>{$table.name}</span>
-                    </InputChoice>
-                </ul>
-            </div>
-        {:else}
-            <p class="u-bold">This action is irreversible.</p>
-        {/if}
-    </div>
+    {#if relatedColumns?.length}
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'relation', width: 150 },
+                { id: 'setting', width: 150 },
+                { id: 'desc' }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="relation" {root}>Relation</Table.Header.Cell>
+                <Table.Header.Cell column="setting" {root}>Setting</Table.Header.Cell>
+                <Table.Header.Cell column="desc" {root} />
+            </svelte:fragment>
+            {#each relatedColumns as attr}
+                <Table.Row.Base {root}>
+                    <Table.Cell column="relation" {root}>
+                        <span class="u-flex u-cross-center u-gap-8">
+                            {#if attr.twoWay}
+                                <span class="icon-switch-horizontal"></span>
+                            {:else}
+                                <span class="icon-arrow-sm-right"></span>
+                            {/if}
+                            <span data-private>{attr.key}</span>
+                        </span>
+                    </Table.Cell>
+                    <Table.Cell column="setting" {root}>
+                        {attr.onDelete}
+                    </Table.Cell>
+                    <Table.Cell column="desc" {root}>
+                        {Deletion[attr.onDelete]}
+                    </Table.Cell>
+                </Table.Row.Base>
+            {/each}
+        </Table.Root>
+        <div class="u-flex u-flex-vertical u-gap-16">
+            <Alert>To change the selection edit the relationship settings.</Alert>
+            <ul>
+                <InputChoice
+                    id="delete"
+                    label="Delete"
+                    showLabel={false}
+                    bind:value={deleteConfirmationChecked}>
+                    Delete {isSingle ? 'document' : 'documents'} from
+                    <span data-private>{$table.name}</span>
+                </InputChoice>
+            </ul>
+        </div>
+    {:else}
+        <p class="u-bold">This action is irreversible.</p>
+    {/if}
 </Confirm>
 
 <Confirm
