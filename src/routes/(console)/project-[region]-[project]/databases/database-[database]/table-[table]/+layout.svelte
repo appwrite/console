@@ -382,7 +382,7 @@
         externalColumnKey={$showCreateIndexSheet.column} />
 </SideSheet>
 
-<SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
+<SideSheet spaced title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
     <RowActivity />
 </SideSheet>
 

@@ -6,7 +6,7 @@
     import { rowActivitySheet } from './store';
     import { pageToOffset } from '$lib/helpers/load';
     import { type Models, Query } from '@appwrite.io/console';
-    import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
+    import { Skeleton } from '@appwrite.io/pink-svelte';
 
     let limit = 25; /* default */
     let offset = $state(0);
@@ -47,16 +47,22 @@
         <Activity
             {limit}
             {offset}
+            insideSideSheet
             on:page={loadRowLogs}
             logs={rowActivityLogs}
-            databasesScreen
             useCreateLinkForPagination={false} />
     </div>
 {/if}
 
 <style lang="scss">
-    .row-activity-wrapper :global(.console-container) {
-        margin-inline: unset;
-        padding-block-start: 1.25rem !important;
+    .row-activity-wrapper {
+        & :global(.console-container) {
+            margin-inline: unset;
+            padding-inline-end: unset;
+
+            @media (max-width: 768px) {
+                margin-block: 0.5rem;
+            }
+        }
     }
 </style>
