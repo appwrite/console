@@ -28,7 +28,6 @@
     let isSubmitting = $state(false);
     let columnFormWrapper: HTMLDivElement | null = $state(null);
     let createMore = $state(false);
-    let formResetKey = $state(0);
 
     type CreateRow = {
         id?: string;
@@ -37,26 +36,26 @@
         columns: Columns[];
     };
 
-    function createRowWritable() {
+    function computeInitialCreateRow(): CreateRow {
         const availableColumns = table.columns.filter((a) => a.status === 'available');
 
-        const initial = {
+        return {
             id: null,
-            row: availableColumns.reduce((acc, attr) => {
-                acc[attr.key] = attr.array ? [] : null;
-
-                return acc;
-            }, {}),
+            row: availableColumns.reduce(
+                (acc, attr) => {
+                    acc[attr.key] = attr.array ? [] : null;
+                    return acc;
+                },
+                {} as Record<string, unknown>
+            ),
             permissions: [],
             columns: availableColumns
         };
-
-        return writable<CreateRow>({ ...initial });
     }
 
-    let createRow = createRowWritable();
+    let createRow = writable<CreateRow>(computeInitialCreateRow());
 
-    async function create() {
+    async function create(): Promise<boolean> {
         isSubmitting = true;
 
         try {
@@ -79,18 +78,20 @@
             await invalidate(Dependencies.ROW);
 
             if (createMore) {
-                createRow = createRowWritable();
+                createRow.set(computeInitialCreateRow());
                 existingData = null;
-                formResetKey += 1;
                 await tick();
                 focusFirstInput();
+                return true; // this keep sheet open
             }
+            return false; // this wull close sheet
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
             trackError(error, Submit.RowCreate);
+            return true; // keep open on error
         } finally {
             isSubmitting = false;
         }
@@ -107,7 +108,7 @@
     $effect(() => {
         if (showSheet) {
             focusFirstInput();
-            createRow = createRowWritable();
+            createRow.set(computeInitialCreateRow());
         } else {
             createMore = false;
         }
@@ -130,47 +131,37 @@
             submit={{
                 text: 'Create',
                 disabled: isSubmitting,
-                onClick: async () => {
-                    await create();
-                    if (createMore) {
-                        throw new Error('Keep open');
-                    }
-                }
+                onClick: async () => await create()
             }}
             {footer}>
             <Layout.Stack gap="xxl">
-                {#key formResetKey}
-                    <div bind:this={columnFormWrapper}>
-                        <ColumnForm
-                            columns={$createRow.columns}
-                            bind:customId={$createRow.id}
-                            bind:formValues={$createRow.row} />
-                    </div>
+                <div bind:this={columnFormWrapper}>
+                    <ColumnForm
+                        columns={$createRow.columns}
+                        bind:customId={$createRow.id}
+                        bind:formValues={$createRow.row} />
+                </div>
 
-                    <Layout.Stack gap="xl">
-                        <Typography.Text>
-                            Choose which permission scopes to grant your application. It is best
-                            practice to allow only the permissions you need to meet your project
-                            goals.
-                        </Typography.Text>
-                        {#if table.rowSecurity}
-                            <Alert.Inline status="info">
-                                <svelte:fragment slot="title"
-                                    >Row security is enabled</svelte:fragment>
-                                Users will be able to access this row if they have been granted
-                                <b>either row or table permissions</b>.
-                            </Alert.Inline>
-                            <Permissions bind:permissions={$createRow.permissions} />
-                        {:else}
-                            <Alert.Inline status="info">
-                                <svelte:fragment slot="title"
-                                    >Row security is disabled</svelte:fragment>
-                                If you want to assign row permissions, navigate to Table settings and
-                                enable row security. Otherwise, only table permissions will be used.
-                            </Alert.Inline>
-                        {/if}
-                    </Layout.Stack>
-                {/key}
+                <Layout.Stack gap="xl">
+                    <Typography.Text>
+                        Choose which permission scopes to grant your application. It is best
+                        practice to allow only the permissions you need to meet your project goals.
+                    </Typography.Text>
+                    {#if table.rowSecurity}
+                        <Alert.Inline status="info">
+                            <svelte:fragment slot="title">Row security is enabled</svelte:fragment>
+                            Users will be able to access this row if they have been granted
+                            <b>either row or table permissions</b>.
+                        </Alert.Inline>
+                        <Permissions bind:permissions={$createRow.permissions} />
+                    {:else}
+                        <Alert.Inline status="info">
+                            <svelte:fragment slot="title">Row security is disabled</svelte:fragment>
+                            If you want to assign row permissions, navigate to Table settings and enable
+                            row security. Otherwise, only table permissions will be used.
+                        </Alert.Inline>
+                    {/if}
+                </Layout.Stack>
             </Layout.Stack>
         </SideSheet>
     </div>

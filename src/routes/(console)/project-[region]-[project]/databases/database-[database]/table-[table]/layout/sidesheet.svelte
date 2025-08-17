@@ -20,7 +20,7 @@
             | {
                   text: string;
                   disabled?: boolean;
-                  onClick?: () => void | Promise<void>;
+                  onClick?: () => boolean | void | Promise<boolean | void>;
               }
             | undefined;
         children?: Snippet;
@@ -42,8 +42,10 @@
             <Form
                 onSubmit={async () => {
                     try {
-                        await submit?.onClick();
-                        show = false;
+                        const keepOpen = await submit?.onClick?.();
+                        if (!keepOpen) {
+                            show = false;
+                        }
                     } catch (error) {
                         // error occurred, dont close the sidebar
                     }
