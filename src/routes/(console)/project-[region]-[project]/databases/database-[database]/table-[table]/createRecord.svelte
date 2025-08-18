@@ -122,11 +122,6 @@
 {#if $createRow}
     <div class="sheet-container">
         <!-- TODO: add a ID badge-->
-        {#snippet footer()}
-            <Layout.Stack inline direction="row" alignItems="center">
-                <Selector.Switch id="create-more" bind:checked={createMore} label="Create more" />
-            </Layout.Stack>
-        {/snippet}
         <SideSheet
             spaced
             title={`${existingData ? 'Duplicate' : 'Create'} row`}
@@ -136,8 +131,16 @@
                 text: 'Create',
                 disabled: isSubmitting,
                 onClick: async () => await create()
-            }}
-            {footer}>
+            }}>
+            {#snippet footer()}
+                <Layout.Stack inline direction="row" alignItems="center">
+                    <Selector.Switch
+                        id="create-more"
+                        bind:checked={createMore}
+                        label="Create more" />
+                </Layout.Stack>
+            {/snippet}
+
             <Layout.Stack gap="xxl">
                 <div bind:this={columnFormWrapper}>
                     <ColumnForm
