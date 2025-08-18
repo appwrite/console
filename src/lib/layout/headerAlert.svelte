@@ -22,6 +22,7 @@
         if (header) {
             header.style.top = `${alertHeight}px`;
         }
+
         if (sidebar) {
             sidebar.style.top = `${alertHeight + ($isTabletViewport ? 0 : header.getBoundingClientRect().height)}px`;
             sidebar.style.height = `calc(100vh - (${alertHeight + ($isTabletViewport ? 0 : header.getBoundingClientRect().height)}px))`;
@@ -29,6 +30,7 @@
             // for sidebar and sub-navigation!
             bannerSpacing.set(`${alertHeight}px`);
         }
+
         if (contentSection) {
             contentSection.style.paddingBlockStart = `${alertHeight}px`;
         }
