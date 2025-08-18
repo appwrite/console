@@ -36,9 +36,9 @@
             let:root
             columns={[
                 { id: 'client' },
-                { id: 'location', width: 120 },
-                { id: 'ip', width: 120 },
-                { id: 'actions', width: 70 }
+                { id: 'location', width: 200 },
+                { id: 'ip', width: 200 },
+                { id: 'actions', width: 100 }
             ]}>
             <svelte:fragment slot="header" let:root>
                 <Table.Header.Cell column="client" {root}>Client</Table.Header.Cell>
