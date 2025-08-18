@@ -38,8 +38,12 @@
                     Create, organize, and query structured data with Tables.
                 </span>
                 <span slot="actions">
-                    <Button external text event="empty_documentation" ariaLabel={`create table`}
-                        >Documentation</Button>
+                    <Button
+                        external
+                        href="https://appwrite.io/docs/products/databases/databases"
+                        text
+                        event="empty_documentation"
+                        ariaLabel={`create table`}>Documentation</Button>
 
                     {#if $canWriteTables}
                         <Button
