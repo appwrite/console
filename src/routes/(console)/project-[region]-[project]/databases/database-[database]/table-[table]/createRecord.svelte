@@ -86,9 +86,9 @@
                 existingData = null;
                 await tick();
                 focusFirstInput();
-                return true; // this keep sheet open
+                return true; // keep sheet open
             }
-            return false; // this wull close sheet
+            return false; // close sheet
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -121,7 +121,6 @@
 
 {#if $createRow}
     <div class="sheet-container">
-        <!-- TODO: add a ID badge-->
         <SideSheet
             spaced
             title={`${existingData ? 'Duplicate' : 'Create'} row`}

@@ -6,29 +6,73 @@
     import { IconViewBoards } from '@appwrite.io/pink-icons-svelte';
     import ViewToggle from './viewToggle.svelte';
     import ColumnSelector from './columnSelector.svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
+    import { preferences } from '$lib/stores/preferences';
+    import { page } from '$app/state';
+    import { hash } from '$lib/helpers/string';
 
-    export let onlyIcon = false;
-    export let ui: 'legacy' | 'new' = 'legacy';
-    export let columns: Writable<Column[]>;
-    export let view: View;
-    export let isCustomTable = false;
-    export let hideView = false;
-    export let hideColumns = false;
-    export let allowNoColumns = false;
-    export let showAnyway = false;
+    interface Props {
+        onlyIcon?: boolean;
+        ui?: 'legacy' | 'new';
+        columns: Writable<Column[]>;
+        view: View;
+        isCustomTable?: boolean;
+        hideView?: boolean;
+        hideColumns?: boolean;
+        allowNoColumns?: boolean;
+        showAnyway?: boolean;
+    }
+
+    let {
+        onlyIcon = false,
+        ui = 'legacy',
+        columns,
+        view = $bindable(),
+        isCustomTable = false,
+        hideView = false,
+        hideColumns = false,
+        allowNoColumns = false,
+        showAnyway = false
+    }: Props = $props();
+
+    let showCountBadge = $state(false);
+    const preferenceKey = $derived(getPreferenceKey());
+
+    function getPreferenceKey(): string {
+        const tableId = page.params.table;
+        const organizationId = page.data.organization?.$id ?? page.data.project?.teamId;
+        return hash([organizationId, tableId].filter(Boolean).join('#'));
+    }
+
+    function updateBadgeState() {
+        if (!preferences.getKey(preferenceKey, false)) {
+            showCountBadge = true;
+            preferences.setKey(preferenceKey, true);
+        }
+    }
+
+    $effect(() => {
+        showCountBadge = !onlyIcon || !!preferences.getKey(preferenceKey, false);
+    });
 </script>
 
 {#if !hideColumns && view === View.Table}
-    <ColumnSelector {columns} {isCustomTable} {allowNoColumns} {ui} {showAnyway}>
+    <ColumnSelector
+        {ui}
+        {columns}
+        {showAnyway}
+        {isCustomTable}
+        {allowNoColumns}
+        onPreferencesUpdated={updateBadgeState}>
         {#snippet children(toggle, selectedColumnsNumber)}
             <Button.Button
                 size="s"
                 icon={onlyIcon}
+                onclick={toggle}
                 variant="secondary"
-                class={onlyIcon ? 'width-fix' : undefined}
                 disabled={!$columns.length && showAnyway}
-                badge={onlyIcon ? undefined : selectedColumnsNumber.toString()}
-                on:click={toggle}>
+                class={onlyIcon && !$isSmallViewport ? 'width-fix' : undefined}
+                badge={showCountBadge ? selectedColumnsNumber.toString() : undefined}>
                 <Icon slot="start" icon={IconViewBoards} />
             </Button.Button>
         {/snippet}

@@ -11,6 +11,7 @@
     import {
         ActionMenu,
         Badge,
+        Divider,
         FloatingActionBar,
         Icon,
         Layout,
@@ -25,13 +26,11 @@
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type ComponentProps, onDestroy, onMount, tick } from 'svelte';
+    import { type ComponentProps, onDestroy, tick } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import EmptySheet from '../layout/emptySheet.svelte';
     import SpreadsheetContainer from '../layout/spreadsheet.svelte';
-    import { page } from '$app/state';
     import SideSheet from '../layout/sidesheet.svelte';
-    import { flags } from '$lib/flags';
     import type { PageData } from './$types';
     import { showCreateAttributeSheet } from '../store';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -93,7 +92,10 @@
     });
 </script>
 
-<Container expanded style="background: var(--bgcolor-neutral-primary)">
+<Container
+    expanded
+    expandHeightButton={$isSmallViewport}
+    style="background: var(--bgcolor-neutral-primary)">
     <Layout.Stack direction="row" justifyContent="flex-end">
         {#if $canWriteTables}
             <Button
@@ -167,7 +169,7 @@
                                 {index.lengths}
                             </Spreadsheet.Cell>
                             <Spreadsheet.Cell column="actions" {root}>
-                                <Popover let:toggle padding="none" placement="bottom-end">
+                                <Popover let:toggle padding="none" placement="bottom-end" portal>
                                     <Button text icon ariaLabel="more options" on:click={toggle}>
                                         <Icon icon={IconDotsHorizontal} size="s" />
                                     </Button>
@@ -178,6 +180,11 @@
                                                 selectedIndex = index;
                                                 showOverview = true;
                                             }}>Overview</ActionMenu.Item.Button>
+
+                                        <div style:padding-block="0.25rem">
+                                            <Divider />
+                                        </div>
+
                                         <ActionMenu.Item.Button
                                             status="danger"
                                             leadingIcon={IconTrash}

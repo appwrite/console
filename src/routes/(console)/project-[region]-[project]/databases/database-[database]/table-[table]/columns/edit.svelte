@@ -128,8 +128,8 @@
             {#if selectedColumn?.type !== 'relationship'}
                 <InputText
                     id="key"
-                    label="Column Key"
-                    placeholder="Enter Key"
+                    label="Column key"
+                    placeholder="Enter key"
                     bind:value={selectedColumn.key}
                     autofocus />
             {/if}
@@ -153,8 +153,8 @@
             {#if selectedColumn?.type !== 'relationship'}
                 <InputText
                     id="key"
-                    label="Attribute Key"
-                    placeholder="Enter Key"
+                    label="Column key"
+                    placeholder="Enter key"
                     bind:value={selectedColumn.key}
                     autofocus />
             {/if}

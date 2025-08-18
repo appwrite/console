@@ -128,11 +128,7 @@
     const spreadsheetColumns = $derived(mode === 'rows' ? getRowColumns() : getIndexesColumns());
 
     const emptyCells = $derived($isSmallViewport ? 14 : 17);
-    const fixedHeight = $derived($isSmallViewport ? '60.75vh' : '74.75vh');
-
-    $effect(() => {
-        console.log(JSON.stringify(spreadsheetColumns, null, 2));
-    });
+    const fixedHeight = $derived($isSmallViewport ? '60.75vh' : '74.35vh');
 </script>
 
 <div class="spreadsheet-container-outer" data-mode={mode}>
@@ -314,8 +310,12 @@
             height: 79.1vh !important;
         }
 
-        @media (max-width: 768px) {
-            height: 70vh;
+        @media (max-width: 1024px) {
+            height: 63.35vh;
+        }
+
+        @media (min-width: 1024px) {
+            height: 70.35vh;
         }
     }
 

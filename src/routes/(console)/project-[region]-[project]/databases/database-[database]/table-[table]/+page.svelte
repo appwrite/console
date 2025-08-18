@@ -138,7 +138,10 @@
                             icon
                             secondary
                             disabled={!(hasColumns && hasValidColumns)}
-                            on:click={() => ($expandTabs = !$expandTabs)}>
+                            on:click={() => {
+                                $expandTabs = !$expandTabs;
+                                preferences.setTableHeaderExpanded($table.$id, $expandTabs);
+                            }}>
                             <Icon icon={!$expandTabs ? IconChevronDown : IconChevronUp} size="s" />
                         </Button>
                     {/if}
@@ -147,9 +150,9 @@
             {#if $isSmallViewport}
                 <Button
                     secondary
+                    event="create_row"
                     disabled={!(hasColumns && hasValidColumns)}
-                    on:click={() => ($showRecordsCreateSheet.show = true)}
-                    event="create_row">
+                    on:click={() => ($showRecordsCreateSheet.show = true)}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create row
                 </Button>
@@ -191,6 +194,7 @@
                     showActions={$canWriteRows}
                     actions={{
                         primary: {
+                            text: 'Create rows',
                             onClick: () => {
                                 $showRecordsCreateSheet.show = true;
                             }

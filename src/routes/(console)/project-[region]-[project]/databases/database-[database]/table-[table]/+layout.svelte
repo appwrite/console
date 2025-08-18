@@ -32,7 +32,8 @@
         showCreateIndexSheet,
         spreadsheetLoading,
         rowActivitySheet,
-        spreadsheetRenderKey
+        spreadsheetRenderKey,
+        expandTabs
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
@@ -54,6 +55,7 @@
     import { sleep } from '$lib/helpers/promises';
     import CreateIndex from './indexes/createIndex.svelte';
     import { hash } from '$lib/helpers/string';
+    import { preferences } from '$lib/stores/preferences';
 
     let editRow: EditRow;
     let createIndex: CreateIndex;
@@ -66,7 +68,11 @@
      */
     let isWaterfallFromFaker = false;
 
+    const tableId = page.params.table;
+
     onMount(() => {
+        expandTabs.set(preferences.isTableHeaderExpanded(tableId));
+
         return realtime
             .forProject(page.params.region, page.params.project)
             .subscribe(['project', 'console'], (response) => {
@@ -237,14 +243,10 @@
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
-        let attributes = $table.columns;
-        if (!attributes.length) {
+        let columns = $table.columns;
+        if (!columns.length) {
             try {
-                attributes = await generateColumns(
-                    $project,
-                    page.params.database,
-                    page.params.table
-                );
+                columns = await generateColumns($project, page.params.database, page.params.table);
 
                 await invalidate(Dependencies.TABLE);
             } catch (e) {
@@ -257,12 +259,12 @@
             }
         }
 
-        /* let the attributes be processed! */
+        /* let the columns be processed! */
         await sleep(1250);
 
         let rowIds = [];
         try {
-            const { rows, ids } = generateFakeRecords(attributes, $randomDataModalState.value);
+            const { rows, ids } = generateFakeRecords(columns, $randomDataModalState.value);
 
             rowIds = ids;
 
@@ -308,7 +310,7 @@
     title={$showCreateAttributeSheet.title}
     bind:show={$showCreateAttributeSheet.show}
     submit={{
-        text: 'Insert',
+        text: 'Create',
         onClick: async () => {
             await createColumn?.submit();
         },
@@ -344,7 +346,6 @@
 </SideSheet>
 
 <SideSheet
-    spaced
     closeOnBlur
     title={$databaseRowSheetOptions.title}
     bind:show={$databaseRowSheetOptions.show}

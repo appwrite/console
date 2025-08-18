@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert, Confirm, Id, SortButton } from '$lib/components';
+    import { Confirm, Id, SortButton } from '$lib/components';
     import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
     import { Button as ConsoleButton, InputChoice, InputSelect } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -37,6 +37,7 @@
     import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import {
+        Alert,
         Tooltip,
         Spreadsheet,
         Table,
@@ -52,6 +53,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import {
+        IconArrowSmRight,
         IconCalendar,
         IconDotsHorizontal,
         IconFingerPrint,
@@ -61,6 +63,7 @@
         IconMail,
         IconPlus,
         IconRelationship,
+        IconSwitchHorizontal,
         IconText,
         IconToggle,
         IconViewList
@@ -75,6 +78,7 @@
     import { pageToOffset } from '$lib/helpers/load';
     import { debounce } from '$lib/helpers/debounce';
     import { hash } from '$lib/helpers/string';
+    import { abbreviateNumber } from '$lib/helpers/numbers';
 
     export let data: PageData;
     export let showRecordsCreateSheet: {
@@ -94,10 +98,14 @@
 
     const minimumWidth = 168;
     const emptyCellsLimit = $isSmallViewport ? 12 : 18;
-    const selected = preferences.getCustomTableColumns(page.params.table);
     const SYSTEM_KEYS = new Set([
         '$tableId',
-        '$databaseId'
+        '$databaseId',
+        '$permissions',
+        '$createdAt',
+        '$updatedAt',
+        '$id',
+        '$sequence'
     ]); /* TODO: should be fixed at the sdk level! */
 
     let selectedRows = [];
@@ -133,11 +141,13 @@
     onDestroy(() => ($showCreateAttributeSheet.show = false));
 
     function makeTableColumns() {
+        const selectedColumnsToHide = preferences.getCustomTableColumns(tableId);
+
         const baseColumns = $table.columns.map((col) => ({
             id: col.key,
-            title: col.key,
+            title: col.array ? `${col.key} []` : col.key,
             type: col.type as ColumnType,
-            hide: !!selected?.includes(col.key),
+            hide: !!selectedColumnsToHide?.includes(col.key),
             array: col?.array,
             width: getColumnWidth(col.key, { min: minimumWidth }),
             minimumWidth: minimumWidth,
@@ -149,18 +159,6 @@
 
         const staticColumns: Column[] = [
             {
-                id: '$sequence',
-                title: 'Sequence',
-                width: 150,
-                minimumWidth: 150,
-                draggable: false,
-                type: 'integer',
-                icon: IconHashtag,
-                isEditable: false,
-                isPrimary: true,
-                resizable: false
-            },
-            {
                 id: '$id',
                 title: 'ID',
                 width: getColumnWidth('$id', 225),
@@ -169,7 +167,8 @@
                 type: 'string',
                 icon: IconFingerPrint,
                 isEditable: false,
-                isPrimary: false
+                isPrimary: false,
+                hide: !!selectedColumnsToHide?.includes('$id')
             },
             {
                 id: '$createdAt',
@@ -179,7 +178,8 @@
                 draggable: true,
                 type: 'datetime',
                 icon: IconCalendar,
-                isEditable: false
+                isEditable: false,
+                hide: !!selectedColumnsToHide?.includes('$createdAt')
             },
             {
                 id: '$updatedAt',
@@ -189,33 +189,35 @@
                 draggable: true,
                 type: 'datetime',
                 icon: IconCalendar,
-                isEditable: false
+                isEditable: false,
+                hide: !!selectedColumnsToHide?.includes('$updatedAt')
             },
             {
                 id: 'actions',
                 title: '',
-                width: getColumnWidth('actions', 40),
+                width: 40,
                 isAction: true,
                 draggable: false,
                 type: 'string',
                 resizable: false,
-                isEditable: false
+                isEditable: false,
+                hide: false
             }
         ];
 
-        tableColumns.set(
-            reorderItems(
-                [
-                    staticColumns[0],
-                    staticColumns[1],
-                    ...baseColumns,
-                    staticColumns[2],
-                    staticColumns[3],
-                    staticColumns[4]
-                ],
-                $columnsOrder
-            )
-        );
+        const groupedColumns: Column[] = [
+            staticColumns[0],
+            ...baseColumns,
+            staticColumns[1],
+            staticColumns[2]
+        ];
+
+        const actionsColumn = staticColumns[3];
+
+        const reorderedNonActions = reorderItems(groupedColumns, $columnsOrder);
+        const finalColumns = [...reorderedNonActions, actionsColumn];
+
+        tableColumns.set(finalColumns);
     }
 
     function getColumnWidth(
@@ -256,18 +258,14 @@
     }
 
     function formatArray(array: unknown[]) {
-        if (array.length === 0) return '[ ]';
+        if (array.length === 0) return 'Empty';
 
         let formattedFields: string[] = [];
         for (const item of array) {
-            if (typeof item === 'string') {
-                formattedFields.push(`"${item}"`);
-            } else {
-                formattedFields.push(`${item}`);
-            }
+            formattedFields.push(`${item}`);
         }
 
-        return `[${formattedFields.join(', ')}]`;
+        return `${formattedFields.join(', ')}`;
     }
 
     function formatColumn(column: unknown) {
@@ -334,9 +332,11 @@
             );
         }
 
+        // save > navigate > restore!
         spreadsheetContainer.saveGridSheetScroll();
         await goto(`${url.pathname}${url.search}`);
         spreadsheetContainer.restoreGridSheetScroll();
+
         $spreadsheetLoading = false;
     }
 
@@ -398,9 +398,11 @@
         showColumnDelete = false;
 
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .grids.deleteColumn(databaseId, tableId, $databaseColumnSheetOptions.column.key);
+            await sdk.forProject(page.params.region, page.params.project).grids.deleteColumn({
+                databaseId,
+                tableId,
+                key: $databaseColumnSheetOptions.column.key
+            });
 
             if ($columnsOrder.includes($databaseColumnSheetOptions.column.key)) {
                 const updatedOrder = $columnsOrder.filter(
@@ -519,9 +521,14 @@
                 Object.entries(row).filter(([key]) => !SYSTEM_KEYS.has(key))
             );
 
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .grids.updateRow(databaseId, tableId, row.$id, onlyData, row.$permissions);
+            // TODO | BUG: related rows still have `system` columns atm!
+            await sdk.forProject(page.params.region, page.params.project).grids.updateRow({
+                databaseId,
+                tableId: $table.$id,
+                rowId: row.$id,
+                data: onlyData,
+                permissions: row.$permissions
+            });
 
             invalidate(Dependencies.ROW);
             trackEvent(Submit.RowUpdate);
@@ -540,6 +547,14 @@
         }
     }
 
+    function getCorrectOrderQuery() {
+        return $sortState?.column && $sortState?.direction !== 'default'
+            ? $sortState.direction === 'asc'
+                ? Query.orderAsc($sortState.column)
+                : Query.orderDesc($sortState.column)
+            : Query.orderDesc('');
+    }
+
     async function loadPage(pageNumber: number): Promise<boolean> {
         if (pageNumber < 1 || pageNumber > totalPages || $paginatedRows.hasPage(pageNumber)) {
             return false;
@@ -552,7 +567,7 @@
                 databaseId,
                 tableId,
                 queries: [
-                    Query.orderDesc(''),
+                    getCorrectOrderQuery(),
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
                     Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT))
                 ]
@@ -565,12 +580,7 @@
     }
 
     async function handleGoToPage(targetPageNum: number): Promise<void> {
-        if ($paginatedRows.hasPage(targetPageNum) || $paginatedRows.hasPage(targetPageNum + 1)) {
-            scrollToIndexOffset = 0;
-        } else {
-            scrollToIndexOffset = 16;
-        }
-
+        jumpToPageReactive = 0;
         if (targetPageNum < 1 || targetPageNum > totalPages) return;
 
         if (!$paginatedRows.hasPage(targetPageNum)) {
@@ -583,7 +593,7 @@
                     databaseId,
                     tableId,
                     queries: [
-                        Query.orderDesc(''),
+                        getCorrectOrderQuery(),
                         Query.limit(SPREADSHEET_PAGE_LIMIT),
                         Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT))
                     ]
@@ -642,8 +652,6 @@
     $: totalPages = Math.ceil($rows.total / SPREADSHEET_PAGE_LIMIT) || 1;
 
     $: rowSelection = !$spreadsheetLoading && !$paginatedRowsLoading ? true : ('disabled' as const);
-
-    $: scrollToIndexOffset = 16;
 </script>
 
 <SpreadsheetContainer observeExpand bind:this={spreadsheetContainer}>
@@ -663,7 +671,6 @@
             on:columnsSwap={(order) => saveColumnsOrder(order.detail)}
             on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}
             bind:currentPage
-            {scrollToIndexOffset}
             nextPageTriggerOffset={2}
             paginationBufferSpace={35}
             jumpToPageNumber={jumpToPageReactive}
@@ -682,8 +689,8 @@
                                 on:click={() => {
                                     $showCreateAttributeSheet.show = true;
                                     $showCreateAttributeSheet.column = null;
-                                    $showCreateAttributeSheet.columns = $tableColumns;
                                     $showCreateAttributeSheet.title = 'Create column';
+                                    $showCreateAttributeSheet.columns = $tableColumns;
                                     $showCreateAttributeSheet.columnsOrder = $columnsOrder;
                                 }}>
                                 <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
@@ -726,8 +733,8 @@
                 {#if row === null}
                     <Spreadsheet.Row.Base
                         {root}
-                        virtualItem={item}
                         {index}
+                        virtualItem={item}
                         id={`loading-${index}`}
                         select={rowSelection}>
                         {#each $tableColumns as col}
@@ -744,14 +751,13 @@
                         {index}
                         id={row?.$id}
                         virtualItem={item}
-                        select={rowSelection}>
+                        select={rowSelection}
+                        showSelectOnHover
+                        valueWithoutHover={row.$sequence}>
                         {#each $tableColumns as { id: columnId, isEditable } (columnId)}
                             {@const rowColumn = $columns.find((col) => col.key === columnId)}
                             <Spreadsheet.Cell {root} {isEditable} column={columnId}>
-                                {#if columnId === '$sequence'}
-                                    <Id value={row.$sequence.toString()} tooltipPortal
-                                        >{row.$sequence}</Id>
-                                {:else if columnId === '$id'}
+                                {#if columnId === '$id'}
                                     <Id value={row.$id} tooltipPortal tooltipDelay={200}
                                         >{row.$id}</Id>
                                 {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
@@ -825,6 +831,7 @@
                                 {:else}
                                     {@const value = row[columnId]}
                                     {@const formatted = formatColumn(row[columnId])}
+                                    {@const isEmptyArray = formatted === 'Empty'}
                                     {@const isDatetimeAttribute = rowColumn.type === 'datetime'}
                                     {@const isEncryptedAttribute =
                                         isString(rowColumn) && rowColumn.encrypt}
@@ -855,6 +862,8 @@
                                         </Tooltip>
                                     {:else if formatted === 'null'}
                                         <Badge variant="secondary" content="NULL" size="xs" />
+                                    {:else if isEmptyArray}
+                                        <Badge variant="secondary" content={formatted} size="xs" />
                                     {:else}
                                         <Typography.Text truncate>
                                             {formatted}
@@ -862,14 +871,17 @@
                                     {/if}
                                 {/if}
 
-                                <svelte:fragment slot="cell-editor">
+                                <svelte:fragment slot="cell-editor" let:close>
                                     <EditRowCell
+                                        {row}
                                         column={rowColumn}
-                                        row={paginatedRows.items[index]}
                                         onRowStructureUpdate={updateRowContents}
-                                        on:change={(row) => paginatedRows.update(index, row.detail)}
-                                        on:revert={(row) =>
-                                            paginatedRows.update(index, row.detail)} />
+                                        onChange={(row) => paginatedRows.update(index, row)}
+                                        onRevert={(row) => paginatedRows.update(index, row)}
+                                        openSideSheet={() => {
+                                            close(); /* closes the editor */
+                                            onSelectSheetOption('update', null, 'row', row);
+                                        }} />
                                 </svelte:fragment>
                             </Spreadsheet.Cell>
                         {/each}
@@ -893,7 +905,7 @@
                             <span style:white-space="nowrap">
                                 {selectedRows.length
                                     ? `${selectedRows.length} row${selectedRows.length === 1 ? '' : 's'} selected`
-                                    : `${$rows.total} row${$rows.total === 1 ? '' : 's'}`}
+                                    : `${abbreviateNumber($rows.total)} row${$rows.total === 1 ? '' : 's'}`}
                             </span>
                         </Typography.Text>
 
@@ -926,13 +938,15 @@
                         </Layout.Stack>
                     </Layout.Stack>
 
-                    <div style:margin-right="var(--space-6)">
-                        <Button.Button
-                            variant="extra-compact"
-                            on:click={() => {
-                                $randomDataModalState.show = true;
-                            }}>Generate sample data</Button.Button>
-                    </div>
+                    {#if !$isSmallViewport}
+                        <div style:margin-right="var(--space-6)">
+                            <Button.Button
+                                variant="extra-compact"
+                                on:click={() => {
+                                    $randomDataModalState.show = true;
+                                }}>Generate sample data</Button.Button>
+                        </div>
+                    {/if}
                 </Layout.Stack>
             </svelte:fragment>
         </Spreadsheet.Root>
@@ -970,65 +984,68 @@
     title={selectedRows.length === 1 ? 'Delete Row' : 'Delete Rows'}>
     {@const isSingle = selectedRowForDelete !== null}
 
-    <div>
+    <p>
         {#if isSingle}
-            Are you sure you want to delete this document from <b>{$table.name}</b>?
+            Are you sure you want to delete this row from <b>{$table.name}</b>?
         {:else}
             Are you sure you want to delete <b>{selectedRows.length}</b>
             {selectedRows.length > 1 ? 'rows' : 'row'} from <b>{$table.name}</b>?
         {/if}
+    </p>
 
-        {#if relatedColumns?.length}
-            <Table.Root
-                let:root
-                columns={[
-                    { id: 'relation', width: 150 },
-                    { id: 'setting', width: 150 },
-                    { id: 'desc' }
-                ]}>
-                <svelte:fragment slot="header" let:root>
-                    <Table.Header.Cell column="relation" {root}>Relation</Table.Header.Cell>
-                    <Table.Header.Cell column="setting" {root}>Setting</Table.Header.Cell>
-                    <Table.Header.Cell column="desc" {root} />
-                </svelte:fragment>
-                {#each relatedColumns as attr}
-                    <Table.Row.Base {root}>
-                        <Table.Cell column="relation" {root}>
-                            <span class="u-flex u-cross-center u-gap-8">
-                                {#if attr.twoWay}
-                                    <span class="icon-switch-horizontal"></span>
-                                {:else}
-                                    <span class="icon-arrow-sm-right"></span>
-                                {/if}
-                                <span data-private>{attr.key}</span>
-                            </span>
-                        </Table.Cell>
-                        <Table.Cell column="setting" {root}>
-                            {attr.onDelete}
-                        </Table.Cell>
-                        <Table.Cell column="desc" {root}>
-                            {Deletion[attr.onDelete]}
-                        </Table.Cell>
-                    </Table.Row.Base>
-                {/each}
-            </Table.Root>
-            <div class="u-flex u-flex-vertical u-gap-16">
-                <Alert>To change the selection edit the relationship settings.</Alert>
-                <ul>
-                    <InputChoice
-                        id="delete"
-                        label="Delete"
-                        showLabel={false}
-                        bind:value={deleteConfirmationChecked}>
-                        Delete {isSingle ? 'document' : 'documents'} from
-                        <span data-private>{$table.name}</span>
-                    </InputChoice>
-                </ul>
-            </div>
-        {:else}
-            <p class="u-bold">This action is irreversible.</p>
-        {/if}
-    </div>
+    {#if relatedColumns?.length}
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'relation', width: 100 },
+                { id: 'setting', width: 100 },
+                { id: 'description', width: { min: $isSmallViewport ? 300 : 275 } }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="relation" {root}>Relation</Table.Header.Cell>
+                <Table.Header.Cell column="setting" {root}>Setting</Table.Header.Cell>
+                <Table.Header.Cell column="description" {root}>Description</Table.Header.Cell>
+            </svelte:fragment>
+
+            {#each relatedColumns as attr}
+                <Table.Row.Base {root}>
+                    <Table.Cell column="relation" {root}>
+                        <span class="u-flex u-cross-center u-gap-8">
+                            {#if attr.twoWay}
+                                <Icon icon={IconSwitchHorizontal} size="s" />
+                            {:else}
+                                <Icon icon={IconArrowSmRight} size="s" />
+                            {/if}
+                            <span data-private>{attr.key}</span>
+                        </span>
+                    </Table.Cell>
+                    <Table.Cell column="setting" {root}>
+                        {attr.onDelete}
+                    </Table.Cell>
+                    <Table.Cell column="description" {root}>
+                        {Deletion[attr.onDelete]}
+                    </Table.Cell>
+                </Table.Row.Base>
+            {/each}
+        </Table.Root>
+
+        <Layout.Stack direction="column" gap="m">
+            <Alert.Inline>To change the selection edit the relationship settings.</Alert.Inline>
+
+            <ul>
+                <InputChoice
+                    id="delete"
+                    label="Delete"
+                    showLabel={false}
+                    bind:value={deleteConfirmationChecked}>
+                    Delete {isSingle ? 'row' : 'rows'} from
+                    <span data-private>{$table.name}</span>
+                </InputChoice>
+            </ul>
+        </Layout.Stack>
+    {:else}
+        <p class="u-bold">This action is irreversible.</p>
+    {/if}
 </Confirm>
 
 <Confirm
@@ -1059,16 +1076,33 @@
     }
 
     :global(.floating-editor) {
+        z-index: 3 !important;
+
         & :global(:has(textarea)) {
-            left: 0 !important;
-            margin-inline-end: 1px;
+            left: 2px !important;
+            //margin-inline-end: 1px;
         }
 
-        /* TODO: not good! */
         & :global(textarea) {
             padding-inline: 9px;
             margin-block: -2.75px;
             min-height: 85px !important;
+        }
+
+        & :global(:has(.link-wrapper) .input) {
+            padding-bottom: 6px !important;
+        }
+
+        & :global(:has(.link-wrapper) textarea) {
+            min-height: 65px !important;
+        }
+
+        & :global(.link-wrapper) {
+            padding-inline: 9px;
+        }
+
+        & :global(input[type='text']) {
+            padding-inline: 8px !important;
         }
 
         & :global(.input:focus-within) {

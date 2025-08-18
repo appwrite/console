@@ -6,7 +6,6 @@
     let {
         show = $bindable(false),
         title,
-        spaced = false,
         closeOnBlur = false,
         submit,
         children = null,
@@ -14,7 +13,6 @@
     }: {
         show: boolean;
         title: string;
-        spaced?: boolean;
         closeOnBlur?: boolean;
         submit?:
             | {
@@ -28,7 +26,7 @@
     } = $props();
 </script>
 
-<div class="sheet-container" class:spaced>
+<div class="sheet-container">
     <Sheet bind:open={show} {closeOnBlur}>
         <div slot="header" style:width="100%">
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -89,7 +87,7 @@
         position: absolute;
 
         @media (max-width: 768px) {
-            &.spaced :global(aside header) {
+            & :global(aside header) {
                 margin-top: 6rem;
             }
         }

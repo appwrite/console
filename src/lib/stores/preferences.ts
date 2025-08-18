@@ -31,6 +31,9 @@ type ConsolePreferencesStore = {
     tables?: {
         [key: string]: ConsolePreferences['columns'];
     };
+    tableHeaderExpanded?: {
+        [key: string]: boolean;
+    };
     displayNames?: {
         [key: string]: TeamPreferences['names'];
     };
@@ -39,6 +42,9 @@ type ConsolePreferencesStore = {
     };
     columnWidths?: {
         [key: string]: TeamPreferences['widths'];
+    };
+    miscellaneous?: {
+        [key: string]: string | number | boolean;
     };
 } & { hideAiDisclaimer?: boolean };
 
@@ -132,9 +138,11 @@ function createPreferences() {
                 }
             );
         },
+
         getCustomTableColumns: (tableId: string): ConsolePreferences['columns'] => {
             return preferences?.tables?.[tableId] ?? preferences?.collections?.[tableId] ?? [];
         },
+
         setLimit: (limit: ConsolePreferences['limit']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
@@ -148,6 +156,7 @@ function createPreferences() {
 
                 return n;
             }),
+
         setView: (view: ConsolePreferences['view']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
@@ -161,6 +170,7 @@ function createPreferences() {
 
                 return n;
             }),
+
         setColumns: (columns: ConsolePreferences['columns']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
@@ -174,20 +184,34 @@ function createPreferences() {
 
                 return n;
             }),
+
         setCustomTableColumns: (tableId: string, columns: ConsolePreferences['columns']) =>
             updateAndSync((n) => {
                 n ??= {};
                 n.tables ??= {};
 
                 n.tables[tableId] = Array.from(new Set(columns));
-                // let's not double save
-                // n.collections[tableId] = Array.from(new Set(columns));
                 return n;
             }),
+
+        deleteCustomTableColumns: async (tableId: string) => {
+            await updateAndSync((n) => {
+                if (!n?.tables) {
+                    n ??= {};
+                    n.tables ??= {};
+                }
+
+                delete n.tables[tableId];
+                return n;
+            });
+        },
+
         loadTeamPrefs: loadTeamPreferences,
+
         getDisplayNames: () => {
             return preferences?.displayNames ?? {};
         },
+
         setDisplayNames: async (tableId: string, names: TeamPreferences['names']) => {
             await updateAndSync((n) => {
                 if (!n?.displayNames) {
@@ -200,8 +224,20 @@ function createPreferences() {
             });
         },
 
-        getColumnOrder(collectionId: string): TeamPreferences['order'] {
-            return teamPreferences?.columnOrder?.[collectionId] ?? [];
+        deleteDisplayNames: async (tableId: string) => {
+            await updateAndSync((n) => {
+                if (!n?.displayNames) {
+                    n ??= {};
+                    n.displayNames ??= {};
+                }
+
+                delete n.displayNames[tableId];
+                return n;
+            });
+        },
+
+        getColumnOrder(tableId: string): TeamPreferences['order'] {
+            return teamPreferences?.columnOrder?.[tableId] ?? [];
         },
 
         async saveColumnOrder(
@@ -242,6 +278,38 @@ function createPreferences() {
             await sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,
                 prefs: teamPreferences
+            });
+        },
+
+        isTableHeaderExpanded(tableId: string): boolean {
+            return preferences.tableHeaderExpanded?.[tableId] ?? true;
+        },
+
+        async setTableHeaderExpanded(tableId: string, expanded: boolean) {
+            await updateAndSync((n) => {
+                if (!n?.tableHeaderExpanded) {
+                    n ??= {};
+                    n.tableHeaderExpanded ??= {};
+                }
+
+                n.tableHeaderExpanded[tableId] = expanded;
+                return n;
+            });
+        },
+
+        getKey<T>(key: string, _default: T): T {
+            return (preferences?.miscellaneous?.[key] ?? _default) as T;
+        },
+
+        async setKey(key: string, value: string | number | boolean) {
+            await updateAndSync((n) => {
+                if (!n?.miscellaneous) {
+                    n ??= {};
+                    n.miscellaneous ??= {};
+                }
+
+                n.miscellaneous[key] = value;
+                return n;
             });
         }
     };

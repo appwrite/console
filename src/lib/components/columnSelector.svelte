@@ -6,11 +6,11 @@
     import type { Column } from '$lib/helpers/types';
     import {
         ActionMenu,
-        Badge,
         Divider,
         Layout,
         Popover,
-        Selector
+        Selector,
+        Typography
     } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
 
@@ -20,7 +20,8 @@
         ui = 'legacy',
         allowNoColumns = false,
         showAnyway = false,
-        children
+        children,
+        onPreferencesUpdated = null
     }: {
         columns: Writable<Column[]>;
         isCustomTable?: boolean;
@@ -28,6 +29,7 @@
         ui?: 'legacy' | 'new';
         showAnyway?: boolean;
         children: Snippet<[toggle: () => void, selectedColumnsNumber: number]>;
+        onPreferencesUpdated?: () => void;
     } = $props();
 
     let search = $state('');
@@ -60,6 +62,7 @@
         const shownColumns = $columns.filter((n) => n.hide === true).map((n) => n.id);
 
         if (isCustomTable) {
+            onPreferencesUpdated?.();
             preferences.setCustomTableColumns(page.params.table, shownColumns);
         } else {
             preferences.setColumns(shownColumns);
@@ -94,7 +97,7 @@
 
     let selectedColumnsNumber = $derived(
         $columns.reduce((acc, column) => {
-            if (column.hide) return acc;
+            if (column.hide || column.isAction) return acc;
 
             return ++acc;
         }, 0)
@@ -194,21 +197,27 @@
                                 placeholder="Search"
                                 bind:value={search} />
 
-                            <Layout.Stack
-                                gap="s"
-                                direction="row"
-                                alignItems="center"
-                                style="padding-block-end: 0.5rem">
-                                <Button size="xs" icon extraCompact on:click={selectAll}
-                                    >Select all</Button>
+                            {#if filteredColumns.length > 0}
+                                <Layout.Stack
+                                    gap="s"
+                                    direction="row"
+                                    alignItems="center"
+                                    style="padding-block-end: 0.5rem">
+                                    <Button size="xs" icon extraCompact on:click={selectAll}
+                                        >Select all</Button>
 
-                                <div style:height="1rem">
-                                    <Divider vertical />
+                                    <div style:height="1rem">
+                                        <Divider vertical />
+                                    </div>
+
+                                    <Button size="xs" icon extraCompact on:click={deselectAll}
+                                        >Deselect all</Button>
+                                </Layout.Stack>
+                            {:else}
+                                <div style:padding-inline="0.6rem" style:padding-block-end="0.5rem">
+                                    <Typography.Text>No results found</Typography.Text>
                                 </div>
-
-                                <Button size="xs" icon extraCompact on:click={deselectAll}
-                                    >Deselect all</Button>
-                            </Layout.Stack>
+                            {/if}
                         </Layout.Stack>
                     {/if}
 

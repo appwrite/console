@@ -27,28 +27,29 @@
         Array.isArray(selectedColumn) ? selectedColumn : [selectedColumn]
     );
 
-    const selectedKeys = $derived(getKeys(selectedColumn));
+    const selectedKeys = $derived(
+        selectedColumns.map((c: string | Columns) => (typeof c === 'string' ? c : c.key))
+    );
 
     const requiresTwoWayConfirm = $derived(
-        selectedColumns.some((column: string | Columns) => {
-            typeof column === 'string' ? false : isRelationship(column) && column.twoWay;
-        })
+        selectedColumns
+            .filter((c): c is Columns => typeof c !== 'string')
+            .some((col) => isRelationship(col) && col.twoWay)
     );
 
     const isDeleteBtnDisabled = $derived(requiresTwoWayConfirm && !checked);
-
-    function getKeys(selected: Columns | string[]): string[] {
-        return Array.isArray(selected) ? selected : [selected.key];
-    }
 
     async function handleDelete() {
         try {
             const client = sdk.forProject(page.params.region, page.params.project);
 
             await Promise.all(
-                // TODO: check the type here
-                selectedColumns.map((key) =>
-                    client.grids.deleteColumn(page.params.database, page.params.table, key)
+                selectedKeys.map((key) =>
+                    client.grids.deleteColumn({
+                        databaseId: page.params.database,
+                        tableId: page.params.table,
+                        key
+                    })
                 )
             );
 

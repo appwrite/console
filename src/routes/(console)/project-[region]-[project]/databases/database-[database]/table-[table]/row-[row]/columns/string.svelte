@@ -1,38 +1,152 @@
 <script lang="ts">
-    import { InputText, InputTextarea } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
+    import { Layout, Link } from '@appwrite.io/pink-svelte';
+    import { InputText, InputTextarea } from '$lib/elements/forms';
 
-    export let id: string;
-    export let label: string;
-    export let value: string;
-    export let limited: boolean = false;
-    export let column: Models.ColumnString;
+    let {
+        id,
+        label,
+        value = $bindable(),
+        array = false,
+        limited = false,
+        column
+    }: {
+        id: string;
+        label: string;
+        value: string | number | boolean | string[] | number[] | boolean[] | null;
+        array?: boolean;
+        limited?: boolean;
+        column:
+            | Models.ColumnString
+            | Models.ColumnInteger
+            | Models.ColumnFloat
+            | Models.ColumnBoolean;
+    } = $props();
 
-    $: autofocus = limited;
-    $: maxlength = limited ? undefined : column.size;
+    const autofocus = $derived(limited);
+    const maxlength = $derived(
+        limited
+            ? undefined
+            : column.type === 'string'
+              ? (column as Models.ColumnString).size
+              : undefined
+    );
 
-    // TODO: do we need the nullable checkbox?
-    $: nullable = !limited ? !column.required : false;
+    const nullable = $derived(!limited ? !column.required : false);
+    const columnSize = $derived('size' in column ? column.size : 0);
+
+    let stringValue = $state('');
+
+    function parseValue(str: string): number | boolean | string | null {
+        const trimmed = str.trim();
+
+        if (!trimmed) return null;
+
+        switch (column.type) {
+            case 'integer': {
+                const int = parseInt(trimmed, 10);
+                return isNaN(int) ? null : int;
+            }
+
+            case 'double': {
+                const float = parseFloat(trimmed);
+                return isNaN(float) ? null : float;
+            }
+
+            case 'boolean': {
+                const lower = trimmed.toLowerCase();
+                if (lower === 'true' || lower === '1') return true;
+                if (lower === 'false' || lower === '0') return false;
+                return null;
+            }
+
+            case 'string':
+            default:
+                return trimmed;
+        }
+    }
+
+    $effect(() => {
+        if (array && Array.isArray(value)) {
+            stringValue = value.map(String).join(', ');
+        } else if (value !== null && value !== undefined) {
+            stringValue = String(value);
+        } else {
+            stringValue = '';
+        }
+    });
+
+    $effect(() => {
+        if (array) {
+            const newArray = stringValue
+                .split(',')
+                .map((item) => parseValue(item))
+                .filter((item) => item !== null);
+
+            if (JSON.stringify(newArray) !== JSON.stringify(value)) {
+                value = newArray as string[] | number[] | boolean[];
+            }
+        } else {
+            const parsedValue = parseValue(stringValue);
+            if (parsedValue !== value) {
+                value = parsedValue;
+            }
+        }
+    });
+
+    const getPlaceholder = () => {
+        if (!array) {
+            switch (column.type) {
+                case 'integer':
+                    return 'Enter integer';
+                case 'double':
+                    return 'Enter number';
+                case 'boolean':
+                    return 'Enter true or false';
+                case 'string':
+                default:
+                    return 'Enter string';
+            }
+        } else {
+            switch (column.type) {
+                case 'integer':
+                    return 'Enter integers separated by commas';
+                case 'double':
+                    return 'Enter numbers separated by commas';
+                case 'boolean':
+                    return 'Enter true/false separated by commas';
+                case 'string':
+                default:
+                    return 'Enter strings separated by commas';
+            }
+        }
+    };
 </script>
 
-{#if column.size >= 50}
+{#if columnSize >= 50 || array}
     <InputTextarea
         {id}
         {label}
-        bind:value
+        {nullable}
         {maxlength}
         {autofocus}
-        placeholder="Enter string"
+        bind:value={stringValue}
         required={column.required}
-        {nullable} />
+        placeholder={getPlaceholder()}>
+        <Layout.Stack direction="column" alignItems="flex-start" slot="end">
+            {#if array}
+                <Link.Button on:click size="s" variant="quiet">Advanced edit</Link.Button>
+            {/if}
+        </Layout.Stack>
+    </InputTextarea>
 {:else}
     <InputText
         {id}
         {label}
-        bind:value
         {nullable}
         {autofocus}
         {maxlength}
+        bind:value={stringValue}
         placeholder="Enter string"
         required={column.required} />
 {/if}

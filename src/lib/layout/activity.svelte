@@ -10,19 +10,19 @@
     export let limit = 0;
     export let offset = 0;
     export let logs: Models.LogList;
+    export let insideSideSheet = false;
     export let databasesScreen = false;
     export let useCreateLinkForPagination = true;
 
     const columns: PinkColumn[] = [
-        { id: 'user' },
-        { id: 'event' },
-        { id: 'location' },
-        { id: 'ip' },
-        { id: 'date' }
+        { id: 'user', ...(insideSideSheet ? { width: 140 } : {}) },
+        { id: 'event', ...(insideSideSheet ? { width: 125 } : {}) },
+        { id: 'location', ...(insideSideSheet ? { width: 100 } : {}) },
+        { id: 'ip', ...(insideSideSheet ? { width: { min: 150 } } : {}) },
+        { id: 'date', ...(insideSideSheet ? { width: { min: 200 } } : {}) }
     ];
 </script>
 
-<!-- TODO: only the databases page -->
 <Container expanded={databasesScreen} slotSpacing={databasesScreen} {databasesScreen}>
     {#if logs.total}
         <div>

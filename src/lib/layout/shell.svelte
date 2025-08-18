@@ -239,17 +239,9 @@
         }
 
         @media (max-width: 768px) {
-            .main-content {
+            .main-content:not(:has(.wide-screen-wrapper)) {
                 width: 100%;
                 position: fixed;
-            }
-        }
-    }
-
-    :global(main:has(.wide-screen-wrapper)) {
-        @media (min-width: 1728px) {
-            .main-content {
-                padding-left: 255px;
             }
         }
     }

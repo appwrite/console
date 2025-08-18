@@ -15,19 +15,13 @@
     } = $props();
 
     const buttonSize = $derived(collapsed ? 'xs' : 's');
-
-    const expandedSize = $derived(
-        $isSmallViewport ? 'var(--font-size-m)' : 'var(--font-size-xxxl)'
-    );
-
-    const currentFontSize = $derived(collapsed ? 'var(--font-size-l)' : expandedSize);
-
     const currentLineHeight = $derived(collapsed ? '130%' : '140%');
     const currentLetterSpacing = $derived(collapsed ? '0' : '-0.144px');
+    const currentFontSize = $derived(collapsed ? 'var(--font-size-l)' : 'var(--font-size-xxxl)');
 </script>
 
 <Layout.Stack justifyContent="center" alignItems="center" direction="row" gap="xs" inline>
-    {#if href}
+    {#if href && !$isSmallViewport}
         <span style:position="relative">
             <Button.Anchor size={buttonSize} icon variant="text" {href} aria-label="page back">
                 <Icon icon={IconChevronLeft} />

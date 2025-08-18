@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/state';
+    import { goto, invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { Button, InputNumber, InputSelect, InputText } from '$lib/elements/forms';
@@ -13,6 +13,7 @@
     import { table, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     let {
         showCreateIndex = $bindable(false),
@@ -63,6 +64,11 @@
 
     const addColumnDisabled = $derived(!columnList.at(-1)?.value || !columnList.at(-1)?.order);
 
+    const isOnIndexesPage = $derived(page.route.id?.endsWith('/indexes'));
+    const navigatorPathToIndexes = $derived(
+        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$table?.$id}/indexes`
+    );
+
     $effect(() => {
         if (showCreateIndex) {
             initialize();
@@ -80,30 +86,32 @@
         }
 
         try {
-            await sdk.forProject(page.params.region, page.params.project).grids.createIndex(
+            await sdk.forProject(page.params.region, page.params.project).grids.createIndex({
                 databaseId,
-                $table.$id,
+                tableId: $table.$id,
                 key,
-                selectedType,
-                columnList.map((a) => a.value),
-                columnList.map((a) => a.order),
-                columnList.map((a) => (a.length ? Number(a.length) : null))
-            );
+                type: selectedType,
+                columns: columnList.map((a) => a.value),
+                orders: columnList.map((a) => a.order),
+                lengths: columnList.map((a) => (a.length ? Number(a.length) : null))
+            });
 
             await Promise.allSettled([
                 invalidate(Dependencies.TABLE),
                 invalidate(Dependencies.DATABASE)
             ]);
 
-            if (!page.route.id.includes('/indexes')) {
-                await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$table.$id}/indexes`
-                );
-            }
-
             addNotification({
-                message: 'Creating index',
-                type: 'success'
+                message: 'Index is being created',
+                type: 'success',
+                buttons: !isOnIndexesPage
+                    ? [
+                          {
+                              name: 'View index',
+                              method: () => goto(navigatorPathToIndexes)
+                          }
+                      ]
+                    : undefined
             });
             trackEvent(Submit.IndexCreate);
             showCreateIndex = false;
@@ -138,7 +146,8 @@
 
 <Layout.Stack gap="s">
     {#each columnList as column, index}
-        <Layout.Stack direction="row">
+        {@const direction = $isSmallViewport ? 'column' : 'row'}
+        <Layout.Stack {direction}>
             <InputSelect
                 required
                 options={[
@@ -171,17 +180,32 @@
                     bind:value={column.length} />
             {/if}
 
-            <Layout.Stack direction="row" alignItems="flex-end" inline>
-                <Button
-                    icon
-                    secondary
-                    disabled={columnList.length <= 1}
-                    on:click={() => {
-                        columnList = remove(columnList, index);
-                    }}>
-                    <Icon icon={IconX} size="s" />
-                </Button>
-            </Layout.Stack>
+            {#if $isSmallViewport}
+                <div style:margin-top="0.25rem">
+                    <Button
+                        text
+                        secondary
+                        disabled={columnList.length <= 1}
+                        on:click={() => {
+                            columnList = remove(columnList, index);
+                        }}>
+                        Remove
+                    </Button>
+                </div>
+            {:else}
+                <div style:margin-top="27.6px" class="x-button-holder">
+                    <Button
+                        icon
+                        size="s"
+                        secondary
+                        disabled={columnList.length <= 1}
+                        on:click={() => {
+                            columnList = remove(columnList, index);
+                        }}>
+                        <Icon icon={IconX} size="s" />
+                    </Button>
+                </div>
+            {/if}
         </Layout.Stack>
     {/each}
     <div>
@@ -191,3 +215,10 @@
         </Button>
     </div>
 </Layout.Stack>
+
+<style lang="scss">
+    .x-button-holder :global(button) {
+        width: 34px;
+        height: 34px;
+    }
+</style>

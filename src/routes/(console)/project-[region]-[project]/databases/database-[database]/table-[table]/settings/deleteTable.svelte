@@ -9,17 +9,29 @@
     import { sdk } from '$lib/stores/sdk';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { table } from '../store';
+    import { preferences } from '$lib/stores/preferences';
 
     export let showDelete = false;
 
-    const databaseId = page.params.database;
     let error: string;
+    const tableId = page.params.table;
+    const databaseId = page.params.database;
+
+    async function clearPreferences() {
+        await Promise.all([
+            preferences.deleteDisplayNames(tableId),
+            preferences.deleteCustomTableColumns(tableId)
+        ]);
+    }
 
     async function handleDelete() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .grids.deleteTable(databaseId, $table.$id);
+            await sdk.forProject(page.params.region, page.params.project).grids.deleteTable({
+                databaseId,
+                tableId
+            });
+
+            await clearPreferences();
             await invalidate(Dependencies.DATABASE);
             showDelete = false;
             addNotification({
