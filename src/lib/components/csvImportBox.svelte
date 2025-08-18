@@ -9,11 +9,13 @@
     import { writable, type Writable } from 'svelte/store';
     import { addNotification } from '$lib/stores/notifications';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Modal, Code } from '$lib/components';
     import { type Models, type Payload, Query } from '@appwrite.io/console';
 
     type ImportItem = {
         status: string;
         table?: string;
+        errors?: string[];
     };
 
     type ImportItemsMap = Map<string, ImportItem>;
@@ -95,7 +97,10 @@
             if (shouldSkip) return items;
 
             const next = new Map(items);
-            next.set(importData.$id, { status, table: tableName ?? undefined });
+            const errors = Array.isArray((importData as any)?.errors)
+                ? ((importData as any)?.errors as string[])
+                : existing?.errors;
+            next.set(importData.$id, { status, table: tableName ?? undefined, errors });
             return next;
         });
 
@@ -160,6 +165,22 @@
 
     $: isOpen = true;
     $: showCsvImportBox = $importItems.size > 0;
+
+    let showDetails = false;
+    let selectedErrors: string[] = [];
+
+    function openDetails(errors?: string[]) {
+        selectedErrors = errors ?? [];
+        showDetails = true;
+    }
+
+    $: parsedErrors = (selectedErrors || []).map((e) => {
+        try {
+            return JSON.stringify(JSON.parse(e), null, 2);
+        } catch {
+            return typeof e === 'string' ? e : JSON.stringify(e, null, 2);
+        }
+    });
 </script>
 
 {#if showCsvImportBox}
@@ -202,12 +223,40 @@
                                     class:is-danger={value.status === 'failed'}
                                     style="--graph-size:{graphSize(value.status)}%">
                                 </div>
+                                {#if value.status === 'failed' && value.errors?.length}
+                                    <div class="u-flex u-gap-8 u-cross-center u-padding-block-8">
+                                        <span
+                                            class="icon-exclamation-circle u-font-size-14"
+                                            aria-hidden="true"
+                                            style="color:hsl(var(--color-danger-100));"></span>
+                                        <Typography.Text
+                                            style="color:hsl(var(--color-danger-100));">
+                                            There was an import issue.
+                                            <button
+                                                type="button"
+                                                class="u-cursor-pointer u-underline"
+                                                on:click={() => openDetails(value.errors)}>
+                                                More details
+                                            </button>
+                                        </Typography.Text>
+                                    </div>
+                                {/if}
                             </section>
                         </li>
                     </ul>
                 </div>
             {/each}
         </section>
+        <Modal title="Import error" bind:show={showDetails} hideFooter>
+            <Layout.Stack gap="m">
+                <Typography.Text>
+                    The import encountered errors. Review the details below.
+                </Typography.Text>
+                <div style="max-inline-size: 524px" class="wrapped-code-block-for-multi-line">
+                    <Code language="json" code={parsedErrors.join('\n\n')} withCopy allowScroll />
+                </div>
+            </Layout.Stack>
+        </Modal>
     </Layout.Stack>
 {/if}
 
