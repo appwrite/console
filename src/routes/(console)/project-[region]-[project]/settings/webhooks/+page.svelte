@@ -29,13 +29,15 @@
     <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
         <ViewSelector {columns} view={View.Table} hideView />
         <Tooltip disabled={$canWriteWebhooks}>
-            <Button
-                href={`${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/create`}
-                event="create_webhook"
-                disabled={!$canWriteWebhooks}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create webhook
-            </Button>
+            <div>
+                <Button
+                    href={`${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/create`}
+                    event="create_webhook"
+                    disabled={!$canWriteWebhooks}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create webhook
+                </Button>
+            </div>
             <div slot="tooltip">Your role does not allow this action</div>
         </Tooltip>
     </Layout.Stack>

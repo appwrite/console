@@ -31,15 +31,17 @@
             <Filters query={data.query} {columns} analyticsSource="messaging_providers" />
             <ViewSelector view={View.Table} {columns} hideView />
             <Tooltip disabled={$canWriteProviders}>
-                <CreateProviderDropdown let:toggle>
-                    <Button
-                        on:click={toggle}
-                        event="create_provider"
-                        disabled={!$canWriteProviders}>
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Create provider
-                    </Button>
-                </CreateProviderDropdown>
+                <div>
+                    <CreateProviderDropdown let:toggle>
+                        <Button
+                            on:click={toggle}
+                            event="create_provider"
+                            disabled={!$canWriteProviders}>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Create provider
+                        </Button>
+                    </CreateProviderDropdown>
+                </div>
                 <div slot="tooltip">Your role does not allow this action</div>
             </Tooltip>
         </Layout.Stack>
@@ -80,15 +82,17 @@
                         event="empty_documentation"
                         size="s">Documentation</Button>
                     <Tooltip disabled={$canWriteProviders}>
-                        <CreateProviderDropdown let:toggle>
-                            <Button
-                                on:click={toggle}
-                                event="create_provider"
-                                secondary
-                                disabled={!$canWriteProviders}>
-                                Create provider
-                            </Button>
-                        </CreateProviderDropdown>
+                        <div>
+                            <CreateProviderDropdown let:toggle>
+                                <Button
+                                    on:click={toggle}
+                                    event="create_provider"
+                                    secondary
+                                    disabled={!$canWriteProviders}>
+                                    Create provider
+                                </Button>
+                            </CreateProviderDropdown>
+                        </div>
                         <div slot="tooltip">Your role does not allow this action</div>
                     </Tooltip>
                 </slot>

@@ -20,13 +20,15 @@
         hasSearch
         searchPlaceholder="Search by name or ID">
         <Tooltip disabled={$canWriteCollections}>
-            <Button
-                on:click={() => ($showCreate = true)}
-                event="create_collection"
-                disabled={!$canWriteCollections}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create collection
-            </Button>
+            <div>
+                <Button
+                    on:click={() => ($showCreate = true)}
+                    event="create_collection"
+                    disabled={!$canWriteCollections}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create collection
+                </Button>
+            </div>
             <div slot="tooltip">Your role does not allow this action</div>
         </Tooltip>
     </ResponsiveContainerHeader>

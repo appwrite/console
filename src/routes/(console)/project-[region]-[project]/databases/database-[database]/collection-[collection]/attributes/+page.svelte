@@ -78,12 +78,14 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <Typography.Title>Attributes</Typography.Title>
         <Tooltip disabled={$canWriteCollections}>
-            <CreateAttributeDropdown bind:selectedOption bind:showCreate>
-                <Button event="create_attribute" disabled={!$canWriteCollections}>
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create attribute
-                </Button>
-            </CreateAttributeDropdown>
+            <div>
+                <CreateAttributeDropdown bind:selectedOption bind:showCreate>
+                    <Button event="create_attribute" disabled={!$canWriteCollections}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create attribute
+                    </Button>
+                </CreateAttributeDropdown>
+            </div>
             <div slot="tooltip">Your role does not allow this action</div>
         </Tooltip>
     </Layout.Stack>
@@ -243,15 +245,17 @@
                     event="empty_documentation"
                     ariaLabel={`create {target}`}>Documentation</Button>
                 <Tooltip disabled={$canWriteCollections}>
-                    <CreateAttributeDropdown bind:selectedOption bind:showCreate let:toggle>
-                        <Button
-                            secondary
-                            event="create_attribute"
-                            on:click={toggle}
-                            disabled={!$canWriteCollections}>
-                            Create attribute
-                        </Button>
-                    </CreateAttributeDropdown>
+                    <div>
+                        <CreateAttributeDropdown bind:selectedOption bind:showCreate let:toggle>
+                            <Button
+                                secondary
+                                event="create_attribute"
+                                on:click={toggle}
+                                disabled={!$canWriteCollections}>
+                                Create attribute
+                            </Button>
+                        </CreateAttributeDropdown>
+                    </div>
                     <div slot="tooltip">Your role does not allow this action</div>
                 </Tooltip>
             </svelte:fragment>

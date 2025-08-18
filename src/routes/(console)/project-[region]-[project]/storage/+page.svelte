@@ -44,14 +44,16 @@
                 hideColumns={!data.buckets.total}
                 hideView={!data.buckets.total} />
             <Tooltip disabled={$canWriteBuckets}>
-                <Button
-                    on:click={() => ($showCreateBucket = true)}
-                    event="create_bucket"
-                    size="s"
-                    disabled={!$canWriteBuckets}>
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create bucket
-                </Button>
+                <div>
+                    <Button
+                        on:click={() => ($showCreateBucket = true)}
+                        event="create_bucket"
+                        size="s"
+                        disabled={!$canWriteBuckets}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create bucket
+                    </Button>
+                </div>
                 <div slot="tooltip">Your role does not allow this action</div>
             </Tooltip>
         </Layout.Stack>

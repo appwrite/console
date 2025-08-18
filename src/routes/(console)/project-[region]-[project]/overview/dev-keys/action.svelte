@@ -45,10 +45,12 @@
 </script>
 
 <Tooltip disabled={$canWriteKeys}>
-    <Button on:click={() => ($showDevKeysCreateModal = true)} disabled={!$canWriteKeys}>
-        <Icon icon={IconPlus} slot="start" size="s" />
-        Create dev key
-    </Button>
+    <div>
+        <Button on:click={() => ($showDevKeysCreateModal = true)} disabled={!$canWriteKeys}>
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Create dev key
+        </Button>
+    </div>
     <div slot="tooltip">Your role does not allow this action</div>
 </Tooltip>
 

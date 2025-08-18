@@ -165,9 +165,11 @@
                 <Button external href="https://appwrite.io/docs/sdks" text>Documentation</Button>
                 <Popover let:toggle padding="none" placement="bottom-end">
                     <Tooltip disabled={$canWritePlatforms}>
-                        <Button secondary on:click={toggle} disabled={!$canWritePlatforms}>
-                            <span class="text">Add platform</span>
-                        </Button>
+                        <div>
+                            <Button secondary on:click={toggle} disabled={!$canWritePlatforms}>
+                                <span class="text">Add platform</span>
+                            </Button>
+                        </div>
                         <div slot="tooltip">Your role does not allow this action</div>
                     </Tooltip>
                     <svelte:fragment slot="tooltip">

@@ -98,14 +98,16 @@
                     hideColumns
                     hideView={!data.siteList.total} />
                 <Tooltip disabled={$canWriteSites}>
-                    <Button
-                        on:mousedown={() => (show = true)}
-                        event="create_site"
-                        size="s"
-                        disabled={!$canWriteSites}>
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Create site
-                    </Button>
+                    <div>
+                        <Button
+                            on:mousedown={() => (show = true)}
+                            event="create_site"
+                            size="s"
+                            disabled={!$canWriteSites}>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Create site
+                        </Button>
+                    </div>
                     <div slot="tooltip">Your role does not allow this action</div>
                 </Tooltip>
             </Layout.Stack>

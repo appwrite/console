@@ -8,11 +8,13 @@
 </script>
 
 <Tooltip disabled={$canWriteKeys}>
-    <Button
-        href={`${base}/project-${page.params.region}-${page.params.project}/overview/api-keys/create`}
-        disabled={!$canWriteKeys}>
-        <Icon icon={IconPlus} slot="start" size="s" />
-        Create API key
-    </Button>
+    <div>
+        <Button
+            href={`${base}/project-${page.params.region}-${page.params.project}/overview/api-keys/create`}
+            disabled={!$canWriteKeys}>
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Create API key
+        </Button>
+    </div>
     <div slot="tooltip">Your role does not allow this action</div>
 </Tooltip>

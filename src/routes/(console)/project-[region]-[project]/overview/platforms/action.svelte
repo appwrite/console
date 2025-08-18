@@ -15,10 +15,12 @@
 
 <Popover let:toggle padding="none" placement="bottom-end">
     <Tooltip disabled={$canWritePlatforms}>
-        <Button on:click={toggle} disabled={!$canWritePlatforms}>
-            <Icon icon={IconPlus} slot="start" />
-            <span class="text">Add platform</span>
-        </Button>
+        <div>
+            <Button on:click={toggle} disabled={!$canWritePlatforms}>
+                <Icon icon={IconPlus} slot="start" />
+                <span class="text">Add platform</span>
+            </Button>
+        </div>
         <div slot="tooltip">Your role does not allow this action</div>
     </Tooltip>
     <div style:min-width="232px" slot="tooltip">

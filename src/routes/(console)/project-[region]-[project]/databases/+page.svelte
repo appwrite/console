@@ -58,13 +58,15 @@
                 hideColumns={!data.databases.total}
                 hideView={!data.databases.total} />
             <Tooltip disabled={$canWriteDatabases}>
-                <Button
-                    on:click={() => (showCreate = true)}
-                    event="create_database"
-                    disabled={isCreationDisabled || !$canWriteDatabases}>
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create database
-                </Button>
+                <div>
+                    <Button
+                        on:click={() => (showCreate = true)}
+                        event="create_database"
+                        disabled={isCreationDisabled || !$canWriteDatabases}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create database
+                    </Button>
+                </div>
                 <div slot="tooltip">Your role does not allow this action</div>
             </Tooltip>
         </Layout.Stack>

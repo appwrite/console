@@ -61,13 +61,15 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <Typography.Title>Indexes</Typography.Title>
         <Tooltip disabled={$canWriteCollections}>
-            <Button
-                event="create_index"
-                disabled={!$collection?.attributes?.length || !$canWriteCollections}
-                on:click={() => (showCreateIndex = true)}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create index
-            </Button>
+            <div>
+                <Button
+                    event="create_index"
+                    disabled={!$collection?.attributes?.length || !$canWriteCollections}
+                    on:click={() => (showCreateIndex = true)}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create index
+                </Button>
+            </div>
             <div slot="tooltip">Your role does not allow this action</div>
         </Tooltip>
     </Layout.Stack>

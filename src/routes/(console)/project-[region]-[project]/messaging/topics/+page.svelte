@@ -74,16 +74,18 @@
         analyticsSource="messaging_topics_filter"
         searchPlaceholder="Search by name or ID">
         <Tooltip disabled={$canWriteTopics}>
-            <Button
-                on:click={() => {
-                    $showCreate = true;
-                    trackEvent(Click.MessagingTopicCreateClick);
-                }}
-                event="create_topic"
-                disabled={!$canWriteTopics}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create topic
-            </Button>
+            <div>
+                <Button
+                    on:click={() => {
+                        $showCreate = true;
+                        trackEvent(Click.MessagingTopicCreateClick);
+                    }}
+                    event="create_topic"
+                    disabled={!$canWriteTopics}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create topic
+                </Button>
+            </div>
             <div slot="tooltip">Your role does not allow this action</div>
         </Tooltip>
     </ResponsiveContainerHeader>

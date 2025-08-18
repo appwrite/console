@@ -109,12 +109,14 @@
         analyticsSource="messaging_messages"
         searchPlaceholder="Search by description, type, status, or ID">
         <Tooltip disabled={$canWriteMessages}>
-            <CreateMessageDropdown>
-                <Button event="create_message" disabled={!$canWriteMessages}>
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create message
-                </Button>
-            </CreateMessageDropdown>
+            <div>
+                <CreateMessageDropdown>
+                    <Button event="create_message" disabled={!$canWriteMessages}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create message
+                    </Button>
+                </CreateMessageDropdown>
+            </div>
             <div slot="tooltip">Your role does not allow this action</div>
         </Tooltip>
     </ResponsiveContainerHeader>
