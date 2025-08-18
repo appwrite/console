@@ -5,12 +5,12 @@
     import { addNotification } from '$lib/stores/notifications';
 
     import { writable } from 'svelte/store';
-    import ColumnForm from './row-[row]/columnForm.svelte';
+    import ColumnForm from './columns/columnForm.svelte';
     import { Permissions } from '$lib/components/permissions';
-    import type { Columns } from './store';
+    import type { Columns } from '../store';
     import { ID, type Models } from '@appwrite.io/console';
     import { Alert, Layout, Typography } from '@appwrite.io/pink-svelte';
-    import SideSheet from './layout/sidesheet.svelte';
+    import SideSheet from '../layout/sidesheet.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
 

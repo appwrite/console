@@ -5,48 +5,50 @@
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { row } from '../store';
-    import { isRelationshipToMany } from './store';
+    import { isRelationshipToMany } from '../../store';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let id: string;
     export let label: string;
     export let limited: boolean = false;
-
     export let editing = false;
-    export let value: string | string[];
+    export let value: object | string[];
     export let column: Models.ColumnRelationship;
     export let optionalText: string | undefined = undefined;
 
     const databaseId = page.params.database;
 
     let rowList: Models.RowList<Models.Row>;
-    let search: string = null;
-    let relatedList: string[] = [];
-    let singleRel: string;
+    let row: Models.DefaultRow | Models.Row | undefined = undefined;
+
     let showInput = false;
+    let singleRel: string;
+    let search: string = null;
+
     let newItemValue: string = '';
+    let relatedList: string[] = [];
+
     let limit = 10;
     let offset = 0;
 
     onMount(async () => {
-        if (value) {
-            if (isRelationshipToMany(column)) {
-                relatedList = (value as string[]).slice();
-            } else {
-                singleRel = value as string;
-            }
+        if (value && typeof value === 'object') {
+            row = value as Models.Row;
+            singleRel = row?.$id;
         }
 
-        if (editing && $row?.[column.key]) {
-            if ($row[column.key]?.length) {
+        if (value && isRelationshipToMany(column)) {
+            // TODO: test this
+            relatedList = (value as string[]).slice();
+        }
+
+        if (editing && row?.[column.key]) {
+            if (row[column.key]?.length) {
                 relatedList =
-                    $row[column.key]?.map((d: Record<string, unknown>) => {
+                    row[column.key]?.map((d: Record<string, unknown>) => {
                         return d?.$id;
                     }) ?? [];
-            } else {
-                singleRel = $row[column.key]?.$id;
             }
         }
     });
@@ -147,13 +149,16 @@
         }) ?? [];
 
     $: hasItems = totalCount > 0;
+
     $: showTopAddButton = !editing && totalCount === 0 && !showInput;
+
     $: showBottomAddButton =
         (!editing && hasItems && !showInput) ||
         (editing && hasItems && relatedList.every((item) => item) && !showInput);
+
     $: showEmptyInput = editing && totalCount === 0 && !showInput;
 
-    $: if (limit && !isRelationshipToMany(column)) {
+    $: if (limit && !isRelationshipToMany(column) && limited) {
         label = undefined;
     }
 </script>
@@ -289,5 +294,5 @@
         required={column.required}
         label={limited ? undefined : label}
         placeholder={`Select ${column.key}`}
-        on:change={() => (value = singleRel)} />
+        on:change={() => (value = rowList.rows.find((row) => row.$id === singleRel))} />
 {/if}

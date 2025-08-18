@@ -8,13 +8,9 @@
     import { type Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { type Columns, PROHIBITED_ROW_KEYS } from './store';
-    import ColumnItem from './row-[row]/columnItem.svelte';
-    import {
-        buildWildcardColumnsQuery,
-        isRelationship,
-        isRelationshipToMany
-    } from './row-[row]/columns/store';
+    import { type Columns, PROHIBITED_ROW_KEYS } from '../store';
+    import ColumnItem from './columns/columnItem.svelte';
+    import { buildWildcardColumnsQuery, isRelationship, isRelationshipToMany } from './store';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
 

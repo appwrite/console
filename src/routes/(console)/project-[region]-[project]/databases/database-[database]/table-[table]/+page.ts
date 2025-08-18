@@ -4,7 +4,7 @@ import { sdk } from '$lib/stores/sdk';
 import { type Models, Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters';
-import { buildWildcardColumnsQuery } from './row-[row]/columns/store';
+import { buildWildcardColumnsQuery } from './rows/store';
 import type { TagValue } from '$lib/components/filters/store';
 
 export const load: PageLoad = async ({ params, depends, url, route, parent }) => {

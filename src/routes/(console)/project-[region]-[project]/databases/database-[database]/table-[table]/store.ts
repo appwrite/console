@@ -163,6 +163,11 @@ export const rowActivitySheet = writable({
     row: null as Models.Row
 });
 
+export const rowPermissionSheet = writable({
+    show: false,
+    row: null as Models.Row
+});
+
 export const expandTabs = writable(null);
 export const spreadsheetRenderKey = writable('initial');
 

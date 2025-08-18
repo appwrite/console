@@ -34,7 +34,8 @@
         rowActivitySheet,
         spreadsheetRenderKey,
         expandTabs,
-        databaseRelatedRowSheetOptions
+        databaseRelatedRowSheetOptions,
+        rowPermissionSheet
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
@@ -46,10 +47,11 @@
     import { canWriteTables } from '$lib/stores/roles';
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
     import SideSheet from './layout/sidesheet.svelte';
-    import EditRow from './editRow.svelte';
-    import EditRelatedRow from './editRelatedRow.svelte';
+    import EditRow from './rows/edit.svelte';
+    import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
     import RowActivity from './rowActivity.svelte';
+    import EditRowPermissions from './rows/editPermissions.svelte';
     import { Dialog, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
@@ -61,6 +63,7 @@
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
+    let editRowPermissions: EditRowPermissions;
 
     let createIndex: CreateIndex;
     let createColumn: CreateColumn;
@@ -390,6 +393,18 @@
         bind:this={createIndex}
         bind:showCreateIndex={$showCreateIndexSheet.show}
         externalColumnKey={$showCreateIndexSheet.column} />
+</SideSheet>
+
+<SideSheet
+    closeOnBlur
+    title="Row permissions"
+    bind:show={$rowPermissionSheet.show}
+    submit={{
+        text: 'Create',
+        disabled: editRowPermissions?.disableSubmit(),
+        onClick: async () => editRowPermissions?.updatePermissions()
+    }}>
+    <EditRowPermissions bind:this={editRowPermissions} bind:row={$rowPermissionSheet.row} />
 </SideSheet>
 
 <SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>

@@ -15,7 +15,10 @@
         Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import { isRelationship, isString } from '../row-[row]/columns/store';
+    import {
+        isRelationship,
+        isString
+    } from '../rows/store';
     import FailedModal from '../failedModal.svelte';
     import {
         columns,

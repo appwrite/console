@@ -30,7 +30,7 @@
     $: disabled = !value || $groups.has(value);
 </script>
 
-<Modal title="Label" bind:show on:close={reset} onSubmit={create}>
+<Modal title="Label" bind:show on:close={reset} onSubmit={create} size="s">
     <svelte:fragment slot="description">
         Labels allow you to grant access to users with the specified label.
     </svelte:fragment>

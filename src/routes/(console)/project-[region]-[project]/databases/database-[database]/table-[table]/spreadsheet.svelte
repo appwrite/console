@@ -11,7 +11,7 @@
     import { type Models, Query } from '@appwrite.io/console';
     import { type ComponentType, onDestroy, onMount, tick } from 'svelte';
     import type { PageData } from './$types';
-    import { isRelationship, isRelationshipToMany, isString } from './row-[row]/columns/store';
+    import { isRelationship, isRelationshipToMany, isString } from './rows/store';
     import {
         columns,
         table,
@@ -33,7 +33,8 @@
         paginatedRowsLoading,
         spreadsheetRenderKey,
         expandTabs,
-        databaseRelatedRowSheetOptions
+        databaseRelatedRowSheetOptions,
+        rowPermissionSheet
     } from './store';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import {
@@ -72,7 +73,7 @@
     import SheetOptions from './sheetOptions.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import SpreadsheetContainer from './layout/spreadsheet.svelte';
-    import EditRowCell from './editRowCell.svelte';
+    import EditRowCell from './rows/cell/edit.svelte';
     import { copy } from '$lib/helpers/copy';
     import { writable } from 'svelte/store';
     import { pageToOffset } from '$lib/helpers/load';
@@ -479,6 +480,11 @@
             if (action === 'duplicate-row') {
                 showRecordsCreateSheet.row = row;
                 showRecordsCreateSheet.show = true;
+            }
+
+            if (action === 'permissions') {
+                $rowPermissionSheet.row = row;
+                $rowPermissionSheet.show = true;
             }
 
             if (action === 'copy-json') {

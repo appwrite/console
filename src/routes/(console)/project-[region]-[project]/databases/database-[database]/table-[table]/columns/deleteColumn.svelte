@@ -7,7 +7,7 @@
     import type { Columns } from '../store';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { isRelationship } from '../row-[row]/columns/store';
+    import { isRelationship } from '../rows/store';
     import Confirm from '$lib/components/confirm.svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';

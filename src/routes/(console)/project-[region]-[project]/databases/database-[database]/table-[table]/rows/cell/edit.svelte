@@ -1,9 +1,9 @@
 <script lang="ts">
     import deepEqual from 'deep-equal';
-    import type { Columns } from './store';
+    import type { Columns } from '../../store';
     import { onDestroy, onMount } from 'svelte';
     import type { Models } from '@appwrite.io/console';
-    import ColumnItem from './row-[row]/columnItem.svelte';
+    import ColumnItem from '../columns/columnItem.svelte';
 
     let {
         column,
