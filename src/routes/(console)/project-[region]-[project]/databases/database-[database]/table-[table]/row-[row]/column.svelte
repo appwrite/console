@@ -45,6 +45,7 @@
 
 {#if column.type in columnsTypeMap}
     {#if 'format' in column && column.format}
+        <!-- the `on:click` is from string > array mode for advanced edit button -->
         <svelte:component
             this={columnsFormatMap[column.format]}
             {id}
@@ -53,6 +54,7 @@
             {limited}
             {array}
             {optionalText}
+            on:click
             bind:value />
     {:else}
         <!-- the `on:click` is from string > array mode for advanced edit button -->

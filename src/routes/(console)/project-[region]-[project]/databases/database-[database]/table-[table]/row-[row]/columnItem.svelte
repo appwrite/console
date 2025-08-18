@@ -90,7 +90,8 @@
             id={column.key}
             limited={fromSpreadsheet}
             optionalText={getColumnType(column)}
-            bind:value={formValues[column.key]} />
+            bind:value={formValues[column.key]}
+            on:click />
     {:else}
         <Layout.Stack>
             {#each [...(formValues[column.key]?.keys() ?? [])] as index}
@@ -123,5 +124,6 @@
         id={column.key}
         limited={fromSpreadsheet}
         optionalText={getColumnType(column)}
-        bind:value={formValues[column.key]} />
+        bind:value={formValues[column.key]}
+        on:click />
 {/if}
