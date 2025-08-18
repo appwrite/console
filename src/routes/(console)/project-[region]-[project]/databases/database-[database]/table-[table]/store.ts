@@ -64,6 +64,18 @@ export const databaseRowSheetOptions = writable<
     row: null
 });
 
+export const databaseRelatedRowSheetOptions = writable<
+    DatabaseSheetOptions & {
+        rowId: string;
+        tableId: string;
+    }
+>({
+    title: 'Update related row',
+    show: false,
+    rowId: null,
+    tableId: null
+});
+
 export const showRecordsCreateSheet = writable({
     show: false,
     row: null
@@ -156,3 +168,12 @@ export const spreadsheetRenderKey = writable('initial');
 
 export const paginatedRowsLoading = writable(false);
 export const paginatedRows = createSparsePagedDataStore<Models.DefaultRow>(SPREADSHEET_PAGE_LIMIT);
+
+export const PROHIBITED_ROW_KEYS = [
+    '$id',
+    '$collection',
+    '$tableId',
+    '$databaseId',
+    '$createdAt',
+    '$updatedAt'
+];

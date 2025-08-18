@@ -7,13 +7,7 @@
         Spreadsheet,
         Typography
     } from '@appwrite.io/pink-svelte';
-
-    import {
-        IconCalendar,
-        IconFingerPrint,
-        IconHashtag,
-        IconPlus
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconCalendar, IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
@@ -24,6 +18,8 @@
         spreadsheetLoading,
         expandTabs
     } from '../store';
+    import { onMount, tick } from 'svelte';
+    import SpreadsheetContainer from './spreadsheet.svelte';
 
     type Mode = 'rows' | 'indexes';
 
@@ -50,7 +46,38 @@
         };
     }>();
 
+    let spreadsheetContainer: HTMLElement;
+    let headerElement: HTMLElement | null = null;
+    let dynamicOverlayHeight = $state('70.5vh');
+
+    let spreadsheetRootContainer: SpreadsheetContainer;
+
     const baseColProps = { draggable: false, resizable: false };
+
+    const updateOverlayHeight = () => {
+        tick().then(() => {
+            spreadsheetRootContainer?.resizeSheet(false, true);
+        });
+
+        if (!spreadsheetContainer) return;
+
+        if (!headerElement || !headerElement.isConnected) {
+            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+        }
+
+        if (headerElement) {
+            const headerRect = headerElement.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const dynamicHeight = viewportHeight - headerRect.bottom;
+
+            dynamicOverlayHeight = `${dynamicHeight}px`;
+            if (!$expandTabs) {
+                dynamicOverlayHeight = `calc(${dynamicHeight}px - 89px)`;
+            }
+        }
+    };
+
+    onMount(updateOverlayHeight);
 
     const getCustomColumns = (): Column[] =>
         customColumns.map((col: Column) => ({
@@ -62,17 +89,8 @@
 
     const getRowColumns = (): Column[] => [
         {
-            id: '$sequence',
-            title: 'Sequence',
-            type: 'string',
-            width: 150,
-            isPrimary: true,
-            icon: IconHashtag,
-            ...baseColProps
-        },
-        {
             id: '$id',
-            title: 'ID',
+            title: '$id',
             type: 'string',
             width: 180,
             icon: IconFingerPrint,
@@ -81,7 +99,7 @@
         ...getCustomColumns(),
         {
             id: '$createdAt',
-            title: 'Created',
+            title: '$createdAt',
             type: 'datetime',
             width: 180,
             icon: IconCalendar,
@@ -89,7 +107,7 @@
         },
         {
             id: '$updatedAt',
-            title: 'Updated',
+            title: '$updatedAt',
             type: 'datetime',
             width: 180,
             icon: IconCalendar,
@@ -127,82 +145,89 @@
 
     const spreadsheetColumns = $derived(mode === 'rows' ? getRowColumns() : getIndexesColumns());
 
-    const emptyCells = $derived($isSmallViewport ? 14 : 17);
-    const fixedHeight = $derived($isSmallViewport ? '60.75vh' : '74.35vh');
+    const fixedHeight = $derived($expandTabs ? 'calc(100% - 89px)' : '100%');
+    const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
 </script>
 
-<div class="spreadsheet-container-outer" data-mode={mode}>
-    <Spreadsheet.Root
-        {emptyCells}
-        allowSelection
-        height={fixedHeight}
-        columns={spreadsheetColumns}
-        loading={$spreadsheetLoading}
-        bottomActionClick={() => {
-            /* @ignore: only for showing the `+` button on footer */
-        }}>
-        <svelte:fragment slot="header" let:root>
-            {#each spreadsheetColumns as column (column.id)}
-                {@const columnActionsById = column.id === 'actions'}
-                <!-- svelte-ignore a11y_click_events_have_key_events -->
-                <div
-                    role="button"
-                    tabindex="0"
-                    style:cursor={columnActionsById ? 'pointer' : null}
-                    onclick={() => {
-                        if (columnActionsById && mode === 'rows') {
-                            $showCreateAttributeSheet.show = true;
-                            $showCreateAttributeSheet.title = 'Create column';
-                            $showCreateAttributeSheet.columns = $tableColumns;
-                            $showCreateAttributeSheet.columnsOrder = $columnsOrder;
-                        }
-                    }}>
-                    <Spreadsheet.Header.Cell
-                        {root}
-                        column={column.id}
-                        icon={column.icon ?? undefined}>
-                        {#if column.isAction}
-                            <Button.Button
-                                icon
-                                variant="extra-compact"
-                                on:click={() => {
-                                    console.log('dank');
-                                }}>
-                                <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
-                            </Button.Button>
-                        {:else if column.id === 'actions' || column.id === 'empty'}
-                            {column.title}
-                        {:else}
-                            <Layout.Stack
-                                gap="xs"
-                                direction="row"
-                                alignItems="center"
-                                alignContent="center">
+<svelte:window on:resize={updateOverlayHeight} />
+
+<div class="spreadsheet-container-outer" data-mode={mode} bind:this={spreadsheetContainer}>
+    <SpreadsheetContainer bind:this={spreadsheetRootContainer}>
+        <Spreadsheet.Root
+            {emptyCells}
+            allowSelection
+            height={fixedHeight}
+            columns={spreadsheetColumns}
+            loading={$spreadsheetLoading}
+            bottomActionClick={() => {
+                /* @ignore: only for showing the `+` button on footer */
+            }}>
+            <svelte:fragment slot="header" let:root>
+                {#each spreadsheetColumns as column (column.id)}
+                    {@const columnActionsById = column.id === 'actions'}
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <div
+                        role="button"
+                        tabindex="0"
+                        style:cursor={columnActionsById ? 'pointer' : null}
+                        onclick={() => {
+                            if (columnActionsById && mode === 'rows') {
+                                $showCreateAttributeSheet.show = true;
+                                $showCreateAttributeSheet.title = 'Create column';
+                                $showCreateAttributeSheet.columns = $tableColumns;
+                                $showCreateAttributeSheet.columnsOrder = $columnsOrder;
+                            }
+                        }}>
+                        <Spreadsheet.Header.Cell
+                            {root}
+                            column={column.id}
+                            icon={column.icon ?? undefined}>
+                            {#if column.isAction}
+                                <Button.Button
+                                    icon
+                                    variant="extra-compact"
+                                    on:click={() => {
+                                        console.log('dank');
+                                    }}>
+                                    <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
+                                </Button.Button>
+                            {:else if column.id === 'actions' || column.id === 'empty'}
                                 {column.title}
+                            {:else}
+                                <Layout.Stack
+                                    gap="xs"
+                                    direction="row"
+                                    alignItems="center"
+                                    alignContent="center">
+                                    {column.title}
 
-                                <SortButton disabled column={column.id} />
-                            </Layout.Stack>
-                        {/if}
-                    </Spreadsheet.Header.Cell>
-                </div>
-            {/each}
-        </svelte:fragment>
+                                    <SortButton disabled column={column.id} />
+                                </Layout.Stack>
+                            {/if}
+                        </Spreadsheet.Header.Cell>
+                    </div>
+                {/each}
+            </svelte:fragment>
 
-        <svelte:fragment slot="footer">
-            {#if $spreadsheetLoading}
-                <Layout.Stack
-                    direction="row"
-                    alignContent="center"
-                    alignItems="center"
-                    justifyContent="space-between">
-                    <Skeleton variant="line" height={18} width={125} />
-                </Layout.Stack>
-            {/if}
-        </svelte:fragment>
-    </Spreadsheet.Root>
+            <svelte:fragment slot="footer">
+                {#if $spreadsheetLoading}
+                    <Layout.Stack
+                        direction="row"
+                        alignContent="center"
+                        alignItems="center"
+                        justifyContent="space-between">
+                        <Skeleton variant="line" height={18} width={125} />
+                    </Layout.Stack>
+                {/if}
+            </svelte:fragment>
+        </Spreadsheet.Root>
+    </SpreadsheetContainer>
 
     {#if !$spreadsheetLoading}
-        <div class="spreadsheet-fade-bottom" data-collapsed-tabs={!$expandTabs}>
+        <div
+            class="spreadsheet-fade-bottom"
+            data-collapsed-tabs={!$expandTabs}
+            style:--dynamic-overlay-height={dynamicOverlayHeight}>
             <div class="empty-actions">
                 <Layout.Stack gap="xl" alignItems="center">
                     <Typography.Title>{title ?? `You have no ${mode} yet`}</Typography.Title>
@@ -293,7 +318,6 @@
     .spreadsheet-fade-bottom {
         bottom: 0;
         width: 100%;
-        height: 70.5vh;
         position: fixed;
         background: linear-gradient(
             180deg,
@@ -302,20 +326,22 @@
             #ffffff 100%
         );
         z-index: 20;
-        display: flex;
+        display: none;
         justify-content: center;
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
+        height: var(--dynamic-overlay-height, 70.5vh);
+
         &[data-collapsed-tabs='true'] {
-            height: 79.1vh !important;
+            height: calc(var(--dynamic-overlay-height, 79.1vh) + 8.6vh);
         }
 
         @media (max-width: 1024px) {
-            height: 63.35vh;
+            height: var(--dynamic-overlay-height, 63.35vh);
         }
 
         @media (min-width: 1024px) {
-            height: 70.35vh;
+            height: var(--dynamic-overlay-height, 70.35vh);
         }
     }
 

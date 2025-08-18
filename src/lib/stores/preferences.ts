@@ -208,31 +208,37 @@ function createPreferences() {
 
         loadTeamPrefs: loadTeamPreferences,
 
-        getDisplayNames: () => {
-            return preferences?.displayNames ?? {};
+        getDisplayNames: (tableId: string) => {
+            return teamPreferences?.displayNames?.[tableId];
         },
 
-        setDisplayNames: async (tableId: string, names: TeamPreferences['names']) => {
-            await updateAndSync((n) => {
-                if (!n?.displayNames) {
-                    n ??= {};
-                    n.displayNames ??= {};
-                }
+        setDisplayNames: async (
+            orgId: string,
+            tableId: string,
+            displayNames: TeamPreferences['names']
+        ) => {
+            if (!teamPreferences.displayNames) {
+                teamPreferences.displayNames = {};
+            }
 
-                n.displayNames[tableId] = names;
-                return n;
+            teamPreferences.displayNames[tableId] = displayNames;
+
+            await sdk.forConsole.teams.updatePrefs({
+                teamId: orgId,
+                prefs: teamPreferences
             });
         },
 
-        deleteDisplayNames: async (tableId: string) => {
-            await updateAndSync((n) => {
-                if (!n?.displayNames) {
-                    n ??= {};
-                    n.displayNames ??= {};
-                }
+        deleteDisplayNames: async (orgId: string, tableId: string) => {
+            if (!teamPreferences?.displayNames) {
+                return;
+            }
 
-                delete n.displayNames[tableId];
-                return n;
+            delete teamPreferences.displayNames[tableId];
+
+            await sdk.forConsole.teams.updatePrefs({
+                teamId: orgId,
+                prefs: teamPreferences
             });
         },
 

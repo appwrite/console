@@ -10,6 +10,7 @@
     import { Typography } from '@appwrite.io/pink-svelte';
     import { table } from '../store';
     import { preferences } from '$lib/stores/preferences';
+    import { organization } from '$lib/stores/organization.js';
 
     export let showDelete = false;
 
@@ -19,8 +20,9 @@
 
     async function clearPreferences() {
         await Promise.all([
-            preferences.deleteDisplayNames(tableId),
-            preferences.deleteCustomTableColumns(tableId)
+            // TODO: remove other prefs like column order, widths, etc.
+            preferences.deleteCustomTableColumns(tableId),
+            preferences.deleteDisplayNames($organization.$id, tableId)
         ]);
     }
 

@@ -33,7 +33,8 @@
         spreadsheetLoading,
         rowActivitySheet,
         spreadsheetRenderKey,
-        expandTabs
+        expandTabs,
+        databaseRelatedRowSheetOptions
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
@@ -46,6 +47,7 @@
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
     import SideSheet from './layout/sidesheet.svelte';
     import EditRow from './editRow.svelte';
+    import EditRelatedRow from './editRelatedRow.svelte';
     import EditColumn from './columns/edit.svelte';
     import RowActivity from './rowActivity.svelte';
     import { Dialog, Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -58,6 +60,8 @@
     import { preferences } from '$lib/stores/preferences';
 
     let editRow: EditRow;
+    let editRelatedRow: EditRelatedRow;
+
     let createIndex: CreateIndex;
     let createColumn: CreateColumn;
     let selectedOption: Option['name'] = 'String';
@@ -355,6 +359,21 @@
         onClick: async () => await editRow?.update()
     }}>
     <EditRow bind:row={$databaseRowSheetOptions.row} bind:this={editRow} />
+</SideSheet>
+
+<SideSheet
+    closeOnBlur
+    title={$databaseRelatedRowSheetOptions.title}
+    bind:show={$databaseRelatedRowSheetOptions.show}
+    submit={{
+        text: 'Update',
+        disabled: editRelatedRow?.isDisabled(),
+        onClick: async () => await editRelatedRow?.update()
+    }}>
+    <EditRelatedRow
+        bind:this={editRelatedRow}
+        rowId={$databaseRelatedRowSheetOptions.rowId}
+        tableId={$databaseRelatedRowSheetOptions.tableId} />
 </SideSheet>
 
 <SideSheet

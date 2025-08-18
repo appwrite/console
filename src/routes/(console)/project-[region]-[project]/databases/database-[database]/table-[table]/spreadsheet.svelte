@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
+    import { goto, invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Confirm, Id, SortButton } from '$lib/components';
     import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
@@ -32,9 +31,10 @@
         rowActivitySheet,
         paginatedRows,
         paginatedRowsLoading,
-        spreadsheetRenderKey
+        spreadsheetRenderKey,
+        expandTabs,
+        databaseRelatedRowSheetOptions
     } from './store';
-    import RelationshipsModal from './relationshipsModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import {
         Alert,
@@ -109,11 +109,6 @@
     ]); /* TODO: should be fixed at the sdk level! */
 
     let selectedRows = [];
-    let displayNames = {};
-    let showRelationships = false;
-    let relationshipData: Partial<Models.Row>[];
-    let selectedRelationship: Models.ColumnRelationship = null;
-
     let spreadsheetContainer: SpreadsheetContainer;
 
     let currentPage = 1;
@@ -125,7 +120,6 @@
     let selectedRowForDelete: Models.Row['$id'] | null = null;
 
     onMount(async () => {
-        displayNames = preferences.getDisplayNames();
         columnsOrder.set(preferences.getColumnOrder(tableId));
         columnsWidth.set(preferences.getColumnWidths(tableId));
 
@@ -160,7 +154,7 @@
         const staticColumns: Column[] = [
             {
                 id: '$id',
-                title: 'ID',
+                title: '$id',
                 width: getColumnWidth('$id', 225),
                 minimumWidth: 225,
                 draggable: false,
@@ -172,7 +166,7 @@
             },
             {
                 id: '$createdAt',
-                title: 'createdAt',
+                title: '$createdAt',
                 width: getColumnWidth('$createdAt', { min: 200 }),
                 minimumWidth: 200,
                 draggable: true,
@@ -183,7 +177,7 @@
             },
             {
                 id: '$updatedAt',
-                title: 'updatedAt',
+                title: '$updatedAt',
                 width: getColumnWidth('$updatedAt', { min: 200 }),
                 minimumWidth: 200,
                 draggable: true,
@@ -604,6 +598,19 @@
         }
     }
 
+    function getDisplayNamesForTable(relatedTable: string | object | null): string[] {
+        if (!relatedTable) return ['$id'];
+
+        let tableId = null;
+        if (typeof relatedTable === 'string') {
+            tableId = relatedTable;
+        } else if (typeof relatedTable === 'object' && '$tableId' in relatedTable) {
+            tableId = relatedTable.$tableId;
+        }
+
+        return preferences.getDisplayNames(tableId) ?? ['$id'];
+    }
+
     const saveColumnWidthsToPreferences = debounce(
         (column: { columnId: string; newWidth: number; fixedWidth: number }) => {
             preferences.saveColumnWidths(organizationId, tableId, {
@@ -636,7 +643,7 @@
     $: emptyCellsCount =
         $paginatedRows.virtualLength >= emptyCellsLimit
             ? 0
-            : emptyCellsLimit - $paginatedRows.virtualLength;
+            : emptyCellsLimit - $paginatedRows.virtualLength + (!$expandTabs ? 2 : 0);
 
     $: canShowDatetimePopover = true;
 
@@ -785,32 +792,31 @@
                                         {/snippet}
                                     </SheetOptions>
                                 {:else if isRelationship(rowColumn)}
-                                    {@const args = displayNames?.[rowColumn.relatedTable] ?? [
-                                        '$id'
-                                    ]}
+                                    {@const args = getDisplayNamesForTable(row[columnId])}
                                     {#if !isRelationshipToMany(rowColumn)}
                                         {#if row[columnId]}
-                                            {@const related = row[columnId]}
-                                            <Link.Button
-                                                variant="muted"
-                                                on:click={(e) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    // TODO: open sheet maybes
-                                                    goto(
-                                                        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table/${rowColumn.relatedTable}/row/${related.$id}`
-                                                    );
-                                                }}>
-                                                {#each args as arg, i}
-                                                    {#if arg !== undefined}
-                                                        {#if i}&nbsp;|{/if}
-                                                        <span class="text" data-private
-                                                            >{related?.[arg]}</span>
-                                                    {/if}
-                                                {/each}
-                                            </Link.Button>
+                                            {@const displayValue = args
+                                                .map((arg) => row[columnId]?.[arg])
+                                                .filter(Boolean)
+                                                .join(' | ')}
+
+                                            {#if displayValue}
+                                                <Link.Button
+                                                    variant="muted"
+                                                    on:click={() => {
+                                                        $databaseRelatedRowSheetOptions.show = true;
+                                                        $databaseRelatedRowSheetOptions.tableId =
+                                                            columnId;
+                                                        $databaseRelatedRowSheetOptions.rowId =
+                                                            row[columnId]?.['$id'];
+                                                    }}>
+                                                    {displayValue}
+                                                </Link.Button>
+                                            {:else}
+                                                <Badge variant="secondary" content="-" size="xs" />
+                                            {/if}
                                         {:else}
-                                            <span class="text">n/a</span>
+                                            <Badge variant="secondary" content="NULL" size="xs" />
                                         {/if}
                                     {:else}
                                         {@const itemsNum = row[columnId]?.length}
@@ -818,12 +824,11 @@
                                             variant="extra-compact"
                                             disabled={!itemsNum}
                                             badge={itemsNum ?? 0}
-                                            on:click={(e) => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                relationshipData = row[columnId];
-                                                showRelationships = true;
-                                                selectedRelationship = rowColumn;
+                                            on:click={() => {
+                                                $databaseRelatedRowSheetOptions.show = true;
+                                                $databaseRelatedRowSheetOptions.tableId = columnId;
+                                                $databaseRelatedRowSheetOptions.rowId =
+                                                    row[columnId]?.['$id'];
                                             }}>
                                             Items
                                         </Button.Button>
@@ -941,7 +946,8 @@
                     {#if !$isSmallViewport}
                         <div style:margin-right="var(--space-6)">
                             <Button.Button
-                                variant="extra-compact"
+                                size="xs"
+                                variant="secondary"
                                 on:click={() => {
                                     $randomDataModalState.show = true;
                                 }}>Generate sample data</Button.Button>
@@ -975,8 +981,6 @@
         </div>
     {/if}
 </SpreadsheetContainer>
-
-<RelationshipsModal bind:show={showRelationships} {selectedRelationship} data={relationshipData} />
 
 <Confirm
     bind:open={showDelete}

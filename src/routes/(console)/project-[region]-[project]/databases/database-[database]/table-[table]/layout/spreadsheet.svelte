@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { onMount, onDestroy, type Snippet, tick } from 'svelte';
     import { expandTabs, scrollStore } from '../store';
+    import { onMount, onDestroy, type Snippet, tick } from 'svelte';
 
     let {
         observeExpand = false,
@@ -26,7 +26,7 @@
     }
 
     /** adjust height to fill remaining viewport space */
-    export function resizeSheet(fromResize: boolean = false): void {
+    export function resizeSheet(fromResize: boolean = false, isEmptySheet: boolean = false): void {
         if (!spreadsheetWrapper) return;
 
         clearTimeout(resizeTimeout);
@@ -36,7 +36,7 @@
             base = window.innerHeight - rect.top;
 
             let headerHeightDiff = 0;
-            if (observeExpand && !isFirstMount && !fromResize) {
+            if (observeExpand && !fromResize) {
                 /**
                  * 16px from padding top
                  * 08px from padding bottom
@@ -44,10 +44,10 @@
                  * ————————————————
                  * 89px
                  */
-                headerHeightDiff = $expandTabs ? -89 : 89;
+                headerHeightDiff = $expandTabs ? (isFirstMount ? 0 : -89) : 89;
             }
 
-            spreadsheetHeight = `${base + headerHeightDiff}px`;
+            spreadsheetHeight = `${base + headerHeightDiff + (isEmptySheet ? 89 : 0)}px`;
             isFirstMount = false;
         }, 16);
     }

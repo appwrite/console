@@ -5,54 +5,92 @@
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { type Writable, writable } from 'svelte/store';
-    import type { Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { table, type Columns, PROHIBITED_ROW_KEYS } from './store';
+    import { type Columns, PROHIBITED_ROW_KEYS } from './store';
     import ColumnItem from './row-[row]/columnItem.svelte';
-    import { isRelationship, isRelationshipToMany } from './row-[row]/columns/store';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import {
+        buildWildcardColumnsQuery,
+        isRelationship,
+        isRelationshipToMany
+    } from './row-[row]/columns/store';
+    import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
 
-    const tableId = page.params.table;
     const databaseId = page.params.database;
 
     let {
-        row = $bindable()
+        rowId,
+        tableId
     }: {
-        row: Models.Row;
+        rowId: string;
+        tableId: string;
     } = $props();
+
+    let loading = $state(false);
+    let fetchedRow = $state<Models.Row | null>(null);
+    let relatedTable = $state<Models.Table | null>(null);
 
     let work = $state<Writable<Models.Row> | null>(null);
     let columnFormWrapper = $state<HTMLElement | null>(null);
 
-    function initWork() {
-        const filteredKeys = Object.keys(row).filter((key) => {
-            return !PROHIBITED_ROW_KEYS.includes(key);
-        });
+    async function loadRelatedRow() {
+        loading = true;
 
-        const result = filteredKeys.reduce((obj, key) => {
-            obj[key] = row[key];
-            return obj;
-        }, {});
+        try {
+            relatedTable =
+                page.data.tables?.[tableId] ??
+                (await sdk.forProject(page.params.region, page.params.project).grids.getTable({
+                    databaseId,
+                    tableId: tableId
+                }));
 
-        return writable(deepClone(result as Models.Row));
+            fetchedRow = await sdk
+                .forProject(page.params.region, page.params.project)
+                .grids.getRow({
+                    databaseId,
+                    tableId: tableId,
+                    rowId: rowId,
+                    queries: buildWildcardColumnsQuery(relatedTable)
+                });
+
+            const filteredKeys = Object.keys(fetchedRow).filter((key) => {
+                return !PROHIBITED_ROW_KEYS.includes(key);
+            });
+
+            const workingData = filteredKeys.reduce((obj, key) => {
+                obj[key] = fetchedRow[key];
+                return obj;
+            }, {});
+
+            work = writable(deepClone(workingData as Models.Row));
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+            trackError(error, Submit.RowUpdate);
+        } finally {
+            loading = false;
+        }
     }
 
     $effect(() => {
-        if (row) {
-            work = initWork();
-            focusFirstInput();
+        if (rowId && tableId) {
+            loadRelatedRow().then(() => {
+                focusFirstInput();
+            });
         }
     });
 
-    function compareColumns(column: Columns, $work: Models.Row, $doc: Models.Row) {
+    function compareColumns(column: Columns, $work: Models.Row, originalRow: Models.Row) {
         if (!column) {
             return false;
         }
 
         const workColumn = $work?.[column.key];
-        const currentColumn = $doc?.[column.key];
+        const currentColumn = originalRow?.[column.key];
 
         if (column.array) {
             return !symmetricDifference(Array.from(workColumn), Array.from(currentColumn)).length;
@@ -84,8 +122,8 @@
         try {
             await sdk.forProject(page.params.region, page.params.project).grids.updateRow({
                 databaseId,
-                tableId,
-                rowId: row.$id,
+                tableId: relatedTable.$id,
+                rowId: fetchedRow.$id,
                 data: $work,
                 permissions: $work.$permissions
             });
@@ -93,7 +131,7 @@
             invalidate(Dependencies.ROW);
             trackEvent(Submit.RowUpdate);
             addNotification({
-                message: 'Row has been updated',
+                message: 'Related row has been updated',
                 type: 'success'
             });
         } catch (error) {
@@ -106,9 +144,9 @@
     }
 
     export function isDisabled(): boolean {
-        if (!work || !$table?.columns?.length) return true;
+        if (!work || !relatedTable?.columns?.length || !fetchedRow) return true;
 
-        return $table.columns.every((column) => compareColumns(column, $work, row));
+        return relatedTable.columns.every((column) => compareColumns(column, $work, fetchedRow));
     }
 
     function focusFirstInput() {
@@ -120,10 +158,14 @@
     }
 </script>
 
-{#if $table.columns?.length && work}
+{#if loading}
+    <div style:margin-block="" style:margin-inline-end="2.25rem">
+        <Skeleton variant="line" height={40} width="auto" />
+    </div>
+{:else if relatedTable?.columns?.length && work}
     <div bind:this={columnFormWrapper}>
         <Layout.Stack direction="column" gap="l">
-            {#each $table.columns as column}
+            {#each relatedTable.columns as column}
                 {@const label = column.key}
                 <ColumnItem {column} bind:formValues={$work} {label} editing />
             {/each}
