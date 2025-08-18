@@ -33,7 +33,6 @@
         spreadsheetLoading,
         rowActivitySheet,
         spreadsheetRenderKey,
-        columnsWidth,
         expandTabs
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
@@ -244,14 +243,10 @@
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
-        let attributes = $table.columns;
-        if (!attributes.length) {
+        let columns = $table.columns;
+        if (!columns.length) {
             try {
-                attributes = await generateColumns(
-                    $project,
-                    page.params.database,
-                    page.params.table
-                );
+                columns = await generateColumns($project, page.params.database, page.params.table);
 
                 await invalidate(Dependencies.TABLE);
             } catch (e) {
@@ -264,12 +259,12 @@
             }
         }
 
-        /* let the attributes be processed! */
+        /* let the columns be processed! */
         await sleep(1250);
 
         let rowIds = [];
         try {
-            const { rows, ids } = generateFakeRecords(attributes, $randomDataModalState.value);
+            const { rows, ids } = generateFakeRecords(columns, $randomDataModalState.value);
 
             rowIds = ids;
 
@@ -311,7 +306,6 @@
 <slot />
 
 <SideSheet
-    spaced
     closeOnBlur
     title={$showCreateAttributeSheet.title}
     bind:show={$showCreateAttributeSheet.show}
@@ -337,7 +331,6 @@
 </SideSheet>
 
 <SideSheet
-    spaced
     closeOnBlur
     title={$databaseColumnSheetOptions.title}
     bind:show={$databaseColumnSheetOptions.show}
@@ -353,7 +346,6 @@
 </SideSheet>
 
 <SideSheet
-    spaced
     closeOnBlur
     title={$databaseRowSheetOptions.title}
     bind:show={$databaseRowSheetOptions.show}
@@ -366,7 +358,6 @@
 </SideSheet>
 
 <SideSheet
-    spaced
     closeOnBlur
     title="Create index"
     bind:show={$showCreateIndexSheet.show}
@@ -382,7 +373,7 @@
         externalColumnKey={$showCreateIndexSheet.column} />
 </SideSheet>
 
-<SideSheet spaced title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
+<SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
     <RowActivity />
 </SideSheet>
 

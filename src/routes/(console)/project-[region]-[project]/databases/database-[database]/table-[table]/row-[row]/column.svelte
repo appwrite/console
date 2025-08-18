@@ -10,6 +10,7 @@
 
     export let id: string;
     export let label: string;
+    export let array: boolean | undefined = undefined;
     export let optionalText: string | undefined = undefined;
     export let value: string | number | boolean | null | string[];
     export let editing = false;
@@ -50,17 +51,21 @@
             {label}
             {column}
             {limited}
+            {array}
             {optionalText}
             bind:value />
     {:else}
+        <!-- the `on:click` is from string > array mode for advanced edit button -->
         <svelte:component
-            this={columnsTypeMap[column.type]}
+            this={column.array ? columnsTypeMap['string'] : columnsTypeMap[column.type]}
             {id}
             {editing}
             {limited}
             {label}
             {column}
+            {array}
             {optionalText}
+            on:click
             bind:value />
     {/if}
 {/if}

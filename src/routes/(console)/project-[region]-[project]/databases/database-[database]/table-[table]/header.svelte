@@ -8,6 +8,7 @@
     import { canWriteTables } from '$lib/stores/roles';
     import { expandTabs, table } from './store';
     import { Layout } from '@appwrite.io/pink-svelte';
+    import { preferences } from '$lib/stores/preferences';
 
     const databaseId = $derived(page.params.database);
 
@@ -64,6 +65,13 @@
         const endings = ['table-[table]', 'table-[table]/columns', 'table-[table]/indexes'];
         const isSpreadsheetPage = endings.some((end) => page.route.id?.endsWith(end));
         return !isSpreadsheetPage;
+    });
+
+    $effect(() => {
+        if (nonSheetPages) expandTabs.set(true);
+        else {
+            expandTabs.set(preferences.isTableHeaderExpanded(tableId));
+        }
     });
 </script>
 

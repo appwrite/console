@@ -138,7 +138,10 @@
                             icon
                             secondary
                             disabled={!(hasColumns && hasValidColumns)}
-                            on:click={() => ($expandTabs = !$expandTabs)}>
+                            on:click={() => {
+                                $expandTabs = !$expandTabs;
+                                preferences.setTableHeaderExpanded($table.$id, $expandTabs);
+                            }}>
                             <Icon icon={!$expandTabs ? IconChevronDown : IconChevronUp} size="s" />
                         </Button>
                     {/if}

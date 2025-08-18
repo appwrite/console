@@ -139,7 +139,7 @@ export const randomDataModalState = writable({
 export const spreadsheetLoading = writable(false);
 
 export enum Deletion {
-    'setNull' = 'Set rpw ID as NULL in all related rows',
+    'setNull' = 'Set row ID as NULL in all related rows',
     'cascade' = 'All related rows will be deleted',
     'restrict' = 'Row can not be deleted'
 }
@@ -151,7 +151,7 @@ export const rowActivitySheet = writable({
     row: null as Models.Row
 });
 
-export const expandTabs = writable(true);
+export const expandTabs = writable(null);
 export const spreadsheetRenderKey = writable('initial');
 
 export const paginatedRowsLoading = writable(false);
