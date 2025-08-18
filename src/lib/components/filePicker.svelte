@@ -32,13 +32,14 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { IconInfo, IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
     import { showCreateBucket } from '$routes/(console)/project-[region]-[project]/storage/+page.svelte';
+    import { preferences } from '$lib/stores/preferences';
 
     export let show: boolean;
     export let mimeTypeQuery: string = 'image/';
     export let allowedExtension: string = '*';
     export let selectedBucket: string = null;
     export let selectedFile: string = null;
-    export let onSelect: (e: Models.File, localFile:boolean) => void;
+    export let onSelect: (e: Models.File, localFile: boolean) => void;
     export let gridImageDimensions: { imageHeight?: number; imageWidth?: number } = {
         imageHeight: 148
     };
@@ -53,15 +54,23 @@
     let view: 'grid' | 'list' = 'list';
 
     onMount(() => {
+        const filePickerPrefs = preferences.getFilePickerPreferences();
+        localFileBucketSelected = !filePickerPrefs.lastSelectedBucket;
+
         selectedBucket = currentBucket?.$id;
     });
 
     async function onSubmit() {
-        // since local needs to be uploaded first
+        // localfile needs to be uploaded first
         if (localFileBucketSelected) {
             await uploadFile();
         }
-        onSelect(currentFile,localFileBucketSelected);
+
+        preferences.setFilePickerPreferences({
+            lastSelectedBucket: localFileBucketSelected ? null : selectedBucket
+        });
+
+        onSelect(currentFile, localFileBucketSelected);
         closeModal();
     }
 
@@ -110,6 +119,7 @@
             localFileBucketSelected = false;
             localFile = null;
         }
+
         search.set('');
         currentBucket = bucket;
         selectedBucket = bucket?.$id ?? null;
@@ -152,10 +162,23 @@
         const response = await sdk
             .forProject(page.params.region, page.params.project)
             .storage.listBuckets();
-        const bucket = response.buckets[0] ?? null;
+
+        const filePickerPrefs = preferences.getFilePickerPreferences();
+        let preferredBucket = null;
+
+        if (filePickerPrefs.lastSelectedBucket) {
+            preferredBucket = response.buckets.find(
+                (bucket) => bucket.$id === filePickerPrefs.lastSelectedBucket
+            );
+        }
+        const bucket = preferredBucket ?? response.buckets[0] ?? null;
+
         if (bucket) {
             currentBucket = bucket;
             selectedBucket = bucket.$id;
+            if (preferredBucket) {
+                localFileBucketSelected = false;
+            }
         }
 
         return response;

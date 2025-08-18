@@ -63,7 +63,7 @@
     $: hasColumns = !!$table.columns.length;
     $: hasValidColumns = $table?.columns?.some((col) => col.status === 'available');
 
-    async function onSelect(file: Models.File, localFile=false) {
+    async function onSelect(file: Models.File, localFile = false) {
         $isCsvImportInProgress = true;
 
         try {
