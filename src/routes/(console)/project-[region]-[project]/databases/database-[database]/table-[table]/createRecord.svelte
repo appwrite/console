@@ -53,6 +53,10 @@
         };
     }
 
+    function resetCreateRow(): void {
+        createRow.set(computeInitialCreateRow());
+    }
+
     let createRow = writable<CreateRow>(computeInitialCreateRow());
 
     async function create(): Promise<boolean> {
@@ -78,7 +82,7 @@
             await invalidate(Dependencies.ROW);
 
             if (createMore) {
-                createRow.set(computeInitialCreateRow());
+                resetCreateRow();
                 existingData = null;
                 await tick();
                 focusFirstInput();
@@ -108,7 +112,7 @@
     $effect(() => {
         if (showSheet) {
             focusFirstInput();
-            createRow.set(computeInitialCreateRow());
+            resetCreateRow();
         } else {
             createMore = false;
         }
