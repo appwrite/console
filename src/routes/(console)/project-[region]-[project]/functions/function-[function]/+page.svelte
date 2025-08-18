@@ -57,8 +57,8 @@
                         text
                         event="empty_documentation"
                         ariaLabel={`create deployment`}>Documentation</Button>
-                    <CreateActionMenu let:toggle installations={data.installations}>
-                        <Button secondary on:click={toggle} event="create_deployment">
+                    <CreateActionMenu let:toggle let:disabled installations={data.installations}>
+                        <Button secondary on:click={toggle} event="create_deployment" {disabled}>
                             Create deployment
                         </Button>
                     </CreateActionMenu>
@@ -192,8 +192,15 @@
                                 text
                                 event="empty_documentation"
                                 ariaLabel={`create deployment`}>Documentation</Button>
-                            <CreateActionMenu let:toggle installations={data.installations}>
-                                <Button secondary on:click={toggle} event="create_deployment">
+                            <CreateActionMenu
+                                let:toggle
+                                let:disabled
+                                installations={data.installations}>
+                                <Button
+                                    secondary
+                                    on:click={toggle}
+                                    event="create_deployment"
+                                    {disabled}>
                                     Create deployment
                                 </Button>
                             </CreateActionMenu>
@@ -208,8 +215,8 @@
                     {columns}
                     hideView
                     analyticsSource="function_deployments">
-                    <CreateActionMenu let:toggle installations={data.installations}>
-                        <Button on:click={toggle} event="create_deployment">
+                    <CreateActionMenu let:toggle let:disabled installations={data.installations}>
+                        <Button on:click={toggle} event="create_deployment" {disabled}>
                             <Icon icon={IconPlus} size="s" slot="start" />
                             Create deployment
                         </Button>

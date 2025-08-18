@@ -7,7 +7,7 @@
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
     import { canWriteCollections } from '$lib/stores/roles';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
@@ -19,12 +19,16 @@
         {columns}
         hasSearch
         searchPlaceholder="Search by name or ID">
-        {#if $canWriteCollections}
-            <Button on:click={() => ($showCreate = true)} event="create_collection">
+        <Tooltip disabled={$canWriteCollections}>
+            <Button
+                on:click={() => ($showCreate = true)}
+                event="create_collection"
+                disabled={!$canWriteCollections}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create collection
             </Button>
-        {/if}
+            <div slot="tooltip">Your role does not allow this action</div>
+        </Tooltip>
     </ResponsiveContainerHeader>
 
     {#if data.collections.total}

@@ -7,7 +7,7 @@
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
-    import { Card, Icon, Layout, Empty as PinkEmpty } from '@appwrite.io/pink-svelte';
+    import { Card, Icon, Layout, Empty as PinkEmpty, Tooltip } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
@@ -196,16 +196,21 @@
                             text
                             event="empty_documentation"
                             size="s">Documentation</Button>
-                        {#if $canWriteCollections}
+                        <Tooltip disabled={$canWriteCollections}>
                             <CreateAttributeDropdown
                                 bind:selectedOption={selectedAttribute}
                                 bind:showCreate={showCreateAttribute}
                                 let:toggle>
-                                <Button secondary event="create_attribute" on:click={toggle}>
+                                <Button
+                                    secondary
+                                    event="create_attribute"
+                                    on:click={toggle}
+                                    disabled={!$canWriteCollections}>
                                     Create attribute
                                 </Button>
                             </CreateAttributeDropdown>
-                        {/if}
+                            <div slot="tooltip">Your role does not allow this action</div>
+                        </Tooltip>
                     </slot>
                 </PinkEmpty>
             </Card.Base>

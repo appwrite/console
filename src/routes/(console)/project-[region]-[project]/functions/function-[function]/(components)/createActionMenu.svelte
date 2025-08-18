@@ -1,7 +1,7 @@
 <script lang="ts">
     import { beforeNavigate } from '$app/navigation';
     import { canWriteFunctions } from '$lib/stores/roles';
-    import { ActionMenu, Popover } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Popover, Tooltip } from '@appwrite.io/pink-svelte';
     import CreateCli from '../(modals)/createCli.svelte';
     import CreateGit from '../(modals)/createGit.svelte';
     import CreateManual from '../(modals)/createManual.svelte';
@@ -17,9 +17,10 @@
 </script>
 
 <Popover let:toggle placement="bottom-end" padding="none">
-    {#if $canWriteFunctions}
-        <slot {toggle} />
-    {/if}
+    <Tooltip disabled={$canWriteFunctions}>
+        <slot {toggle} disabled={!$canWriteFunctions} />
+        <div slot="tooltip">Your role does not allow this action</div>
+    </Tooltip>
     <svelte:fragment slot="tooltip" let:toggle>
         <ActionMenu.Root>
             <ActionMenu.Item.Button

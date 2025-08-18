@@ -14,7 +14,7 @@
     import Table from './table.svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import EmptySearch from '$lib/components/emptySearch.svelte';
 
@@ -57,15 +57,16 @@
                 view={data.view}
                 hideColumns={!data.databases.total}
                 hideView={!data.databases.total} />
-            {#if $canWriteDatabases}
+            <Tooltip disabled={$canWriteDatabases}>
                 <Button
                     on:click={() => (showCreate = true)}
                     event="create_database"
-                    disabled={isCreationDisabled}>
+                    disabled={isCreationDisabled || !$canWriteDatabases}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create database
                 </Button>
-            {/if}
+                <div slot="tooltip">Your role does not allow this action</div>
+            </Tooltip>
         </Layout.Stack>
     </Layout.Stack>
 

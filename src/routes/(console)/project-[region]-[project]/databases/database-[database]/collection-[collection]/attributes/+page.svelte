@@ -77,9 +77,15 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Typography.Title>Attributes</Typography.Title>
-        {#if $canWriteCollections}
-            <CreateAttributeDropdown bind:selectedOption bind:showCreate />
-        {/if}
+        <Tooltip disabled={$canWriteCollections}>
+            <CreateAttributeDropdown bind:selectedOption bind:showCreate>
+                <Button event="create_attribute" disabled={!$canWriteCollections}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create attribute
+                </Button>
+            </CreateAttributeDropdown>
+            <div slot="tooltip">Your role does not allow this action</div>
+        </Tooltip>
     </Layout.Stack>
 
     {#if $attributes.length}
@@ -236,13 +242,18 @@
                     text
                     event="empty_documentation"
                     ariaLabel={`create {target}`}>Documentation</Button>
-                {#if $canWriteCollections}
+                <Tooltip disabled={$canWriteCollections}>
                     <CreateAttributeDropdown bind:selectedOption bind:showCreate let:toggle>
-                        <Button secondary event="create_attribute" on:click={toggle}>
+                        <Button
+                            secondary
+                            event="create_attribute"
+                            on:click={toggle}
+                            disabled={!$canWriteCollections}>
                             Create attribute
                         </Button>
                     </CreateAttributeDropdown>
-                {/if}
+                    <div slot="tooltip">Your role does not allow this action</div>
+                </Tooltip>
             </svelte:fragment>
         </Empty>
     {/if}

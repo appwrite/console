@@ -20,6 +20,7 @@
         Link,
         Popover,
         Table,
+        Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
     import {
@@ -59,15 +60,16 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Typography.Title>Indexes</Typography.Title>
-        {#if $canWriteCollections}
+        <Tooltip disabled={$canWriteCollections}>
             <Button
                 event="create_index"
-                disabled={!$collection?.attributes?.length}
+                disabled={!$collection?.attributes?.length || !$canWriteCollections}
                 on:click={() => (showCreateIndex = true)}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create index
             </Button>
-        {/if}
+            <div slot="tooltip">Your role does not allow this action</div>
+        </Tooltip>
     </Layout.Stack>
 
     {#if data.collection?.attributes?.length}
@@ -165,16 +167,21 @@
                     text
                     event="empty_documentation"
                     ariaLabel={`create {target}`}>Documentation</Button>
-                {#if $canWriteCollections}
+                <Tooltip disabled={$canWriteCollections}>
                     <CreateAttributeDropdown
                         bind:selectedOption={selectedAttribute}
                         bind:showCreate={showCreateAttribute}
                         let:toggle>
-                        <Button secondary event="create_attribute" on:click={toggle}>
+                        <Button
+                            secondary
+                            event="create_attribute"
+                            on:click={toggle}
+                            disabled={!$canWriteCollections}>
                             Create attribute
                         </Button>
                     </CreateAttributeDropdown>
-                {/if}
+                    <div slot="tooltip">Your role does not allow this action</div>
+                </Tooltip>
             </svelte:fragment>
         </Empty>
     {/if}

@@ -11,7 +11,7 @@
     import { type Models } from '@appwrite.io/console';
     import FailedModal from './failedModal.svelte';
     import { canWriteWebhooks } from '$lib/stores/roles';
-    import { Icon, Layout, Link, Status, Table } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Link, Status, Table, Tooltip } from '@appwrite.io/pink-svelte';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { View } from '$lib/helpers/load';
@@ -28,14 +28,16 @@
 <Container>
     <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
         <ViewSelector {columns} view={View.Table} hideView />
-        {#if $canWriteWebhooks}
+        <Tooltip disabled={$canWriteWebhooks}>
             <Button
                 href={`${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/create`}
-                event="create_webhook">
+                event="create_webhook"
+                disabled={!$canWriteWebhooks}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create webhook
             </Button>
-        {/if}
+            <div slot="tooltip">Your role does not allow this action</div>
+        </Tooltip>
     </Layout.Stack>
 
     {#if data.webhooks.total}

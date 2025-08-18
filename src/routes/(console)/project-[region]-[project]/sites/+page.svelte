@@ -11,7 +11,7 @@
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { canWriteSites } from '$lib/stores/roles.js';
-    import { Card, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Card, Icon, Layout, Typography, Tooltip } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { app } from '$lib/stores/app';
     import CreateSiteModal from './createSiteModal.svelte';
@@ -97,12 +97,17 @@
                     view={data.view}
                     hideColumns
                     hideView={!data.siteList.total} />
-                {#if $canWriteSites}
-                    <Button on:mousedown={() => (show = true)} event="create_site" size="s">
+                <Tooltip disabled={$canWriteSites}>
+                    <Button
+                        on:mousedown={() => (show = true)}
+                        event="create_site"
+                        size="s"
+                        disabled={!$canWriteSites}>
                         <Icon icon={IconPlus} slot="start" size="s" />
                         Create site
                     </Button>
-                {/if}
+                    <div slot="tooltip">Your role does not allow this action</div>
+                </Tooltip>
             </Layout.Stack>
         </Layout.Stack>
         {#if data.siteList.total}

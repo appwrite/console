@@ -214,19 +214,20 @@
                                                     text>
                                                     <span class="text">Details</span>
                                                 </Button>
-                                                {#if $canWriteFunctions}
-                                                    <ContainerButton
-                                                        title="functions"
-                                                        disabled={buttonDisabled}
-                                                        buttonType="secondary"
-                                                        buttonHref={`${base}/project-${page.params.region}-${page.params.project}/functions/create-function/template-${template.id}`}
-                                                        showIcon={false}
-                                                        buttonText="Create"
-                                                        buttonEventData={{
-                                                            source: 'functions_template'
-                                                        }}
-                                                        buttonEvent="create_function" />
-                                                {/if}
+                                                <ContainerButton
+                                                    title="functions"
+                                                    disabled={buttonDisabled || !$canWriteFunctions}
+                                                    buttonType="secondary"
+                                                    buttonHref={`${base}/project-${page.params.region}-${page.params.project}/functions/create-function/template-${template.id}`}
+                                                    showIcon={false}
+                                                    buttonText="Create"
+                                                    buttonEventData={{
+                                                        source: 'functions_template'
+                                                    }}
+                                                    buttonEvent="create_function"
+                                                    tooltipContent={!$canWriteFunctions
+                                                        ? 'Your role does not allow this action'
+                                                        : undefined} />
                                             </Layout.Stack>
                                         </Layout.Stack>
                                     </Layout.Stack>
