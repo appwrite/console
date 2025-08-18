@@ -93,20 +93,18 @@ const createUploader = () => {
                 n.files.unshift(newFile);
                 return n;
             });
-            const uploadedFile = await temporaryStorage(region, projectId).createFile(
-                {
-                    bucketId,
-                    fileId: id ?? ID.unique(),
-                    file,
-                    permissions,
-                    onProgress: ((progress) => {
-                        newFile.$id = progress.$id;
-                        newFile.progress = progress.progress;
-                        newFile.status = progress.progress === 100 ? 'success' : 'pending';
-                        updateFile(progress.$id, newFile);
-                    }) as (progress: UploadProgress) => {}
-                }
-            );
+            const uploadedFile = await temporaryStorage(region, projectId).createFile({
+                bucketId,
+                fileId: id ?? ID.unique(),
+                file,
+                permissions,
+                onProgress: ((progress) => {
+                    newFile.$id = progress.$id;
+                    newFile.progress = progress.progress;
+                    newFile.status = progress.progress === 100 ? 'success' : 'pending';
+                    updateFile(progress.$id, newFile);
+                }) as (progress: UploadProgress) => {}
+            });
             newFile.$id = uploadedFile.$id;
             newFile.progress = 100;
             newFile.status = 'success';
@@ -130,13 +128,12 @@ const createUploader = () => {
             const uploadedFile = await temporarySites(
                 page.params.region,
                 page.params.project
-            ).createDeployment(
-                siteId, code, true, undefined, undefined, undefined, (p) => {
+            ).createDeployment(siteId, code, true, undefined, undefined, undefined, (p) => {
                 newDeployment.$id = p.$id;
                 newDeployment.progress = p.progress;
                 newDeployment.status = p.progress === 100 ? 'success' : 'pending';
                 updateFile(p.$id, newDeployment);
-                return {}
+                return {};
             });
             newDeployment.$id = uploadedFile.$id;
             newDeployment.progress = 100;

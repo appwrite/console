@@ -272,7 +272,8 @@
     :global(.sub-navigation header) {
         top: 48px !important;
     }
-    .trigger {
+
+    :global(.trigger) {
         display: inline-flex;
         align-items: center;
         justify-content: center;
