@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/state';
+    import { goto, invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { Button, InputNumber, InputSelect, InputText } from '$lib/elements/forms';
@@ -63,6 +64,11 @@
 
     const addColumnDisabled = $derived(!columnList.at(-1)?.value || !columnList.at(-1)?.order);
 
+    const isOnIndexesPage = $derived(page.route.id?.endsWith('/indexes'));
+    const navigatorPathToIndexes = $derived(
+        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$table?.$id}/indexes`
+    );
+
     $effect(() => {
         if (showCreateIndex) {
             initialize();
@@ -80,15 +86,15 @@
         }
 
         try {
-            await sdk.forProject(page.params.region, page.params.project).grids.createIndex(
+            await sdk.forProject(page.params.region, page.params.project).grids.createIndex({
                 databaseId,
-                $table.$id,
+                tableId: $table.$id,
                 key,
-                selectedType,
-                columnList.map((a) => a.value),
-                columnList.map((a) => a.order),
-                columnList.map((a) => (a.length ? Number(a.length) : null))
-            );
+                type: selectedType,
+                columns: columnList.map((a) => a.value),
+                orders: columnList.map((a) => a.order),
+                lengths: columnList.map((a) => (a.length ? Number(a.length) : null))
+            });
 
             await Promise.allSettled([
                 invalidate(Dependencies.TABLE),
@@ -96,8 +102,16 @@
             ]);
 
             addNotification({
-                message: 'Creating index',
-                type: 'success'
+                message: 'Index is being created',
+                type: 'success',
+                buttons: !isOnIndexesPage
+                    ? [
+                          {
+                              name: 'View index',
+                              method: () => goto(navigatorPathToIndexes)
+                          }
+                      ]
+                    : undefined
             });
             trackEvent(Submit.IndexCreate);
             showCreateIndex = false;
@@ -179,9 +193,10 @@
                     </Button>
                 </div>
             {:else}
-                <div style:margin-top="2.05rem">
+                <div style:margin-top="27.6px" class="x-button-holder">
                     <Button
                         icon
+                        size="s"
                         secondary
                         disabled={columnList.length <= 1}
                         on:click={() => {
@@ -200,3 +215,10 @@
         </Button>
     </div>
 </Layout.Stack>
+
+<style lang="scss">
+    .x-button-holder :global(button) {
+        width: 34px;
+        height: 34px;
+    }
+</style>

@@ -46,6 +46,9 @@ type ConsolePreferencesStore = {
     columnWidths?: {
         [key: string]: TeamPreferences['widths'];
     };
+    miscellaneous?: {
+        [key: string]: string | number | boolean;
+    };
 } & { hideAiDisclaimer?: boolean };
 
 async function updateConsolePreferences(store: ConsolePreferencesStore): Promise<void> {
@@ -191,8 +194,6 @@ function createPreferences() {
                 n.tables ??= {};
 
                 n.tables[tableId] = Array.from(new Set(columns));
-                // let's not double save
-                // n.collections[tableId] = Array.from(new Set(columns));
                 return n;
             }),
 
@@ -238,8 +239,8 @@ function createPreferences() {
             });
         },
 
-        getColumnOrder(collectionId: string): TeamPreferences['order'] {
-            return teamPreferences?.columnOrder?.[collectionId] ?? [];
+        getColumnOrder(tableId: string): TeamPreferences['order'] {
+            return teamPreferences?.columnOrder?.[tableId] ?? [];
         },
 
         async saveColumnOrder(
@@ -299,6 +300,21 @@ function createPreferences() {
             });
         },
 
+        getKey<T>(key: string, _default: T): T {
+            return (preferences?.miscellaneous?.[key] ?? _default) as T;
+        },
+
+        async setKey(key: string, value: string | number | boolean) {
+            await updateAndSync((n) => {
+                if (!n?.miscellaneous) {
+                    n ??= {};
+                    n.miscellaneous ??= {};
+                }
+
+                n.miscellaneous[key] = value;
+                return n;
+            });
+        }
     };
 }
 

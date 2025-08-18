@@ -20,7 +20,8 @@
         ui = 'legacy',
         allowNoColumns = false,
         showAnyway = false,
-        children
+        children,
+        onPreferencesUpdated = null
     }: {
         columns: Writable<Column[]>;
         isCustomTable?: boolean;
@@ -28,6 +29,7 @@
         ui?: 'legacy' | 'new';
         showAnyway?: boolean;
         children: Snippet<[toggle: () => void, selectedColumnsNumber: number]>;
+        onPreferencesUpdated?: () => void;
     } = $props();
 
     let search = $state('');
@@ -60,6 +62,7 @@
         const shownColumns = $columns.filter((n) => n.hide === true).map((n) => n.id);
 
         if (isCustomTable) {
+            onPreferencesUpdated?.();
             preferences.setCustomTableColumns(page.params.table, shownColumns);
         } else {
             preferences.setColumns(shownColumns);
@@ -211,10 +214,8 @@
                                         >Deselect all</Button>
                                 </Layout.Stack>
                             {:else}
-                                <div style:padding-inline="0.6rem">
-                                    <Typography.Text>
-                                        No column named "{search}" was found
-                                    </Typography.Text>
+                                <div style:padding-inline="0.6rem" style:padding-block-end="0.5rem">
+                                    <Typography.Text>No results found</Typography.Text>
                                 </div>
                             {/if}
                         </Layout.Stack>

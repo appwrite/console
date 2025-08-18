@@ -96,7 +96,6 @@
 
     const minimumWidth = 168;
     const emptyCellsLimit = $isSmallViewport ? 12 : 18;
-    const selected = preferences.getCustomTableColumns(page.params.table);
     const SYSTEM_KEYS = new Set([
         '$tableId',
         '$databaseId'
@@ -120,6 +119,8 @@
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
+        columnsOrder.set(preferences.getColumnOrder(tableId));
+        columnsWidth.set(preferences.getColumnWidths(tableId));
 
         makeTableColumns();
         sortState.set(data.currentSort as SortState);
@@ -133,11 +134,13 @@
     onDestroy(() => ($showCreateAttributeSheet.show = false));
 
     function makeTableColumns() {
+        const selectedColumnsToHide = preferences.getCustomTableColumns(tableId);
+
         const baseColumns = $table.columns.map((col) => ({
             id: col.key,
             title: col.key,
             type: col.type as ColumnType,
-            hide: !!selected?.includes(col.key),
+            hide: !!selectedColumnsToHide?.includes(col.key),
             array: col?.array,
             width: getColumnWidth(col.key, { min: minimumWidth }),
             minimumWidth: minimumWidth,
@@ -158,7 +161,7 @@
                 icon: IconFingerPrint,
                 isEditable: false,
                 isPrimary: false,
-                hide: !!selected?.includes('$id')
+                hide: !!selectedColumnsToHide?.includes('$id')
             },
             {
                 id: '$createdAt',
@@ -169,7 +172,7 @@
                 type: 'datetime',
                 icon: IconCalendar,
                 isEditable: false,
-                hide: !!selected?.includes('$createdAt')
+                hide: !!selectedColumnsToHide?.includes('$createdAt')
             },
             {
                 id: '$updatedAt',
@@ -180,17 +183,18 @@
                 type: 'datetime',
                 icon: IconCalendar,
                 isEditable: false,
-                hide: !!selected?.includes('$updatedAt')
+                hide: !!selectedColumnsToHide?.includes('$updatedAt')
             },
             {
                 id: 'actions',
                 title: '',
-                width: getColumnWidth('actions', 40),
+                width: 40,
                 isAction: true,
                 draggable: false,
                 type: 'string',
                 resizable: false,
-                isEditable: false
+                isEditable: false,
+                hide: false
             }
         ];
 
@@ -198,32 +202,15 @@
             staticColumns[0],
             ...baseColumns,
             staticColumns[1],
-            staticColumns[2],
-            staticColumns[3]
+            staticColumns[2]
         ];
 
-        const visibleNonAction = groupedColumns.filter((c) => !c.hide && !c.isAction);
-        if (visibleNonAction.length === 1) {
-            const only = visibleNonAction[0];
-            if (typeof only.width === 'number') {
-                only.width = {
-                    min: only.width
-                };
-            }
-        }
+        const actionsColumn = staticColumns[3];
 
-        tableColumns.set(
-            reorderItems(
-                [
-                    staticColumns[0],
-                    ...baseColumns,
-                    staticColumns[1],
-                    staticColumns[2],
-                    staticColumns[3]
-                ],
-                $columnsOrder
-            )
-        );
+        const reorderedNonActions = reorderItems(groupedColumns, $columnsOrder);
+        const finalColumns = [...reorderedNonActions, actionsColumn];
+
+        tableColumns.set(finalColumns);
     }
 
     function getColumnWidth(
@@ -264,18 +251,14 @@
     }
 
     function formatArray(array: unknown[]) {
-        if (array.length === 0) return '[ ]';
+        if (array.length === 0) return 'Empty';
 
         let formattedFields: string[] = [];
         for (const item of array) {
-            if (typeof item === 'string') {
-                formattedFields.push(`"${item}"`);
-            } else {
-                formattedFields.push(`${item}`);
-            }
+            formattedFields.push(`${item}`);
         }
 
-        return `[${formattedFields.join(', ')}]`;
+        return `${formattedFields.join(', ')}`;
     }
 
     function formatColumn(column: unknown) {
@@ -341,9 +324,6 @@
                 ])
             );
         }
-
-        // trigger ui update with randomized key!
-        spreadsheetRenderKey.set(`sorted#${Date.now()}`);
 
         // save > navigate > restore!
         spreadsheetContainer.saveGridSheetScroll();
@@ -411,9 +391,11 @@
         showColumnDelete = false;
 
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .grids.deleteColumn(databaseId, tableId, $databaseColumnSheetOptions.column.key);
+            await sdk.forProject(page.params.region, page.params.project).grids.deleteColumn({
+                databaseId,
+                tableId,
+                key: $databaseColumnSheetOptions.column.key
+            });
 
             if ($columnsOrder.includes($databaseColumnSheetOptions.column.key)) {
                 const updatedOrder = $columnsOrder.filter(
@@ -532,9 +514,13 @@
                 Object.entries(row).filter(([key]) => !SYSTEM_KEYS.has(key))
             );
 
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .grids.updateRow(databaseId, tableId, row.$id, onlyData, row.$permissions);
+            await sdk.forProject(page.params.region, page.params.project).grids.updateRow({
+                databaseId,
+                tableId,
+                rowId: row.$id,
+                data: onlyData,
+                permissions: row.$permissions
+            });
 
             invalidate(Dependencies.ROW);
             trackEvent(Submit.RowUpdate);
@@ -586,6 +572,7 @@
     }
 
     async function handleGoToPage(targetPageNum: number): Promise<void> {
+        jumpToPageReactive = 0;
         if (targetPageNum < 1 || targetPageNum > totalPages) return;
 
         if (!$paginatedRows.hasPage(targetPageNum)) {
@@ -742,8 +729,8 @@
                 {#if row === null}
                     <Spreadsheet.Row.Base
                         {root}
-                        virtualItem={item}
                         {index}
+                        virtualItem={item}
                         id={`loading-${index}`}
                         select={rowSelection}>
                         {#each $tableColumns as col}
@@ -760,7 +747,9 @@
                         {index}
                         id={row?.$id}
                         virtualItem={item}
-                        select={rowSelection}>
+                        select={rowSelection}
+                        showSelectOnHover
+                        valueWithoutHover={row.$sequence}>
                         {#each $tableColumns as { id: columnId, isEditable } (columnId)}
                             {@const rowColumn = $columns.find((col) => col.key === columnId)}
                             <Spreadsheet.Cell {root} {isEditable} column={columnId}>
@@ -838,6 +827,7 @@
                                 {:else}
                                     {@const value = row[columnId]}
                                     {@const formatted = formatColumn(row[columnId])}
+                                    {@const isEmptyArray = formatted === 'Empty'}
                                     {@const isDatetimeAttribute = rowColumn.type === 'datetime'}
                                     {@const isEncryptedAttribute =
                                         isString(rowColumn) && rowColumn.encrypt}
@@ -868,6 +858,8 @@
                                         </Tooltip>
                                     {:else if formatted === 'null'}
                                         <Badge variant="secondary" content="NULL" size="xs" />
+                                    {:else if isEmptyArray}
+                                        <Badge variant="secondary" content={formatted} size="xs" />
                                     {:else}
                                         <Typography.Text truncate>
                                             {formatted}
@@ -878,7 +870,7 @@
                                 <svelte:fragment slot="cell-editor">
                                     <EditRowCell
                                         column={rowColumn}
-                                        row={paginatedRows.items[index]}
+                                        row={paginatedRows.getItemAtVirtualIndex(index)}
                                         onRowStructureUpdate={updateRowContents}
                                         on:change={(row) => paginatedRows.update(index, row.detail)}
                                         on:revert={(row) =>
@@ -985,65 +977,65 @@
     title={selectedRows.length === 1 ? 'Delete Row' : 'Delete Rows'}>
     {@const isSingle = selectedRowForDelete !== null}
 
-    <div>
+    <p>
         {#if isSingle}
-            Are you sure you want to delete this document from <b>{$table.name}</b>?
+            Are you sure you want to delete this row from <b>{$table.name}</b>?
         {:else}
             Are you sure you want to delete <b>{selectedRows.length}</b>
             {selectedRows.length > 1 ? 'rows' : 'row'} from <b>{$table.name}</b>?
         {/if}
+    </p>
 
-        {#if relatedColumns?.length}
-            <Table.Root
-                let:root
-                columns={[
-                    { id: 'relation', width: 150 },
-                    { id: 'setting', width: 150 },
-                    { id: 'desc' }
-                ]}>
-                <svelte:fragment slot="header" let:root>
-                    <Table.Header.Cell column="relation" {root}>Relation</Table.Header.Cell>
-                    <Table.Header.Cell column="setting" {root}>Setting</Table.Header.Cell>
-                    <Table.Header.Cell column="desc" {root} />
-                </svelte:fragment>
-                {#each relatedColumns as attr}
-                    <Table.Row.Base {root}>
-                        <Table.Cell column="relation" {root}>
-                            <span class="u-flex u-cross-center u-gap-8">
-                                {#if attr.twoWay}
-                                    <span class="icon-switch-horizontal"></span>
-                                {:else}
-                                    <span class="icon-arrow-sm-right"></span>
-                                {/if}
-                                <span data-private>{attr.key}</span>
-                            </span>
-                        </Table.Cell>
-                        <Table.Cell column="setting" {root}>
-                            {attr.onDelete}
-                        </Table.Cell>
-                        <Table.Cell column="desc" {root}>
-                            {Deletion[attr.onDelete]}
-                        </Table.Cell>
-                    </Table.Row.Base>
-                {/each}
-            </Table.Root>
-            <div class="u-flex u-flex-vertical u-gap-16">
-                <Alert>To change the selection edit the relationship settings.</Alert>
-                <ul>
-                    <InputChoice
-                        id="delete"
-                        label="Delete"
-                        showLabel={false}
-                        bind:value={deleteConfirmationChecked}>
-                        Delete {isSingle ? 'document' : 'documents'} from
-                        <span data-private>{$table.name}</span>
-                    </InputChoice>
-                </ul>
-            </div>
-        {:else}
-            <p class="u-bold">This action is irreversible.</p>
-        {/if}
-    </div>
+    {#if relatedColumns?.length}
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'relation', width: 150 },
+                { id: 'setting', width: 150 },
+                { id: 'desc' }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="relation" {root}>Relation</Table.Header.Cell>
+                <Table.Header.Cell column="setting" {root}>Setting</Table.Header.Cell>
+                <Table.Header.Cell column="desc" {root} />
+            </svelte:fragment>
+            {#each relatedColumns as attr}
+                <Table.Row.Base {root}>
+                    <Table.Cell column="relation" {root}>
+                        <span class="u-flex u-cross-center u-gap-8">
+                            {#if attr.twoWay}
+                                <span class="icon-switch-horizontal"></span>
+                            {:else}
+                                <span class="icon-arrow-sm-right"></span>
+                            {/if}
+                            <span data-private>{attr.key}</span>
+                        </span>
+                    </Table.Cell>
+                    <Table.Cell column="setting" {root}>
+                        {attr.onDelete}
+                    </Table.Cell>
+                    <Table.Cell column="desc" {root}>
+                        {Deletion[attr.onDelete]}
+                    </Table.Cell>
+                </Table.Row.Base>
+            {/each}
+        </Table.Root>
+        <div class="u-flex u-flex-vertical u-gap-16">
+            <Alert>To change the selection edit the relationship settings.</Alert>
+            <ul>
+                <InputChoice
+                    id="delete"
+                    label="Delete"
+                    showLabel={false}
+                    bind:value={deleteConfirmationChecked}>
+                    Delete {isSingle ? 'document' : 'documents'} from
+                    <span data-private>{$table.name}</span>
+                </InputChoice>
+            </ul>
+        </div>
+    {:else}
+        <p class="u-bold">This action is irreversible.</p>
+    {/if}
 </Confirm>
 
 <Confirm
@@ -1087,7 +1079,7 @@
         }
 
         /* TODO: not good! */
-        & :global(input) {
+        & :global(input[type='text']) {
             padding-inline: 8px !important;
         }
 
