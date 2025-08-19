@@ -167,18 +167,18 @@
                 </ul>
             </div>
             <div
-                class="logo u-flex u-gap-16 u-margin-inline-auto is-only-mobile u-margin-block-start-32">
+                class="logo u-flex u-gap-16 u-margin-inline-auto is-only-mobile u-margin-block-start-32 mobile-logo">
                 <a href={base}>
                     {#if $app.themeInUse === 'dark'}
                         <img
                             src={AppwriteLogoDark}
-                            width="93"
+                            width="160"
                             class="u-block u-only-dark"
                             alt="Appwrite Logo" />
                     {:else}
                         <img
                             src={AppwriteLogoLight}
-                            width="93"
+                            width="160"
                             class="u-block u-only-light"
                             alt="Appwrite Logo" />
                     {/if}
@@ -358,5 +358,14 @@
         @media #{devices.$break1} {
             padding-block-start: 5rem;
         }
+    }
+
+    .mobile-logo {
+        position: fixed;
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        margin-block-start: 0 !important;
     }
 </style>
