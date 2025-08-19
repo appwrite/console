@@ -26,7 +26,7 @@
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type ComponentProps, onDestroy, tick } from 'svelte';
+    import { type ComponentProps, onDestroy } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import EmptySheet from '../layout/emptySheet.svelte';
     import SpreadsheetContainer from '../layout/spreadsheet.svelte';
@@ -46,7 +46,6 @@
 
     let selectedIndexes = $state([]);
     let createIndex: CreateIndex;
-    let spreadsheetContainer: SpreadsheetContainer = $state(null);
 
     let error = $state('');
     let showFailed = $state(false);
@@ -83,13 +82,6 @@
             ? 0
             : emptyCellsLimit - data.table.indexes.length
     );
-
-    $effect(() => {
-        if (data.table.indexes) {
-            /* up-to-date height */
-            tick().then(() => spreadsheetContainer?.resizeSheet());
-        }
-    });
 </script>
 
 <Container
@@ -113,7 +105,7 @@
 <div class="databases-spreadsheet">
     {#if data.table?.columns?.length}
         {#if data.table.indexes.length}
-            <SpreadsheetContainer bind:this={spreadsheetContainer}>
+            <SpreadsheetContainer>
                 <Spreadsheet.Root
                     let:root
                     {columns}

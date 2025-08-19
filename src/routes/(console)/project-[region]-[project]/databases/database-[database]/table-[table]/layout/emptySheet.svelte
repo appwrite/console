@@ -18,7 +18,7 @@
         spreadsheetLoading,
         expandTabs
     } from '../store';
-    import { onMount, tick } from 'svelte';
+    import { onMount } from 'svelte';
     import SpreadsheetContainer from './spreadsheet.svelte';
 
     type Mode = 'rows' | 'indexes';
@@ -50,15 +50,9 @@
     let headerElement: HTMLElement | null = null;
     let dynamicOverlayHeight = $state('70.5vh');
 
-    let spreadsheetRootContainer: SpreadsheetContainer;
-
     const baseColProps = { draggable: false, resizable: false };
 
     const updateOverlayHeight = () => {
-        tick().then(() => {
-            spreadsheetRootContainer?.resizeSheet(false, true);
-        });
-
         if (!spreadsheetContainer) return;
 
         if (!headerElement || !headerElement.isConnected) {
@@ -145,18 +139,17 @@
 
     const spreadsheetColumns = $derived(mode === 'rows' ? getRowColumns() : getIndexesColumns());
 
-    const fixedHeight = $derived($expandTabs ? 'calc(100% - 89px)' : '100%');
     const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
 </script>
 
 <svelte:window on:resize={updateOverlayHeight} />
 
 <div class="spreadsheet-container-outer" data-mode={mode} bind:this={spreadsheetContainer}>
-    <SpreadsheetContainer bind:this={spreadsheetRootContainer}>
+    <SpreadsheetContainer>
         <Spreadsheet.Root
             {emptyCells}
             allowSelection
-            height={fixedHeight}
+            height="100%"
             columns={spreadsheetColumns}
             loading={$spreadsheetLoading}
             bottomActionClick={() => {
@@ -271,23 +264,6 @@
         position: fixed;
         overflow: hidden;
 
-        &[data-mode='indexes'] {
-            position: relative;
-
-            & :global(.spreadsheet-container) {
-                max-height: 70vh;
-                overflow-y: hidden;
-
-                @media (max-width: 768px) {
-                    height: 50vh;
-                }
-            }
-        }
-
-        @media (max-width: 768px) {
-            position: unset;
-        }
-
         &[data-mode='rows'] {
             & :global([role='rowheader'] :nth-last-child(2) [role='presentation']) {
                 display: none;
@@ -326,7 +302,7 @@
             #ffffff 100%
         );
         z-index: 20;
-        display: none;
+        display: flex;
         justify-content: center;
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
 

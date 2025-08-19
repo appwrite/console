@@ -70,7 +70,7 @@
     $effect(() => {
         if (nonSheetPages) expandTabs.set(true);
         else {
-            expandTabs.set(preferences.isTableHeaderExpanded(tableId));
+            expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
         }
     });
 </script>

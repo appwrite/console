@@ -140,7 +140,7 @@
                             disabled={!(hasColumns && hasValidColumns)}
                             on:click={() => {
                                 $expandTabs = !$expandTabs;
-                                preferences.setTableHeaderExpanded($table.$id, $expandTabs);
+                                preferences.setKey('tableHeaderExpanded', $expandTabs);
                             }}>
                             <Icon icon={!$expandTabs ? IconChevronDown : IconChevronUp} size="s" />
                         </Button>

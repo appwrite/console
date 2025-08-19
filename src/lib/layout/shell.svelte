@@ -135,10 +135,13 @@
 </script>
 
 <svelte:window on:resize={handleResize} />
+
 <svelte:body use:style={$bodyStyle} />
+
 {#if $activeHeaderAlert?.show && !$isNewWizardStatusOpen}
     <svelte:component this={$activeHeaderAlert.component} />
 {/if}
+
 <main
     class:has-alert={$activeHeaderAlert?.show}
     class:is-open={$showSubNavigation}
@@ -165,7 +168,9 @@
         class:no-sidebar={!showSideNavigation}>
         <section class="main-content" data-test={showSideNavigation}>
             {#if $page.data?.header}
-                <svelte:component this={$page.data.header} />
+                <div class="layout-header">
+                    <svelte:component this={$page.data.header} />
+                </div>
             {/if}
             <slot />
             {#if showFooter}

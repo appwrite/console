@@ -182,3 +182,5 @@ export const PROHIBITED_ROW_KEYS = [
     '$createdAt',
     '$updatedAt'
 ];
+
+export const sheetHeightStore = writable('74.5vh');

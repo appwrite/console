@@ -31,9 +31,6 @@ type ConsolePreferencesStore = {
     tables?: {
         [key: string]: ConsolePreferences['columns'];
     };
-    tableHeaderExpanded?: {
-        [key: string]: boolean;
-    };
     displayNames?: {
         [key: string]: TeamPreferences['names'];
     };
@@ -284,22 +281,6 @@ function createPreferences() {
             await sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,
                 prefs: teamPreferences
-            });
-        },
-
-        isTableHeaderExpanded(tableId: string): boolean {
-            return preferences.tableHeaderExpanded?.[tableId] ?? true;
-        },
-
-        async setTableHeaderExpanded(tableId: string, expanded: boolean) {
-            await updateAndSync((n) => {
-                if (!n?.tableHeaderExpanded) {
-                    n ??= {};
-                    n.tableHeaderExpanded ??= {};
-                }
-
-                n.tableHeaderExpanded[tableId] = expanded;
-                return n;
             });
         },
 

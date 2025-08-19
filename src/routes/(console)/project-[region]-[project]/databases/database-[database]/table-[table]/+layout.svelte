@@ -75,10 +75,8 @@
      */
     let isWaterfallFromFaker = false;
 
-    const tableId = page.params.table;
-
     onMount(() => {
-        expandTabs.set(preferences.isTableHeaderExpanded(tableId));
+        expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
 
         return realtime
             .forProject(page.params.region, page.params.project)

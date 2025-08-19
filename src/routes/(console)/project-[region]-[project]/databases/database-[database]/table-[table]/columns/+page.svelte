@@ -109,7 +109,6 @@
 
     let showEdit = $state(false);
     let editColumn: EditColumn;
-    let spreadsheetContainer: SpreadsheetContainer;
 
     const columnFormatIcon = {
         ip: IconLocationMarker,
@@ -157,13 +156,6 @@
     onDestroy(() => ($showCreateAttributeSheet.show = false));
 
     $effect(() => {
-        if (updatedColumnsForSheet) {
-            /* up-to-date height */
-            tick().then(() => spreadsheetContainer?.resizeSheet());
-        }
-    });
-
-    $effect(() => {
         if (!$showCreateIndexSheet.show && $showCreateIndexSheet.column) {
             const columnKey = $showCreateIndexSheet.column;
 
@@ -196,7 +188,7 @@
 </Container>
 
 <div class="databases-spreadsheet">
-    <SpreadsheetContainer bind:this={spreadsheetContainer}>
+    <SpreadsheetContainer>
         <Spreadsheet.Root
             let:root
             allowSelection

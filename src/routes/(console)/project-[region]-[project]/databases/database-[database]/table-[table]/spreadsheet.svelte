@@ -9,7 +9,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import { type Models, Query } from '@appwrite.io/console';
-    import { type ComponentType, onDestroy, onMount, tick } from 'svelte';
+    import { type ComponentType, onDestroy, onMount } from 'svelte';
     import type { PageData } from './$types';
     import { isRelationship, isRelationshipToMany, isString } from './rows/store';
     import {
@@ -657,17 +657,12 @@
         makeTableColumns();
     }
 
-    $: {
-        /* up-to-date height */
-        tick().then(() => spreadsheetContainer?.resizeSheet());
-    }
-
     $: totalPages = Math.ceil($rows.total / SPREADSHEET_PAGE_LIMIT) || 1;
 
     $: rowSelection = !$spreadsheetLoading && !$paginatedRowsLoading ? true : ('disabled' as const);
 </script>
 
-<SpreadsheetContainer observeExpand bind:this={spreadsheetContainer}>
+<SpreadsheetContainer bind:this={spreadsheetContainer}>
     {#key $spreadsheetRenderKey}
         <Spreadsheet.Root
             height="100%"
