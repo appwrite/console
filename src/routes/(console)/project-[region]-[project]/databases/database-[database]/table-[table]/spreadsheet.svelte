@@ -690,8 +690,7 @@
             bottomActionTooltip={{
                 text: 'Create row',
                 placement: 'top-end'
-            }}
-        >
+            }}>
             <svelte:fragment slot="header" let:root>
                 {#each $tableColumns as column (column.id)}
                     {#if column.isAction}
@@ -710,9 +709,7 @@
                                     <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                                 </Button.Button>
 
-                                <span slot="tooltip">
-                                    Create column
-                                </span>
+                                <span slot="tooltip"> Create column </span>
                             </Tooltip>
                         </Spreadsheet.Header.Cell>
                     {:else}
