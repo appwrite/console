@@ -252,7 +252,7 @@
                 <Typography.Text>
                     The import encountered errors. Review the details below.
                 </Typography.Text>
-                <div style="max-inline-size: 524px" class="wrapped-code-block-for-multi-line">
+                <div style="max-inline-size: 800px" class="wrapped-code-block-for-multi-line">
                     <Code language="json" code={parsedErrors.join('\n\n')} withCopy allowScroll />
                 </div>
             </Layout.Stack>
