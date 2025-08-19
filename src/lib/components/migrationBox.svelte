@@ -11,6 +11,7 @@
 </script>
 
 <script lang="ts">
+    import { Modal, Code } from '$lib/components';
     let migration: Models.Migration;
     type Counter = {
         pending: number;
@@ -60,6 +61,15 @@
                 }
             });
     });
+
+    let showDetails = false;
+    $: parsedErrors = (migration?.errors || []).map((e) => {
+        try {
+            return JSON.stringify(JSON.parse(e as unknown as string), null, 2);
+        } catch {
+            return typeof e === 'string' ? (e as string) : JSON.stringify(e, null, 2);
+        }
+    });
 </script>
 
 {#if $showMigrationBox && migration}
@@ -85,7 +95,29 @@
                     class:is-danger={migration.status === 'failed'}
                     style="--graph-size:{percentage}%">
                 </div>
+                {#if migration.status === 'failed' && migration.errors?.length}
+                    <div class="u-flex u-gap-8 u-cross-center u-padding-block-8">
+                        <span
+                            class="icon-exclamation-circle u-font-size-14"
+                            aria-hidden="true"
+                            style="color:hsl(var(--color-danger-100));"></span>
+                        <span>
+                            There was an import issue.
+                            <button
+                                type="button"
+                                class="u-cursor-pointer u-underline"
+                                on:click={() => (showDetails = true)}>
+                                More details
+                            </button>
+                        </span>
+                    </div>
+                {/if}
             </section>
+            <Modal title="Import error" bind:show={showDetails} hideFooter>
+                <div style="max-inline-size: 524px" class="wrapped-code-block-for-multi-line">
+                    <Code language="json" code={parsedErrors.join('\n\n')} withCopy allowScroll />
+                </div>
+            </Modal>
         </div>
     </section>
 {/if}
