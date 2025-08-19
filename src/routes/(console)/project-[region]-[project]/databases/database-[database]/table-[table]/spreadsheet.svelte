@@ -686,23 +686,34 @@
             itemsPerPage={SPREADSHEET_PAGE_LIMIT}
             loadNextPage={loadPage}
             loadPreviousPage={loadPage}
-            goToPage={handleGoToPage}>
+            goToPage={handleGoToPage}
+            bottomActionTooltip={{
+                text: 'Create row',
+                placement: 'top-end'
+            }}
+        >
             <svelte:fragment slot="header" let:root>
                 {#each $tableColumns as column (column.id)}
                     {#if column.isAction}
                         <Spreadsheet.Header.Cell column="actions" {root}>
-                            <Button.Button
-                                icon
-                                variant="extra-compact"
-                                on:click={() => {
-                                    $showCreateAttributeSheet.show = true;
-                                    $showCreateAttributeSheet.column = null;
-                                    $showCreateAttributeSheet.title = 'Create column';
-                                    $showCreateAttributeSheet.columns = $tableColumns;
-                                    $showCreateAttributeSheet.columnsOrder = $columnsOrder;
-                                }}>
-                                <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
-                            </Button.Button>
+                            <Tooltip>
+                                <Button.Button
+                                    icon
+                                    variant="extra-compact"
+                                    on:click={() => {
+                                        $showCreateAttributeSheet.show = true;
+                                        $showCreateAttributeSheet.column = null;
+                                        $showCreateAttributeSheet.title = 'Create column';
+                                        $showCreateAttributeSheet.columns = $tableColumns;
+                                        $showCreateAttributeSheet.columnsOrder = $columnsOrder;
+                                    }}>
+                                    <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
+                                </Button.Button>
+
+                                <span slot="tooltip">
+                                    Create column
+                                </span>
+                            </Tooltip>
                         </Spreadsheet.Header.Cell>
                     {:else}
                         <SheetOptions
