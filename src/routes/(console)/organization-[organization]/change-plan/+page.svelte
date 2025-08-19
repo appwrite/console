@@ -150,8 +150,7 @@
             await goto(previousPage);
             addNotification({
                 type: 'success',
-                isHtml: true,
-                message: `<b>${$organization.name}</b> plan has been successfully updated.`
+                message: `${$organization.name} plan has been successfully updated.`
             });
 
             trackEvent(Submit.OrganizationDowngrade, {
