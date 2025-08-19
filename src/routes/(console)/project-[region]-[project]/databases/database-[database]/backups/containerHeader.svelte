@@ -41,7 +41,12 @@
 
         {#if title === 'Policies' && policiesCreated >= maxPolicies}
             <div style:height="40px;" style:padding-block-start="4px">
-                <DropList bind:show={showDropdown} width="16">
+                <DropList
+                    bind:show={showDropdown}
+                    width="16"
+                    noArrow
+                    placement="bottom-start"
+                    class="gap-popover policies-popover">
                     {#if $organization?.billingPlan === BillingPlan.PRO}
                         <Tag
                             size="s"
@@ -93,5 +98,16 @@
 <style>
     .is-disabled {
         opacity: 0.5;
+    }
+    :global(.drop.gap-popover) {
+        margin-block-start: 6px;
+    }
+    :global(.drop.policies-popover .drop-section) {
+        padding-block: var(--space-5, 12px);
+        padding-inline: var(--space-6, 16px);
+    }
+    :global(.drop.policies-popover .drop-list) {
+        padding: 0;
+        margin: 0;
     }
 </style>
