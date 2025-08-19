@@ -235,7 +235,7 @@
         {/if}
 
         <div class="menu" use:melt={$menuOrganizations}>
-            <Card.Base padding="xxxs" shadow={true}>
+            <Card.Base padding="none" shadow={true}>
                 {#if selectedOrg}
                     <div use:melt={$itemOrganizations}>
                         <ActionMenu.Root>
@@ -249,17 +249,18 @@
 
                         <div use:melt={$subTriggerOrganizations}>
                             <ActionMenu.Root>
-                                <ActionMenu.Item.Button trailingIcon={IconChevronRight}
+                                <ActionMenu.Item.Button size="m" trailingIcon={IconChevronRight}
                                     >Switch organization</ActionMenu.Item.Button>
                             </ActionMenu.Root>
                         </div>
                         <div class="menu subMenu" use:melt={$subMenuOrganizations}>
-                            <Card.Base padding="xxxs" shadow={true}>
+                            <Card.Base padding="none" shadow={true}>
                                 <div use:melt={$radioGroupOrganizations}>
                                     {#each organizations as organization}
                                         <div use:melt={$itemOrganizations}>
                                             <ActionMenu.Root>
                                                 <ActionMenu.Item.Anchor
+                                                    size="m"
                                                     href={`${base}/organization-${organization?.$id}`}
                                                     >{organization.name}</ActionMenu.Item.Anchor>
                                             </ActionMenu.Root>
@@ -269,6 +270,7 @@
                                     <div use:melt={$itemOrganizations}>
                                         <ActionMenu.Root>
                                             <ActionMenu.Item.Button
+                                                size="m"
                                                 leadingIcon={IconPlusSm}
                                                 on:click={createOrg}
                                                 >Create organization</ActionMenu.Item.Button
@@ -282,6 +284,7 @@
                         <div use:melt={$itemOrganizations}>
                             <ActionMenu.Root>
                                 <ActionMenu.Item.Button
+                                    size="m"
                                     leadingIcon={IconPlusSm}
                                     on:click={createOrg}>Create organization</ActionMenu.Item.Button
                                 ></ActionMenu.Root>
@@ -292,6 +295,7 @@
                         <div use:melt={$itemOrganizations}>
                             <ActionMenu.Root>
                                 <ActionMenu.Item.Anchor
+                                    size="m"
                                     href={`${base}/organization-${organization?.$id}`}
                                     >{organization.name}</ActionMenu.Item.Anchor
                                 ></ActionMenu.Root>
@@ -300,8 +304,10 @@
                     <div class="separator" use:melt={$separatorOrganizations}></div>
                     <div use:melt={$itemOrganizations}>
                         <ActionMenu.Root>
-                            <ActionMenu.Item.Button leadingIcon={IconPlusSm} on:click={createOrg}
-                                >Create organization</ActionMenu.Item.Button
+                            <ActionMenu.Item.Button
+                                size="m"
+                                leadingIcon={IconPlusSm}
+                                on:click={createOrg}>Create organization</ActionMenu.Item.Button
                             ></ActionMenu.Root>
                     </div>
                 {/if}
@@ -331,7 +337,7 @@
             {/if}
 
             <div class="menu" use:melt={$menuProjects}>
-                <Card.Base padding="xxxs" shadow={true}>
+                <Card.Base padding="none" shadow={true}>
                     {#if isLoadingProjects}
                         <div style:margin-inline="0.25rem" style:margin-block="0.25rem">
                             <Layout.Stack gap="s">
@@ -346,6 +352,7 @@
                                 <div use:melt={$itemProjects}>
                                     <ActionMenu.Root>
                                         <ActionMenu.Item.Anchor
+                                            size="m"
                                             href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
                                             <span class="projectName dropdown">{project.name}</span>
                                         </ActionMenu.Item.Anchor>
@@ -355,6 +362,7 @@
                                 <div use:melt={$itemProjects}>
                                     <ActionMenu.Root>
                                         <ActionMenu.Item.Anchor
+                                            size="m"
                                             href={`${base}/organization-${selectedOrg.$id}`}>
                                             All projects
                                         </ActionMenu.Item.Anchor>
@@ -367,6 +375,7 @@
                     <div use:melt={$itemProjects}>
                         <ActionMenu.Root>
                             <ActionMenu.Item.Anchor
+                                size="m"
                                 leadingIcon={IconPlusSm}
                                 href={`${base}/organization-${selectedOrg?.$id}?create-project`}>
                                 Create project
