@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { Pill } from '$lib/elements';
     import { DropList } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -41,12 +40,12 @@
         {#if title === 'Policies' && policiesCreated >= maxPolicies}
             <div style:height="40px;" style:padding-block-start="4px">
                 <DropList bind:show={showDropdown} width="16">
-                    <Pill disabled={buttonDisabled} button on:click={() => (showDropdown = true)}>
-                        <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
-                            <Icon icon={IconInfo} size="s" />
-                            {policiesCreated}/{maxPolicies} created
-                        </Layout.Stack>
-                    </Pill>
+                    <Badge
+                        variant="secondary"
+                        content={`${policiesCreated}/${maxPolicies} created`}
+                        on:click={() => (showDropdown = true)}>
+                        <Icon icon={IconInfo} size="s" slot="start" />
+                    </Badge>
                     <svelte:fragment slot="list">
                         <slot name="tooltip">
                             <span>

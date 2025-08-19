@@ -27,6 +27,7 @@
     import { PlatformType } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import { app } from '$lib/stores/app';
+    import { project } from '../../store';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -37,9 +38,12 @@
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-ios\ncd starter-for-ios\n';
 
+    const baseConfig = `APPWRITE_PROJECT_ID: "${projectId}"
+APPWRITE_PROJECT_NAME: "${$project.name}"`;
+
     const updateConfigCode = isCloud
-        ? `APPWRITE_PROJECT_ID: "${projectId}"`
-        : `APPWRITE_PROJECT_ID: "${projectId}"
+        ? baseConfig
+        : `${baseConfig}
 APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
 
@@ -68,6 +72,12 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
             trackEvent(Submit.PlatformCreate, {
                 type: platform
             });
+
+            addNotification({
+                type: 'success',
+                message: 'Platform created.'
+            });
+
             invalidate(Dependencies.PROJECT);
             invalidate(Dependencies.PLATFORMS);
         } catch (error) {
@@ -188,7 +198,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
 
         <!-- Step Three -->
         {#if isPlatformCreated}
-            <Fieldset legend="Clone starter">
+            <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
@@ -268,7 +278,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
                 secondary
                 disabled={isCreatingPlatform}
                 href={location.pathname}>
-                Go to dashboard
+                Skip, go to dashboard
             </Button>
         {/if}
     </svelte:fragment>

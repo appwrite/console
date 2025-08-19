@@ -29,12 +29,9 @@
             direction="row"
             alignItems="center"
             gap={$isSmallViewport ? 'm' : 'l'}
-            inline={$isTabletViewport}
             justifyContent="flex-start">
             <Typography.Caption variant="400">
-                <span style:white-space="nowrap">
-                    ⓒ {currentYear} Appwrite. All rights reserved.
-                </span>
+                ⓒ {currentYear} Appwrite. All rights reserved.
             </Typography.Caption>
             <span class="divider-wrapper">
                 <Divider vertical />
@@ -62,52 +59,37 @@
                 </Button.Anchor>
             </Layout.Stack>
         </Layout.Stack>
-        {#if isCloud && $isSmallViewport}
-            <div class="extra-margin">
-                <Layout.Stack direction="row" justifyContent={'flex-start'} alignItems="center">
-                    {#if $version}
-                        {#if isCloud}
-                            <Icon size="s" icon={IconCloud} />
-                        {/if}
-                        <Link.Anchor
-                            size="s"
-                            variant="quiet"
-                            href="https://github.com/appwrite/appwrite/releases"
-                            aria-label="Appwrite releases on Github"
-                            target="_blank"
-                            rel="noreferrer">
-                            Version {$version}
-                        </Link.Anchor>
-                        <span class="divider-wrapper">
-                            <Divider vertical />
-                        </span>
-                    {/if}
-                    <Badge size="xs" variant="secondary" content="BETA" />
-                </Layout.Stack>
-            </div>
-        {/if}
+
         <Layout.Stack
             direction="row"
             justifyContent={$isSmallViewport ? 'flex-start' : 'flex-end'}
-            alignItems="center">
-            {#if isCloud}
-                {#if !$isSmallViewport}<Badge size="xs" variant="secondary" content="BETA" /><Icon
+            alignItems="center"
+            wrap={$isSmallViewport ? 'wrap' : 'normal'}>
+            {#if !$isSmallViewport}
+                {#if isCloud}
+                    <Badge
+                        size="xs"
+                        type="success"
+                        variant="secondary"
+                        content="Generally Available"
+                        style="white-space: nowrap;" />
+                    <Icon size="s" icon={IconCloud} />
+                {/if}
+
+                {#if $version}
+                    <Link.Anchor
                         size="s"
-                        icon={IconCloud} />
-                    {#if $version}
-                        <Link.Anchor
-                            size="s"
-                            variant="quiet"
-                            href="https://github.com/appwrite/appwrite/releases"
-                            aria-label="Appwrite releases on Github"
-                            target="_blank"
-                            rel="noreferrer">
-                            Version {$version}
-                        </Link.Anchor>
-                        <span class="divider-wrapper">
-                            <Divider vertical />
-                        </span>
-                    {/if}
+                        variant="quiet"
+                        href="https://github.com/appwrite/appwrite/releases"
+                        aria-label="Appwrite releases on Github"
+                        target="_blank"
+                        rel="noreferrer"
+                        style="white-space: nowrap;">
+                        Version {$version}
+                    </Link.Anchor>
+                    <span class="divider-wrapper">
+                        <Divider vertical />
+                    </span>
                 {/if}
             {/if}
 
@@ -153,6 +135,32 @@
                     rel="noreferrer">
                     Cookies
                 </Link.Anchor>
+            {/if}
+            {#if $isSmallViewport}
+                {#if $version}
+                    <span class="divider-wrapper">
+                        <Divider vertical />
+                    </span>
+                    <Link.Anchor
+                        size="s"
+                        variant="quiet"
+                        href="https://github.com/appwrite/appwrite/releases"
+                        aria-label="Appwrite releases on Github"
+                        target="_blank"
+                        rel="noreferrer"
+                        style="white-space: nowrap;">
+                        Version {$version}
+                    </Link.Anchor>
+                    {#if isCloud}
+                        <Icon size="s" icon={IconCloud} />
+                        <Badge
+                            size="xs"
+                            type="success"
+                            variant="secondary"
+                            content="Generally Available"
+                            style="white-space: nowrap;" />
+                    {/if}
+                {/if}
             {/if}
         </Layout.Stack>
     </Layout.Stack>

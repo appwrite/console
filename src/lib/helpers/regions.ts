@@ -6,6 +6,7 @@ type RegionOption = {
     value: string;
     disabled: boolean;
     leadingHtml: string;
+    badge?: string;
 };
 
 export function filterRegions(regions: Models.ConsoleRegion[]): RegionOption[] {
@@ -22,6 +23,7 @@ export function filterRegions(regions: Models.ConsoleRegion[]): RegionOption[] {
             label: region.name,
             value: region.$id,
             disabled: region.disabled || !region.available,
-            leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`
+            leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
+            badge: region.disabled || !region.available ? 'Coming soon' : undefined
         }));
 }

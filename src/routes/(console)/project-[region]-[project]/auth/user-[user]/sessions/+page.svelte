@@ -1,6 +1,6 @@
 <script lang="ts">
     import { EmptySearch } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Badge } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import {
         TableBody,
@@ -77,7 +77,10 @@
                                     {session.osVersion}
                                 </p>
                                 {#if session.current}
-                                    <Pill success>current session</Pill>
+                                    <Badge
+                                        variant="secondary"
+                                        type="success"
+                                        content="current session" />
                                 {/if}
                             </div>
                         </TableCell>
