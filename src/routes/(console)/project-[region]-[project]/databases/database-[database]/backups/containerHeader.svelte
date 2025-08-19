@@ -41,6 +41,7 @@
             <div style:height="40px;" style:padding-block-start="4px">
                 <DropList bind:show={showDropdown} width="16">
                     <Badge
+                        style="white-space: nowrap; max-width: none;"
                         variant="secondary"
                         content={`${policiesCreated}/${maxPolicies} created`}
                         on:click={() => (showDropdown = true)}>
