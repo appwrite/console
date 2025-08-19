@@ -46,7 +46,10 @@
                     width="16"
                     noArrow
                     placement="bottom-start"
-                    class="gap-popover policies-popover">
+                    gap="6px"
+                    paddingBlock="var(--space-5, 12px)"
+                    paddingInline="var(--space-6, 16px)"
+                    resetListPadding>
                     {#if $organization?.billingPlan === BillingPlan.PRO}
                         <Tag
                             size="s"
@@ -98,16 +101,5 @@
 <style>
     .is-disabled {
         opacity: 0.5;
-    }
-    :global(.drop.gap-popover) {
-        margin-block-start: 6px;
-    }
-    :global(.drop.policies-popover .drop-section) {
-        padding-block: var(--space-5, 12px);
-        padding-inline: var(--space-6, 16px);
-    }
-    :global(.drop.policies-popover .drop-list) {
-        padding: 0;
-        margin: 0;
     }
 </style>
