@@ -292,6 +292,13 @@
         }
     }
 
+    /* mobile only: remove top padding toeliminate extra space */
+    @media #{devices.$break1} {
+        .side-default {
+            padding-block-start: 0;
+        }
+    }
+
     /* for smaller screens */
     @media #{devices.$break2open} {
         .side-default {
