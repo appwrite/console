@@ -13,27 +13,17 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
     const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
-    const grids = sdk.forProject(params.region, params.project).grids;
-
-    const [tables, tablesForSubNavigation] = await Promise.all([
-        grids.listTables({
-            databaseId: params.database,
-            queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-            search: search || undefined
-        }),
-
-        grids.listTables({
-            databaseId: params.database,
-            queries: [Query.orderDesc('')]
-        })
-    ]);
+    const tables = await sdk.forProject(params.region, params.project).grids.listTables({
+        databaseId: params.database,
+        queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+        search: search || undefined
+    });
 
     return {
         offset,
         limit,
         search,
         view,
-        tables,
-        tablesForSubNavigation
+        tables
     };
 };

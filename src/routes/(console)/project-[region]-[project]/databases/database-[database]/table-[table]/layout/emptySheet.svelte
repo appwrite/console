@@ -144,7 +144,10 @@
 
 <svelte:window on:resize={updateOverlayHeight} />
 
-<div class="spreadsheet-container-outer" data-mode={mode} bind:this={spreadsheetContainer}>
+<div
+    class="databases-spreadsheet spreadsheet-container-outer"
+    data-mode={mode}
+    bind:this={spreadsheetContainer}>
     <SpreadsheetContainer>
         <Spreadsheet.Root
             {emptyCells}
@@ -338,14 +341,21 @@
     }
 
     .empty-actions {
-        bottom: 30%;
+        left: 50%;
+        bottom: 35%;
         position: fixed;
-        transform: translateX(-40%);
 
-        @media (min-width: 1024px) {
-            left: 50%;
+        @media (max-width: 1024px) {
+            left: unset;
+            bottom: 30%;
+        }
+
+        @media (min-width: 1280px) {
+            bottom: 37.5%;
+        }
+
+        @media (min-width: 1440px) {
             bottom: 40%;
-            transform: unset !important;
         }
     }
 </style>
