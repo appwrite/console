@@ -14,8 +14,6 @@
     import { type Attributes, collection, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { flags } from '$lib/flags';
-
     export let showCreateIndex = false;
     export let externalAttribute: Attributes = null;
 
@@ -38,8 +36,6 @@
         }));
 
     let attributeList = [{ value: '', order: '', length: null }];
-
-    const showLengths = flags.showIndexLengths(page.data);
 
     function generateIndexKey() {
         let indexKeys = $indexes.map((index) => index.key);
@@ -152,7 +148,7 @@
                     placeholder="Select Order" />
 
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
-                    {#if selectedType === IndexType.Key && showLengths}
+                    {#if selectedType === IndexType.Key}
                         <InputNumber
                             id={`length-${i}`}
                             label={i === 0 ? 'Length' : undefined}
