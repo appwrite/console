@@ -339,7 +339,7 @@
         showDelete = false;
         try {
             if (selectedRowForDelete) {
-                await sdk.forProject(page.params.region, page.params.project).grids.deleteRow({
+                await sdk.forProject(page.params.region, page.params.project).tablesDb.deleteRow({
                     databaseId,
                     tableId,
                     rowId: selectedRowForDelete
@@ -355,7 +355,7 @@
                         batches.map((batch) =>
                             sdk
                                 .forProject(page.params.region, page.params.project)
-                                .grids.deleteRows({
+                                .tablesDb.deleteRows({
                                     databaseId,
                                     tableId,
                                     queries: [Query.equal('$id', batch)]
@@ -393,7 +393,7 @@
         showColumnDelete = false;
 
         try {
-            await sdk.forProject(page.params.region, page.params.project).grids.deleteColumn({
+            await sdk.forProject(page.params.region, page.params.project).tablesDb.deleteColumn({
                 databaseId,
                 tableId,
                 key: $databaseColumnSheetOptions.column.key
@@ -522,7 +522,7 @@
             );
 
             // TODO | BUG: related rows still have `system` columns atm!
-            await sdk.forProject(page.params.region, page.params.project).grids.updateRow({
+            await sdk.forProject(page.params.region, page.params.project).tablesDb.updateRow({
                 databaseId,
                 tableId: $table.$id,
                 rowId: row.$id,
@@ -563,7 +563,7 @@
         $paginatedRowsLoading = true;
         const loadedRows = await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.listRows({
+            .tablesDb.listRows({
                 databaseId,
                 tableId,
                 queries: [
@@ -589,7 +589,7 @@
 
             const loadedRows = await sdk
                 .forProject(page.params.region, page.params.project)
-                .grids.listRows({
+                .tablesDb.listRows({
                     databaseId,
                     tableId,
                     queries: [

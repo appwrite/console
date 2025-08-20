@@ -11,7 +11,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.createUrlColumn(
+            .tablesDb.createUrlColumn(
                 databaseId,
                 tableId,
                 key,
@@ -29,7 +29,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.updateUrlColumn(
+            .tablesDb.updateUrlColumn(
                 databaseId,
                 tableId,
                 originalKey,

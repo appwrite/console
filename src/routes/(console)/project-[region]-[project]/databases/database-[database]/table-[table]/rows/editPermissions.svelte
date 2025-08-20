@@ -29,7 +29,7 @@
         try {
             const { $databaseId: databaseId, $tableId: tableId, $id: rowId } = row;
 
-            await sdk.forProject(page.params.region, page.params.project).grids.updateRow({
+            await sdk.forProject(page.params.region, page.params.project).tablesDb.updateRow({
                 databaseId,
                 tableId,
                 rowId,

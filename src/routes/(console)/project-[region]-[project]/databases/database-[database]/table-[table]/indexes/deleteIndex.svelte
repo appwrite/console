@@ -29,7 +29,7 @@
                 selectedKeys.map((key) =>
                     sdk
                         .forProject(page.params.region, page.params.project)
-                        .grids.deleteIndex(page.params.database, page.params.table, key)
+                        .tablesDb.deleteIndex(page.params.database, page.params.table, key)
                 )
             );
             await invalidate(Dependencies.TABLE);

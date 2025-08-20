@@ -86,7 +86,7 @@
         }
 
         try {
-            await sdk.forProject(page.params.region, page.params.project).grids.createIndex({
+            await sdk.forProject(page.params.region, page.params.project).tablesDb.createIndex({
                 databaseId,
                 tableId: $table.$id,
                 key,

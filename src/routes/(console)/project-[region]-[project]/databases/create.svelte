@@ -83,7 +83,7 @@
             const databaseId = id ? id : ID.unique();
             const database = await sdk
                 .forProject(page.params.region, page.params.project)
-                .grids.createDatabase({
+                .tablesDb.create({
                     databaseId,
                     name
                 });

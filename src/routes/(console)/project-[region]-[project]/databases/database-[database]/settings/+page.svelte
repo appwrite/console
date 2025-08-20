@@ -28,7 +28,7 @@
     async function loadTableCount() {
         const { total } = await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.listTables($database.$id, [Query.limit(1)]);
+            .tablesDb.listTables($database.$id, [Query.limit(1)]);
         return total;
     }
 
@@ -40,9 +40,10 @@
 
     async function updateName() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .grids.updateDatabase(page.params.database, databaseName);
+            await sdk.forProject(page.params.region, page.params.project).tablesDb.update({
+                databaseId: page.params.database,
+                name: databaseName
+            });
             await invalidate(Dependencies.DATABASE);
             addNotification({
                 message: 'Name has been updated',

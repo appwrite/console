@@ -273,7 +273,7 @@
 
             rowIds = ids;
 
-            await sdk.forProject(page.params.region, page.params.project).grids.createRows({
+            await sdk.forProject(page.params.region, page.params.project).tablesDb.createRows({
                 databaseId: page.params.database,
                 tableId: page.params.table,
                 rows

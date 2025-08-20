@@ -13,7 +13,7 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
     const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
-    const tables = await sdk.forProject(params.region, params.project).grids.listTables({
+    const tables = await sdk.forProject(params.region, params.project).tablesDb.listTables({
         databaseId: params.database,
         queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
         search: search || undefined

@@ -16,14 +16,14 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const [table, tablesForSubNav] = await Promise.all([
         tableFromParentCache
             ? tableFromParentCache
-            : sdk.forProject(params.region, params.project).grids.getTable({
+            : sdk.forProject(params.region, params.project).tablesDb.getTable({
                   databaseId: params.database,
                   tableId: params.table
               }),
 
         tablesForSubNavigation
             ? tablesForSubNavigation
-            : sdk.forProject(params.region, params.project).grids.listTables({
+            : sdk.forProject(params.region, params.project).tablesDb.listTables({
                   databaseId: params.database,
                   queries: [Query.orderDesc(''), Query.limit(100)]
               })

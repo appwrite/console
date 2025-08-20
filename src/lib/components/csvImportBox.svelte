@@ -80,7 +80,7 @@
             try {
                 const table = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .grids.getTable({
+                    .tablesDb.getTable({
                         databaseId,
                         tableId
                     });

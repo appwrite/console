@@ -11,7 +11,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.createIpColumn(
+            .tablesDb.createIpColumn(
                 databaseId,
                 tableId,
                 key,
@@ -28,7 +28,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.updateIpColumn(
+            .tablesDb.updateIpColumn(
                 databaseId,
                 tableId,
                 originalKey,

@@ -45,7 +45,7 @@
 
             await Promise.all(
                 selectedKeys.map((key) =>
-                    client.grids.deleteColumn({
+                    client.tablesDb.deleteColumn({
                         databaseId: page.params.database,
                         tableId: page.params.table,
                         key

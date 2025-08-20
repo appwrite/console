@@ -11,7 +11,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.createEnumColumn(
+            .tablesDb.createEnumColumn(
                 databaseId,
                 tableId,
                 key,
@@ -30,7 +30,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.updateEnumColumn(
+            .tablesDb.updateEnumColumn(
                 databaseId,
                 tableId,
                 originalKey,

@@ -28,7 +28,7 @@
 
     async function handleDelete() {
         try {
-            await sdk.forProject(page.params.region, page.params.project).grids.deleteTable({
+            await sdk.forProject(page.params.region, page.params.project).tablesDb.deleteTable({
                 databaseId,
                 tableId
             });
