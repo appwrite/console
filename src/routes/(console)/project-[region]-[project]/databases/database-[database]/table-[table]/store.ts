@@ -76,7 +76,7 @@ export const databaseRelatedRowSheetOptions = writable<
     tableId: null
 });
 
-export const showRecordsCreateSheet = writable({
+export const showRowCreateSheet = writable({
     show: false,
     row: null
 });
@@ -96,7 +96,7 @@ export type ColumnDirection = {
     to: 'left' | 'right';
 };
 
-export type CreateAttribute = {
+export type CreateColumn = {
     show: boolean;
     column?: Columns;
     title: string;
@@ -106,7 +106,7 @@ export type CreateAttribute = {
     columnsOrder?: string[];
 };
 
-export const showCreateAttributeSheet = writable<CreateAttribute>({
+export const showCreateColumnSheet = writable<CreateColumn>({
     show: false,
     column: null,
     title: 'Create column',
@@ -150,10 +150,11 @@ export const randomDataModalState = writable({
 
 export const spreadsheetLoading = writable(false);
 
+// noinspection JSUnusedGlobalSymbols
 export enum Deletion {
-    'setNull' = 'Set row ID as NULL in all related rows',
-    'cascade' = 'All related rows will be deleted',
-    'restrict' = 'Row can not be deleted'
+    setNull = 'Set row ID as NULL in all related rows',
+    cascade = 'All related rows will be deleted',
+    restrict = 'Row can not be deleted'
 }
 
 export const scrollStore = writable(null);

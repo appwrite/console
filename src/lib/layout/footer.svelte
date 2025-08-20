@@ -11,7 +11,7 @@
         Button,
         Badge
     } from '@appwrite.io/pink-svelte';
-    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import { page } from '$app/state';
 
     const currentYear = new Date().getFullYear();

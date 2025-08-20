@@ -23,7 +23,11 @@
     ];
 </script>
 
-<Container expanded={databasesScreen} slotSpacing={databasesScreen} {databasesScreen}>
+<Container
+    {databasesScreen}
+    {insideSideSheet}
+    expanded={databasesScreen && !insideSideSheet}
+    slotSpacing={databasesScreen && !insideSideSheet}>
     {#if logs.total}
         <div>
             <Table.Root {columns} let:root>

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { debounce } from '$lib/helpers/debounce';
     import { scrollStore, sheetHeightStore } from '../store';
-    import { onMount, onDestroy, type Snippet } from 'svelte';
+    import { onMount, onDestroy, type Snippet, tick } from 'svelte';
 
     let {
         children
@@ -36,7 +36,7 @@
     function initSpreadsheetGridContainer(): boolean {
         if (spreadsheetGridContainer) return true;
 
-        spreadsheetGridContainer = spreadsheetWrapper.querySelector('.spreadsheet-container');
+        spreadsheetGridContainer = spreadsheetWrapper?.querySelector('.spreadsheet-container');
         return !!spreadsheetGridContainer;
     }
 
@@ -100,7 +100,8 @@
         }
     }
 
-    onMount(() => {
+    onMount(async () => {
+        await tick();
         addObservers();
         resizeSheet();
     });

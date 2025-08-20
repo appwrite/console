@@ -28,7 +28,7 @@
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
         randomDataModalState,
-        showCreateAttributeSheet,
+        showCreateColumnSheet,
         showCreateIndexSheet,
         spreadsheetLoading,
         rowActivitySheet,
@@ -50,7 +50,7 @@
     import EditRow from './rows/edit.svelte';
     import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
-    import RowActivity from './rowActivity.svelte';
+    import RowActivity from './rows/activity.svelte';
     import EditRowPermissions from './rows/editPermissions.svelte';
     import { Dialog, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
@@ -312,8 +312,8 @@
 
 <SideSheet
     closeOnBlur
-    title={$showCreateAttributeSheet.title}
-    bind:show={$showCreateAttributeSheet.show}
+    title={$showCreateColumnSheet.title}
+    bind:show={$showCreateColumnSheet.show}
     submit={{
         text: 'Create',
         onClick: async () => {
@@ -324,11 +324,10 @@
     <CreateColumn
         bind:selectedOption
         bind:this={createColumn}
-        column={$showCreateAttributeSheet.column}
-        showCreate={$showCreateAttributeSheet.show}
-        direction={$showCreateAttributeSheet.direction}
-        columns={$showCreateAttributeSheet.columns}
-        columnsOrder={$showCreateAttributeSheet.columnsOrder}
+        column={$showCreateColumnSheet.column}
+        columns={$showCreateColumnSheet.columns}
+        direction={$showCreateColumnSheet.direction}
+        columnsOrder={$showCreateColumnSheet.columnsOrder}
         onColumnsReorder={(newOrder) => {
             columnsOrder.set(newOrder);
             // columns.set(reorderItems($columns, $columnsOrder));

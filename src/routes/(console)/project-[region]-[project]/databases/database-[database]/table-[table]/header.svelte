@@ -122,6 +122,7 @@
 
         &.collapsed {
             opacity: 0;
+            pointer-events: none;
 
             & :global([role='tab']) {
                 cursor: default;

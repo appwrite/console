@@ -23,7 +23,7 @@
     let tableId = $derived(page.params.table);
     let databaseId = $derived(page.params.database);
 
-    const tables = $derived(data.tables);
+    const tables = $derived(data.tablesForSubNavigation);
 
     const sortedTables = $derived.by(() =>
         tables?.tables?.slice().sort((a, b) => a.name.localeCompare(b.name))

@@ -11,6 +11,10 @@
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { type Models, type Payload, Query } from '@appwrite.io/console';
 
+    // re-render the key for sheet UI.
+    import { hash } from '$lib/helpers/string';
+    import { spreadsheetRenderKey } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/store';
+
     type ImportItem = {
         status: string;
         table?: string;
@@ -58,6 +62,7 @@
 
         if (isSuccess) {
             await invalidate(Dependencies.ROWS);
+            $spreadsheetRenderKey = hash(Date.now().toString());
         }
     }
 
@@ -75,7 +80,10 @@
             try {
                 const table = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .grids.getTable(databaseId, tableId);
+                    .grids.getTable({
+                        databaseId,
+                        tableId
+                    });
                 tableName = table.name;
             } catch {
                 tableName = null;
@@ -142,10 +150,12 @@
 
     onMount(() => {
         sdk.forProject(page.params.region, page.params.project)
-            .migrations.list([
-                Query.equal('source', 'CSV'),
-                Query.equal('status', ['pending', 'processing'])
-            ])
+            .migrations.list({
+                queries: [
+                    Query.equal('source', 'CSV'),
+                    Query.equal('status', ['pending', 'processing'])
+                ]
+            })
             .then((migrations) => {
                 migrations.migrations.forEach(updateOrAddItem);
             });
@@ -186,34 +196,50 @@
                 </button>
             </header>
 
-            {#each [...$importItems.entries()] as [key, value] (key)}
-                <div class="upload-box-content" class:is-open={isOpen}>
-                    <ul class="upload-box-list">
-                        <li class="upload-box-item">
-                            <section class="progress-bar u-width-full-line">
-                                <div
-                                    class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
-                                    <Typography.Text>
-                                        {@html text(value.status, value.table)}
-                                    </Typography.Text>
-                                </div>
-                                <div
-                                    class="progress-bar-container"
-                                    class:is-danger={value.status === 'failed'}
-                                    style="--graph-size:{graphSize(value.status)}%">
-                                </div>
-                            </section>
-                        </li>
-                    </ul>
-                </div>
-            {/each}
+            <div class="upload-box-content-list">
+                {#each [...$importItems.entries()] as [key, value] (key)}
+                    <div class="upload-box-content" class:is-open={isOpen}>
+                        <ul class="upload-box-list">
+                            <li class="upload-box-item">
+                                <section class="progress-bar u-width-full-line">
+                                    <div
+                                        class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
+                                        <Typography.Text>
+                                            {@html text(value.status, value.table)}
+                                        </Typography.Text>
+                                    </div>
+                                    <div
+                                        class="progress-bar-container"
+                                        class:is-danger={value.status === 'failed'}
+                                        style="--graph-size:{graphSize(value.status)}%">
+                                    </div>
+                                </section>
+                            </li>
+                        </ul>
+                    </div>
+                {/each}
+            </div>
         </section>
     </Layout.Stack>
 {/if}
 
 <style lang="scss">
+    .upload-box {
+        display: flex;
+        max-height: 320px;
+        flex-direction: column;
+    }
+
+    .upload-box-header {
+        flex-shrink: 0;
+    }
+
     .upload-box-title {
         font-size: 11px;
+    }
+
+    .upload-box-content-list {
+        overflow-y: auto;
     }
 
     .upload-box-content {

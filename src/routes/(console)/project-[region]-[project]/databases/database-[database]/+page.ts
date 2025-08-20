@@ -6,25 +6,34 @@ import { CARD_LIMIT, Dependencies } from '$lib/constants';
 
 export const load: PageLoad = async ({ params, url, route, depends }) => {
     depends(Dependencies.TABLES);
+
     const page = getPage(url);
     const search = getSearch(url);
     const limit = getLimit(url, route, CARD_LIMIT);
     const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
-    const tables = await sdk
-        .forProject(params.region, params.project)
-        .grids.listTables(
-            params.database,
-            [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-            search || undefined
-        );
+    const grids = sdk.forProject(params.region, params.project).grids;
+
+    const [tables, tablesForSubNavigation] = await Promise.all([
+        grids.listTables({
+            databaseId: params.database,
+            queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+            search: search || undefined
+        }),
+
+        grids.listTables({
+            databaseId: params.database,
+            queries: [Query.orderDesc('')]
+        })
+    ]);
 
     return {
         offset,
         limit,
         search,
         view,
-        tables
+        tables,
+        tablesForSubNavigation
     };
 };

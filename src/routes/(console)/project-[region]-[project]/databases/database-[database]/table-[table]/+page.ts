@@ -30,13 +30,11 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         view,
         query,
         currentSort,
-        rows: await sdk
-            .forProject(params.region, params.project)
-            .grids.listRows(
-                params.database,
-                params.table,
-                buildGridQueries(limit, offset, parsedQueries, table)
-            )
+        rows: await sdk.forProject(params.region, params.project).grids.listRows({
+            databaseId: params.database,
+            tableId: params.table,
+            queries: buildGridQueries(limit, offset, parsedQueries, table)
+        })
     };
 };
 

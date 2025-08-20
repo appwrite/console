@@ -8,7 +8,7 @@ import { Query } from '@appwrite.io/console';
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.TABLE);
 
-    const [table, tables] = await Promise.all([
+    const [table, tablesForSubNavigation] = await Promise.all([
         sdk.forProject(params.region, params.project).grids.getTable({
             databaseId: params.database,
             tableId: params.table
@@ -24,6 +24,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         header: Header,
         breadcrumbs: Breadcrumbs,
         table,
-        tables
+        tablesForSubNavigation
     };
 };

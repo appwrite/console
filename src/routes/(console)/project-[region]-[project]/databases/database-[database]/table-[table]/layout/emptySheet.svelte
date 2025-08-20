@@ -14,14 +14,14 @@
     import {
         tableColumns,
         columnsOrder,
-        showCreateAttributeSheet,
+        showCreateColumnSheet,
         spreadsheetLoading,
         expandTabs
     } from '../store';
     import { onMount } from 'svelte';
     import SpreadsheetContainer from './spreadsheet.svelte';
 
-    type Mode = 'rows' | 'indexes';
+    type Mode = 'rows' | 'rows-filtered' | 'indexes';
 
     interface Action {
         text?: string;
@@ -165,10 +165,10 @@
                         style:cursor={columnActionsById ? 'pointer' : null}
                         onclick={() => {
                             if (columnActionsById && mode === 'rows') {
-                                $showCreateAttributeSheet.show = true;
-                                $showCreateAttributeSheet.title = 'Create column';
-                                $showCreateAttributeSheet.columns = $tableColumns;
-                                $showCreateAttributeSheet.columnsOrder = $columnsOrder;
+                                $showCreateColumnSheet.show = true;
+                                $showCreateColumnSheet.title = 'Create column';
+                                $showCreateColumnSheet.columns = $tableColumns;
+                                $showCreateColumnSheet.columnsOrder = $columnsOrder;
                             }
                         }}>
                         <Spreadsheet.Header.Cell
@@ -176,12 +176,7 @@
                             column={column.id}
                             icon={column.icon ?? undefined}>
                             {#if column.isAction}
-                                <Button.Button
-                                    icon
-                                    variant="extra-compact"
-                                    on:click={() => {
-                                        console.log('dank');
-                                    }}>
+                                <Button.Button icon variant="extra-compact">
                                     <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                                 </Button.Button>
                             {:else if column.id === 'actions' || column.id === 'empty'}
@@ -217,6 +212,7 @@
     </SpreadsheetContainer>
 
     {#if !$spreadsheetLoading}
+        <!-- Claude: Can this be truly centered without hacky left: xyz values? -->
         <div
             class="spreadsheet-fade-bottom"
             data-collapsed-tabs={!$expandTabs}
@@ -228,26 +224,36 @@
                     {#if showActions}
                         <Layout.Stack
                             inline
+                            gap="s"
                             alignItems="center"
-                            direction={$isSmallViewport ? 'column' : 'row'}
-                            gap="s">
-                            <Button.Button
-                                icon
-                                size="s"
-                                variant="secondary"
-                                disabled={actions?.primary?.disabled}
-                                onclick={actions?.primary?.onClick}>
-                                <Icon icon={IconPlus} size="s" />
-                                {actions?.primary?.text ?? `Create ${mode}`}
-                            </Button.Button>
+                            direction={$isSmallViewport ? 'column' : 'row'}>
+                            {#if mode !== 'rows-filtered'}
+                                <Button.Button
+                                    icon
+                                    size="s"
+                                    variant="secondary"
+                                    disabled={actions?.primary?.disabled}
+                                    onclick={actions?.primary?.onClick}>
+                                    <Icon icon={IconPlus} size="s" />
+                                    {actions?.primary?.text ?? `Create ${mode}`}
+                                </Button.Button>
 
-                            {#if mode === 'rows'}
+                                {#if mode === 'rows'}
+                                    <Button.Button
+                                        size="s"
+                                        variant="secondary"
+                                        disabled={actions?.random?.disabled}
+                                        onclick={actions?.random?.onClick}>
+                                        {actions?.random?.text ?? `Generate sample data`}
+                                    </Button.Button>
+                                {/if}
+                            {:else}
                                 <Button.Button
                                     size="s"
                                     variant="secondary"
-                                    disabled={actions?.random?.disabled}
-                                    onclick={actions?.random?.onClick}>
-                                    {actions?.random?.text ?? `Generate sample data`}
+                                    disabled={actions?.primary?.disabled}
+                                    onclick={actions?.primary?.onClick}>
+                                    {actions?.primary?.text}
                                 </Button.Button>
                             {/if}
                         </Layout.Stack>
@@ -334,10 +340,12 @@
     .empty-actions {
         bottom: 30%;
         position: fixed;
+        transform: translateX(-40%);
 
         @media (min-width: 1024px) {
             left: 50%;
             bottom: 40%;
+            transform: unset !important;
         }
     }
 </style>

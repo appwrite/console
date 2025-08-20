@@ -77,6 +77,7 @@
     onSubmit={handleDelete}
     title="Delete column"
     bind:error
+    confirmDeletion
     disabled={isDeleteBtnDisabled}>
     {#if selectedColumns.length === 1}
         <p>

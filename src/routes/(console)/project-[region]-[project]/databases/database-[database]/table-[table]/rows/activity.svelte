@@ -3,7 +3,7 @@
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import { Activity } from '$lib/layout';
-    import { rowActivitySheet } from './store';
+    import { rowActivitySheet } from '../store';
     import { pageToOffset } from '$lib/helpers/load';
     import { type Models, Query } from '@appwrite.io/console';
     import { Skeleton } from '@appwrite.io/pink-svelte';

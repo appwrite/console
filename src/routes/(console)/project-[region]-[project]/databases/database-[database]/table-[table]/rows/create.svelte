@@ -21,7 +21,7 @@
     }: {
         showSheet: boolean;
         table: Models.Table;
-        existingData: Models.Document | null;
+        existingData: Models.Row | null;
     } = $props();
 
     let isSubmitting = $state(false);
@@ -39,11 +39,13 @@
 
         const initial = {
             id: null,
-            row: availableColumns.reduce((acc, attr) => {
-                acc[attr.key] = attr.array ? [] : null;
+            row: existingData
+                ? existingData
+                : availableColumns.reduce((acc, attr) => {
+                      acc[attr.key] = attr.array ? [] : null;
 
-                return acc;
-            }, {}),
+                      return acc;
+                  }, {}),
             permissions: [],
             columns: availableColumns
         };

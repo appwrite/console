@@ -12,8 +12,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         header: Header,
         breadcrumbs: Breadcrumbs,
         subNavigation: SubNavigation,
-        database: await sdk
-            .forProject(params.region, params.project)
-            .grids.getDatabase(params.database)
+        database: await sdk.forProject(params.region, params.project).grids.getDatabase({
+            databaseId: params.database
+        })
     };
 };

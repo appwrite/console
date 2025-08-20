@@ -41,13 +41,13 @@
         IconLockClosed,
         IconFingerPrint
     } from '@appwrite.io/pink-icons-svelte';
-    import { type ComponentProps, onDestroy, onMount, tick } from 'svelte';
+    import { type ComponentProps, onDestroy, onMount } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import CsvDisabled from '../csvDisabled.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import SideSheet from '../layout/sidesheet.svelte';
     import SpreadsheetContainer from '../layout/spreadsheet.svelte';
-    import { showCreateAttributeSheet } from '../store';
+    import { showCreateColumnSheet } from '../store';
     import { type Models } from '@appwrite.io/console';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
@@ -61,7 +61,7 @@
                 name: 'ID',
                 selectable: false,
                 system: true
-            } as Models.AttributeString & {
+            } as Models.ColumnString & {
                 name: string;
                 selectable: boolean;
                 system: boolean;
@@ -74,7 +74,7 @@
                 name: 'createdAt',
                 selectable: false,
                 system: true
-            } as Models.AttributeDatetime & {
+            } as Models.ColumnDatetime & {
                 name: string;
                 selectable: boolean;
                 system: boolean;
@@ -86,7 +86,7 @@
                 name: 'updatedAt',
                 selectable: false,
                 system: true
-            } as Models.AttributeDatetime & {
+            } as Models.ColumnDatetime & {
                 name: string;
                 selectable: boolean;
                 system: boolean;
@@ -153,7 +153,7 @@
         }
     }
 
-    onDestroy(() => ($showCreateAttributeSheet.show = false));
+    onDestroy(() => ($showCreateColumnSheet.show = false));
 
     $effect(() => {
         if (!$showCreateIndexSheet.show && $showCreateIndexSheet.column) {
@@ -178,7 +178,7 @@
                 size="s"
                 secondary
                 disabled={$isCsvImportInProgress}
-                on:click={() => ($showCreateAttributeSheet.show = true)}
+                on:click={() => ($showCreateColumnSheet.show = true)}
                 event="create_attribute">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create column
@@ -202,7 +202,7 @@
                 { id: 'default', width: { min: 200 } },
                 { id: 'actions', width: 40, isAction: true }
             ]}
-            bottomActionClick={() => ($showCreateAttributeSheet.show = true)}>
+            bottomActionClick={() => ($showCreateColumnSheet.show = true)}>
             <svelte:fragment slot="header" let:root>
                 <Spreadsheet.Header.Cell column="key" {root}>Column name</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="indexed" {root}>Indexed</Spreadsheet.Header.Cell>

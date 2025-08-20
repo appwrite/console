@@ -19,7 +19,7 @@
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
         sortState,
-        showCreateAttributeSheet,
+        showCreateColumnSheet,
         reorderItems,
         columnsOrder,
         columnsWidth,
@@ -82,7 +82,7 @@
     import { abbreviateNumber } from '$lib/helpers/numbers';
 
     export let data: PageData;
-    export let showRecordsCreateSheet: {
+    export let showRowCreateSheet: {
         show: boolean;
         row: Models.Row | null;
     };
@@ -133,7 +133,7 @@
         }
     });
 
-    onDestroy(() => ($showCreateAttributeSheet.show = false));
+    onDestroy(() => ($showCreateColumnSheet.show = false));
 
     function makeTableColumns() {
         const selectedColumnsToHide = preferences.getCustomTableColumns(tableId);
@@ -439,11 +439,11 @@
 
             if (action === 'column-left' || action === 'column-right') {
                 const { to, neighbour } = $databaseColumnSheetOptions.direction;
-                $showCreateAttributeSheet.title = `Create column to the ${to} of ${neighbour}`;
-                $showCreateAttributeSheet.direction = $databaseColumnSheetOptions.direction;
-                $showCreateAttributeSheet.columns = $tableColumns;
-                $showCreateAttributeSheet.columnsOrder = $columnsOrder;
-                $showCreateAttributeSheet.show = true;
+                $showCreateColumnSheet.title = `Create column to the ${to} of ${neighbour}`;
+                $showCreateColumnSheet.direction = $databaseColumnSheetOptions.direction;
+                $showCreateColumnSheet.columns = $tableColumns;
+                $showCreateColumnSheet.columnsOrder = $columnsOrder;
+                $showCreateColumnSheet.show = true;
             }
 
             if (action === 'delete') {
@@ -464,11 +464,11 @@
             }
 
             if (action === 'duplicate-header') {
-                $showCreateAttributeSheet.title = `Duplicate column`;
-                $showCreateAttributeSheet.column = $columns.find((attr) => attr.key === columnId);
-                $showCreateAttributeSheet.columns = $tableColumns;
-                $showCreateAttributeSheet.columnsOrder = $columnsOrder;
-                $showCreateAttributeSheet.show = true;
+                $showCreateColumnSheet.title = `Duplicate column`;
+                $showCreateColumnSheet.column = $columns.find((attr) => attr.key === columnId);
+                $showCreateColumnSheet.columns = $tableColumns;
+                $showCreateColumnSheet.columnsOrder = $columnsOrder;
+                $showCreateColumnSheet.show = true;
             }
         } else if (type === 'row') {
             if (action === 'update') {
@@ -478,8 +478,8 @@
             }
 
             if (action === 'duplicate-row') {
-                showRecordsCreateSheet.row = row;
-                showRecordsCreateSheet.show = true;
+                showRowCreateSheet.row = row;
+                showRowCreateSheet.show = true;
             }
 
             if (action === 'permissions') {
@@ -675,7 +675,7 @@
             loading={$spreadsheetLoading}
             emptyCells={emptyCellsCount}
             rowCount={$paginatedRows.virtualLength}
-            bottomActionClick={() => (showRecordsCreateSheet.show = true)}
+            bottomActionClick={() => (showRowCreateSheet.show = true)}
             on:columnsSwap={(order) => saveColumnsOrder(order.detail)}
             on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}
             bind:currentPage
@@ -700,11 +700,11 @@
                                     icon
                                     variant="extra-compact"
                                     on:click={() => {
-                                        $showCreateAttributeSheet.show = true;
-                                        $showCreateAttributeSheet.column = null;
-                                        $showCreateAttributeSheet.title = 'Create column';
-                                        $showCreateAttributeSheet.columns = $tableColumns;
-                                        $showCreateAttributeSheet.columnsOrder = $columnsOrder;
+                                        $showCreateColumnSheet.show = true;
+                                        $showCreateColumnSheet.column = null;
+                                        $showCreateColumnSheet.title = 'Create column';
+                                        $showCreateColumnSheet.columns = $tableColumns;
+                                        $showCreateColumnSheet.columnsOrder = $columnsOrder;
                                     }}>
                                     <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                                 </Button.Button>
@@ -822,7 +822,10 @@
                                                     {displayValue}
                                                 </Link.Button>
                                             {:else}
-                                                <Badge variant="secondary" content="-" size="xs" />
+                                                <Badge
+                                                    variant="secondary"
+                                                    content="NULL"
+                                                    size="xs" />
                                             {/if}
                                         {:else}
                                             <Badge variant="secondary" content="NULL" size="xs" />
