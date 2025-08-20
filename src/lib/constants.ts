@@ -7,10 +7,12 @@ export const NEW_DEV_PRO_UPGRADE_COUPON = 'appw50';
 export const REGION_FRA = 'fra';
 export const REGION_SYD = 'syd';
 export const REGION_NYC = 'nyc';
+export const REGION_SFO = 'sfo';
 
 export const SUBDOMAIN_FRA = 'fra.';
 export const SUBDOMAIN_SYD = 'syd.';
 export const SUBDOMAIN_NYC = 'nyc.';
+export const SUBDOMAIN_SFO = 'sfo.';
 
 export enum Dependencies {
     FACTORS = 'dependency:factors',
