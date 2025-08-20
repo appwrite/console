@@ -270,7 +270,7 @@
 
     /* Default (including mobile) */
     .side-default {
-        padding-block-start: 0;
+        padding-block-start: 2.25rem;
         padding-block-end: 2rem;
 
         div {
@@ -300,7 +300,7 @@
             background-position: top;
             background-size: cover;
 
-            padding-block-start: 0;
+            padding-block-start: 6.25rem;
             padding-block-end: 6.875rem;
 
             div {
