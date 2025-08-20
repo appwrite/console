@@ -245,6 +245,11 @@
     }
 
     :global(main:has(.databases-spreadsheet)) {
+        /* avoids the unnecessary sheet slide animation */
+        .has-transition {
+            transition: none !important;
+        }
+
         @media (min-width: 1024px) {
             .main-content {
                 height: auto;
