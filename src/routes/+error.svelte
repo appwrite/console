@@ -7,9 +7,9 @@
 <Unauthenticated>
     <div class="content">
         <div class="center">
-            <span>404 Page not found</span>
+            <span class="error-badge">404 Page not found</span>
         </div>
-        <h1>The page you're looking for doesn't exist.</h1>
+        <h1 class="error-title">The page you're looking for doesn't exist.</h1>
         <div class="center">
             <a href={base}>
                 <Button>Back to console</Button>
@@ -23,7 +23,7 @@
         text-align: center;
     }
 
-    span {
+    .error-badge {
         padding: var(--space-1, 2px) var(--space-3, 6px);
         border-radius: var(--border-radius-XS, 6px);
         background: rgba(0, 0, 0, 0.08);
@@ -38,7 +38,7 @@
         display: inline-block;
     }
 
-    h1 {
+    .error-title {
         color: #2d2d31;
         text-align: center;
         font-family: var(--font-family-sansSerif, Inter), sans-serif;
@@ -56,21 +56,21 @@
         justify-content: center;
     }
 
-    :global(.theme-light) span {
+    :global(.theme-light) .error-badge {
         background: rgba(0, 0, 0, 0.08);
         color: #56565c;
     }
 
-    :global(.theme-light) h1 {
+    :global(.theme-light) .error-title {
         color: #2d2d31;
     }
 
-    :global(.theme-dark) span {
+    :global(.theme-dark) .error-badge {
         background: rgba(255, 255, 255, 0.2);
         color: #c3c3c6;
     }
 
-    :global(.theme-dark) h1 {
+    :global(.theme-dark) .error-title {
         color: #ededf0;
     }
 </style>

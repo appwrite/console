@@ -197,7 +197,8 @@
         z-index: 1;
         height: 100%;
         width: 100%;
-        padding-block: 2rem;
+        padding-block-start: 0;
+        padding-block-end: 2rem;
         padding-inline: 1rem;
         background-color: #ededf0 !important;
 
@@ -269,7 +270,7 @@
 
     /* Default (including mobile) */
     .side-default {
-        padding-block-start: 2.25rem;
+        padding-block-start: 0;
         padding-block-end: 2rem;
 
         div {
@@ -299,7 +300,7 @@
             background-position: top;
             background-size: cover;
 
-            padding-block-start: 6.25rem;
+            padding-block-start: 0;
             padding-block-end: 6.875rem;
 
             div {
@@ -351,6 +352,10 @@
                 scale: 0.7;
             }
         }
+    }
+
+    .logo:not(.mobile-logo) {
+        padding-block-end: 20px;
     }
 
     .review-footer-container {
