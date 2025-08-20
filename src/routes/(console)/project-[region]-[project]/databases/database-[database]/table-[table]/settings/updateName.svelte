@@ -30,7 +30,7 @@
                 enabled: $table.enabled
             });
 
-            subNavigation.trigger();
+            subNavigation.update();
 
             await invalidate(Dependencies.TABLE);
             addNotification({

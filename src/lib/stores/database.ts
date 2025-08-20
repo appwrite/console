@@ -59,7 +59,7 @@ function createSubNavigationTrigger() {
                 subscribers.delete(callback);
             };
         },
-        trigger: () => {
+        update: () => {
             subscribers.forEach((callback) => callback());
         }
     };

@@ -36,7 +36,7 @@
                 });
 
             showCreate = false;
-            subNavigation.trigger();
+            subNavigation.update();
 
             dispatch('created', table);
             addNotification({

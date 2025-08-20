@@ -27,7 +27,7 @@
             });
 
             showDelete = false;
-            subNavigation.trigger();
+            subNavigation.update();
 
             addNotification({
                 type: 'success',
