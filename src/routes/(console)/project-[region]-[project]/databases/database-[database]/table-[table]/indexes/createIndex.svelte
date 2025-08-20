@@ -107,7 +107,7 @@
                 buttons: !isOnIndexesPage
                     ? [
                           {
-                              name: 'View index',
+                              name: 'View indexes',
                               method: () => goto(navigatorPathToIndexes)
                           }
                       ]
