@@ -197,8 +197,7 @@
         z-index: 1;
         height: 100%;
         width: 100%;
-        padding-block-start: 0;
-        padding-block-end: 2rem;
+        padding-block: 2rem;
         padding-inline: 1rem;
         background-color: #ededf0 !important;
 
@@ -361,10 +360,6 @@
         }
     }
 
-    .logo:not(.mobile-logo) {
-        padding-block-end: 20px;
-    }
-
     .review-footer-container {
         padding-block-start: 10rem;
         @media #{devices.$break1} {
@@ -374,7 +369,7 @@
 
     .mobile-logo {
         position: fixed;
-        bottom: 1rem;
+        bottom: 1.25rem;
         left: 50%;
         transform: translateX(-50%);
         z-index: 10;
