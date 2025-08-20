@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
+    import { subNavigation } from '$lib/stores/database';
 
     let {
         showCreate = $bindable(false)
@@ -35,6 +36,7 @@
                 });
 
             showCreate = false;
+            subNavigation.trigger();
 
             dispatch('created', table);
             addNotification({

@@ -8,16 +8,18 @@
     import { sdk } from '$lib/stores/sdk';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { table } from '../store';
+    import { subNavigation } from '$lib/stores/database';
     import { preferences } from '$lib/stores/preferences';
     import { organization } from '$lib/stores/organization.js';
 
     export let showDelete = false;
 
     let error: string;
-    const tableId = page.params.table;
-    const databaseId = page.params.database;
 
     async function handleDelete() {
+        const tableId = page.params.table;
+        const databaseId = page.params.database;
+
         try {
             await sdk.forProject(page.params.region, page.params.project).tablesDb.deleteTable({
                 databaseId,
@@ -25,10 +27,13 @@
             });
 
             showDelete = false;
+            subNavigation.trigger();
+
             addNotification({
                 type: 'success',
                 message: `${$table.name} has been deleted`
             });
+
             trackEvent(Submit.TableDelete);
 
             await Promise.all([

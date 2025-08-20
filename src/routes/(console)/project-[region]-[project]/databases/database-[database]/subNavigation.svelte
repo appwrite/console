@@ -14,7 +14,10 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { BottomSheet } from '$lib/components';
     import Button from '$lib/elements/forms/button.svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { type Models, Query } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
+    import { subNavigation } from '$lib/stores/database';
 
     let data = $derived(page.data) as PageData;
 
@@ -23,7 +26,12 @@
     let tableId = $derived(page.params.table);
     let databaseId = $derived(page.params.database);
 
-    const tables = $derived(data.tablesForSubNavigation);
+    let openBottomSheet = $state(false);
+
+    let tables = $state<Models.TableList>({
+        total: 0,
+        tables: []
+    });
 
     const sortedTables = $derived.by(() =>
         tables?.tables?.slice().sort((a, b) => a.name.localeCompare(b.name))
@@ -33,7 +41,17 @@
         sortedTables?.find((table: Models.Table) => table.$id === tableId)
     );
 
-    let openBottomSheet = $state(false);
+    async function loadTables() {
+        tables = await sdk.forProject(region, project).tablesDb.listTables({
+            databaseId: databaseId,
+            queries: [Query.orderDesc(''), Query.limit(100)]
+        });
+    }
+
+    onMount(() => {
+        loadTables();
+        return subNavigation.subscribe(loadTables);
+    });
 
     function onResize() {
         if (openBottomSheet && !$isTabletViewport) {
