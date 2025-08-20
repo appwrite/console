@@ -3,6 +3,7 @@
     import { BillingPlan, INTERVAL } from '$lib/constants';
     import Footer from '$lib/layout/footer.svelte';
     import Shell from '$lib/layout/shell.svelte';
+    import { HeaderAlert } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
     import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
@@ -39,11 +40,15 @@
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
     import { activeHeaderAlert, consoleVariables } from './store';
+    import { user } from '$lib/stores/user';
+    import { Button } from '$lib/elements/forms';
+    import { base } from '$app/paths';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
-    import { base } from '$app/paths';
     import { canSeeProjects } from '$lib/stores/roles';
     import { BottomModalAlert } from '$lib/components';
+    import { Typography } from '@appwrite.io/pink-svelte';
+    import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import {
         IconAnnotation,
         IconBookOpen,
@@ -59,6 +64,7 @@
     import { Query } from '@appwrite.io/console';
 
     export let data: LayoutData;
+    let emailBannerClosed = false;
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -345,6 +351,10 @@
     afterUpdate(() => {
         $activeHeaderAlert = headerAlert.get();
     });
+
+    function navigateToAccount() {
+        goto(`${base}/account`);
+    }
 </script>
 
 <CommandCenter />
@@ -362,6 +372,27 @@
     <slot />
     <Footer slot="footer" />
 </Shell>
+
+{#if $user && !$user.emailVerification && shouldShowNotification('email-verification-banner') && !$wizard.show && !$wizard.cover && !emailBannerClosed}
+    <HeaderAlert
+        type="warning"
+        title="Your email address needs to be verified"
+        dismissible={true}
+        on:dismiss={() => {
+            emailBannerClosed = true;
+            hideNotification('email-verification-banner', { coolOffPeriod: 24 });
+        }}>
+        <svelte:fragment>
+            To avoid losing access to your projects, make sure <Typography.Text
+                variant="m-500"
+                style="display:inline">{$user.email}</Typography.Text> is valid and up to date. Email
+            verification will be required soon.
+        </svelte:fragment>
+        <svelte:fragment slot="buttons">
+            <Button secondary size="s" on:click={navigateToAccount}>Update email address</Button>
+        </svelte:fragment>
+    </HeaderAlert>
+{/if}
 
 {#if $wizard.show && $wizard.component}
     <svelte:component this={$wizard.component} {...$wizard.props} />
