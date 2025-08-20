@@ -8,12 +8,10 @@ export const load: PageLoad = async ({ params }) => {
         ? params.period
         : UsageRange.ThirtyDays;
 
-    const response = (await sdk
-        .forProject(params.region, params.project)
-        .storage.getBucketUsage({
-            bucketId: params.bucket,
-            range: period
-        }));
+    const response = await sdk.forProject(params.region, params.project).storage.getBucketUsage({
+        bucketId: params.bucket,
+        range: period
+    });
 
     return {
         filesTotal: response.filesTotal,
