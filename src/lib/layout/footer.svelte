@@ -193,8 +193,4 @@
     :global(main:has(.wide-screen-wrapper)) footer {
         margin-inline-start: 2rem !important;
     }
-
-    .extra-margin {
-        margin-block-start: var(--space-2, 4px);
-    }
 </style>
