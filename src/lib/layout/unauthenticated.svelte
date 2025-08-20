@@ -59,13 +59,13 @@
                 {#if $app.themeInUse === 'dark'}
                     <img
                         src={AppwriteLogoDark}
-                        width="160"
+                        width="120"
                         class="u-block u-only-dark"
                         alt="Appwrite Logo" />
                 {:else}
                     <img
                         src={AppwriteLogoLight}
-                        width="160"
+                        width="120"
                         class="u-block u-only-light"
                         alt="Appwrite Logo" />
                 {/if}
