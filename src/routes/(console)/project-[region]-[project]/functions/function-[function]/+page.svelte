@@ -12,7 +12,15 @@
     import DeploymentCard from './(components)/deploymentCard.svelte';
     import RedeployModal from './(modals)/redeployModal.svelte';
     import { canWriteFunctions } from '$lib/stores/roles';
-    import { ActionMenu, Alert, Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Alert,
+        Card,
+        Empty,
+        Icon,
+        Layout,
+        Tooltip
+    } from '@appwrite.io/pink-svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
         IconDotsHorizontal,
@@ -58,13 +66,31 @@
             </Empty>
         </Card.Base>
     {:else}
-        {@const activeDeployment = data.activeDeployment}
+        {@const activeDeployment = data?.activeDeployment}
 
-        {#if data?.activeDeployment && !$func.live && showAlert}
-            <Alert.Inline status="warning" dismissible on:dismiss={() => (showAlert = false)}>
-                Some configuration options are not live yet. Redeploy your function to apply latest
-                changes.
-            </Alert.Inline>
+        {#if activeDeployment && !$func.live && showAlert}
+            {@const latestDeployment = data.deploymentList.deployments[0]}
+            {#if latestDeployment?.status === 'failed' || latestDeployment?.status === 'ready'}
+                <Alert.Inline status="warning" dismissible on:dismiss={() => (showAlert = false)}>
+                    Some configuration changes are not live yet. Redeploy your function to apply
+                    latest changes.
+                    <svelte:fragment slot="actions">
+                        <Button
+                            compact
+                            on:click={() => {
+                                selectedDeployment = activeDeployment;
+                                showRedeploy = true;
+                            }}>
+                            Redeploy
+                        </Button>
+                    </svelte:fragment>
+                </Alert.Inline>
+            {:else}
+                <Alert.Inline status="info" dismissible on:dismiss={() => (showAlert = false)}>
+                    Some configuration changes are not live yet. Your function is redeploying —
+                    changes will be applied once the build is complete.
+                </Alert.Inline>
+            {/if}
         {/if}
         <Layout.Stack gap="xxxl">
             {#if activeDeployment}
@@ -81,16 +107,27 @@
                                 <svelte:fragment slot="menu" let:toggle>
                                     <ActionMenu.Root>
                                         {#if $canWriteFunctions}
-                                            <ActionMenu.Item.Button
-                                                trailingIcon={IconRefresh}
-                                                on:click={() => {
-                                                    selectedDeployment = activeDeployment;
-                                                    showRedeploy = true;
-                                                    trackEvent(Click.FunctionsRedeployClick);
-                                                    toggle();
-                                                }}>
-                                                Redeploy
-                                            </ActionMenu.Item.Button>
+                                            <Tooltip
+                                                disabled={activeDeployment.sourceSize !== 0}
+                                                placement={'bottom'}>
+                                                <div>
+                                                    <ActionMenu.Item.Button
+                                                        trailingIcon={IconRefresh}
+                                                        disabled={activeDeployment.sourceSize === 0}
+                                                        on:click={() => {
+                                                            selectedDeployment = activeDeployment;
+                                                            showRedeploy = true;
+                                                            trackEvent(
+                                                                Click.FunctionsRedeployClick
+                                                            );
+                                                            toggle();
+                                                        }}
+                                                        style="width: 100%">
+                                                        Redeploy
+                                                    </ActionMenu.Item.Button>
+                                                </div>
+                                                <div slot="tooltip">Source is empty</div>
+                                            </Tooltip>
                                         {/if}
                                         <DownloadActionMenuItem
                                             deployment={activeDeployment}

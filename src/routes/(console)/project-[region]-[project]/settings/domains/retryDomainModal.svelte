@@ -17,8 +17,8 @@
         show: boolean;
         selectedDomain: Models.ProxyRule;
     } = $props();
-    let error = $state(null);
 
+    let error = $state(null);
     async function retryDomain() {
         try {
             await sdk
@@ -28,12 +28,12 @@
             show = false;
             addNotification({
                 type: 'success',
-                message: `${selectedDomain.domain} has been deleted`
+                message: `${selectedDomain.domain} has been verified`
             });
-            trackEvent(Submit.DomainDelete);
+            trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
-            error = e;
-            trackError(e, Submit.DomainDelete);
+            error = e.message;
+            trackError(e, Submit.DomainUpdateVerification);
         }
     }
 

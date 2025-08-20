@@ -65,9 +65,8 @@
         : provider.secret;
 </script>
 
-<Modal {error} onSubmit={update} size="l" bind:show on:close>
-    <svelte:fragment slot="title">{provider.name} OAuth2 settings</svelte:fragment>
-    <p>
+<Modal {error} onSubmit={update} title="{provider.name} OAuth2 settings" bind:show on:close>
+    <p slot="description">
         To use {provider.name} authentication in your application, first fill in this form. For more
         info you can
         <a class="link" href={oAuthProvider?.docs} target="_blank" rel="noopener noreferrer"
@@ -79,49 +78,56 @@
         label="Client ID"
         autofocus={true}
         placeholder="Enter ID"
-        bind:value={appId} />
+        bind:value={appId}
+        required />
     <InputPassword
         id="secret"
         label="Client Secret"
         placeholder="Enter Client Secret"
         minlength={0}
-        bind:value={clientSecret} />
+        bind:value={clientSecret}
+        required />
     <InputText
         id="well-known-endpoint"
         label="Well-Known Endpoint"
         placeholder="https://example.com/.well-known/openid-configuration"
-        bind:value={wellKnownEndpoint} />
+        bind:value={wellKnownEndpoint}
+        required={!authorizationEndpoint && !tokenEndpoint && !userinfoEndpoint} />
     <InputText
         id="authorization-endpoint"
         label="Authorization Endpoint"
         placeholder="https://example.com/authorize"
-        bind:value={authorizationEndpoint} />
+        bind:value={authorizationEndpoint}
+        required={!wellKnownEndpoint} />
     <InputText
         id="token-endpoint"
         label="Token Endpoint"
         placeholder="https://example.com/token"
-        bind:value={tokenEndpoint} />
+        bind:value={tokenEndpoint}
+        required={!wellKnownEndpoint} />
     <InputText
         id="userinfo-endpoint"
         label="User Info Endpoint"
         placeholder="https://example.com/userinfo"
-        bind:value={userinfoEndpoint} />
+        bind:value={userinfoEndpoint}
+        required={!wellKnownEndpoint} />
 
     <Alert.Inline status="info">
         To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
     </Alert.Inline>
-    <div>
-        <p>URI</p>
-        <CopyInput
-            value={`${getApiEndpoint(page.params.region)}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
-    </div>
+    <CopyInput
+        label="URI"
+        value={`${getApiEndpoint(page.params.region)}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
-            disabled={(secret === provider.secret &&
-                enabled === provider.enabled &&
-                appId === provider.appId) ||
-                !(appId && isValidSecret)}
+            disabled={!appId ||
+                !clientSecret ||
+                (!wellKnownEndpoint &&
+                    (!authorizationEndpoint || !tokenEndpoint || !userinfoEndpoint)) ||
+                (secret === provider.secret &&
+                    enabled === provider.enabled &&
+                    appId === provider.appId)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>

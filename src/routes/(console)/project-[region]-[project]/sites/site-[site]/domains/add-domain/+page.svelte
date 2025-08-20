@@ -9,20 +9,26 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
-    import { protocol } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
     import {
         Adapter,
         BuildRuntime,
         Framework,
-        StatusCode,
-        type Models
+        type Models,
+        ProxyResourceType,
+        StatusCode
     } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { ConnectRepoModal } from '$lib/components/git/index.js';
+    import {
+        project,
+        regionalConsoleVariables
+    } from '$routes/(console)/project-[region]-[project]/store';
+    import { isCloud } from '$lib/system';
+    import { getApexDomain } from '$lib/helpers/tlds';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
 
@@ -34,8 +40,8 @@
     let behaviour: 'REDIRECT' | 'BRANCH' | 'ACTIVE' = $state('ACTIVE');
     let domainName = $state('');
     let redirect: string = $state(null);
-    let statusCode = $state(307);
     let branch: string = $state(null);
+    let statusCode = $state(StatusCode.TemporaryRedirect307);
 
     onMount(() => {
         if (
@@ -50,6 +56,27 @@
     });
 
     async function addDomain() {
+        const apexDomain = getApexDomain(domainName);
+        let domain = data.domains?.domains.find((d: Models.Domain) => d.domain === apexDomain);
+
+        const isSiteDomain = domainName.endsWith($regionalConsoleVariables._APP_DOMAIN_SITES);
+
+        if (isCloud && apexDomain && !domain && !isSiteDomain) {
+            try {
+                domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
+            } catch (error) {
+                // apex might already be added on organization level, skip.
+                const alreadyAdded = error?.type === 'domain_already_exists';
+                if (!alreadyAdded) {
+                    addNotification({
+                        type: 'error',
+                        message: error.message
+                    });
+                    return;
+                }
+            }
+        }
+
         try {
             let rule: Models.ProxyRule;
             if (behaviour === 'BRANCH') {
@@ -57,10 +84,15 @@
                     .forProject(page.params.region, page.params.project)
                     .proxy.createSiteRule(domainName, page.params.site, branch);
             } else if (behaviour === 'REDIRECT') {
-                const sc = Object.values(StatusCode).find((code) => parseInt(code) === statusCode);
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(domainName, $protocol + redirect, sc);
+                    .proxy.createRedirectRule(
+                        domainName,
+                        redirect,
+                        statusCode,
+                        page.params.site,
+                        ProxyResourceType.Site
+                    );
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
@@ -106,8 +138,8 @@
                     undefined
                 );
             invalidate(Dependencies.SITE);
-        } catch (error) {
-            console.log(error);
+        } catch {
+            return;
         }
     }
 </script>
@@ -157,13 +189,16 @@
                                 value: branch.name
                             }))}
                             <Layout.Stack gap="s">
-                                <InputSelect
-                                    {options}
-                                    label="Production branch"
-                                    id="branch"
+                                <Input.ComboBox
                                     required
+                                    id="branch"
+                                    label="Production branch"
+                                    placeholder="Select branch"
                                     bind:value={branch}
-                                    placeholder="Select branch" />
+                                    on:select={(event) => {
+                                        branch = event.detail.value;
+                                    }}
+                                    {options} />
                                 {#if !data.branches?.total}
                                     <Input.Helper state="default">
                                         No branches found in the selected repository. Create a

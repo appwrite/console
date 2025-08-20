@@ -3,15 +3,19 @@ import { ID } from '@appwrite.io/console';
 import { buildVerboseDomain } from '../../store';
 
 export const load = async ({ parent, params, url }) => {
-    const { installations, frameworks, project, organization, consoleVariables } = await parent();
-    const [repository] = await Promise.all([
-        sdk
-            .forProject(params.region, params.project)
-            .vcs.getRepository(url.searchParams.get('installation'), params.repository)
-    ]);
+    const { installations, frameworks, project, organization, regionalConsoleVariables } =
+        await parent();
+
+    const repository = await sdk
+        .forProject(params.region, params.project)
+        .vcs.getRepository(url.searchParams.get('installation'), params.repository);
+
+    const installation = installations.installations.find(
+        (installation) => installation.$id === url.searchParams.get('installation')
+    );
 
     const domain = await buildVerboseDomain(
-        consoleVariables._APP_DOMAIN_SITES,
+        regionalConsoleVariables._APP_DOMAIN_SITES,
         repository.name,
         organization.name,
         project.name,
@@ -20,9 +24,7 @@ export const load = async ({ parent, params, url }) => {
 
     return {
         installations,
-        installation: installations.installations.find(
-            (installation) => installation.$id === url.searchParams.get('installation')
-        ),
+        installation,
         repository,
         frameworks,
         domain

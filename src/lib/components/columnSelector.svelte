@@ -18,22 +18,46 @@
         children: Snippet<[toggle: () => void, selectedColumnsNumber: number]>;
     } = $props();
 
-    onMount(async () => {
+    let maxHeight = $state('none');
+    let containerRef = $state<HTMLElement>(null);
+    const collectionId = $derived(page.params.collection);
+
+    const calcMaxHeight = () => {
+        if (containerRef) {
+            // get parent row element for correct top position
+            const parent = containerRef?.parentElement?.parentElement;
+            const { top } = parent.getBoundingClientRect();
+
+            maxHeight = `${window.innerHeight - top - 48}px`;
+        }
+    };
+
+    const saveColumnPreferences = () => {
+        const shownColumns = $columns.filter((n) => n.hide === true).map((n) => n.id);
+
         if (isCustomCollection) {
-            const prefs = preferences.getCustomCollectionColumns(page.params.collection);
-            columns.set(
-                $columns.map((column) => {
-                    column.hide = prefs?.includes(column.id) ?? false;
+            preferences.setCustomCollectionColumns(collectionId, shownColumns);
+        } else {
+            preferences.setColumns(shownColumns);
+        }
+    };
+
+    onMount(() => {
+        if (isCustomCollection) {
+            const shownColumns = preferences.getCustomCollectionColumns(collectionId);
+
+            columns.update((n) =>
+                n.map((column) => {
+                    column.hide = shownColumns?.includes(column.id) ?? false;
                     return column;
                 })
             );
         } else {
             const prefs = preferences.get(page.route);
 
-            // Override the shown columns only if a preference was set
             if (prefs?.columns) {
-                columns.set(
-                    $columns.map((column) => {
+                columns.update((n) =>
+                    n.map((column) => {
                         column.hide = prefs.columns?.includes(column.id) ?? false;
                         return column;
                     })
@@ -41,49 +65,58 @@
             }
         }
 
-        columns.subscribe((ctx) => {
-            const columns = ctx.filter((n) => n.hide === true).map((n) => n.id);
-
-            if (isCustomCollection) {
-                preferences.setCustomCollectionColumns(columns);
-            } else {
-                preferences.setColumns(columns);
-            }
-        });
+        calcMaxHeight();
     });
 
     let selectedColumnsNumber = $derived(
         $columns.reduce((acc, column) => {
-            if (column.hide === true) return acc;
+            if (column.hide) return acc;
 
             return ++acc;
         }, 0)
     );
+
+    function toggleColumn(column: Column) {
+        columns.update((cols) =>
+            cols.map((col) => {
+                if (col.id === column.id) {
+                    column.hide = !column.hide;
+                }
+                return col;
+            })
+        );
+
+        saveColumnPreferences();
+    }
 </script>
+
+<svelte:window on:resize={calcMaxHeight} />
 
 {#if $columns?.length}
     <Popover let:toggle placement="bottom-end" padding="none">
         {@render children(toggle, selectedColumnsNumber)}
         <svelte:fragment slot="tooltip">
-            <ActionMenu.Root>
-                {#each $columns as column}
-                    {#if !column?.exclude}
-                        <ActionMenu.Item.Button
-                            on:click={() => (column.hide = !column.hide)}
-                            disabled={allowNoColumns
-                                ? false
-                                : selectedColumnsNumber <= 1 && column.hide !== true}>
-                            <Layout.Stack direction="row" gap="s">
-                                <Selector.Checkbox
-                                    checked={!column.hide}
-                                    size="s"
-                                    on:click={() => (column.hide = !column.hide)} />
-                                {column.title}
-                            </Layout.Stack>
-                        </ActionMenu.Item.Button>
-                    {/if}
-                {/each}
-            </ActionMenu.Root>
+            <div style:max-height={maxHeight} style:overflow="scroll" bind:this={containerRef}>
+                <ActionMenu.Root>
+                    {#each $columns as column}
+                        {#if !column?.exclude}
+                            <ActionMenu.Item.Button
+                                on:click={() => toggleColumn(column)}
+                                disabled={allowNoColumns
+                                    ? false
+                                    : selectedColumnsNumber <= 1 && column.hide !== true}>
+                                <Layout.Stack direction="row" gap="s">
+                                    <Selector.Checkbox
+                                        checked={!column.hide}
+                                        size="s"
+                                        on:click={() => toggleColumn(column)} />
+                                    {column.title}
+                                </Layout.Stack>
+                            </ActionMenu.Item.Button>
+                        {/if}
+                    {/each}
+                </ActionMenu.Root>
+            </div>
         </svelte:fragment>
     </Popover>
 {/if}

@@ -11,7 +11,7 @@
 
 <div class="top-cover-console" style:block-size={blocksize}>
     <div class="cover-container" {style}>
-        <Layout.Stack direction="row" alignItems="center">
+        <Layout.Stack direction="row" alignItems="baseline">
             <slot name="header" />
         </Layout.Stack>
         <slot />

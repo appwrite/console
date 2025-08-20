@@ -4,8 +4,8 @@
     import Footer from '$lib/layout/footer.svelte';
     import Shell from '$lib/layout/shell.svelte';
     import { app } from '$lib/stores/app';
-    import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
     import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
+    import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { afterUpdate, onMount } from 'svelte';
     import { loading } from '$routes/store';
@@ -13,10 +13,12 @@
     import Create from './createOrganization.svelte';
     import {
         calculateTrialDay,
+        checkForEnterpriseTrial,
         checkForMandate,
         checkForMarkedForDeletion,
         checkForMissingPaymentMethod,
         checkForNewDevUpgradePro,
+        checkForProjectsLimit,
         checkForUsageLimit,
         checkPaymentAuthorizationRequired,
         paymentExpired,
@@ -52,6 +54,11 @@
         IconSparkles,
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
+    import type { LayoutData } from './$types';
+    import { sdk } from '$lib/stores/sdk';
+    import { Query } from '@appwrite.io/console';
+
+    export let data: LayoutData;
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -60,19 +67,7 @@
             .join(' ');
     }
 
-    const isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
-
-    export let data;
-    $: loadedProjects = data.projects.map((project) => {
-        return {
-            name: project?.name,
-            $id: project.$id,
-            region: project.region,
-            isSelected: data.currentProjectId === project.$id,
-            platformCount: project.platforms.length,
-            pingCount: project.pingCount
-        };
-    });
+    $: isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
 
     $: isOnSettingsLayout = $project?.$id
         ? page.url.pathname.includes(`project-${$project.region}-${$project.$id}/settings`)
@@ -259,6 +254,7 @@
             rank: -1
         }
     ]);
+
     onMount(async () => {
         loading.set(false);
         if (!localStorage.getItem('feedbackElapsed')) {
@@ -301,6 +297,12 @@
         if (currentOrganizationId === org.$id) return;
         if (isCloud) {
             currentOrganizationId = org.$id;
+            const orgProjectCount =
+                data.allProjects && data.currentOrgId === org.$id
+                    ? data.allProjects.projects.length
+                    : undefined;
+            checkForProjectsLimit(org, orgProjectCount);
+            checkForEnterpriseTrial(org);
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
             await checkForNewDevUpgradePro(org);
@@ -320,6 +322,20 @@
 
     $: checkForUsageLimits($organization);
 
+    $: isOnOnboarding = page.route?.id?.includes('/(console)/onboarding');
+
+    $: projects = isOnOnboarding
+        ? null
+        : sdk.forConsole.projects.list([
+              Query.equal(
+                  'teamId',
+                  // id from page params ?? id from store ?? id from preferences
+                  page.params.organization ?? currentOrganizationId ?? data.currentOrgId
+              ),
+              Query.limit(5),
+              Query.orderDesc('$updatedAt')
+          ]);
+
     $: if ($requestedMigration) {
         openMigrationWizard();
     }
@@ -338,10 +354,10 @@
         !page.url.pathname.includes('/console/account') &&
         !page.url.pathname.includes('/console/card') &&
         !page.url.pathname.includes('/console/onboarding')}
-    showHeader={!page.url.pathname.includes('/console/onboarding')}
-    showFooter={!page.url.pathname.includes('/console/onboarding')}
-    bind:loadedProjects
-    bind:projects={data.projects}>
+    showHeader={!page.url.pathname.includes('/console/onboarding/create-project')}
+    showFooter={!page.url.pathname.includes('/console/onboarding/create-project')}
+    {projects}
+    selectedProject={page.data?.project}>
     <!--    <Header slot="header" />-->
     <slot />
     <Footer slot="footer" />

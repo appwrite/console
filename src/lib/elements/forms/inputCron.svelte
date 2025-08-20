@@ -49,7 +49,7 @@
     {pattern}
     on:input
     on:invalid={handleInvalid}
-    type="email"
+    type="text"
     helper={error}
     state={error ? 'error' : 'default'}
     autofocus={autofocus || undefined}

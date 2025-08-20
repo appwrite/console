@@ -11,7 +11,7 @@ import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequi
 import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
 import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
-import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
+import { type Size, sizeToBytes } from '$lib/helpers/sizeConvertion';
 import type {
     AddressesList,
     Aggregation,
@@ -24,16 +24,23 @@ import type {
 } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
-import { Query } from '@appwrite.io/console';
+import { AppwriteException, Query } from '@appwrite.io/console';
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
 import { addNotification, notifications } from './notifications';
-import { organization, type Organization, type OrganizationError } from './organization';
+import {
+    currentPlan,
+    organization,
+    type Organization,
+    type OrganizationError
+} from './organization';
 import { canSeeBilling } from './roles';
 import { sdk } from './sdk';
 import { user } from './user';
 import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budgetLimitAlert.svelte';
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
+import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
+import EnterpriseTrial from '$routes/(console)/organization-[organization]/enterpriseTrial.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
@@ -62,6 +69,7 @@ export const roles = [
 
 export const teamStatusReadonly = 'readonly';
 export const billingLimitOutstandingInvoice = 'outstanding_invoice';
+export const billingProjectsLimitDate = '2025-09-01';
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
@@ -268,6 +276,33 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
     return isLimited && total >= limit && !hasUsageFees;
 }
 
+export function checkForEnterpriseTrial(org: Organization) {
+    if (!org || !org.billingNextInvoiceDate) return;
+    if (calculateEnterpriseTrial(org) > 0) {
+        headerAlert.add({
+            id: 'teamEnterpriseTrial',
+            component: EnterpriseTrial,
+            show: true,
+            importance: 11
+        });
+    }
+}
+
+export function calculateEnterpriseTrial(org: Organization) {
+    if (!org || !org.billingNextInvoiceDate) return 0;
+    const endDate = new Date(org.billingNextInvoiceDate);
+    const startDate = new Date(org.billingCurrentInvoiceDate);
+    const today = new Date();
+
+    let diffCycle = endDate.getTime() - startDate.getTime();
+    diffCycle = Math.ceil(diffCycle / (1000 * 60 * 60 * 24));
+    if (diffCycle === 14) {
+        const remaining = endDate.getTime() - today.getTime();
+        return Math.ceil(remaining / (1000 * 60 * 60 * 24));
+    }
+    return 0;
+}
+
 export function calculateTrialDay(org: Organization) {
     if (org?.billingPlan === BillingPlan.FREE) return false;
     const endDate = new Date(org?.billingStartDate);
@@ -280,6 +315,27 @@ export function calculateTrialDay(org: Organization) {
 
     daysLeftInTrial.set(days);
     return days;
+}
+
+export async function checkForProjectsLimit(org: Organization, orgProjectCount?: number) {
+    if (!isCloud) return;
+    if (!org) return;
+    const plan = await sdk.forConsole.billing.getOrganizationPlan(org.$id);
+    if (!plan) return;
+    if (plan.$id !== BillingPlan.FREE) return;
+    if (org.projects?.length > 0) return;
+
+    const projectCount = orgProjectCount;
+    if (projectCount === undefined) return;
+
+    if (plan.projects > 0 && projectCount > plan.projects) {
+        headerAlert.add({
+            id: 'projectsLimitReached',
+            component: ProjectsLimit,
+            show: true,
+            importance: 12
+        });
+    }
 }
 
 export async function checkForUsageLimit(org: Organization) {
@@ -323,9 +379,12 @@ export async function checkForUsageLimit(org: Organization) {
     ];
 
     const members = org.total;
-    const plan = get(plansInfo)?.get(org.billingPlan);
+    const plan = get(currentPlan);
     const membersOverflow =
-        members > plan.addons.seats.limit ? members - (plan.addons.seats.limit || members) : 0;
+        // nested null checks needed: GitHub Education plan have empty addons.
+        members > plan?.addons?.seats?.limit
+            ? members - (plan?.addons?.seats?.limit || members)
+            : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);
@@ -492,25 +551,41 @@ export async function checkForMissingPaymentMethod() {
 
 // Display upgrade banner for new users after 1 week for 30 days
 export async function checkForNewDevUpgradePro(org: Organization) {
-    if (org?.billingPlan !== BillingPlan.FREE || !browser) return;
+    // browser or plan check.
+    if (!browser || org?.billingPlan !== BillingPlan.FREE) return;
 
-    const orgs = await sdk.forConsole.billing.listOrganization([
-        Query.notEqual('billingPlan', BillingPlan.FREE)
-    ]);
-    if (orgs?.total) return;
+    // already dismissed by user!
+    if (localStorage.getItem('newDevUpgradePro')) return;
+
+    // saves one trip to backend!
+    const notValidKey = `${org.$id}:isNotValid`;
+    if (localStorage.getItem(notValidKey)) return;
 
     const now = new Date().getTime();
     const account = get(user);
     const accountCreated = new Date(account.$createdAt).getTime();
     if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
-    const isDismissed = !!localStorage.getItem('newDevUpgradePro');
-    if (isDismissed) return;
-    // check if coupon already applied
+
+    const organizations = await sdk.forConsole.billing.listOrganization([
+        Query.notEqual('billingPlan', BillingPlan.FREE)
+    ]);
+
+    if (organizations?.total) return;
+
     try {
         await sdk.forConsole.billing.getCouponAccount(NEW_DEV_PRO_UPGRADE_COUPON);
-    } catch (e) {
+    } catch (error) {
+        if (
+            // already utilized if error is 409
+            error instanceof AppwriteException &&
+            error?.code === 409 &&
+            error.type === 'billing_coupon_already_used'
+        ) {
+            localStorage.setItem(notValidKey, 'true');
+        }
         return;
     }
+
     headerAlert.add({
         id: 'newDevUpgradePro',
         component: newDevUpgradePro,

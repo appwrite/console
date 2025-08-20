@@ -11,7 +11,7 @@
 {#if menu?.title}
     <span class="menu-title">{menu.title}</span>
 {/if}
-<ActionMenu.Root>
+<ActionMenu.Root width="100%">
     {#each menu.items as menuItem}
         {#if menuItem.href}
             <ActionMenu.Item.Anchor

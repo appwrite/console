@@ -65,8 +65,6 @@
             items: filterCols.map((col) => {
                 return {
                     name: col.title,
-                    onClick: () =>
-                        console.log(subSheets.find((sheet) => sheet?.title === col?.title)),
                     subMenu: subSheets.find((sheet) => sheet?.title === col?.title),
                     trailingIcon: IconChevronRight
                 };

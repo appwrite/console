@@ -4,7 +4,6 @@
     import CustomId from '$lib/components/customId.svelte';
     import { SvgIcon } from '$lib/components/index.js';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
-    import { getFlagUrl } from '$lib/helpers/flag.js';
     import type { AllowedRegions } from '$lib/sdk/billing.js';
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
@@ -23,6 +22,7 @@
         Tag,
         Typography
     } from '@appwrite.io/pink-svelte';
+    import { filterRegions } from '$lib/helpers/regions';
 
     let { data } = $props();
 
@@ -36,25 +36,6 @@
     let region = $state<AllowedRegions>();
     let regions = $state<Array<Models.ConsoleRegion>>([]);
     let id = $state<string>();
-
-    function getRegions() {
-        return regions
-            .filter((region) => region.$id !== 'default')
-            .sort((regionA, regionB) => {
-                if (regionA.disabled && !regionB.disabled) {
-                    return 1;
-                }
-                return regionA.name > regionB.name ? 1 : -1;
-            })
-            .map((region) => {
-                return {
-                    label: region.name,
-                    value: region.$id,
-                    leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
-                    disabled: region.disabled
-                };
-            });
-    }
 
     function isSiteTemplate(
         template: Models.TemplateFunction | Models.TemplateSite,
@@ -80,11 +61,11 @@
         selectedProject = projects?.total ? projects.projects[0].$id : null;
     }
 
-    function generateUrl() {
+    function generateUrl(project: Models.Project) {
         if (isSiteTemplate(data.template, data.product)) {
-            return `${base}/project-${selectedProject}/sites/create-site/templates/template-${data.template.key}`;
+            return `${base}/project-${project.region}-${project.$id}/sites/create-site/templates/template-${data.template.key}`;
         } else {
-            return `${base}/project-${selectedProject}/functions/create-function/templates/template-${data.template.name}`;
+            return `${base}/project-${project.region}-${project.$id}/functions/create-function/templates/template-${data.template.name}`;
         }
     }
 
@@ -105,7 +86,7 @@
 
                 selectedProject = p.$id;
 
-                window.location.href = generateUrl();
+                window.location.href = generateUrl(p);
             } catch (e) {
                 trackError(e, Submit.ProjectCreate);
                 addNotification({
@@ -114,7 +95,8 @@
                 });
             }
         } else {
-            window.location.href = generateUrl();
+            const project = projects.projects.find((p) => p.$id === selectedProject);
+            window.location.href = generateUrl(project);
         }
     }
 
@@ -242,7 +224,7 @@
                                             required
                                             bind:value={region}
                                             placeholder="Select a region"
-                                            options={getRegions()}
+                                            options={filterRegions(regions)}
                                             label="Region" />
                                         <Typography.Text>
                                             Region cannot be changed after creation

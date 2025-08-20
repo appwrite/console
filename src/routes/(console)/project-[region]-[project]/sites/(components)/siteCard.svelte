@@ -2,7 +2,8 @@
     import { Card } from '$lib/components/index.js';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
-    import type { Models } from '@appwrite.io/console';
+    import { ImageFormat, type Models } from '@appwrite.io/console';
+    import { page } from '$app/state';
     import {
         Badge,
         Divider,
@@ -20,7 +21,7 @@
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
     import { isCloud } from '$lib/system';
-    import { getApiEndpoint } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { capitalize } from '$lib/helpers/string';
 
     export let deployment: Models.Deployment;
@@ -45,9 +46,23 @@
     }
 
     function getFilePreview(fileId: string) {
-        // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
-        const endpoint = getApiEndpoint();
-        return endpoint + `/storage/buckets/screenshots/files/${fileId}/view?project=console`;
+        return sdk
+            .forConsoleIn(page.params.region)
+            .storage.getFilePreview(
+                'screenshots',
+                fileId,
+                1024,
+                576,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                ImageFormat.Webp
+            );
     }
 </script>
 

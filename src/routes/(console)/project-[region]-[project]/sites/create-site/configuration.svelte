@@ -37,7 +37,9 @@
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
     $: frameworkData = frameworks.find((framework) => framework.key === selectedFramework?.key);
-    $: ssr = frameworkData?.adapters.find((adapter) => adapter.key === 'ssr');
+    $: adapterData =
+        frameworkData?.adapters.find((adapter) => adapter.key === 'ssr') ??
+        frameworkData?.adapters.find((adapter) => adapter.key === 'static');
 
     export let variables: Partial<Models.Variable>[] = [];
     export let installCommand = '';
@@ -55,15 +57,15 @@
     let frameworkId = selectedFramework.key;
 
     $: if (!installCommand || !buildCommand || !outputDirectory) {
-        installCommand ||= ssr?.installCommand;
-        buildCommand ||= ssr?.buildCommand;
-        outputDirectory ||= ssr?.outputDirectory;
+        installCommand ||= adapterData?.installCommand;
+        buildCommand ||= adapterData?.buildCommand;
+        outputDirectory ||= adapterData?.outputDirectory;
     }
 
     $: if (frameworkData) {
-        installCommand = ssr?.installCommand;
-        buildCommand = ssr?.buildCommand;
-        outputDirectory = ssr?.outputDirectory;
+        installCommand = adapterData?.installCommand;
+        buildCommand = adapterData?.buildCommand;
+        outputDirectory = adapterData?.outputDirectory;
     }
 </script>
 
@@ -93,12 +95,12 @@
                                 id="installCommand"
                                 label="Install command"
                                 bind:value={installCommand}
-                                placeholder={ssr?.installCommand} />
+                                placeholder={adapterData?.installCommand} />
                             <Button
                                 secondary
                                 size="s"
-                                disabled={ssr?.installCommand === installCommand}
-                                on:click={() => (installCommand = ssr?.installCommand)}>
+                                disabled={adapterData?.installCommand === installCommand}
+                                on:click={() => (installCommand = adapterData?.installCommand)}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -107,12 +109,12 @@
                                 id="buildCommand"
                                 label="Build command"
                                 bind:value={buildCommand}
-                                placeholder={ssr?.buildCommand} />
+                                placeholder={adapterData?.buildCommand} />
                             <Button
                                 secondary
                                 size="s"
-                                disabled={ssr?.buildCommand === buildCommand}
-                                on:click={() => (buildCommand = ssr?.buildCommand)}>
+                                disabled={adapterData?.buildCommand === buildCommand}
+                                on:click={() => (buildCommand = adapterData?.buildCommand)}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -121,12 +123,12 @@
                                 id="outputDirectory"
                                 label="Output directory"
                                 bind:value={outputDirectory}
-                                placeholder={ssr?.outputDirectory} />
+                                placeholder={adapterData?.outputDirectory} />
                             <Button
                                 secondary
                                 size="s"
-                                disabled={ssr?.outputDirectory === outputDirectory}
-                                on:click={() => (outputDirectory = ssr?.outputDirectory)}>
+                                disabled={adapterData?.outputDirectory === outputDirectory}
+                                on:click={() => (outputDirectory = adapterData?.outputDirectory)}>
                                 Reset
                             </Button>
                         </Layout.Stack>

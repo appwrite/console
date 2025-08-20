@@ -1,7 +1,10 @@
 <script lang="ts">
-    import { Alert, DropList } from '$lib/components';
+    import { DropList } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
-    import { Link, Pill } from '$lib/elements';
+    import { Link } from '$lib/elements';
+    import { Badge, Icon } from '@appwrite.io/pink-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import {
         checkForProjectLimitation,
         checkForUsageFees,
@@ -22,7 +25,7 @@
     export let title: string;
     export let serviceId = title.toLocaleLowerCase() as PlanServices;
     export let total: number = null;
-    export let alertType: 'info' | 'success' | 'warning' | 'error' | 'default' = 'warning';
+    export let alertType: 'info' | 'success' | 'warning' | 'error' = 'warning';
     export let showAlert = true;
 
     export let buttonText: string = null;
@@ -95,16 +98,16 @@
     {#if services.length}
         <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees} {services}>
             {#if $organization?.billingPlan !== BillingPlan.FREE && hasUsageFees}
-                <Alert type="info" isStandalone>
+                <Alert.Inline status="info">
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan.
                         <Link on:mousedown={() => ($showUsageRatesModal = true)}
                             >Excess usage fees will apply</Link
                         >.
                     </span>
-                </Alert>
+                </Alert.Inline>
             {:else}
-                <Alert type={alertType} isStandalone>
+                <Alert.Inline status={alertType}>
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan. <Link
                             href={$upgradeURL}
@@ -112,7 +115,7 @@
                             eventData={{ from: 'event', source: 'inline_alert' }}>Upgrade</Link> your
                         organization for additional resources.
                     </span>
-                </Alert>
+                </Alert.Inline>
             {/if}
         </slot>
     {/if}
@@ -124,13 +127,19 @@
         {#if isCloud && isLimited}
             <DropList bind:show={showDropdown} width="16">
                 {#if hasProjectLimitation}
-                    <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info"></span>{total}/{limit} created
-                    </Pill>
+                    <Badge
+                        variant="secondary"
+                        content={`${total}/${limit} created`}
+                        on:click={() => (showDropdown = !showDropdown)}>
+                        <Icon icon={IconInfo} size="s" slot="start" />
+                    </Badge>
                 {:else if $organization?.billingPlan !== BillingPlan.SCALE}
-                    <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info"></span>Limits applied
-                    </Pill>
+                    <Badge
+                        variant="secondary"
+                        content="Limits applied"
+                        on:click={() => (showDropdown = !showDropdown)}>
+                        <Icon icon={IconInfo} size="s" slot="start" />
+                    </Badge>
                 {/if}
                 <svelte:fragment slot="list">
                     <slot name="tooltip" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>

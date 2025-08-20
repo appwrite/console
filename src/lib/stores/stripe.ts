@@ -1,4 +1,10 @@
-import type { Appearance, Stripe, StripeElement, StripeElements } from '@stripe/stripe-js';
+import type {
+    Appearance,
+    PaymentMethod,
+    Stripe,
+    StripeElement,
+    StripeElements
+} from '@stripe/stripe-js';
 import { sdk } from './sdk';
 import { app } from './app';
 import { get, writable } from 'svelte/store';
@@ -7,7 +13,8 @@ import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { addNotification } from './notifications';
 import { organization } from './organization';
 import { base } from '$app/paths';
-import { ThemeLightCloud } from '$themes';
+import { ThemeDarkCloud, ThemeLightCloud } from '$themes';
+import Color from 'color';
 
 export const stripe = writable<Stripe>();
 let paymentMethod: PaymentMethodData;
@@ -82,7 +89,8 @@ export async function submitStripeCard(name: string, organizationId?: string) {
                     billing_details: {
                         name
                     }
-                }
+                },
+                expand: ['payment_method']
             },
             redirect: 'if_required'
         });
@@ -94,9 +102,13 @@ export async function submitStripeCard(name: string, organizationId?: string) {
         }
 
         if (setupIntent && setupIntent.status === 'succeeded') {
+            if ((setupIntent.payment_method as PaymentMethod).card.country === 'US') {
+                // need to get state
+                return setupIntent.payment_method as PaymentMethod;
+            }
             const method = await sdk.forConsole.billing.setPaymentMethod(
                 paymentMethod.$id,
-                setupIntent.payment_method,
+                (setupIntent.payment_method as PaymentMethod).id,
                 name
             );
             paymentElement.destroy();
@@ -108,6 +120,32 @@ export async function submitStripeCard(name: string, organizationId?: string) {
             trackError(e, Submit.PaymentMethodCreate);
             throw e.message;
         }
+    } catch (e) {
+        trackError(e, Submit.PaymentMethodCreate);
+        throw e;
+    }
+}
+
+export async function setPaymentMethod(providerMethodId: string, name: string, state: string) {
+    if (!paymentMethod) {
+        addNotification({
+            title: 'Error',
+            message: 'No payment method found. Please try again.',
+            type: 'error'
+        });
+        return;
+    }
+    try {
+        const method = await sdk.forConsole.billing.setPaymentMethod(
+            paymentMethod.$id,
+            providerMethodId,
+            name,
+            state
+        );
+        paymentElement.destroy();
+        isStripeInitialized.set(false);
+        trackEvent(Submit.PaymentMethodCreate);
+        return method;
     } catch (e) {
         trackError(e, Submit.PaymentMethodCreate);
         throw e;
@@ -185,37 +223,46 @@ export async function confirmSetup(
     }
 }
 
+function toRGB(color: string): string {
+    return Color(color).rgb().string();
+}
+
 const appearanceLight: Appearance = {
     variables: {
         fontSizeBase: ThemeLightCloud['font-size-s'],
         fontSizeSm: ThemeLightCloud['font-size-s'],
-        colorPrimary: ThemeLightCloud['neutral-700'],
-        colorText: ThemeLightCloud['neutral-700'],
-        colorBackground: 'rgb(250, 250, 251)',
-        colorDanger: ThemeLightCloud['fgcolor-error'],
-        fontFamily: ThemeLightCloud['font-family-sansserif'],
+        colorPrimary: toRGB(ThemeLightCloud['neutral-700']),
+        colorTextSecondary: toRGB(ThemeLightCloud['neutral-700']),
+        colorText: toRGB(ThemeLightCloud['neutral-700']),
+        colorBackground: toRGB(ThemeLightCloud['neutral-25']),
+        colorDanger: toRGB(ThemeLightCloud['web-red-700']),
+        fontFamily:
+            ThemeLightCloud['font-family-sansserif'] +
+            ', system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
         borderRadius: ThemeLightCloud['base-8']
     },
     rules: {
         '.Label': {
-            color: ThemeLightCloud['neutral-700'],
+            color: toRGB(ThemeLightCloud['neutral-700']),
             marginBottom: ThemeLightCloud['base-8'],
             fontWeight: '500'
         },
         '.Input': {
             padding: ThemeLightCloud['base-6'],
-            paddingLeft: ThemeLightCloud['base-12']
+            paddingLeft: ThemeLightCloud['base-12'],
+            outlineOffset: '-1px'
         },
         '.Input:hover': {
-            border: 'solid 1px rgb(195, 195, 198)',
+            border: '1px solid ' + toRGB(ThemeLightCloud['neutral-250']),
             boxShadow: 'none'
         },
         '.Input:focus': {
-            border: 'solid 1px rgb(195, 195, 198)',
+            border: '1px solid ' + toRGB(ThemeLightCloud['neutral-250']),
+            outline: '2px solid ' + toRGB(ThemeLightCloud['neutral-250']),
             boxShadow: 'none'
         },
         '.Input::placeholder': {
-            color: '#C4C6D7'
+            color: toRGB(ThemeLightCloud['neutral-250'])
         },
         '.Input--invalid': {
             border: 'solid 1px var(--colorDanger)',
@@ -226,25 +273,40 @@ const appearanceLight: Appearance = {
 
 const appearanceDark = {
     variables: {
-        colorPrimary: '#606a7b',
-        colorText: 'rgb(195, 195, 198)',
-        colorBackground: 'rgb(24, 24, 27)',
-        colorDanger: '#FF453A',
-        fontFamily: 'Inter, arial, sans-serif',
-        borderRadius: '4px',
-        spacingGridRow: '16px'
+        fontSizeBase: ThemeDarkCloud['font-size-s'],
+        fontSizeSm: ThemeDarkCloud['font-size-s'],
+        colorPrimary: toRGB(ThemeDarkCloud['neutral-250']),
+        colorText: toRGB(ThemeDarkCloud['neutral-250']),
+        colorTextSecondary: toRGB(ThemeDarkCloud['neutral-250']),
+        colorBackground: toRGB(ThemeDarkCloud['neutral-900']),
+        colorDanger: toRGB(ThemeDarkCloud['web-red-500']),
+        fontFamily:
+            ThemeLightCloud['font-family-sansserif'] +
+            ', system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+        borderRadius: ThemeDarkCloud['base-8']
     },
     rules: {
+        '.Label': {
+            color: toRGB(ThemeDarkCloud['neutral-250']),
+            marginBottom: ThemeDarkCloud['base-8'],
+            fontWeight: '500'
+        },
+        '.Input': {
+            padding: ThemeDarkCloud['base-6'],
+            paddingLeft: ThemeDarkCloud['base-12'],
+            outlineOffset: '-1px'
+        },
         '.Input:hover': {
-            border: 'solid 1px rgb(87, 87, 92)',
+            border: '1px solid ' + toRGB(ThemeDarkCloud['neutral-500']),
             boxShadow: 'none'
         },
         '.Input:focus': {
-            border: 'solid 1px rgb(87, 87, 92)',
+            border: '1px solid ' + toRGB(ThemeDarkCloud['neutral-500']),
+            outline: '2px solid ' + toRGB(ThemeDarkCloud['neutral-500']),
             boxShadow: 'none'
         },
         '.Input::placeholder': {
-            color: 'rgb(87, 87, 92)'
+            color: toRGB(ThemeDarkCloud['neutral-500'])
         },
         '.Input--invalid': {
             border: 'solid 1px var(--colorDanger)',

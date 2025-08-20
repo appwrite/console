@@ -9,10 +9,14 @@
     import { Dependencies } from '$lib/constants';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
+    import { isCloud } from '$lib/system';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import { getApexDomain } from '$lib/helpers/tlds';
+    import type { Models } from '@appwrite.io/console';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/settings/domains`;
 
-    // let { data } = $props();
+    let { data } = $props();
 
     let formComponent: Form;
     let isSubmitting = $state(writable(false));
@@ -25,15 +29,44 @@
     });
 
     async function addDomain() {
+        const apexDomain = getApexDomain(domainName);
+        let domain = data.domains?.domains.find((d: Models.Domain) => d.domain === apexDomain);
+
+        if (apexDomain && !domain && isCloud) {
+            try {
+                domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
+            } catch (error) {
+                // apex might already be added on organization level, skip.
+                const alreadyAdded = error?.type === 'domain_already_exists';
+                if (!alreadyAdded) {
+                    addNotification({
+                        type: 'error',
+                        message: error.message
+                    });
+                    return;
+                }
+            }
+        }
+
         try {
             const rule = await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.createAPIRule(domainName);
+                .proxy.createAPIRule(domainName.toLocaleLowerCase());
             if (rule?.status === 'verified') {
                 await goto(routeBase);
                 await invalidate(Dependencies.DOMAINS);
             } else {
-                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
+                let redirect = `${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`;
+
+                if (isCloud) {
+                    /**
+                     * Domains are only on cloud!
+                     * Self-hosted instances have rules.
+                     */
+                    redirect += `&domain=${domain.$id}`;
+                }
+
+                await goto(redirect);
                 await invalidate(Dependencies.DOMAINS);
             }
         } catch (error) {
@@ -52,6 +85,7 @@
             id="domain"
             bind:value={domainName}
             required
+            autofocus
             placeholder="appwrite.example.com" />
     </Form>
 

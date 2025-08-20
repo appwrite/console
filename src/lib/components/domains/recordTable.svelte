@@ -1,31 +1,32 @@
 <script lang="ts">
     import { Link } from '$lib/elements';
-    import { consoleVariables } from '$routes/(console)/store';
-    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import {
         Badge,
         Layout,
         Typography,
         Table,
-        Icon,
         InteractiveText,
         Alert
     } from '@appwrite.io/pink-svelte';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let domain: string;
-    export let verified = false;
+    export let verified = undefined;
     export let variant: 'cname' | 'a' | 'aaaa';
+    export let service: 'sites' | 'general' = 'general';
 
     let subdomain = domain?.split('.')?.slice(0, -2)?.join('.');
 
     function setTarget() {
         switch (variant) {
             case 'cname':
-                return $consoleVariables._APP_DOMAIN_TARGET_CNAME;
+                return service === 'general'
+                    ? $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME
+                    : $regionalConsoleVariables._APP_DOMAIN_SITES;
             case 'a':
-                return $consoleVariables._APP_DOMAIN_TARGET_A;
+                return $regionalConsoleVariables._APP_DOMAIN_TARGET_A;
             case 'aaaa':
-                return $consoleVariables._APP_DOMAIN_TARGET_AAAA;
+                return $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA;
         }
     }
 </script>
@@ -36,16 +37,10 @@
             <Typography.Text variant="l-500" color="--fgcolor-neutral-primary">
                 {domain}
             </Typography.Text>
-            {#if verified}
-                <Badge variant="secondary" type="success" content="Verified" />
+            {#if verified === true}
+                <Badge variant="secondary" type="success" size="xs" content="Verified" />
             {:else if verified === false}
-                <Badge variant="secondary" type="error" content="Verification failed" />
-            {:else}
-                <Badge
-                    variant="secondary"
-                    type="warning"
-                    size="xs"
-                    content="Pending verification" />
+                <Badge variant="secondary" type="warning" size="xs" content="Verification failed" />
             {/if}
         </Layout.Stack>
         <Typography.Text variant="m-400">
@@ -69,7 +64,6 @@
         </Table.Row.Base>
     </Table.Root>
     <Layout.Stack gap="s" direction="row" alignItems="center">
-        <Icon icon={IconInfo} size="s" color="--fgcolor-neutral-secondary" />
         {#if variant === 'cname'}
             <Alert.Inline>
                 If your domain uses CAA records, ensure certainly.com is authorized — otherwise, SSL

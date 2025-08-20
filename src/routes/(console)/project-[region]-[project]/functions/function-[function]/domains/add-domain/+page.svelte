@@ -9,15 +9,17 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
-    import { protocol } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
-    import { Runtime, StatusCode, type Models } from '@appwrite.io/console';
+    import { type Models, ProxyResourceType, Runtime, StatusCode } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { ConnectRepoModal } from '$lib/components/git/index.js';
     import { isValueOfStringEnum } from '$lib/helpers/types.js';
+    import { isCloud } from '$lib/system';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import { getApexDomain } from '$lib/helpers/tlds';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/domains`;
 
@@ -29,8 +31,8 @@
     let behaviour: 'REDIRECT' | 'BRANCH' | 'ACTIVE' = $state('ACTIVE');
     let domainName = $state('');
     let redirect: string = $state(null);
-    let statusCode = $state(307);
     let branch: string = $state(null);
+    let statusCode = $state(StatusCode.TemporaryRedirect307);
 
     onMount(() => {
         if (
@@ -45,6 +47,25 @@
     });
 
     async function addDomain() {
+        const apexDomain = getApexDomain(domainName);
+        let domain = data.domains?.domains.find((d: Models.Domain) => d.domain === apexDomain);
+
+        if (apexDomain && !domain && isCloud) {
+            try {
+                domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
+            } catch (error) {
+                // apex might already be added on organization level, skip.
+                const alreadyAdded = error?.type === 'domain_already_exists';
+                if (!alreadyAdded) {
+                    addNotification({
+                        type: 'error',
+                        message: error.message
+                    });
+                    return;
+                }
+            }
+        }
+
         try {
             let rule: Models.ProxyRule;
             if (behaviour === 'BRANCH') {
@@ -52,10 +73,15 @@
                     .forProject(page.params.region, page.params.project)
                     .proxy.createFunctionRule(domainName, page.params.function, branch);
             } else if (behaviour === 'REDIRECT') {
-                const sc = Object.values(StatusCode).find((code) => parseInt(code) === statusCode);
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(domainName, $protocol + redirect, sc);
+                    .proxy.createRedirectRule(
+                        domainName,
+                        redirect,
+                        statusCode,
+                        page.params.function,
+                        ProxyResourceType.Function
+                    );
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
@@ -65,7 +91,9 @@
                 await goto(routeBase);
                 await invalidate(Dependencies.FUNCTION_DOMAINS);
             } else {
-                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
+                await goto(
+                    `${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}&domain=${domain.$id}`
+                );
                 await invalidate(Dependencies.FUNCTION_DOMAINS);
             }
         } catch (error) {
@@ -104,8 +132,8 @@
                     undefined
                 );
             await invalidate(Dependencies.FUNCTION);
-        } catch (error) {
-            console.log(error);
+        } catch {
+            return;
         }
     }
 </script>

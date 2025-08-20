@@ -28,7 +28,6 @@
     import { writable, type Writable } from 'svelte/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { SHOW_INIT_FEATURES } from '$lib/system';
 
     let period: UsagePeriods = '30d';
     $: path = `${base}/project-${page.params.region}-${page.params.project}/overview`;
@@ -53,7 +52,7 @@
     }
 
     function isTabSelected(key: string) {
-        return page.url.pathname === `${path}/${key}`;
+        return page.url.pathname.endsWith(`/${key}`);
     }
 
     $: $registerCommands([
@@ -71,7 +70,7 @@
             label: 'Create API Key',
             icon: IconPlus,
             callback() {
-                goto(`${path}/keys/create`);
+                goto(`${path}/api-keys/create`);
             },
             keys: ['c', 'k'],
             group: 'integrations',
@@ -230,16 +229,14 @@
                         selected={isTabSelected('platforms')}>Platforms</Tab>
                     <Tab
                         noscroll
-                        event="keys"
-                        href={`${path}/keys`}
-                        selected={isTabSelected('keys')}>API keys</Tab>
-                    {#if SHOW_INIT_FEATURES}
-                        <Tab
-                            noscroll
-                            event="keys"
-                            href={`${path}/dev-keys`}
-                            selected={isTabSelected('dev-keys')}>Dev keys</Tab>
-                    {/if}
+                        event="api-keys"
+                        href={`${path}/api-keys`}
+                        selected={isTabSelected('api-keys')}>API keys</Tab>
+                    <Tab
+                        noscroll
+                        event="dev-keys"
+                        href={`${path}/dev-keys`}
+                        selected={isTabSelected('dev-keys')}>Dev keys</Tab>
                 </Tabs>
                 {#if $action}
                     <svelte:component this={$action} />

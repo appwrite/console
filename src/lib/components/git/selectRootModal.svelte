@@ -22,6 +22,7 @@
     export let show = false;
     export let rootDir: string;
     export let product: 'sites' | 'functions' = 'functions';
+    export let branch: string;
 
     let isLoading = true;
     let directories: Directory[] = [
@@ -42,8 +43,7 @@
         try {
             const content = await sdk
                 .forProject(page.params.region, page.params.project)
-                .vcs.getRepositoryContents($installation.$id, $repository.id, currentPath);
-            // console.log(content);
+                .vcs.getRepositoryContents($installation.$id, $repository.id, currentPath, branch);
             directories[0].fileCount = content.contents?.length ?? 0;
             directories[0].children = content.contents
                 .filter((e) => e.isDirectory)
@@ -55,10 +55,9 @@
                     loading: false
                 }));
             currentDir = directories[0];
-            // console.log(directories);
             isLoading = false;
-        } catch (e) {
-            console.log(e);
+        } catch {
+            return;
         }
     });
 
@@ -84,8 +83,8 @@
             try {
                 const content = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .vcs.getRepositoryContents($installation.$id, $repository.id, path);
-                // console.log(content);
+                    .vcs.getRepositoryContents($installation.$id, $repository.id, path, branch);
+
                 const fileCount = content.contents?.length ?? 0;
                 const contentDirectories = content.contents.filter((e) => e.isDirectory);
 

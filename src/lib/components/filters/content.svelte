@@ -8,79 +8,92 @@
         InputSelectCheckbox,
         InputDateTime
     } from '$lib/elements/forms';
-    import { createEventDispatcher, onMount } from 'svelte';
-    import { operators, addFilter, queries, type TagValue } from './store';
+    import { onMount, createEventDispatcher } from 'svelte';
+    import { operators, addFilter, queries, tags } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { TagList } from '.';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
-    // We cast to any to not cause type errors in the input components
-    /* eslint  @typescript-eslint/no-explicit-any: 'off' */
-    export let value: any = null;
-    export let columns: Writable<Column[]>;
-    export let columnId: string | null = null;
-    export let arrayValues: string[] = [];
-    export let operatorKey: string | null = null;
-    export let singleCondition = false;
+    let {
+        value = $bindable(null),
+        columns,
+        columnId = $bindable(null),
+        arrayValues = $bindable([]),
+        operatorKey = $bindable(null),
+        singleCondition = false
+    }: {
+        // We cast to any to not cause type errors in the input components
+        /* eslint  @typescript-eslint/no-explicit-any: 'off' */
+        value?: any;
+        columns: Writable<Column[]>;
+        columnId?: string | null;
+        arrayValues?: string[];
+        operatorKey?: string | null;
+        singleCondition?: boolean;
+    } = $props();
 
-    $: column = $columns.find((c) => c.id === columnId) as Column;
-
-    $: operatorsForColumn = Object.entries(operators)
-        .filter(([, v]) => v.types.includes(column?.type))
-        .map(([k]) => ({
-            label: k,
-            value: k
+    let columnsArray = $derived($columns);
+    let column = $derived(columnsArray.find((c) => c.id === columnId));
+    let operatorsForColumn = $derived.by(() => {
+        if (!column?.type) return [];
+        return Object.entries(operators)
+            .filter(([, v]) => v.types.includes(column.type))
+            .map(([k]) => ({ label: k, value: k }));
+    });
+    let operator = $derived(operatorKey ? operators[operatorKey] : null);
+    let isDisabled = $derived(!operator);
+    let appliedTags = $derived($tags);
+    let columnOptions = $derived.by(() =>
+        columnsArray.filter((c) => c.filter !== false).map((c) => ({ label: c.title, value: c.id }))
+    );
+    let enumOptions = $derived.by(() => {
+        if (!column?.elements) return [];
+        return column.elements.map((e) => ({ label: e?.label ?? e, value: e?.value ?? e }));
+    });
+    let enumOptionsWithChecked = $derived.by(() => {
+        if (!column?.elements) return [];
+        return column.elements.map((e) => ({
+            label: e?.label ?? e,
+            value: e?.value ?? e,
+            checked: arrayValues.includes(e?.value ?? e)
         }));
-
-    $: operator = operatorKey ? operators[operatorKey] : null;
-    $: {
-        columnId;
-        operatorKey = null;
-    }
-
-    $: isDisabled = !operator;
-
-    let localTags: TagValue[] = [];
+    });
 
     onMount(() => {
         value = column?.array ? [] : null;
         if (column?.type === 'datetime') {
-            const today = new Date();
-            value = today.toISOString();
+            const now = new Date();
+            value = now.toISOString().slice(0, 16);
         }
     });
 
+    const dispatch = createEventDispatcher<{ clear: void; apply: { applied: number } }>();
+
     function addFilterAndReset() {
-        addFilter($columns, columnId, operatorKey, value, arrayValues);
+        addFilter(columnsArray, columnId, operatorKey, value, arrayValues);
         columnId = null;
         operatorKey = null;
         value = null;
         arrayValues = [];
+        dispatch('apply', { applied: appliedTags.length });
         if (singleCondition) {
             queries.apply();
         }
     }
-
-    const dispatch = createEventDispatcher<{
-        clear: void;
-        apply: { applied: number };
-    }>();
-    dispatch('apply', { applied: localTags.length });
 </script>
 
 <div>
-    <form on:submit|preventDefault={addFilterAndReset}>
+    <form
+        onsubmit={(e) => {
+            e.preventDefault();
+            addFilterAndReset();
+        }}>
         <Layout.Stack gap="s" direction="row" alignItems="flex-start">
             <InputSelect
                 id="column"
-                options={$columns
-                    .filter((c) => c.filter !== false)
-                    .map((c) => ({
-                        label: c.title,
-                        value: c.id
-                    }))}
+                options={columnOptions}
                 placeholder="Select column"
                 bind:value={columnId} />
             <InputSelect
@@ -97,11 +110,7 @@
                         name="value"
                         bind:tags={arrayValues}
                         placeholder="Select value"
-                        options={column?.elements?.map((e) => ({
-                            label: e?.label ?? e,
-                            value: e?.value ?? e,
-                            checked: arrayValues.includes(e?.value ?? e)
-                        }))}>
+                        options={enumOptionsWithChecked}>
                     </InputSelectCheckbox>
                 {:else}
                     <InputTags
@@ -117,10 +126,7 @@
                             id="value"
                             bind:value
                             placeholder="Select value"
-                            options={column?.elements?.map((e) => ({
-                                label: e?.label ?? e,
-                                value: e?.value ?? e
-                            }))} />
+                            options={enumOptions} />
                     {:else if column.type === 'integer' || column.type === 'double'}
                         <InputNumber id="value" bind:value placeholder="Enter value" />
                     {:else if column.type === 'boolean'}
@@ -131,11 +137,11 @@
                             options={[
                                 { label: 'True', value: true },
                                 { label: 'False', value: false }
-                            ].filter(Boolean)}
+                            ]}
                             bind:value />
                     {:else if column.type === 'datetime'}
                         {#key value}
-                            <InputDateTime id="value" bind:value step={60} />
+                            <InputDateTime id="value" bind:value step={60} type="datetime-local" />
                         {/key}
                     {:else}
                         <InputText id="value" bind:value placeholder="Enter value" />
@@ -151,10 +157,10 @@
         {/if}
     </form>
 
-    {#if !singleCondition}
+    {#if !singleCondition && appliedTags.length > 0}
         <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
             <TagList
-                tags={localTags}
+                tags={appliedTags}
                 on:remove={(e) => {
                     queries.removeFilter(e.detail);
                     queries.apply();

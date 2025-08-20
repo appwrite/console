@@ -7,7 +7,7 @@
     import type { Address } from '$lib/sdk/billing';
     import { addressList } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization } from '$lib/stores/organization';
+    import { type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import RemoveAddress from './removeAddress.svelte';
     import { user } from '$lib/stores/user';
@@ -22,8 +22,12 @@
         IconSwitchHorizontal,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
+    import type { Models } from '@appwrite.io/console';
 
-    export let billingAddress: Address = null;
+    export let organization: Organization;
+    export let locale: Models.Locale;
+    export let countryList: Models.CountryList;
+    export let billingAddress: Address;
 
     let showCreate = false;
     let showEdit = false;
@@ -32,16 +36,16 @@
 
     async function addAddress(addressId: string) {
         try {
-            await sdk.forConsole.billing.setBillingAddress($organization.$id, addressId);
-
-            await invalidate(Dependencies.ADDRESS);
-            await invalidate(Dependencies.ORGANIZATION);
+            await sdk.forConsole.billing.setBillingAddress(organization.$id, addressId);
 
             addNotification({
                 type: 'success',
-                message: `A new billing address has been added to ${$organization.name}`
+                message: `A new billing address has been added to ${organization.name}`
             });
             trackEvent(Submit.OrganizationBillingAddressUpdate);
+
+            invalidate(Dependencies.ADDRESS);
+            invalidate(Dependencies.ORGANIZATIONS);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -56,7 +60,7 @@
     <svelte:fragment slot="title">Billing address</svelte:fragment>
     View or update your billing address. This address will be included in your invoices from Appwrite.
     <svelte:fragment slot="aside">
-        {#if $organization?.billingAddressId && billingAddress}
+        {#if organization?.billingAddressId && billingAddress}
             <Card.Base variant="secondary" padding="s">
                 <Layout.Stack direction="row" justifyContent="space-between">
                     <div>
@@ -98,6 +102,7 @@
                 </Layout.Stack>
             </Card.Base>
         {:else}
+            {@const hasBillingAddresses = $addressList.billingAddresses.length}
             <Card.Base>
                 <Layout.Stack justifyContent="center" alignItems="center" gap="m">
                     <Popover let:toggle padding="none" placement="bottom-start">
@@ -117,7 +122,9 @@
                                     <span>{address.country}</span>
                                 </ActionMenu.Item.Button>
                             {/each}
-                            <Divider />
+                            {#if hasBillingAddresses}
+                                <Divider />
+                            {/if}
                             <ActionMenu.Item.Button
                                 leadingIcon={IconPlus}
                                 on:click={() => (showCreate = true)}>
@@ -133,10 +140,14 @@
 </CardGrid>
 
 {#if showCreate}
-    <AddressModal bind:show={showCreate} organization={$organization?.$id} />
+    <AddressModal bind:show={showCreate} organization={organization?.$id} {countryList} {locale} />
 {/if}
 {#if showEdit}
-    <EditAddressModal bind:show={showEdit} bind:selectedAddress={billingAddress} />
+    <EditAddressModal
+        {locale}
+        {countryList}
+        bind:show={showEdit}
+        bind:selectedAddress={billingAddress} />
 {/if}
 {#if showReplace}
     <ReplaceAddress bind:show={showReplace} />

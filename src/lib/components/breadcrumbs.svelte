@@ -1,6 +1,14 @@
 <script lang="ts">
     import { createMenubar, melt } from '@melt-ui/svelte';
-    import { Badge, Icon, type SheetMenu, ActionMenu, Card } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Icon,
+        type SheetMenu,
+        Layout,
+        ActionMenu,
+        Card,
+        Skeleton
+    } from '@appwrite.io/pink-svelte';
     import {
         IconChevronDown,
         IconChevronRight,
@@ -12,21 +20,15 @@
     import { isCloud } from '$lib/system';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { newOrgModal } from '$lib/stores/organization';
+    import { currentPlan, newOrgModal } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import type { Models } from '@appwrite.io/console';
 
-    type Project = {
-        name: string;
-        $id: string;
-        isSelected: boolean;
-        region: string;
-    };
     type Organization = {
         name: string;
         $id: string;
         tierName: string;
         isSelected: boolean;
-        projects: Array<Project>;
     };
 
     const {
@@ -61,13 +63,15 @@
         }
     } = createMenu();
 
+    let isLoadingProjects = true;
+    let loadedProjects: Models.ProjectList = { total: 0, projects: [] };
+
     export let organizations: Organization[] = [];
+    export let currentProject: Models.Project | null = null;
+    export let projects: Promise<Models.ProjectList> = Promise.resolve(loadedProjects);
 
-    $: selectedOrg = organizations.find((organization) => organization.isSelected);
-    $: selectedProject = selectedOrg?.projects.find((project) => project.isSelected);
-
-    let organisationBottomSheetOpen = false;
     let projectsBottomSheetOpen = false;
+    let organisationBottomSheetOpen = false;
 
     function createOrg() {
         trackEvent(Click.OrganizationClickCreate, { source: 'breadcrumbs' });
@@ -81,7 +85,7 @@
             title: 'Switch Organization',
             items: organizations.map((organization) => ({
                 name: organization.name,
-                href: `/console/organization-${organization?.$id}`
+                href: `${base}/organization-${organization?.$id}`
             }))
         },
         bottom: {
@@ -95,85 +99,82 @@
         }
     };
 
-    $: organizationsBottomSheet = !selectedOrg
-        ? switchOrganization
-        : {
-              top: {
-                  items: [
-                      {
-                          name: 'Organization overview',
-                          href: `/console/organization-${selectedOrg?.$id}`
-                      }
-                  ]
-              },
-              bottom:
-                  organizations.length > 1
-                      ? {
-                            items: [
-                                {
-                                    name: 'Switch organization',
-                                    trailingIcon: IconChevronRight,
-                                    subMenu: switchOrganization
-                                }
-                            ]
-                        }
-                      : {
-                            items: [
-                                {
-                                    name: 'Create organization',
-                                    leadingIcon: IconPlus,
-                                    onClick: createOrg
-                                }
-                            ]
-                        }
-          };
-    let projectsBottomSheet: SheetMenu;
-    $: projectsBottomSheet = {
-        top:
-            selectedOrg?.projects.length > 1
-                ? {
-                      title: 'Switch project',
-                      items: !selectedOrg
-                          ? []
-                          : selectedOrg?.projects
-                                .map((project, index) => {
-                                    if (index < 4) {
-                                        return {
-                                            name: project.name,
-                                            href: `/console/project-${project.region}-${project.$id}/overview`
-                                        };
-                                    } else if (index === 4) {
-                                        return {
-                                            name: 'All projects',
-                                            href: `/console/organization-${selectedOrg?.$id}`
-                                        };
-                                    }
-                                    return null;
-                                })
-                                .filter((project) => project !== null)
-                  }
-                : {
+    async function createProjectsBottomSheet(organization: Organization): Promise<SheetMenu> {
+        isLoadingProjects = true;
+        // null on non-org/project path like `onboarding`.
+        loadedProjects = (await projects) ?? loadedProjects;
+        for (const project of loadedProjects.projects) {
+            project.region ??= 'default';
+        }
+        isLoadingProjects = false;
+
+        const createProjectItem = {
+            name: 'Create project',
+            trailingIcon: IconPlus,
+            href: `${base}/organization-${organization?.$id}?create-project`
+        };
+
+        if (loadedProjects.total > 1 && selectedOrg) {
+            const projectLinks = loadedProjects.projects.slice(0, 4).map((project) => {
+                return {
+                    name: project.name,
+                    href: `${base}/project-${project.region}-${project.$id}/overview/platforms`
+                };
+            });
+
+            if (loadedProjects.projects.length > 4) {
+                projectLinks.push({
+                    name: 'All projects',
+                    href: `${base}/organization-${selectedOrg.$id}`
+                });
+            }
+
+            return {
+                top: { title: 'Switch project', items: projectLinks },
+                bottom: { items: [createProjectItem] }
+            };
+        }
+
+        return {
+            top: { items: [createProjectItem] },
+            bottom: { items: [createProjectItem] }
+        };
+    }
+
+    function createOrganizationBottomSheet(organization: Organization) {
+        return !organization
+            ? switchOrganization
+            : ({
+                  top: {
                       items: [
                           {
-                              name: 'Create project',
-                              trailingIcon: IconPlus,
-                              href: `/console/organization-${selectedOrg?.$id}?create-project`
+                              name: 'Organization overview',
+                              href: `${base}/organization-${organization?.$id}`
                           }
                       ]
                   },
-        bottom:
-            selectedOrg?.projects.length > 1
-                ? {
-                      items: [
-                          {
-                              name: 'Create project',
-                              trailingIcon: IconPlus,
-                              href: `/console/organization-${selectedOrg?.$id}?create-project`
-                          }
-                      ]
-                  }
-                : undefined
-    };
+                  bottom:
+                      organizations.length > 1
+                          ? {
+                                items: [
+                                    {
+                                        name: 'Switch organization',
+                                        trailingIcon: IconChevronRight,
+                                        subMenu: switchOrganization
+                                    }
+                                ]
+                            }
+                          : {
+                                items: [
+                                    {
+                                        name: 'Create organization',
+                                        leadingIcon: IconPlus,
+                                        onClick: createOrg
+                                    }
+                                ]
+                            }
+              } satisfies SheetMenu);
+    }
 
     function onResize() {
         if ((organisationBottomSheetOpen || projectsBottomSheetOpen) && !$isSmallViewport) {
@@ -181,83 +182,121 @@
             projectsBottomSheetOpen = false;
         }
     }
+
+    $: selectedOrg = organizations.find((org) => org.isSelected);
+
+    $: projectsBottomSheet = createProjectsBottomSheet(selectedOrg);
+
+    $: organizationsBottomSheet = createOrganizationBottomSheet(selectedOrg);
+
+    $: correctPlanName =
+        // the plan names are hardcoded in some cases and are not available locally,
+        // so we rely on the plan's source of truth - `$currentPlan`
+        $currentPlan &&
+        $currentPlan?.name.toLocaleLowerCase() !== selectedOrg?.tierName.toLocaleLowerCase()
+            ? $currentPlan.name
+            : selectedOrg?.tierName; // fallback
+
+    $: derivedKey = `${selectedOrg?.$id}-${currentProject?.$id}`;
 </script>
 
 <svelte:window on:resize={onResize} />
-<div use:melt={$menubar}>
-    {#if !$isSmallViewport}
-        <span class="breadcrumb-separator">/</span>
-        <button
-            type="button"
-            class="trigger"
-            use:melt={$triggerOrganizations}
-            aria-label="Open organizations tab">
-            <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
-            <span class="not-mobile"
-                >{#if selectedOrg?.tierName}<Badge
-                        variant="secondary"
-                        content={selectedOrg?.tierName} />{/if}</span>
-            <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
-        </button>
-    {:else}
-        <button
-            type="button"
-            class="trigger"
-            on:click={() => {
-                organisationBottomSheetOpen = true;
-            }}
-            aria-label="Open organizations tab">
-            <span class="orgName" class:noProjects={!selectedProject}
-                >{selectedOrg?.name ?? 'Organization'}</span>
-            <span class="not-mobile"
-                ><Badge variant="secondary" content={selectedOrg?.tierName ?? ''} /></span>
-            <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
-        </button>
-    {/if}
 
-    <div class="menu" use:melt={$menuOrganizations}>
-        <Card.Base padding="xxxs" shadow={true}>
-            {#if selectedOrg}
-                <div use:melt={$itemOrganizations}>
-                    <ActionMenu.Root>
-                        <ActionMenu.Item.Anchor href={`/console/organization-${selectedOrg?.$id}`}
-                            >Organization overview</ActionMenu.Item.Anchor
-                        ></ActionMenu.Root>
-                </div>
-                {#if organizations.length > 1}
-                    <div class="separator" use:melt={$separatorOrganizations}></div>
+{#key derivedKey}
+    <div use:melt={$menubar}>
+        {#if !$isSmallViewport}
+            <span class="breadcrumb-separator">/</span>
+            <button
+                type="button"
+                class="trigger"
+                use:melt={$triggerOrganizations}
+                aria-label="Open organizations tab">
+                <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
+                <span class="not-mobile"
+                    >{#if correctPlanName}<Badge
+                            variant="secondary"
+                            content={correctPlanName} />{/if}</span>
+                <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
+            </button>
+        {:else}
+            <button
+                type="button"
+                class="trigger"
+                on:click={() => {
+                    organisationBottomSheetOpen = true;
+                }}
+                aria-label="Open organizations tab">
+                <span class="orgName" class:noProjects={!currentProject}
+                    >{selectedOrg?.name ?? 'Organization'}</span>
+                <span class="not-mobile"
+                    ><Badge variant="secondary" content={correctPlanName ?? ''} /></span>
+                <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
+            </button>
+        {/if}
 
-                    <div use:melt={$subTriggerOrganizations}>
+        <div class="menu" use:melt={$menuOrganizations}>
+            <Card.Base padding="xxxs" shadow={true}>
+                {#if selectedOrg}
+                    <div use:melt={$itemOrganizations}>
                         <ActionMenu.Root>
-                            <ActionMenu.Item.Button trailingIcon={IconChevronRight}
-                                >Switch organization</ActionMenu.Item.Button>
-                        </ActionMenu.Root>
+                            <ActionMenu.Item.Anchor
+                                href={`${base}/organization-${selectedOrg?.$id}`}
+                                >Organization overview</ActionMenu.Item.Anchor
+                            ></ActionMenu.Root>
                     </div>
-                    <div class="menu subMenu" use:melt={$subMenuOrganizations}>
-                        <Card.Base padding="xxxs" shadow={true}>
-                            <div use:melt={$radioGroupOrganizations}>
-                                {#each organizations as organization}
+                    {#if organizations.length > 1}
+                        <div class="separator" use:melt={$separatorOrganizations}></div>
+
+                        <div use:melt={$subTriggerOrganizations}>
+                            <ActionMenu.Root>
+                                <ActionMenu.Item.Button trailingIcon={IconChevronRight}
+                                    >Switch organization</ActionMenu.Item.Button>
+                            </ActionMenu.Root>
+                        </div>
+                        <div class="menu subMenu" use:melt={$subMenuOrganizations}>
+                            <Card.Base padding="xxxs" shadow={true}>
+                                <div use:melt={$radioGroupOrganizations}>
+                                    {#each organizations as organization}
+                                        <div use:melt={$itemOrganizations}>
+                                            <ActionMenu.Root>
+                                                <ActionMenu.Item.Anchor
+                                                    href={`${base}/organization-${organization?.$id}`}
+                                                    >{organization.name}</ActionMenu.Item.Anchor>
+                                            </ActionMenu.Root>
+                                        </div>
+                                    {/each}
+                                    <div class="separator" use:melt={$separatorOrganizations}></div>
                                     <div use:melt={$itemOrganizations}>
                                         <ActionMenu.Root>
-                                            <ActionMenu.Item.Anchor
-                                                href={`/console/organization-${organization?.$id}`}
-                                                >{organization.name}</ActionMenu.Item.Anchor>
-                                        </ActionMenu.Root>
+                                            <ActionMenu.Item.Button
+                                                leadingIcon={IconPlusSm}
+                                                on:click={createOrg}
+                                                >Create organization</ActionMenu.Item.Button
+                                            ></ActionMenu.Root>
                                     </div>
-                                {/each}
-                                <div class="separator" use:melt={$separatorOrganizations}></div>
-                                <div use:melt={$itemOrganizations}>
-                                    <ActionMenu.Root>
-                                        <ActionMenu.Item.Button
-                                            leadingIcon={IconPlusSm}
-                                            on:click={createOrg}
-                                            >Create organization</ActionMenu.Item.Button
-                                        ></ActionMenu.Root>
                                 </div>
-                            </div>
-                        </Card.Base>
-                    </div>
+                            </Card.Base>
+                        </div>
+                    {:else}
+                        <div class="separator" use:melt={$separatorOrganizations}></div>
+                        <div use:melt={$itemOrganizations}>
+                            <ActionMenu.Root>
+                                <ActionMenu.Item.Button
+                                    leadingIcon={IconPlusSm}
+                                    on:click={createOrg}>Create organization</ActionMenu.Item.Button
+                                ></ActionMenu.Root>
+                        </div>
+                    {/if}
                 {:else}
+                    {#each organizations as organization}
+                        <div use:melt={$itemOrganizations}>
+                            <ActionMenu.Root>
+                                <ActionMenu.Item.Anchor
+                                    href={`${base}/organization-${organization?.$id}`}
+                                    >{organization.name}</ActionMenu.Item.Anchor
+                                ></ActionMenu.Root>
+                        </div>
+                    {/each}
                     <div class="separator" use:melt={$separatorOrganizations}></div>
                     <div use:melt={$itemOrganizations}>
                         <ActionMenu.Root>
@@ -266,89 +305,84 @@
                             ></ActionMenu.Root>
                     </div>
                 {/if}
-            {:else}
-                {#each organizations as organization}
-                    <div use:melt={$itemOrganizations}>
-                        <ActionMenu.Root>
-                            <ActionMenu.Item.Anchor
-                                href={`/console/organization-${organization?.$id}`}
-                                >{organization.name}</ActionMenu.Item.Anchor
-                            ></ActionMenu.Root>
-                    </div>
-                {/each}
-                <div class="separator" use:melt={$separatorOrganizations}></div>
-                <div use:melt={$itemOrganizations}>
-                    <ActionMenu.Root>
-                        <ActionMenu.Item.Button leadingIcon={IconPlusSm} on:click={createOrg}
-                            >Create organization</ActionMenu.Item.Button
-                        ></ActionMenu.Root>
-                </div>
-            {/if}
-        </Card.Base>
-    </div>
-
-    {#if selectedOrg && selectedProject}
-        <span class="breadcrumb-separator">/</span>
-        {#if !$isSmallViewport}
-            <button
-                type="button"
-                class="trigger"
-                use:melt={$triggerProjects}
-                aria-label="Open projects tab">
-                <span class="projectName">{selectedProject.name}</span>
-                <Icon icon={IconChevronDown} size="s" />
-            </button>
-        {:else}
-            <button
-                type="button"
-                class="trigger"
-                on:click={() => (projectsBottomSheetOpen = true)}
-                aria-label="Open projects tab">
-                <span class="projectName">{selectedProject.name}</span>
-                <Icon icon={IconChevronDown} size="s" />
-            </button>
-        {/if}
-
-        <div class="menu" use:melt={$menuProjects}>
-            <Card.Base padding="xxxs" shadow={true}>
-                {#if selectedOrg.projects.length > 1}
-                    {#each selectedOrg.projects as project, index}
-                        {#if index < 4}
-                            <div use:melt={$itemProjects}>
-                                <ActionMenu.Root>
-                                    <ActionMenu.Item.Anchor
-                                        href={`/console/project-${project.region}-${project.$id}`}
-                                        >{project.name}</ActionMenu.Item.Anchor
-                                    ></ActionMenu.Root>
-                            </div>
-                        {:else if index === 4}
-                            <div use:melt={$itemProjects}>
-                                <ActionMenu.Root>
-                                    <ActionMenu.Item.Anchor
-                                        href={`/console/organization-${selectedOrg.$id}`}
-                                        >All projects</ActionMenu.Item.Anchor
-                                    ></ActionMenu.Root>
-                            </div>
-                        {/if}
-                    {/each}
-                    <div class="separator" use:melt={$separatorProjects}></div>
-                {/if}
-                <div use:melt={$itemProjects}>
-                    <ActionMenu.Root>
-                        <ActionMenu.Item.Anchor
-                            leadingIcon={IconPlusSm}
-                            href={`/console/organization-${selectedOrg?.$id}?create-project`}
-                            >Create project</ActionMenu.Item.Anchor
-                        ></ActionMenu.Root>
-                </div>
             </Card.Base>
         </div>
-    {/if}
-</div>
-<BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet}
-></BottomSheet.Menu>
-<BottomSheet.Menu bind:isOpen={projectsBottomSheetOpen} menu={projectsBottomSheet}
-></BottomSheet.Menu>
+
+        {#if selectedOrg && currentProject}
+            <span class="breadcrumb-separator">/</span>
+            {#if !$isSmallViewport}
+                <button
+                    type="button"
+                    class="trigger"
+                    use:melt={$triggerProjects}
+                    aria-label="Open projects tab">
+                    <span class="projectName">{currentProject.name}</span>
+                    <Icon icon={IconChevronDown} size="s" />
+                </button>
+            {:else}
+                <button
+                    type="button"
+                    class="trigger"
+                    on:click={() => (projectsBottomSheetOpen = true)}
+                    aria-label="Open projects tab">
+                    <span class="projectName">{currentProject.name}</span>
+                    <Icon icon={IconChevronDown} size="s" />
+                </button>
+            {/if}
+
+            <div class="menu" use:melt={$menuProjects}>
+                <Card.Base padding="xxxs" shadow={true}>
+                    {#if isLoadingProjects}
+                        <div style:margin-inline="0.25rem" style:margin-block="0.25rem">
+                            <Layout.Stack gap="s">
+                                <!-- 2 should be enough -->
+                                <Skeleton width="100%" height={30} variant="line" />
+                                <Skeleton width="100%" height={30} variant="line" />
+                            </Layout.Stack>
+                        </div>
+                    {:else if loadedProjects.total > 1}
+                        {#each loadedProjects.projects as project, index}
+                            {#if index < 4}
+                                <div use:melt={$itemProjects}>
+                                    <ActionMenu.Root>
+                                        <ActionMenu.Item.Anchor
+                                            href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
+                                            <span class="projectName dropdown">{project.name}</span>
+                                        </ActionMenu.Item.Anchor>
+                                    </ActionMenu.Root>
+                                </div>
+                            {:else if index === 4}
+                                <div use:melt={$itemProjects}>
+                                    <ActionMenu.Root>
+                                        <ActionMenu.Item.Anchor
+                                            href={`${base}/organization-${selectedOrg.$id}`}>
+                                            All projects
+                                        </ActionMenu.Item.Anchor>
+                                    </ActionMenu.Root>
+                                </div>
+                            {/if}
+                        {/each}
+                        <div class="separator" use:melt={$separatorProjects}></div>
+                    {/if}
+                    <div use:melt={$itemProjects}>
+                        <ActionMenu.Root>
+                            <ActionMenu.Item.Anchor
+                                leadingIcon={IconPlusSm}
+                                href={`${base}/organization-${selectedOrg?.$id}?create-project`}>
+                                Create project
+                            </ActionMenu.Item.Anchor></ActionMenu.Root>
+                    </div>
+                </Card.Base>
+            </div>
+        {/if}
+    </div>
+
+    <BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet} />
+
+    {#await projectsBottomSheet then menu}
+        <BottomSheet.Menu bind:isOpen={projectsBottomSheetOpen} {menu} />
+    {/await}
+{/key}
 
 <style lang="scss">
     .menu {
@@ -392,6 +426,15 @@
 
         @media (min-width: 1024px) {
             max-width: 150px;
+        }
+
+        &.dropdown {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            vertical-align: middle;
         }
     }
 

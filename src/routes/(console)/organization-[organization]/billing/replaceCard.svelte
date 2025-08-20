@@ -3,31 +3,35 @@
     import { FakeModal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { organization } from '$lib/stores/organization';
+    import type { Organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
-    import { submitStripeCard } from '$lib/stores/stripe';
+    import { setPaymentMethod, submitStripeCard } from '$lib/stores/stripe';
     import { onMount } from 'svelte';
-    import type { PaymentList } from '$lib/sdk/billing';
+    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PaymentBoxes } from '$lib/components/billing';
+    import type { PaymentMethod } from '@stripe/stripe-js';
 
+    export let organization: Organization;
     export let show = false;
     export let isBackup = false;
-    let methods: PaymentList;
-    let selectedPaymentMethodId: string;
+    export let methods: PaymentList;
+
     let name: string;
     let error: string;
+    let selectedPaymentMethodId: string;
+    let showState: boolean = false;
+    let state: string = '';
+    let paymentMethod: PaymentMethod | null = null;
 
     onMount(async () => {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
-
-        if (!$organization.paymentMethodId && !$organization.backupPaymentMethodId) {
+        if (!organization.paymentMethodId && !organization.backupPaymentMethodId) {
             selectedPaymentMethodId = methods?.total ? methods.paymentMethods[0].$id : null;
         } else {
             selectedPaymentMethodId = isBackup
-                ? $organization.backupPaymentMethodId
-                : $organization.paymentMethodId;
+                ? organization.backupPaymentMethodId
+                : organization.paymentMethodId;
             // If the selected payment method does not belong to the current user, select the first one.
             if (
                 methods?.total &&
@@ -41,7 +45,24 @@
     async function handleSubmit() {
         try {
             if (selectedPaymentMethodId === '$new') {
-                const method = await submitStripeCard(name, $organization.$id);
+                if (showState && !state) {
+                    throw Error('Please select a state');
+                }
+                let method: PaymentMethodData;
+                if (showState) {
+                    method = await setPaymentMethod(paymentMethod.id, name, state);
+                } else {
+                    const card = await submitStripeCard(name, organization.$id);
+                    if (card && Object.hasOwn(card, 'id')) {
+                        if ((card as PaymentMethod).card.country === 'US') {
+                            paymentMethod = card as PaymentMethod;
+                            showState = true;
+                            return;
+                        }
+                    } else if (card && Object.hasOwn(card, '$id')) {
+                        method = card as PaymentMethodData;
+                    }
+                }
                 selectedPaymentMethodId = method.$id;
             }
             isBackup
@@ -69,7 +90,7 @@
     async function addPaymentMethod(paymentMethodId: string) {
         try {
             await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                $organization.$id,
+                organization.$id,
                 paymentMethodId
             );
         } catch (e) {
@@ -80,7 +101,7 @@
     async function addBackupPaymentMethod(paymentMethodId: string) {
         try {
             await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
-                $organization.$id,
+                organization.$id,
                 paymentMethodId
             );
         } catch (e) {
@@ -97,19 +118,22 @@
     <PaymentBoxes
         methods={filteredMethods}
         bind:name
+        bind:paymentMethod
+        bind:showState
+        bind:state
         bind:group={selectedPaymentMethodId}
-        defaultMethod={$organization?.paymentMethodId}
-        backupMethod={$organization?.backupPaymentMethodId}
+        defaultMethod={organization?.paymentMethodId}
+        backupMethod={organization?.backupPaymentMethodId}
         disabledCondition={isBackup
-            ? $organization.paymentMethodId
-            : $organization.backupPaymentMethodId} />
+            ? organization.paymentMethodId
+            : organization.backupPaymentMethodId} />
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
         <Button
             secondary
             submit
             disabled={selectedPaymentMethodId ===
-                (isBackup ? $organization.backupPaymentMethodId : $organization.paymentMethodId)}>
+                (isBackup ? organization.backupPaymentMethodId : organization.paymentMethodId)}>
             Save
         </Button>
     </svelte:fragment>

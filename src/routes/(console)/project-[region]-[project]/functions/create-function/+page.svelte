@@ -5,14 +5,12 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import { isSelfHosted } from '$lib/system';
-    import { consoleVariables } from '$routes/(console)/store';
     import { afterNavigate, goto } from '$app/navigation';
     import { installation, repository } from '$lib/stores/vcs';
     import { Repositories } from '$lib/components/git';
     import {
         Alert,
         Avatar,
-        Badge,
         Card,
         Divider,
         Icon,
@@ -23,10 +21,11 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
+    import { regionalConsoleVariables } from '../../store';
 
     export let data;
 
-    const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
+    const isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
     const wizardBase = `${base}/project-${page.params.region}-${page.params.project}/functions`;
     let previousPage: string = wizardBase;
     afterNavigate(({ from }) => {
@@ -35,13 +34,11 @@
 
     let selectedRepository: string;
 
-    const featuredTemplatesList = data.templatesList.templates
+    const featuredTemplates = data.templates
         .filter((template) => template.id !== 'starter')
         .slice(0, 4);
 
-    const starterTemplate = data.templatesList.templates.find(
-        (template) => template.id === 'starter'
-    );
+    const starterTemplate = data.templates.find((template) => template.id === 'starter');
 
     const baseRuntimesList = [
         ...new Map(
@@ -151,12 +148,12 @@
                                     <Typography.Text color="--fgcolor-neutral-primary">
                                         <Layout.Stack direction="row" gap="xs" alignItems="center">
                                             {runtimeDetail?.name}
-                                            {#if runtimeDetail?.name?.toLowerCase() === 'deno'}
-                                                <Badge
-                                                    variant="secondary"
-                                                    size="xs"
-                                                    content="New" />
-                                            {/if}
+                                            <!--{#if runtimeDetail?.name?.toLowerCase() === 'deno'}-->
+                                            <!--    <Badge-->
+                                            <!--        variant="secondary"-->
+                                            <!--        size="xs"-->
+                                            <!--        content="New" />-->
+                                            <!--{/if}-->
                                         </Layout.Stack>
                                     </Typography.Text>
                                 </Layout.Stack>
@@ -167,7 +164,7 @@
                     <Divider />
 
                     <Layout.Grid columnsS={1} columns={2}>
-                        {#each featuredTemplatesList as template}
+                        {#each featuredTemplates as template}
                             <Card.Link
                                 radius="s"
                                 padding="xs"

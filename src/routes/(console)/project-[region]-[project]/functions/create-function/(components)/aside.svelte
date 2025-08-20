@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Card, SvgIcon } from '$lib/components';
-    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
     import type { Models, Runtime } from '@appwrite.io/console';
 
@@ -10,17 +10,16 @@
     export let rootDir: string = undefined;
     export let showGitData = true;
     export let runtimes: Models.RuntimeList;
+    export let loading = false;
 
     $: selectedRuntime = runtimes?.runtimes.find((r) => r.$id === runtime);
-
-    $: console.log(runtimes);
 </script>
 
 <Card padding="s" radius="s">
     <Layout.Stack gap="xl">
         <slot />
         <Layout.Stack gap="l">
-            {#if selectedRuntime?.name}
+            {#if selectedRuntime?.name && !loading}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Runtime</Typography.Caption>
                     <Layout.Stack gap="xxs" alignItems="center" direction="row">
@@ -31,6 +30,11 @@
                             {selectedRuntime.name} - {selectedRuntime.version}
                         </Typography.Text>
                     </Layout.Stack>
+                </Layout.Stack>
+            {:else if loading}
+                <Layout.Stack gap="xs">
+                    <Skeleton variant="line" width={100} height={16} />
+                    <Skeleton variant="line" width="100%" height={20} />
                 </Layout.Stack>
             {/if}
             {#if showGitData}

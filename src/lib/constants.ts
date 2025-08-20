@@ -20,6 +20,7 @@ export enum Dependencies {
     INVOICES = 'dependency:invoices',
     ADDRESS = 'dependency:address',
     UPGRADE_PLAN = 'dependency:upgrade_plan',
+    ORGANIZATIONS = 'dependency:organizations',
     PAYMENT_METHODS = 'dependency:paymentMethods',
     ORGANIZATION = 'dependency:organization',
     MEMBERS = 'dependency:members',
@@ -530,6 +531,8 @@ export enum BillingPlan {
     CUSTOM = 'cont-1',
     ENTERPRISE = 'ent-1'
 }
+
+export const BASE_BILLING_PLANS: string[] = [BillingPlan.FREE, BillingPlan.PRO, BillingPlan.SCALE];
 
 export const feedbackDowngradeOptions = [
     {

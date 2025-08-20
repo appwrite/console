@@ -25,6 +25,7 @@
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
+    import { project } from '../../store';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -35,9 +36,12 @@
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-android\ncd starter-for-android\n';
 
+    const baseConfig = `const val APPWRITE_PROJECT_ID = "${projectId}"
+const val APPWRITE_PROJECT_NAME = ${$project.name}`;
+
     const updateConfigCode = isCloud
-        ? `const val APPWRITE_PROJECT_ID = "${projectId}"`
-        : `const val APPWRITE_PROJECT_ID = "${projectId}"
+        ? baseConfig
+        : `${baseConfig}
 const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
 
@@ -57,10 +61,14 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
             trackEvent(Submit.PlatformCreate, {
                 type: 'android'
             });
-            await Promise.all([
-                invalidate(Dependencies.PROJECT),
-                invalidate(Dependencies.PLATFORMS)
-            ]);
+
+            addNotification({
+                type: 'success',
+                message: 'Platform created.'
+            });
+
+            invalidate(Dependencies.PROJECT);
+            invalidate(Dependencies.PLATFORMS);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -93,11 +101,11 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
     });
 </script>
 
-<Wizard title="Add Android platform" bind:showExitModal confirmExit>
-    <Form onSubmit={createAndroidPlatform}>
-        <Layout.Stack gap="xxl">
-            <!-- Step One -->
-            {#if !isPlatformCreated}
+<Wizard title="Add Android platform" bind:showExitModal confirmExit={!isPlatformCreated}>
+    <Layout.Stack gap="xxl">
+        <!-- Step One -->
+        {#if !isPlatformCreated}
+            <Form onSubmit={createAndroidPlatform}>
                 <Fieldset legend="Details">
                     <Layout.Stack gap="l" alignItems="flex-end">
                         <Layout.Stack gap="s">
@@ -138,59 +146,58 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
                         </Button>
                     </Layout.Stack>
                 </Fieldset>
-            {:else}
-                <Layout.Stack gap="xxl">
-                    <Card padding="s" radius="s">
-                        <Layout.Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            gap="xs">
-                            <Layout.Stack direction="row" alignItems="center" gap="s">
-                                <Icon size="m" icon={IconAndroid} />
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                    {$createPlatform.name} ({$createPlatform.key})
-                                </Typography.Text>
-                            </Layout.Stack>
+            </Form>
+        {:else}
+            <Layout.Stack gap="xxl">
+                <Card padding="s" radius="s">
+                    <Layout.Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        gap="xs">
+                        <Layout.Stack direction="row" alignItems="center" gap="s">
+                            <Icon size="m" icon={IconAndroid} />
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
+                                {$createPlatform.name} ({$createPlatform.key})
+                            </Typography.Text>
                         </Layout.Stack>
-                    </Card>
-                </Layout.Stack>
-            {/if}
-
-            <!-- Step Two -->
-            {#if isPlatformCreated}
-                <Fieldset legend="Clone starter">
-                    <Layout.Stack gap="l">
-                        <Typography.Text variant="m-500">
-                            1. Clone the starter kit from GitHub using the terminal or Android
-                            Studio.
-                        </Typography.Text>
-
-                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
-                        <div class="pink2-code-margin-fix">
-                            <Code lang="bash" lineNumbers code={gitCloneCode} />
-                        </div>
-
-                        <Typography.Text variant="m-500"
-                            >2. Open the file <InlineCode
-                                size="s"
-                                code="data/repository/AppwriteRepository.kt" /> and update the configuration
-                            settings.</Typography.Text>
-
-                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
-                        <div class="pink2-code-margin-fix">
-                            <Code lang="kotlin" lineNumbers code={updateConfigCode} />
-                        </div>
-
-                        <Typography.Text variant="m-500"
-                            >3. Run the app on a connected device or emulator, then click the <InlineCode
-                                size="s"
-                                code="Send a ping" /> button to verify the setup.</Typography.Text>
                     </Layout.Stack>
-                </Fieldset>
-            {/if}
-        </Layout.Stack>
-    </Form>
+                </Card>
+            </Layout.Stack>
+        {/if}
+
+        <!-- Step Two -->
+        {#if isPlatformCreated}
+            <Fieldset legend="Clone starter" badge="Optional">
+                <Layout.Stack gap="l">
+                    <Typography.Text variant="m-500">
+                        1. If you're starting a new project, you can clone our starter kit from
+                        GitHub using the terminal, VSCode or Android Studio.
+                    </Typography.Text>
+
+                    <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                    <div class="pink2-code-margin-fix">
+                        <Code lang="bash" lineNumbers code={gitCloneCode} />
+                    </div>
+
+                    <Typography.Text variant="m-500"
+                        >2. Open the file <InlineCode size="s" code="constants/AppwriteConfig.kt" />
+                        and update the configuration settings.</Typography.Text>
+
+                    <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                    <div class="pink2-code-margin-fix">
+                        <Code lang="kotlin" lineNumbers code={updateConfigCode} />
+                    </div>
+
+                    <Typography.Text variant="m-500"
+                        >3. Run the app on a connected device or emulator, then click the <InlineCode
+                            size="s"
+                            code="Send a ping" /> button to verify the setup.</Typography.Text>
+                </Layout.Stack>
+            </Fieldset>
+        {/if}
+    </Layout.Stack>
+
     <svelte:fragment slot="aside">
         <Card padding="l" class="responsive-padding">
             <Layout.Stack gap="xxl">
@@ -242,7 +249,7 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
                 secondary
                 disabled={isCreatingPlatform}
                 href={location.pathname}>
-                Go to dashboard
+                Skip, go to dashboard
             </Button>
         {/if}
     </svelte:fragment>

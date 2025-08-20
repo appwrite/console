@@ -13,8 +13,9 @@
         </Typography.Caption>
         <slot>
             {#if value !== null && value !== undefined}
-                <Typography.Text size="s" truncate color="--fgcolor-neutral-primary"
-                    >{value}</Typography.Text>
+                <Typography.Text size="s" truncate color="--fgcolor-neutral-primary">
+                    {value}
+                </Typography.Text>
             {:else}
                 <Skeleton variant="line" width="100%" height={19.5} />
             {/if}

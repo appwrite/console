@@ -38,6 +38,7 @@
     import { page } from '$app/state';
     import UpdateVariablesModal from './updateVariablesModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
+    import { Confirm } from '$lib/components';
 
     export let variableList: Models.VariableList;
     export let globalVariableList: Models.VariableList | undefined = undefined;
@@ -64,12 +65,13 @@
     let showEditorModal = false;
     let showUpdate = false;
     let showSecretModal = false;
+    let showDeleteModal = false;
+    let deleteError: string;
     let offset = 0;
     const limit = 10;
 
     async function handleVariableCreated(event: CustomEvent<Models.Variable[]>) {
         const variables = event.detail;
-        console.log(variables);
         try {
             const promises = variables.map((variable) =>
                 sdkCreateVariable(variable.key, variable.value, variable?.secret || false)
@@ -115,7 +117,6 @@
     }
     async function handleVariableSecret(event: CustomEvent<Models.Variable>) {
         const variable = event.detail;
-        console.log(variable);
         try {
             await sdkUpdateVariable(variable.$id, variable.key, variable.value, variable.secret);
             selectedVar = null;
@@ -136,9 +137,11 @@
         }
     }
 
-    async function handleVariableDeleted(variable: Models.Variable) {
+    async function handleVariableDeleted() {
         try {
-            await sdkDeleteVariable(variable.$id);
+            await sdkDeleteVariable(selectedVar.$id);
+            showDeleteModal = false;
+            selectedVar = null;
             addNotification({
                 type: 'success',
                 message: `${$project.name} ${
@@ -147,10 +150,7 @@
             });
             trackEvent(Submit.VariableDelete);
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+            deleteError = error.message;
             trackError(error, Submit.VariableDelete);
         }
     }
@@ -369,16 +369,16 @@
                                     </Button>
                                     <svelte:fragment slot="tooltip" let:toggle>
                                         <ActionMenu.Root>
+                                            <ActionMenu.Item.Button
+                                                trailingIcon={IconPencil}
+                                                on:click={(e) => {
+                                                    selectedVar = variable;
+                                                    showUpdate = true;
+                                                    toggle(e);
+                                                }}>
+                                                Update
+                                            </ActionMenu.Item.Button>
                                             {#if !variable.secret}
-                                                <ActionMenu.Item.Button
-                                                    trailingIcon={IconPencil}
-                                                    on:click={(e) => {
-                                                        selectedVar = variable;
-                                                        showUpdate = true;
-                                                        toggle(e);
-                                                    }}>
-                                                    Update
-                                                </ActionMenu.Item.Button>
                                                 <ActionMenu.Item.Button
                                                     trailingIcon={IconEyeOff}
                                                     on:click={(e) => {
@@ -404,7 +404,8 @@
                                                 status="danger"
                                                 trailingIcon={IconTrash}
                                                 on:click={async (e) => {
-                                                    handleVariableDeleted(variable);
+                                                    selectedVar = variable;
+                                                    showDeleteModal = true;
                                                     toggle(e);
                                                 }}>
                                                 Delete
@@ -481,4 +482,14 @@
         {sdkUpdateVariable}
         {variableList}
         bind:show={showVariablesUpload} />
+{/if}
+
+{#if showDeleteModal}
+    <Confirm
+        title="Delete variable"
+        bind:open={showDeleteModal}
+        bind:error={deleteError}
+        onSubmit={handleVariableDeleted}>
+        <p>Are you sure you want to delete this variable? This action is irreversible.</p>
+    </Confirm>
 {/if}

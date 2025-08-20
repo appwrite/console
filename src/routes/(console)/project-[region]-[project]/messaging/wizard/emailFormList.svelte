@@ -8,7 +8,8 @@
         InputText,
         InputTextarea
     } from '$lib/elements/forms';
-    import { Pill } from '$lib/elements';
+    import { Badge, Icon } from '@appwrite.io/pink-svelte';
+    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { CustomId, Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
@@ -23,8 +24,6 @@
     let otherEmail = '';
 
     async function sendTestEmail() {
-        const email = selected === 'self' ? $user.email : otherEmail;
-        console.log(email);
         // TODO: replace with test method
         sdk.forProject(page.params.region, page.params.project).messaging.createEmail(
             ID.unique(),
@@ -106,10 +105,12 @@
 </InputSwitch>
 {#if !showCustomId}
     <div>
-        <Pill button on:click={() => (showCustomId = !showCustomId)}
-            ><span class="icon-pencil" aria-hidden="true"></span><span class="text">
-                Message ID
-            </span></Pill>
+        <Badge
+            variant="secondary"
+            content="Message ID"
+            on:click={() => (showCustomId = !showCustomId)}>
+            <Icon icon={IconPencil} size="s" slot="start" />
+        </Badge>
     </div>
 {:else}
     <CustomId

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -9,9 +8,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
     export let selectedAddress: Address;
+    export let locale: Models.Locale;
+    export let countryList: Models.CountryList;
 
     let error: string = null;
     let options = [
@@ -22,9 +24,6 @@
     ];
 
     onMount(async () => {
-        const countryList = await sdk
-            .forProject(page.params.region, page.params.project)
-            .locale.listCountries();
         options = countryList.countries.map((country) => {
             return {
                 value: country.code,
@@ -65,13 +64,15 @@
      * which really shouldn't happen, but here we are, playing it safe!
      */
     $: if (show && !selectedAddress.country) {
-        sdk.forProject(page.params.region, page.params.project)
-            .locale.get()
-            .then((locale) => {
+        if (locale) {
+            selectedAddress.country = locale.countryCode;
+        } else {
+            sdk.forConsole.locale.get().then((locale) => {
                 if (locale.countryCode) {
                     selectedAddress.country = locale.countryCode;
                 }
             });
+        }
     }
 </script>
 

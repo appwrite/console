@@ -1,8 +1,7 @@
 <script lang="ts">
     import { beforeNavigate } from '$app/navigation';
     import { Navbar, Sidebar } from '$lib/components';
-    import type { NavbarProject } from '$lib/components/navbar.svelte';
-    import { wizard } from '$lib/stores/wizard';
+    import { isNewWizardStatusOpen, wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
     import { setContext } from 'svelte';
     import { writable } from 'svelte/store';
@@ -11,21 +10,20 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { tierToPlan } from '$lib/stores/billing';
-    import { type Models } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen } from '$lib/stores/sidebar';
     import { BillingPlan } from '$lib/constants';
     import { page } from '$app/stores';
+    import type { Models } from '@appwrite.io/console';
 
-    export let showSideNavigation = false;
     export let showHeader = true;
     export let showFooter = true;
-    export let loadedProjects: Array<NavbarProject> = [];
-    export let projects: Array<Models.Project> = [];
+    export let showSideNavigation = false;
+    export let selectedProject: Models.Project = null;
+    export let projects: Promise<Models.ProjectList> = undefined;
 
-    $: selectedProject = loadedProjects.find((project) => project.isSelected);
     let yOnMenuOpen: number;
     let showContentTransition = false;
     let timeoutId: ReturnType<typeof setTimeout>;
@@ -102,10 +100,13 @@
                 $id: org.$id,
                 showUpgrade: billingPlan === BillingPlan.FREE,
                 tierName: isCloud ? tierToPlan(billingPlan).name : null,
-                isSelected: $organization?.$id === org.$id,
-                projects: loadedProjects
+                isSelected: $organization?.$id === org.$id
             };
-        })
+        }),
+
+        projects: projects,
+
+        currentProject: selectedProject
     };
 
     let showAccountMenu = false;
@@ -113,18 +114,28 @@
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = $isSidebarOpen ? 'open' : 'closed';
 
+    let isProjectPage;
+    $: isProjectPage = $page.route?.id?.includes('project-');
+
     function handleResize() {
         $isSidebarOpen = false;
         showAccountMenu = false;
     }
 
     const progressCard = function getProgressCard() {
-        if (selectedProject && !hasOnboardingDismissed(selectedProject.$id)) {
-            const currentProject = projects.find((project) => project.$id === selectedProject.$id);
+        if (selectedProject && !hasOnboardingDismissed(selectedProject.$id, $user)) {
+            const { platforms, pingCount } = selectedProject;
+            let percentage = 33;
+
+            if (platforms.length > 0 && pingCount === 0) {
+                percentage = 66;
+            } else if (pingCount > 0) {
+                percentage = 100;
+            }
 
             return {
                 title: 'Get started',
-                percentage: currentProject && currentProject.platforms.length ? 100 : 33
+                percentage
             };
         }
 
@@ -134,7 +145,7 @@
 
 <svelte:window on:resize={handleResize} />
 <svelte:body use:style={$bodyStyle} />
-{#if $activeHeaderAlert?.show}
+{#if $activeHeaderAlert?.show && !$isNewWizardStatusOpen}
     <svelte:component this={$activeHeaderAlert.component} />
 {/if}
 <main
@@ -159,7 +170,7 @@
     <div
         class="content"
         class:has-transition={showContentTransition}
-        class:icons-content={state === 'icons'}
+        class:icons-content={state === 'icons' && isProjectPage}
         class:no-sidebar={!showSideNavigation}>
         <section class="main-content" data-test={showSideNavigation}>
             {#if $page.data?.header}
@@ -172,14 +183,14 @@
         </section>
     </div>
 
-    <button
-        type="button"
-        class="overlay-button"
-        aria-label="Close sidebar"
-        class:overlay={$isSidebarOpen}
-        on:click={() => {
-            $isSidebarOpen = false;
-        }}></button>
+    {#if $isSidebarOpen}
+        <button
+            type="button"
+            class="overlay-button"
+            aria-label="Close sidebar"
+            class:overlay={$isSidebarOpen}
+            on:click={() => ($isSidebarOpen = false)}></button>
+    {/if}
 </main>
 
 <style lang="scss">

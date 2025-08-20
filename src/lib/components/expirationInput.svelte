@@ -85,7 +85,8 @@
             return options[0]?.value ?? null;
         }
 
-        let result = 'custom';
+        let result = null;
+
         for (const option of options) {
             if (!isValidDate(option.value)) continue;
 
@@ -93,6 +94,12 @@
                 result = option.value;
                 break;
             }
+        }
+
+        // no matching date, check if 'custom' is available
+        if (result === null) {
+            const hasCustomOption = options.some((option) => option.value === 'custom');
+            result = hasCustomOption ? 'custom' : (options[0]?.value ?? null);
         }
 
         return result;
@@ -108,8 +115,18 @@
     let expirationSelect = initExpirationSelect();
     let expirationCustom: string | null = value ? splitDateValue(value) : null;
 
+    let initialized = false;
+    let hasUserInteracted = false;
+
     $: {
-        if (!isSameDay(new Date(expirationSelect), new Date(value))) {
+        // Set initial value if value is null on first load
+        if (!initialized && value === null && expirationSelect !== null) {
+            value = expirationSelect === 'custom' ? expirationCustom : expirationSelect;
+            initialized = true;
+        }
+
+        // Only update value after user interaction
+        if (hasUserInteracted && !isSameDay(new Date(expirationSelect), new Date(value))) {
             value = expirationSelect === 'custom' ? expirationCustom : expirationSelect;
         }
     }
@@ -126,8 +143,15 @@
     {options}
     id="preset"
     label={selectorLabel}
-    bind:value={expirationSelect} />
+    bind:value={expirationSelect}
+    on:change={() => (hasUserInteracted = true)} />
 
 {#if expirationSelect === 'custom'}
-    <InputDateTime required id="expire" label={dateSelectorLabel} bind:value={expirationCustom} />
+    <InputDateTime
+        required
+        type="date"
+        id="expire"
+        label={dateSelectorLabel}
+        bind:value={expirationCustom}
+        on:change={() => (hasUserInteracted = true)} />
 {/if}

@@ -5,7 +5,7 @@
     import { Repositories } from '$lib/components/git';
     import { Dependencies } from '$lib/constants';
     import { Link } from '$lib/elements';
-    import { Button, InputCheckbox, InputSelect } from '$lib/elements/forms';
+    import { Button, InputCheckbox } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -18,7 +18,7 @@
         type Models
     } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Input, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let site: Models.Site;
@@ -57,16 +57,18 @@
                 .vcs.listRepositoryBranches($installation.$id, selectedRepository);
 
             const sorted = sortBranches(branchList.branches);
-            branch = sorted[0]?.name ?? null;
+
+            branch = sorted.find((b) => b.name === site.providerBranch)
+                ? site.providerBranch
+                : (sorted[0]?.name ?? null);
 
             if (!branch) {
                 branch = 'main';
             }
 
             return sorted;
-        } catch (error) {
-            console.log(installations);
-            console.log(error);
+        } catch {
+            return;
         }
     }
 
@@ -127,7 +129,13 @@
         }
     }
 
-    $: console.log($repository);
+    $: if (!show) {
+        error = '';
+        branch = null;
+        commit = null;
+        activate = true;
+        hasRepository = !!site?.providerRepositoryId;
+    }
 </script>
 
 <Modal title="Create Git deployment" bind:show onSubmit={createDeployment} bind:error>
@@ -187,13 +195,12 @@
                     </Typography.Caption>
                 </Layout.Stack>
             </Card>
-            <InputSelect
-                required={true}
+            <Input.ComboBox
+                required
                 id="branch"
                 label="Production branch"
                 placeholder="Select branch"
                 bind:value={branch}
-                isSearchable
                 on:select={(event) => {
                     branch = event.detail.value;
                 }}

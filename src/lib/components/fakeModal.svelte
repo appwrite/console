@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert } from '$lib/components';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import Form from '$lib/elements/forms/form.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -30,7 +30,7 @@
         }
     }
 
-    function closeModal() {
+    export function closeModal() {
         document.documentElement.classList.remove('u-overflow-hidden');
         show = false;
     }
@@ -112,14 +112,14 @@
                 <div class="modal-content">
                     <div class="modal-content-spacer u-flex-vertical u-gap-24 u-width-full-line">
                         {#if error}
-                            <Alert
+                            <Alert.Inline
+                                status="warning"
                                 dismissible
-                                type="warning"
                                 on:dismiss={() => {
                                     error = null;
                                 }}>
                                 {error}
-                            </Alert>
+                            </Alert.Inline>
                         {/if}
                         <slot />
                     </div>

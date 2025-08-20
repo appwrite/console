@@ -3,16 +3,21 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert, Confirm, Id } from '$lib/components';
+    import { Confirm, Id } from '$lib/components';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';
     import { Button as ConsoleButton, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { afterUpdate, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import type { PageData } from './$types';
-    import { isRelationship, isRelationshipToMany } from './document-[document]/attributes/store';
+    import {
+        isRelationship,
+        isRelationshipToMany,
+        isString
+    } from './document-[document]/attributes/store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
     import type { ColumnType } from '$lib/helpers/types';
@@ -22,37 +27,27 @@
         Button,
         Link,
         Badge,
-        FloatingActionBar
+        FloatingActionBar,
+        InteractiveText,
+        Typography,
+        Layout
     } from '@appwrite.io/pink-svelte';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data: PageData;
 
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
+
+    let displayNames = {};
     let showRelationships = false;
     let selectedRelationship: Models.AttributeRelationship = null;
     let relationshipData: Partial<Models.Document>[];
-    let displayNames = {};
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
-        updateMaxWidth();
     });
-
-    afterUpdate(() => updateMaxWidth());
-
-    function updateMaxWidth() {
-        const tableCells = Array.from(document.querySelectorAll('.less-width-truncated'));
-
-        const visibleColumnsCount = $columns.filter((col) => !col.hide).length;
-        const newMaxWidth = Math.max(50 - (visibleColumnsCount - 1) * 5, 25);
-
-        tableCells.forEach((cell) => {
-            const cellItem = cell as HTMLElement;
-            cellItem.style.maxWidth = `${newMaxWidth}vw`;
-        });
-    }
 
     function formatArray(array: unknown[]) {
         if (array.length === 0) return '[ ]';
@@ -88,7 +83,7 @@
                     ? `${formattedColumn.slice(0, 20)}...`
                     : formattedColumn,
             truncated: formattedColumn.length > 20,
-            whole: formattedColumn
+            whole: `${formattedColumn.slice(0, 100)}...`
         };
     }
 
@@ -100,8 +95,9 @@
                 id: attribute.key,
                 title: attribute.key,
                 type: attribute.type as ColumnType,
-                show: selected?.includes(attribute.key) ?? true,
+                hide: !!selected?.includes(attribute.key),
                 array: attribute?.array,
+                width: { min: 168 },
                 format:
                     'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
                 elements: 'elements' in attribute ? attribute.elements : null
@@ -166,7 +162,12 @@
     let:root
     allowSelection
     bind:selectedRows
-    columns={[{ id: '$id', width: 200 }, ...$columns, { id: '$created' }, { id: '$updated' }]}>
+    columns={[
+        { id: '$id', width: 200 },
+        ...$columns,
+        { id: '$created', width: 200 },
+        { id: '$updated', width: 200 }
+    ]}>
     <svelte:fragment slot="header" let:root>
         <Table.Header.Cell column="$id" {root}>Document ID</Table.Header.Cell>
         {#each $columns as column}
@@ -188,65 +189,91 @@
                 {/key}
             </Table.Cell>
 
-            {#each $columns as { id }}
+            {#each $columns as { id } (id)}
                 {@const attr = $attributes.find((n) => n.key === id)}
-                <Table.Cell column={id} {root}>
-                    {#if isRelationship(attr)}
-                        {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
-                        {#if !isRelationshipToMany(attr)}
-                            {#if document[+id]}
-                                {@const related = document[id]}
-                                <Link.Button
-                                    variant="muted"
-                                    on:click={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        goto(
-                                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
-                                        );
-                                    }}>
-                                    {#each args as arg, i}
-                                        {#if arg !== undefined}
-                                            {#if i}
-                                                &nbsp;|
+                {#if attr}
+                    <Table.Cell column={id} {root}>
+                        {#if isRelationship(attr)}
+                            {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
+                            {#if !isRelationshipToMany(attr)}
+                                {#if document[id]}
+                                    {@const related = document[id]}
+                                    <Link.Button
+                                        variant="muted"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            goto(
+                                                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
+                                            );
+                                        }}>
+                                        {#each args as arg, i}
+                                            {#if arg !== undefined}
+                                                {#if i}
+                                                    &nbsp;|
+                                                {/if}
+                                                <span class="text" data-private>
+                                                    {related?.[arg]}
+                                                </span>
                                             {/if}
-                                            <span class="text" data-private>
-                                                {related?.[arg]}
-                                            </span>
-                                        {/if}
-                                    {/each}
-                                </Link.Button>
+                                        {/each}
+                                    </Link.Button>
+                                {:else}
+                                    <span class="text">n/a</span>
+                                {/if}
                             {:else}
-                                <span class="text">n/a</span>
+                                {@const itemsNum = document[id]?.length}
+                                <Button.Button
+                                    variant="extra-compact"
+                                    disabled={!itemsNum}
+                                    badge={itemsNum ?? 0}
+                                    on:click={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        relationshipData = document[id];
+                                        showRelationships = true;
+                                        selectedRelationship = attr;
+                                    }}>
+                                    Items
+                                </Button.Button>
                             {/if}
                         {:else}
-                            {@const itemsNum = document[id]?.length}
-                            <Button.Button
-                                variant="extra-compact"
-                                disabled={!itemsNum}
-                                badge={itemsNum ?? 0}
-                                on:click={(e) => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    relationshipData = document[id];
-                                    showRelationships = true;
-                                    selectedRelationship = attr;
-                                }}>
-                                Items
-                            </Button.Button>
+                            {@const datetime = document[id]}
+                            {@const formatted = formatColumn(document[id])}
+                            {@const isDatetimeAttribute = attr.type === 'datetime'}
+                            {@const isEncryptedAttribute = isString(attr) && attr.encrypt}
+                            {#if isDatetimeAttribute}
+                                <DualTimeView time={datetime}>
+                                    <span slot="title">Timestamp</span>
+                                    {toLocaleDateTime(datetime, true)}
+                                </DualTimeView>
+                            {:else if isEncryptedAttribute}
+                                <button on:click={(e) => e.preventDefault()}>
+                                    <InteractiveText
+                                        copy={false}
+                                        variant="secret"
+                                        isVisible={false}
+                                        text={formatted.value} />
+                                </button>
+                            {:else if formatted.truncated}
+                                <Tooltip placement="bottom" disabled={!formatted.truncated}>
+                                    <Typography.Text truncate>{formatted.value}</Typography.Text>
+                                    <span
+                                        let:showing
+                                        slot="tooltip"
+                                        style:white-space="pre-wrap"
+                                        style:word-break="break-all">
+                                        {#if showing}
+                                            {formatted.whole}
+                                        {/if}
+                                    </span>
+                                </Tooltip>
+                            {:else}
+                                <Typography.Text truncate>{formatted.value}</Typography.Text>
+                            {/if}
                         {/if}
-                    {:else}
-                        {@const formatted = formatColumn(document[id])}
-                        <Tooltip disabled={!formatted.truncated} placement="bottom">
-                            <span>
-                                {formatted.value}
-                            </span>
-                            <span style:white-space="pre-wrap" slot="tooltip">
-                                {formatted.whole}
-                            </span>
-                        </Tooltip>
-                    {/if}
-                </Table.Cell>
+                    </Table.Cell>
+                {/if}
             {/each}
             <Table.Cell column="$created" {root}>
                 <DualTimeView time={document.$createdAt} />
@@ -317,15 +344,15 @@
                     </Table.Row.Base>
                 {/each}
             </Table.Root>
-            <div class="u-flex u-flex-vertical u-gap-16">
-                <Alert>To change the selection edit the relationship settings.</Alert>
-
+            <Layout.Stack gap="l" direction="column">
+                <Alert.Inline status="info"
+                    >To change the selection edit the relationship settings.</Alert.Inline>
                 <ul>
                     <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
                         Delete document from <span data-private>{$collection.name}</span>
                     </InputChoice>
                 </ul>
-            </div>
+            </Layout.Stack>
         {:else}
             <p class="u-bold">This action is irreversible.</p>
         {/if}
@@ -333,8 +360,12 @@
 </Confirm>
 
 <style>
-    .floating-action-bar :global(div:first-of-type) {
-        /* 50% > 60% because we have sub-navigation */
-        left: calc(60% - var(--p-floating-action-bar-width) / 2);
+    .floating-action-bar {
+        position: fixed;
+
+        :global(div:first-of-type) {
+            /* 50% > 60% because we have sub-navigation */
+            left: calc(60% - var(--p-floating-action-bar-width) / 2);
+        }
     }
 </style>

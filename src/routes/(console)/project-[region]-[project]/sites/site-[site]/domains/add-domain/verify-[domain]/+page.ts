@@ -1,24 +1,19 @@
 import { sdk } from '$lib/stores/sdk';
-import { Dependencies } from '$lib/constants.js';
 import { isCloud } from '$lib/system';
-import type { Domain, DomainsList } from '$lib/sdk/domains.js';
+import { Dependencies } from '$lib/constants.js';
+import { type Models, Query } from '@appwrite.io/console';
 
-export const load = async ({ parent, depends, params }) => {
-    const { site } = await parent();
-    depends(Dependencies.DOMAINS);
+export const load = async ({ parent, depends }) => {
+    const { site, organization } = await parent();
+    depends(Dependencies.SITES_DOMAINS);
 
-    let domain: Domain;
-    let domainsList: DomainsList;
+    let domainsList: Models.DomainsList;
     if (isCloud) {
-        [domain, domainsList] = await Promise.all([
-            sdk.forConsole.domains.get(params.domain),
-            sdk.forConsole.domains.list()
-        ]);
+        domainsList = await sdk.forConsole.domains.list([Query.equal('teamId', organization.$id)]);
     }
 
     return {
         site,
-        domain,
         domainsList
     };
 };

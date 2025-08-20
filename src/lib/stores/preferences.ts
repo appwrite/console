@@ -4,35 +4,66 @@ import type { Page } from '@sveltejs/kit';
 import { get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import type { Models } from '@appwrite.io/console';
-import { organization } from './organization';
 import { page } from '$app/state';
+import { user } from '$lib/stores/user';
+import deepEqual from 'deep-equal';
 
-type Preferences = {
+type ConsolePreferences = {
     limit?: number;
     view?: View;
     columns?: string[];
-};
+} /* support a strict + flexible preference type for TS compatibility */ & Record<
+    string,
+    string | number | boolean | object | null | unknown
+>;
 
 type TeamPreferences = {
     names?: string[];
 };
 
-type PreferencesStore = {
-    [key: string]: Preferences;
+type ConsolePreferencesStore = {
+    [key: string]: ConsolePreferences;
     collections?: {
-        [key: string]: Preferences['columns'];
+        [key: string]: ConsolePreferences['columns'];
     };
     displayNames?: {
         [key: string]: TeamPreferences['names'];
     };
 } & { hideAiDisclaimer?: boolean };
 
+async function updateConsolePreferences(store: ConsolePreferencesStore): Promise<void> {
+    const currentPreferences = get(user)?.prefs ?? (await sdk.forConsole.account.getPrefs());
+    if (!currentPreferences?.console || Array.isArray(currentPreferences.console)) {
+        currentPreferences.console = {};
+    }
+
+    currentPreferences.console = {
+        ...currentPreferences.console,
+        ...store
+    };
+
+    await sdk.forConsole.account.updatePrefs(currentPreferences);
+}
+
 function createPreferences() {
-    const { subscribe, set, update } = writable<PreferencesStore>({});
-    let preferences: PreferencesStore = {};
+    const { subscribe, set, update } = writable<ConsolePreferencesStore>({});
+    let preferences: ConsolePreferencesStore = {};
 
     if (browser) {
-        set(JSON.parse(globalThis.localStorage.getItem('preferences') ?? '{}'));
+        // fresh fetch.
+        sdk.forConsole.account
+            .getPrefs()
+            .then((userPreferences) => {
+                if (!userPreferences?.console || Array.isArray(userPreferences.console)) {
+                    userPreferences.console = {};
+                }
+
+                set(userPreferences.console);
+            })
+            .catch(() => {
+                // exception is thrown if there's no session; in that case - fallback!
+                set(JSON.parse(globalThis.localStorage.getItem('preferences') ?? '{}'));
+            });
     }
 
     subscribe((v) => {
@@ -42,11 +73,33 @@ function createPreferences() {
         }
     });
 
+    /**
+     * Update the local store and then synchronizes them on user prefs.
+     */
+    function updateAndSync(callback: (prefs: ConsolePreferencesStore) => void): Promise<void> {
+        let oldPrefsSnapshot: ConsolePreferencesStore;
+        let newPrefsSnapshot: ConsolePreferencesStore;
+
+        update((currentPrefs) => {
+            oldPrefsSnapshot = structuredClone(currentPrefs);
+            callback(currentPrefs);
+            newPrefsSnapshot = structuredClone(currentPrefs);
+            return currentPrefs;
+        });
+
+        if (deepEqual(oldPrefsSnapshot, newPrefsSnapshot)) {
+            return;
+        }
+
+        // sync the preferences.
+        return updateConsolePreferences(newPrefsSnapshot);
+    }
+
     return {
         subscribe,
         set,
         update,
-        get: (route?: Page['route']): Preferences => {
+        get: (route?: Page['route']): ConsolePreferences => {
             const parsedRoute = route ?? page.route;
             return (
                 preferences?.[parsedRoute.id] ?? {
@@ -56,12 +109,11 @@ function createPreferences() {
                 }
             );
         },
-
-        getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
+        getCustomCollectionColumns: (collectionId: string): ConsolePreferences['columns'] => {
             return preferences?.collections?.[collectionId] ?? [];
         },
-        setLimit: (limit: Preferences['limit']) =>
-            update((n) => {
+        setLimit: (limit: ConsolePreferences['limit']) =>
+            updateAndSync((n) => {
                 const path = page.route.id;
 
                 if (!n?.[path]) {
@@ -73,8 +125,8 @@ function createPreferences() {
 
                 return n;
             }),
-        setView: (view: Preferences['view']) =>
-            update((n) => {
+        setView: (view: ConsolePreferences['view']) =>
+            updateAndSync((n) => {
                 const path = page.route.id;
 
                 if (!n?.[path]) {
@@ -86,8 +138,8 @@ function createPreferences() {
 
                 return n;
             }),
-        setColumns: (columns: Preferences['columns']) =>
-            update((n) => {
+        setColumns: (columns: ConsolePreferences['columns']) =>
+            updateAndSync((n) => {
                 const path = page.route.id;
 
                 if (!n?.[path]) {
@@ -99,18 +151,17 @@ function createPreferences() {
 
                 return n;
             }),
-        setCustomCollectionColumns: (columns: Preferences['columns']) =>
-            update((n) => {
-                const current = page;
-
-                const collection = current.params.collection;
-                if (!n?.collections?.[collection]) {
+        setCustomCollectionColumns: (
+            collectionId: string,
+            columns: ConsolePreferences['columns']
+        ) =>
+            updateAndSync((n) => {
+                if (!n?.collections?.[collectionId]) {
                     n ??= {};
                     n.collections ??= {};
                 }
 
-                n.collections[collection] = columns;
-
+                n.collections[collectionId] = Array.from(new Set(columns));
                 return n;
             }),
         loadTeamPrefs: async (id: string) => {
@@ -125,10 +176,13 @@ function createPreferences() {
         getDisplayNames: () => {
             return preferences?.displayNames ?? {};
         },
-        setDisplayNames: async (collectionId: string, names: TeamPreferences['names']) => {
-            const id = get(organization).$id;
+        setDisplayNames: async (
+            orgId: string,
+            collectionId: string,
+            names: TeamPreferences['names']
+        ) => {
             let teamPrefs: Models.Preferences;
-            update((n) => {
+            await updateAndSync((n) => {
                 if (!n?.displayNames) {
                     n ??= {};
                     n.displayNames ??= {};
@@ -139,7 +193,8 @@ function createPreferences() {
 
                 return n;
             });
-            await sdk.forConsole.teams.updatePrefs(id, teamPrefs);
+
+            await sdk.forConsole.teams.updatePrefs(orgId, teamPrefs);
         }
     };
 }

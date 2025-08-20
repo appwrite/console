@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Click, Submit, trackEvent } from '$lib/actions/analytics';
-    import { Alert, CardGrid } from '$lib/components';
+    import { CardGrid } from '$lib/components';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import { BillingPlan } from '$lib/constants';
     import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
@@ -45,16 +46,14 @@
         <svelte:fragment slot="aside">
             {#if isCloud}
                 {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}
-                <Alert type="info">
-                    <p class="text">
-                        The {currentPlan.name} plan has a maximum upload file size limit of {Math.floor(
-                            parseInt(size.value)
-                        )}{size.unit}.
-                        {#if $organization?.billingPlan === BillingPlan.FREE}
-                            Upgrade to allow files of a larger size.
-                        {/if}
-                    </p>
-                    <svelte:fragment slot="action">
+                <Alert.Inline status="info">
+                    The {currentPlan.name} plan has a maximum upload file size limit of {Math.floor(
+                        parseInt(size.value)
+                    )}{size.unit}.
+                    {#if $organization?.billingPlan === BillingPlan.FREE}
+                        Upgrade to allow files of a larger size.
+                    {/if}
+                    <svelte:fragment slot="actions">
                         {#if $organization?.billingPlan === BillingPlan.FREE}
                             <div class="alert-buttons u-flex">
                                 <Button
@@ -68,7 +67,7 @@
                             </div>
                         {/if}
                     </svelte:fragment>
-                </Alert>
+                </Alert.Inline>
             {/if}
             <InputNumber
                 required

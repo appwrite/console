@@ -15,7 +15,6 @@
     import { tierToPlan } from '$lib/stores/billing';
     import { Table, Tabs, Alert } from '@appwrite.io/pink-svelte';
     import DeleteOrganizationEstimation from './deleteOrganizationEstimation.svelte';
-    import { onMount } from 'svelte';
     import type { EstimationDeleteOrganization, InvoiceList } from '$lib/sdk/billing';
 
     export let showDelete = false;
@@ -39,7 +38,7 @@
             if ($organizationList?.total > 1) {
                 await goto(`${base}/account/organizations`);
             } else {
-                await goto(`${base}/onboarding/create-project`);
+                await goto(`${base}/onboarding/create-organization`);
             }
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
@@ -54,8 +53,6 @@
             trackError(e, Submit.OrganizationDelete);
         }
     }
-
-    onMount(() => getEstimate());
 
     const tabs = [
         {
@@ -75,6 +72,8 @@
     $: if (!showDelete) {
         // reset on close.
         organizationName = '';
+    } else {
+        getEstimate();
     }
 
     async function getEstimate() {

@@ -14,12 +14,13 @@
     import { BuildRuntime, Framework, ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import Configuration from '../configuration.svelte';
-    import { buildVerboseDomain } from '../store';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
-    import { organization } from '$lib/stores/organization';
-    import { consoleVariables } from '$routes/(console)/store';
+    import { regionalConsoleVariables } from '../../../store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { removeFile } from '$lib/helpers/files';
+    import { InvalidFileType, removeFile } from '$lib/helpers/files';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { isCloud } from '$lib/system';
+    import { currentPlan } from '$lib/stores/organization';
+    import Domain from '../domain.svelte';
 
     export let data;
     let showExitModal = false;
@@ -29,7 +30,8 @@
 
     let name = 'My website';
     let id = ID.unique();
-    let domain = id;
+    let domain = data.domain;
+    let domainIsValid = true;
     let framework: Models.Framework =
         data.frameworks.frameworks?.find((f) => f.key === 'other') ??
         data.frameworks.frameworks?.[0];
@@ -40,9 +42,22 @@
     let variables: Partial<Models.Variable>[] = [];
     let files: FileList;
 
+    $: maxSize =
+        isCloud && $currentPlan
+            ? $currentPlan.deploymentSize * 1000000
+            : $regionalConsoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+
+    $: readableMaxSize = humanFileSize(maxSize);
+
     async function create() {
         try {
-            domain = await buildVerboseDomain(name, $organization.name, $project.name, id);
+            if (!domainIsValid) {
+                addNotification({
+                    type: 'error',
+                    message: 'Domain is not valid'
+                });
+                return;
+            }
 
             const fr = Object.values(Framework).find((f) => f === framework.key);
             const buildRuntime = Object.values(BuildRuntime).find(
@@ -73,7 +88,10 @@
             // Add domain
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.createSiteRule(`${domain}.${$consoleVariables._APP_DOMAIN_SITES}`, site.$id);
+                .proxy.createSiteRule(
+                    `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
+                    site.$id
+                );
 
             //Add variables
             const promises = variables.map((variable) =>
@@ -116,17 +134,37 @@
         }
     }
 
+    function handleInvalid(e: CustomEvent) {
+        const reason = e.detail?.reason ?? '';
+        if (reason === InvalidFileType.EXTENSION) {
+            addNotification({
+                type: 'error',
+                message: 'Only .tar.gz files allowed'
+            });
+        } else if (reason === InvalidFileType.SIZE) {
+            addNotification({
+                type: 'error',
+                message: 'File size exceeds 10MB'
+            });
+        } else {
+            addNotification({
+                type: 'error',
+                message: 'Invalid file'
+            });
+        }
+    }
+
     $: filesList = files?.length
         ? Array.from(files).map((f) => {
               return {
                   ...f,
+                  name: f.name,
+                  size: f.size,
                   extension: f.type,
                   removable: true
               };
           })
         : [];
-
-    $: console.log(files);
 </script>
 
 <svelte:head>
@@ -144,7 +182,12 @@
                 <Typography.Text color="--fgcolor-neutral-primary">
                     Upload a tar.gz containing your site source code
                 </Typography.Text>
-                <Upload.Dropzone extensions={['gz', 'tar']} bind:files maxSize={10000000} required>
+                <Upload.Dropzone
+                    extensions={['gz', 'tar']}
+                    bind:files
+                    {maxSize}
+                    required
+                    on:invalid={handleInvalid}>
                     <Layout.Stack alignItems="center" gap="s">
                         <Layout.Stack alignItems="center" gap="s">
                             <Layout.Stack
@@ -166,8 +209,11 @@
                                         >Only .tar.gz files allowed</svelte:fragment>
                                 </Tooltip>
                             </Layout.Stack>
-                            <Typography.Caption variant="400"
-                                >Max file size 10MB</Typography.Caption>
+                            {#if maxSize > 0}
+                                <Typography.Caption variant="400"
+                                    >Max file size: {readableMaxSize.value +
+                                        readableMaxSize.unit}</Typography.Caption>
+                            {/if}
                         </Layout.Stack>
                     </Layout.Stack>
                 </Upload.Dropzone>
@@ -186,6 +232,8 @@
                 bind:selectedFramework={framework}
                 bind:variables
                 frameworks={data.frameworks.frameworks} />
+
+            <Domain bind:domain bind:domainIsValid />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

@@ -2,12 +2,12 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { timeFromNow } from '$lib/helpers/date';
-    import type { Models } from '@appwrite.io/console';
+    import { ImageFormat, type Models } from '@appwrite.io/console';
     import { Card, Icon, Layout, Popover, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { generateSiteDeploymentDesc } from './store';
     import { SvgIcon } from '$lib/components';
     import { app } from '$lib/stores/app';
-    import { getApiEndpoint } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import AddCollaboratorModal from './(components)/addCollaboratorModal.svelte';
     import SitesActionMenu from './sitesActionMenu.svelte';
     import { capitalize } from '$lib/helpers/string';
@@ -33,9 +33,23 @@
     }
 
     function getFilePreview(fileId: string) {
-        // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
-        const endpoint = getApiEndpoint();
-        return endpoint + `/storage/buckets/screenshots/files/${fileId}/view?project=console`;
+        return sdk
+            .forConsoleIn(page.params.region)
+            .storage.getFilePreview(
+                'screenshots',
+                fileId,
+                1024,
+                576,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                ImageFormat.Webp
+            );
     }
 </script>
 

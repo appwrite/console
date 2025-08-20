@@ -22,14 +22,11 @@ export const load = async ({ params, depends, url, route }) => {
         limit,
         query,
         search,
-        domains: await sdk
+        proxyRules: await sdk
             .forProject(params.region, params.project)
             .proxy.listRules(
                 [
-                    Query.or([
-                        Query.equal('type', RuleType.DEPLOYMENT),
-                        Query.equal('type', RuleType.REDIRECT)
-                    ]),
+                    Query.equal('type', [RuleType.DEPLOYMENT, RuleType.REDIRECT]),
                     Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
                     Query.equal('deploymentResourceId', params.site),
                     Query.equal('trigger', RuleTrigger.MANUAL),

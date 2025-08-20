@@ -6,8 +6,6 @@
     export let data;
     $: total = data.deploymentsTotal;
     $: count = data.deployments;
-
-    $: console.log(data);
 </script>
 
 <Container>

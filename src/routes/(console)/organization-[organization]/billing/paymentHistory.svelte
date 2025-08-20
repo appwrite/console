@@ -5,9 +5,8 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Invoice, InvoiceList } from '$lib/sdk/billing';
-    import { sdk } from '$lib/stores/sdk';
+    import { getApiEndpoint, sdk } from '$lib/stores/sdk';
     import { Query } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { selectedInvoice, showRetryModal } from './store';
     import {
@@ -19,6 +18,7 @@
         Layout,
         Link,
         Popover,
+        Skeleton,
         Table
     } from '@appwrite.io/pink-svelte';
     import {
@@ -27,30 +27,27 @@
         IconExternalLink,
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
-    import { base } from '$app/paths';
 
-    let offset = 0;
-    let invoiceList: InvoiceList = {
+    let offset = $state(0);
+    let isLoadingInvoices = $state(false);
+    let invoiceList: InvoiceList = $state({
         invoices: [],
         total: 0
-    };
+    });
 
     const limit = 5;
-
-    onMount(request);
+    const endpoint = getApiEndpoint();
+    const hasPaymentError = $derived(invoiceList?.invoices.some((invoice) => invoice?.lastError));
 
     async function request() {
-        // isLoadingInvoices = true;
+        isLoadingInvoices = true;
         invoiceList = await sdk.forConsole.billing.listInvoices(page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
             Query.orderDesc('$createdAt')
         ]);
-    }
 
-    $: if (page.url.searchParams.get('type') === 'validate-invoice') {
-        window.history.replaceState({}, '', page.url.pathname);
-        request();
+        isLoadingInvoices = false;
     }
 
     function retryPayment(invoice: Invoice) {
@@ -58,30 +55,52 @@
         $showRetryModal = true;
     }
 
-    $: if (offset !== null) {
-        request();
-    }
+    $effect(() => {
+        if (page.url.searchParams.get('type') === 'validate-invoice') {
+            window.history.replaceState({}, '', page.url.pathname);
+            request();
+        }
+    });
+
+    $effect(() => {
+        if (offset !== null) {
+            request();
+        }
+    });
+
+    const columns = $derived([
+        { id: 'dueDate', width: { min: 120 } },
+        { id: 'status', width: { min: hasPaymentError ? 200 : 100 } },
+        { id: 'amount', width: { min: 120 } },
+        { id: 'action', width: 40 }
+    ]);
 </script>
 
 <CardGrid>
     <svelte:fragment slot="title">Payment history</svelte:fragment>
     Transaction history for this organization. Download invoices for more details about your payments.
     <svelte:fragment slot="aside">
-        {#if invoiceList.total > 0}
-            <Table.Root
-                let:root
-                columns={[
-                    { id: 'dueDate' },
-                    { id: 'status', width: { min: 200 } },
-                    { id: 'amount', width: { min: 120 } },
-                    { id: 'action', width: 40 }
-                ]}>
+        {#if invoiceList.total > 0 || isLoadingInvoices}
+            <Table.Root let:root {columns}>
                 <svelte:fragment slot="header" let:root>
                     <Table.Header.Cell column="dueDate" {root}>Due date</Table.Header.Cell>
                     <Table.Header.Cell column="status" {root}>Status</Table.Header.Cell>
                     <Table.Header.Cell column="amount" {root}>Amount due</Table.Header.Cell>
                     <Table.Header.Cell column="action" {root} />
                 </svelte:fragment>
+
+                {#if isLoadingInvoices}
+                    {#each Array.from({ length: 2 }).keys() as index (index)}
+                        <Table.Row.Base {root}>
+                            {#each columns as column}
+                                <Table.Cell column={column.id} {root}>
+                                    <Skeleton variant="line" height={20} width="100%" />
+                                </Table.Cell>
+                            {/each}
+                        </Table.Row.Base>
+                    {/each}
+                {/if}
+
                 {#each invoiceList?.invoices as invoice}
                     {@const status = invoice.status}
                     <Table.Row.Base {root}>
@@ -134,15 +153,15 @@
                                     <ActionMenu.Item.Anchor
                                         leadingIcon={IconExternalLink}
                                         external
-                                        href={`${base}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
+                                        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
                                         View invoice
                                     </ActionMenu.Item.Anchor>
                                     <ActionMenu.Item.Anchor
                                         leadingIcon={IconDownload}
-                                        href={`${base}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
+                                        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
                                         Download PDF
                                     </ActionMenu.Item.Anchor>
-                                    {#if status === 'overdue' || status === 'failed'}
+                                    {#if status === 'overdue' || status === 'failed' || status === 'abandoned'}
                                         <ActionMenu.Item.Button
                                             leadingIcon={IconRefresh}
                                             on:click={() => {
@@ -162,10 +181,10 @@
                 {/each}
             </Table.Root>
             {#if invoiceList.total > limit}
-                <div class="u-flex u-main-space-between">
+                <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                     <p class="text">Total results: {invoiceList.total}</p>
                     <PaginationInline {limit} bind:offset total={invoiceList.total} hidePages />
-                </div>
+                </Layout.Stack>
             {/if}
         {:else}
             <Card.Base>

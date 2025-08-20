@@ -38,14 +38,6 @@
                     message: 'Credits applied successfully'
                 });
             }
-            couponData = response;
-            dispatch('validation', couponData);
-            coupon = null;
-            show = false;
-            addNotification({
-                type: 'success',
-                message: 'Credits applied successfully'
-            });
         } catch (e) {
             error = e.message;
         }
@@ -56,7 +48,7 @@
     }
 </script>
 
-<Modal bind:show title="Add credits" onSubmit={addCoupon} bind:error>
+<Modal size="s" bind:show title="Add credits" onSubmit={addCoupon} bind:error>
     <svelte:fragment slot="description">
         Credits will be applied automatically to your next invoice.
     </svelte:fragment>
@@ -66,10 +58,11 @@
         placeholder="Promo code"
         id="code"
         label="Add promo code"
+        autofocus
         bind:value={coupon} />
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button submit disabled={coupon === ''}>Add</Button>
+        <Button submissionLoader submit disabled={coupon === ''}>Add</Button>
     </svelte:fragment>
 </Modal>

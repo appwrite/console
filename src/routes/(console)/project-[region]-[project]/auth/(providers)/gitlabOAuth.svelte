@@ -55,33 +55,30 @@
         label="App ID"
         autofocus={true}
         placeholder="Enter ID"
-        bind:value={appId} />
+        bind:value={appId}
+        required />
     <InputPassword
         id="secret"
         label="App Secret"
         placeholder="Enter App Secret"
         minlength={0}
-        bind:value={clientSecret} />
-    <InputText
-        id="endpoint"
-        label="Endpoint (optional)"
-        placeholder="Your endpoint"
-        bind:value={endpoint} />
+        bind:value={clientSecret}
+        required />
+    <InputText id="endpoint" label="Endpoint" placeholder="Your endpoint" bind:value={endpoint} />
     <Alert.Inline status="info">
         To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
     </Alert.Inline>
-    <div>
-        <p>URI</p>
-        <CopyInput
-            value={`${getApiEndpoint(page.params.region)}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
-    </div>
+    <CopyInput
+        label="URI"
+        value={`${getApiEndpoint(page.params.region)}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
-            disabled={(secret === provider.secret &&
-                enabled === provider.enabled &&
-                appId === provider.appId) ||
-                !(appId && clientSecret)}
+            disabled={!appId ||
+                !clientSecret ||
+                (secret === provider.secret &&
+                    enabled === provider.enabled &&
+                    appId === provider.appId)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>

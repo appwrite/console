@@ -1,9 +1,10 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+    import { onDestroy, onMount } from 'svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import WizardExitModal from './wizardExitModal.svelte';
-    import { goto } from '$app/navigation';
-    import { wizard } from '$lib/stores/wizard';
+    import { isNewWizardStatusOpen, wizard } from '$lib/stores/wizard';
 
     type $$Props =
         | {
@@ -49,13 +50,19 @@
             if (confirmExit) {
                 showExitModal = true;
             } else {
-                goto(href);
+                goBack();
                 trackEvent('wizard_exit', {
                     from: 'escape'
                 });
             }
         }
     }
+
+    const goBack = () => goto(href);
+
+    onMount(() => ($isNewWizardStatusOpen = true));
+
+    onDestroy(() => ($isNewWizardStatusOpen = false));
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -72,7 +79,7 @@
         if (confirmExit) {
             showExitModal = true;
         } else {
-            goto(href);
+            goBack();
             trackEvent('wizard_exit', {
                 from: 'button'
             });

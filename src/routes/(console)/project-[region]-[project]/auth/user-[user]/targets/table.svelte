@@ -98,7 +98,7 @@
         <svelte:fragment slot="start">
             <Badge content={selectedIds.length.toString()} />
             <span>
-                {selectedIds.length > 1 ? 'subscribers' : 'subscriber'}
+                {selectedIds.length > 1 ? 'targets' : 'target'}
                 selected
             </span>
         </svelte:fragment>
@@ -109,7 +109,7 @@
     </FloatingActionBar>
 {/if}
 
-<Confirm title="Delete Identity" bind:open={showDelete} onSubmit={handleDelete}>
+<Confirm title="Delete Target" bind:open={showDelete} onSubmit={handleDelete}>
     <Typography.Text>
         Are you sure you want to delete <b>{selectedIds.length}</b>
         {selectedIds.length > 1 ? 'targets' : 'target'}?

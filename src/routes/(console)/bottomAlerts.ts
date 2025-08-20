@@ -1,124 +1,88 @@
-import Init3KeysPromo from '$lib/images/promos/init3-keys.png';
-import Init3SitesPromo from '$lib/images/promos/init3-sites.png';
-import Init3FlutterPromo from '$lib/images/promos/init3-flutter.png';
-import Init3ImagesPromo from '$lib/images/promos/init3-images.png';
-import Init3TokensPromo from '$lib/images/promos/init3-tokens.png';
-
-import {
-    type BottomModalAlertItem,
-    setMobileSingleAlertLayout,
-    showBottomModalAlert
-} from '$lib/stores/bottom-alerts';
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
+import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
+import AtomicNumericOperationsDark from '$lib/images/promos/atomic-numeric-operations-dark.png';
+import AtomicNumericOperationsLight from '$lib/images/promos/atomic-numeric-operations-light.png';
+import AppwriteGeneralAvailabiltyLight from '$lib/images/promos/appwrite-general-availability-light.png';
+import AppwriteGeneralAvailabiltyDark from '$lib/images/promos/appwrite-general-availability-dark.png';
+import TimestampOverridesDark from '$lib/images/promos/timestamp-overrides-dark.png';
+import TimestampOverridesLight from '$lib/images/promos/timestamp-overrides-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
-if (!isCloud) {
-    const getSrc = (image: string) => {
-        return {
-            dark: image,
-            light: image
-        };
+if (isCloud) {
+    const appwriteGeneralAvailabiltyPromo: BottomModalAlertItem = {
+        id: 'modal:appwrite_general_availability_announcement',
+        src: {
+            dark: AppwriteGeneralAvailabiltyDark,
+            light: AppwriteGeneralAvailabiltyLight
+        },
+        title: 'Now Generally Available',
+        message: 'After 26 months of Appwrite Cloud, we are ready to remove the beta tag.',
+        plan: 'free',
+        importance: 8,
+        scope: 'everywhere',
+        cta: {
+            text: 'Learn more',
+            link: () => 'https://apwr.dev/ygTXfxA',
+            external: true,
+            hideOnClick: true
+        },
+        show: true
     };
-
-    const sharedCTA = (url: string) => ({
-        external: true,
-        link: () => url,
-        hideOnClick: true,
-        text: 'Read the announcement'
-    });
-
-    const promos: BottomModalAlertItem[] = [
-        {
-            id: 'modal:init3_sites',
-            src: getSrc(Init3SitesPromo),
-            title: 'Announcing: Sites',
-            message:
-                'The open-source Vercel alternative. With Sites, you deploy and host your websites and web apps right inside Appwrite.',
-            plan: 'free',
-            importance: 8,
-            scope: 'everywhere',
-            cta: sharedCTA('https://apwr.dev/sites1'),
-
-            // Day 1 = Monday 9 AM CET
-            show: isPromoLive('2025-05-19', '09:00')
+    const timestampOverridesPromo: BottomModalAlertItem = {
+        id: 'modal:timestamp_overrides_announcement',
+        src: {
+            dark: TimestampOverridesDark,
+            light: TimestampOverridesLight
         },
-        {
-            id: 'modal:init3_flutter',
-            src: getSrc(Init3FlutterPromo),
-            title: 'Announcing: Hosting for Flutter Web',
-            message: 'Deploy your Flutter web apps directly from Appwrite Sites.',
-            plan: 'free',
-            importance: 8,
-            scope: 'everywhere',
-            cta: sharedCTA('https://apwr.dev/sitesfl'),
-
-            // Day 2 = Tuesday 3 PM CET
-            show: isPromoLive('2025-05-20', '15:00')
+        title: 'Announcing Timestamp Overrides',
+        message:
+            'Move historical data into Appwrite without losing context or disrupting chronological accuracy.',
+        plan: 'free',
+        importance: 8,
+        scope: 'project',
+        cta: {
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-timestamp-overrides',
+            external: true,
+            hideOnClick: true
         },
-        {
-            id: 'modal:init3_keys',
-            src: getSrc(Init3KeysPromo),
-            title: 'Announcing: Dev Keys',
-            message:
-                'A new Appwrite feature that lets you bypass rate limits during local development.',
-            plan: 'free',
-            importance: 8,
-            scope: 'everywhere',
-            cta: sharedCTA('https://apwr.dev/devkeys'),
-
-            // Day 3 = Wednesday 3 PM CET
-            show: isPromoLive('2025-05-21', '15:00')
+        show: true
+    };
+    const atomicNumericOperationsPromo: BottomModalAlertItem = {
+        id: 'modal:atomic_numeric_operations_announcement',
+        src: {
+            dark: AtomicNumericOperationsDark,
+            light: AtomicNumericOperationsLight
         },
-        {
-            id: 'modal:init3_images',
-            src: getSrc(Init3ImagesPromo),
-            title: 'Announcing: New image formats',
-            message:
-                'We have added support for two new image formats in Appwrite Storage: HEIC and AVIF.',
-            plan: 'free',
-            importance: 8,
-            scope: 'everywhere',
-            cta: sharedCTA('https://apwr.dev/imagefo'),
-
-            // Day 4 = Thursday 3 PM CET
-            show: isPromoLive('2025-05-22', '15:00')
+        title: 'Announcing Atomic Numeric Operations',
+        message:
+            'Safely update numeric fields directly on the server, without conflicts or race conditions.',
+        plan: 'free',
+        importance: 8,
+        scope: 'project',
+        cta: {
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-atomic-numeric-operations',
+            external: true,
+            hideOnClick: true
         },
-        {
-            id: 'modal:init3_file_tokens',
-            src: getSrc(Init3TokensPromo),
-            title: 'Announcing: File Tokens',
-            message:
-                'File tokens let you share files easily and securely, without modifying permissions or changing project access.',
-            plan: 'free',
-            importance: 8,
-            scope: 'everywhere',
-            cta: sharedCTA('https://apwr.dev/filet'),
-
-            // Day 5 = Friday 3 PM CET
-            show: isPromoLive('2025-05-23', '15:00')
-        }
-    ];
-
-    const currentPromo = promos.find((promo) => promo.show);
-
-    if (currentPromo) {
-        listOfPromotions.push(currentPromo);
-
-        setMobileSingleAlertLayout({
-            title: currentPromo.title,
-            message: currentPromo.message,
-            enabled: true,
-            cta: currentPromo.cta
-        });
-    }
+        show: true
+    };
+    listOfPromotions.push(
+        timestampOverridesPromo,
+        appwriteGeneralAvailabiltyPromo,
+        atomicNumericOperationsPromo
+    );
 }
 
 export function addBottomModalAlerts() {
     listOfPromotions.forEach((promotion) => showBottomModalAlert(promotion));
 }
 
+// use this for time based promo handling
+// noinspection JSUnusedGlobalSymbols
 export function isPromoLive(
     date: string,
     time: string,

@@ -38,9 +38,11 @@
                 `${page.url.origin}${base}/invite`,
                 name || undefined
             );
-            await invalidate(Dependencies.ACCOUNT);
-            await invalidate(Dependencies.ORGANIZATION);
-            await invalidate(Dependencies.MEMBERS);
+            await Promise.all([
+                invalidate(Dependencies.ACCOUNT),
+                invalidate(Dependencies.ORGANIZATION),
+                invalidate(Dependencies.MEMBERS)
+            ]);
 
             showCreate = false;
             addNotification({
@@ -68,7 +70,7 @@
         id="email"
         label="Email"
         placeholder="Enter email"
-        autofocus={true}
+        autofocus
         bind:value={email} />
     <InputText id="member-name" label="Name" placeholder="Enter name" bind:value={name} />
     {#if isCloud}

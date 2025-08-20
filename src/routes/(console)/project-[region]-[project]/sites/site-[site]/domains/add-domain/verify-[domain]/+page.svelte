@@ -20,23 +20,27 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import { base } from '$app/paths';
     import { writable } from 'svelte/store';
-    import { consoleVariables } from '$routes/(console)/store';
-    import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
+    import { isASubdomain } from '$lib/helpers/tlds';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
+    import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     let { data } = $props();
 
     const ruleId = page.url.searchParams.get('rule');
-    let isSubDomain = $derived(page.params.domain?.split('.')?.length >= 3);
+    const isSubDomain = $derived.by(() => isASubdomain(page.params.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
+
     $effect(() => {
-        if ($consoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
+        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
             selectedTab = 'cname';
-        } else if ($consoleVariables._APP_DOMAIN_TARGET_A) {
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
             selectedTab = 'a';
-        } else if ($consoleVariables._APP_DOMAIN_TARGET_AAAA) {
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
             selectedTab = 'aaaa';
+        } else {
+            selectedTab = 'nameserver';
         }
     });
 
@@ -54,12 +58,18 @@
                     .forProject(page.params.region, page.params.project)
                     .proxy.updateRuleVerification(ruleId);
                 verified = ruleData.status === 'verified';
+                throw new Error(
+                    'Domain verification failed. Please check your domain settings or try again later'
+                );
             } else if (isNewDomain && isCloud) {
                 const domainData = await sdk.forConsole.domains.create(
                     $organization.$id,
                     page.params.domain
                 );
-                verified = domainData.nameservers.toLocaleLowerCase() === 'appwrite';
+                verified = domainData.nameservers.toLowerCase() === 'appwrite';
+                throw new Error(
+                    'Domain verification failed. Please check your domain settings or try again later'
+                );
             }
 
             addNotification({
@@ -111,7 +121,7 @@
                 <Layout.Stack gap="xl">
                     <div>
                         <Tabs.Root variant="secondary" let:root>
-                            {#if isSubDomain && !!$consoleVariables._APP_DOMAIN_TARGET_CNAME && $consoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
+                            {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'cname')}
@@ -127,7 +137,7 @@
                                     Nameservers
                                 </Tabs.Item.Button>
                             {/if}
-                            {#if !!$consoleVariables._APP_DOMAIN_TARGET_A && $consoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'}
+                            {#if !isCloud && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_A && $regionalConsoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'a')}
@@ -135,7 +145,7 @@
                                     A
                                 </Tabs.Item.Button>
                             {/if}
-                            {#if !!$consoleVariables._APP_DOMAIN_TARGET_AAAA && $consoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'}
+                            {#if !isCloud && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'aaaa')}
@@ -149,7 +159,11 @@
                     {#if selectedTab === 'nameserver'}
                         <NameserverTable domain={page.params.domain} {verified} />
                     {:else}
-                        <RecordTable domain={page.params.domain} {verified} variant={selectedTab} />
+                        <RecordTable
+                            {verified}
+                            service="sites"
+                            variant={selectedTab}
+                            domain={page.params.domain} />
                     {/if}
                     <Divider />
                     <Layout.Stack direction="row" justifyContent="flex-end">

@@ -12,13 +12,13 @@
     import CancelDeploymentModal from '../cancelDeploymentModal.svelte';
     import RedeployModal from '../../../redeployModal.svelte';
     import ActivateDeploymentModal from '../../../activateDeploymentModal.svelte';
-    import { protocol } from '$routes/(console)/store';
-    import { Accordion } from '@appwrite.io/pink-svelte';
+    import { Accordion, Tooltip } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
     import LogsTimer from '../../../(components)/logsTimer.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/state';
+    import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
     let { data } = $props();
 
@@ -29,19 +29,21 @@
     let showDelete = $state(false);
     let showCancel = $state(false);
 
-    onMount(async () => {
-        sdk.forConsole.client.subscribe(
-            'console',
-            async (response: RealtimeResponseEvent<Models.Deployment>) => {
-                if (
-                    response.events.includes(
-                        `sites.${page.params.site}.deployments.${page.params.deployment}.update`
-                    )
-                ) {
-                    invalidate(Dependencies.DEPLOYMENTS);
+    onMount(() => {
+        return sdk
+            .forConsoleIn(page.params.region)
+            .client.subscribe(
+                'console',
+                async (response: RealtimeResponseEvent<Models.Deployment>) => {
+                    if (
+                        response.events.includes(
+                            `sites.${page.params.site}.deployments.${page.params.deployment}.update`
+                        )
+                    ) {
+                        await invalidate(Dependencies.DEPLOYMENT);
+                    }
                 }
-            }
-        );
+            );
     });
 </script>
 
@@ -49,12 +51,24 @@
     <SiteCard {deployment} proxyRuleList={data.proxyRuleList}>
         <svelte:fragment slot="footer">
             {#if deployment?.status === 'ready' && data.proxyRuleList?.total}
-                <Button href={`${$protocol}${data.proxyRuleList.rules[0]?.domain}`} external>
+                <Button
+                    external
+                    href={`${$regionalProtocol}${data.proxyRuleList.rules[0]?.domain}`}>
                     Visit
                 </Button>
             {/if}
 
-            <Button secondary on:click={() => (showRedeploy = true)}>Redeploy</Button>
+            <Tooltip disabled={deployment?.sourceSize !== 0} placement={'bottom'}>
+                <div>
+                    <Button
+                        secondary
+                        disabled={deployment?.sourceSize === 0}
+                        on:click={() => (showRedeploy = true)}>
+                        Redeploy
+                    </Button>
+                </div>
+                <div slot="tooltip">Source is empty</div>
+            </Tooltip>
             <DeploymentActionMenu
                 inCard
                 {deployment}

@@ -34,7 +34,8 @@
         InputTextarea,
         Label
     } from '$lib/elements/forms';
-    import { Pill } from '$lib/elements';
+    import { Badge, Icon } from '@appwrite.io/pink-svelte';
+    import { IconPencil, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { CustomId, Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
@@ -43,8 +44,6 @@
     import PushPhone from '../pushPhone.svelte';
     import { onMount } from 'svelte';
     import InputFilePicker from '$lib/elements/forms/inputFilePicker.svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
 
     let showCustomId = false;
@@ -59,9 +58,6 @@
     });
 
     async function sendTestMessage() {
-        const email = selected === 'self' ? $user.email : otherEmail;
-        console.log(email);
-
         // TODO: replace with test method
         sdk.forProject(page.params.region, page.params.project).messaging.createPush(
             ID.unique(),
@@ -199,10 +195,12 @@
     </form>
     {#if !showCustomId}
         <div>
-            <Pill button on:click={() => (showCustomId = !showCustomId)}
-                ><span class="icon-pencil" aria-hidden="true"></span><span class="text">
-                    Message ID
-                </span></Pill>
+            <Badge
+                variant="secondary"
+                content="Message ID"
+                on:click={() => (showCustomId = !showCustomId)}>
+                <Icon icon={IconPencil} size="s" slot="start" />
+            </Badge>
         </div>
     {:else}
         <CustomId

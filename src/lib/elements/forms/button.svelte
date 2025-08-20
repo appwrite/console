@@ -3,7 +3,7 @@
     import { getContext, hasContext } from 'svelte';
     import { readable } from 'svelte/store';
     import type { FormContext } from './form.svelte';
-    import { Button } from '@appwrite.io/pink-svelte';
+    import { Button, Spinner } from '@appwrite.io/pink-svelte';
     import type { ComponentProps } from 'svelte';
 
     type Props = ComponentProps<Button.Button | Button.Anchor>;
@@ -115,12 +115,24 @@
         type={submit ? 'submit' : 'button'}>
         <slot name="start" slot="start" />
         {#if ($isSubmitting && submissionLoader) || (forceShowLoader && submissionLoader)}
-            <span
-                class="loader is-small"
-                style:--p-loader-base-full-color="transparent"
-                aria-hidden="true"></span>
+            <Spinner size="s" />
         {/if}
         <slot isSubmitting={$isSubmitting} />
         <slot slot="end" name="end" />
     </Button.Button>
 {/if}
+
+<!-- built-in classes don't seem to work -->
+<style lang="scss">
+    :global {
+        .is-full-width {
+            width: 100% !important;
+        }
+
+        @media (max-width: 768px) {
+            .is-full-width-mobile {
+                width: 100% !important;
+            }
+        }
+    }
+</style>

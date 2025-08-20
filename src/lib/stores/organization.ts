@@ -34,6 +34,7 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     billingInvoiceId: string;
     status: string;
     remarks: string;
+    projects: string[];
 };
 
 export type OrganizationList = {
@@ -60,5 +61,4 @@ export const organizationList = derived(
 export const organization = derived(page, ($page) => $page.data?.organization as Organization);
 export const currentPlan = derived(page, ($page) => $page.data?.currentPlan as Plan);
 export const members = derived(page, ($page) => $page.data.members as Models.MembershipList);
-
-export const regions = writable<Models.ConsoleRegionList | undefined>(undefined);
+export const regions = writable<Models.ConsoleRegionList>({ total: 0, regions: [] });

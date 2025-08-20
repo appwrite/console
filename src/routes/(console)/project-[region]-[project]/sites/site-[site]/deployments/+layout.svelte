@@ -14,7 +14,7 @@
     onMount(() => {
         let previousStatus: string = null;
         return sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
-            if (previousStatus === message.payload.status) {
+            if (message.payload.status !== 'ready' && previousStatus === message.payload.status) {
                 return;
             }
             previousStatus = message.payload.status;
@@ -26,7 +26,6 @@
             if (message.events.includes('sites.*.deployments.*.update')) {
                 invalidate(Dependencies.DEPLOYMENTS);
                 invalidate(Dependencies.SITE);
-                console.log(message);
                 return;
             }
             if (message.events.includes('sites.*.deployments.*.delete')) {

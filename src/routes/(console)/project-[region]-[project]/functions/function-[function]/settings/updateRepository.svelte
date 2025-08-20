@@ -152,8 +152,8 @@
                     undefined
                 );
             await invalidate(Dependencies.FUNCTION);
-        } catch (error) {
-            console.log(error);
+        } catch {
+            return;
         }
     }
 </script>
@@ -274,5 +274,9 @@
     <DisconnectRepo bind:show={showDisconnect} on:success={loadRepository} />
 {/if}
 {#if showSelectRoot}
-    <SelectRootModal bind:show={showSelectRoot} product="sites" bind:rootDir={selectedDir} />
+    <SelectRootModal
+        bind:show={showSelectRoot}
+        product="sites"
+        bind:rootDir={selectedDir}
+        branch={selectedBranch} />
 {/if}

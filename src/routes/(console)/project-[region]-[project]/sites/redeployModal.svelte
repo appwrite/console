@@ -14,6 +14,7 @@
     export let selectedDeploymentId: string;
     export let site: Models.Site;
     export let redirect = false;
+
     let error: string;
 
     async function redeploy() {
@@ -22,14 +23,16 @@
                 .forProject(page.params.region, page.params.project)
                 .sites.createDuplicateDeployment(site.$id, selectedDeploymentId);
 
-            trackEvent(Submit.SiteRedeploy);
-            await invalidate(Dependencies.SITE);
-            await invalidate(Dependencies.DEPLOYMENTS);
+            await Promise.all([
+                invalidate(Dependencies.SITE),
+                invalidate(Dependencies.DEPLOYMENTS)
+            ]);
             show = false;
             addNotification({
                 type: 'success',
                 message: `Redeploying ${site.name}`
             });
+            trackEvent(Submit.SiteRedeploy);
             if (redirect) {
                 await goto(
                     `${base}/project-${page.params.region}-${page.params.project}/sites/site-${site.$id}/deployments/deployment-${deployment.$id}`

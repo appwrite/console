@@ -141,7 +141,7 @@
                     </Layout.Stack>
                 </Accordion>
                 <Accordion title="Request" open>
-                    <LogsRequest {selectedLog} />
+                    <LogsRequest {selectedLog} product="site" />
                 </Accordion>
                 <Accordion title="Response" open hideDivider>
                     <LogsResponse {selectedLog} logging={$site?.logging} product="site" />

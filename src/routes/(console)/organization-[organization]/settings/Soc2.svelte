@@ -2,8 +2,11 @@
     import { Box, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import Soc2Modal from './Soc2Modal.svelte';
+    import type { Models } from '@appwrite.io/console';
 
     let show = false;
+    export let locale: Models.Locale;
+    export let countryList: Models.CountryList;
 </script>
 
 <CardGrid>
@@ -31,4 +34,4 @@
     </svelte:fragment>
 </CardGrid>
 
-<Soc2Modal bind:show />
+<Soc2Modal {locale} {countryList} bind:show />

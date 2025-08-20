@@ -10,13 +10,28 @@
     import { base } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
     import CreateProject from '$lib/layout/createProject.svelte';
+    import { loadAvailableRegions } from '$routes/(console)/regions';
+    import { regions as regionsStore } from '$lib/stores/organization';
+    import { user } from '$lib/stores/user';
 
     let isLoading = false;
-    let id: string;
+    let id: string = ID.unique();
     let startAnimation = false;
     let projectName = 'Appwrite project';
     let region = Region.Fra;
+
     export let data;
+
+    function markOnboardingComplete() {
+        const currentPrefs = data.accountPrefs ?? $user.prefs;
+
+        const newPrefs = {
+            ...currentPrefs,
+            newOnboardingCompleted: true
+        };
+
+        sdk.forConsole.account.updatePrefs(newPrefs);
+    }
 
     async function createProject() {
         isLoading = true;
@@ -29,6 +44,9 @@
                 teamId,
                 isCloud ? region : undefined
             );
+
+            markOnboardingComplete();
+
             trackEvent(Submit.ProjectCreate, {
                 customId: !!id,
                 teamId
@@ -49,6 +67,9 @@
             });
         }
     }
+
+    // safe side!
+    loadAvailableRegions(data.organization?.$id);
 </script>
 
 <svelte:head>
@@ -74,18 +95,22 @@
             alt="Appwrite Logo" />
         <Card.Base variant="primary" padding="l">
             <CreateProject
-                regions={isCloud ? data.regions.regions : []}
+                regions={$regionsStore?.regions}
                 bind:projectName
                 bind:id
                 bind:region
-                on:submit={createProject}>
-                <svelte:fragment slot="submit">
+                showTitle={true}>
+                {#snippet submit()}
                     <Layout.Stack direction="row" justifyContent="flex-end">
-                        <Button.Button autofocus type="submit" variant="primary" size="s">
+                        <Button.Button
+                            on:click={createProject}
+                            type="submit"
+                            variant="primary"
+                            size="s">
                             Create
                         </Button.Button>
                     </Layout.Stack>
-                </svelte:fragment>
+                {/snippet}
             </CreateProject>
         </Card.Base>
     {/if}

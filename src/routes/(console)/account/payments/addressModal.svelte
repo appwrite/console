@@ -1,6 +1,5 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -9,9 +8,12 @@
     import type { Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
+    export let locale: Models.Locale;
     export let organization: string = null;
+    export let countryList: Models.CountryList;
 
     let country: string;
     let address: string;
@@ -28,10 +30,6 @@
     let error: string = null;
 
     onMount(async () => {
-        const countryList = await sdk
-            .forProject(page.params.region, page.params.project)
-            .locale.listCountries();
-        const locale = await sdk.forProject(page.params.region, page.params.project).locale.get();
         if (locale.countryCode) {
             country = locale.countryCode;
         }
@@ -58,7 +56,7 @@
             if (organization) {
                 org = await sdk.forConsole.billing.setBillingAddress(organization, response.$id);
                 trackEvent(Submit.OrganizationBillingAddressUpdate);
-                await invalidate(Dependencies.ORGANIZATION);
+                await invalidate(Dependencies.ORGANIZATIONS);
             }
             await invalidate(Dependencies.ADDRESS);
 

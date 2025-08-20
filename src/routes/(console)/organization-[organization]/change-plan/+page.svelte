@@ -10,7 +10,7 @@
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
-    import { type Coupon } from '$lib/sdk/billing';
+    import { type Coupon, type PaymentMethodData } from '$lib/sdk/billing';
     import { isOrganization, plansInfo, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
@@ -26,23 +26,24 @@
         Icon,
         Layout,
         Link,
+        Skeleton,
         Typography
     } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
+    import { loadAvailableRegions } from '$routes/(console)/regions';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
+    import { Query } from '@appwrite.io/console';
 
     export let data;
 
+    let selectedCoupon: Partial<Coupon> = null;
+
     let selectedPlan: BillingPlan = data.plan as BillingPlan;
-    let selectedCoupon: Partial<Coupon> | null = data.coupon;
     let previousPage: string = base;
     let showExitModal = false;
     let formComponent: Form;
     let isSubmitting = writable(false);
-    let paymentMethodId: string =
-        data.organization.paymentMethodId ??
-        data.paymentMethods.paymentMethods.find((method) => !!method?.last4)?.$id;
     let collaborators: string[] =
         data?.members?.memberships
             ?.map((m) => {
@@ -54,45 +55,48 @@
     let showCreditModal = false;
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
-    let couponData: Partial<Coupon> = data.coupon;
+
+    $: paymentMethods = null;
+
+    $: paymentMethodId =
+        data.organization.paymentMethodId ??
+        paymentMethods?.paymentMethods?.find((method: PaymentMethodData) => !!method?.last4)?.$id;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
     });
+
     onMount(async () => {
-        if (page.url.searchParams.has('code')) {
-            const coupon = page.url.searchParams.get('code');
+        const params = page.url.searchParams;
+
+        const couponCode = params.get('code');
+        if (couponCode) {
             try {
-                couponData = await sdk.forConsole.billing.getCouponAccount(coupon);
-            } catch (e) {
-                couponData = {
-                    code: null,
-                    status: null,
-                    credits: null
-                };
-            }
-        }
-        if (page.url.searchParams.has('plan')) {
-            const plan = page.url.searchParams.get('plan');
-            if (plan && plan in BillingPlan) {
-                selectedPlan = plan as BillingPlan;
+                selectedCoupon = await sdk.forConsole.billing.getCouponAccount(couponCode);
+            } catch {
+                selectedCoupon = { code: null, status: null, credits: null };
             }
         }
 
-        if (page.url.searchParams.has('type')) {
-            const type = page.url.searchParams.get('type');
-            if (type === 'payment_confirmed') {
-                const organizationId = page.url.searchParams.get('id');
-                const invites = page.url.searchParams.get('invites').split(',');
-                await validate(organizationId, invites);
-            }
+        const plan = params.get('plan');
+        if (plan && plan in BillingPlan) {
+            selectedPlan = plan as BillingPlan;
         }
-        if ($currentPlan?.$id === BillingPlan.SCALE) {
-            selectedPlan = BillingPlan.SCALE;
-        } else {
-            selectedPlan = BillingPlan.PRO;
+
+        if (params.get('type') === 'payment_confirmed') {
+            const organizationId = params.get('id');
+            const invites = params.get('invites')?.split(',') ?? [];
+            await validate(organizationId, invites);
         }
+
+        selectedPlan =
+            $currentPlan?.$id === BillingPlan.SCALE ? BillingPlan.SCALE : BillingPlan.PRO;
     });
+
+    async function loadPaymentMethods() {
+        paymentMethods = await sdk.forConsole.billing.listPaymentMethods();
+        return paymentMethods;
+    }
 
     async function handleSubmit() {
         if (isDowngrade) {
@@ -100,6 +104,34 @@
         } else if (isUpgrade) {
             await upgrade();
         }
+    }
+
+    async function trackDowngradeFeedback() {
+        const paidInvoices = await sdk.forConsole.billing.listInvoices(data.organization.$id, [
+            Query.equal('status', 'succeeded'),
+            Query.greaterThan('grossAmount', 0)
+        ]);
+
+        await fetch(`${VARS.GROWTH_ENDPOINT}/feedback/billing`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                from: tierToPlan(data.organization.billingPlan).name,
+                to: tierToPlan(selectedPlan).name,
+                email: data.account.email,
+                reason: feedbackDowngradeOptions.find(
+                    (option) => option.value === feedbackDowngradeReason
+                )?.label,
+                orgId: data.organization.$id,
+                userId: data.account.$id,
+                orgAge: data.organization.$createdAt,
+                userAge: data.account.$createdAt,
+                paidInvoices: paidInvoices.total,
+                message: feedbackMessage ?? ''
+            })
+        });
     }
 
     async function downgrade() {
@@ -111,23 +143,7 @@
                 null
             );
 
-            await fetch(`${VARS.GROWTH_ENDPOINT}/feedback/billing`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    from: tierToPlan(data.organization.billingPlan).name,
-                    to: tierToPlan(selectedPlan).name,
-                    email: data.account.email,
-                    reason: feedbackDowngradeOptions.find(
-                        (option) => option.value === feedbackDowngradeReason
-                    )?.label,
-                    orgId: data.organization.$id,
-                    userId: data.account.$id,
-                    message: feedbackMessage ?? ''
-                })
-            });
+            trackDowngradeFeedback();
 
             await invalidate(Dependencies.ORGANIZATION);
 
@@ -191,7 +207,7 @@
                 selectedPlan,
                 paymentMethodId,
                 null,
-                couponData?.code,
+                selectedCoupon?.code,
                 newCollaborators,
                 billingBudget,
                 taxId ? taxId : null
@@ -219,6 +235,11 @@
             }
 
             if (isOrganization(org)) {
+                /**
+                 * Reload on upgrade (e.g. Free → Paid)
+                 */
+                loadAvailableRegions(org.$id, true);
+
                 await invalidate(Dependencies.ACCOUNT);
                 await invalidate(Dependencies.ORGANIZATION);
 
@@ -241,20 +262,16 @@
         }
     }
 
-    $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan.order;
-    $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan.order;
-    $: isButtonDisabled = $organization.billingPlan === selectedPlan;
+    $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan?.order;
+    $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan?.order;
+    $: isButtonDisabled = $organization?.billingPlan === selectedPlan;
 </script>
 
 <svelte:head>
     <title>Change plan - Appwrite</title>
 </svelte:head>
 
-<Wizard
-    title="Change plan"
-    href={`${base}/organization-${page.params.organization}`}
-    bind:showExitModal
-    confirmExit>
+<Wizard title="Change plan" href={previousPage} bind:showExitModal confirmExit>
     <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Select plan">
@@ -303,24 +320,42 @@
                 </Layout.Stack>
             </Fieldset>
 
-            <!-- Show email input if upgrading from free plan -->
-            {#if selectedPlan !== BillingPlan.FREE && data.organization.billingPlan === BillingPlan.FREE}
-                <Fieldset legend="Payment">
-                    <SelectPaymentMethod
-                        methods={data.paymentMethods}
-                        bind:value={paymentMethodId}
-                        bind:taxId>
-                        <svelte:fragment slot="actions">
-                            {#if !selectedCoupon?.code}
+            {#if isUpgrade}
+                {#await loadPaymentMethods()}
+                    <Fieldset legend="Payment">
+                        <Layout.Stack gap="m">
+                            <Typography.Text variant="m-500">Payment method</Typography.Text>
+                            <Skeleton variant="line" width="100%" height={30} />
+
+                            <Layout.Stack direction="row">
+                                <Skeleton variant="line" width="165px" height={30} />
                                 <Divider vertical style="height: 2rem" />
-                                <Button compact on:click={() => (showCreditModal = true)}>
-                                    <Icon icon={IconPlus} slot="start" size="s" />
-                                    Add credits
-                                </Button>
-                            {/if}
-                        </svelte:fragment>
-                    </SelectPaymentMethod>
-                </Fieldset>
+                                <Skeleton variant="line" width="100px" height={30} />
+                            </Layout.Stack>
+                        </Layout.Stack>
+                    </Fieldset>
+                {:then}
+                    <Fieldset legend="Payment">
+                        <SelectPaymentMethod
+                            bind:taxId
+                            bind:value={paymentMethodId}
+                            bind:methods={paymentMethods}>
+                            <svelte:fragment slot="actions">
+                                {#if !selectedCoupon?.code}
+                                    {#if paymentMethodId}
+                                        <Divider vertical style="height: 2rem" />
+                                    {/if}
+
+                                    <Button compact on:click={() => (showCreditModal = true)}>
+                                        <Icon icon={IconPlus} slot="start" size="s" />
+                                        Add credits
+                                    </Button>
+                                {/if}
+                            </svelte:fragment>
+                        </SelectPaymentMethod>
+                    </Fieldset>
+                {/await}
+
                 <Fieldset legend="Invite members">
                     <InputTags
                         bind:tags={collaborators}
@@ -355,10 +390,10 @@
             <EstimatedTotalBox
                 {collaborators}
                 {isDowngrade}
-                plans={data.plansInfo}
                 billingPlan={selectedPlan}
                 bind:couponData={selectedCoupon}
-                bind:billingBudget />
+                bind:billingBudget
+                organizationId={data.organization.$id} />
         {:else if data.organization.billingPlan !== BillingPlan.CUSTOM}
             <PlanComparisonBox downgrade={isDowngrade} />
         {/if}
@@ -367,6 +402,8 @@
         <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
+            forceShowLoader
+            submissionLoader={$isSubmitting}
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting || isButtonDisabled || !data.selfService}>
             Change plan

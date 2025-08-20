@@ -101,6 +101,8 @@ function createWizardStore() {
 
 export const wizard = createWizardStore();
 
+export const isNewWizardStatusOpen = writable(false);
+
 export function updateStepStatus(map: WizardStepsType, key: number, status: boolean) {
     const updatedComponent = {
         ...map.get(key),
