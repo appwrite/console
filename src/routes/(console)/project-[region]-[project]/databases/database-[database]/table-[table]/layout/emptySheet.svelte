@@ -18,7 +18,6 @@
         spreadsheetLoading,
         expandTabs
     } from '../store';
-    import { onMount } from 'svelte';
     import SpreadsheetContainer from './spreadsheet.svelte';
 
     type Mode = 'rows' | 'rows-filtered' | 'indexes';
@@ -71,7 +70,7 @@
         }
     };
 
-    onMount(updateOverlayHeight);
+    updateOverlayHeight();
 
     const getCustomColumns = (): Column[] =>
         customColumns.map((col: Column) => ({

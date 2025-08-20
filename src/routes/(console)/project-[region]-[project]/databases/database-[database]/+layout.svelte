@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
+    import { beforeNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import {
@@ -19,9 +19,17 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { currentPlan } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
+    import { updateSidebarState } from '$lib/helpers/sidebar';
 
     const project = page.params.project;
     const databaseId = page.params.database;
+
+    beforeNavigate((navigation) => {
+        /* avoids the unnecessary sheet slide animation */
+        if (navigation.to.route.id?.includes('table-[table]')) {
+            updateSidebarState(page, 'icons');
+        }
+    });
 
     async function handleCreate(event: CustomEvent<Models.Table>) {
         $showCreate = false;

@@ -26,9 +26,10 @@
         showDelete = false;
 
         const promises = selectedTables.map((tableId) =>
-            sdk
-                .forProject(page.params.region, page.params.project)
-                .grids.deleteTable(databaseId, tableId)
+            sdk.forProject(page.params.region, page.params.project).grids.deleteTable({
+                databaseId,
+                tableId
+            })
         );
         try {
             await Promise.all(promises);
