@@ -191,8 +191,9 @@ function createPreferences() {
                 return n;
             }),
 
-        deleteCustomTableColumns: async (tableId: string) => {
-            await updateAndSync((n) => {
+        deleteTableDetails: async (orgId: string, tableId: string) => {
+            // remove from account preferences
+            const removeCustomTableColumns = updateAndSync((n) => {
                 if (!n?.tables) {
                     n ??= {};
                     n.tables ??= {};
@@ -201,6 +202,17 @@ function createPreferences() {
                 delete n.tables[tableId];
                 return n;
             });
+
+            delete teamPreferences?.displayNames?.[tableId];
+            delete teamPreferences?.columnOrder?.[tableId];
+            delete teamPreferences?.columnWidths?.[tableId];
+
+            const removeTablePreferences = sdk.forConsole.teams.updatePrefs({
+                teamId: orgId,
+                prefs: teamPreferences
+            });
+
+            await Promise.all([removeCustomTableColumns, removeTablePreferences]);
         },
 
         loadTeamPrefs: loadTeamPreferences,
@@ -219,19 +231,6 @@ function createPreferences() {
             }
 
             teamPreferences.displayNames[tableId] = displayNames;
-
-            await sdk.forConsole.teams.updatePrefs({
-                teamId: orgId,
-                prefs: teamPreferences
-            });
-        },
-
-        deleteDisplayNames: async (orgId: string, tableId: string) => {
-            if (!teamPreferences?.displayNames) {
-                return;
-            }
-
-            delete teamPreferences.displayNames[tableId];
 
             await sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,
