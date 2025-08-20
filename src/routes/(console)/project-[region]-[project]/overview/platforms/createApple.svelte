@@ -25,7 +25,6 @@
     import ConnectionLine from './components/ConnectionLine.svelte';
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
-    import { isCloud } from '$lib/system';
     import { app } from '$lib/stores/app';
     import { project } from '../../store';
 
@@ -38,14 +37,9 @@
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-ios\ncd starter-for-ios\n';
 
-    const baseConfig = `APPWRITE_PROJECT_ID: "${projectId}"
-APPWRITE_PROJECT_NAME: "${$project.name}"`;
-
-    const updateConfigCode = isCloud
-        ? baseConfig
-        : `${baseConfig}
-APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
-        `;
+    const configCode = `APPWRITE_PROJECT_ID: "${projectId}"
+APPWRITE_PROJECT_NAME: "${$project.name}"
+APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"`;
 
     export let platform: PlatformType = PlatformType.Appleios;
 
@@ -216,7 +210,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
 
                     <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                     <div class="pink2-code-margin-fix">
-                        <Code lang="plaintext" lineNumbers code={updateConfigCode} />
+                        <Code lang="plaintext" lineNumbers code={configCode} />
                     </div>
 
                     <Typography.Text variant="m-500"
