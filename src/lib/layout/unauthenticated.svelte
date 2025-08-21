@@ -60,13 +60,13 @@
                 {#if $app.themeInUse === 'dark'}
                     <img
                         src={AppwriteLogoDark}
-                        width="120"
+                        width="160"
                         class="u-block u-only-dark"
                         alt="Appwrite Logo" />
                 {:else}
                     <img
                         src={AppwriteLogoLight}
-                        width="120"
+                        width="160"
                         class="u-block u-only-light"
                         alt="Appwrite Logo" />
                 {/if}
@@ -362,7 +362,7 @@
 
     .mobile-logo {
         position: absolute;
-        bottom: 20px;
+        bottom: 60px;
         left: 50%;
         transform: translate(-50%, -50%);
         max-width: 100%;
