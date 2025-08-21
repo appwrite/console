@@ -1,32 +1,26 @@
-export type Template = {
-  key?: string; // template slug, e.g. "magic-portfolio"
-  frameworks?: Array<{ 
-    key?: string;
-    providerRootDirectory?: string;
-  }>; // e.g. [{ key: "nextjs", providerRootDirectory: "./nextjs/magic-portfolio" }]
-  providerOwner?: string; // e.g. "appwrite"
-  providerRepositoryId?: string; // e.g. "templates-for-sites" or "template-for-store"
-  repository?: string; // if API already returns full URL, use it
-  repoUrl?: string;    // alias some builds may use
-  source?: string;     // alias some builds may use
-};
+import type { Models } from "@appwrite.io/console";
 
-export function getTemplateSourceUrl(template: Template): string | null {
-  // 1) Prefer a direct URL if the API already provides it
-  const direct = template.repository || template.repoUrl || template.source;
-  if (direct) return direct;
+/**
+ * Build VCS repo URL from the template response model.
+ * Example (GitHub): https://github.com/appwrite/templates-for-sites
+ */
+export function getTemplateSourceUrl(
+  t: Models.TemplateSite | Models.TemplateFunction
+): string | null {
+  const owner = t.providerOwner;
+  const repo  = t.providerRepositoryId;
+  const provider = t.vcsProvider; // e.g., "github"
 
-  // 2) Ensure we have the parts to build the GitHub URL
-  const owner = template.providerOwner || "appwrite";
-  const repo = template.providerRepositoryId || "templates-for-sites";
-  const rootDir = template.frameworks?.[0]?.providerRootDirectory ?? "./";
+  if (!owner || !repo || !provider) return null;
 
-  // strip leading "./"
-  const cleanDir = rootDir.startsWith("./") ? rootDir.slice(2) : rootDir;
+  // Map provider → host (extend if needed)
+  const hostMap: Record<string, string> = {
+    github: "github.com",
+    gitlab: "gitlab.com",
+    bitbucket: "bitbucket.org",
+  };
 
-  if (!cleanDir || cleanDir === "") {
-    return `https://github.com/${owner}/${repo}/tree/main`;
-  }
+  const host = hostMap[provider.toLowerCase()] ?? provider; // fallback
 
-  return `https://github.com/${owner}/${repo}/tree/main/${cleanDir}`;
+  return `https://${host}/${owner}/${repo}`;
 }

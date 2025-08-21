@@ -63,7 +63,7 @@
                     </Layout.Stack>
                 </Layout.Stack>
                 <Layout.Stack gap="s">
-                        <slot name="framework-actions" />
+                    <slot name="framework-actions" />
                 </Layout.Stack>
             {/if}
 
