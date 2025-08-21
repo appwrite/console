@@ -362,7 +362,7 @@
 
     .mobile-logo {
         position: absolute;
-        bottom: 60px;
+        bottom: 20px;
         left: 50%;
         transform: translate(-50%, -50%);
         max-width: 100%;
