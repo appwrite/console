@@ -317,7 +317,7 @@
                                                         );
                                                         $showCreateBucket = true;
                                                     }}>
-                                                    create bucket
+                                                    Create a bucket
                                                 </Button>
                                             </Layout.Stack>
                                         {/each}
