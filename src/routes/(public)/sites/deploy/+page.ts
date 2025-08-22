@@ -64,7 +64,7 @@ export const load: PageLoad = async ({ parent, url }) => {
         }
     } else {
         // Repository deployment
-        const repoMatch = repoUrl!.match(/github\.com[\/:]([^\/]+)\/([^\/\?\s]+)/);
+        const repoMatch = repoUrl!.match(/github\.com[/:]([^/]+)\/([^/?s]+)/);
         if (!repoMatch) {
             redirect(302, base + '/');
         }
