@@ -44,12 +44,12 @@
             row: existingData
                 ? existingData
                 : availableColumns.reduce(
-                    (acc, attr) => {
-                        acc[attr.key] = attr.array ? [] : null;
-                        return acc;
-                    },
-                    {} as Record<string, unknown>
-                ),
+                      (acc, attr) => {
+                          acc[attr.key] = attr.array ? [] : null;
+                          return acc;
+                      },
+                      {} as Record<string, unknown>
+                  ),
             permissions: [],
             columns: availableColumns
         };

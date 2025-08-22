@@ -18,7 +18,7 @@
             | {
                   text: string;
                   disabled?: boolean;
-                  onClick?: () => boolean | void | Promise<boolean | void>;
+                  onClick?: () => boolean | Promise<boolean>;
               }
             | undefined;
         children?: Snippet;
