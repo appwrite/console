@@ -311,7 +311,7 @@
                                     label="Organization"
                                     required
                                     placeholder="Select an organization"
-                                    options={data.organizations.teams.map((o: any) => ({
+                                    options={data.organizations.teams.map((o) => ({
                                         label: o.name,
                                         value: o.$id
                                     }))}

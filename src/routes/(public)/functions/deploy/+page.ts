@@ -34,18 +34,27 @@ export const load: PageLoad = async ({ parent, url }) => {
     const envKeys = envParam ? envParam.split(',').map((key: string) => key.trim()) : [];
     const name = url.searchParams.get('name');
 
-    let deploymentData: {
+    const deploymentData: {
         type: 'repo';
         repository: { url: string; owner: string; name: string };
         runtime?: string;
         name?: string;
+    } = {
+        type: 'repo',
+        repository: {
+            url: repoUrl!,
+            owner: '',
+            name: ''
+        },
+        runtime: runtime || 'node-18.0',
+        name: name || ''
     };
 
     // Get available runtimes
     const runtimesList = await sdk.forConsole.functions.listRuntimes();
 
     // Repository deployment only
-    const repoMatch = repoUrl!.match(/github\.com[\/:]([^\/]+)\/([^\/\?\s]+)/);
+    const repoMatch = repoUrl!.match(/github\.com[/:]([^/]+)\/([^/?s]+)/);
     if (!repoMatch) {
         redirect(302, base + '/');
     }
@@ -54,16 +63,10 @@ export const load: PageLoad = async ({ parent, url }) => {
     // Clean repository name (remove .git extension if present)
     const cleanRepoName = repoName.replace(/\.git$/, '');
 
-    deploymentData = {
-        type: 'repo',
-        repository: {
-            url: repoUrl!,
-            owner,
-            name: cleanRepoName
-        },
-        runtime: runtime || 'node-18.0', // Default to Node.js if not specified
-        name: name || cleanRepoName
-    };
+    // Update deployment data with parsed repository info
+    deploymentData.repository.owner = owner;
+    deploymentData.repository.name = cleanRepoName;
+    deploymentData.name = name || cleanRepoName;
 
     // Get organizations
     let organizations: Models.TeamList<Record<string, unknown>> | OrganizationList | undefined;

@@ -12,7 +12,7 @@ export const load: PageLoad = async ({ url, params }) => {
     }
 
     // Parse repository information
-    const repoMatch = repoUrl.match(/github\.com[\/:]([^\/]+)\/([^\/\?\s]+)/);
+    const repoMatch = repoUrl.match(/github\.com[/:]([^/]+)\/([^/?s]+)/);
     if (!repoMatch) {
         redirect(302, `${base}/project-${params.region}-${params.project}/sites`);
     }
