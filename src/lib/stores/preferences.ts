@@ -11,9 +11,6 @@ type ConsolePreferences = {
     limit?: number;
     view?: View;
     columns?: string[];
-    filePicker?: {
-        lastSelectedBucket?: string;
-    };
 } /* support a strict + flexible preference type for TS compatibility */ & Record<
     string,
     string | number | boolean | object | null | unknown
