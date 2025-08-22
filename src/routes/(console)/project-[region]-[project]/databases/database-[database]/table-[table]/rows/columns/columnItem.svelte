@@ -4,7 +4,7 @@
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import Column from './column.svelte';
-    import type { Columns } from '../store';
+    import type { Columns } from '../../store';
 
     let {
         column,
@@ -90,7 +90,8 @@
             id={column.key}
             limited={fromSpreadsheet}
             optionalText={getColumnType(column)}
-            bind:value={formValues[column.key]} />
+            bind:value={formValues[column.key]}
+            on:click />
     {:else}
         <Layout.Stack>
             {#each [...(formValues[column.key]?.keys() ?? [])] as index}
@@ -123,5 +124,6 @@
         id={column.key}
         limited={fromSpreadsheet}
         optionalText={getColumnType(column)}
-        bind:value={formValues[column.key]} />
+        bind:value={formValues[column.key]}
+        on:click />
 {/if}

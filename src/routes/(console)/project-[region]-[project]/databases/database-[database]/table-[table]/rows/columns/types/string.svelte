@@ -37,8 +37,8 @@
 
     let stringValue = $state('');
 
-    function parseValue(str: string): number | boolean | string | null {
-        const trimmed = str.trim();
+    function parseValue(str: string | null): number | boolean | string | null {
+        const trimmed = str?.trim() ?? null;
 
         if (!trimmed) return null;
 

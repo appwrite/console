@@ -31,9 +31,6 @@ type ConsolePreferencesStore = {
     tables?: {
         [key: string]: ConsolePreferences['columns'];
     };
-    tableHeaderExpanded?: {
-        [key: string]: boolean;
-    };
     displayNames?: {
         [key: string]: TeamPreferences['names'];
     };
@@ -128,7 +125,7 @@ function createPreferences() {
         subscribe,
         set,
         update,
-        get: (route?: Page['route']): ConsolePreferences => {
+        getForRoute: (route?: Page['route']): ConsolePreferences => {
             const parsedRoute = route ?? page.route;
             return (
                 preferences?.[parsedRoute.id] ?? {
@@ -194,8 +191,9 @@ function createPreferences() {
                 return n;
             }),
 
-        deleteCustomTableColumns: async (tableId: string) => {
-            await updateAndSync((n) => {
+        deleteTableDetails: async (orgId: string, tableId: string) => {
+            // remove from account preferences
+            const removeCustomTableColumns = updateAndSync((n) => {
                 if (!n?.tables) {
                     n ??= {};
                     n.tables ??= {};
@@ -204,35 +202,39 @@ function createPreferences() {
                 delete n.tables[tableId];
                 return n;
             });
+
+            delete teamPreferences?.displayNames?.[tableId];
+            delete teamPreferences?.columnOrder?.[tableId];
+            delete teamPreferences?.columnWidths?.[tableId];
+
+            const removeTablePreferences = sdk.forConsole.teams.updatePrefs({
+                teamId: orgId,
+                prefs: teamPreferences
+            });
+
+            await Promise.all([removeCustomTableColumns, removeTablePreferences]);
         },
 
         loadTeamPrefs: loadTeamPreferences,
 
-        getDisplayNames: () => {
-            return preferences?.displayNames ?? {};
+        getDisplayNames: (tableId: string) => {
+            return teamPreferences?.displayNames?.[tableId];
         },
 
-        setDisplayNames: async (tableId: string, names: TeamPreferences['names']) => {
-            await updateAndSync((n) => {
-                if (!n?.displayNames) {
-                    n ??= {};
-                    n.displayNames ??= {};
-                }
+        setDisplayNames: async (
+            orgId: string,
+            tableId: string,
+            displayNames: TeamPreferences['names']
+        ) => {
+            if (!teamPreferences.displayNames) {
+                teamPreferences.displayNames = {};
+            }
 
-                n.displayNames[tableId] = names;
-                return n;
-            });
-        },
+            teamPreferences.displayNames[tableId] = displayNames;
 
-        deleteDisplayNames: async (tableId: string) => {
-            await updateAndSync((n) => {
-                if (!n?.displayNames) {
-                    n ??= {};
-                    n.displayNames ??= {};
-                }
-
-                delete n.displayNames[tableId];
-                return n;
+            await sdk.forConsole.teams.updatePrefs({
+                teamId: orgId,
+                prefs: teamPreferences
             });
         },
 
@@ -278,22 +280,6 @@ function createPreferences() {
             await sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,
                 prefs: teamPreferences
-            });
-        },
-
-        isTableHeaderExpanded(tableId: string): boolean {
-            return preferences.tableHeaderExpanded?.[tableId] ?? true;
-        },
-
-        async setTableHeaderExpanded(tableId: string, expanded: boolean) {
-            await updateAndSync((n) => {
-                if (!n?.tableHeaderExpanded) {
-                    n ??= {};
-                    n.tableHeaderExpanded ??= {};
-                }
-
-                n.tableHeaderExpanded[tableId] = expanded;
-                return n;
             });
         },
 

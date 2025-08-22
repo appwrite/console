@@ -11,7 +11,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.createIntegerColumn(
+            .tablesDb.createIntegerColumn(
                 databaseId,
                 tableId,
                 key,
@@ -31,7 +31,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.updateIntegerColumn(
+            .tablesDb.updateIntegerColumn(
                 databaseId,
                 tableId,
                 originalKey,

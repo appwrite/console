@@ -22,11 +22,11 @@
     },
     "dependencies": {
         "@ai-sdk/svelte": "^1.1.24",
-        "@appwrite.io/console": "https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@e64a383",
+        "@appwrite.io/console": "https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@5545e66",
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "^2.0.0-RC.1",
         "@appwrite.io/pink-legacy": "^1.0.3",
-        "@appwrite.io/pink-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@34671e4",
+        "@appwrite.io/pink-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@59e81f6",
         "@faker-js/faker": "^9.9.0",
         "@popperjs/core": "^2.11.8",
         "@sentry/sveltekit": "^8.38.0",
@@ -56,7 +56,6 @@
         "@sveltejs/adapter-static": "^3.0.8",
         "@sveltejs/kit": "^2.20.2",
         "@sveltejs/vite-plugin-svelte": "^5.0.3",
-        "@tanstack/svelte-virtual": "^3.13.12",
         "@testing-library/dom": "^10.4.0",
         "@testing-library/jest-dom": "^6.6.3",
         "@testing-library/svelte": "^5.2.8",
@@ -86,7 +85,7 @@
         "typescript": "^5.8.2",
         "typescript-eslint": "^8.30.1",
         "vite": "^7.0.6",
-        "vitest": "^3.0.0"
+        "vitest": "^3.2.4"
     },
     "pnpm": {
         "onlyBuiltDependencies": [
@@ -96,5 +95,5 @@
             "svelte-preprocess"
         ]
     },
-    "packageManager": "pnpm@10.14.0"
+    "packageManager": "pnpm@10.15.0"
 }

@@ -21,7 +21,7 @@
 
         await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.createRelationshipColumn(
+            .tablesDb.createRelationshipColumn(
                 databaseId,
                 tableId,
                 data.relatedTable,
@@ -45,7 +45,7 @@
 
         await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.updateRelationshipColumn(
+            .tablesDb.updateRelationshipColumn(
                 databaseId,
                 tableId,
                 originalKey,
@@ -97,7 +97,7 @@
         const queries = [Query.limit(100)];
         return sdk
             .forProject(page.params.region, page.params.project)
-            .grids.listTables(databaseId, queries, search);
+            .tablesDb.listTables(databaseId, queries, search);
     }
 
     const debouncedFetchTables = debounce(async () => {
@@ -156,6 +156,7 @@
         bind:group={way}
         name="one"
         value="one"
+        disabled={editing}
         icon={IconArrowSmRight}>
         One Relation column within this table
     </Card.Selector>
@@ -164,6 +165,7 @@
         bind:group={way}
         name="two"
         value="two"
+        disabled={editing}
         icon={IconSwitchHorizontal}>
         One Relation column within this table and another within the related table
     </Card.Selector>
@@ -176,6 +178,7 @@
     placeholder="Select a table"
     bind:value={data.relatedTable}
     on:change={updateKeyName}
+    disabled={editing}
     options={tables?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
 
 {#if data?.relatedTable}

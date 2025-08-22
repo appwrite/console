@@ -5,66 +5,67 @@
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { row } from '../store';
-    import { isRelationshipToMany } from './store';
+    import { isRelationshipToMany } from '../../store';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let id: string;
     export let label: string;
     export let limited: boolean = false;
-
     export let editing = false;
-    export let value: string | string[];
+    export let value: object | string[];
     export let column: Models.ColumnRelationship;
     export let optionalText: string | undefined = undefined;
 
     const databaseId = page.params.database;
 
     let rowList: Models.RowList<Models.Row>;
-    let search: string = null;
-    let displayNames = ['$id'];
-    let relatedList: string[] = [];
-    let singleRel: string;
+    let row: Models.DefaultRow | Models.Row | undefined = undefined;
+
     let showInput = false;
+    let singleRel: string;
+    let search: string = null;
+
     let newItemValue: string = '';
+    let relatedList: string[] = [];
+
     let limit = 10;
     let offset = 0;
 
     onMount(async () => {
-        if (value) {
-            if (isRelationshipToMany(column)) {
-                relatedList = (value as string[]).slice();
-            } else {
-                singleRel = value as string;
-            }
+        if (value && typeof value === 'object') {
+            row = value as Models.Row;
+            singleRel = row?.$id;
         }
 
-        if (editing && $row?.[column.key]) {
-            if ($row[column.key]?.length) {
+        if (value && isRelationshipToMany(column)) {
+            // TODO: test this
+            relatedList = (value as string[]).slice();
+        }
+
+        if (editing && row?.[column.key]) {
+            if (row[column.key]?.length) {
                 relatedList =
-                    $row[column.key]?.map((d: Record<string, unknown>) => {
+                    row[column.key]?.map((d: Record<string, unknown>) => {
                         return d?.$id;
                     }) ?? [];
-            } else {
-                singleRel = $row[column.key]?.$id;
             }
-        }
-
-        displayNames = preferences.getDisplayNames()?.[column?.relatedTable] ?? ['$id'];
-        if (!displayNames?.includes('$id')) {
-            displayNames.unshift('$id');
         }
     });
 
     async function getRows(search: string = null) {
-        const queries = search
-            ? [Query.select(['$id']), Query.startsWith('$id', search), Query.orderDesc('')]
-            : [Query.select(['$id'])];
+        // already includes the `$id`, dw!
+        const displayNames = preferences.getDisplayNames(column.relatedTable);
 
-        return await sdk
-            .forProject(page.params.region, page.params.project)
-            .grids.listRows(databaseId, column.relatedTable, queries);
+        const queries = search
+            ? [Query.select(displayNames), Query.startsWith('$id', search), Query.orderDesc('')]
+            : [Query.select(displayNames)];
+
+        return await sdk.forProject(page.params.region, page.params.project).tablesDb.listRows({
+            databaseId,
+            tableId: column.relatedTable,
+            queries
+        });
     }
 
     function getAvailableOptions(excludeIndex?: number) {
@@ -73,6 +74,7 @@
                 excludeIndex !== undefined
                     ? relatedList.filter((_, idx) => idx !== excludeIndex)
                     : relatedList;
+
             return !otherItems.includes(option.value);
         });
     }
@@ -119,7 +121,10 @@
 
     $: options =
         rowList?.rows?.map((row) => {
-            const names = displayNames.filter((name) => name !== '$id');
+            const names = preferences
+                .getDisplayNames(column?.relatedTable)
+                .filter((name) => name !== '$id');
+
             const values = names
                 .map((name) => row?.[name])
                 // always supposed to be a string but just being a bit safe here
@@ -144,36 +149,40 @@
         }) ?? [];
 
     $: hasItems = totalCount > 0;
+
     $: showTopAddButton = !editing && totalCount === 0 && !showInput;
+
     $: showBottomAddButton =
         (!editing && hasItems && !showInput) ||
         (editing && hasItems && relatedList.every((item) => item) && !showInput);
+
     $: showEmptyInput = editing && totalCount === 0 && !showInput;
 
-    $: if (limit && !isRelationshipToMany(column)) {
+    $: if (limit && !isRelationshipToMany(column) && limited) {
         label = undefined;
     }
 </script>
 
-<!-- TODO: Maybe show a dialog for this for spreadsheet -->
 {#if isRelationshipToMany(column)}
     <Layout.Stack gap="xxl">
         <Layout.Stack gap="m">
-            <Layout.Stack direction="row" alignContent="space-between">
-                <Layout.Stack gap="xxs" direction="row" alignItems="center">
-                    <Typography.Text variant="m-500">{label}</Typography.Text>
-                    <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                        {optionalText}
-                    </Typography.Text>
-                </Layout.Stack>
+            {#if !limited}
+                <Layout.Stack direction="row" alignContent="space-between">
+                    <Layout.Stack gap="xxs" direction="row" alignItems="center">
+                        <Typography.Text variant="m-500">{label}</Typography.Text>
+                        <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                            {optionalText}
+                        </Typography.Text>
+                    </Layout.Stack>
 
-                {#if showTopAddButton}
-                    <Button secondary on:click={() => (showInput = true)}>
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Add item
-                    </Button>
-                {/if}
-            </Layout.Stack>
+                    {#if showTopAddButton}
+                        <Button secondary on:click={() => (showInput = true)}>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add item
+                        </Button>
+                    {/if}
+                </Layout.Stack>
+            {/if}
 
             <Layout.Stack gap="m">
                 <!-- Empty input for editing mode when no items exist -->
@@ -200,19 +209,22 @@
                             <InputSelect
                                 {id}
                                 required
+                                autofocus={limited}
                                 options={getAvailableOptions(actualIndex)}
                                 bind:value={relatedList[actualIndex]}
                                 placeholder={`Select ${column.key}`}
                                 on:change={updateRelatedList} />
-                            {#if relatedList[actualIndex]}
-                                <div style:padding-block-start="0.5rem">
-                                    <Button
-                                        icon
-                                        extraCompact
-                                        on:click={() => removeItem(actualIndex)}>
-                                        <Icon icon={IconX} size="s" />
-                                    </Button>
-                                </div>
+                            {#if !limited}
+                                {#if relatedList[actualIndex]}
+                                    <div style:padding-block-start="0.5rem">
+                                        <Button
+                                            icon
+                                            extraCompact
+                                            on:click={() => removeItem(actualIndex)}>
+                                            <Icon icon={IconX} size="s" />
+                                        </Button>
+                                    </div>
+                                {/if}
                             {/if}
                         </Layout.Stack>
                     {/each}
@@ -263,7 +275,7 @@
                 {/if}
             </Layout.Stack>
 
-            {#if showBottomAddButton}
+            {#if showBottomAddButton && !limited}
                 <Layout.Stack direction="row" alignContent="flex-start">
                     <Button extraCompact on:click={() => (showInput = true)}>
                         <Icon icon={IconPlus} slot="start" size="s" />
@@ -282,5 +294,5 @@
         required={column.required}
         label={limited ? undefined : label}
         placeholder={`Select ${column.key}`}
-        on:change={() => (value = singleRel)} />
+        on:change={() => (value = rowList.rows.find((row) => row.$id === singleRel))} />
 {/if}

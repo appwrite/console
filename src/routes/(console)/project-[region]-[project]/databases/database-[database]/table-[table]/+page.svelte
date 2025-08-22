@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { EmptySearch } from '$lib/components';
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
@@ -13,8 +12,8 @@
         table,
         tableColumns,
         isCsvImportInProgress,
-        showRecordsCreateSheet,
-        showCreateAttributeSheet,
+        showRowCreateSheet,
+        showCreateColumnSheet,
         type Columns,
         randomDataModalState,
         expandTabs
@@ -30,7 +29,7 @@
     import { IconChevronDown, IconChevronUp, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import EmptySheet from './layout/emptySheet.svelte';
-    import CreateRecord from './createRecord.svelte';
+    import CreateRow from './rows/create.svelte';
     import { onDestroy } from 'svelte';
 
     export let data: PageData;
@@ -63,7 +62,7 @@
     $: hasColumns = !!$table.columns.length;
     $: hasValidColumns = $table?.columns?.some((col) => col.status === 'available');
 
-    async function onSelect(file: Models.File) {
+    async function onSelect(file: Models.File, localFile = false) {
         $isCsvImportInProgress = true;
 
         try {
@@ -72,7 +71,8 @@
                 .migrations.createCsvMigration({
                     bucketId: file.bucketId,
                     fileId: file.$id,
-                    resourceId: `${page.params.database}:${page.params.table}`
+                    resourceId: `${page.params.database}:${page.params.table}`,
+                    internalFile: localFile
                 });
 
             addNotification({
@@ -92,7 +92,7 @@
         }
     }
 
-    onDestroy(() => ($showCreateAttributeSheet.show = false));
+    onDestroy(() => ($showCreateColumnSheet.show = false));
 </script>
 
 {#key page.params.table}
@@ -127,20 +127,21 @@
                     {#if !$isSmallViewport}
                         <Button
                             secondary
+                            event="create_row"
                             disabled={!(hasColumns && hasValidColumns)}
-                            on:click={() => ($showRecordsCreateSheet.show = true)}
-                            event="create_row">
+                            on:click={() => ($showRowCreateSheet.show = true)}>
                             <Icon icon={IconPlus} slot="start" size="s" />
                             Create row
                         </Button>
 
                         <Button
                             icon
+                            size="s"
                             secondary
-                            disabled={!(hasColumns && hasValidColumns)}
+                            class="small-button-dimensions"
                             on:click={() => {
                                 $expandTabs = !$expandTabs;
-                                preferences.setTableHeaderExpanded($table.$id, $expandTabs);
+                                preferences.setKey('tableHeaderExpanded', $expandTabs);
                             }}>
                             <Icon icon={!$expandTabs ? IconChevronDown : IconChevronUp} size="s" />
                         </Button>
@@ -152,7 +153,7 @@
                     secondary
                     event="create_row"
                     disabled={!(hasColumns && hasValidColumns)}
-                    on:click={() => ($showRecordsCreateSheet.show = true)}>
+                    on:click={() => ($showRowCreateSheet.show = true)}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create row
                 </Button>
@@ -164,29 +165,24 @@
         {#if hasColumns && hasValidColumns}
             {#if data.rows.total}
                 <Divider />
-                <SpreadSheet {data} bind:showRecordsCreateSheet={$showRecordsCreateSheet} />
+                <SpreadSheet {data} bind:showRowCreateSheet={$showRowCreateSheet} />
             {:else if $hasPageQueries}
-                <EmptySearch hidePages>
-                    <div class="common-section">
-                        <div class="u-text-center common-section">
-                            <b class="body-text-2 u-bold">Sorry, we couldn't find any rows.</b>
-                            <p>There are no rows that match your filters.</p>
-                        </div>
-                        <div class="u-flex common-section u-main-center">
-                            <Button
-                                secondary
-                                on:click={() => {
-                                    queries.clearAll();
-                                    queries.apply();
-                                    trackEvent(Submit.FilterClear, {
-                                        source: 'database_rows'
-                                    });
-                                }}>
-                                Clear filters
-                            </Button>
-                        </div>
-                    </div>
-                </EmptySearch>
+                <EmptySheet
+                    mode="rows-filtered"
+                    title="There are no rows that match your filters"
+                    customColumns={createTableColumns($table.columns, selected)}
+                    actions={{
+                        primary: {
+                            text: 'Clear filters',
+                            onClick: () => {
+                                queries.clearAll();
+                                queries.apply();
+                                trackEvent(Submit.FilterClear, {
+                                    source: 'database_rows'
+                                });
+                            }
+                        }
+                    }} />
             {:else}
                 <EmptySheet
                     mode="rows"
@@ -196,7 +192,7 @@
                         primary: {
                             text: 'Create rows',
                             onClick: () => {
-                                $showRecordsCreateSheet.show = true;
+                                $showRowCreateSheet.show = true;
                             }
                         },
                         random: {
@@ -215,7 +211,7 @@
                     primary: {
                         text: 'Create column',
                         onClick: async () => {
-                            $showCreateAttributeSheet.show = true;
+                            $showCreateColumnSheet.show = true;
                         }
                     },
                     random: {
@@ -232,6 +228,8 @@
     <!-- CSVs can be text/plain or text/csv sometimes! -->
     <FilePicker
         {onSelect}
+        showLocalFileBucket
+        localFileBucketTitle="Upload CSV file"
         mimeTypeQuery="text/"
         allowedExtension="csv"
         bind:show={showImportCSV}
@@ -241,7 +239,14 @@
         }} />
 {/if}
 
-<CreateRecord
+<CreateRow
     table={$table}
-    bind:showSheet={$showRecordsCreateSheet.show}
-    bind:existingData={$showRecordsCreateSheet.row} />
+    bind:showSheet={$showRowCreateSheet.show}
+    bind:existingData={$showRowCreateSheet.row} />
+
+<style>
+    :global(.small-button-dimensions) {
+        width: 32px !important;
+        height: 32px !important;
+    }
+</style>

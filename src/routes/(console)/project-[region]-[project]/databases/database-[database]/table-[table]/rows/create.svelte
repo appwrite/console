@@ -5,12 +5,12 @@
     import { addNotification } from '$lib/stores/notifications';
 
     import { writable } from 'svelte/store';
-    import ColumnForm from './row-[row]/columnForm.svelte';
+    import ColumnForm from './columns/columnForm.svelte';
     import { Permissions } from '$lib/components/permissions';
-    import type { Columns } from './store';
+    import type { Columns } from '../store';
     import { ID, type Models } from '@appwrite.io/console';
     import { Alert, Layout, Typography, Selector } from '@appwrite.io/pink-svelte';
-    import SideSheet from './layout/sidesheet.svelte';
+    import SideSheet from '../layout/sidesheet.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { tick } from 'svelte';
@@ -22,7 +22,7 @@
     }: {
         showSheet: boolean;
         table: Models.Table;
-        existingData: Models.Document | null;
+        existingData: Models.Row | null;
     } = $props();
 
     let isSubmitting = $state(false);
@@ -41,13 +41,15 @@
 
         return {
             id: null,
-            row: availableColumns.reduce(
-                (acc, attr) => {
-                    acc[attr.key] = attr.array ? [] : null;
-                    return acc;
-                },
-                {} as Record<string, unknown>
-            ),
+            row: existingData
+                ? existingData
+                : availableColumns.reduce(
+                    (acc, attr) => {
+                        acc[attr.key] = attr.array ? [] : null;
+                        return acc;
+                    },
+                    {} as Record<string, unknown>
+                ),
             permissions: [],
             columns: availableColumns
         };
@@ -63,7 +65,7 @@
         isSubmitting = true;
 
         try {
-            await sdk.forProject(page.params.region, page.params.project).grids.createRow({
+            await sdk.forProject(page.params.region, page.params.project).tablesDb.createRow({
                 databaseId: page.params.database,
                 tableId: page.params.table,
                 rowId: $createRow.id ?? ID.unique(),
@@ -122,7 +124,6 @@
 {#if $createRow}
     <div class="sheet-container">
         <SideSheet
-            spaced
             title={`${existingData ? 'Duplicate' : 'Create'} row`}
             bind:show={showSheet}
             closeOnBlur={false}

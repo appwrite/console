@@ -20,7 +20,7 @@ import {
     Vcs,
     Sites,
     Tokens,
-    Grids,
+    TablesDB,
     Domains
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
@@ -30,8 +30,10 @@ import {
     REGION_FRA,
     REGION_NYC,
     REGION_SYD,
+    REGION_SFO,
     SUBDOMAIN_FRA,
     SUBDOMAIN_NYC,
+    SUBDOMAIN_SFO,
     SUBDOMAIN_SYD
 } from '$lib/constants';
 import { building } from '$app/environment';
@@ -59,6 +61,8 @@ const getSubdomain = (region?: string) => {
             return SUBDOMAIN_SYD;
         case REGION_NYC:
             return SUBDOMAIN_NYC;
+        case REGION_SFO:
+            return SUBDOMAIN_SFO;
         default:
             return '';
     }
@@ -122,7 +126,7 @@ const sdkForProject = {
     proxy: new Proxy(clientProject),
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
-    grids: new Grids(clientProject)
+    tablesDb: new TablesDB(clientProject)
 };
 
 export const realtime = {

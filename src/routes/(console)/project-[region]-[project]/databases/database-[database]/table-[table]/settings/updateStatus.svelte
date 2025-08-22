@@ -23,7 +23,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .grids.updateTable(
+                .tablesDb.updateTable(
                     databaseId,
                     $table.$id,
                     $table.name,

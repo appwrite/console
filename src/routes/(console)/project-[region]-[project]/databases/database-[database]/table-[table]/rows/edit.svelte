@@ -8,9 +8,9 @@
     import type { Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { table, type Columns } from './store';
-    import ColumnItem from './row-[row]/columnItem.svelte';
-    import { isRelationship, isRelationshipToMany } from './row-[row]/columns/store';
+    import { table, type Columns, PROHIBITED_ROW_KEYS } from '../store';
+    import ColumnItem from './columns/columnItem.svelte';
+    import { isRelationship, isRelationshipToMany } from './store';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
 
@@ -27,17 +27,8 @@
     let columnFormWrapper = $state<HTMLElement | null>(null);
 
     function initWork() {
-        const prohibitedKeys = [
-            '$id',
-            '$collection',
-            '$tableId',
-            '$databaseId',
-            '$createdAt',
-            '$updatedAt'
-        ];
-
         const filteredKeys = Object.keys(row).filter((key) => {
-            return !prohibitedKeys.includes(key);
+            return !PROHIBITED_ROW_KEYS.includes(key);
         });
 
         const result = filteredKeys.reduce((obj, key) => {
@@ -55,7 +46,7 @@
         }
     });
 
-    function compareAttributes(column: Columns, $work: Models.Row, $doc: Models.Row) {
+    function compareColumns(column: Columns, $work: Models.Row, $doc: Models.Row) {
         if (!column) {
             return false;
         }
@@ -91,9 +82,13 @@
 
     export async function update() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .grids.updateRow(databaseId, tableId, row.$id, $work, $work.$permissions);
+            await sdk.forProject(page.params.region, page.params.project).tablesDb.updateRow({
+                databaseId,
+                tableId,
+                rowId: row.$id,
+                data: $work,
+                permissions: $work.$permissions
+            });
 
             invalidate(Dependencies.ROW);
             trackEvent(Submit.RowUpdate);
@@ -113,7 +108,7 @@
     export function isDisabled(): boolean {
         if (!work || !$table?.columns?.length) return true;
 
-        return $table.columns.every((attribute) => compareAttributes(attribute, $work, row));
+        return $table.columns.every((column) => compareColumns(column, $work, row));
     }
 
     function focusFirstInput() {

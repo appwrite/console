@@ -26,13 +26,13 @@
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type ComponentProps, onDestroy, tick } from 'svelte';
+    import { type ComponentProps, onDestroy } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import EmptySheet from '../layout/emptySheet.svelte';
     import SpreadsheetContainer from '../layout/spreadsheet.svelte';
     import SideSheet from '../layout/sidesheet.svelte';
     import type { PageData } from './$types';
-    import { showCreateAttributeSheet } from '../store';
+    import { showCreateColumnSheet } from '../store';
     import { isSmallViewport } from '$lib/stores/viewport';
 
     let {
@@ -46,7 +46,6 @@
 
     let selectedIndexes = $state([]);
     let createIndex: CreateIndex;
-    let spreadsheetContainer: SpreadsheetContainer = $state(null);
 
     let error = $state('');
     let showFailed = $state(false);
@@ -75,7 +74,7 @@
         }
     }
 
-    onDestroy(() => ($showCreateAttributeSheet.show = false));
+    onDestroy(() => ($showCreateColumnSheet.show = false));
 
     const emptyCellsLimit = $derived($isSmallViewport ? 14 : 17);
     const emptyCellsCount = $derived(
@@ -83,13 +82,6 @@
             ? 0
             : emptyCellsLimit - data.table.indexes.length
     );
-
-    $effect(() => {
-        if (data.table.indexes) {
-            /* up-to-date height */
-            tick().then(() => spreadsheetContainer?.resizeSheet());
-        }
-    });
 </script>
 
 <Container
@@ -113,7 +105,7 @@
 <div class="databases-spreadsheet">
     {#if data.table?.columns?.length}
         {#if data.table.indexes.length}
-            <SpreadsheetContainer bind:this={spreadsheetContainer}>
+            <SpreadsheetContainer>
                 <Spreadsheet.Root
                     let:root
                     {columns}
@@ -173,10 +165,11 @@
                                     <Button text icon ariaLabel="more options" on:click={toggle}>
                                         <Icon icon={IconDotsHorizontal} size="s" />
                                     </Button>
-                                    <ActionMenu.Root slot="tooltip">
+                                    <ActionMenu.Root slot="tooltip" let:toggle>
                                         <ActionMenu.Item.Button
                                             leadingIcon={IconEye}
                                             on:click={() => {
+                                                toggle();
                                                 selectedIndex = index;
                                                 showOverview = true;
                                             }}>Overview</ActionMenu.Item.Button>
@@ -189,8 +182,9 @@
                                             status="danger"
                                             leadingIcon={IconTrash}
                                             on:click={() => {
-                                                selectedIndex = index;
+                                                toggle();
                                                 showDelete = true;
+                                                selectedIndex = index;
                                                 trackEvent(Click.DatabaseIndexDelete);
                                             }}>Delete</ActionMenu.Item.Button>
                                     </ActionMenu.Root>
@@ -232,7 +226,7 @@
                 primary: {
                     text: 'Create columns',
                     onClick: async () => {
-                        $showCreateAttributeSheet.show = true;
+                        $showCreateColumnSheet.show = true;
                     }
                 }
             }} />

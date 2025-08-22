@@ -124,9 +124,18 @@
 
     const progressCard = function getProgressCard() {
         if (selectedProject && !hasOnboardingDismissed(selectedProject.$id, $user)) {
+            const { platforms, pingCount } = selectedProject;
+            let percentage = 33;
+
+            if (platforms.length > 0 && pingCount === 0) {
+                percentage = 66;
+            } else if (pingCount > 0) {
+                percentage = 100;
+            }
+
             return {
                 title: 'Get started',
-                percentage: selectedProject && selectedProject.platforms.length ? 100 : 33
+                percentage
             };
         }
 
@@ -135,10 +144,13 @@
 </script>
 
 <svelte:window on:resize={handleResize} />
+
 <svelte:body use:style={$bodyStyle} />
+
 {#if $activeHeaderAlert?.show && !$isNewWizardStatusOpen}
     <svelte:component this={$activeHeaderAlert.component} />
 {/if}
+
 <main
     class:has-alert={$activeHeaderAlert?.show}
     class:is-open={$showSubNavigation}
@@ -165,7 +177,9 @@
         class:no-sidebar={!showSideNavigation}>
         <section class="main-content" data-test={showSideNavigation}>
             {#if $page.data?.header}
-                <svelte:component this={$page.data.header} />
+                <div class="layout-header">
+                    <svelte:component this={$page.data.header} />
+                </div>
             {/if}
             <slot />
             {#if showFooter}
@@ -231,6 +245,11 @@
     }
 
     :global(main:has(.databases-spreadsheet)) {
+        /* avoids the unnecessary sheet slide animation */
+        .has-transition {
+            transition: none !important;
+        }
+
         @media (min-width: 1024px) {
             .main-content {
                 height: auto;

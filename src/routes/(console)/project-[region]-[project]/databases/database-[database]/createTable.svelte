@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
+    import { subNavigation } from '$lib/stores/database';
 
     let {
         showCreate = $bindable(false)
@@ -28,9 +29,14 @@
         try {
             const table = await sdk
                 .forProject(page.params.region, page.params.project)
-                .grids.createTable(databaseId, id ? id : ID.unique(), name);
+                .tablesDb.createTable({
+                    databaseId,
+                    tableId: id ? id : ID.unique(),
+                    name
+                });
 
             showCreate = false;
+            subNavigation.update();
 
             dispatch('created', table);
             addNotification({
