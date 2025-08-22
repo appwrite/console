@@ -153,16 +153,14 @@
                         <Typography.Title size="m">Deploy function</Typography.Title>
                         <Card.Base variant="secondary" padding="s" radius="s">
                             <Layout.Stack gap="m">
-                                <Typography.Text
-                                    variant="m-500"
-                                    color="--fgcolor-neutral-primary">
+                                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                                     Repository
                                 </Typography.Text>
                                 <Layout.Stack direction="row" alignItems="center" gap="s">
                                     <Icon icon={IconGithub} size="m" />
                                     <Typography.Text variant="m-400">
-                                        {data.deploymentData.repository.owner}/{data
-                                            .deploymentData.repository.name}
+                                        {data.deploymentData.repository.owner}/{data.deploymentData
+                                            .repository.name}
                                     </Typography.Text>
                                 </Layout.Stack>
                                 {#if data.envKeys.length > 0}
