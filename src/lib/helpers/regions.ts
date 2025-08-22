@@ -18,11 +18,11 @@ export function filterRegions(regions: Models.ConsoleRegion[]): RegionOption[] {
             // Check if regions are truly available (not disabled and available)
             const aAvailable = !a.disabled && a.available;
             const bAvailable = !b.disabled && b.available;
-            
+
             // Prioritize truly available regions
             if (aAvailable && !bAvailable) return -1;
             if (!aAvailable && bAvailable) return 1;
-            
+
             // Within the same availability group, sort alphabetically
             return a.name.localeCompare(b.name);
         })
