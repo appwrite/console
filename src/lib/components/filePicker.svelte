@@ -30,7 +30,7 @@
     } from '@appwrite.io/pink-svelte';
     import Form from '$lib/elements/forms/form.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { IconInfo, IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
+    import { IconInfo, IconPlus, IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
     import { showCreateBucket } from '$routes/(console)/project-[region]-[project]/storage/+page.svelte';
     import { preferences } from '$lib/stores/preferences';
 
@@ -54,8 +54,8 @@
     let view: 'grid' | 'list' = 'list';
 
     onMount(() => {
-        const filePickerPrefs = preferences.getFilePickerPreferences();
-        localFileBucketSelected = !filePickerPrefs.lastSelectedBucket;
+        const lastSelectedBucket = preferences.getKey('lastSelectedBucket', null);
+        localFileBucketSelected = !lastSelectedBucket;
 
         selectedBucket = currentBucket?.$id;
     });
@@ -66,9 +66,8 @@
             await uploadFile();
         }
 
-        preferences.setFilePickerPreferences({
-            lastSelectedBucket: localFileBucketSelected ? null : selectedBucket
-        });
+        // Save preference based on selection
+        preferences.setKey('lastSelectedBucket', localFileBucketSelected ? null : selectedBucket);
 
         onSelect(currentFile, localFileBucketSelected);
         closeModal();
@@ -90,9 +89,7 @@
             if (localFileBucketSelected) {
                 file = await sdk
                     .forConsoleIn(page.params.region)
-                    .storage.createFile('default', ID.unique(), localFile[0], [
-                        Permission.read(Role.any())
-                    ]);
+                    .storage.createFile('default', ID.unique(), localFile[0]);
             } else {
                 file = await sdk
                     .forProject(page.params.region, page.params.project)
@@ -163,13 +160,11 @@
             .forProject(page.params.region, page.params.project)
             .storage.listBuckets();
 
-        const filePickerPrefs = preferences.getFilePickerPreferences();
+        const lastSelectedBucket = preferences.getKey('lastSelectedBucket', null);
         let preferredBucket = null;
 
-        if (filePickerPrefs.lastSelectedBucket) {
-            preferredBucket = response.buckets.find(
-                (bucket) => bucket.$id === filePickerPrefs.lastSelectedBucket
-            );
+        if (lastSelectedBucket) {
+            preferredBucket = response.buckets.find((bucket) => bucket.$id === lastSelectedBucket);
         }
         const bucket = preferredBucket ?? response.buckets[0] ?? null;
 
@@ -179,6 +174,9 @@
             if (preferredBucket) {
                 localFileBucketSelected = false;
             }
+        } else {
+            // in case when the last bucket selected was deleted
+            localFileBucketSelected = true;
         }
 
         return response;
@@ -228,86 +226,107 @@
         <Layout.Stack direction={$isSmallViewport ? 'column' : 'row'} height="50vh" gap="none">
             <!-- min-width to avoid a layout-shift -->
             <aside>
-                {#if showLocalFileBucket}
-                    <div class="action-menu-holder">
-                        <ActionMenu.Root width="180px">
-                            <div class="action-button" class:active-item={localFileBucketSelected}>
-                                <ActionMenu.Item.Button on:click={selectLocalBucket}>
-                                    Local file
-                                </ActionMenu.Item.Button>
-                            </div>
-                        </ActionMenu.Root>
-                    </div>
-                {/if}
-                {#if !$isSmallViewport}
-                    <Typography.Caption variant="500">Buckets</Typography.Caption>
-                {/if}
+                <Layout.Stack direction="column" gap="l">
+                    {#if showLocalFileBucket}
+                        <div class="action-button" class:active-item={localFileBucketSelected}>
+                            <ActionMenu.Item.Button on:click={selectLocalBucket}>
+                                Local file
+                            </ActionMenu.Item.Button>
+                        </div>
+                    {/if}
+                    <Layout.Stack direction="column" gap="s">
+                        {#if !$isSmallViewport}
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary"
+                                >Buckets</Typography.Caption>
+                        {/if}
 
-                {#await buckets}
-                    {#if $isSmallViewport}
-                        <!-- disabled state -->
-                        <div style:padding-block-start="1rem">
-                            <InputSelect
-                                required
-                                disabled
-                                id="bucket"
-                                value={null}
-                                options={[]}
-                                label="Bucket"
-                                placeholder="Loading buckets..." />
-                        </div>
-                    {/if}
-                {:then response}
-                    {#if $isSmallViewport}
-                        <div style:padding-block-start="1rem">
-                            <InputSelect
-                                required
-                                id="bucket"
-                                label="Bucket"
-                                bind:value={selectedBucket}
-                                placeholder="Select bucket"
-                                on:change={(event) => {
-                                    const bucketId = event.detail;
-                                    const bucket = response.buckets.find(
-                                        (bucket) => bucket.$id === bucketId
-                                    );
-                                    selectBucket(bucket);
-                                }}
-                                options={response.buckets.map((bucket) => {
-                                    return {
-                                        value: bucket.$id,
-                                        label: `${bucket.name}`
-                                    };
-                                })} />
-                        </div>
-                    {:else}
-                        <div class="action-menu-holder">
-                            <ActionMenu.Root width="180px">
-                                {#each response.buckets as bucket}
-                                    {@const isSelected =
-                                        !localFileBucketSelected && bucket.$id === selectedBucket}
-                                    <div class="action-button" class:active-item={isSelected}>
-                                        <ActionMenu.Item.Button
-                                            on:click={() => selectBucket(bucket)}>
-                                            {bucket.name}
-                                        </ActionMenu.Item.Button>
-                                    </div>
-                                {:else}
-                                    <Button
-                                        secondary
-                                        on:click={async () => {
-                                            await goto(
-                                                `${base}/project-${page.params.region}-${page.params.project}/storage`
+                        {#await buckets}
+                            {#if $isSmallViewport}
+                                <!-- disabled state -->
+                                <div style:padding-block-start="1rem">
+                                    <InputSelect
+                                        required
+                                        disabled
+                                        id="bucket"
+                                        value={null}
+                                        options={[]}
+                                        label="Bucket"
+                                        placeholder="Loading buckets..." />
+                                </div>
+                            {/if}
+                        {:then response}
+                            {#if $isSmallViewport}
+                                <div style:padding-block-start="1rem">
+                                    <InputSelect
+                                        required
+                                        id="bucket"
+                                        label="Bucket"
+                                        bind:value={selectedBucket}
+                                        placeholder="Select bucket"
+                                        on:change={(event) => {
+                                            const bucketId = event.detail;
+                                            const bucket = response.buckets.find(
+                                                (bucket) => bucket.$id === bucketId
                                             );
-                                            $showCreateBucket = true;
-                                        }}>
-                                        Create bucket
-                                    </Button>
-                                {/each}
-                            </ActionMenu.Root>
-                        </div>
-                    {/if}
-                {/await}
+                                            selectBucket(bucket);
+                                        }}
+                                        options={response.buckets.map((bucket) => {
+                                            return {
+                                                value: bucket.$id,
+                                                label: `${bucket.name}`
+                                            };
+                                        })} />
+                                </div>
+                            {:else}
+                                <div class="action-menu-holder">
+                                    <ActionMenu.Root width="180px">
+                                        {#each response.buckets as bucket}
+                                            {@const isSelected =
+                                                !localFileBucketSelected &&
+                                                bucket.$id === selectedBucket}
+                                            <div
+                                                class="action-button"
+                                                class:active-item={isSelected}>
+                                                <ActionMenu.Item.Button
+                                                    on:click={() => selectBucket(bucket)}>
+                                                    {bucket.name}
+                                                </ActionMenu.Item.Button>
+                                            </div>
+                                        {:else}
+                                            <Layout.Stack
+                                                gap="xs"
+                                                direction="row"
+                                                alignItems="center"
+                                                class="u-margin-inline-start-8">
+                                                <Typography.Text
+                                                    align="center"
+                                                    variant="m-400"
+                                                    color="--fgcolor-neutral-tertiary"
+                                                    >No buckets found</Typography.Text>
+                                            </Layout.Stack>
+                                            <Layout.Stack
+                                                alignItems="center"
+                                                direction="row"
+                                                style="gap: 3px; margin-block-start: 8px;">
+                                                <Icon icon={IconPlus} size="s" />
+                                                <Button
+                                                    compact
+                                                    on:click={async () => {
+                                                        await goto(
+                                                            `${base}/project-${page.params.region}-${page.params.project}/storage`
+                                                        );
+                                                        $showCreateBucket = true;
+                                                    }}>
+                                                    create bucket
+                                                </Button>
+                                            </Layout.Stack>
+                                        {/each}
+                                    </ActionMenu.Root>
+                                </div>
+                            {/if}
+                        {/await}
+                    </Layout.Stack>
+                </Layout.Stack>
             </aside>
 
             <div style:padding-inline-start="1rem" style:opacity={$isSmallViewport ? 0 : 1}>
@@ -315,8 +334,9 @@
             </div>
             {#if localFileBucketSelected}
                 <div class="files-section">
-                    <Layout.Stack gap="xxl">
-                        <Typography.Title size="s">{localFileBucketTitle}</Typography.Title>
+                    <Layout.Stack gap="l">
+                        <Typography.Title size="s" color="--fgcolor-neutral-primary"
+                            >{localFileBucketTitle}</Typography.Title>
                         <Upload.Dropzone bind:files={localFile} extensions={[allowedExtension]}>
                             <Layout.Stack alignItems="center" gap="s">
                                 <Layout.Stack alignItems="center" gap="s">

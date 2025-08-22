@@ -11,9 +11,6 @@ type ConsolePreferences = {
     limit?: number;
     view?: View;
     columns?: string[];
-    filePicker?: {
-        lastSelectedBucket?: string;
-    };
 } /* support a strict + flexible preference type for TS compatibility */ & Record<
     string,
     string | number | boolean | object | null | unknown
@@ -298,28 +295,6 @@ function createPreferences() {
                 }
 
                 n.miscellaneous[key] = value;
-                return n;
-            });
-        },
-        getFilePickerPreferences() {
-            return (
-                preferences?.filePicker ?? {
-                    lastSelectedBucket: null
-                }
-            );
-        },
-
-        async setFilePickerPreferences(prefs: ConsolePreferences['filePicker']) {
-            await updateAndSync((n) => {
-                if (!n?.filePicker) {
-                    n ??= {};
-                    n.filePicker ??= {};
-                }
-
-                n.filePicker = {
-                    ...n.filePicker,
-                    ...prefs
-                };
                 return n;
             });
         }
