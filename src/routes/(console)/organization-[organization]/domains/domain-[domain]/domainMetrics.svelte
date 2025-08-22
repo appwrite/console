@@ -5,12 +5,17 @@
     import { Link } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
 
-    let { domain, retryVerification }: { domain: Models.Domain; retryVerification: () => void } =
-        $props();
+    let {
+        domain,
+        retryVerification
+    }: {
+        domain: Models.Domain;
+        retryVerification: () => void;
+    } = $props();
 
-    const isDomainVerified = domain.nameservers.toLowerCase() === 'appwrite';
+    const isDomainVerified = $derived(domain.nameservers.toLowerCase() === 'appwrite');
 
-    const metrics = [
+    const metrics = $derived([
         {
             value: isDomainVerified ? 'Verified' : 'Not verified',
             description: 'Status'
@@ -40,7 +45,7 @@
             value: domain?.renewalPrice || '-',
             description: 'Renewal price'
         }
-    ];
+    ]);
 </script>
 
 <Layout.Grid gap="m" columnsL={6} columns={3} columnsS={2} columnsXXS={1}>

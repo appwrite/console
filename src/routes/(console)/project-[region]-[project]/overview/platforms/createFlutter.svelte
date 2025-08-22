@@ -26,6 +26,7 @@
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
+    import { project } from '../../store';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -36,11 +37,15 @@
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-flutter\ncd starter-for-flutter\n';
 
+    const baseConfig = `class Environment {
+  static const String appwriteProjectId = '${projectId}';
+  static const String appwriteProjectName = '${$project.name}';`;
+
     const updateConfigCode = isCloud
-        ? `static const String APPWRITE_PROJECT_ID = "${projectId}"`
-        : `static const String APPWRITE_PROJECT_ID = "${projectId}"
-static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
-        `;
+        ? `${baseConfig}\n}`
+        : `${baseConfig}
+  static const String appwriteEndpoint = '${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}';
+}`;
 
     export let platform: PlatformType = PlatformType.Flutterandroid;
 
@@ -125,6 +130,11 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {
                 type: platform
+            });
+
+            addNotification({
+                type: 'success',
+                message: 'Platform created.'
             });
 
             invalidate(Dependencies.PROJECT);
@@ -263,7 +273,7 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
 
         <!-- Step Three -->
         {#if isPlatformCreated}
-            <Fieldset legend="Clone starter">
+            <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
@@ -276,8 +286,8 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
                     </div>
 
                     <Typography.Text variant="m-500"
-                        >2. Open the file <InlineCode size="s" code="lib/constants/appwrite.dart" />
-                        and update the configuration settings.</Typography.Text>
+                        >2. Replace <InlineCode size="s" code="lib/config/environment.dart" />
+                        to reflect the values below:</Typography.Text>
 
                     <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                     <div class="pink2-code-margin-fix">
@@ -285,7 +295,9 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
                     </div>
 
                     <Typography.Text variant="m-500"
-                        >3. Run the app on a connected device or simulator, then click the <InlineCode
+                        >3. Run the app on a connected device or simulator using <InlineCode
+                            size="s"
+                            code="flutter run -d [device_name]" />, then click the <InlineCode
                             size="s"
                             code="Send a ping" /> button to verify the setup.</Typography.Text>
                 </Layout.Stack>
@@ -343,7 +355,7 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.reg
                 secondary
                 disabled={isCreatingPlatform}
                 href={location.pathname}>
-                Go to dashboard
+                Skip, go to dashboard
             </Button>
         {/if}
     </svelte:fragment>

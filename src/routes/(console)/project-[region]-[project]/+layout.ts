@@ -56,7 +56,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         });
     }
 
-    preferences.loadTeamPrefs(project.teamId);
+    // should be awaited for `displayNames`!
+    await preferences.loadTeamPrefs(project.teamId);
 
     if (isCloud && scopes.includes('billing.read')) {
         loadFailedInvoices(project.teamId);

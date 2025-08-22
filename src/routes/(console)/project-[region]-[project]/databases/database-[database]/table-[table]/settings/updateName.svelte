@@ -9,6 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { table } from '../store';
+    import { subNavigation } from '$lib/stores/database';
 
     const databaseId = page.params.database;
 
@@ -20,16 +21,17 @@
 
     async function updateName() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .grids.updateTable(
-                    databaseId,
-                    $table.$id,
-                    tableName,
-                    $table.$permissions,
-                    $table.rowSecurity,
-                    $table.enabled
-                );
+            await sdk.forProject(page.params.region, page.params.project).tablesDb.updateTable({
+                databaseId,
+                tableId: $table.$id,
+                name: tableName,
+                permissions: $table.$permissions,
+                rowSecurity: $table.rowSecurity,
+                enabled: $table.enabled
+            });
+
+            subNavigation.update();
+
             await invalidate(Dependencies.TABLE);
             addNotification({
                 message: 'Name has been updated',

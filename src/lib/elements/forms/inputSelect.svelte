@@ -17,6 +17,7 @@
         disabled?: boolean;
         leadingIcon?: ComponentType;
         leadingHtml?: string;
+        badge?: string;
     }[];
 
     let element: HTMLSelectElement;

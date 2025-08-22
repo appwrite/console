@@ -8,12 +8,14 @@ import SubNavigation from './subNavigation.svelte';
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.DATABASE);
 
+    const database = await sdk.forProject(params.region, params.project).tablesDb.get({
+        databaseId: params.database
+    });
+
     return {
         header: Header,
         breadcrumbs: Breadcrumbs,
         subNavigation: SubNavigation,
-        database: await sdk
-            .forProject(params.region, params.project)
-            .grids.getDatabase(params.database)
+        database
     };
 };

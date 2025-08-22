@@ -52,20 +52,20 @@ async function fetchDatabasesAndBackups(
 
     const projectSDK = sdk.forProject(params.region, params.project);
 
-    const databases = await projectSDK.grids.listDatabases(
-        [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
-        search || undefined
-    );
+    const databases = await projectSDK.tablesDb.list({
+        queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        search: search || undefined
+    });
 
     const tables: Record<string, string | null> = {};
 
     await Promise.all(
         // TODO: backend should allow `Query.select` for perf!
         databases.databases.map(async ({ $id }) => {
-            const res = await projectSDK.grids.listTables($id, [
-                Query.limit(1),
-                Query.orderDesc('')
-            ]);
+            const res = await projectSDK.tablesDb.listTables({
+                databaseId: $id,
+                queries: [Query.limit(1), Query.orderDesc('')]
+            });
 
             tables[$id] = res.tables?.[0]?.$id ?? null;
         })

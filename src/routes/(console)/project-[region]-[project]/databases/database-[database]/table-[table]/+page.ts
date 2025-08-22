@@ -4,7 +4,7 @@ import { sdk } from '$lib/stores/sdk';
 import { type Models, Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters';
-import { buildWildcardColumnsQuery } from './row-[row]/columns/store';
+import { buildWildcardColumnsQuery } from './rows/store';
 import type { TagValue } from '$lib/components/filters/store';
 
 export const load: PageLoad = async ({ params, depends, url, route, parent }) => {
@@ -30,13 +30,11 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         view,
         query,
         currentSort,
-        rows: await sdk
-            .forProject(params.region, params.project)
-            .grids.listRows(
-                params.database,
-                params.table,
-                buildGridQueries(limit, offset, parsedQueries, table)
-            )
+        rows: await sdk.forProject(params.region, params.project).tablesDb.listRows({
+            databaseId: params.database,
+            tableId: params.table,
+            queries: buildGridQueries(limit, offset, parsedQueries, table)
+        })
     };
 };
 

@@ -64,7 +64,19 @@ export const databaseRowSheetOptions = writable<
     row: null
 });
 
-export const showRecordsCreateSheet = writable({
+export const databaseRelatedRowSheetOptions = writable<
+    DatabaseSheetOptions & {
+        rowId: string;
+        tableId: string;
+    }
+>({
+    title: 'Update related row',
+    show: false,
+    rowId: null,
+    tableId: null
+});
+
+export const showRowCreateSheet = writable({
     show: false,
     row: null
 });
@@ -84,7 +96,7 @@ export type ColumnDirection = {
     to: 'left' | 'right';
 };
 
-export type CreateAttribute = {
+export type CreateColumn = {
     show: boolean;
     column?: Columns;
     title: string;
@@ -94,7 +106,7 @@ export type CreateAttribute = {
     columnsOrder?: string[];
 };
 
-export const showCreateAttributeSheet = writable<CreateAttribute>({
+export const showCreateColumnSheet = writable<CreateColumn>({
     show: false,
     column: null,
     title: 'Create column',
@@ -138,10 +150,11 @@ export const randomDataModalState = writable({
 
 export const spreadsheetLoading = writable(false);
 
+// noinspection JSUnusedGlobalSymbols
 export enum Deletion {
-    'setNull' = 'Set rpw ID as NULL in all related rows',
-    'cascade' = 'All related rows will be deleted',
-    'restrict' = 'Row can not be deleted'
+    setNull = 'Set row ID as NULL in all related rows',
+    cascade = 'All related rows will be deleted',
+    restrict = 'Row can not be deleted'
 }
 
 export const scrollStore = writable(null);
@@ -151,8 +164,24 @@ export const rowActivitySheet = writable({
     row: null as Models.Row
 });
 
-export const expandTabs = writable(true);
+export const rowPermissionSheet = writable({
+    show: false,
+    row: null as Models.Row
+});
+
+export const expandTabs = writable(null);
 export const spreadsheetRenderKey = writable('initial');
 
 export const paginatedRowsLoading = writable(false);
 export const paginatedRows = createSparsePagedDataStore<Models.DefaultRow>(SPREADSHEET_PAGE_LIMIT);
+
+export const PROHIBITED_ROW_KEYS = [
+    '$id',
+    '$collection',
+    '$tableId',
+    '$databaseId',
+    '$createdAt',
+    '$updatedAt'
+];
+
+export const sheetHeightStore = writable('74.5vh');

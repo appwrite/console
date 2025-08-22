@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { Modal } from '$lib/components';
-    import { Pill } from '$lib/elements';
     import { createEventDispatcher } from 'svelte';
     import { at, empty } from '$lib/helpers/array';
     import { singular } from '$lib/helpers/string';
@@ -292,13 +291,12 @@
             <Typography.Text variant="m-500">Choose an attribute (optional)</Typography.Text>
             <Layout.Stack gap="s" wrap="wrap" direction="row">
                 {#each available.columns as attribute}
-                    <Pill
+                    <Tag
                         disabled={showInput}
                         selected={selected.column === attribute}
-                        button
                         on:click={() => select('attribute', attribute)}>
                         {attribute}
-                    </Pill>
+                    </Tag>
                 {/each}
             </Layout.Stack>
         </Layout.Stack>

@@ -47,7 +47,7 @@
 
             tables = await sdk
                 .forProject(page.params.region, page.params.project)
-                .grids.listTables(databaseId, queries);
+                .tablesDb.listTables(databaseId, queries);
 
             const tablePromises = tables.tables.map(async (table) => {
                 return {
@@ -69,7 +69,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .grids.deleteDatabase(databaseId);
+                .tablesDb.delete({ databaseId });
             showDelete = false;
             addNotification({
                 type: 'success',

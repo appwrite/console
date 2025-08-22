@@ -4,13 +4,21 @@
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import Column from './column.svelte';
-    import type { Columns } from '../store';
+    import type { Columns } from '../../store';
 
-    export let column: Columns;
-    export let formValues: object = {};
-    export let label: string;
-    export let editing = false;
-    export let fromSpreadsheet: boolean = false;
+    let {
+        column,
+        formValues = $bindable({}),
+        label,
+        editing = false,
+        fromSpreadsheet = false
+    }: {
+        column: Columns;
+        formValues: object;
+        label: string;
+        editing?: boolean;
+        fromSpreadsheet?: boolean;
+    } = $props();
 
     function removeArrayItem(key: string, index: number) {
         formValues = {
@@ -48,18 +56,42 @@
 
 {#if column.array}
     {#if formValues[column.key]?.length === 0}
-        <Layout.Stack direction="row" alignContent="space-between">
-            <Layout.Stack gap="xxs" direction="row" alignItems="center">
-                <Typography.Text variant="m-500">{label}</Typography.Text>
-                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                    {getColumnType(column)}
-                </Typography.Text>
+        {#if fromSpreadsheet}
+            <Column
+                array
+                {label}
+                {column}
+                {editing}
+                id={column.key}
+                limited={fromSpreadsheet}
+                optionalText={getColumnType(column)}
+                bind:value={formValues[column.key]}
+                on:click />
+        {:else}
+            <Layout.Stack direction="row" alignContent="space-between">
+                <Layout.Stack gap="xxs" direction="row" alignItems="center">
+                    <Typography.Text variant="m-500">{label}</Typography.Text>
+                    <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                        {getColumnType(column)}
+                    </Typography.Text>
+                </Layout.Stack>
+                <Button secondary on:click={() => addArrayItem(column.key)}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add item
+                </Button>
             </Layout.Stack>
-            <Button secondary on:click={() => addArrayItem(column.key)}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Add item
-            </Button>
-        </Layout.Stack>
+        {/if}
+    {:else if fromSpreadsheet}
+        <Column
+            array
+            {label}
+            {column}
+            {editing}
+            id={column.key}
+            limited={fromSpreadsheet}
+            optionalText={getColumnType(column)}
+            bind:value={formValues[column.key]}
+            on:click />
     {:else}
         <Layout.Stack>
             {#each [...(formValues[column.key]?.keys() ?? [])] as index}
@@ -89,8 +121,9 @@
         {label}
         {editing}
         {column}
-        limited={fromSpreadsheet}
         id={column.key}
+        limited={fromSpreadsheet}
         optionalText={getColumnType(column)}
-        bind:value={formValues[column.key]} />
+        bind:value={formValues[column.key]}
+        on:click />
 {/if}

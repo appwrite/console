@@ -42,9 +42,8 @@
         clientSecret && tenantID ? JSON.stringify({ clientSecret, tenantID }) : provider.secret;
 </script>
 
-<Modal {error} onSubmit={update} bind:show on:close>
-    <svelte:fragment slot="title">{provider.name} OAuth2 settings</svelte:fragment>
-    <p>
+<Modal {error} onSubmit={update} bind:show on:close title={`${provider.name} OAuth2 settings`}>
+    <p slot="description">
         To use {provider.name} authentication in your application, first fill in this form. For more
         info you can
         <a class="link" href={oAuthProvider?.docs} target="_blank" rel="noopener noreferrer">
@@ -57,13 +56,15 @@
         label="Application (client) ID"
         autofocus={true}
         placeholder="Enter ID"
-        bind:value={appId} />
+        bind:value={appId}
+        required />
     <InputPassword
         id="secret"
         label="Client Secret"
         placeholder="Enter Client Secret"
         minlength={0}
-        bind:value={clientSecret} />
+        bind:value={clientSecret}
+        required />
     <InputText
         id="tenant"
         label="Target Tenant"
@@ -78,10 +79,11 @@
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
-            disabled={(secret === provider.secret &&
-                enabled === provider.enabled &&
-                appId === provider.appId) ||
-                !(appId && clientSecret && tenantID)}
+            disabled={!appId ||
+                !clientSecret ||
+                (secret === provider.secret &&
+                    enabled === provider.enabled &&
+                    appId === provider.appId)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>

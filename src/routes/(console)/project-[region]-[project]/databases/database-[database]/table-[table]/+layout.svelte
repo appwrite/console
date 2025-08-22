@@ -28,13 +28,14 @@
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
         randomDataModalState,
-        showCreateAttributeSheet,
+        showCreateColumnSheet,
         showCreateIndexSheet,
         spreadsheetLoading,
         rowActivitySheet,
         spreadsheetRenderKey,
-        columnsWidth,
-        expandTabs
+        expandTabs,
+        databaseRelatedRowSheetOptions,
+        rowPermissionSheet
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
@@ -46,9 +47,11 @@
     import { canWriteTables } from '$lib/stores/roles';
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
     import SideSheet from './layout/sidesheet.svelte';
-    import EditRow from './editRow.svelte';
+    import EditRow from './rows/edit.svelte';
+    import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
-    import RowActivity from './rowActivity.svelte';
+    import RowActivity from './rows/activity.svelte';
+    import EditRowPermissions from './rows/editPermissions.svelte';
     import { Dialog, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
@@ -59,6 +62,9 @@
     import { preferences } from '$lib/stores/preferences';
 
     let editRow: EditRow;
+    let editRelatedRow: EditRelatedRow;
+    let editRowPermissions: EditRowPermissions;
+
     let createIndex: CreateIndex;
     let createColumn: CreateColumn;
     let selectedOption: Option['name'] = 'String';
@@ -69,10 +75,8 @@
      */
     let isWaterfallFromFaker = false;
 
-    const tableId = page.params.table;
-
     onMount(() => {
-        expandTabs.set(preferences.isTableHeaderExpanded(tableId));
+        expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
 
         return realtime
             .forProject(page.params.region, page.params.project)
@@ -244,14 +248,10 @@
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
-        let attributes = $table.columns;
-        if (!attributes.length) {
+        let columns = $table.columns;
+        if (!columns.length) {
             try {
-                attributes = await generateColumns(
-                    $project,
-                    page.params.database,
-                    page.params.table
-                );
+                columns = await generateColumns($project, page.params.database, page.params.table);
 
                 await invalidate(Dependencies.TABLE);
             } catch (e) {
@@ -264,16 +264,16 @@
             }
         }
 
-        /* let the attributes be processed! */
+        /* let the columns be processed! */
         await sleep(1250);
 
         let rowIds = [];
         try {
-            const { rows, ids } = generateFakeRecords(attributes, $randomDataModalState.value);
+            const { rows, ids } = generateFakeRecords(columns, $randomDataModalState.value);
 
             rowIds = ids;
 
-            await sdk.forProject(page.params.region, page.params.project).grids.createRows({
+            await sdk.forProject(page.params.region, page.params.project).tablesDb.createRows({
                 databaseId: page.params.database,
                 tableId: page.params.table,
                 rows
@@ -311,10 +311,9 @@
 <slot />
 
 <SideSheet
-    spaced
     closeOnBlur
-    title={$showCreateAttributeSheet.title}
-    bind:show={$showCreateAttributeSheet.show}
+    title={$showCreateColumnSheet.title}
+    bind:show={$showCreateColumnSheet.show}
     submit={{
         text: 'Create',
         onClick: async () => {
@@ -325,11 +324,10 @@
     <CreateColumn
         bind:selectedOption
         bind:this={createColumn}
-        column={$showCreateAttributeSheet.column}
-        showCreate={$showCreateAttributeSheet.show}
-        direction={$showCreateAttributeSheet.direction}
-        columns={$showCreateAttributeSheet.columns}
-        columnsOrder={$showCreateAttributeSheet.columnsOrder}
+        column={$showCreateColumnSheet.column}
+        columns={$showCreateColumnSheet.columns}
+        direction={$showCreateColumnSheet.direction}
+        columnsOrder={$showCreateColumnSheet.columnsOrder}
         onColumnsReorder={(newOrder) => {
             columnsOrder.set(newOrder);
             // columns.set(reorderItems($columns, $columnsOrder));
@@ -337,7 +335,6 @@
 </SideSheet>
 
 <SideSheet
-    spaced
     closeOnBlur
     title={$databaseColumnSheetOptions.title}
     bind:show={$databaseColumnSheetOptions.show}
@@ -353,7 +350,6 @@
 </SideSheet>
 
 <SideSheet
-    spaced
     closeOnBlur
     title={$databaseRowSheetOptions.title}
     bind:show={$databaseRowSheetOptions.show}
@@ -366,7 +362,21 @@
 </SideSheet>
 
 <SideSheet
-    spaced
+    closeOnBlur
+    title={$databaseRelatedRowSheetOptions.title}
+    bind:show={$databaseRelatedRowSheetOptions.show}
+    submit={{
+        text: 'Update',
+        disabled: editRelatedRow?.isDisabled(),
+        onClick: async () => await editRelatedRow?.update()
+    }}>
+    <EditRelatedRow
+        bind:this={editRelatedRow}
+        rowId={$databaseRelatedRowSheetOptions.rowId}
+        tableId={$databaseRelatedRowSheetOptions.tableId} />
+</SideSheet>
+
+<SideSheet
     closeOnBlur
     title="Create index"
     bind:show={$showCreateIndexSheet.show}
@@ -382,7 +392,19 @@
         externalColumnKey={$showCreateIndexSheet.column} />
 </SideSheet>
 
-<SideSheet spaced title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
+<SideSheet
+    closeOnBlur
+    title="Row permissions"
+    bind:show={$rowPermissionSheet.show}
+    submit={{
+        text: 'Create',
+        disabled: editRowPermissions?.disableSubmit(),
+        onClick: async () => editRowPermissions?.updatePermissions()
+    }}>
+    <EditRowPermissions bind:this={editRowPermissions} bind:row={$rowPermissionSheet.row} />
+</SideSheet>
+
+<SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
     <RowActivity />
 </SideSheet>
 

@@ -7,25 +7,20 @@
         Spreadsheet,
         Typography
     } from '@appwrite.io/pink-svelte';
-
-    import {
-        IconCalendar,
-        IconFingerPrint,
-        IconHashtag,
-        IconPlus
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconCalendar, IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
     import {
         tableColumns,
         columnsOrder,
-        showCreateAttributeSheet,
+        showCreateColumnSheet,
         spreadsheetLoading,
         expandTabs
     } from '../store';
+    import SpreadsheetContainer from './spreadsheet.svelte';
 
-    type Mode = 'rows' | 'indexes';
+    type Mode = 'rows' | 'rows-filtered' | 'indexes';
 
     interface Action {
         text?: string;
@@ -50,7 +45,32 @@
         };
     }>();
 
+    let spreadsheetContainer: HTMLElement;
+    let headerElement: HTMLElement | null = null;
+    let dynamicOverlayHeight = $state('70.5vh');
+
     const baseColProps = { draggable: false, resizable: false };
+
+    const updateOverlayHeight = () => {
+        if (!spreadsheetContainer) return;
+
+        if (!headerElement || !headerElement.isConnected) {
+            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+        }
+
+        if (headerElement) {
+            const headerRect = headerElement.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const dynamicHeight = viewportHeight - headerRect.bottom;
+
+            dynamicOverlayHeight = `${dynamicHeight}px`;
+            if (!$expandTabs) {
+                dynamicOverlayHeight = `calc(${dynamicHeight}px - 89px)`;
+            }
+        }
+    };
+
+    updateOverlayHeight();
 
     const getCustomColumns = (): Column[] =>
         customColumns.map((col: Column) => ({
@@ -62,17 +82,8 @@
 
     const getRowColumns = (): Column[] => [
         {
-            id: '$sequence',
-            title: 'Sequence',
-            type: 'string',
-            width: 150,
-            isPrimary: true,
-            icon: IconHashtag,
-            ...baseColProps
-        },
-        {
             id: '$id',
-            title: 'ID',
+            title: '$id',
             type: 'string',
             width: 180,
             icon: IconFingerPrint,
@@ -81,7 +92,7 @@
         ...getCustomColumns(),
         {
             id: '$createdAt',
-            title: 'Created',
+            title: '$createdAt',
             type: 'datetime',
             width: 180,
             icon: IconCalendar,
@@ -89,7 +100,7 @@
         },
         {
             id: '$updatedAt',
-            title: 'Updated',
+            title: '$updatedAt',
             type: 'datetime',
             width: 180,
             icon: IconCalendar,
@@ -127,82 +138,87 @@
 
     const spreadsheetColumns = $derived(mode === 'rows' ? getRowColumns() : getIndexesColumns());
 
-    const emptyCells = $derived($isSmallViewport ? 14 : 17);
-    const fixedHeight = $derived($isSmallViewport ? '60.75vh' : '74.35vh');
+    const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
 </script>
 
-<div class="spreadsheet-container-outer" data-mode={mode}>
-    <Spreadsheet.Root
-        {emptyCells}
-        allowSelection
-        height={fixedHeight}
-        columns={spreadsheetColumns}
-        loading={$spreadsheetLoading}
-        bottomActionClick={() => {
-            /* @ignore: only for showing the `+` button on footer */
-        }}>
-        <svelte:fragment slot="header" let:root>
-            {#each spreadsheetColumns as column (column.id)}
-                {@const columnActionsById = column.id === 'actions'}
-                <!-- svelte-ignore a11y_click_events_have_key_events -->
-                <div
-                    role="button"
-                    tabindex="0"
-                    style:cursor={columnActionsById ? 'pointer' : null}
-                    onclick={() => {
-                        if (columnActionsById && mode === 'rows') {
-                            $showCreateAttributeSheet.show = true;
-                            $showCreateAttributeSheet.title = 'Create column';
-                            $showCreateAttributeSheet.columns = $tableColumns;
-                            $showCreateAttributeSheet.columnsOrder = $columnsOrder;
-                        }
-                    }}>
-                    <Spreadsheet.Header.Cell
-                        {root}
-                        column={column.id}
-                        icon={column.icon ?? undefined}>
-                        {#if column.isAction}
-                            <Button.Button
-                                icon
-                                variant="extra-compact"
-                                on:click={() => {
-                                    console.log('dank');
-                                }}>
-                                <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
-                            </Button.Button>
-                        {:else if column.id === 'actions' || column.id === 'empty'}
-                            {column.title}
-                        {:else}
-                            <Layout.Stack
-                                gap="xs"
-                                direction="row"
-                                alignItems="center"
-                                alignContent="center">
+<svelte:window on:resize={updateOverlayHeight} />
+
+<div
+    class="databases-spreadsheet spreadsheet-container-outer"
+    data-mode={mode}
+    bind:this={spreadsheetContainer}>
+    <SpreadsheetContainer>
+        <Spreadsheet.Root
+            {emptyCells}
+            allowSelection
+            height="100%"
+            columns={spreadsheetColumns}
+            loading={$spreadsheetLoading}
+            bottomActionClick={() => {
+                /* @ignore: only for showing the `+` button on footer */
+            }}>
+            <svelte:fragment slot="header" let:root>
+                {#each spreadsheetColumns as column (column.id)}
+                    {@const columnActionsById = column.id === 'actions'}
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <div
+                        role="button"
+                        tabindex="0"
+                        style:cursor={columnActionsById ? 'pointer' : null}
+                        onclick={() => {
+                            if (columnActionsById && mode === 'rows') {
+                                $showCreateColumnSheet.show = true;
+                                $showCreateColumnSheet.title = 'Create column';
+                                $showCreateColumnSheet.columns = $tableColumns;
+                                $showCreateColumnSheet.columnsOrder = $columnsOrder;
+                            }
+                        }}>
+                        <Spreadsheet.Header.Cell
+                            {root}
+                            column={column.id}
+                            icon={column.icon ?? undefined}>
+                            {#if column.isAction}
+                                <Button.Button icon variant="extra-compact">
+                                    <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
+                                </Button.Button>
+                            {:else if column.id === 'actions' || column.id === 'empty'}
                                 {column.title}
+                            {:else}
+                                <Layout.Stack
+                                    gap="xs"
+                                    direction="row"
+                                    alignItems="center"
+                                    alignContent="center">
+                                    {column.title}
 
-                                <SortButton disabled column={column.id} />
-                            </Layout.Stack>
-                        {/if}
-                    </Spreadsheet.Header.Cell>
-                </div>
-            {/each}
-        </svelte:fragment>
+                                    <SortButton disabled column={column.id} />
+                                </Layout.Stack>
+                            {/if}
+                        </Spreadsheet.Header.Cell>
+                    </div>
+                {/each}
+            </svelte:fragment>
 
-        <svelte:fragment slot="footer">
-            {#if $spreadsheetLoading}
-                <Layout.Stack
-                    direction="row"
-                    alignContent="center"
-                    alignItems="center"
-                    justifyContent="space-between">
-                    <Skeleton variant="line" height={18} width={125} />
-                </Layout.Stack>
-            {/if}
-        </svelte:fragment>
-    </Spreadsheet.Root>
+            <svelte:fragment slot="footer">
+                {#if $spreadsheetLoading}
+                    <Layout.Stack
+                        direction="row"
+                        alignContent="center"
+                        alignItems="center"
+                        justifyContent="space-between">
+                        <Skeleton variant="line" height={18} width={125} />
+                    </Layout.Stack>
+                {/if}
+            </svelte:fragment>
+        </Spreadsheet.Root>
+    </SpreadsheetContainer>
 
     {#if !$spreadsheetLoading}
-        <div class="spreadsheet-fade-bottom" data-collapsed-tabs={!$expandTabs}>
+        <!-- Claude: Can this be truly centered without hacky left: xyz values? -->
+        <div
+            class="spreadsheet-fade-bottom"
+            data-collapsed-tabs={!$expandTabs}
+            style:--dynamic-overlay-height={dynamicOverlayHeight}>
             <div class="empty-actions">
                 <Layout.Stack gap="xl" alignItems="center">
                     <Typography.Title>{title ?? `You have no ${mode} yet`}</Typography.Title>
@@ -210,26 +226,36 @@
                     {#if showActions}
                         <Layout.Stack
                             inline
+                            gap="s"
                             alignItems="center"
-                            direction={$isSmallViewport ? 'column' : 'row'}
-                            gap="s">
-                            <Button.Button
-                                icon
-                                size="s"
-                                variant="secondary"
-                                disabled={actions?.primary?.disabled}
-                                onclick={actions?.primary?.onClick}>
-                                <Icon icon={IconPlus} size="s" />
-                                {actions?.primary?.text ?? `Create ${mode}`}
-                            </Button.Button>
+                            direction={$isSmallViewport ? 'column' : 'row'}>
+                            {#if mode !== 'rows-filtered'}
+                                <Button.Button
+                                    icon
+                                    size="s"
+                                    variant="secondary"
+                                    disabled={actions?.primary?.disabled}
+                                    onclick={actions?.primary?.onClick}>
+                                    <Icon icon={IconPlus} size="s" />
+                                    {actions?.primary?.text ?? `Create ${mode}`}
+                                </Button.Button>
 
-                            {#if mode === 'rows'}
+                                {#if mode === 'rows'}
+                                    <Button.Button
+                                        size="s"
+                                        variant="secondary"
+                                        disabled={actions?.random?.disabled}
+                                        onclick={actions?.random?.onClick}>
+                                        {actions?.random?.text ?? `Generate sample data`}
+                                    </Button.Button>
+                                {/if}
+                            {:else}
                                 <Button.Button
                                     size="s"
                                     variant="secondary"
-                                    disabled={actions?.random?.disabled}
-                                    onclick={actions?.random?.onClick}>
-                                    {actions?.random?.text ?? `Generate sample data`}
+                                    disabled={actions?.primary?.disabled}
+                                    onclick={actions?.primary?.onClick}>
+                                    {actions?.primary?.text}
                                 </Button.Button>
                             {/if}
                         </Layout.Stack>
@@ -245,23 +271,6 @@
         width: 100%;
         position: fixed;
         overflow: hidden;
-
-        &[data-mode='indexes'] {
-            position: relative;
-
-            & :global(.spreadsheet-container) {
-                max-height: 70vh;
-                overflow-y: hidden;
-
-                @media (max-width: 768px) {
-                    height: 50vh;
-                }
-            }
-        }
-
-        @media (max-width: 768px) {
-            position: unset;
-        }
 
         &[data-mode='rows'] {
             & :global([role='rowheader'] :nth-last-child(2) [role='presentation']) {
@@ -293,7 +302,6 @@
     .spreadsheet-fade-bottom {
         bottom: 0;
         width: 100%;
-        height: 70.5vh;
         position: fixed;
         background: linear-gradient(
             180deg,
@@ -306,16 +314,18 @@
         justify-content: center;
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
+        height: var(--dynamic-overlay-height, 70.5vh);
+
         &[data-collapsed-tabs='true'] {
-            height: 79.1vh !important;
+            height: calc(var(--dynamic-overlay-height, 79.1vh) + 8.6vh);
         }
 
         @media (max-width: 1024px) {
-            height: 63.35vh;
+            height: var(--dynamic-overlay-height, 63.35vh);
         }
 
         @media (min-width: 1024px) {
-            height: 70.35vh;
+            height: var(--dynamic-overlay-height, 70.35vh);
         }
     }
 
@@ -330,11 +340,20 @@
     }
 
     .empty-actions {
-        bottom: 30%;
+        left: 50%;
+        bottom: 35%;
         position: fixed;
 
-        @media (min-width: 1024px) {
-            left: 50%;
+        @media (max-width: 1024px) {
+            left: unset;
+            bottom: 30%;
+        }
+
+        @media (min-width: 1280px) {
+            bottom: 37.5%;
+        }
+
+        @media (min-width: 1440px) {
             bottom: 40%;
         }
     }

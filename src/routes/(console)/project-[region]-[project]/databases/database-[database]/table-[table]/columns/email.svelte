@@ -11,7 +11,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.createEmailColumn(
+            .tablesDb.createEmailColumn(
                 databaseId,
                 tableId,
                 key,
@@ -29,7 +29,7 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .grids.updateEmailColumn(
+            .tablesDb.updateEmailColumn(
                 databaseId,
                 tableId,
                 originalKey,

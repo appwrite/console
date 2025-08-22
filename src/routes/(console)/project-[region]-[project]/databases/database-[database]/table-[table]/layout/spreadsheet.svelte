@@ -1,63 +1,98 @@
 <script lang="ts">
+    import { debounce } from '$lib/helpers/debounce';
+    import { scrollStore, sheetHeightStore } from '../store';
     import { onMount, onDestroy, type Snippet, tick } from 'svelte';
-    import { expandTabs, scrollStore } from '../store';
 
     let {
-        observeExpand = false,
         children
     }: {
-        observeExpand?: boolean;
         children: Snippet;
     } = $props();
 
-    let base = $state(0);
-    let isFirstMount = $state(true);
     let spreadsheetWrapper: HTMLDivElement;
-    let spreadsheetHeight = $state('74.5vh');
     let spreadsheetGridContainer: HTMLDivElement;
-    let resizeTimeout: ReturnType<typeof setTimeout>;
-    let unsubscribeExpandTabs: (() => void) | null = null;
 
+    /** resizing logic variables */
+    let resizeObserver: ResizeObserver;
+    let mutationObserver: MutationObserver;
+
+    /** to avoid querySelector for perf! */
+    let cachedElements = new Set<Element>();
+
+    /** writable store to prevent jumps when changing views */
+    let spreadsheetHeight = $state($sheetHeightStore);
+
+    const handleResize = debounce(() => resizeSheet(), 125);
+
+    function observeElement(selector: string) {
+        const element = document.querySelector(selector);
+        if (element && !cachedElements.has(element)) {
+            cachedElements.add(element);
+            resizeObserver.observe(element);
+        }
+    }
+
+    /** get the actual spreadsheet-container */
     function initSpreadsheetGridContainer(): boolean {
-        if (!spreadsheetWrapper) return false;
+        if (spreadsheetGridContainer) return true;
 
-        spreadsheetGridContainer = spreadsheetWrapper.querySelector('.spreadsheet-container');
+        spreadsheetGridContainer = spreadsheetWrapper?.querySelector('.spreadsheet-container');
         return !!spreadsheetGridContainer;
     }
 
     /** adjust height to fill remaining viewport space */
-    export function resizeSheet(fromResize: boolean = false): void {
+    function resizeSheet(): void {
         if (!spreadsheetWrapper) return;
+        const wrapperRect = spreadsheetWrapper.getBoundingClientRect();
+        const wrapperTop = wrapperRect.top;
+        const viewportHeight = window.innerHeight;
+        const availableHeight = viewportHeight - wrapperTop;
+        const finalHeight = Math.max(100, availableHeight);
 
-        clearTimeout(resizeTimeout);
+        const currentHeight = parseFloat(spreadsheetHeight);
+        const heightChanged = Math.abs(currentHeight - finalHeight) > 1;
 
-        resizeTimeout = setTimeout(() => {
-            const rect = spreadsheetWrapper.getBoundingClientRect();
-            base = window.innerHeight - rect.top;
-
-            let headerHeightDiff = 0;
-            if (observeExpand && !isFirstMount && !fromResize) {
-                /**
-                 * 16px from padding top
-                 * 08px from padding bottom
-                 * 65px from block size difference on cover
-                 * ————————————————
-                 * 89px
-                 */
-                headerHeightDiff = $expandTabs ? -89 : 89;
-            }
-
-            spreadsheetHeight = `${base + headerHeightDiff}px`;
-            isFirstMount = false;
-        }, 16);
+        if (heightChanged) {
+            const newHeight = `${finalHeight}px`;
+            spreadsheetHeight = newHeight;
+            sheetHeightStore.set(newHeight);
+        }
     }
 
+    function addObservers() {
+        /** grab the sheet container */
+        initSpreadsheetGridContainer();
+
+        resizeObserver = new ResizeObserver(handleResize);
+
+        /** banners */
+        observeElement('.top-banner');
+
+        /** expand / collapse tabs */
+        observeElement('.layout-header');
+
+        /** just in case */
+        resizeObserver.observe(document.body);
+
+        /** add an observer when a banner pops-in */
+        mutationObserver = new MutationObserver(() => {
+            observeElement('.top-banner');
+        });
+
+        mutationObserver.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    /** save grid sheet scroll for restore */
     export function saveGridSheetScroll(): void {
         if (initSpreadsheetGridContainer()) {
             scrollStore.set(spreadsheetGridContainer.scrollLeft || 0);
         }
     }
 
+    /** restore grid sheet scroll from before */
     export function restoreGridSheetScroll(): void {
         if (initSpreadsheetGridContainer() && spreadsheetGridContainer.scrollWidth > 0) {
             spreadsheetGridContainer.scrollTop = 0;
@@ -65,24 +100,17 @@
         }
     }
 
-    onMount(() => {
+    onMount(async () => {
+        await tick();
+        addObservers();
         resizeSheet();
-
-        if (observeExpand) {
-            unsubscribeExpandTabs = expandTabs.subscribe(async () => {
-                await tick();
-                resizeSheet();
-            });
-        }
     });
 
     onDestroy(() => {
-        clearTimeout(resizeTimeout);
-        unsubscribeExpandTabs?.();
+        resizeObserver?.disconnect();
+        mutationObserver?.disconnect();
     });
 </script>
-
-<svelte:window on:resize={() => resizeSheet(true)} />
 
 <div bind:this={spreadsheetWrapper} class="spreadsheet-wrapper" style:height={spreadsheetHeight}>
     {@render children()}

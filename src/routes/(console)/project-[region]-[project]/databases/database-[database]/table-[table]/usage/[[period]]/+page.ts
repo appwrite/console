@@ -1,14 +1,16 @@
 import { isValueOfStringEnum } from '$lib/helpers/types';
 import { sdk } from '$lib/stores/sdk';
-import { GridUsageRange } from '@appwrite.io/console';
+import { UsageRange } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params }) => {
-    const period = isValueOfStringEnum(GridUsageRange, params.period)
+    const period = isValueOfStringEnum(UsageRange, params.period)
         ? params.period
-        : GridUsageRange.ThirtyDays;
+        : UsageRange.ThirtyDays;
 
-    return sdk
-        .forProject(params.region, params.project)
-        .grids.getTableUsage(params.database, params.table, period);
+    return sdk.forProject(params.region, params.project).tablesDb.getTableUsage({
+        databaseId: params.database,
+        tableId: params.table,
+        range: period
+    });
 };
