@@ -4,12 +4,10 @@
     import { app } from '$lib/stores/app';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import CustomId from '$lib/components/customId.svelte';
-    import { SvgIcon } from '$lib/components/index.js';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
     import type { AllowedRegions } from '$lib/sdk/billing.js';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { getIconFromRuntime } from '$lib/stores/runtimes.js';
     import { isCloud } from '$lib/system';
     import { ID, Query, type Models, Region } from '@appwrite.io/console';
     import { IconGithub, IconPencil, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
@@ -76,40 +74,29 @@
         const projectRegion = isCloud ? region : 'default';
         let url: URL;
 
-        if (data.deploymentData.type === 'template') {
-            url = new URL(
-                `${base}/project-${projectRegion}-${project.$id}/functions/create-function/template-${data.deploymentData.template.id}`,
-                window.location.origin
-            );
-            // Pass runtime as query param if specified from original URL
-            if (data.deploymentData.runtime) {
-                url.searchParams.set('runtime', data.deploymentData.runtime);
-            }
-        } else {
-            // For repository deployments, navigate to the deploy page
-            url = new URL(
-                `${base}/project-${projectRegion}-${project.$id}/functions/create-function/deploy`,
-                window.location.origin
-            );
-            url.searchParams.set('repo', data.deploymentData.repository.url);
+        // For repository deployments, navigate to the deploy page
+        url = new URL(
+            `${base}/project-${projectRegion}-${project.$id}/functions/create-function/deploy`,
+            window.location.origin
+        );
+        url.searchParams.set('repo', data.deploymentData.repository.url);
 
-            // Pass runtime if specified from original URL
-            if (data.deploymentData.runtime) {
-                url.searchParams.set('runtime', data.deploymentData.runtime);
-            }
-
-            // Pass through additional build configuration params if present
-            const currentUrl = new URL(window.location.href);
-            const entrypoint = currentUrl.searchParams.get('entrypoint');
-            const install = currentUrl.searchParams.get('install');
-            const build = currentUrl.searchParams.get('build');
-            const rootDir = currentUrl.searchParams.get('rootDir');
-
-            if (entrypoint) url.searchParams.set('entrypoint', entrypoint);
-            if (install) url.searchParams.set('install', install);
-            if (build) url.searchParams.set('build', build);
-            if (rootDir) url.searchParams.set('rootDir', rootDir);
+        // Pass runtime if specified from original URL
+        if (data.deploymentData.runtime) {
+            url.searchParams.set('runtime', data.deploymentData.runtime);
         }
+
+        // Pass through additional build configuration params if present
+        const currentUrl = new URL(window.location.href);
+        const entrypoint = currentUrl.searchParams.get('entrypoint');
+        const install = currentUrl.searchParams.get('install');
+        const build = currentUrl.searchParams.get('build');
+        const rootDir = currentUrl.searchParams.get('rootDir');
+
+        if (entrypoint) url.searchParams.set('entrypoint', entrypoint);
+        if (install) url.searchParams.set('install', install);
+        if (build) url.searchParams.set('build', build);
+        if (rootDir) url.searchParams.set('rootDir', rootDir);
 
         if (data.envKeys.length > 0) {
             url.searchParams.set('env', data.envKeys.join(','));
@@ -165,72 +152,35 @@
                     <Layout.Stack gap="l">
                         <Typography.Title size="m">Deploy function</Typography.Title>
                         <Card.Base variant="secondary" padding="s" radius="s">
-                            {#if data.deploymentData.type === 'template'}
-                                <Layout.Stack gap="m">
-                                    <Typography.Text
-                                        variant="m-500"
-                                        color="--fgcolor-neutral-primary">
-                                        Template
+                            <Layout.Stack gap="m">
+                                <Typography.Text
+                                    variant="m-500"
+                                    color="--fgcolor-neutral-primary">
+                                    Repository
+                                </Typography.Text>
+                                <Layout.Stack direction="row" alignItems="center" gap="s">
+                                    <Icon icon={IconGithub} size="m" />
+                                    <Typography.Text variant="m-400">
+                                        {data.deploymentData.repository.owner}/{data
+                                            .deploymentData.repository.name}
                                     </Typography.Text>
-                                    <Layout.Stack gap="xxs">
+                                </Layout.Stack>
+                                {#if data.envKeys.length > 0}
+                                    <Divider />
+                                    <Layout.Stack gap="s">
                                         <Typography.Text
                                             variant="m-500"
                                             color="--fgcolor-neutral-primary">
-                                            {data.deploymentData.template.name}
+                                            Environment Variables Required
                                         </Typography.Text>
-                                        {#if data.deploymentData.template.tagline}
-                                            <Typography.Text variant="m-500">
-                                                {data.deploymentData.template.tagline}
-                                            </Typography.Text>
-                                        {/if}
-                                    </Layout.Stack>
-                                    {#if data.deploymentData.runtime}
-                                        <Layout.Stack gap="xxs" alignItems="center" direction="row">
-                                            <SvgIcon
-                                                iconSize="small"
-                                                size={16}
-                                                name={getIconFromRuntime(
-                                                    data.deploymentData.runtime
-                                                )} />
-                                            <Typography.Text
-                                                variant="m-500"
-                                                color="--fgcolor-neutral-primary">
-                                                {data.deploymentData.runtime}
-                                            </Typography.Text>
+                                        <Layout.Stack direction="row" gap="xs" wrap="wrap">
+                                            {#each data.envKeys as envKey}
+                                                <Tag size="s">{envKey}</Tag>
+                                            {/each}
                                         </Layout.Stack>
-                                    {/if}
-                                </Layout.Stack>
-                            {:else}
-                                <Layout.Stack gap="m">
-                                    <Typography.Text
-                                        variant="m-500"
-                                        color="--fgcolor-neutral-primary">
-                                        Repository
-                                    </Typography.Text>
-                                    <Layout.Stack direction="row" alignItems="center" gap="s">
-                                        <Icon icon={IconGithub} size="m" />
-                                        <Typography.Text variant="m-400">
-                                            {data.deploymentData.repository.owner}/{data
-                                                .deploymentData.repository.name}
-                                        </Typography.Text>
                                     </Layout.Stack>
-                                    {#if data.envKeys.length > 0}
-                                        <Divider />
-                                        <Layout.Stack gap="s">
-                                            <Typography.Text
-                                                variant="m-500"
-                                                color="--fgcolor-neutral-primary">
-                                                Environment Variables Required
-                                            </Typography.Text>
-                                            <Layout.Stack direction="row" gap="xs" wrap="wrap">
-                                                {#each data.envKeys as envKey}
-                                                    <Tag size="s">{envKey}</Tag>
-                                                {/each}
-                                            </Layout.Stack>
-                                        </Layout.Stack>
-                                    {/if}
-                                </Layout.Stack>
-                            {/if}
+                                {/if}
+                            </Layout.Stack>
                         </Card.Base>
 
                         <Form onSubmit={handleSubmit}>
