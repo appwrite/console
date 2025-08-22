@@ -1,23 +1,28 @@
 <script lang="ts">
     import deepEqual from 'deep-equal';
-    import type { Columns } from './store';
+    import type { Columns } from '../../store';
+    import { onDestroy, onMount } from 'svelte';
     import type { Models } from '@appwrite.io/console';
-    import ColumnItem from './row-[row]/columnItem.svelte';
-    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+    import ColumnItem from '../columns/columnItem.svelte';
 
     let {
         column,
         row = $bindable(null),
+        onChange = null,
+        onRevert = null,
+        openSideSheet = null,
         onRowStructureUpdate = null
     }: {
         row: Models.Row;
         column: Columns;
+        openSideSheet?: () => void;
+        onChange?: (row: Models.DefaultRow) => void;
+        onRevert?: (row: Models.DefaultRow) => void;
         onRowStructureUpdate?: (row: Models.Row) => Promise<boolean>;
     } = $props();
 
     let original: Models.Row;
     let wrapperEl: HTMLDivElement;
-    const dispatch = createEventDispatcher();
 
     onMount(() => {
         original = structuredClone(row);
@@ -38,18 +43,24 @@
             const accepted = await onRowStructureUpdate(row);
             if (!accepted) {
                 row = original;
-                dispatch('revert', original);
+                onRevert?.(original as Models.DefaultRow);
             }
         }
     });
 
     $effect(() => {
         if (!deepEqual(original, row)) {
-            dispatch('change', row);
+            onChange?.(row as Models.DefaultRow);
         }
     });
 </script>
 
 <div style:width="100%" bind:this={wrapperEl}>
-    <ColumnItem {column} fromSpreadsheet bind:formValues={row} label={undefined} editing />
+    <ColumnItem
+        {column}
+        editing
+        fromSpreadsheet
+        label={undefined}
+        bind:formValues={row}
+        on:click={openSideSheet} />
 </div>

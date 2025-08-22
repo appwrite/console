@@ -7,6 +7,7 @@
     export let slotSpacing = false;
     export let overlapCover = false;
     export let paddingInlineEnd = true;
+    export let insideSideSheet = false;
     export let databasesScreen = false;
     export let expandHeightButton = false;
     export let size: 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl' = null;
@@ -22,6 +23,7 @@
         class:expanded
         class:slotSpacing
         class:databasesScreen
+        class:insideSideSheet
         class:expandHeightButton
         class="console-container"
         class:paddingInlineEnd={!paddingInlineEnd}>
@@ -38,6 +40,10 @@
     }
     :global(.console-container) {
         margin-block: var(--base-32);
+
+        &.insideSideSheet {
+            margin-block: var(--base-20);
+        }
 
         &.expanded {
             max-width: unset;

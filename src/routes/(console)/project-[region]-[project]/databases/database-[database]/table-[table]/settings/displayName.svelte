@@ -12,16 +12,13 @@
     import { page } from '$app/state';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { organization } from '$lib/stores/organization';
 
     const tableId = page.params.table;
 
-    function getDisplayNames() {
-        return [...(preferences.getDisplayNames()?.[tableId] ?? [])].filter(
-            (name) => name !== '$id'
-        ); // edge case with `$id`? got saved during tests!
-    }
+    const displayNames = $derived(preferences.getDisplayNames(tableId) ?? []);
 
-    let names: string[] = $state(getDisplayNames());
+    let names: string[] = $state(preferences.getDisplayNames(tableId) ?? []);
 
     async function updateDisplayName() {
         try {
@@ -29,8 +26,9 @@
             // structuredClone doesn't work
             const regularArray = [...names];
 
-            await preferences.setDisplayNames(tableId, regularArray);
-            names = getDisplayNames();
+            await preferences.setDisplayNames($organization.$id, tableId, regularArray);
+
+            names = displayNames;
 
             await invalidate(Dependencies.TEAM);
             addNotification({
@@ -68,7 +66,7 @@
     );
 
     const updateBtnDisabled = $derived(
-        !symmetricDifference(names, preferences.getDisplayNames()?.[tableId] ?? [])?.length ||
+        !symmetricDifference(names, preferences.getDisplayNames(tableId))?.length ||
             (names?.length && !last(names))
     );
 
@@ -97,12 +95,14 @@
                             {@const options = getOptions(index)}
                             {@const disabled =
                                 (!!names[index] && names.length > index + 1) || hasExhaustedOptions}
+
                             <InputSelect
                                 id={name}
                                 {options}
                                 {disabled}
                                 bind:value={names[index]}
                                 placeholder="Select column" />
+
                             <Button
                                 icon
                                 extraCompact

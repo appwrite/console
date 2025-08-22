@@ -10,10 +10,10 @@
     import { option, columnOptions, type Option } from './columns/store';
     import type { Column } from '$lib/helpers/types';
     import { preferences } from '$lib/stores/preferences';
+    import { onMount } from 'svelte';
 
     let {
         direction = null,
-        showCreate = false,
         column = null,
         columns = $bindable(null),
         columnId = $bindable(null),
@@ -21,7 +21,6 @@
         selectedOption = $bindable('String'),
         onColumnsReorder = null
     }: {
-        showCreate: boolean;
         column?: Columns;
         columnId?: string;
         columns?: Column[];
@@ -45,6 +44,20 @@
     let ColumnComponent = $derived(
         columnOptions.find((option) => option.name === selectedOption).component
     );
+
+    function init() {
+        key = null;
+        $option = null;
+        data = {
+            required: false,
+            array: false,
+            default: null
+        };
+
+        /* default to string */
+        selectedOption = 'String';
+        $option = columnOptions[0];
+    }
 
     function insertColumnInOrder() {
         if (!key) return;
@@ -144,24 +157,14 @@
         }
     }
 
+    onMount(init);
+
     $effect(() => {
         columnId; /* silences lint check, variable not read */
 
         // correct view
         if (selectedOption) {
             $option = columnOptions.find((option) => option.name === selectedOption);
-        }
-
-        // cleanup
-        if (!showCreate) {
-            key = null;
-            $option = null;
-            selectedOption = null;
-            data = {
-                required: false,
-                array: false,
-                default: null
-            };
         }
     });
 </script>

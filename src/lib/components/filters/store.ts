@@ -59,9 +59,15 @@ function initQueries(initialValue = new Map<TagValue, string>()) {
     }
 
     function apply() {
-        const queryParam = mapToQueryParams(get(queries));
+        const usableQueries = get(queries);
         const currentLocation = window.location.pathname;
-        goto(`${currentLocation}?query=${queryParam}`, { noScroll: true });
+
+        if (usableQueries.size) {
+            const queryParam = mapToQueryParams(get(queries));
+            goto(`${currentLocation}?query=${queryParam}`, { noScroll: true });
+        } else {
+            goto(currentLocation, { noScroll: true });
+        }
     }
 
     return {

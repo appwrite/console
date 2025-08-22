@@ -366,6 +366,29 @@
 {/if}
 
 <style lang="scss">
+    .middle-container {
+        flex: 1;
+        overflow-y: visible;
+        max-height: none;
+    }
+
+    .mobile-tablet-settings {
+        display: block;
+        margin-top: var(--space-6, 12px);
+
+        &::before {
+            content: '';
+            display: block;
+            height: 1px;
+            background: var(--border-neutral, #ededf0);
+            margin-bottom: var(--space-6, 12px);
+        }
+
+        @media (min-width: 1024px) {
+            display: none;
+        }
+    }
+
     .link {
         display: flex;
         height: 32px;

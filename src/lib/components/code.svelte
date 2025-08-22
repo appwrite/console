@@ -8,7 +8,8 @@
 </script>
 
 <script lang="ts">
-    import { Pill } from '$lib/elements';
+    import { Badge, Icon } from '@appwrite.io/pink-svelte';
+    import { IconCode, IconAndroid, IconFlutter, IconApple } from '@appwrite.io/pink-icons-svelte';
     import Prism from 'prismjs';
     import 'prismjs/components/prism-dart';
     import 'prismjs/components/prism-kotlin';
@@ -24,6 +25,21 @@
 
     export let label: string = null;
     export let labelIcon: 'code' | 'android' | 'flutter' | 'apple' = null;
+
+    function getIcon(iconName: string) {
+        switch (iconName) {
+            case 'code':
+                return IconCode;
+            case 'android':
+                return IconAndroid;
+            case 'flutter':
+                return IconFlutter;
+            case 'apple':
+                return IconApple;
+            default:
+                return null;
+        }
+    }
     export let code: string;
     export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh' | 'yml' | 'swift';
     export let withLineNumbers = false;
@@ -49,12 +65,11 @@
     <div
         class="controls u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
         {#if label}
-            <Pill>
+            <Badge variant="secondary" content={label}>
                 {#if labelIcon}
-                    <span class={`icon-${labelIcon}`} aria-hidden="true"></span>
+                    <Icon icon={getIcon(labelIcon)} size="s" slot="start" />
                 {/if}
-                {label}
-            </Pill>
+            </Badge>
         {/if}
         {#if withCopy}
             <Copy value={code}>

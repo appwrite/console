@@ -9,7 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { IndexType } from '@appwrite.io/console';
-    import { isRelationship } from '../row-[row]/columns/store';
+    import { isRelationship } from '../rows/store';
     import { table, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
@@ -86,7 +86,7 @@
         }
 
         try {
-            await sdk.forProject(page.params.region, page.params.project).grids.createIndex({
+            await sdk.forProject(page.params.region, page.params.project).tablesDb.createIndex({
                 databaseId,
                 tableId: $table.$id,
                 key,
@@ -107,7 +107,7 @@
                 buttons: !isOnIndexesPage
                     ? [
                           {
-                              name: 'View index',
+                              name: 'View indexes',
                               method: () => goto(navigatorPathToIndexes)
                           }
                       ]

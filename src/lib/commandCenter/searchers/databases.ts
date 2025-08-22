@@ -8,7 +8,7 @@ import { page } from '$app/state';
 export const dbSearcher = (async (query: string) => {
     const { databases } = await sdk
         .forProject(page.params.region, page.params.project)
-        .grids.listDatabases();
+        .tablesDb.list({});
 
     return databases
         .filter((db) => db.name.toLowerCase().includes(query.toLowerCase()))

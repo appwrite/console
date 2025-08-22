@@ -1,20 +1,45 @@
 <script lang="ts">
-    import { PaginationWithLimit } from '$lib/components';
+    import { EmptySearch, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { showCreate } from './store';
+    import { showCreate, tableViewColumns } from './store';
     import Table from './table.svelte';
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
-    import { Card, Empty } from '@appwrite.io/pink-svelte';
+    import { Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { canWriteTables } from '$lib/stores/roles';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
     export let data: PageData;
+
+    const databaseId = page.params.database;
 </script>
 
-<Container expanded slotSpacing paddingInlineEnd={false}>
+<Container paddingInlineEnd={false}>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery placeholder="Search by name or ID" />
+        </Layout.Stack>
+
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <ViewSelector
+                view={data.view}
+                columns={tableViewColumns}
+                hideColumns={!data.tables.total}
+                hideView={!data.tables.total} />
+
+            {#if $canWriteTables}
+                <Button event="create_table" on:click={() => ($showCreate = true)}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create table
+                </Button>
+            {/if}
+        </Layout.Stack>
+    </Layout.Stack>
+
     {#if data.tables.total}
         {#if data.view === 'grid'}
             <Grid {data} bind:showCreate={$showCreate} />
@@ -27,6 +52,14 @@
             limit={data.limit}
             offset={data.offset}
             total={data.tables.total} />
+    {:else if data.search}
+        <EmptySearch target="tables" hidePagination>
+            <Button
+                size="s"
+                secondary
+                href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`}
+                >Clear Search</Button>
+        </EmptySearch>
     {:else}
         <Card.Base padding="none">
             <Empty
@@ -38,8 +71,12 @@
                     Create, organize, and query structured data with Tables.
                 </span>
                 <span slot="actions">
-                    <Button external text event="empty_documentation" ariaLabel={`create table`}
-                        >Documentation</Button>
+                    <Button
+                        external
+                        href="https://appwrite.io/docs/products/databases/databases"
+                        text
+                        event="empty_documentation"
+                        ariaLabel={`create table`}>Documentation</Button>
 
                     {#if $canWriteTables}
                         <Button

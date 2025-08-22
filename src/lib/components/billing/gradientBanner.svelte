@@ -5,6 +5,7 @@
     import { IconX } from '@appwrite.io/pink-icons-svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
     import PinkBackground from '$lib/images/pink-background.svg';
+    import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
     import { createEventDispatcher, onMount, onDestroy } from 'svelte';
 
     export let variant: 'gradient' | 'image' = 'gradient';
@@ -23,12 +24,22 @@
         const { header, sidebar, content } = queryLayoutElements();
         const headerHeight = header?.getBoundingClientRect().height || 0;
         const offset = alertHeight + (!$isTabletViewport && header ? headerHeight : 0);
-        if (header) header.style.top = `${alertHeight}px`;
+
+        if (header) {
+            header.style.top = `${alertHeight}px`;
+        }
+
         if (sidebar) {
             sidebar.style.top = `${offset}px`;
             sidebar.style.height = `calc(100vh - ${offset}px)`;
+
+            // for sidebar and sub-navigation!
+            bannerSpacing.set(`${alertHeight}px`);
         }
-        if (content) content.style.paddingBlockStart = `${alertHeight}px`;
+
+        if (content) {
+            content.style.paddingBlockStart = `${alertHeight}px`;
+        }
     };
 
     onMount(setNavigationHeight);

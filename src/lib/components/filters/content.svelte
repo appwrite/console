@@ -64,8 +64,8 @@
     onMount(() => {
         value = column?.array ? [] : null;
         if (column?.type === 'datetime') {
-            const today = new Date();
-            value = today.toISOString();
+            const now = new Date();
+            value = now.toISOString().slice(0, 16);
         }
     });
 
@@ -141,7 +141,7 @@
                             bind:value />
                     {:else if column.type === 'datetime'}
                         {#key value}
-                            <InputDateTime id="value" bind:value step={60} />
+                            <InputDateTime id="value" bind:value step={60} type="datetime-local" />
                         {/key}
                     {:else}
                         <InputText id="value" bind:value placeholder="Enter value" />

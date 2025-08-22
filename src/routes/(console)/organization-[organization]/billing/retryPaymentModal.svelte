@@ -3,11 +3,16 @@
     import { FakeModal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Dependencies } from '$lib/constants';
-    import type { Invoice } from '$lib/sdk/billing';
+    import type { Invoice, PaymentMethodData } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { page } from '$app/state';
-    import { confirmPayment, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
+    import {
+        confirmPayment,
+        isStripeInitialized,
+        setPaymentMethod,
+        submitStripeCard
+    } from '$lib/stores/stripe';
     import { organization } from '$lib/stores/organization';
     import { toLocaleDate } from '$lib/helpers/date';
     import { PaymentBoxes } from '$lib/components/billing';
@@ -16,6 +21,7 @@
     import { getApiEndpoint, sdk } from '$lib/stores/sdk';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
+    import type { PaymentMethod } from '@stripe/stripe-js';
 
     export let show = false;
     export let invoice: Invoice;
@@ -24,6 +30,9 @@
     let name: string;
     let paymentMethodId: string;
     let setAsDefault = false;
+    let showState: boolean = false;
+    let state: string = '';
+    let paymentMethod: PaymentMethod | null = null;
     const endpoint = getApiEndpoint();
 
     onMount(async () => {
@@ -48,7 +57,24 @@
         try {
             if (paymentMethodId === null) {
                 try {
-                    const method = await submitStripeCard(name, $organization.$id);
+                    if (showState && !state) {
+                        throw Error('Please select a state');
+                    }
+                    let method: PaymentMethodData;
+                    if (showState) {
+                        method = await setPaymentMethod(paymentMethod.id, name, state);
+                    } else {
+                        const card = await submitStripeCard(name, $organization.$id);
+                        if (card && Object.hasOwn(card, 'id')) {
+                            if ((card as PaymentMethod).card?.country === 'US') {
+                                paymentMethod = card as PaymentMethod;
+                                showState = true;
+                                return;
+                            }
+                        } else if (card && Object.hasOwn(card, '$id')) {
+                            method = card as PaymentMethodData;
+                        }
+                    }
                     const card = await sdk.forConsole.billing.getPaymentMethod(method.$id);
                     if (card?.last4) {
                         paymentMethodId = card.$id;
@@ -131,6 +157,9 @@
     </Button>
 
     <PaymentBoxes
+        bind:paymentMethod
+        bind:showState
+        bind:state
         methods={filteredMethods}
         defaultMethod={$organization?.paymentMethodId}
         backupMethod={$organization?.backupPaymentMethodId}

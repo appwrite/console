@@ -80,7 +80,7 @@
                 })
             );
         } else {
-            const prefs = preferences.get(page.route);
+            const prefs = preferences.getForRoute(page.route);
 
             if (prefs?.columns) {
                 columns.update((n) =>
@@ -233,7 +233,10 @@
                                         ? false
                                         : visibleRealColumns.length <= 1 && !column.hide}>
                                     <Layout.Stack direction="row" gap="s">
-                                        <Selector.Checkbox size="s" checked={!column.hide} />
+                                        <Selector.Checkbox
+                                            size="s"
+                                            checked={!column.hide}
+                                            on:change={() => toggleColumn(column)} />
                                         {column.title}
                                     </Layout.Stack>
                                 </ActionMenu.Item.Button>
