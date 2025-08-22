@@ -8,7 +8,8 @@
         title,
         closeOnBlur = false,
         submit,
-        children = null
+        children = null,
+        footer = null
     }: {
         show: boolean;
         title: string;
@@ -17,10 +18,11 @@
             | {
                   text: string;
                   disabled?: boolean;
-                  onClick?: () => void | Promise<void>;
+                  onClick?: () => boolean | void | Promise<boolean | void>;
               }
             | undefined;
         children?: Snippet;
+        footer?: Snippet | null;
     } = $props();
 </script>
 
@@ -38,8 +40,10 @@
             <Form
                 onSubmit={async () => {
                     try {
-                        await submit?.onClick();
-                        show = false;
+                        const keepOpen = await submit?.onClick?.();
+                        if (!keepOpen) {
+                            show = false;
+                        }
                     } catch (error) {
                         // error occurred, dont close the sidebar
                     }
@@ -54,10 +58,16 @@
                             <Divider />
 
                             <div class="sheet-footer-actions">
-                                <Layout.Stack gap="m" direction="row" justifyContent="flex-end">
+                                <Layout.Stack
+                                    gap="m"
+                                    direction="row"
+                                    justifyContent="flex-end"
+                                    alignItems="center">
+                                    {#if footer}
+                                        {@render footer?.()}
+                                    {/if}
                                     <Button size="s" secondary on:click={() => (show = false)}
                                         >Cancel</Button>
-
                                     <Button size="s" submit disabled={submit.disabled}>
                                         {submit.text}
                                     </Button>
