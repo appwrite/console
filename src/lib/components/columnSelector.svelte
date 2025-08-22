@@ -80,7 +80,7 @@
                 })
             );
         } else {
-            const prefs = preferences.get(page.route);
+            const prefs = preferences.getForRoute(page.route);
 
             if (prefs?.columns) {
                 columns.update((n) =>

@@ -125,7 +125,7 @@ function createPreferences() {
         subscribe,
         set,
         update,
-        get: (route?: Page['route']): ConsolePreferences => {
+        getForRoute: (route?: Page['route']): ConsolePreferences => {
             const parsedRoute = route ?? page.route;
             return (
                 preferences?.[parsedRoute.id] ?? {
