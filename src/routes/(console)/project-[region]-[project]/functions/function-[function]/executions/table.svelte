@@ -84,6 +84,8 @@
                         {#key column.id}
                             <Id value={log.$id}>{log.$id}</Id>
                         {/key}
+                    {:else if column.id === 'deploymentId'}
+                        <Id value={log.deploymentId}>{log.deploymentId}</Id>
                     {:else if column.id === '$createdAt'}
                         <DualTimeView time={log.$createdAt} />
                     {:else if column.id === 'requestPath'}
