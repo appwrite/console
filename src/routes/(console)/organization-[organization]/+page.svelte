@@ -8,6 +8,7 @@
     import { page } from '$app/state';
     import { registerCommands } from '$lib/commandCenter';
     import {
+        // ArchiveProject,
         CardContainer,
         DropList,
         DropListItem,
@@ -270,6 +271,14 @@
                 <p>Create a new project</p>
             </svelte:fragment>
         </CardContainer>
+
+        <PaginationWithLimit
+            name="Projects"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.projects.total} />
+        <!-- TODO: uncomment this when we have a way to archive projects -->
+        <!-- <ArchiveProject {projectsToArchive} /> -->
     {:else}
         <Empty
             single
@@ -278,12 +287,6 @@
             target="project"
             href="https://appwrite.io/docs/quick-starts"></Empty>
     {/if}
-
-    <PaginationWithLimit
-        name="Projects"
-        limit={data.limit}
-        offset={data.offset}
-        total={data.projects.total} />
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />
