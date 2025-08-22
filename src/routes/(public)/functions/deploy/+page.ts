@@ -1,5 +1,5 @@
 import { sdk } from '$lib/stores/sdk.js';
-import { redirect, error } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import { isCloud } from '$lib/system';
 import { BillingPlan } from '$lib/constants';
@@ -20,17 +20,13 @@ export const load: PageLoad = async ({ parent, url }) => {
         redirect(302, base + '/login?redirect=' + encodeURIComponent(fullUrl));
     }
 
-    // Check deployment type - either template or repo
-    const templateKey = url.searchParams.get('template');
+    // Check deployment type - repo only for functions
     const repoUrl = url.searchParams.get('repo');
     const runtime = url.searchParams.get('runtime');
 
-    // Must have either template or repo, but not both
-    if (!templateKey && !repoUrl) {
+    // Must have repo
+    if (!repoUrl) {
         redirect(302, base + '/');
-    }
-    if (templateKey && repoUrl) {
-        error(400, 'Cannot specify both template and repo parameters');
     }
 
     // Get common parameters
@@ -39,9 +35,8 @@ export const load: PageLoad = async ({ parent, url }) => {
     const name = url.searchParams.get('name');
 
     let deploymentData: {
-        type: 'template' | 'repo';
-        template?: Models.TemplateFunction;
-        repository?: { url: string; owner: string; name: string };
+        type: 'repo';
+        repository: { url: string; owner: string; name: string };
         runtime?: string;
         name?: string;
     };
@@ -49,45 +44,26 @@ export const load: PageLoad = async ({ parent, url }) => {
     // Get available runtimes
     const runtimesList = await sdk.forConsole.functions.listRuntimes();
 
-    if (templateKey) {
-        // Template deployment
-        try {
-            const template = await sdk.forConsole.functions.getTemplate(templateKey);
-
-            // For templates, use the first available runtime from the template if not specified
-            const selectedRuntime = runtime || template.runtimes[0]?.name;
-
-            deploymentData = {
-                type: 'template',
-                template,
-                runtime: selectedRuntime,
-                name: name || template.name
-            };
-        } catch (e) {
-            error(404, `Template "${templateKey}" not found`);
-        }
-    } else {
-        // Repository deployment
-        const repoMatch = repoUrl!.match(/github\.com[\/:]([^\/]+)\/([^\/\?\s]+)/);
-        if (!repoMatch) {
-            redirect(302, base + '/');
-        }
-
-        const [, owner, repoName] = repoMatch;
-        // Clean repository name (remove .git extension if present)
-        const cleanRepoName = repoName.replace(/\.git$/, '');
-
-        deploymentData = {
-            type: 'repo',
-            repository: {
-                url: repoUrl!,
-                owner,
-                name: cleanRepoName
-            },
-            runtime: runtime || 'node-18.0', // Default to Node.js if not specified
-            name: name || cleanRepoName
-        };
+    // Repository deployment only
+    const repoMatch = repoUrl!.match(/github\.com[\/:]([^\/]+)\/([^\/\?\s]+)/);
+    if (!repoMatch) {
+        redirect(302, base + '/');
     }
+
+    const [, owner, repoName] = repoMatch;
+    // Clean repository name (remove .git extension if present)
+    const cleanRepoName = repoName.replace(/\.git$/, '');
+
+    deploymentData = {
+        type: 'repo',
+        repository: {
+            url: repoUrl!,
+            owner,
+            name: cleanRepoName
+        },
+        runtime: runtime || 'node-18.0', // Default to Node.js if not specified
+        name: name || cleanRepoName
+    };
 
     // Get organizations
     let organizations: Models.TeamList<Record<string, unknown>> | OrganizationList | undefined;

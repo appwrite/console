@@ -31,7 +31,6 @@
 
     let showExitModal = false;
     let showCustomId = false;
-    let formComponent: Form;
     let isSubmitting = writable(false);
 
     // State variables
@@ -214,7 +213,7 @@
     bind:showExitModal
     href={`${base}/project-${page.params.region}-${page.params.project}/functions/`}
     confirmExit>
-    <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
+    <Form onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
             <Card padding="s" radius="s">
                 <Layout.Stack gap="m">
