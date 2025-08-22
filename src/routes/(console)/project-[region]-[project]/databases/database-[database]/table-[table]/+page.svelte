@@ -62,7 +62,7 @@
     $: hasColumns = !!$table.columns.length;
     $: hasValidColumns = $table?.columns?.some((col) => col.status === 'available');
 
-    async function onSelect(file: Models.File) {
+    async function onSelect(file: Models.File, localFile = false) {
         $isCsvImportInProgress = true;
 
         try {
@@ -71,7 +71,8 @@
                 .migrations.createCsvMigration({
                     bucketId: file.bucketId,
                     fileId: file.$id,
-                    resourceId: `${page.params.database}:${page.params.table}`
+                    resourceId: `${page.params.database}:${page.params.table}`,
+                    internalFile: localFile
                 });
 
             addNotification({
@@ -227,6 +228,8 @@
     <!-- CSVs can be text/plain or text/csv sometimes! -->
     <FilePicker
         {onSelect}
+        showLocalFileBucket
+        localFileBucketTitle="Upload CSV file"
         mimeTypeQuery="text/"
         allowedExtension="csv"
         bind:show={showImportCSV}
