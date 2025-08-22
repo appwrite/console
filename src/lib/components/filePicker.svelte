@@ -54,8 +54,8 @@
     let view: 'grid' | 'list' = 'list';
 
     onMount(() => {
-        const filePickerPrefs = preferences.getFilePickerPreferences();
-        localFileBucketSelected = !filePickerPrefs.lastSelectedBucket;
+        const lastSelectedBucket = preferences.getKey('lastSelectedBucket', null);
+        localFileBucketSelected = !lastSelectedBucket;
 
         selectedBucket = currentBucket?.$id;
     });
@@ -66,9 +66,8 @@
             await uploadFile();
         }
 
-        preferences.setFilePickerPreferences({
-            lastSelectedBucket: localFileBucketSelected ? null : selectedBucket
-        });
+        // Save preference based on selection
+        preferences.setKey('lastSelectedBucket', localFileBucketSelected ? null : selectedBucket);
 
         onSelect(currentFile, localFileBucketSelected);
         closeModal();
@@ -90,9 +89,7 @@
             if (localFileBucketSelected) {
                 file = await sdk
                     .forConsoleIn(page.params.region)
-                    .storage.createFile('default', ID.unique(), localFile[0], [
-                        Permission.read(Role.any())
-                    ]);
+                    .storage.createFile('default', ID.unique(), localFile[0]);
             } else {
                 file = await sdk
                     .forProject(page.params.region, page.params.project)
@@ -163,13 +160,11 @@
             .forProject(page.params.region, page.params.project)
             .storage.listBuckets();
 
-        const filePickerPrefs = preferences.getFilePickerPreferences();
+        const lastSelectedBucket = preferences.getKey('lastSelectedBucket', null);
         let preferredBucket = null;
 
-        if (filePickerPrefs.lastSelectedBucket) {
-            preferredBucket = response.buckets.find(
-                (bucket) => bucket.$id === filePickerPrefs.lastSelectedBucket
-            );
+        if (lastSelectedBucket) {
+            preferredBucket = response.buckets.find((bucket) => bucket.$id === lastSelectedBucket);
         }
         const bucket = preferredBucket ?? response.buckets[0] ?? null;
 
