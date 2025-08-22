@@ -120,7 +120,7 @@
             const tagsResponse = await fetch(
                 `https://api.github.com/repos/${data.repository.owner}/${data.repository.name}/tags`
             );
-            
+
             if (!tagsResponse.ok) {
                 addNotification({
                     type: 'error',
@@ -128,7 +128,7 @@
                 });
                 return null;
             }
-            
+
             const tags = await tagsResponse.json();
             if (tags.length === 0) {
                 addNotification({
@@ -137,7 +137,7 @@
                 });
                 return null;
             }
-            
+
             return tags[0].name;
         } catch (error) {
             addNotification({

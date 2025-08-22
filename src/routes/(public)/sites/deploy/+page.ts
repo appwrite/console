@@ -1,5 +1,5 @@
 import { sdk } from '$lib/stores/sdk.js';
-import { redirect } from '@sveltejs/kit';
+import { redirect, error } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import { isCloud } from '$lib/system';
 import { BillingPlan } from '$lib/constants';
@@ -20,25 +20,71 @@ export const load: PageLoad = async ({ parent, url }) => {
         redirect(302, base + '/login?redirect=' + encodeURIComponent(fullUrl));
     }
 
-    // Get repository URL from query params
+    // Check deployment type - either template or repo
+    const templateKey = url.searchParams.get('template');
     const repoUrl = url.searchParams.get('repo');
-    if (!repoUrl) {
+
+    // Must have either template or repo, but not both
+    if (!templateKey && !repoUrl) {
         redirect(302, base + '/');
     }
-
-    // Parse repository information
-    const repoMatch = repoUrl.match(/github\.com[\/:]([^\/]+)\/([^\/\?\s]+)/);
-    if (!repoMatch) {
-        redirect(302, base + '/');
+    if (templateKey && repoUrl) {
+        error(400, 'Cannot specify both template and repo parameters');
     }
 
-    const [, owner, repoName] = repoMatch;
-    // Clean repository name (remove .git extension if present)
-    const cleanRepoName = repoName.replace(/\.git$/, '');
-
-    // Get environment variables from query params
+    // Get common parameters
     const envParam = url.searchParams.get('env');
     const envKeys = envParam ? envParam.split(',').map((key: string) => key.trim()) : [];
+    const screenshot = url.searchParams.get('screenshot');
+    const name = url.searchParams.get('name');
+    const tagline = url.searchParams.get('tagline');
+
+    let deploymentData: {
+        type: 'template' | 'repo';
+        template?: Models.TemplateSite;
+        repository?: { url: string; owner: string; name: string };
+        screenshot?: string;
+        name?: string;
+        tagline?: string;
+    };
+
+    if (templateKey) {
+        // Template deployment
+        try {
+            const template = await sdk.forConsole.sites.getTemplate(templateKey);
+            deploymentData = {
+                type: 'template',
+                template,
+                screenshot: screenshot || template.screenshotLight,
+                name: name || template.name,
+                tagline: tagline || template.tagline
+            };
+        } catch (e) {
+            error(404, `Template "${templateKey}" not found`);
+        }
+    } else {
+        // Repository deployment
+        const repoMatch = repoUrl!.match(/github\.com[\/:]([^\/]+)\/([^\/\?\s]+)/);
+        if (!repoMatch) {
+            redirect(302, base + '/');
+        }
+
+        const [, owner, repoName] = repoMatch;
+        // Clean repository name (remove .git extension if present)
+        const cleanRepoName = repoName.replace(/\.git$/, '');
+
+        deploymentData = {
+            type: 'repo',
+            repository: {
+                url: repoUrl!,
+                owner,
+                name: cleanRepoName
+            },
+            screenshot,
+            name: name || cleanRepoName,
+            tagline
+        };
+    }
 
     // Get organizations
     let organizations: Models.TeamList<Record<string, unknown>> | OrganizationList | undefined;
@@ -80,11 +126,7 @@ export const load: PageLoad = async ({ parent, url }) => {
     return {
         account,
         organizations,
-        repository: {
-            url: repoUrl,
-            owner,
-            name: cleanRepoName
-        },
+        deploymentData,
         envKeys
     };
 };
