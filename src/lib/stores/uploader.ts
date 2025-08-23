@@ -1,4 +1,4 @@
-import { Client, ID, type Models, Sites, Storage, type UploadProgress } from '@appwrite.io/console';
+import { Client, ID, type Models, Sites, Storage } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
 import { getApiEndpoint } from '$lib/stores/sdk';
 import { page } from '$app/state';
@@ -98,12 +98,13 @@ const createUploader = () => {
                 fileId: id ?? ID.unique(),
                 file,
                 permissions,
-                onProgress: ((progress) => {
+                onProgress: (progress) => {
                     newFile.$id = progress.$id;
                     newFile.progress = progress.progress;
                     newFile.status = progress.progress === 100 ? 'success' : 'pending';
                     updateFile(progress.$id, newFile);
-                }) as (progress: UploadProgress) => {}
+                    return {};
+                }
             });
             newFile.$id = uploadedFile.$id;
             newFile.progress = 100;
@@ -128,12 +129,17 @@ const createUploader = () => {
             const uploadedFile = await temporarySites(
                 page.params.region,
                 page.params.project
-            ).createDeployment(siteId, code, true, undefined, undefined, undefined, (p) => {
-                newDeployment.$id = p.$id;
-                newDeployment.progress = p.progress;
-                newDeployment.status = p.progress === 100 ? 'success' : 'pending';
-                updateFile(p.$id, newDeployment);
-                return {};
+            ).createDeployment({
+                siteId,
+                code,
+                activate: true,
+                onProgress: (p) => {
+                    newDeployment.$id = p.$id;
+                    newDeployment.progress = p.progress;
+                    newDeployment.status = p.progress === 100 ? 'success' : 'pending';
+                    updateFile(p.$id, newDeployment);
+                    return {};
+                }
             });
             newDeployment.$id = uploadedFile.$id;
             newDeployment.progress = 100;
