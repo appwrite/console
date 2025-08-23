@@ -360,12 +360,27 @@
         }
     }
 
+    // mobiel logo positioned at boytom in mobile view
     .mobile-logo {
         position: absolute;
         bottom: 20px;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translateX(-50%);
         max-width: 100%;
         margin-block-start: 0 !important;
+    }
+
+    .container {
+        position: relative;
+        min-height: 100vh;
+    }
+
+    .auth-container {
+        max-inline-size: 27.5rem;
+
+        @media #{devices.$break1} {
+            margin-top: 32px;
+            margin-bottom: 80px;
+        }
     }
 </style>
