@@ -92,7 +92,9 @@
 
     async function back() {
         if (ruleId) {
-            await sdk.forProject(page.params.region, page.params.project).proxy.deleteRule(ruleId);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.deleteRule({ ruleId });
         }
         await goto(`${routeBase}/add-domain?domain=${page.params.domain}`);
     }

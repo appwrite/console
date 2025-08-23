@@ -40,7 +40,7 @@
 
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .teams.updatePrefs($team.$id, updatedPrefs);
+                .teams.updatePrefs({ teamId: $team.$id, prefs: updatedPrefs });
             await invalidate(Dependencies.TEAM);
             arePrefsDisabled = true;
 

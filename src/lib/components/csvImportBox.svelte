@@ -80,7 +80,7 @@
             try {
                 const table = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .tablesDb.getTable({
+                    .tablesDB.getTable({
                         databaseId,
                         tableId
                     });

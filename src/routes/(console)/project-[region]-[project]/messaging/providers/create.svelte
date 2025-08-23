@@ -29,136 +29,138 @@
                 case Providers.Twilio:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.createTwilioProvider(
+                        .messaging.createTwilioProvider({
                             providerId,
-                            $providerParams[$provider].name,
-                            $providerParams[$provider].from,
-                            $providerParams[$provider].accountSid,
-                            $providerParams[$provider].authToken,
-                            $providerParams[$provider].enabled
-                        );
+                            name: $providerParams[$provider].name,
+                            from: $providerParams[$provider].from,
+                            accountSid: $providerParams[$provider].accountSid,
+                            authToken: $providerParams[$provider].authToken,
+                            enabled: $providerParams[$provider].enabled
+                        });
                     break;
                 case Providers.Msg91:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.createMsg91Provider(
+                        .messaging.createMsg91Provider({
                             providerId,
-                            $providerParams[$provider].name,
-                            $providerParams[$provider].templateId,
-                            $providerParams[$provider].senderId,
-                            $providerParams[$provider].authKey,
-                            $providerParams[$provider].enabled
-                        );
+                            name: $providerParams[$provider].name,
+                            templateId: $providerParams[$provider].templateId,
+                            senderId: $providerParams[$provider].senderId,
+                            authKey: $providerParams[$provider].authKey,
+                            enabled: $providerParams[$provider].enabled
+                        });
                     break;
                 case Providers.Telesign:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.createTelesignProvider(
+                        .messaging.createTelesignProvider({
                             providerId,
-                            $providerParams[$provider].name,
-                            $providerParams[$provider].from,
-                            $providerParams[$provider].customerId,
-                            $providerParams[$provider].apiKey,
-                            $providerParams[$provider].enabled
-                        );
+                            name: $providerParams[$provider].name,
+                            from: $providerParams[$provider].from,
+                            customerId: $providerParams[$provider].customerId,
+                            apiKey: $providerParams[$provider].apiKey,
+                            enabled: $providerParams[$provider].enabled
+                        });
                     break;
                 case Providers.Textmagic:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.createTextmagicProvider(
+                        .messaging.createTextmagicProvider({
                             providerId,
-                            $providerParams[$provider].name,
-                            $providerParams[$provider].from,
-                            $providerParams[$provider].username,
-                            $providerParams[$provider].apiKey,
-                            $providerParams[$provider].enabled
-                        );
+                            name: $providerParams[$provider].name,
+                            from: $providerParams[$provider].from,
+                            username: $providerParams[$provider].username,
+                            apiKey: $providerParams[$provider].apiKey,
+                            enabled: $providerParams[$provider].enabled
+                        });
                     break;
                 case Providers.Vonage:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.createVonageProvider(
+                        .messaging.createVonageProvider({
                             providerId,
-                            $providerParams[$provider].name,
-                            $providerParams[$provider].from,
-                            $providerParams[$provider].apiKey,
-                            $providerParams[$provider].apiSecret,
-                            $providerParams[$provider].enabled
-                        );
+                            name: $providerParams[$provider].name,
+                            from: $providerParams[$provider].from,
+                            apiKey: $providerParams[$provider].apiKey,
+                            apiSecret: $providerParams[$provider].apiSecret,
+                            enabled: $providerParams[$provider].enabled
+                        });
                     break;
                 case Providers.Mailgun:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.createMailgunProvider(
+                        .messaging.createMailgunProvider({
                             providerId,
-                            $providerParams[$provider].name,
-                            $providerParams[$provider].apiKey,
-                            $providerParams[$provider].domain,
-                            $providerParams[$provider].isEuRegion,
-                            $providerParams[$provider].fromName || undefined,
-                            $providerParams[$provider].fromEmail,
-                            $providerParams[$provider].replyToName || undefined,
-                            $providerParams[$provider].replyToEmail || undefined,
-                            $providerParams[$provider].enabled
-                        );
+                            name: $providerParams[$provider].name,
+                            apiKey: $providerParams[$provider].apiKey,
+                            domain: $providerParams[$provider].domain,
+                            isEuRegion: $providerParams[$provider].isEuRegion,
+                            fromName: $providerParams[$provider].fromName || undefined,
+                            fromEmail: $providerParams[$provider].fromEmail,
+                            replyToName: $providerParams[$provider].replyToName || undefined,
+                            replyToEmail: $providerParams[$provider].replyToEmail || undefined,
+                            enabled: $providerParams[$provider].enabled
+                        });
                     break;
                 case Providers.Sendgrid:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.createSendgridProvider(
+                        .messaging.createSendgridProvider({
                             providerId,
-                            $providerParams[$provider].name,
-                            $providerParams[$provider].apiKey,
-                            $providerParams[$provider].fromName || undefined,
-                            $providerParams[$provider].fromEmail,
-                            $providerParams[$provider].replyToName || undefined,
-                            $providerParams[$provider].replyToEmail || undefined,
-                            $providerParams[$provider].enabled
-                        );
+                            name: $providerParams[$provider].name,
+                            apiKey: $providerParams[$provider].apiKey,
+                            fromName: $providerParams[$provider].fromName || undefined,
+                            fromEmail: $providerParams[$provider].fromEmail,
+                            replyToName: $providerParams[$provider].replyToName || undefined,
+                            replyToEmail: $providerParams[$provider].replyToEmail || undefined,
+                            enabled: $providerParams[$provider].enabled
+                        });
                     break;
                 case Providers.SMTP:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.createSmtpProvider(
+                        .messaging.createSmtpProvider({
                             providerId,
-                            $providerParams[$provider].name,
-                            $providerParams[$provider].host,
-                            $providerParams[$provider].port || undefined,
-                            $providerParams[$provider].username || undefined,
-                            $providerParams[$provider].password || undefined,
-                            $providerParams[$provider].encryption,
-                            $providerParams[$provider].autoTLS,
-                            $providerParams[$provider].mailer || undefined,
-                            $providerParams[$provider].fromName || undefined,
-                            $providerParams[$provider].fromEmail,
-                            $providerParams[$provider].replyToName || undefined,
-                            $providerParams[$provider].replyToEmail || undefined,
-                            $providerParams[$provider].enabled
-                        );
+                            name: $providerParams[$provider].name,
+                            host: $providerParams[$provider].host,
+                            port: $providerParams[$provider].port || undefined,
+                            username: $providerParams[$provider].username || undefined,
+                            password: $providerParams[$provider].password || undefined,
+                            encryption: $providerParams[$provider].encryption,
+                            autoTLS: $providerParams[$provider].autoTLS,
+                            mailer: $providerParams[$provider].mailer || undefined,
+                            fromName: $providerParams[$provider].fromName || undefined,
+                            fromEmail: $providerParams[$provider].fromEmail,
+                            replyToName: $providerParams[$provider].replyToName || undefined,
+                            replyToEmail: $providerParams[$provider].replyToEmail || undefined,
+                            enabled: $providerParams[$provider].enabled
+                        });
                     break;
                 case Providers.FCM:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.createFcmProvider(
+                        .messaging.createFcmProvider({
                             providerId,
-                            $providerParams[$provider].name,
-                            JSON.parse($providerParams[$provider].serviceAccountJSON),
-                            $providerParams[$provider].enabled
-                        );
+                            name: $providerParams[$provider].name,
+                            serviceAccountJSON: JSON.parse(
+                                $providerParams[$provider].serviceAccountJSON
+                            ),
+                            enabled: $providerParams[$provider].enabled
+                        });
                     break;
                 case Providers.APNS:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.createApnsProvider(
+                        .messaging.createApnsProvider({
                             providerId,
-                            $providerParams[$provider].name,
-                            $providerParams[$provider].authKey,
-                            $providerParams[$provider].authKeyId,
-                            $providerParams[$provider].teamId,
-                            $providerParams[$provider].bundleId,
-                            $providerParams[$provider].sandbox,
-                            $providerParams[$provider].enabled
-                        );
+                            name: $providerParams[$provider].name,
+                            authKey: $providerParams[$provider].authKey,
+                            authKeyId: $providerParams[$provider].authKeyId,
+                            teamId: $providerParams[$provider].teamId,
+                            bundleId: $providerParams[$provider].bundleId,
+                            sandbox: $providerParams[$provider].sandbox,
+                            enabled: $providerParams[$provider].enabled
+                        });
                     break;
             }
             wizard.hide();

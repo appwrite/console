@@ -126,7 +126,7 @@ const sdkForProject = {
     proxy: new Proxy(clientProject),
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
-    tablesDb: new TablesDB(clientProject)
+    tablesDB: new TablesDB(clientProject)
 };
 
 export const realtime = {

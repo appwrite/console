@@ -42,7 +42,7 @@
     );
 
     async function loadTables() {
-        tables = await sdk.forProject(region, project).tablesDb.listTables({
+        tables = await sdk.forProject(region, project).tablesDB.listTables({
             databaseId: databaseId,
             queries: [Query.orderDesc(''), Query.limit(100)]
         });

@@ -29,7 +29,7 @@
         try {
             const table = await sdk
                 .forProject(page.params.region, page.params.project)
-                .tablesDb.createTable({
+                .tablesDB.createTable({
                     databaseId,
                     tableId: id ? id : ID.unique(),
                     name

@@ -9,16 +9,14 @@
         key: string,
         data: Partial<Models.ColumnUrl>
     ) {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDb.createUrlColumn(
-                databaseId,
-                tableId,
-                key,
-                data.required,
-                data.default,
-                data.array
-            );
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.createUrlColumn({
+            databaseId,
+            tableId,
+            key,
+            required: data.required,
+            xdefault: data.default,
+            array: data.array
+        });
     }
 
     export async function updateUrl(
@@ -27,16 +25,14 @@
         data: Partial<Models.ColumnUrl>,
         originalKey?: string
     ) {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDb.updateUrlColumn(
-                databaseId,
-                tableId,
-                originalKey,
-                data.required,
-                data.default,
-                data.key !== originalKey ? data.key : undefined
-            );
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateUrlColumn({
+            databaseId,
+            tableId,
+            key: originalKey,
+            required: data.required,
+            xdefault: data.default,
+            newKey: data.key !== originalKey ? data.key : undefined
+        });
     }
 </script>
 

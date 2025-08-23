@@ -139,7 +139,12 @@
 
             const deployment = await sdk
                 .forProject(page.params.region, page.params.project)
-                .sites.createVcsDeployment(site.$id, VCSDeploymentType.Branch, branch, true);
+                .sites.createVcsDeployment({
+                    siteId: site.$id,
+                    type: VCSDeploymentType.Branch,
+                    reference: branch,
+                    activate: true
+                });
 
             trackEvent(Submit.SiteCreate, {
                 source: 'repository',

@@ -99,7 +99,9 @@
 
     async function deleteFileToken(token: Models.ResourceToken) {
         try {
-            await sdk.forProject(page.params.region, page.params.project).tokens.delete(token.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .tokens.delete({ tokenId: token.$id });
             await invalidate(Dependencies.FILE_TOKENS);
             addNotification({
                 message: 'File token deleted',
@@ -142,9 +144,10 @@
 
     async function updateFileToken(fileToken: Models.ResourceToken) {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .tokens.update(selectedFileToken.$id, fileToken.expire ? fileToken.expire : null);
+            await sdk.forProject(page.params.region, page.params.project).tokens.update({
+                tokenId: selectedFileToken.$id,
+                expire: fileToken.expire ? fileToken.expire : null
+            });
             await invalidate(Dependencies.FILE_TOKENS);
             addNotification({
                 message: 'File token updated',

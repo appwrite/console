@@ -9,16 +9,14 @@
         key: string,
         data: Partial<Models.ColumnEmail>
     ) {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDb.createEmailColumn(
-                databaseId,
-                tableId,
-                key,
-                data.required,
-                data.default,
-                data.array
-            );
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.createEmailColumn({
+            databaseId,
+            tableId,
+            key,
+            required: data.required,
+            xdefault: data.default,
+            array: data.array
+        });
     }
 
     export async function updateEmail(
@@ -27,16 +25,14 @@
         data: Partial<Models.ColumnEmail>,
         originalKey?: string
     ) {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDb.updateEmailColumn(
-                databaseId,
-                tableId,
-                originalKey,
-                data.required,
-                data.default,
-                data.key !== originalKey ? data.key : undefined
-            );
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateEmailColumn({
+            databaseId,
+            tableId,
+            key: originalKey,
+            required: data.required,
+            xdefault: data.default,
+            newKey: data.key !== originalKey ? data.key : undefined
+        });
     }
 </script>
 

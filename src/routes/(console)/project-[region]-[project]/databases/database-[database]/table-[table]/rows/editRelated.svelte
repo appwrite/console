@@ -37,14 +37,14 @@
         try {
             relatedTable =
                 page.data.tables?.[tableId] ??
-                (await sdk.forProject(page.params.region, page.params.project).tablesDb.getTable({
+                (await sdk.forProject(page.params.region, page.params.project).tablesDB.getTable({
                     databaseId,
                     tableId: tableId
                 }));
 
             fetchedRow = await sdk
                 .forProject(page.params.region, page.params.project)
-                .tablesDb.getRow({
+                .tablesDB.getRow({
                     databaseId,
                     tableId: tableId,
                     rowId: rowId,
@@ -116,7 +116,7 @@
 
     export async function update() {
         try {
-            await sdk.forProject(page.params.region, page.params.project).tablesDb.updateRow({
+            await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId,
                 tableId: relatedTable.$id,
                 rowId: fetchedRow.$id,

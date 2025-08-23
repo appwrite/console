@@ -34,7 +34,10 @@
 
         if (apexDomain && !domain && isCloud) {
             try {
-                domain = await sdk.forConsole.domains.create($project.teamId, apexDomain);
+                domain = await sdk.forConsole.domains.create({
+                    teamId: $project.teamId,
+                    domain: apexDomain
+                });
             } catch (error) {
                 // apex might already be added on organization level, skip.
                 const alreadyAdded = error?.type === 'domain_already_exists';

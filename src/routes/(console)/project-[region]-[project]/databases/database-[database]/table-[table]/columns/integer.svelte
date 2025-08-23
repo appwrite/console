@@ -9,18 +9,16 @@
         key: string,
         data: Partial<Models.ColumnInteger>
     ) {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDb.createIntegerColumn(
-                databaseId,
-                tableId,
-                key,
-                data.required,
-                data.min,
-                data.max,
-                data.default,
-                data.array
-            );
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.createIntegerColumn({
+            databaseId,
+            tableId,
+            key,
+            required: data.required,
+            min: data.min,
+            max: data.max,
+            xdefault: data.default,
+            array: data.array
+        });
     }
 
     export async function updateInteger(
@@ -29,18 +27,16 @@
         data: Partial<Models.ColumnInteger>,
         originalKey?: string
     ) {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDb.updateIntegerColumn(
-                databaseId,
-                tableId,
-                originalKey,
-                data.required,
-                data.default,
-                Math.abs(data.min) > Number.MAX_SAFE_INTEGER ? undefined : data.min,
-                Math.abs(data.max) > Number.MAX_SAFE_INTEGER ? undefined : data.max,
-                data.key !== originalKey ? data.key : undefined
-            );
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateIntegerColumn({
+            databaseId,
+            tableId,
+            key: originalKey,
+            required: data.required,
+            xdefault: data.default,
+            min: Math.abs(data.min) > Number.MAX_SAFE_INTEGER ? undefined : data.min,
+            max: Math.abs(data.max) > Number.MAX_SAFE_INTEGER ? undefined : data.max,
+            newKey: data.key !== originalKey ? data.key : undefined
+        });
     }
 </script>
 

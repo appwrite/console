@@ -12,7 +12,10 @@
 
     async function updatePassword() {
         try {
-            await sdk.forConsole.account.updatePassword(newPassword, oldPassword);
+            await sdk.forConsole.account.updatePassword({
+                password: newPassword,
+                oldPassword
+            });
             newPassword = oldPassword = null;
             addNotification({
                 message: 'Password has been updated',

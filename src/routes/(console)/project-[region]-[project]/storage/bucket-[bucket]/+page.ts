@@ -11,13 +11,11 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
     const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
 
-    const files = await sdk
-        .forProject(params.region, params.project)
-        .storage.listFiles(
-            params.bucket,
-            [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-            search
-        );
+    const files = await sdk.forProject(params.region, params.project).storage.listFiles({
+        bucketId: params.bucket,
+        queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+        search
+    });
 
     return {
         offset,

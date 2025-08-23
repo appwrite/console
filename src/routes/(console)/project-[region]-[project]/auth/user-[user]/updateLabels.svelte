@@ -26,7 +26,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .users.updateLabels($user.$id, labels);
+                .users.updateLabels({ userId: $user.$id, labels });
             await invalidate(Dependencies.USER);
             isDisabled = true;
 

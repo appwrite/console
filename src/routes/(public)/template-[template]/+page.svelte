@@ -54,10 +54,9 @@
     }
 
     async function fetchProjects() {
-        projects = await sdk.forConsole.projects.list([
-            Query.equal('teamId', selectedOrg),
-            Query.orderDesc('')
-        ]);
+        projects = await sdk.forConsole.projects.list({
+            queries: [Query.equal('teamId', selectedOrg), Query.orderDesc('')]
+        });
         selectedProject = projects?.total ? projects.projects[0].$id : null;
     }
 

@@ -82,7 +82,7 @@
 
     export async function update() {
         try {
-            await sdk.forProject(page.params.region, page.params.project).tablesDb.updateRow({
+            await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId,
                 tableId,
                 rowId: row.$id,

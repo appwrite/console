@@ -15,7 +15,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .messaging.deleteTopic($topic.$id);
+                .messaging.deleteTopic({ topicId: $topic.$id });
 
             showDelete = false;
             addNotification({

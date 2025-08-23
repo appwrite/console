@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ params }) => {
         ? params.period
         : UsageRange.ThirtyDays;
 
-    return sdk.forProject(params.region, params.project).tablesDb.getTableUsage({
+    return sdk.forProject(params.region, params.project).tablesDB.getTableUsage({
         databaseId: params.database,
         tableId: params.table,
         range: period
