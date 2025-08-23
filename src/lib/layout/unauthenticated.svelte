@@ -360,7 +360,7 @@
         }
     }
 
-    // mobiel logo positioned at boytom in mobile view
+    // mobile logo positioned at bottom in mobile view
     .mobile-logo {
         position: absolute;
         bottom: 20px;
