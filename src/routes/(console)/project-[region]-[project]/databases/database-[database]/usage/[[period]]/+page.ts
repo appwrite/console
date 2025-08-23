@@ -7,7 +7,7 @@ export const load: PageLoad = async ({ params }) => {
     const period = isValueOfStringEnum(UsageRange, params.period)
         ? params.period
         : UsageRange.ThirtyDays;
-    return sdk.forProject(params.region, params.project).tablesDb.getUsage({
+    return sdk.forProject(params.region, params.project).tablesDB.getUsage({
         databaseId: params.database,
         range: period
     });

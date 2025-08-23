@@ -77,7 +77,12 @@
         return (
             sdk
                 .forProject(page.params.region, page.params.project)
-                .storage.getFilePreview(bucketId, fileId, size, size)
+                .storage.getFilePreview({
+                    bucketId,
+                    fileId,
+                    width: size,
+                    height: size
+                })
                 .toString() + '&mode=admin'
         );
     }
@@ -87,15 +92,20 @@
             uploading = true;
             let file = null;
             if (localFileBucketSelected) {
-                file = await sdk
-                    .forConsoleIn(page.params.region)
-                    .storage.createFile('default', ID.unique(), localFile[0]);
+                file = await sdk.forConsoleIn(page.params.region).storage.createFile({
+                    bucketId: 'default',
+                    fileId: ID.unique(),
+                    file: localFile[0]
+                });
             } else {
                 file = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .storage.createFile(selectedBucket, ID.unique(), fileSelector.files[0], [
-                        Permission.read(Role.any())
-                    ]);
+                    .storage.createFile({
+                        bucketId: selectedBucket,
+                        fileId: ID.unique(),
+                        file: fileSelector.files[0],
+                        permissions: [Permission.read(Role.any())]
+                    });
                 search.set($search === null ? '' : null);
             }
             selectFile(file);
@@ -203,7 +213,11 @@
         currentBucket &&
         sdk
             .forProject(page.params.region, page.params.project)
-            .storage.listFiles(currentBucket.$id, getProperQuery(), $search || undefined)
+            .storage.listFiles({
+                bucketId: currentBucket.$id,
+                queries: getProperQuery(),
+                search: $search || undefined
+            })
             .then((response) => {
                 if ($search === '') {
                     searchEnabled = response.total > 0;

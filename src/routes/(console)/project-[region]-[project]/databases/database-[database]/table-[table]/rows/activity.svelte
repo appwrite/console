@@ -26,7 +26,7 @@
 
         rowActivityLogs = await sdk
             .forProject(page.params.region, page.params.project)
-            .tablesDb.listRowLogs({
+            .tablesDB.listRowLogs({
                 databaseId: row.$databaseId,
                 tableId: row.$tableId,
                 rowId: row.$id,

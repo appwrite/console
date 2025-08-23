@@ -16,7 +16,7 @@ export const load = async ({ depends, params, parent }) => {
                 Query.equal('trigger', RuleTrigger.MANUAL)
             ]),
         isCloud
-            ? sdk.forConsole.domains.list([Query.equal('teamId', organization.$id)])
+            ? sdk.forConsole.domains.list({ queries: [Query.equal('teamId', organization.$id)] })
             : Promise.resolve(null)
     ]);
 

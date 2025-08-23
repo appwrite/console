@@ -6,14 +6,16 @@ export async function load({ depends, params }) {
     depends(Dependencies.MIGRATIONS);
 
     try {
-        const { migrations } = await sdk.forProject(params.region, params.project).migrations.list([
-            // hides backups/restorations from migrations page.
-            Query.equal('source', ['Appwrite', 'Firebase', 'NHost', 'Supabase']),
-            Query.or([
-                Query.equal('destination', ['Appwrite', 'Firebase', 'NHost', 'Supabase']),
-                Query.isNull('destination')
-            ])
-        ]);
+        const { migrations } = await sdk.forProject(params.region, params.project).migrations.list({
+            queries: [
+                // hides backups/restorations from migrations page.
+                Query.equal('source', ['Appwrite', 'Firebase', 'NHost', 'Supabase']),
+                Query.or([
+                    Query.equal('destination', ['Appwrite', 'Firebase', 'NHost', 'Supabase']),
+                    Query.isNull('destination')
+                ])
+            ]
+        });
 
         return {
             migrations

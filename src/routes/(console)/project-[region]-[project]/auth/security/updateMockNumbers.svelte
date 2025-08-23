@@ -38,7 +38,10 @@
 
     async function updateMockNumbers() {
         try {
-            await sdk.forConsole.projects.updateMockNumbers($project.$id, numbers);
+            await sdk.forConsole.projects.updateMockNumbers({
+                projectId: $project.$id,
+                numbers
+            });
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',

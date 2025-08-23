@@ -108,7 +108,11 @@
 
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.createDeployment(func.$id, files[0], true, undefined, undefined);
+                .functions.createDeployment({
+                    functionId: func.$id,
+                    code: files[0],
+                    activate: true
+                });
 
             trackEvent(Submit.FunctionCreate, {
                 source: 'repository',

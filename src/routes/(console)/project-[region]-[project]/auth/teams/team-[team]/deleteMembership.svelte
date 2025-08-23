@@ -20,7 +20,10 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .teams.deleteMembership(selectedMembership.teamId, selectedMembership.$id);
+                .teams.deleteMembership({
+                    teamId: selectedMembership.teamId,
+                    membershipId: selectedMembership.$id
+                });
             showDelete = false;
             dispatch('deleted');
             trackEvent(Submit.MemberDelete);

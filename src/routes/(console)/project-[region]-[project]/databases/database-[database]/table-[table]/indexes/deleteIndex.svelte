@@ -27,9 +27,11 @@
         try {
             await Promise.all(
                 selectedKeys.map((key) =>
-                    sdk
-                        .forProject(page.params.region, page.params.project)
-                        .tablesDb.deleteIndex(page.params.database, page.params.table, key)
+                    sdk.forProject(page.params.region, page.params.project).tablesDB.deleteIndex({
+                        databaseId: page.params.database,
+                        tableId: page.params.table,
+                        key
+                    })
                 )
             );
             await invalidate(Dependencies.TABLE);

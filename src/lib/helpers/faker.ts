@@ -11,15 +11,15 @@ export async function generateColumns(
     const client = sdk.forProject(project.region, project.$id);
 
     return await Promise.all([
-        client.tablesDb.createStringColumn({
+        client.tablesDB.createStringColumn({
             databaseId,
             tableId,
             key: 'name',
             size: 255,
             required: false
         }),
-        client.tablesDb.createEmailColumn({ databaseId, tableId, key: 'email', required: false }),
-        client.tablesDb.createIntegerColumn({
+        client.tablesDB.createEmailColumn({ databaseId, tableId, key: 'email', required: false }),
+        client.tablesDB.createIntegerColumn({
             databaseId,
             tableId,
             key: 'age',
@@ -27,21 +27,21 @@ export async function generateColumns(
             min: 0,
             max: 150
         }),
-        client.tablesDb.createStringColumn({
+        client.tablesDB.createStringColumn({
             databaseId,
             tableId,
             key: 'city',
             size: 100,
             required: false
         }),
-        client.tablesDb.createStringColumn({
+        client.tablesDB.createStringColumn({
             databaseId,
             tableId,
             key: 'description',
             size: 1000,
             required: false
         }),
-        client.tablesDb.createBooleanColumn({ databaseId, tableId, key: 'active', required: false })
+        client.tablesDB.createBooleanColumn({ databaseId, tableId, key: 'active', required: false })
     ]);
 }
 

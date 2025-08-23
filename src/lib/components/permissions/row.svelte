@@ -29,13 +29,13 @@
         if (role === 'user') {
             const user = await sdk
                 .forProject(page.params.region, page.params.project)
-                .users.get(id);
+                .users.get({ userId: id });
             return user;
         }
         if (role === 'team') {
             const team = await sdk
                 .forProject(page.params.region, page.params.project)
-                .teams.get(id);
+                .teams.get({ teamId: id });
             return team;
         }
     }

@@ -50,7 +50,10 @@
 
     async function login() {
         try {
-            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
+            await sdk.forConsole.account.createEmailPasswordSession({
+                email: mail,
+                password: pass
+            });
             await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountLogin);
 
@@ -63,8 +66,16 @@
 
     async function register() {
         try {
-            await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
-            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
+            await sdk.forConsole.account.create({
+                userId: ID.unique(),
+                email: mail,
+                password: pass,
+                name: name ?? ''
+            });
+            await sdk.forConsole.account.createEmailPasswordSession({
+                email: mail,
+                password: pass
+            });
 
             await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountCreate);

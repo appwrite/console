@@ -9,18 +9,16 @@
         key: string,
         data: Partial<Models.ColumnString>
     ) {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDb.createStringColumn(
-                databaseId,
-                tableId,
-                key,
-                data.size,
-                data.required,
-                data.default,
-                data.array,
-                data.encrypt
-            );
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.createStringColumn({
+            databaseId,
+            tableId,
+            key,
+            size: data.size,
+            required: data.required,
+            xdefault: data.default,
+            array: data.array,
+            encrypt: data.encrypt
+        });
     }
     export async function updateString(
         databaseId: string,
@@ -28,17 +26,15 @@
         data: Partial<Models.ColumnString>,
         originalKey?: string
     ) {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDb.updateStringColumn(
-                databaseId,
-                tableId,
-                originalKey,
-                data.required,
-                data.default,
-                data.size,
-                data.key !== originalKey ? data.key : undefined
-            );
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateStringColumn({
+            databaseId,
+            tableId,
+            key: originalKey,
+            required: data.required,
+            xdefault: data.default,
+            size: data.size,
+            newKey: data.key !== originalKey ? data.key : undefined
+        });
     }
 </script>
 

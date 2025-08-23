@@ -10,7 +10,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     return {
         header: Header,
         breadcrumbs: Breadcrumbs,
-        table: await sdk.forProject(params.region, params.project).tablesDb.getTable({
+        table: await sdk.forProject(params.region, params.project).tablesDB.getTable({
             databaseId: params.database,
             tableId: params.table
         })

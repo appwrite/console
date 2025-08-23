@@ -20,16 +20,14 @@
 
     async function updateSecurity() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .tablesDb.updateTable(
-                    databaseId,
-                    $table.$id,
-                    $table.name,
-                    $table.$permissions,
-                    tableRowSecurity,
-                    $table.enabled
-                );
+            await sdk.forProject(page.params.region, page.params.project).tablesDB.updateTable({
+                databaseId,
+                tableId: $table.$id,
+                name: $table.name,
+                permissions: $table.$permissions,
+                rowSecurity: tableRowSecurity,
+                enabled: $table.enabled
+            });
             await invalidate(Dependencies.TABLE);
             addNotification({
                 message: 'Security has been updated',

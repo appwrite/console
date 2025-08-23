@@ -29,8 +29,16 @@
     async function register() {
         try {
             disabled = true;
-            await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
-            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
+            await sdk.forConsole.account.create({
+                userId: ID.unique(),
+                email: mail,
+                password: pass,
+                name: name ?? ''
+            });
+            await sdk.forConsole.account.createEmailPasswordSession({
+                email: mail,
+                password: pass
+            });
 
             trackEvent(Submit.AccountCreate, {
                 campaign_name: data?.couponData?.code,

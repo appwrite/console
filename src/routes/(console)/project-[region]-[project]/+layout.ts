@@ -15,7 +15,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const { plansInfo, organizations, preferences: prefs } = await parent();
     depends(Dependencies.PROJECT);
 
-    const project = await sdk.forConsole.projects.get(params.project);
+    const project = await sdk.forConsole.projects.get({ projectId: params.project });
     project.region ??= 'default';
 
     // fast path without a network call!
@@ -27,7 +27,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
 
     const [org, regionalConsoleVariables, rolesResult, organizationPlan] = await Promise.all([
         !organization
-            ? (sdk.forConsole.teams.get(project.teamId) as Promise<Organization>)
+            ? (sdk.forConsole.teams.get({ teamId: project.teamId }) as Promise<Organization>)
             : organization,
         sdk.forConsoleIn(project.region).console.variables(),
         isCloud ? sdk.forConsole.billing.getRoles(project.teamId) : null,

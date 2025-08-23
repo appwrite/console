@@ -21,16 +21,14 @@
 
     async function toggleTable() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .tablesDb.updateTable(
-                    databaseId,
-                    $table.$id,
-                    $table.name,
-                    $table.$permissions,
-                    $table.rowSecurity,
-                    enabled
-                );
+            await sdk.forProject(page.params.region, page.params.project).tablesDB.updateTable({
+                databaseId,
+                tableId: $table.$id,
+                name: $table.name,
+                permissions: $table.$permissions,
+                rowSecurity: $table.rowSecurity,
+                enabled
+            });
             await invalidate(Dependencies.TABLE);
             addNotification({
                 message: `${$table.name} has been updated`,

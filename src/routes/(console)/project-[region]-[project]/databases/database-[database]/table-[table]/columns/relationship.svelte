@@ -21,16 +21,16 @@
 
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tablesDb.createRelationshipColumn(
+            .tablesDB.createRelationshipColumn({
                 databaseId,
                 tableId,
-                data.relatedTable,
-                data.relationType,
-                data.twoWay,
-                data.key,
-                data.twoWayKey ?? ID.unique(),
-                data.onDelete
-            );
+                relatedTableId: data.relatedTable,
+                type: data.relationType,
+                twoWay: data.twoWay,
+                key: data.key,
+                twoWayKey: data.twoWayKey ?? ID.unique(),
+                onDelete: data.onDelete
+            });
     }
 
     export async function updateRelationship(
@@ -45,13 +45,13 @@
 
         await sdk
             .forProject(page.params.region, page.params.project)
-            .tablesDb.updateRelationshipColumn(
+            .tablesDB.updateRelationshipColumn({
                 databaseId,
                 tableId,
-                originalKey,
-                data.onDelete,
-                data.key !== originalKey ? data.key : undefined
-            );
+                key: originalKey,
+                onDelete: data.onDelete,
+                newKey: data.key !== originalKey ? data.key : undefined
+            });
     }
 </script>
 
@@ -95,9 +95,11 @@
     // Lifecycle hooks
     async function getTables() {
         const queries = [Query.limit(100)];
-        return sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDb.listTables(databaseId, queries, search);
+        return sdk.forProject(page.params.region, page.params.project).tablesDB.listTables({
+            databaseId,
+            queries,
+            search
+        });
     }
 
     const debouncedFetchTables = debounce(async () => {

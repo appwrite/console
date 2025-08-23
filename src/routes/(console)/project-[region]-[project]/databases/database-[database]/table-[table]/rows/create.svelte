@@ -65,7 +65,7 @@
         isSubmitting = true;
 
         try {
-            await sdk.forProject(page.params.region, page.params.project).tablesDb.createRow({
+            await sdk.forProject(page.params.region, page.params.project).tablesDB.createRow({
                 databaseId: page.params.database,
                 tableId: page.params.table,
                 rowId: $createRow.id ?? ID.unique(),

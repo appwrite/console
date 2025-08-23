@@ -66,7 +66,9 @@
                 );
                 verified = domainData.nameservers.toLowerCase() === 'appwrite';
             } else if (!isNewDomain && isCloud) {
-                const domain = await sdk.forConsole.domains.updateNameservers(domainId);
+                const domain = await sdk.forConsole.domains.updateNameservers({
+                    domainId
+                });
                 verified = domain.nameservers.toLowerCase() === 'appwrite';
                 if (!verified)
                     throw new Error(
@@ -92,7 +94,9 @@
 
     async function back() {
         if (ruleId) {
-            await sdk.forProject(page.params.region, page.params.project).proxy.deleteRule(ruleId);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.deleteRule({ ruleId });
         }
         await goto(`${routeBase}/add-domain?domain=${page.params.domain}`);
     }

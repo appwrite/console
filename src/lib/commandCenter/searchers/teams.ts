@@ -17,9 +17,9 @@ const getTeamCommand = (team: Models.Team<Models.Preferences>, region: string, p
     }) satisfies Command;
 
 export const teamSearcher = (async (query: string) => {
-    const { teams } = await sdk
-        .forProject(page.params.region, page.params.project)
-        .teams.list([], query);
+    const { teams } = await sdk.forProject(page.params.region, page.params.project).teams.list({
+        search: query
+    });
 
     if (teams.length === 1) {
         return [

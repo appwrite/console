@@ -27,9 +27,10 @@
         title = message.data.title;
         body = message.data.body;
         if (message.data?.image) {
-            file = await sdk
-                .forProject(page.params.region, page.params.project)
-                .storage.getFile(message.data.image?.bucketId, message.data.image?.fileId);
+            file = await sdk.forProject(page.params.region, page.params.project).storage.getFile({
+                bucketId: message.data.image?.bucketId,
+                fileId: message.data.image?.fileId
+            });
         }
 
         const dataEntries: [string, string][] = [];

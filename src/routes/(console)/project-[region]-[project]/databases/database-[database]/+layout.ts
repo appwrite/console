@@ -8,7 +8,7 @@ import SubNavigation from './subNavigation.svelte';
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.DATABASE);
 
-    const database = await sdk.forProject(params.region, params.project).tablesDb.get({
+    const database = await sdk.forProject(params.region, params.project).tablesDB.get({
         databaseId: params.database
     });
 

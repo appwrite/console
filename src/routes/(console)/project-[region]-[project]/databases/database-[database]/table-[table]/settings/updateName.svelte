@@ -21,7 +21,7 @@
 
     async function updateName() {
         try {
-            await sdk.forProject(page.params.region, page.params.project).tablesDb.updateTable({
+            await sdk.forProject(page.params.region, page.params.project).tablesDB.updateTable({
                 databaseId,
                 tableId: $table.$id,
                 name: tableName,

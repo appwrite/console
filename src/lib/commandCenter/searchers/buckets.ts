@@ -32,7 +32,9 @@ export const bucketSearcher = (async (query: string) => {
     const region = page.params.region;
     const { buckets } = await sdk
         .forProject(page.params.region, page.params.project)
-        .storage.listBuckets([Query.orderDesc('$createdAt')]);
+        .storage.listBuckets({
+            queries: [Query.orderDesc('$createdAt')]
+        });
 
     const filtered = buckets.filter((bucket) => bucket.name.includes(query));
 

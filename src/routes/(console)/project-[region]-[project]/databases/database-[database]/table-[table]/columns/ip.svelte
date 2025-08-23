@@ -9,16 +9,14 @@
         key: string,
         data: Partial<Models.ColumnIp>
     ) {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDb.createIpColumn(
-                databaseId,
-                tableId,
-                key,
-                data.required,
-                data.default,
-                data.array
-            );
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.createIpColumn({
+            databaseId,
+            tableId,
+            key,
+            required: data.required,
+            xdefault: data.default,
+            array: data.array
+        });
     }
     export async function updateIp(
         databaseId: string,
@@ -26,16 +24,14 @@
         data: Partial<Models.ColumnIp>,
         originalKey?: string
     ) {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDb.updateIpColumn(
-                databaseId,
-                tableId,
-                originalKey,
-                data.required,
-                data.default,
-                data.key !== originalKey ? data.key : undefined
-            );
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateIpColumn({
+            databaseId,
+            tableId,
+            key: originalKey,
+            required: data.required,
+            xdefault: data.default,
+            newKey: data.key !== originalKey ? data.key : undefined
+        });
     }
 </script>
 

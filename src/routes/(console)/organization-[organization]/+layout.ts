@@ -43,8 +43,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         }
 
         const [organization, members, countryList, locale] = await Promise.all([
-            sdk.forConsole.teams.get(params.organization) as Promise<Organization>,
-            sdk.forConsole.teams.listMemberships(params.organization),
+            sdk.forConsole.teams.get({ teamId: params.organization }) as Promise<Organization>,
+            sdk.forConsole.teams.listMemberships({ teamId: params.organization }),
             sdk.forConsole.locale.listCountries(),
             sdk.forConsole.locale.get(),
             preferences.loadTeamPrefs(params.organization),

@@ -326,15 +326,17 @@
 
     $: projects = isOnOnboarding
         ? null
-        : sdk.forConsole.projects.list([
-              Query.equal(
-                  'teamId',
-                  // id from page params ?? id from store ?? id from preferences
-                  page.params.organization ?? currentOrganizationId ?? data.currentOrgId
-              ),
-              Query.limit(5),
-              Query.orderDesc('$updatedAt')
-          ]);
+        : sdk.forConsole.projects.list({
+              queries: [
+                  Query.equal(
+                      'teamId',
+                      // id from page params ?? id from store ?? id from preferences
+                      page.params.organization ?? currentOrganizationId ?? data.currentOrgId
+                  ),
+                  Query.limit(5),
+                  Query.orderDesc('$updatedAt')
+              ]
+          });
 
     $: if ($requestedMigration) {
         openMigrationWizard();

@@ -21,7 +21,7 @@
         const databaseId = page.params.database;
 
         try {
-            await sdk.forProject(page.params.region, page.params.project).tablesDb.deleteTable({
+            await sdk.forProject(page.params.region, page.params.project).tablesDB.deleteTable({
                 databaseId,
                 tableId
             });

@@ -15,7 +15,11 @@ export const fileSearcher = (async (query: string) => {
 
     const { files } = await sdk
         .forProject(page.params.region, page.params.project)
-        .storage.listFiles($bucket.$id, [Query.orderDesc('')], query || undefined);
+        .storage.listFiles({
+            bucketId: $bucket.$id,
+            queries: [Query.orderDesc('')],
+            search: query || undefined
+        });
 
     return files.map((file) => ({
         label: file.name,

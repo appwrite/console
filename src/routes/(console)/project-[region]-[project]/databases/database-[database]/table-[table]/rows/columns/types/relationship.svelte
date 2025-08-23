@@ -61,7 +61,7 @@
             ? [Query.select(displayNames), Query.startsWith('$id', search), Query.orderDesc('')]
             : [Query.select(displayNames)];
 
-        return await sdk.forProject(page.params.region, page.params.project).tablesDb.listRows({
+        return await sdk.forProject(page.params.region, page.params.project).tablesDB.listRows({
             databaseId,
             tableId: column.relatedTable,
             queries
