@@ -15,17 +15,15 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         .functions.get({ functionId: params.function });
 
     //TODO remove rule limit of 1 and display extra rules
-    const proxyRuleList = await sdk
-        .forProject(params.region, params.project)
-        .proxy.listRules({
-            queries: [
-                Query.equal('type', RuleType.DEPLOYMENT),
-                Query.equal('deploymentResourceType', DeploymentResourceType.FUNCTION),
-                Query.equal('deploymentResourceId', params.function),
-                Query.equal('deploymentId', func.deploymentId),
-                Query.limit(1)
-            ]
-        });
+    const proxyRuleList = await sdk.forProject(params.region, params.project).proxy.listRules({
+        queries: [
+            Query.equal('type', RuleType.DEPLOYMENT),
+            Query.equal('deploymentResourceType', DeploymentResourceType.FUNCTION),
+            Query.equal('deploymentResourceId', params.function),
+            Query.equal('deploymentId', func.deploymentId),
+            Query.limit(1)
+        ]
+    });
 
     return {
         header: Header,

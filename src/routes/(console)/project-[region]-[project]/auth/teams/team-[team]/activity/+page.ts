@@ -12,11 +12,9 @@ export const load: PageLoad = async ({ params, url, route }) => {
     return {
         offset,
         limit,
-        logs: await sdk
-            .forProject(params.region, params.project)
-            .teams.listLogs({
-                teamId: params.team,
-                queries: [Query.limit(limit), Query.offset(offset)]
-            })
+        logs: await sdk.forProject(params.region, params.project).teams.listLogs({
+            teamId: params.team,
+            queries: [Query.limit(limit), Query.offset(offset)]
+        })
     };
 };
