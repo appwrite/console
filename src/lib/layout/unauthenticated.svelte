@@ -360,6 +360,7 @@
         }
     }
 
+    // mobile logo positioned at bottom in mobile view
     .mobile-logo {
         position: absolute;
         bottom: 20px;
@@ -367,5 +368,17 @@
         transform: translate(-50%, -50%);
         max-width: 100%;
         margin-block-start: 0 !important;
+    }
+
+    @media #{devices.$break1} {
+        .auth-container {
+            margin-block-end: 5rem;
+            margin-block-start: 2rem;
+        }
+
+        .container {
+            min-height: 100%;
+            position: relative;
+        }
     }
 </style>
