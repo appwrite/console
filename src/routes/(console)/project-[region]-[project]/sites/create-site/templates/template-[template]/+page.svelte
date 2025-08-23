@@ -357,7 +357,6 @@
                 {@const sourceUrl = getTemplateSourceUrl(data.template)}
                 {#if sourceUrl}
                     <Button 
-                        class="mt-4"
                         secondary 
                         size="s" 
                         external 

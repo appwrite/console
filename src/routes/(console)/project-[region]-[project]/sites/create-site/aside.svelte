@@ -62,9 +62,7 @@
                         </Typography.Text>
                     </Layout.Stack>
                 </Layout.Stack>
-                <Layout.Stack gap="s">
                     <slot name="framework-actions" />
-                </Layout.Stack>
             {/if}
 
             {#if domain && showAfter}
