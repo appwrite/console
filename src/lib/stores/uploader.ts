@@ -103,7 +103,6 @@ const createUploader = () => {
                     newFile.progress = progress.progress;
                     newFile.status = progress.progress === 100 ? 'success' : 'pending';
                     updateFile(progress.$id, newFile);
-                    return {};
                 }
             });
             newFile.$id = uploadedFile.$id;
@@ -133,12 +132,11 @@ const createUploader = () => {
                 siteId,
                 code,
                 activate: true,
-                onProgress: (p) => {
-                    newDeployment.$id = p.$id;
-                    newDeployment.progress = p.progress;
-                    newDeployment.status = p.progress === 100 ? 'success' : 'pending';
-                    updateFile(p.$id, newDeployment);
-                    return {};
+                onProgress: (progress) => {
+                    newDeployment.$id = progress.$id;
+                    newDeployment.progress = progress.progress;
+                    newDeployment.status = progress.progress === 100 ? 'success' : 'pending';
+                    updateFile(progress.$id, newDeployment);
                 }
             });
             newDeployment.$id = uploadedFile.$id;
