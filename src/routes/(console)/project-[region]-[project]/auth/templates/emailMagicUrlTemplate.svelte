@@ -45,6 +45,12 @@
             <Id value={'{{user}}'}>{'{{user}}'}</Id>
             <Id value={'{{project}}'}>{'{{project}}'}</Id>
             <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>
+
+            <!-- START: for client info -->
+            <Id value={'{{agentClient}}'}>{'{{agentClient}}'}</Id>
+            <Id value={'{{agentDevice}}'}>{'{{agentDevice}}'}</Id>
+            <Id value={'{{agentOs}}'}>{'{{agentOs}}'}</Id>
+            <!-- END: for client info -->
         </EmailTemplate>
     </Layout.Stack>
 </Card.Base>

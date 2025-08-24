@@ -5,7 +5,7 @@
     import CreateFlutter from './createFlutter.svelte';
     import CreateReactNative from './createReactNative.svelte';
     import CreateWeb from './createWeb.svelte';
-    import { createPlatform, versions } from './wizard/store';
+    import { createPlatform } from './wizard/store';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
     export enum Platform {
@@ -17,13 +17,12 @@
     }
 
     export async function addPlatform(type: Platform) {
-        await versions.load();
         createPlatform.reset();
+        wizard.start(platforms[type]);
         trackEvent(Click.PlatformCreateClick, {
             platform: platforms[type],
             source: 'platforms_page'
         });
-        wizard.start(platforms[type]);
     }
 
     export async function continuePlatform(
@@ -32,7 +31,6 @@
         key: string,
         type: string
     ) {
-        await versions.load();
         createPlatform.set({
             name: name,
             key: key,
@@ -121,10 +119,11 @@
 </script>
 
 {#if data.platforms.platforms.length}
-    <Table.Root columns={3} let:root>
+    <Table.Root columns={4} let:root>
         <svelte:fragment slot="header" let:root>
             <Table.Header.Cell {root}>Name</Table.Header.Cell>
             <Table.Header.Cell {root}>Platform type</Table.Header.Cell>
+            <Table.Header.Cell {root}>Identifier</Table.Header.Cell>
             <Table.Header.Cell {root}>Last updated</Table.Header.Cell>
         </svelte:fragment>
         {#each data.platforms.platforms as platform}
@@ -137,6 +136,13 @@
                         <Icon icon={getPlatformInfo(platform.type)} />
                         {PlatformTypes[platform.type]}
                     </Layout.Stack>
+                </Table.Cell>
+                <Table.Cell {root}>
+                    {#if platform.type.includes('web') || platform.type === 'web'}
+                        {platform.hostname || '—'}
+                    {:else}
+                        {platform.key || platform.hostname || '—'}
+                    {/if}
                 </Table.Cell>
                 <Table.Cell {root}>
                     {#if platform.$updatedAt}

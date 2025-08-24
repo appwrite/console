@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { timeFromNow } from '$lib/helpers/date';
-    import type { Models } from '@appwrite.io/console';
+    import { ImageFormat, type Models } from '@appwrite.io/console';
     import { Card, Icon, Layout, Popover, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { generateSiteDeploymentDesc } from './store';
     import { SvgIcon } from '$lib/components';
@@ -14,6 +14,7 @@
     import { Link } from '$lib/elements';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { getProjectRoute } from '$lib/helpers/project';
+    import { page } from '$app/state';
 
     export let siteList: Models.SiteList;
 
@@ -33,7 +34,23 @@
     }
 
     function getFilePreview(fileId: string) {
-        return sdk.forConsole.storage.getFileView('screenshots', fileId);
+        return sdk
+            .forConsoleIn(page.params.region)
+            .storage.getFilePreview(
+                'screenshots',
+                fileId,
+                1024,
+                576,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                ImageFormat.Webp
+            );
     }
 </script>
 

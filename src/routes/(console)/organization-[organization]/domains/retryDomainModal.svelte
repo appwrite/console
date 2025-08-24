@@ -11,31 +11,36 @@
     import { consoleVariables } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
 
-    export let show = false;
-    export let selectedDomain: Models.Domain;
+    let {
+        show = $bindable(),
+        selectedDomain
+    }: {
+        show: boolean;
+        selectedDomain: Models.Domain;
+    } = $props();
+
     const nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',') ?? [
         'ns1.appwrite.io',
         'ns2.appwrite.io'
     ];
 
-    let error = null;
+    let error = $state(null);
+
     async function retryDomain() {
         try {
+            error = null;
             const domain = await sdk.forConsole.domains.updateNameservers(selectedDomain.$id);
-            show = false;
             if (domain.nameservers.toLowerCase() === 'appwrite') {
+                show = false;
                 addNotification({
                     type: 'success',
                     message: `${selectedDomain.domain} has been verified`
                 });
             } else {
-                addNotification({
-                    type: 'error',
-                    message:
-                        'Domain verification failed. Please check your domain settings or try again later'
-                });
+                error =
+                    'Domain verification failed. Please check your domain settings or try again later';
             }
-            await invalidate(Dependencies.DOMAINS);
+            await Promise.all([invalidate(Dependencies.DOMAIN), invalidate(Dependencies.DOMAINS)]);
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
             error = e.message;
@@ -43,9 +48,11 @@
         }
     }
 
-    $: if (!show) {
-        error = null;
-    }
+    $effect(() => {
+        if (!show) {
+            error = null;
+        }
+    });
 </script>
 
 <Modal title="Retry verification" bind:show onSubmit={retryDomain} bind:error>

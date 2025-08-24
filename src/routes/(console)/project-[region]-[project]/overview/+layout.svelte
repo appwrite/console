@@ -52,7 +52,7 @@
     }
 
     function isTabSelected(key: string) {
-        return page.url.pathname === `${path}/${key}`;
+        return page.url.pathname.endsWith(`/${key}`);
     }
 
     $: $registerCommands([
@@ -70,7 +70,7 @@
             label: 'Create API Key',
             icon: IconPlus,
             callback() {
-                goto(`${path}/keys/create`);
+                goto(`${path}/api-keys/create`);
             },
             keys: ['c', 'k'],
             group: 'integrations',
@@ -229,12 +229,12 @@
                         selected={isTabSelected('platforms')}>Platforms</Tab>
                     <Tab
                         noscroll
-                        event="keys"
-                        href={`${path}/keys`}
-                        selected={isTabSelected('keys')}>API keys</Tab>
+                        event="api-keys"
+                        href={`${path}/api-keys`}
+                        selected={isTabSelected('api-keys')}>API keys</Tab>
                     <Tab
                         noscroll
-                        event="keys"
+                        event="dev-keys"
                         href={`${path}/dev-keys`}
                         selected={isTabSelected('dev-keys')}>Dev keys</Tab>
                 </Tabs>

@@ -1,18 +1,10 @@
 <script lang="ts">
-    import { EmptySearch } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { EmptySearch, Trim } from '$lib/components';
+    import { Badge, Layout, Table, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import { IconGlobeAlt } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow,
-        TableScroll
-    } from '$lib/elements/table';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { Browser } from '@appwrite.io/console';
     import DeleteAllSessions from '../deleteAllSessions.svelte';
@@ -33,74 +25,81 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Sessions">
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Typography.Title>Sessions</Typography.Title>
         {#if data.sessions.total}
-            <Button secondary on:click={() => (showDeleteAll = true)}>
-                <span class="text">Delete All</span>
-            </Button>
+            <Button secondary on:click={() => (showDeleteAll = true)}>Sign out all sessions</Button>
         {/if}
-    </ContainerHeader>
+    </Layout.Stack>
+
     {#if data.sessions.total}
-        <TableScroll>
-            <TableHeader>
-                <TableCellHead width={140}>Browser and device</TableCellHead>
-                <TableCellHead width={140}>Session</TableCellHead>
-                <TableCellHead width={140}>Location</TableCellHead>
-                <TableCellHead width={140}>IP</TableCellHead>
-                <TableCellHead width={30} />
-            </TableHeader>
-            <TableBody>
-                {#each data.sessions.sessions as session}
-                    {@const browser = getBrowser(session.clientCode)}
-                    <TableRow>
-                        <TableCell title="Client">
-                            <div class="u-flex u-gap-12 u-cross-center">
-                                <div class="avatar">
-                                    {#if browser}
-                                        <img
-                                            height="20"
-                                            width="20"
-                                            src={getBrowser(session.clientCode).toString()}
-                                            style="--p-text-size: 1.25rem"
-                                            alt={session.clientName} />
-                                    {:else}
-                                        <span
-                                            class="icon-globe-alt"
-                                            style="--p-text-size: 1.25rem"
-                                            aria-hidden="true">
-                                        </span>
-                                    {/if}
-                                </div>
-                                <p class="text">
-                                    {session.clientName}
-                                    {session.clientVersion} on {session.osName}
-                                    {session.osVersion}
-                                </p>
-                                {#if session.current}
-                                    <Pill success>current session</Pill>
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'client' },
+                { id: 'location', width: 200 },
+                { id: 'ip', width: 200 },
+                { id: 'actions', width: 100 }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="client" {root}>Client</Table.Header.Cell>
+                <Table.Header.Cell column="location" {root}>Location</Table.Header.Cell>
+                <Table.Header.Cell column="ip" {root}>IP</Table.Header.Cell>
+                <Table.Header.Cell column="actions" {root} />
+            </svelte:fragment>
+            {#each data.sessions.sessions as session}
+                {@const browser = getBrowser(session.clientCode)}
+                <Table.Row.Base {root}>
+                    <Table.Cell column="client" {root}>
+                        <Layout.Stack direction="row" alignItems="center">
+                            <div class="avatar is-size-small">
+                                {#if browser}
+                                    <img
+                                        height="20"
+                                        width="20"
+                                        src={getBrowser(session.clientCode).toString()}
+                                        alt={session.clientName} />
+                                {:else}
+                                    <Icon icon={IconGlobeAlt} size="s" />
                                 {/if}
                             </div>
-                        </TableCell>
-
-                        <TableCellText title="Session">{session.clientType}</TableCellText>
-                        <TableCellText title="Location">{session.countryName}</TableCellText>
-                        <TableCellText title="IP">{session.ip}</TableCellText>
-                        <TableCell>
-                            <Button
-                                text
-                                icon
-                                ariaLabel="Delete item"
-                                on:click={() => {
-                                    selectedSessionId = session.$id;
-                                    showDelete = true;
-                                }}>
-                                <span class="icon-trash" aria-hidden="true"></span>
-                            </Button>
-                        </TableCell>
-                    </TableRow>
-                {/each}
-            </TableBody>
-        </TableScroll>
+                            <Trim>
+                                {session.clientName}
+                                {session.clientVersion} on {session.osName}
+                                {session.osVersion}
+                            </Trim>
+                            {#if session.current}
+                                <Badge
+                                    type="success"
+                                    variant="secondary"
+                                    content="current session" />
+                            {/if}
+                        </Layout.Stack>
+                    </Table.Cell>
+                    <Table.Cell column="location" {root}>
+                        {#if session.countryCode !== '--'}
+                            {session.countryName}
+                        {:else}
+                            Unknown
+                        {/if}
+                    </Table.Cell>
+                    <Table.Cell column="ip" {root}>
+                        {session.ip}
+                    </Table.Cell>
+                    <Table.Cell column="actions" {root}>
+                        <Button
+                            size="xs"
+                            secondary
+                            on:click={() => {
+                                selectedSessionId = session.$id;
+                                showDelete = true;
+                            }}>
+                            Sign out
+                        </Button>
+                    </Table.Cell>
+                </Table.Row.Base>
+            {/each}
+        </Table.Root>
     {:else}
         <EmptySearch>
             <div class="u-flex u-flex-vertical u-cross-center u-gap-24">

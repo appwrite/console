@@ -56,7 +56,7 @@
             group: 'databases',
             icon: IconPlus,
             rank: page.url.pathname.endsWith('backups') ? 10 : 0,
-            disabled: !isCloud || !$currentPlan.backupsEnabled
+            disabled: !isCloud || !$currentPlan?.backupsEnabled
         },
         {
             label: 'Create manual backup',
@@ -70,7 +70,7 @@
             group: 'databases',
             icon: IconPlus,
             rank: page.url.pathname.endsWith('backups') ? 10 : 0,
-            disabled: !isCloud || !$currentPlan.backupsEnabled
+            disabled: !isCloud || !$currentPlan?.backupsEnabled
         },
         {
             label: 'Go to collections',

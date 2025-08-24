@@ -7,7 +7,7 @@
 </script>
 
 {#if $canWriteKeys}
-    <Button href={getProjectRoute('/overview/keys/create')}>
+    <Button href={getProjectRoute('/overview/api-keys/create')}>
         <Icon icon={IconPlus} slot="start" size="s" />
         Create API key
     </Button>

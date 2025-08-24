@@ -7,7 +7,13 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
-    import { daysLeftInTrial, getServiceLimit, plansInfo, readOnly } from '$lib/stores/billing';
+    import {
+        daysLeftInTrial,
+        getServiceLimit,
+        plansInfo,
+        readOnly,
+        tierToPlan
+    } from '$lib/stores/billing';
     import { members, newMemberModal, type Organization } from '$lib/stores/organization';
     import {
         canSeeBilling,
@@ -20,60 +26,64 @@
     import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
 
-    let areMembersLimited: boolean;
+    let areMembersLimited: boolean = $state(false);
 
-    $: {
+    $effect(() => {
         const limit = getServiceLimit('members') || Infinity;
         const isLimited = limit !== 0 && limit < Infinity;
         areMembersLimited =
             isCloud &&
             (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && $members?.total >= limit));
-    }
+    });
 
-    $: organization = page.data.organization as Organization;
-    $: avatars = $members.memberships?.map((m) => m.userName || m.userEmail) ?? [];
-    $: path = `${base}/organization-${organization.$id}`;
-    $: tabs = [
-        {
-            href: path,
-            title: 'Projects',
-            event: 'projects',
-            hasChildren: true,
-            disabled: !$canSeeProjects
-        },
-        {
-            href: `${path}/domains`,
-            event: 'domains',
-            title: 'Domains',
-            disabled: !isCloud
-        },
-        {
-            href: `${path}/members`,
-            title: 'Members',
-            event: 'members',
-            hasChildren: true,
-            disabled: !$canSeeTeams
-        },
-        {
-            href: `${path}/usage`,
-            event: 'usage',
-            title: 'Usage',
-            hasChildren: true,
-            disabled: !(isCloud && ($isOwner || $isBilling))
-        },
-        {
-            href: `${path}/billing`,
-            event: 'billing',
-            title: 'Billing',
-            disabled: !(isCloud && $canSeeBilling)
-        },
-        {
-            href: `${path}/settings`,
-            event: 'settings',
-            title: 'Settings',
-            disabled: !$isOwner
-        }
-    ].filter((tab) => !tab.disabled);
+    const organization = $derived(page.data.organization as Organization);
+    const path = $derived(`${base}/organization-${organization.$id}`);
+
+    const tabs = $derived(
+        [
+            {
+                href: path,
+                title: 'Projects',
+                event: 'projects',
+                hasChildren: true,
+                disabled: !$canSeeProjects
+            },
+            {
+                href: `${path}/domains`,
+                event: 'domains',
+                title: 'Domains',
+                disabled: !isCloud
+            },
+            {
+                href: `${path}/members`,
+                title: 'Members',
+                event: 'members',
+                hasChildren: true,
+                disabled: !$canSeeTeams
+            },
+            {
+                href: `${path}/usage`,
+                event: 'usage',
+                title: 'Usage',
+                hasChildren: true,
+                disabled: !(isCloud && ($isOwner || $isBilling))
+            },
+            {
+                href: `${path}/billing`,
+                event: 'billing',
+                title: 'Billing',
+                disabled: !(isCloud && $canSeeBilling)
+            },
+            {
+                href: `${path}/settings`,
+                event: 'settings',
+                title: 'Settings',
+                disabled: !$isOwner
+            }
+        ].filter((tab) => !tab.disabled)
+    );
+
+    const avatars = $derived($members.memberships?.map((m) => m.userName || m.userEmail) ?? []);
 </script>
 
 {#if organization?.$id}
@@ -110,14 +120,25 @@
                     {/if}
 
                     {#if $isOwner}
-                        <Button
-                            secondary
-                            size="s"
-                            on:click={() => newMemberModal.set(true)}
-                            disabled={areMembersLimited}>
-                            <Icon icon={IconPlus} size="s" slot="start" />
-                            Invite
-                        </Button>
+                        <Tooltip disabled={!areMembersLimited} placement="bottom-end">
+                            <div>
+                                <Button
+                                    secondary
+                                    size="s"
+                                    on:click={() => newMemberModal.set(true)}
+                                    disabled={areMembersLimited}>
+                                    <Icon icon={IconPlus} size="s" slot="start" />
+                                    Invite
+                                </Button>
+                            </div>
+                            <div slot="tooltip">
+                                {organization?.billingPlan === BillingPlan.FREE
+                                    ? 'Upgrade to add more members'
+                                    : `You've reached the members limit for the ${
+                                          tierToPlan(organization?.billingPlan)?.name
+                                      } plan`}
+                            </div>
+                        </Tooltip>
                     {/if}
                 </Layout.Stack>
             </div>

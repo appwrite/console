@@ -44,7 +44,8 @@
         AngularFrameworkIcon,
         JavascriptFrameworkIcon
     } from './components/index';
-    import { hostnameRegex } from '$lib/helpers/string';
+    import { extendedHostnameRegex } from '$lib/helpers/string';
+    import { project } from '../../store';
 
     export let key;
 
@@ -57,6 +58,7 @@
     const projectId = page.params.project;
 
     const updateConfigCode = (prefix = '') => `${prefix}APPWRITE_PROJECT_ID = "${projectId}"
+${prefix}APPWRITE_PROJECT_NAME = "${$project.name}"
 ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
     type FrameworkType = {
@@ -126,11 +128,19 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
             smallIcon: IconAngular,
             portNumber: 4200,
             runCommand: 'npm run start',
-            updateConfigCode: `appwriteEndpoint: '${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}',\nappwriteProjectId:'${projectId}'`
+            updateConfigCode: `export const environment: {
+  appwriteEndpoint: string;
+  appwriteProjectId: string;
+  appwriteProjectName: string;
+} = {
+  appwriteEndpoint: '${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}',
+  appwriteProjectId: '${projectId}',
+  appwriteProjectName: '${$project.name}'
+};`
         },
         {
             key: 'js',
-            label: 'Javascript',
+            label: 'JavaScript',
             icon: JavascriptFrameworkIcon,
             smallIcon: IconJs,
             portNumber: 5173,
@@ -143,7 +153,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     $: selectedFrameworkIcon = selectedFramework ? selectedFramework.icon : NoFrameworkIcon;
 
     async function createWebPlatform() {
-        hostnameError = hostname !== '' ? !new RegExp(hostnameRegex).test(hostname) : null;
+        hostnameError = hostname !== '' ? !new RegExp(extendedHostnameRegex).test(hostname) : null;
 
         if (hostnameError) {
             return;
@@ -163,6 +173,11 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {
                 type: platform
+            });
+
+            addNotification({
+                type: 'success',
+                message: 'Platform created.'
             });
 
             invalidate(Dependencies.PROJECT);
@@ -235,6 +250,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                                 id="hostname"
                                 label="Hostname"
                                 placeholder="localhost"
+                                autofocus
                                 error={hostnameError && 'Please enter a valid hostname'}
                                 bind:value={hostname}>
                                 <Tooltip slot="info">
@@ -270,7 +286,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 
         <!-- Step Three -->
         {#if isPlatformCreated && !isChangingFramework}
-            <Fieldset legend="Clone starter">
+            <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
@@ -287,22 +303,23 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 
                     {#if selectedFramework.key === 'angular'}
                         <Typography.Text variant="m-500"
-                            >2. Change <InlineCode
+                            >2. Replace <InlineCode
                                 size="s"
                                 code="src/environments/environment.ts" />
                             to reflect the values below:</Typography.Text>
                     {:else}
                         <Typography.Text variant="m-500"
-                            >2. Add your Appwrite credentials to <InlineCode
-                                size="s"
-                                code=".env.example" /> then rename it to <InlineCode
-                                size="s"
-                                code=".env" /> if needed.</Typography.Text>
+                            >2. Copy the file <InlineCode size="s" code=".env.example" />, rename it
+                            to <InlineCode size="s" code=".env" />
+                            and update the configuration settings.</Typography.Text>
                     {/if}
 
                     <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                     <div class="pink2-code-margin-fix">
-                        <Code lang="bash" lineNumbers code={selectedFramework.updateConfigCode} />
+                        <Code
+                            lang={selectedFramework.key === 'angular' ? 'ts' : 'dotenv'}
+                            lineNumbers
+                            code={selectedFramework.updateConfigCode} />
                     </div>
 
                     <Typography.Text variant="m-500"
@@ -390,7 +407,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                 secondary
                 fullWidthMobile
                 href={location.pathname}
-                disabled={isCreatingPlatform}>Go to dashboard</Button>
+                disabled={isCreatingPlatform}>Skip, go to dashboard</Button>
         {/if}
     </svelte:fragment>
 </Wizard>

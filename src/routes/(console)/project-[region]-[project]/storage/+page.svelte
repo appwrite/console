@@ -39,10 +39,7 @@
                 hideColumns={!data.buckets.total}
                 hideView={!data.buckets.total} />
             {#if $canWriteBuckets}
-                <Button
-                    on:mousedown={() => ($showCreateBucket = true)}
-                    event="create_bucket"
-                    size="s">
+                <Button on:click={() => ($showCreateBucket = true)} event="create_bucket" size="s">
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create bucket
                 </Button>

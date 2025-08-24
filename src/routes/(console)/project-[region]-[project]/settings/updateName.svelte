@@ -45,7 +45,10 @@
         <CopyInput label="API Endpoint" value={getProjectEndpoint()} />
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        <Button secondary event="view_keys" href={getProjectRoute('/overview/keys#integrations')}>
+        <Button
+            secondary
+            event="view_api_keys"
+            href={getProjectRoute('/overview/api-keys#integrations')}>
             View API keys
         </Button>
     </svelte:fragment>

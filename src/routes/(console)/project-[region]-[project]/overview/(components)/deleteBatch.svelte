@@ -19,7 +19,7 @@
     const projectId = page.params.project;
 
     async function handleDelete() {
-        const slug = isApiKey ? 'keys' : 'dev-keys';
+        const slug = isApiKey ? 'api-keys' : 'dev-keys';
         const event = isApiKey ? Submit.KeyDelete : Submit.DevKeyDelete;
         const dependency = isApiKey ? Dependencies.KEYS : Dependencies.DEV_KEYS;
 

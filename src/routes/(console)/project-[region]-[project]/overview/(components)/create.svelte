@@ -12,7 +12,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
-    import Scopes from '../keys/scopes.svelte';
+    import Scopes from '../api-keys/scopes.svelte';
     import { page } from '$app/state';
     import { getProjectRoute } from '$lib/helpers/project';
 
@@ -40,7 +40,7 @@
             }
 
             trackEvent(Submit.KeyCreate);
-            await goto(getProjectRoute(`/overview/keys/${$id}`));
+            await goto(getProjectRoute(`/overview/api-keys/${$id}`));
             addNotification({
                 message: `API key has been created`,
                 type: 'success'
@@ -57,7 +57,7 @@
 
 <Wizard
     title="Create API key"
-    href={getProjectRoute('/overview/keys/')}
+    href={getProjectRoute('/overview/api-keys')}
     bind:showExitModal
     column
     columnSize="s"

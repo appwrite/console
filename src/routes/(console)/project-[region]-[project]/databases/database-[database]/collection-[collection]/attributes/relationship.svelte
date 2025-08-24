@@ -123,16 +123,12 @@
     // Reactive statements
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
 
-    $: if (editing) {
-        way = data.twoWay ? 'two' : 'one';
-    } else {
-        if (way === 'two') {
-            data.twoWay = true;
-            if (!data.twoWayKey) {
-                data.twoWayKey = camelize($collection.name);
-            }
-        } else {
-            data.twoWay = false;
+    $: if (!editing && way) {
+        data.twoWay = way === 'two';
+        if (way === 'two' && !data.twoWayKey) {
+            data.twoWayKey = camelize($collection.name);
+        } else if (way === 'one') {
+            data.twoWayKey = undefined;
         }
     }
 
@@ -158,6 +154,7 @@
         bind:group={way}
         name="one"
         value="one"
+        disabled={editing}
         icon={IconArrowSmRight}>
         One Relation attribute within this collection
     </Card.Selector>
@@ -166,6 +163,7 @@
         bind:group={way}
         name="two"
         value="two"
+        disabled={editing}
         icon={IconSwitchHorizontal}>
         One Relation attribute within this collection and another within the related collection
     </Card.Selector>
@@ -178,6 +176,7 @@
     placeholder="Select a collection"
     bind:value={data.relatedCollection}
     on:change={updateKeyName}
+    disabled={editing}
     options={collections?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
 
 {#if data?.relatedCollection}

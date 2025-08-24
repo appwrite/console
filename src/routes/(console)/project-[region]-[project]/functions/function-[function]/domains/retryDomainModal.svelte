@@ -10,16 +10,21 @@
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/state';
 
-    export let show = false;
-    export let selectedProxyRule: Models.ProxyRule;
+    let {
+        show = $bindable(false),
+        selectedProxyRule
+    }: {
+        show: boolean;
+        selectedProxyRule: Models.ProxyRule;
+    } = $props();
 
-    let error = null;
+    let error = $state(null);
     async function retryProxyRule() {
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.updateRuleVerification(selectedProxyRule.$id);
-            await invalidate(Dependencies.SITES_DOMAINS);
+            await invalidate(Dependencies.FUNCTION_DOMAINS);
             show = false;
             addNotification({
                 type: 'success',
@@ -32,9 +37,11 @@
         }
     }
 
-    $: if (!show) {
-        error = null;
-    }
+    $effect(() => {
+        if (!show) {
+            error = null;
+        }
+    });
 </script>
 
 <Modal title="Retry verification" bind:show onSubmit={retryProxyRule} bind:error>

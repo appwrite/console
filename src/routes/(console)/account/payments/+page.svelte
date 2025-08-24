@@ -6,6 +6,9 @@
     import { page } from '$app/state';
     import { confirmPayment } from '$lib/stores/stripe';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import type { PageData } from './$types';
+
+    export let data: PageData;
 
     let showPayment = false;
 
@@ -21,5 +24,5 @@
 <Container>
     <Typography.Title size="s">Payment details</Typography.Title>
     <PaymentMethods bind:showPayment />
-    <BillingAddress />
+    <BillingAddress {data} />
 </Container>

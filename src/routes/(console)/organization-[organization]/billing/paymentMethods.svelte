@@ -5,11 +5,10 @@
     import { CardGrid, CreditCardBrandImage, CreditCardInfo } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization } from '$lib/stores/organization';
+    import { type Organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { hasStripePublicKey, isCloud } from '$lib/system';
-    import { paymentMethods } from '$lib/stores/billing';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
+    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
     import ReplaceCard from './replaceCard.svelte';
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
@@ -35,23 +34,26 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
 
+    export let organization: Organization;
+    export let methods: PaymentList;
+
     let showPayment = false;
     let showEdit = false;
     let showDelete = false;
     let showReplace = false;
     let isSelectedBackup = false;
-    let defaultPaymentMethod: PaymentMethodData;
     let backupPaymentMethod: PaymentMethodData;
+    let defaultPaymentMethod: PaymentMethodData;
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
             await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                $organization.$id,
+                organization.$id,
                 paymentMethodId
             );
             addNotification({
                 type: 'success',
-                message: `A new payment method has been added to ${$organization.name}`
+                message: `A new payment method has been added to ${organization.name}`
             });
             trackEvent(Submit.OrganizationPaymentUpdate);
             invalidate(Dependencies.ORGANIZATION);
@@ -67,12 +69,12 @@
     async function addBackupPaymentMethod(paymentMethodId: string) {
         try {
             await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
-                $organization.$id,
+                organization.$id,
                 paymentMethodId
             );
             addNotification({
                 type: 'success',
-                message: `A new payment method has been added to ${$organization.name}`
+                message: `A new payment method has been added to ${organization.name}`
             });
             invalidate(Dependencies.ORGANIZATION);
         } catch (error) {
@@ -84,15 +86,15 @@
         }
     }
 
-    $: if ($organization?.backupPaymentMethodId) {
+    $: if (organization?.backupPaymentMethodId) {
         sdk.forConsole.billing
-            .getOrganizationPaymentMethod($organization.$id, $organization.backupPaymentMethodId)
+            .getOrganizationPaymentMethod(organization.$id, organization.backupPaymentMethodId)
             .then((res) => (backupPaymentMethod = res));
     }
 
-    $: if ($organization?.paymentMethodId) {
+    $: if (organization?.paymentMethodId) {
         sdk.forConsole.billing
-            .getOrganizationPaymentMethod($organization.$id, $organization.paymentMethodId)
+            .getOrganizationPaymentMethod(organization.$id, organization.paymentMethodId)
             .then((res) => (defaultPaymentMethod = res));
     }
 
@@ -111,20 +113,20 @@
     <svelte:fragment slot="title">Payment methods</svelte:fragment>
     View or update your organization payment methods here.
     <svelte:fragment slot="aside">
-        {#if $organization?.paymentMethodId}
+        {#if organization?.paymentMethodId}
             <Table.Root
                 let:root
                 columns={[
-                    { id: 'cc', width: 140 },
+                    { id: 'cc', width: { min: 155 } },
                     { id: 'name', width: { min: 140 } },
-                    { id: 'expiry', width: 100 },
-                    { id: 'status', width: 110, hide: !hasPaymentError },
+                    { id: 'expiry', width: { min: 75 } },
+                    { id: 'status', width: { min: 110 }, hide: !hasPaymentError },
                     { id: 'actions', width: 40 }
                 ]}>
                 <svelte:fragment slot="header" let:root>
                     <Table.Header.Cell column="cc" {root}>Credit card</Table.Header.Cell>
                     <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
-                    <Table.Header.Cell column="expiry" {root}>Expiration date</Table.Header.Cell>
+                    <Table.Header.Cell column="expiry" {root}>Expiration</Table.Header.Cell>
                     <Table.Header.Cell column="status" {root} />
                     <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
@@ -167,7 +169,7 @@
                         </Popover>
                     </Table.Cell>
                 </Table.Row.Base>
-                {#if $organization?.backupPaymentMethodId}
+                {#if organization?.backupPaymentMethodId}
                     <Table.Row.Base {root}>
                         <CreditCardInfo {root} isBackup paymentMethod={backupPaymentMethod} />
                         <Table.Cell column="actions" {root}>
@@ -208,9 +210,9 @@
                     </Table.Row.Base>
                 {/if}
             </Table.Root>
-            {#if !$organization?.backupPaymentMethodId}
-                {@const filteredPaymentMethods = $paymentMethods.paymentMethods.filter(
-                    (o) => !!o.last4 && o.$id !== $organization?.paymentMethodId
+            {#if !organization?.backupPaymentMethodId}
+                {@const filteredPaymentMethods = methods.paymentMethods.filter(
+                    (o) => !!o.last4 && o.$id !== organization?.paymentMethodId
                 )}
                 <div>
                     <Popover let:toggle placement="bottom-start" padding="none">
@@ -237,7 +239,7 @@
                             </Tooltip>
                         </Layout.Stack>
                         <ActionMenu.Root slot="tooltip" let:toggle>
-                            {#if $paymentMethods.total}
+                            {#if methods.total}
                                 {#each filteredPaymentMethods as paymentMethod}
                                     <ActionMenu.Item.Button
                                         on:click={() => addBackupPaymentMethod(paymentMethod?.$id)}>
@@ -247,8 +249,9 @@
                                         </Layout.Stack>
                                     </ActionMenu.Item.Button>
                                 {/each}
+
+                                <Divider />
                             {/if}
-                            <Divider />
                             <ActionMenu.Item.Button
                                 leadingIcon={IconPlus}
                                 on:click={(e) => {
@@ -262,8 +265,8 @@
                 </div>
             {/if}
         {:else}
-            {@const filteredPaymentMethods = $paymentMethods.paymentMethods.filter(
-                (o) => !!o.last4 && o.$id !== $organization?.backupPaymentMethodId
+            {@const filteredPaymentMethods = methods.paymentMethods.filter(
+                (o) => !!o.last4 && o.$id !== organization?.backupPaymentMethodId
             )}
             <Card.Base>
                 <Layout.Stack justifyContent="center" alignItems="center" gap="m">
@@ -272,7 +275,7 @@
                             <Icon icon={IconPlus} size="s" />
                         </Button>
                         <ActionMenu.Root slot="tooltip" let:toggle>
-                            {#if $paymentMethods.total}
+                            {#if methods.total}
                                 {#each filteredPaymentMethods as paymentMethod}
                                     <ActionMenu.Item.Button
                                         on:click={() => addPaymentMethod(paymentMethod?.$id)}>
@@ -282,8 +285,9 @@
                                         </Layout.Stack>
                                     </ActionMenu.Item.Button>
                                 {/each}
+
+                                <Divider />
                             {/if}
-                            <Divider />
                             <ActionMenu.Item.Button
                                 leadingIcon={IconPlus}
                                 on:click={(e) => {
@@ -318,15 +322,15 @@
         bind:show={showEdit} />
 {/if}
 {#if isCloud && hasStripePublicKey}
-    <ReplaceCard bind:show={showReplace} isBackup={isSelectedBackup} />
+    <ReplaceCard {organization} {methods} bind:show={showReplace} isBackup={isSelectedBackup} />
 {/if}
 {#if showDelete && isCloud && hasStripePublicKey}
     {@const hasOtherMethod = isSelectedBackup
-        ? !!$organization?.paymentMethodId
-        : !!$organization?.backupPaymentMethodId}
+        ? !!organization?.paymentMethodId
+        : !!organization?.backupPaymentMethodId}
     <DeleteOrgPayment
         bind:showDelete
         {hasOtherMethod}
         isBackup={isSelectedBackup}
-        disabled={$organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod} />
+        disabled={organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod} />
 {/if}

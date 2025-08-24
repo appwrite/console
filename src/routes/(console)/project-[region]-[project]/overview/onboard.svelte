@@ -42,7 +42,7 @@
         trackEvent(Click.KeyCreateClick, {
             source: 'onboarding'
         });
-        goto(getProjectRoute('/overview/keys/create'), {
+        goto(getProjectRoute('/overview/api-keys/create'), {
             replaceState: true
         });
     }

@@ -4,6 +4,8 @@ import { sdk } from '$lib/stores/sdk';
 import type { Models } from '@appwrite.io/console';
 import { regions } from '$lib/stores/organization';
 
+export type UsageProjectInfo = Pick<Models.Project, 'name' | 'region'>;
+
 export const regionFlagUrls = derived(regions, ($regions) => {
     if (!$regions?.regions?.length) return [];
 

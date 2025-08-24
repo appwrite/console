@@ -103,6 +103,8 @@ const createUploader = () => {
                     newFile.progress = p.progress;
                     newFile.status = p.progress === 100 ? 'success' : 'pending';
                     updateFile(p.$id, newFile);
+
+                    return {};
                 }
             );
             newFile.$id = uploadedFile.$id;
@@ -133,6 +135,8 @@ const createUploader = () => {
                 newDeployment.progress = p.progress;
                 newDeployment.status = p.progress === 100 ? 'success' : 'pending';
                 updateFile(p.$id, newDeployment);
+
+                return {};
             });
             newDeployment.$id = uploadedFile.$id;
             newDeployment.progress = 100;

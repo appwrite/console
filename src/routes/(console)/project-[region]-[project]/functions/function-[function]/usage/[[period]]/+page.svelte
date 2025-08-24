@@ -5,10 +5,17 @@
     import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
-    $: count = data.executions;
+
     $: total = data.executionsTotal;
-    $: mbSecondsCount = data.executionsMbSeconds;
+    $: count = data.executions;
     $: gbHoursTotal = data.executionsMbSecondsTotal / 1000 / 3600;
+    $: mbSecondsCount = data.executionsMbSeconds;
+    $: gbHoursCount = data.executionsMbSeconds
+        ?.map((metric) => ({
+            ...metric,
+            value: metric.value / 1000 / 3600
+        }))
+        .filter(({ value }) => value);
 </script>
 
 <Container>
@@ -33,7 +40,7 @@
                     title: 'Total GB hours'
                 }}
                 total={gbHoursTotal}
-                count={mbSecondsCount} />
+                count={gbHoursCount} />
         {/if}
     </Layout.Stack>
 </Container>

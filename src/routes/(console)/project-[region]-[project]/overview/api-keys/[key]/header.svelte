@@ -6,7 +6,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={getProjectRoute('/overview/keys')}>
+        <CoverTitle href={getProjectRoute('/overview/api-keys')}>
             {$key?.name}
         </CoverTitle>
     </svelte:fragment>

@@ -24,10 +24,6 @@
     $: $updateCommandGroupRanks({ webhooks: 20, domains: 10 });
 </script>
 
-<svelte:head>
-    <title>Webhooks - Appwrite</title>
-</svelte:head>
-
 <Container>
     <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
         <ViewSelector {columns} view={View.Table} hideView />

@@ -39,8 +39,6 @@
             }
         }
 
-        documentList = await getDocuments();
-
         if (editing && $doc?.[attribute.key]) {
             if ($doc[attribute.key]?.length) {
                 relatedList =
@@ -59,7 +57,10 @@
     });
 
     async function getDocuments(search: string = null) {
-        const queries = search ? [Query.startsWith('$id', search), Query.orderDesc('')] : [];
+        const queries = search
+            ? [Query.select(['$id']), Query.startsWith('$id', search), Query.orderDesc('')]
+            : [Query.select(['$id'])];
+
         return await sdk
             .forProject(page.params.region, page.params.project)
             .databases.listDocuments(databaseId, attribute.relatedCollection, queries);
@@ -103,7 +104,7 @@
         showInput = false;
     }
 
-    //Reactive statements
+    // Reactive statements
     $: getDocuments(search).then((res) => (documentList = res));
 
     $: paginatedItems = editing
@@ -116,9 +117,29 @@
     $: totalCount = relatedList?.length ?? 0;
 
     $: options =
-        documentList?.documents?.map((n) => {
-            const data = displayNames.filter((name) => name !== '$id').map((name) => n?.[name]);
-            return { value: n.$id, label: n.$id, data };
+        documentList?.documents?.map((document) => {
+            const names = displayNames.filter((name) => name !== '$id');
+            const values = names
+                .map((name) => document?.[name])
+                // always supposed to be a string but just being a bit safe here
+                .filter((value) => value != null && typeof value === 'string' && value !== '');
+
+            const displayValues = !editing
+                ? values
+                : // on non edit routes like create, there's enough space!
+                  values.map((value) => (value.length > 5 ? value.slice(0, 5) + '...' : value));
+
+            const label = !values.length
+                ? document.$id
+                : // values are in `$id (a | b)` format
+                  // previously used to have a `$id a | b`.
+                  `${document.$id} (${displayValues.join(' | ')})`;
+
+            return {
+                label,
+                value: document.$id,
+                data: names.map((name) => document?.[name])
+            };
         }) ?? [];
 
     $: hasItems = totalCount > 0;

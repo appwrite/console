@@ -37,6 +37,7 @@
     import { page } from '$app/state';
     import UpdateVariablesModal from './updateVariablesModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
+    import { Confirm } from '$lib/components';
     import { getProjectRoute } from '$lib/helpers/project';
 
     export let variableList: Models.VariableList;
@@ -64,6 +65,8 @@
     let showEditorModal = false;
     let showUpdate = false;
     let showSecretModal = false;
+    let showDeleteModal = false;
+    let deleteError: string;
     let offset = 0;
     const limit = 10;
 
@@ -134,9 +137,11 @@
         }
     }
 
-    async function handleVariableDeleted(variable: Models.Variable) {
+    async function handleVariableDeleted() {
         try {
-            await sdkDeleteVariable(variable.$id);
+            await sdkDeleteVariable(selectedVar.$id);
+            showDeleteModal = false;
+            selectedVar = null;
             addNotification({
                 type: 'success',
                 message: `${$project.name} ${
@@ -145,10 +150,7 @@
             });
             trackEvent(Submit.VariableDelete);
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+            deleteError = error.message;
             trackError(error, Submit.VariableDelete);
         }
     }
@@ -398,7 +400,8 @@
                                                 status="danger"
                                                 trailingIcon={IconTrash}
                                                 on:click={async (e) => {
-                                                    handleVariableDeleted(variable);
+                                                    selectedVar = variable;
+                                                    showDeleteModal = true;
                                                     toggle(e);
                                                 }}>
                                                 Delete
@@ -475,4 +478,14 @@
         {sdkUpdateVariable}
         {variableList}
         bind:show={showVariablesUpload} />
+{/if}
+
+{#if showDeleteModal}
+    <Confirm
+        title="Delete variable"
+        bind:open={showDeleteModal}
+        bind:error={deleteError}
+        onSubmit={handleVariableDeleted}>
+        <p>Are you sure you want to delete this variable? This action is irreversible.</p>
+    </Confirm>
 {/if}

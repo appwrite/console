@@ -42,7 +42,7 @@
     }
 
     function handleInvalid(e: CustomEvent) {
-        const reason = e.detail.reason;
+        const reason = e.detail?.reason ?? '';
         if (reason === InvalidFileType.EXTENSION) {
             error = 'Only .tar.gz files allowed';
         } else if (reason === InvalidFileType.SIZE) {
@@ -95,9 +95,11 @@
                                 >Only .tar.gz files allowed</svelte:fragment>
                         </Tooltip>
                     </Layout.Stack>
-                    <Typography.Caption variant="400"
-                        >Max file size: {readableMaxSize.value +
-                            readableMaxSize.unit}</Typography.Caption>
+                    {#if maxSize > 0}
+                        <Typography.Caption variant="400"
+                            >Max file size: {readableMaxSize.value +
+                                readableMaxSize.unit}</Typography.Caption>
+                    {/if}
                 </Layout.Stack>
             </Layout.Stack>
         </Upload.Dropzone>

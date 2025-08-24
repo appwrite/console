@@ -269,5 +269,9 @@
 {/if}
 
 {#if showSelectRoot}
-    <SelectRootModal bind:show={showSelectRoot} product="sites" bind:rootDir={selectedDir} />
+    <SelectRootModal
+        bind:show={showSelectRoot}
+        product="sites"
+        bind:rootDir={selectedDir}
+        branch={selectedBranch} />
 {/if}

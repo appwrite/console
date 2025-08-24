@@ -2,26 +2,35 @@
     import { page } from '$app/state';
     import { Id, RegionEndpoint } from '$lib/components';
     import { Cover } from '$lib/layout';
-    import { project } from '../store';
+    import { project, projectRegion } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
-    import { goto, invalidate } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { Layout, Button, Typography } from '@appwrite.io/pink-svelte';
     import { user } from '$lib/stores/user';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { getProjectRoute } from '$lib/helpers/project';
+
+    function dismissOnboarding() {
+        setHasOnboardingDismissed($project.$id, $user);
+        trackEvent('onboarding_hub_platform_dismiss');
+        goto(getProjectRoute('/overview/platforms'));
+    }
 </script>
 
 {#if !page.url.pathname.includes('get-started')}
     <Cover>
         <svelte:fragment slot="header">
-            <Typography.Title color="--fgcolor-neutral-primary" size="xl">
-                {$project?.name}
-            </Typography.Title>
-            <Layout.Stack alignItems="center" direction="row" inline>
-                <Id value={$project.$id}>{$project.$id}</Id>
-                <RegionEndpoint />
+            <Layout.Stack alignItems="baseline" direction={$isSmallViewport ? 'column' : 'row'}>
+                <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
+                    <span class="project-title">
+                        {$project?.name}
+                    </span>
+                </Typography.Title>
+                <Layout.Stack direction="row" inline>
+                    <Id value={$project.$id}>{$project.$id}</Id>
+                    <RegionEndpoint region={$projectRegion} />
+                </Layout.Stack>
             </Layout.Stack>
         </svelte:fragment>
     </Cover>
@@ -44,19 +53,23 @@
                         >Follow a few quick steps to get started with Appwrite</Typography.Text>
                 </Layout.Stack>
                 <div class="dashboard-header-button">
-                    {#if !hasOnboardingDismissed($project.$id)}
-                        <Button.Button
-                            variant="secondary"
-                            size="s"
-                            on:click={async () => {
-                                trackEvent('onboarding_hub_platform_dismiss');
-                                await setHasOnboardingDismissed($project.$id);
-                                await invalidate(Dependencies.ORGANIZATION);
-                                goto(getProjectRoute('/overview'));
-                            }}>Dismiss this page</Button.Button>
+                    {#if !hasOnboardingDismissed($project.$id, $user)}
+                        <Button.Button size="s" variant="secondary" on:click={dismissOnboarding}>
+                            Dismiss this page
+                        </Button.Button>
                     {/if}
                 </div>
             </Layout.Stack>
         </svelte:fragment>
     </Cover>
 {/if}
+
+<style>
+    .project-title {
+        max-width: 375px;
+        overflow: hidden;
+        display: inline-block;
+        vertical-align: middle;
+        text-overflow: ellipsis;
+    }
+</style>

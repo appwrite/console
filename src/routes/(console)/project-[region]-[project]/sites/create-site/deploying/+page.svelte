@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { Fieldset, Card, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
@@ -17,21 +18,25 @@
     let deployment = $state(data.deployment);
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe(
-            'console',
-            async (response: RealtimeResponseEvent<Models.Deployment>) => {
-                if (
-                    response.events.includes(
-                        `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
-                    )
-                ) {
-                    deployment = response.payload;
-                    if (response.payload.status === 'ready') {
-                        goto(getProjectRoute(`/sites/create-site/finish?site=${data.site.$id}`));
+        return sdk
+            .forConsoleIn(page.params.region)
+            .client.subscribe(
+                'console',
+                async (response: RealtimeResponseEvent<Models.Deployment>) => {
+                    if (
+                        response.events.includes(
+                            `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
+                        )
+                    ) {
+                        deployment = response.payload;
+                        if (response.payload.status === 'ready') {
+                            goto(
+                                getProjectRoute(`/sites/create-site/finish?site=${data.site.$id}`)
+                            );
+                        }
                     }
                 }
-            }
-        );
+            );
     });
 </script>
 

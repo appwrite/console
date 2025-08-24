@@ -8,7 +8,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { Attributes } from './store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { preferences } from '$lib/stores/preferences';
     import { getProjectRoute } from '$lib/helpers/project';
 
     export let showCreate = false;
@@ -27,11 +26,8 @@
     async function submit() {
         try {
             await $option.create(databaseId, collectionId, key, data);
-
-            let selectedColumns = preferences.getCustomCollectionColumns(collectionId);
-            selectedColumns.push(key ?? data?.key);
-            preferences.setCustomCollectionColumns(selectedColumns);
             await invalidate(Dependencies.COLLECTION);
+
             if (!page.url.pathname.includes('attributes')) {
                 await goto(
                     getProjectRoute(

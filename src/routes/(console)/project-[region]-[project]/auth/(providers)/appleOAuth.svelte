@@ -60,25 +60,27 @@
         label="Services ID"
         autofocus={true}
         placeholder="com.company.appname"
-        bind:value={appId} />
-    <InputText id="keyID" label="Key ID" placeholder="SHAB13ROFN" bind:value={keyID} />
-    <InputText id="teamID" label="Team ID" placeholder="ELA2CD3AED" bind:value={teamID} />
-    <InputTextarea id="p8" label="P8 File" placeholder="" bind:value={p8} />
+        bind:value={appId}
+        required />
+    <InputText id="keyID" label="Key ID" placeholder="SHAB13ROFN" bind:value={keyID} required />
+    <InputText id="teamID" label="Team ID" placeholder="ELA2CD3AED" bind:value={teamID} required />
+    <InputTextarea id="p8" label="P8 File" placeholder="" bind:value={p8} required />
     <Alert.Inline status="info">
         To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
     </Alert.Inline>
-    <div>
-        <p>URI</p>
-        <CopyInput
-            value={`${getApiEndpoint(page.params.region)}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
-    </div>
+    <CopyInput
+        label="URI"
+        value={`${getApiEndpoint(page.params.region)}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
-            disabled={(secret === provider.secret &&
-                enabled === provider.enabled &&
-                appId === provider.appId) ||
-                !(appId && keyID && teamID && p8)}
+            disabled={!appId ||
+                !keyID ||
+                !teamID ||
+                !p8 ||
+                (secret === provider.secret &&
+                    enabled === provider.enabled &&
+                    appId === provider.appId)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>

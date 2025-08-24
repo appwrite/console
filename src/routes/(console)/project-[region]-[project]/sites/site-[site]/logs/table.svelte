@@ -74,6 +74,8 @@
                         {#key column.id}
                             <Id value={log.$id}>{log.$id}</Id>
                         {/key}
+                    {:else if column.id === 'deploymentId'}
+                        <Id value={log.deploymentId}>{log.deploymentId}</Id>
                     {:else if column.id === 'requestMethod'}
                         <Typography.Code size="m">
                             {log.requestMethod}

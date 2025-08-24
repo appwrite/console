@@ -16,11 +16,11 @@
             title: $project?.name
         },
         {
-            href: getProjectRoute('/overview/keys'),
+            href: getProjectRoute('/overview/api-keys'),
             title: 'API keys'
         },
         {
-            href: getProjectRoute(`/overview/keys/${$key?.$id}`),
+            href: getProjectRoute(`/overview/api-keys/${$key?.$id}`),
             title: $key?.name
         }
     ];

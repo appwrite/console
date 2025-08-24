@@ -151,6 +151,10 @@ export type CreditList = {
     total: number;
 };
 
+export type AvailableCredit = {
+    available: number;
+};
+
 export type Aggregation = {
     $id: string;
     /**
@@ -309,6 +313,7 @@ export type Plan = {
     webhooks: number;
     users: number;
     teams: number;
+    projects: number;
     databases: number;
     databasesAllowEncrypt: boolean;
     buckets: number;
@@ -576,6 +581,25 @@ export class Billing {
             organizationId,
             budget,
             alerts
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async updateSelectedProjects(
+        organizationId: string,
+        projects: string[]
+    ): Promise<Organization> {
+        const path = `/organizations/${organizationId}/projects`;
+        const params = {
+            projects
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
@@ -859,6 +883,20 @@ export class Billing {
         );
     }
 
+    async getAvailableCredit(organizationId: string): Promise<AvailableCredit> {
+        const path = `/organizations/${organizationId}/credits/available`;
+        const params = {};
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async getCredit(organizationId: string, creditId: string): Promise<Credit> {
         const path = `/organizations/${organizationId}/credits/${creditId}`;
         const params = {
@@ -1073,7 +1111,8 @@ export class Billing {
     async setPaymentMethod(
         paymentMethodId: string,
         providerMethodId: string | PaymentMethod,
-        name: string
+        name: string,
+        state: string | undefined = undefined
     ): Promise<PaymentMethodData> {
         const path = `/account/payment-methods/${paymentMethodId}/provider`;
         const params = {
@@ -1081,6 +1120,10 @@ export class Billing {
             providerMethodId,
             name
         };
+
+        if (state !== undefined) {
+            params['state'] = state;
+        }
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'patch',

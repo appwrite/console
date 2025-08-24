@@ -29,10 +29,14 @@
     import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { addNotification } from '$lib/stores/notifications';
+    import { isOnWaitlistSites, joinWaitlistSites } from '$lib/helpers/waitlist';
+    import { user } from '$lib/stores/user';
 
     export let data;
 
     let show = false;
+    let isOnWaitlist = isOnWaitlistSites($user);
 
     $: $registerCommands([
         {
@@ -68,6 +72,17 @@
           ? EmptyLightMobile
           : EmptyLight;
     $: imgClass = $isSmallViewport ? 'mobile' : 'desktop';
+
+    function addToWaitlist() {
+        joinWaitlistSites($user);
+        addNotification({
+            type: 'success',
+            title: 'Waitlist joined',
+            message: "We'll let you know as soon as Appwrite Sites is ready for you."
+        });
+
+        isOnWaitlist = true;
+    }
 </script>
 
 <Container>
@@ -108,7 +123,7 @@
                 single
                 allowCreate={$canWriteSites}
                 href="https://appwrite.io/docs/products/sites"
-                description="Deploy and manage your web your web applications with Sites. "
+                description="Deploy and manage your web applications with Sites. "
                 target="site"
                 src={$app.themeInUse === 'dark' ? EmptyDark : EmptyLight}
                 on:click={() => (show = true)}>
@@ -120,18 +135,37 @@
                 <img src={imgSrc} alt="create" aria-hidden="true" height="242" class={imgClass} />
 
                 <Layout.Stack>
-                    <Layout.Stack gap="m" alignItems="center">
+                    {#if isOnWaitlist}
                         <Typography.Title size="s" align="center" color="--fgcolor-neutral-primary">
-                            Appwrite Sites is in high demand
+                            You've successfully joined the Sites waitlist
                         </Typography.Title>
 
-                        <div style:max-width="600px">
-                            <Typography.Text align="center" color="--fgcolor-neutral-secondary">
-                                To ensure a smooth experience for everyone, we’re rolling out access
-                                gradually.
-                            </Typography.Text>
-                        </div>
-                    </Layout.Stack>
+                        <Typography.Text align="center" color="--fgcolor-neutral-secondary">
+                            We can't wait for you to try out Sites on Cloud. You will get access
+                            soon.
+                        </Typography.Text>
+                    {:else}
+                        <Layout.Stack gap="m" alignItems="center">
+                            <Typography.Title
+                                size="s"
+                                align="center"
+                                color="--fgcolor-neutral-primary">
+                                Appwrite Sites is in high demand
+                            </Typography.Title>
+
+                            <div style:max-width="600px">
+                                <Typography.Text align="center" color="--fgcolor-neutral-secondary">
+                                    To ensure a smooth experience for everyone, we’re rolling out
+                                    access gradually. Join the waitlist and be one of the first to
+                                    deploy with Sites.
+                                </Typography.Text>
+                            </div>
+
+                            <div style:margin-block-start="1rem">
+                                <Button on:click={addToWaitlist}>Join waitlist</Button>
+                            </div>
+                        </Layout.Stack>
+                    {/if}
                 </Layout.Stack>
             </Layout.Stack>
         </Card.Base>

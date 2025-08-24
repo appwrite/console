@@ -16,12 +16,12 @@
     import { writable } from 'svelte/store';
     import Actions from './actions.svelte';
     import Row from './row.svelte';
-    import { Icon, Selector, Table } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Selector, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import type { PinkColumn } from '$lib/helpers/types';
+    import { Card } from '$lib/components';
 
     export let withCreate = false;
-    export let hideOnClick = false;
     export let permissions: string[] = [];
 
     let showUser = false;
@@ -196,7 +196,6 @@
             bind:showTeam
             bind:showUser
             {groups}
-            {hideOnClick}
             on:create={create}
             let:toggle>
             <Button secondary on:click={toggle}>
@@ -206,28 +205,23 @@
         </Actions>
     </div>
 {:else}
-    <article class="card u-grid u-cross-center u-width-full-line dashed">
-        <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-            <div class="common-section">
-                <Actions
-                    bind:showLabel
-                    bind:showCustom
-                    bind:showTeam
-                    bind:showUser
-                    {groups}
-                    {hideOnClick}
-                    on:create={create}
-                    let:toggle>
-                    <Button compact icon on:click={toggle}>
-                        <Icon icon={IconPlus} size="s" />
-                    </Button>
-                </Actions>
-            </div>
-            <div class="common-section">
-                <span class="text"> Add a role to get started </span>
-            </div>
-        </div>
-    </article>
+    <Card variant="secondary">
+        <Layout.Stack direction="column" alignItems="center" gap="xl">
+            <Actions
+                bind:showLabel
+                bind:showCustom
+                bind:showTeam
+                bind:showUser
+                {groups}
+                on:create={create}
+                let:toggle>
+                <Button secondary icon on:click={toggle}>
+                    <Icon icon={IconPlus} size="s" />
+                </Button>
+            </Actions>
+            <Typography.Text>Add a role to get started</Typography.Text>
+        </Layout.Stack>
+    </Card>
 {/if}
 
 <style lang="scss">

@@ -4,33 +4,35 @@ import type { Page } from '@sveltejs/kit';
 import { get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import type { Models } from '@appwrite.io/console';
-import { organization } from './organization';
 import { page } from '$app/state';
 import { user } from '$lib/stores/user';
 import deepEqual from 'deep-equal';
 
-type Preferences = {
+type ConsolePreferences = {
     limit?: number;
     view?: View;
     columns?: string[];
-};
+} /* support a strict + flexible preference type for TS compatibility */ & Record<
+    string,
+    string | number | boolean | object | null | unknown
+>;
 
 type TeamPreferences = {
     names?: string[];
 };
 
-type PreferencesStore = {
-    [key: string]: Preferences;
+type ConsolePreferencesStore = {
+    [key: string]: ConsolePreferences;
     collections?: {
-        [key: string]: Preferences['columns'];
+        [key: string]: ConsolePreferences['columns'];
     };
     displayNames?: {
         [key: string]: TeamPreferences['names'];
     };
 } & { hideAiDisclaimer?: boolean };
 
-async function updateConsolePreferences(store: PreferencesStore): Promise<void> {
-    const currentPreferences = get(user).prefs ?? (await sdk.forConsole.account.getPrefs());
+async function updateConsolePreferences(store: ConsolePreferencesStore): Promise<void> {
+    const currentPreferences = get(user)?.prefs ?? (await sdk.forConsole.account.getPrefs());
     if (!currentPreferences?.console || Array.isArray(currentPreferences.console)) {
         currentPreferences.console = {};
     }
@@ -44,8 +46,8 @@ async function updateConsolePreferences(store: PreferencesStore): Promise<void> 
 }
 
 function createPreferences() {
-    const { subscribe, set, update } = writable<PreferencesStore>({});
-    let preferences: PreferencesStore = {};
+    const { subscribe, set, update } = writable<ConsolePreferencesStore>({});
+    let preferences: ConsolePreferencesStore = {};
 
     if (browser) {
         // fresh fetch.
@@ -74,14 +76,14 @@ function createPreferences() {
     /**
      * Update the local store and then synchronizes them on user prefs.
      */
-    function updateAndSync(callback: (prefs: PreferencesStore) => void): Promise<void> {
-        let oldPrefsSnapshot: PreferencesStore;
-        let newPrefsSnapshot: PreferencesStore;
+    function updateAndSync(callback: (prefs: ConsolePreferencesStore) => void): Promise<void> {
+        let oldPrefsSnapshot: ConsolePreferencesStore;
+        let newPrefsSnapshot: ConsolePreferencesStore;
 
         update((currentPrefs) => {
-            oldPrefsSnapshot = currentPrefs;
+            oldPrefsSnapshot = structuredClone(currentPrefs);
             callback(currentPrefs);
-            newPrefsSnapshot = currentPrefs;
+            newPrefsSnapshot = structuredClone(currentPrefs);
             return currentPrefs;
         });
 
@@ -97,7 +99,7 @@ function createPreferences() {
         subscribe,
         set,
         update,
-        get: (route?: Page['route']): Preferences => {
+        get: (route?: Page['route']): ConsolePreferences => {
             const parsedRoute = route ?? page.route;
             return (
                 preferences?.[parsedRoute.id] ?? {
@@ -107,11 +109,10 @@ function createPreferences() {
                 }
             );
         },
-
-        getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
+        getCustomCollectionColumns: (collectionId: string): ConsolePreferences['columns'] => {
             return preferences?.collections?.[collectionId] ?? [];
         },
-        setLimit: (limit: Preferences['limit']) =>
+        setLimit: (limit: ConsolePreferences['limit']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
 
@@ -124,7 +125,7 @@ function createPreferences() {
 
                 return n;
             }),
-        setView: (view: Preferences['view']) =>
+        setView: (view: ConsolePreferences['view']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
 
@@ -137,7 +138,7 @@ function createPreferences() {
 
                 return n;
             }),
-        setColumns: (columns: Preferences['columns']) =>
+        setColumns: (columns: ConsolePreferences['columns']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
 
@@ -150,16 +151,17 @@ function createPreferences() {
 
                 return n;
             }),
-        setCustomCollectionColumns: (columns: Preferences['columns']) =>
+        setCustomCollectionColumns: (
+            collectionId: string,
+            columns: ConsolePreferences['columns']
+        ) =>
             updateAndSync((n) => {
-                const collection = page.params.collection;
-                if (!n?.collections?.[collection]) {
+                if (!n?.collections?.[collectionId]) {
                     n ??= {};
                     n.collections ??= {};
                 }
 
-                n.collections[collection] = columns;
-
+                n.collections[collectionId] = Array.from(new Set(columns));
                 return n;
             }),
         loadTeamPrefs: async (id: string) => {
@@ -174,10 +176,13 @@ function createPreferences() {
         getDisplayNames: () => {
             return preferences?.displayNames ?? {};
         },
-        setDisplayNames: async (collectionId: string, names: TeamPreferences['names']) => {
-            const id = get(organization).$id;
+        setDisplayNames: async (
+            orgId: string,
+            collectionId: string,
+            names: TeamPreferences['names']
+        ) => {
             let teamPrefs: Models.Preferences;
-            update((n) => {
+            await updateAndSync((n) => {
                 if (!n?.displayNames) {
                     n ??= {};
                     n.displayNames ??= {};
@@ -188,7 +193,8 @@ function createPreferences() {
 
                 return n;
             });
-            await sdk.forConsole.teams.updatePrefs(id, teamPrefs);
+
+            await sdk.forConsole.teams.updatePrefs(orgId, teamPrefs);
         }
     };
 }

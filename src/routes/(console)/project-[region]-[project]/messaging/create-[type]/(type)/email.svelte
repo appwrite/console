@@ -104,6 +104,7 @@
                         id="subject"
                         label="Subject"
                         required
+                        autofocus={true}
                         placeholder="Enter subject"
                         bind:value={subject}>
                     </InputText>

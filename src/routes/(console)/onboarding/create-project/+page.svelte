@@ -15,7 +15,7 @@
     import { getProjectRoute } from '$lib/helpers/project';
 
     let isLoading = false;
-    let id: string;
+    let id: string = ID.unique();
     let startAnimation = false;
     let projectName = 'Appwrite project';
     let region = Region.Fra;
@@ -99,14 +99,18 @@
                 bind:projectName
                 bind:id
                 bind:region
-                on:submit={createProject}>
-                <svelte:fragment slot="submit">
+                showTitle={true}>
+                {#snippet submit()}
                     <Layout.Stack direction="row" justifyContent="flex-end">
-                        <Button.Button autofocus type="submit" variant="primary" size="s">
+                        <Button.Button
+                            on:click={createProject}
+                            type="submit"
+                            variant="primary"
+                            size="s">
                             Create
                         </Button.Button>
                     </Layout.Stack>
-                </svelte:fragment>
+                {/snippet}
             </CreateProject>
         </Card.Base>
     {/if}
