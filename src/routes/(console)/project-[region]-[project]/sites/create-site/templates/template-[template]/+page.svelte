@@ -37,6 +37,7 @@
     import { connectGitHub } from '$lib/stores/git';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { getTemplateSourceUrl } from '$lib/helpers/templateSource';
 
     export let data;
 
@@ -351,6 +352,16 @@
                     alt={data.template.name}
                     ratio="16/9" />
             </Layout.Stack>
+
+            <svelte:fragment slot="framework-actions">
+                {@const sourceUrl = getTemplateSourceUrl(data.template)}
+                {#if sourceUrl}
+                    <Button secondary size="s" external href={sourceUrl}>
+                        View source
+                        <Icon icon={IconExternalLink} slot="end" size="s" />
+                    </Button>
+                {/if}
+            </svelte:fragment>
         </Aside>
     </svelte:fragment>
 
