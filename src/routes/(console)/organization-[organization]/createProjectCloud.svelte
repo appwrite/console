@@ -12,8 +12,8 @@
     import { Dependencies } from '$lib/constants';
 
     export let teamId: string;
-    export let showCreateProjectCloud: boolean;
     export let projects: number;
+    export let showCreateProjectCloud: boolean;
     export let regions: Array<Models.ConsoleRegion> = [];
 
     let id: string = null;
