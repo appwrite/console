@@ -163,7 +163,7 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
     // plan > addons > seats/others
     if (serviceId === 'members') {
         // some don't include `limit`, so we fallback!
-        return plan?.['addons']['seats']['limit'] ?? 1;
+        return (plan?.['addons']['seats'] || [])['limit'] ?? 1;
     }
 
     return plan?.[serviceId] ?? 0;
@@ -325,7 +325,8 @@ export async function checkForProjectsLimit(org: Organization, orgProjectCount?:
     if (!plan) return;
 
     if (plan.$id !== BillingPlan.FREE) return;
-    if (org.projects?.length > 0) return;
+    if (!org.projects) return;
+    if (org.projects.length > 0) return;
 
     const projectCount = orgProjectCount;
     if (projectCount === undefined) return;
