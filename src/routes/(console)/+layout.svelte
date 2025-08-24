@@ -373,7 +373,7 @@
     <Footer slot="footer" />
 </Shell>
 
-{#if $user && !$user.emailVerification && shouldShowNotification('email-verification-banner') && !$wizard.show && !$wizard.cover && !emailBannerClosed}
+{#if $user && !$user.emailVerification && shouldShowNotification('email-verification-banner') && !$wizard.show && !$wizard.cover && !emailBannerClosed && !isOnOnboarding}
     <HeaderAlert
         type="warning"
         title="Your email address needs to be verified"
