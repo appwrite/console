@@ -30,19 +30,17 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         (organizations.teams.length > 0 ? organizations.teams[0].$id : undefined);
 
     // Load projects for the current organization if one is selected
-    let projects = null;
+    let projectsCount = 0;
     if (currentOrgId) {
         try {
-            projects = await sdk.forConsole.projects.list([
-                Query.equal('teamId', currentOrgId),
-                Query.limit(1000) // Get all projects for organization
-            ]);
-            for (const project of projects.projects) {
-                project.region ??= 'default';
-            }
+            projectsCount = (
+                await sdk.forConsole.projects.list([
+                    Query.equal('teamId', currentOrgId),
+                    Query.limit(1)
+                ])
+            ).total;
         } catch (e) {
-            // Handle error silently - projects might not be accessible
-            projects = {};
+            projectsCount = 0;
         }
     }
 
@@ -55,7 +53,7 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         organizations,
         consoleVariables,
         version: versionData?.version ?? null,
-        allProjects: projects
+        allProjectsCount: projectsCount
     };
 };
 

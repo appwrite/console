@@ -55,8 +55,6 @@
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
-    import { sdk } from '$lib/stores/sdk';
-    import { Query } from '@appwrite.io/console';
 
     export let data: LayoutData;
 
@@ -298,10 +296,8 @@
         if (isCloud) {
             currentOrganizationId = org.$id;
             const orgProjectCount =
-                data.allProjects && data.currentOrgId === org.$id
-                    ? data.allProjects.projects.length
-                    : undefined;
-            checkForProjectsLimit(org, orgProjectCount);
+                data.currentOrgId === org.$id ? data.allProjectsCount : undefined;
+            await checkForProjectsLimit(org, orgProjectCount);
             checkForEnterpriseTrial(org);
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
@@ -321,20 +317,6 @@
     }
 
     $: checkForUsageLimits($organization);
-
-    $: isOnOnboarding = page.route?.id?.includes('/(console)/onboarding');
-
-    $: projects = isOnOnboarding
-        ? null
-        : sdk.forConsole.projects.list([
-              Query.equal(
-                  'teamId',
-                  // id from page params ?? id from store ?? id from preferences
-                  page.params.organization ?? currentOrganizationId ?? data.currentOrgId
-              ),
-              Query.limit(5),
-              Query.orderDesc('$updatedAt')
-          ]);
 
     $: if ($requestedMigration) {
         openMigrationWizard();
@@ -356,7 +338,6 @@
         !page.url.pathname.includes('/console/onboarding')}
     showHeader={!page.url.pathname.includes('/console/onboarding/create-project')}
     showFooter={!page.url.pathname.includes('/console/onboarding/create-project')}
-    {projects}
     selectedProject={page.data?.project}>
     <!--    <Header slot="header" />-->
     <slot />
