@@ -13,7 +13,8 @@
     import type { PageData } from './$types';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
-    import { Badge, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Layout, Table, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import { IconGlobeAlt } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -114,7 +115,7 @@
                                         src={getBrowser(session.clientCode).toString()}
                                         alt={session.clientName} />
                                 {:else}
-                                    <span class="icon-globe-alt" aria-hidden="true"></span>
+                                    <Icon icon={IconGlobeAlt} size="s" />
                                 {/if}
                             </div>
                             <Trim>

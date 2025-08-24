@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { EmptySearch } from '$lib/components';
-    import { Badge, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { EmptySearch, Trim } from '$lib/components';
+    import { Badge, Layout, Table, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import { IconGlobeAlt } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
@@ -59,14 +60,14 @@
                                         src={getBrowser(session.clientCode).toString()}
                                         alt={session.clientName} />
                                 {:else}
-                                    <span class="icon-globe-alt" aria-hidden="true"> </span>
+                                    <Icon icon={IconGlobeAlt} size="s" />
                                 {/if}
                             </div>
-                            <p class="text">
+                            <Trim>
                                 {session.clientName}
                                 {session.clientVersion} on {session.osName}
                                 {session.osVersion}
-                            </p>
+                            </Trim>
                             {#if session.current}
                                 <Badge
                                     type="success"
