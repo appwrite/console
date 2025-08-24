@@ -112,13 +112,9 @@
                                         height="20"
                                         width="20"
                                         src={getBrowser(session.clientCode).toString()}
-                                        style="--p-text-size: 1.25rem"
                                         alt={session.clientName} />
                                 {:else}
-                                    <span
-                                        class="icon-globe-alt"
-                                        style="--p-text-size: 1.25rem"
-                                        aria-hidden="true"></span>
+                                    <span class="icon-globe-alt" aria-hidden="true"></span>
                                 {/if}
                             </div>
                             <Trim>
