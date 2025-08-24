@@ -62,7 +62,7 @@
                         </Typography.Text>
                     </Layout.Stack>
                 </Layout.Stack>
-                    <slot name="framework-actions" />
+                <slot name="framework-actions" />
             {/if}
 
             {#if domain && showAfter}

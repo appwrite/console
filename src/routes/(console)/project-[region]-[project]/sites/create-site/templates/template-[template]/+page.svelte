@@ -352,15 +352,11 @@
                     alt={data.template.name}
                     ratio="16/9" />
             </Layout.Stack>
-            
-            <svelte:fragment slot="framework-actions" >
+
+            <svelte:fragment slot="framework-actions">
                 {@const sourceUrl = getTemplateSourceUrl(data.template)}
                 {#if sourceUrl}
-                    <Button 
-                        secondary 
-                        size="s" 
-                        external 
-                        href={sourceUrl}>
+                    <Button secondary size="s" external href={sourceUrl}>
                         View source
                         <Icon icon={IconExternalLink} slot="end" size="s" />
                     </Button>
