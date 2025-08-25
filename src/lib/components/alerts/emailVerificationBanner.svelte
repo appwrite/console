@@ -14,20 +14,19 @@
         onEmailBannerClose: (closed: boolean) => void;
     }>();
 
-    const isOnOnboarding = $derived.by(() => page.route?.id?.includes('/(console)/onboarding'));
+    const isOnOnboarding = $derived(() => page.route?.id?.includes('/(console)/onboarding'));
 
-    const hasUser = $derived.by(() => !!$user);
-    const needsEmailVerification = $derived.by(() => $user && !$user.emailVerification);
+    const hasUser = $derived(!!$user);
+    const needsEmailVerification = $derived($user && !$user.emailVerification);
     const shouldShowNotificationBanner = $derived.by(() =>
         shouldShowNotification('email-verification-banner')
     );
-    const wizardNotActive = $derived.by(() => !$wizard.show && !$wizard.cover);
-    const bannerNotClosed = $derived.by(() => !emailBannerClosed);
-    const notOnOnboarding = $derived.by(() => !isOnOnboarding);
+    const wizardNotActive = $derived(!$wizard.show && !$wizard.cover);
+    const bannerNotClosed = $derived(!emailBannerClosed);
+    const notOnOnboarding = $derived(!isOnOnboarding);
 
-    const shouldShowEmailBanner = $derived.by(
-        () =>
-            hasUser &&
+    const shouldShowEmailBanner = $derived(
+        hasUser &&
             needsEmailVerification &&
             shouldShowNotificationBanner &&
             wizardNotActive &&
