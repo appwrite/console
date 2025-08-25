@@ -7,8 +7,8 @@
     import { LabelCard } from '..';
 
     export let billingPlan: Tier;
-    export let anyOrgFree = false;
     export let isNewOrg = false;
+    export let anyOrgFree = false;
     export let selfService = true;
 
     $: freePlan = $plansInfo.get(BillingPlan.FREE);
@@ -22,12 +22,9 @@
     <LabelCard
         name="plan"
         bind:group={billingPlan}
-        disabled={anyOrgFree || !selfService}
+        disabled={!selfService}
         value={BillingPlan.FREE}
-        title={tierFree.name}
-        tooltipShow={anyOrgFree}
-        tooltipText="You are limited to 1 Free organization per account."
-        tooltipWidth="100%">
+        title={tierFree.name}>
         <svelte:fragment slot="action">
             {#if $organization?.billingPlan === BillingPlan.FREE && !isNewOrg}
                 <Badge variant="secondary" size="xs" content="Current plan" />

@@ -13,7 +13,8 @@
     import type { PageData } from './$types';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
-    import { Badge, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Layout, Table, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import { IconGlobeAlt } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -92,9 +93,9 @@
         let:root
         columns={[
             { id: 'client' },
-            { id: 'location', width: 120 },
-            { id: 'ip', width: 120 },
-            { id: 'actions', width: 70 }
+            { id: 'location', width: 200 },
+            { id: 'ip', width: 200 },
+            { id: 'actions', width: 100 }
         ]}>
         <svelte:fragment slot="header" let:root>
             <Table.Header.Cell column="client" {root}>Client</Table.Header.Cell>
@@ -114,13 +115,9 @@
                                         height="20"
                                         width="20"
                                         src={getBrowser(session.clientCode).toString()}
-                                        style="--p-text-size: 1.25rem"
                                         alt={session.clientName} />
                                 {:else}
-                                    <span
-                                        class="icon-globe-alt"
-                                        style="--p-text-size: 1.25rem"
-                                        aria-hidden="true"></span>
+                                    <Icon icon={IconGlobeAlt} size="s" />
                                 {/if}
                             </div>
                             <Trim>
