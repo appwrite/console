@@ -53,7 +53,6 @@
         addNotification({
             type,
             message,
-            isHtml: true,
             buttons:
                 isSuccess && collection !== page.params.collection
                     ? [{ name: 'View documents', method: () => goto(url) }]

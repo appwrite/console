@@ -40,8 +40,7 @@
 
             addNotification({
                 type: 'success',
-                isHtml: true,
-                message: `Restoration complete. <b>${newDatabaseName}</b> has been created.`,
+                message: `Restoration complete. ${newDatabaseName} has been created.`,
                 buttons: [
                     {
                         name: 'View restored data',
