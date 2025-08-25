@@ -147,7 +147,18 @@
             return `Size: ${stringColumn.size}`;
         } else if (column.type === 'integer' || column.type === 'double') {
             const numbersColumn = column as Models.ColumnInteger | Models.ColumnFloat;
-            return `Min: ${numbersColumn.min}, Max: ${numbersColumn.max}`;
+            const { min, max } = numbersColumn;
+
+            const hasValidMin = min > Number.MIN_SAFE_INTEGER;
+            const hasValidMax = max < Number.MAX_SAFE_INTEGER;
+
+            if (hasValidMin && hasValidMax) {
+                return `Min: ${min}, Max: ${max}`;
+            } else if (hasValidMin) {
+                return `Min: ${min}`;
+            } else if (hasValidMax) {
+                return `Max: ${max}`;
+            }
         } else {
             return undefined;
         }
