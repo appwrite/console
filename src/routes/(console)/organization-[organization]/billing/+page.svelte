@@ -17,7 +17,7 @@
     import RetryPaymentModal from './retryPaymentModal.svelte';
     import { selectedInvoice, showRetryModal } from './store';
     import { Button } from '$lib/elements/forms';
-    import { Alert, Typography } from '@appwrite.io/pink-svelte';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { base } from '$app/paths';
@@ -127,12 +127,13 @@
             until your billing period ends on {toLocaleDate(organization.billingNextInvoiceDate)}.
         </Alert.Inline>
     {/if}
-    <Typography.Title>Billing</Typography.Title>
     <PlanSummary
         availableCredit={data?.availableCredit}
         currentPlan={data?.currentPlan}
         currentAggregation={data?.billingAggregation}
-        currentInvoice={data?.billingInvoice} />
+        currentInvoice={data?.billingInvoice}
+        organizationUsage={data?.organizationUsage}
+        usageProjects={data?.usageProjects} />
     <PaymentHistory />
     <PaymentMethods organization={data?.organization} methods={data?.paymentMethods} />
     <BillingAddress

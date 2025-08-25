@@ -207,7 +207,7 @@ export type AggregationTeam = {
      * Aggregation billing plan
      */
     plan: string;
-    projectBreakdown: ProjectBreakdown[]
+    projectBreakdown: ProjectBreakdown[];
 };
 
 export type ProjectBreakdown = {
@@ -215,13 +215,13 @@ export type ProjectBreakdown = {
     name: string;
     amount: number;
     resources: InvoiceUsage[];
-}
+};
 
 export type InvoiceUsage = {
     resourceId: string;
     value: number;
     amount: number;
-}
+};
 
 export type AvailableCredit = {
     available: number;

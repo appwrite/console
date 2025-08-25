@@ -4,13 +4,14 @@
     import { CustomId } from '$lib/components/index.js';
     import { getFlagUrl } from '$lib/helpers/flag';
     import { isCloud } from '$lib/system.js';
-    import { currentPlan } from '$lib/stores/organization';
+    import { currentPlan, organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
     import { filterRegions } from '$lib/helpers/regions';
     import type { Snippet } from 'svelte';
+    import { BillingPlan } from '$lib/constants';
 
     let {
         projectName = $bindable(''),
@@ -31,8 +32,11 @@
     } = $props();
 
     let showCustomId = $state(false);
+    let isProPlan = $derived($organization?.billingPlan === BillingPlan.PRO);
     let projectsLimited = $derived(
-        $currentPlan?.projects > 0 && projects && projects >= $currentPlan?.projects
+        isProPlan
+            ? projects && projects >= 2
+            : $currentPlan?.projects > 0 && projects && projects >= $currentPlan?.projects
     );
 </script>
 
@@ -46,24 +50,11 @@
     {#if showTitle}
         <Typography.Title size="l">Create your project</Typography.Title>
     {/if}
-    {#if projectsLimited}
-        <Alert.Inline status="warning" title="You've reached your limit of 2 projects">
-            Extra projects are available on paid plans for an additional fee
-            <svelte:fragment slot="actions">
-                <Button
-                    compact
-                    size="s"
-                    href={`${base}/organization-${page.params.organization}/billing`}
-                    external
-                    text>Upgrade</Button>
-            </svelte:fragment>
-        </Alert.Inline>
-    {/if}
     <Layout.Stack direction="column" gap="xxl">
         <Layout.Stack direction="column" gap="xxl">
             <Layout.Stack direction="column" gap="s">
                 <Input.Text
-                    disabled={projectsLimited}
+                    disabled={!isProPlan && projectsLimited}
                     label="Name"
                     placeholder="Project name"
                     required
@@ -80,10 +71,32 @@
                 {/if}
                 <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
             </Layout.Stack>
+
+            {#if projectsLimited}
+                {#if isProPlan}
+                    <Alert.Inline status="info" title="Extra projects cost $15/month">
+                        You've reached your limit of 2 projects included on the Pro plan. Each extra
+                        project costs $15/month.
+                    </Alert.Inline>
+                {:else}
+                    <Alert.Inline status="warning" title="You've reached your limit of 2 projects">
+                        Extra projects are available on paid plans for an additional fee
+                        <svelte:fragment slot="actions">
+                            <Button
+                                compact
+                                size="s"
+                                href={`${base}/organization-${page.params.organization}/billing`}
+                                external
+                                text>Upgrade</Button>
+                        </svelte:fragment>
+                    </Alert.Inline>
+                {/if}
+            {/if}
+
             {#if isCloud && regions.length > 0}
                 <Layout.Stack gap="xs">
                     <Input.Select
-                        disabled={projectsLimited}
+                        disabled={!isProPlan && projectsLimited}
                         required
                         bind:value={region}
                         placeholder="Select a region"
