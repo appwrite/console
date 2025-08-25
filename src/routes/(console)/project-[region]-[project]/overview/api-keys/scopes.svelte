@@ -9,8 +9,14 @@
 
     const newScopes = ['tables.', 'columns.', 'rows.'];
     const legacyScopes = ['attributes.', 'collections.', 'documents.'];
+    const compatPairs = [
+        { newer: 'tables.', legacy: 'collections.' },
+        { newer: 'columns.', legacy: 'attributes.' },
+        { newer: 'rows.', legacy: 'documents.' }
+    ] as const;
 
     const isCreateMode = scopes.length === 0;
+    const scopeCatalog = new Set(allScopes.map((s) => s.scope));
 
     const hasLegacyScopes = !isCreateMode
         ? scopes.some((scope) => legacyScopes.some((prefix) => scope?.startsWith(prefix)))
@@ -57,9 +63,12 @@
     let mounted = false;
 
     onMount(() => {
-        scopes.forEach((scope) => {
-            activeScopes[scope] = true;
-        });
+        const computedScopes = syncScopes(scopes);
+        if (symmetricDifference(scopes, computedScopes).length) {
+            scopes = computedScopes;
+        }
+
+        scopes.forEach((scope) => (activeScopes[scope] = true));
 
         mounted = true;
     });
@@ -83,9 +92,8 @@
             return false;
         } else if (filtered.length === scopesByCategory.length) {
             return true;
-        } else {
-            return 'indeterminate';
         }
+        return 'indeterminate';
     }
 
     function onCategoryChange(event: CustomEvent<boolean | 'indeterminate'>, category: Category) {
@@ -95,6 +103,25 @@
                 activeScopes[s.scope] = event.detail;
             }
         });
+    }
+
+    function syncScopes(list: string[]): string[] {
+        const out = new Set(list);
+        const pairs = compatPairs.map((pair) =>
+            hasLegacyScopes
+                ? ([pair.legacy, pair.newer] as const)
+                : ([pair.newer, pair.legacy] as const)
+        );
+
+        for (const scope of list) {
+            for (const [from, to] of pairs) {
+                if (scope.startsWith(from)) {
+                    const counterpart = scope.replace(from, to);
+                    if (scopeCatalog.has(counterpart)) out.add(counterpart);
+                }
+            }
+        }
+        return Array.from(out);
     }
 
     const activeScopes = filteredScopes.reduce((prev, next) => {
@@ -109,8 +136,10 @@
                 .filter((scope) => activeScopes[scope.scope])
                 .map(({ scope }) => scope);
 
-            if (symmetricDifference(scopes, newScopeSet).length) {
-                scopes = newScopeSet;
+            const updatedScopes = hasLegacyScopes ? newScopeSet : syncScopes(newScopeSet);
+
+            if (symmetricDifference(scopes, updatedScopes).length) {
+                scopes = updatedScopes;
             }
         }
     }
