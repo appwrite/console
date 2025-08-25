@@ -45,7 +45,9 @@
 </script>
 
 <Tooltip maxWidth={tooltipWidth} disabled={!tooltipText || !tooltipShow}>
-    <div style:cursor={disabled ? 'pointer' : ''}>
+    <div
+        style:cursor={disabled ? 'pointer' : ''}
+        style:z-index="1">
         <Card.Selector
             {name}
             {src}

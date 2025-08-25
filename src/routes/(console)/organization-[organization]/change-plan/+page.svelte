@@ -33,6 +33,7 @@
     import { onMount } from 'svelte';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
+    import OrganizationUsageLimits from '$lib/components/organizationUsageLimits.svelte';
     import { Query } from '@appwrite.io/console';
 
     export let data;
@@ -43,6 +44,7 @@
     let previousPage: string = base;
     let showExitModal = false;
     let formComponent: Form;
+    let usageLimitsComponent: any;
     let isSubmitting = writable(false);
     let collaborators: string[] =
         data?.members?.memberships
@@ -100,6 +102,12 @@
 
     async function handleSubmit() {
         if (isDowngrade) {
+            if (selectedPlan === BillingPlan.FREE && usageLimitsComponent?.validateOrAlert) {
+                const ok = usageLimitsComponent.validateOrAlert();
+                if (!ok) {
+                    return;
+                }
+            }
             await downgrade();
         } else if (isUpgrade) {
             await upgrade();
@@ -316,6 +324,10 @@
                                 This will be reflected in your next invoice.
                             </Alert.Inline>
                         {/if}
+                    {/if}
+
+                    {#if isDowngrade && selectedPlan === BillingPlan.FREE}
+                        <OrganizationUsageLimits bind:this={usageLimitsComponent} />
                     {/if}
                 </Layout.Stack>
             </Fieldset>
