@@ -24,8 +24,8 @@ export async function generateColumns(
             tableId,
             key: 'age',
             required: false,
-            min: 0,
-            max: 150
+            min: 18,
+            max: 80
         }),
         client.tablesDB.createStringColumn({
             databaseId,
@@ -160,7 +160,7 @@ function generateSingleValue(column: Columns): string | number | boolean | null 
         case 'integer': {
             const intAttr = column as Models.ColumnInteger;
             const min = intAttr.min ?? 0;
-            const max = intAttr.max ?? 1000000;
+            const max = intAttr.max ?? 10000;
             return faker.number.int({ min, max });
         }
 
