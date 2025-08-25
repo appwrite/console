@@ -127,11 +127,11 @@
                         adapter: framework.adapter as unknown as Adapter,
                         installationId:
                             connectBehaviour === 'later' ? undefined : selectedInstallationId,
-                        fallbackFile: framework?.fallbackFile,
-                        providerRepositoryId: selectedRepository,
-                        providerBranch: branch,
+                        fallbackFile: framework?.fallbackFile || undefined,
+                        providerRepositoryId: selectedRepository || undefined,
+                        providerBranch: branch || undefined,
                         providerSilentMode: selectedRepository ? silentMode : undefined,
-                        providerRootDirectory: rootDir
+                        providerRootDirectory: rootDir || undefined
                     });
 
                 // Add domain
