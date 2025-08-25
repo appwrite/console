@@ -39,8 +39,7 @@
         } catch (e) {
             addNotification({
                 type: 'error',
-                message: `There was an error deleting your user session. <a href="?sessionId=${session.$id}" class="u-underline">Try again</a>`,
-                isHtml: true
+                message: `There was an error deleting your user session. Try again.`
             });
         }
 

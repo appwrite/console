@@ -403,13 +403,12 @@ export async function checkForUsageLimit(org: Organization) {
         if (now - lastNotification < 1000 * 60 * 60 * 24) return;
 
         localStorage.setItem('limitReachedNotification', now.toString());
-        let message = `<b>${org.name}</b> has reached <b>75%</b> of the ${tierToPlan(BillingPlan.FREE).name} plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`;
+        let message = `${org.name} has reached 75% of the ${tierToPlan(BillingPlan.FREE).name} plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`;
         if (resources.filter((r) => r.value >= 75)?.length > 1) {
-            message = `Usage for <b>${org.name}</b> has reached 75% of the ${tierToPlan(BillingPlan.FREE).name} plan limit. Upgrade to ensure there are no service disruptions.`;
+            message = `Usage for ${org.name} has reached 75% of the ${tierToPlan(BillingPlan.FREE).name} plan limit. Upgrade to ensure there are no service disruptions.`;
         }
         addNotification({
             type: 'warning',
-            isHtml: true,
             timeout: 0,
             message,
             buttons: [
@@ -467,15 +466,14 @@ export async function paymentExpired(org: Organization) {
     if (sessionStorageNotification === 'true') return;
     const year = new Date().getFullYear();
     const month = new Date().getMonth();
-    const expiredMessage = `The default payment method for <b>${org.name}</b> has expired`;
-    const expiringMessage = `The default payment method for <b>${org.name}</b> will expire soon`;
+    const expiredMessage = `The default payment method for ${org.name} has expired`;
+    const expiringMessage = `The default payment method for ${org.name} will expire soon`;
     const nots = get(notifications);
     const expiredNotification = nots.some((n) => n.message === expiredMessage);
     const expiringNotification = nots.some((n) => n.message === expiringMessage);
     if (payment.expired && !expiredNotification) {
         addNotification({
             type: 'error',
-            isHtml: true,
             timeout: 0,
             message: expiredMessage,
             buttons: [
@@ -490,7 +488,6 @@ export async function paymentExpired(org: Organization) {
     } else if (!expiringNotification && payment.expiryYear <= year && payment.expiryMonth < month) {
         addNotification({
             type: 'warning',
-            isHtml: true,
             message: expiringMessage,
             buttons: [
                 {

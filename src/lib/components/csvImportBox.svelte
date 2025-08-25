@@ -53,7 +53,6 @@
         addNotification({
             type,
             message,
-            isHtml: true,
             buttons:
                 isSuccess && collection !== page.params.collection
                     ? [{ name: 'View documents', method: () => goto(url) }]
@@ -132,7 +131,7 @@
     }
 
     function text(status: string, collectionName = '') {
-        const name = collectionName ? `<b>${collectionName}</b>` : '';
+        const name = collectionName ? collectionName : '';
         switch (status) {
             case 'completed':
             case 'failed':
@@ -198,7 +197,7 @@
                                 <div
                                     class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                     <Typography.Text>
-                                        {@html text(value.status, value.collection)}
+                                        {text(value.status, value.collection)}
                                     </Typography.Text>
                                 </div>
                                 <div

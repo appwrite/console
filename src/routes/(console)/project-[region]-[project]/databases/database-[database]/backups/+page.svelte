@@ -136,11 +136,9 @@
             const message =
                 totalPolicies.length > 1
                     ? `Backup policies have been created`
-                    : `<b>${totalPolicies[0].label}</b> policy has been created`;
+                    : `${totalPolicies[0].label} policy has been created`;
 
-            // TODO: html isn't yet supported on Toast.
             addNotification({
-                isHtml: true,
                 type: 'success',
                 message
             });
