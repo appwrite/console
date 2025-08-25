@@ -15,7 +15,7 @@
     import Table from './table.svelte';
     import { base } from '$app/paths';
     import { canWriteProviders } from '$lib/stores/roles';
-    import { Card, Layout, Empty, Icon } from '@appwrite.io/pink-svelte';
+    import { Card, Layout, Empty, Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
@@ -30,14 +30,20 @@
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Filters query={data.query} {columns} analyticsSource="messaging_providers" />
             <ViewSelector view={View.Table} {columns} hideView />
-            {#if $canWriteProviders}
-                <CreateProviderDropdown let:toggle>
-                    <Button on:click={toggle} event="create_provider">
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Create provider
-                    </Button>
-                </CreateProviderDropdown>
-            {/if}
+            <Tooltip disabled={$canWriteProviders}>
+                <div>
+                    <CreateProviderDropdown let:toggle>
+                        <Button
+                            on:click={toggle}
+                            event="create_provider"
+                            disabled={!$canWriteProviders}>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Create provider
+                        </Button>
+                    </CreateProviderDropdown>
+                </div>
+                <div slot="tooltip">Your role does not allow this action</div>
+            </Tooltip>
         </Layout.Stack>
     </Layout.Stack>
 
@@ -75,13 +81,20 @@
                         text
                         event="empty_documentation"
                         size="s">Documentation</Button>
-                    {#if $canWriteProviders}
-                        <CreateProviderDropdown let:toggle>
-                            <Button on:click={toggle} event="create_provider" secondary>
-                                Create provider
-                            </Button>
-                        </CreateProviderDropdown>
-                    {/if}
+                    <Tooltip disabled={$canWriteProviders}>
+                        <div>
+                            <CreateProviderDropdown let:toggle>
+                                <Button
+                                    on:click={toggle}
+                                    event="create_provider"
+                                    secondary
+                                    disabled={!$canWriteProviders}>
+                                    Create provider
+                                </Button>
+                            </CreateProviderDropdown>
+                        </div>
+                        <div slot="tooltip">Your role does not allow this action</div>
+                    </Tooltip>
                 </slot>
             </Empty>
         </Card.Base>

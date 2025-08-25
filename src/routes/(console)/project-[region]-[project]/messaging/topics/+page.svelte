@@ -14,7 +14,7 @@
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { canWriteTopics } from '$lib/stores/roles';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -73,17 +73,21 @@
         hasSearch
         analyticsSource="messaging_topics_filter"
         searchPlaceholder="Search by name or ID">
-        {#if $canWriteTopics}
-            <Button
-                on:click={() => {
-                    $showCreate = true;
-                    trackEvent(Click.MessagingTopicCreateClick);
-                }}
-                event="create_topic">
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create topic
-            </Button>
-        {/if}
+        <Tooltip disabled={$canWriteTopics}>
+            <div>
+                <Button
+                    on:click={() => {
+                        $showCreate = true;
+                        trackEvent(Click.MessagingTopicCreateClick);
+                    }}
+                    event="create_topic"
+                    disabled={!$canWriteTopics}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create topic
+                </Button>
+            </div>
+            <div slot="tooltip">Your role does not allow this action</div>
+        </Tooltip>
     </ResponsiveContainerHeader>
 
     {#if data.topics.total}

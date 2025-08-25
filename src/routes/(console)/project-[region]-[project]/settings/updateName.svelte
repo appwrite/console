@@ -6,6 +6,7 @@
     import { CardGrid, CopyInput } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputText } from '$lib/elements/forms';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -55,22 +56,25 @@
         </Button>
     </svelte:fragment>
 </CardGrid>
-{#if $canWriteProjects}
-    <Form onSubmit={updateName}>
-        <CardGrid>
-            <svelte:fragment slot="title">Name</svelte:fragment>
-            <svelte:fragment slot="aside">
-                <InputText
-                    id="name"
-                    label="Name"
-                    bind:value={name}
-                    required
-                    placeholder="Enter name" />
-            </svelte:fragment>
+<Form onSubmit={updateName}>
+    <CardGrid>
+        <svelte:fragment slot="title">Name</svelte:fragment>
+        <svelte:fragment slot="aside">
+            <InputText
+                id="name"
+                label="Name"
+                bind:value={name}
+                required
+                placeholder="Enter name"
+                disabled={!$canWriteProjects} />
+        </svelte:fragment>
 
-            <svelte:fragment slot="actions">
-                <Button disabled={name === $project.name} submit>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
-    </Form>
-{/if}
+        <svelte:fragment slot="actions">
+            <Tooltip disabled={$canWriteProjects}>
+                <Button disabled={name === $project.name || !$canWriteProjects} submit
+                    >Update</Button>
+                <div slot="tooltip">Your role does not allow this action</div>
+            </Tooltip>
+        </svelte:fragment>
+    </CardGrid>
+</Form>

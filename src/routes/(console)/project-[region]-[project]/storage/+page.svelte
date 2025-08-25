@@ -12,7 +12,7 @@
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import { canWriteBuckets } from '$lib/stores/roles';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { columns } from './store';
     import Grid from './grid.svelte';
@@ -43,12 +43,19 @@
                 view={data.view}
                 hideColumns={!data.buckets.total}
                 hideView={!data.buckets.total} />
-            {#if $canWriteBuckets}
-                <Button on:click={() => ($showCreateBucket = true)} event="create_bucket" size="s">
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create bucket
-                </Button>
-            {/if}
+            <Tooltip disabled={$canWriteBuckets}>
+                <div>
+                    <Button
+                        on:click={() => ($showCreateBucket = true)}
+                        event="create_bucket"
+                        size="s"
+                        disabled={!$canWriteBuckets}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create bucket
+                    </Button>
+                </div>
+                <div slot="tooltip">Your role does not allow this action</div>
+            </Tooltip>
         </Layout.Stack>
     </Layout.Stack>
     {#if data.buckets.total}

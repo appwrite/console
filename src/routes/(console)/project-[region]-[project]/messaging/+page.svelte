@@ -23,11 +23,14 @@
     import {
         Badge,
         FloatingActionBar,
+        Icon,
         Layout,
         Link,
         Table,
+        Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Confirm } from '$lib/components';
     import { onDestroy, onMount } from 'svelte';
     import { stopPolling, pollMessagesStatus } from './helper';
@@ -105,9 +108,17 @@
         hasSearch
         analyticsSource="messaging_messages"
         searchPlaceholder="Search by description, type, status, or ID">
-        {#if $canWriteMessages}
-            <CreateMessageDropdown />
-        {/if}
+        <Tooltip disabled={$canWriteMessages}>
+            <div>
+                <CreateMessageDropdown>
+                    <Button event="create_message" disabled={!$canWriteMessages}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create message
+                    </Button>
+                </CreateMessageDropdown>
+            </div>
+            <div slot="tooltip">Your role does not allow this action</div>
+        </Tooltip>
     </ResponsiveContainerHeader>
 
     {#if data.messages.total}
@@ -220,13 +231,18 @@
                     ariaLabel={`create message`}>
                     Documentation
                 </Button>
-                {#if $canWriteMessages}
+                <Tooltip disabled={$canWriteMessages}>
                     <CreateMessageDropdown let:toggle>
-                        <Button secondary on:click={toggle} event="create_message">
+                        <Button
+                            secondary
+                            on:click={toggle}
+                            event="create_message"
+                            disabled={!$canWriteMessages}>
                             <span class="text">Create message</span>
                         </Button>
                     </CreateMessageDropdown>
-                {/if}
+                    <div slot="tooltip">Your role does not allow this action</div>
+                </Tooltip>
             </svelte:fragment>
         </Empty>
     {/if}

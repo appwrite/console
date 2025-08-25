@@ -88,15 +88,16 @@
                         View source
                         <Icon icon={IconExternalLink} size="s" slot="end" />
                     </Button>
-                    {#if $canWriteFunctions}
-                        <ContainerButton
-                            title="functions"
-                            disabled={buttonDisabled}
-                            buttonHref={`${base}/project-${page.params.region}-${page.params.project}/functions/create-function/template-${$template.id}`}
-                            showIcon={false}
-                            buttonText="Create function"
-                            buttonEvent="create_function" />
-                    {/if}
+                    <ContainerButton
+                        title="functions"
+                        disabled={buttonDisabled || !$canWriteFunctions}
+                        buttonHref={`${base}/project-${page.params.region}-${page.params.project}/functions/create-function/template-${$template.id}`}
+                        showIcon={false}
+                        buttonText="Create function"
+                        buttonEvent="create_function"
+                        tooltipContent={!$canWriteFunctions
+                            ? 'Your role does not allow this action'
+                            : undefined} />
                 </Layout.Stack>
             </Layout.Stack>
         </Card>

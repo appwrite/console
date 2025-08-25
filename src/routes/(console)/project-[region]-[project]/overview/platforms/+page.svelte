@@ -69,7 +69,8 @@
         Icon,
         Layout,
         Popover,
-        Table
+        Table,
+        Tooltip
     } from '@appwrite.io/pink-svelte';
     import Action from './action.svelte';
     import {
@@ -163,11 +164,14 @@
             <svelte:fragment slot="actions">
                 <Button external href="https://appwrite.io/docs/sdks" text>Documentation</Button>
                 <Popover let:toggle padding="none" placement="bottom-end">
-                    {#if $canWritePlatforms}
-                        <Button secondary on:click={toggle}>
-                            <span class="text">Add platform</span>
-                        </Button>
-                    {/if}
+                    <Tooltip disabled={$canWritePlatforms}>
+                        <div>
+                            <Button secondary on:click={toggle} disabled={!$canWritePlatforms}>
+                                <span class="text">Add platform</span>
+                            </Button>
+                        </div>
+                        <div slot="tooltip">Your role does not allow this action</div>
+                    </Tooltip>
                     <svelte:fragment slot="tooltip">
                         <ActionMenu.Root>
                             <ActionMenu.Item.Button

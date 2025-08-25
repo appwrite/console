@@ -1,7 +1,7 @@
 <script lang="ts">
     import Button from '$lib/elements/forms/button.svelte';
     import { canWriteKeys } from '$lib/stores/roles';
-    import { Icon, Modal, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Modal, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Form, InputText } from '$lib/elements/forms/index.js';
     import { ExpirationInput } from '$lib/components';
@@ -44,34 +44,37 @@
     }
 </script>
 
-{#if $canWriteKeys}
-    <Button on:click={() => ($showDevKeysCreateModal = true)}>
-        <Icon icon={IconPlus} slot="start" size="s" />
-        Create dev key
-    </Button>
+<Tooltip disabled={$canWriteKeys}>
+    <div>
+        <Button on:click={() => ($showDevKeysCreateModal = true)} disabled={!$canWriteKeys}>
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Create dev key
+        </Button>
+    </div>
+    <div slot="tooltip">Your role does not allow this action</div>
+</Tooltip>
 
-    <Form onSubmit={create} isModal>
-        <Modal title="Create dev key" bind:open={$showDevKeysCreateModal}>
-            <span slot="description">
-                Bypass Appwrite rate limits and CORS errors in your development environment.
-            </span>
+<Form onSubmit={create} isModal>
+    <Modal title="Create dev key" bind:open={$showDevKeysCreateModal}>
+        <span slot="description">
+            Bypass Appwrite rate limits and CORS errors in your development environment.
+        </span>
 
-            <Layout.Stack>
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder="Enter key name"
-                    required
-                    bind:value={name} />
+        <Layout.Stack>
+            <InputText
+                id="name"
+                label="Name"
+                placeholder="Enter key name"
+                required
+                bind:value={name} />
 
-                <ExpirationInput bind:value={expire} expiryOptions="limited" />
-            </Layout.Stack>
+            <ExpirationInput bind:value={expire} expiryOptions="limited" />
+        </Layout.Stack>
 
-            <Layout.Stack direction="row" justifyContent="flex-end" slot="footer">
-                <Button fullWidthMobile secondary on:click={() => ($showDevKeysCreateModal = false)}
-                    >Cancel</Button>
-                <Button fullWidthMobile submit disabled={isSubmitting}>Create</Button>
-            </Layout.Stack>
-        </Modal>
-    </Form>
-{/if}
+        <Layout.Stack direction="row" justifyContent="flex-end" slot="footer">
+            <Button fullWidthMobile secondary on:click={() => ($showDevKeysCreateModal = false)}
+                >Cancel</Button>
+            <Button fullWidthMobile submit disabled={isSubmitting}>Create</Button>
+        </Layout.Stack>
+    </Modal>
+</Form>

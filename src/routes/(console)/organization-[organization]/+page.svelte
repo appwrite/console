@@ -149,15 +149,18 @@
         <Typography.Title>Projects</Typography.Title>
 
         <DropList bind:show={showDropdown} placement="bottom-end">
-            {#if $canWriteProjects}
-                <Button
-                    on:click={handleCreateProject}
-                    event="create_project"
-                    disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create project
-                </Button>
-            {/if}
+            <Tooltip disabled={$canWriteProjects}>
+                <div>
+                    <Button
+                        on:click={handleCreateProject}
+                        event="create_project"
+                        disabled={($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteProjects}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create project
+                    </Button>
+                </div>
+                <div slot="tooltip">Your role does not allow this action</div>
+            </Tooltip>
             <svelte:fragment slot="list">
                 <DropListItem on:click={() => (showCreate = true)}>Empty project</DropListItem>
                 <DropListItem on:click={importProject}>
