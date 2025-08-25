@@ -22,17 +22,15 @@ export const load = async ({ params, depends, parent }) => {
                 Query.orderDesc('')
             ]
         }),
-        sdk
-            .forProject(params.region, params.project)
-            .proxy.listRules({
-                queries: [
-                    Query.equal('type', RuleType.DEPLOYMENT),
-                    Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
-                    Query.equal('deploymentResourceId', site.$id),
-                    Query.equal('deploymentId', site.deploymentId),
-                    Query.orderDesc('')
-                ]
-            })
+        sdk.forProject(params.region, params.project).proxy.listRules({
+            queries: [
+                Query.equal('type', RuleType.DEPLOYMENT),
+                Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
+                Query.equal('deploymentResourceId', site.$id),
+                Query.equal('deploymentId', site.deploymentId),
+                Query.orderDesc('')
+            ]
+        })
     ]);
 
     const deployment = deploymentList?.total

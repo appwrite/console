@@ -23,8 +23,8 @@
             );
             $emailTemplate = await loadEmailTemplate(
                 $project.$id,
-                $emailTemplate.type,
-                $emailTemplate.locale
+                $emailTemplate.type as EmailTemplateType,
+                $emailTemplate.locale as EmailTemplateLocale
             );
             $baseEmailTemplate = { ...$emailTemplate };
             addNotification({

@@ -9,14 +9,9 @@ export const load = async ({ depends, params, parent }) => {
     depends(Dependencies.DOMAINS);
 
     const [rules, domains] = await Promise.all([
-        sdk
-            .forProject(params.region, params.project)
-            .proxy.listRules({
-                queries: [
-                    Query.equal('type', RuleType.API),
-                    Query.equal('trigger', RuleTrigger.MANUAL)
-                ]
-            }),
+        sdk.forProject(params.region, params.project).proxy.listRules({
+            queries: [Query.equal('type', RuleType.API), Query.equal('trigger', RuleTrigger.MANUAL)]
+        }),
         isCloud
             ? sdk.forConsole.domains.list({ queries: [Query.equal('teamId', organization.$id)] })
             : Promise.resolve(null)
