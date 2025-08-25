@@ -85,7 +85,7 @@
                     </Table.Row.Base>
                 {/each}
                 {#each currentAggregation.projectBreakdown as projectBreakdown}
-                    <Accordion title="{projectBreakdown.name}">
+                    <Accordion title={projectBreakdown.name}>
                         <svelte:fragment slot="end">
                             {formatCurrency(projectBreakdown.amount)}
                         </svelte:fragment>
@@ -96,9 +96,7 @@
                                 {/if}
 
                                 <Layout.Stack gap="xxxs">
-                                    <Layout.Stack
-                                        direction="row"
-                                        justifyContent="space-between">
+                                    <Layout.Stack direction="row" justifyContent="space-between">
                                         <Typography.Text color="--fgcolor-neutral-primary">
                                             {resource.resourceId}
                                         </Typography.Text>
