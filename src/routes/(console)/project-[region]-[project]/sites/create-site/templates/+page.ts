@@ -10,7 +10,9 @@ export const load = async ({ url, params }) => {
 
     const siteTemplatesList = await sdk
         .forProject(params.region, params.project)
-        .sites.listTemplates(undefined, undefined, 100);
+        .sites.listTemplates({
+            limit: 100
+        });
 
     const useCasesSet = new Set<string>();
     const frameworksSet = new Set<string>();

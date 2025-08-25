@@ -8,7 +8,7 @@ export const joinWaitlistSites = (user: Account) => {
         joinWaitlistSites: true
     };
 
-    sdk.forConsole.account.updatePrefs(newPrefs);
+    sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
 
     if (sessionStorage) {
         sessionStorage.setItem('joinWaitlistSites', 'true');

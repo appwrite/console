@@ -14,7 +14,9 @@
     let error: string;
     const handleSubmit = async () => {
         try {
-            await sdk.forProject(page.params.region, page.params.project).sites.delete(site.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.delete({ siteId: site.$id });
             showDelete = false;
             addNotification({
                 type: 'success',

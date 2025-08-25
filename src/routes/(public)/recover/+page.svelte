@@ -24,7 +24,10 @@
 
     async function recover() {
         try {
-            await sdk.forConsole.account.createRecovery(email, window.location.toString());
+            await sdk.forConsole.account.createRecovery({
+                email,
+                url: window.location.toString()
+            });
             addNotification({
                 type: 'success',
                 message: 'We have sent you an email with a password reset link'
@@ -44,7 +47,11 @@
             if (password !== confirmPassword) {
                 throw new Error('Passwords do not match');
             }
-            await sdk.forConsole.account.updateRecovery(userId, secret, password);
+            await sdk.forConsole.account.updateRecovery({
+                userId,
+                secret,
+                password
+            });
             await goto(`${base}/login`);
             addNotification({
                 type: 'success',

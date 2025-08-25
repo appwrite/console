@@ -9,7 +9,7 @@ export const load: LayoutLoad = async ({ depends }) => {
     depends(Dependencies.IDENTITIES);
 
     const [factors, identities] = await Promise.all([
-        sdk.forConsole.account.listMfaFactors(),
+        sdk.forConsole.account.listMFAFactors(),
         sdk.forConsole.account.listIdentities()
     ]);
 

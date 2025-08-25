@@ -18,7 +18,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .messaging.delete(message.$id);
+                .messaging.delete({ messageId: message.$id });
             show = false;
             let notificationMessage = '';
             switch (message.status) {

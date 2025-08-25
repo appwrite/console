@@ -14,7 +14,9 @@
     let error: string;
     const deleteUser = async () => {
         try {
-            await sdk.forProject(page.params.region, page.params.project).users.delete($user.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .users.delete({ userId: $user.$id });
             showDelete = false;
             addNotification({
                 type: 'success',

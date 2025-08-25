@@ -48,9 +48,10 @@
     async function request() {
         if (!show) return;
         isLoading = true;
-        results = await sdk
-            .forProject(page.params.region, page.params.project)
-            .users.list([Query.limit(5), Query.offset(offset)], search || undefined);
+        results = await sdk.forProject(page.params.region, page.params.project).users.list({
+            queries: [Query.limit(5), Query.offset(offset)],
+            search: search || undefined
+        });
         isLoading = false;
     }
 

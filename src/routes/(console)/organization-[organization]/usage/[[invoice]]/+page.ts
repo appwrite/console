@@ -55,7 +55,7 @@ export const load: PageLoad = async ({ params, parent }) => {
         // so it is fine to use this check and fetch memberships conditionally!
         !plan?.addons?.seats?.supported
             ? null
-            : sdk.forConsole.teams.listMemberships(org.$id, [Query.limit(100)])
+            : sdk.forConsole.teams.listMemberships({ teamId: org.$id, queries: [Query.limit(100)] })
     ]);
 
     return {
@@ -76,7 +76,9 @@ function getUsageProjects(usage: OrganizationUsage) {
         for (let index = 0; index < usage.projects.length; index += limit) {
             const chunkIds = usage.projects.slice(index, index + limit).map((p) => p.projectId);
             requests.push(
-                sdk.forConsole.projects.list([Query.limit(limit), Query.equal('$id', chunkIds)])
+                sdk.forConsole.projects.list({
+                    queries: [Query.limit(limit), Query.equal('$id', chunkIds)]
+                })
             );
         }
 

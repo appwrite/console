@@ -21,7 +21,10 @@
         try {
             const team = await sdk
                 .forProject(page.params.region, page.params.project)
-                .teams.create(id ?? ID.unique(), name);
+                .teams.create({
+                    teamId: id ?? ID.unique(),
+                    name
+                });
             name = '';
             showCreate = false;
             showCustomId = false;

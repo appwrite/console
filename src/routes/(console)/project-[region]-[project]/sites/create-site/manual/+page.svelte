@@ -63,59 +63,43 @@
             const buildRuntime = Object.values(BuildRuntime).find(
                 (f) => f === framework.buildRuntime
             );
-            let site = await sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.create(
-                    id || ID.unique(),
-                    name,
-                    fr,
-                    buildRuntime,
-                    undefined,
-                    undefined,
-                    undefined,
-                    installCommand || undefined,
-                    buildCommand || undefined,
-                    outputDirectory || undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined
-                );
+            let site = await sdk.forProject(page.params.region, page.params.project).sites.create({
+                siteId: id || ID.unique(),
+                name,
+                framework: fr,
+                buildRuntime,
+                installCommand: installCommand || undefined,
+                buildCommand: buildCommand || undefined,
+                outputDirectory: outputDirectory || undefined
+            });
 
             // Add domain
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .proxy.createSiteRule(
-                    `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
-                    site.$id
-                );
+            await sdk.forProject(page.params.region, page.params.project).proxy.createSiteRule({
+                domain: `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
+                siteId: site.$id
+            });
 
             //Add variables
             const promises = variables.map((variable) =>
-                sdk
-                    .forProject(page.params.region, page.params.project)
-                    .sites.createVariable(
-                        site.$id,
-                        variable.key,
-                        variable.value,
-                        variable?.secret ?? false
-                    )
+                sdk.forProject(page.params.region, page.params.project).sites.createVariable({
+                    siteId: site.$id,
+                    key: variable.key,
+                    value: variable.value,
+                    secret: variable?.secret ?? false
+                })
             );
             await Promise.all(promises);
 
             const deployment = await sdk
                 .forProject(page.params.region, page.params.project)
-                .sites.createDeployment(
-                    site.$id,
-                    files[0],
-                    true,
-                    installCommand || undefined,
-                    buildCommand || undefined,
-                    outputDirectory || undefined
-                );
+                .sites.createDeployment({
+                    siteId: site.$id,
+                    code: files[0],
+                    activate: true,
+                    installCommand: installCommand || undefined,
+                    buildCommand: buildCommand || undefined,
+                    outputDirectory: outputDirectory || undefined
+                });
 
             trackEvent(Submit.SiteCreate, {
                 source: 'manual',

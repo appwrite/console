@@ -10,7 +10,9 @@ export function getPage(url: URL): number {
 }
 
 export function getLimit(url: URL, route: Page['route'], fallback: number): number {
-    return Number(url.searchParams.get('limit') ?? preferences.get(route).limit ?? fallback);
+    return Number(
+        url.searchParams.get('limit') ?? preferences.getForRoute(route).limit ?? fallback
+    );
 }
 
 export enum View {
@@ -19,7 +21,7 @@ export enum View {
 }
 
 export function getView(url: URL, route: Page['route'], fallback: View, overwrite?: View): View {
-    const view = url.searchParams.get('view') ?? preferences.get(route).view;
+    const view = url.searchParams.get('view') ?? preferences.getForRoute(route).view;
 
     return view === View.Grid
         ? View.Grid
@@ -29,7 +31,7 @@ export function getView(url: URL, route: Page['route'], fallback: View, overwrit
 }
 
 export function getColumns(route: Page['route'], fallback: string[]): string[] {
-    return preferences.get(route).columns ?? fallback;
+    return preferences.getForRoute(route).columns ?? fallback;
 }
 
 export function getSearch(url: URL): string | undefined {

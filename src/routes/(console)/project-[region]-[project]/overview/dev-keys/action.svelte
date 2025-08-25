@@ -21,7 +21,11 @@
     async function create() {
         try {
             isSubmitting = true;
-            const { $id } = await sdk.forConsole.projects.createDevKey(projectId, name, expire);
+            const { $id } = await sdk.forConsole.projects.createDevKey({
+                projectId,
+                name,
+                expire
+            });
 
             $showDevKeysCreateModal = false;
             trackEvent(Submit.DevKeyCreate);

@@ -10,6 +10,9 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     return {
         header: Header,
         breadcrumbs: Breadcrumbs,
-        webhook: await sdk.forConsole.projects.getWebhook(params.project, params.webhook)
+        webhook: await sdk.forConsole.projects.getWebhook({
+            projectId: params.project,
+            webhookId: params.webhook
+        })
     };
 };

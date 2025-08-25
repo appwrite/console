@@ -48,3 +48,21 @@ export async function checkForDatabaseBackupPolicies(
         });
     }
 }
+
+function createSubNavigationTrigger() {
+    const subscribers = new Set<() => void>();
+
+    return {
+        subscribe: (callback: () => void) => {
+            subscribers.add(callback);
+            return () => {
+                subscribers.delete(callback);
+            };
+        },
+        update: () => {
+            subscribers.forEach((callback) => callback());
+        }
+    };
+}
+
+export const subNavigation = createSubNavigationTrigger();

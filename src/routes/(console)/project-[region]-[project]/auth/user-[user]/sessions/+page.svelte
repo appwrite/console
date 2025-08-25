@@ -20,7 +20,7 @@
         const code = clientCode.toLowerCase();
         if (!isValueOfStringEnum(Browser, code)) return '';
 
-        return sdk.forConsole.avatars.getBrowser(code, 40, 40);
+        return sdk.forConsole.avatars.getBrowser({ code, width: 40, height: 40 });
     }
 </script>
 

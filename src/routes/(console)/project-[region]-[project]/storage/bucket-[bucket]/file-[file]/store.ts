@@ -8,8 +8,8 @@ export const file = derived(page, ($page) => $page.data.file as Models.File);
 export const tokens = derived(page, ($page) => $page.data.tokens as Models.ResourceTokenList);
 
 export const columns = writable<Column[]>([
-    { id: 'created', title: 'Created', type: 'datetime', width: 200 },
-    { id: 'expire', title: 'Expiration', type: 'datetime', width: 200 },
-    { id: 'last_accessed', title: 'Last accessed', type: 'datetime', width: 200 },
+    { id: 'created', title: 'Created', type: 'datetime', width: { min: 200 } },
+    { id: 'expire', title: 'Expiration', type: 'datetime', width: { min: 200 } },
+    { id: 'last_accessed', title: 'Last accessed', type: 'datetime', width: { min: 200 } },
     { id: 'actions', title: '', type: 'string', width: 60 }
 ]);

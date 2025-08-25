@@ -15,7 +15,10 @@
 
     async function deleteDomain() {
         try {
-            await sdk.forConsole.domains.deleteRecord(page.params.domain, selectedRecord.$id);
+            await sdk.forConsole.domains.deleteRecord({
+                domainId: page.params.domain,
+                recordId: selectedRecord.$id
+            });
             await invalidate(Dependencies.DOMAINS);
             show = false;
             addNotification({

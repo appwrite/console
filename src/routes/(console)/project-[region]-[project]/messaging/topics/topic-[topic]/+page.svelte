@@ -59,7 +59,11 @@
         const promises = targetIds.map(async (targetId) => {
             const subscriber = await sdk
                 .forProject(page.params.region, page.params.project)
-                .messaging.createSubscriber(page.params.topic, ID.unique(), targetId);
+                .messaging.createSubscriber({
+                    topicId: page.params.topic,
+                    subscriberId: ID.unique(),
+                    targetId
+                });
             subscribersByTargetId[targetId] = subscriber;
         });
 

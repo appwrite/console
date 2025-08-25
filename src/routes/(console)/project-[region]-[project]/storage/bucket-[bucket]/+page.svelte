@@ -35,7 +35,12 @@
         return (
             sdk
                 .forProject(page.params.region, page.params.project)
-                .storage.getFilePreview(bucketId, fileId, 128, 128)
+                .storage.getFilePreview({
+                    bucketId,
+                    fileId,
+                    height: 128,
+                    width: 128
+                })
                 .toString() + '&mode=admin'
         );
     }
@@ -50,7 +55,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .storage.deleteFile(file.bucketId, file.$id);
+                .storage.deleteFile({ bucketId: file.bucketId, fileId: file.$id });
             await invalidate(Dependencies.FILES);
             await uploader.removeFile(file);
             trackEvent(Submit.FileDelete);

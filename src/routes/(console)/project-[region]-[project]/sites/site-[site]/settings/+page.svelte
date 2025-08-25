@@ -20,9 +20,12 @@
     export let data;
 
     const sdkCreateVariable = async (key: string, value: string, secret: boolean) => {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .sites.createVariable(page.params.site, key, value, secret);
+        await sdk.forProject(page.params.region, page.params.project).sites.createVariable({
+            siteId: page.params.site,
+            key,
+            value,
+            secret
+        });
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
 
@@ -34,14 +37,14 @@
     ) => {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .sites.updateVariable(page.params.site, variableId, key, value, secret);
+            .sites.updateVariable({ siteId: page.params.site, variableId, key, value, secret });
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
 
     const sdkDeleteVariable = async (variableId: string) => {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .sites.deleteVariable(page.params.site, variableId);
+            .sites.deleteVariable({ siteId: page.params.site, variableId });
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
 

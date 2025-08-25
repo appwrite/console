@@ -7,6 +7,6 @@ export const load: PageLoad = async ({ params }) => {
         localeCodes: codes.localeCodes,
         memberships: await sdk
             .forProject(params.region, params.project)
-            .users.listMemberships(params.user)
+            .users.listMemberships({ userId: params.user })
     };
 };

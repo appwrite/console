@@ -10,7 +10,9 @@ export const load: LayoutLoad = async ({ depends, params }) => {
 
     const [runtimesList, installations, specificationsList] = await Promise.all([
         sdk.forProject(params.region, params.project).functions.listRuntimes(),
-        sdk.forProject(params.region, params.project).vcs.listInstallations([Query.limit(100)]),
+        sdk
+            .forProject(params.region, params.project)
+            .vcs.listInstallations({ queries: [Query.limit(100)] }),
         sdk.forProject(params.region, params.project).functions.listSpecifications()
     ]);
 

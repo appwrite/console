@@ -39,12 +39,12 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         }
         if (prefs.organization !== params.organization) {
             const newPrefs = { ...prefs, organization: params.organization };
-            sdk.forConsole.account.updatePrefs(newPrefs);
+            sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
         }
 
         const [organization, members, countryList, locale] = await Promise.all([
-            sdk.forConsole.teams.get(params.organization) as Promise<Organization>,
-            sdk.forConsole.teams.listMemberships(params.organization),
+            sdk.forConsole.teams.get({ teamId: params.organization }) as Promise<Organization>,
+            sdk.forConsole.teams.listMemberships({ teamId: params.organization }),
             sdk.forConsole.locale.listCountries(),
             sdk.forConsole.locale.get(),
             preferences.loadTeamPrefs(params.organization),
@@ -64,7 +64,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         };
     } catch (e) {
         const newPrefs = { ...prefs, organization: null };
-        sdk.forConsole.account.updatePrefs(newPrefs);
+        sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
         error(e.code, e.message);
     }
 };

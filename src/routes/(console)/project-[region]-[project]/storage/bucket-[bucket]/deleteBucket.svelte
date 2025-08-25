@@ -15,7 +15,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .storage.deleteBucket($bucket.$id);
+                .storage.deleteBucket({ bucketId: $bucket.$id });
             showDelete = false;
             addNotification({
                 type: 'success',

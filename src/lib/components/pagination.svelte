@@ -5,6 +5,7 @@
     export let sum: number;
     export let limit: number;
     export let offset: number;
+    export let useCreateLink = true;
 
     $: currentPage = Math.floor(offset / limit + 1);
 
@@ -18,6 +19,10 @@
 
         return url.toString();
     }
+
+    $: paginationProps = useCreateLink
+        ? ({ type: 'link', createLink: getLink } as const)
+        : ({ type: 'button', createLink: undefined as never } as const);
 </script>
 
-<Pagination page={currentPage} total={sum} {limit} createLink={getLink} type="link" />
+<Pagination on:page {limit} total={sum} page={currentPage} {...paginationProps} />

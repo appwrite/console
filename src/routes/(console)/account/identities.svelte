@@ -15,7 +15,7 @@
 
     async function deleteIdentity(id: string) {
         try {
-            await sdk.forConsole.account.deleteIdentity(id);
+            await sdk.forConsole.account.deleteIdentity({ identityId: id });
             addNotification({
                 message: 'Identity has been deleted',
                 type: 'success'

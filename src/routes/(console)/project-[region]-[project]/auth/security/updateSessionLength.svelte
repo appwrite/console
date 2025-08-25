@@ -17,7 +17,10 @@
 
     async function updateSessionLength() {
         try {
-            await sdk.forConsole.projects.updateAuthDuration(project.$id, $baseValue);
+            await sdk.forConsole.projects.updateAuthDuration({
+                projectId: project.$id,
+                duration: $baseValue
+            });
             await invalidate(Dependencies.PROJECT);
 
             addNotification({

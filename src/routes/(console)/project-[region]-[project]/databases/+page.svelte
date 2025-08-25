@@ -21,7 +21,6 @@
     export let data: PageData;
 
     let showCreate = false;
-    let isCreationDisabled = false;
     const project = page.params.project;
 
     async function handleCreate(event: CustomEvent<Models.Database>) {
@@ -38,7 +37,7 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: showCreate || isCreationDisabled || !$canWriteDatabases,
+            disabled: showCreate || !$canWriteDatabases,
             icon: IconPlus,
             group: 'databases',
             rank: 10
@@ -58,10 +57,7 @@
                 hideColumns={!data.databases.total}
                 hideView={!data.databases.total} />
             {#if $canWriteDatabases}
-                <Button
-                    on:click={() => (showCreate = true)}
-                    event="create_database"
-                    disabled={isCreationDisabled}>
+                <Button event="create_database" on:click={() => (showCreate = true)}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create database
                 </Button>

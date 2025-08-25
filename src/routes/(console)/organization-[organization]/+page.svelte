@@ -98,12 +98,12 @@
     const importProject = async () => {
         try {
             loading.set(true);
-            const project = await sdk.forConsole.projects.create(
-                ID.unique(),
-                `Imported project ${new Date().toISOString()}`,
-                page.params.organization,
-                Region.Fra // default
-            );
+            const project = await sdk.forConsole.projects.create({
+                projectId: ID.unique(),
+                name: `Imported project ${new Date().toISOString()}`,
+                teamId: page.params.organization,
+                region: Region.Fra
+            });
             trackEvent(Submit.ProjectCreate, {
                 teamId: page.params.organization
             });

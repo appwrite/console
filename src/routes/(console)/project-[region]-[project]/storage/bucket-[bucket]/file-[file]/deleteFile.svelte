@@ -16,7 +16,7 @@
             const fileName = $file.name;
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .storage.deleteFile($file.bucketId, $file.$id);
+                .storage.deleteFile({ bucketId: $file.bucketId, fileId: $file.$id });
             showDelete = false;
 
             addNotification({

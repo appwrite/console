@@ -49,7 +49,7 @@
 
         const response = await sdk
             .forProject(page.params.region, page.params.project)
-            .messaging.listTopics(queries, search || undefined);
+            .messaging.listTopics({ queries, search: search || undefined });
 
         if (response.total !== 0) {
             switch (providerType) {

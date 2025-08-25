@@ -8,11 +8,12 @@
     import { Id } from '$lib/components';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Layout, Card } from '@appwrite.io/pink-svelte';
+    import { EmailTemplateLocale, EmailTemplateType } from '@appwrite.io/console';
 
     export let loading = false;
 
-    let locale = 'en';
     let isUpdating = false;
+    let locale = EmailTemplateLocale.En;
     const projectId = page.params.project;
 
     async function onLocaleChange() {
@@ -20,10 +21,10 @@
             isUpdating = true;
         }, 1000);
         try {
-            const template = await loadEmailTemplate(projectId, 'recovery', locale);
+            const template = await loadEmailTemplate(projectId, EmailTemplateType.Recovery, locale);
             emailTemplate.set(template);
             $baseEmailTemplate = { ...$emailTemplate };
-            trackEvent(Submit.EmailChangeLocale, { locale, type: 'recovery' });
+            trackEvent(Submit.EmailChangeLocale, { locale, type: EmailTemplateType.Recovery });
         } catch (error) {
             trackError(error, Submit.EmailChangeLocale);
             addNotification({

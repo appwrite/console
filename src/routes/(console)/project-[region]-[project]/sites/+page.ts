@@ -33,12 +33,10 @@ export const load = async ({ url, depends, route, params, parent }) => {
         offset,
         limit,
         search,
-        siteList: await sdk
-            .forProject(params.region, params.project)
-            .sites.list(
-                [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-                search || undefined
-            ),
+        siteList: await sdk.forProject(params.region, params.project).sites.list({
+            queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+            search: search || undefined
+        }),
         view
     };
 };

@@ -107,21 +107,21 @@
             $repositories.repositories = (
                 (await sdk
                     .forProject(page.params.region, page.params.project)
-                    .vcs.listRepositories(
+                    .vcs.listRepositories({
                         installationId,
-                        VCSDetectionType.Runtime,
-                        search || undefined
-                    )) as unknown as Models.ProviderRepositoryRuntimeList
+                        type: VCSDetectionType.Runtime,
+                        search: search || undefined
+                    })) as unknown as Models.ProviderRepositoryRuntimeList
             ).runtimeProviderRepositories; //TODO: remove forced cast after backend fixes
         } else {
             $repositories.repositories = (
                 (await sdk
                     .forProject(page.params.region, page.params.project)
-                    .vcs.listRepositories(
+                    .vcs.listRepositories({
                         installationId,
-                        VCSDetectionType.Framework,
-                        search || undefined
-                    )) as unknown as Models.ProviderRepositoryFrameworkList
+                        type: VCSDetectionType.Framework,
+                        search: search || undefined
+                    })) as unknown as Models.ProviderRepositoryFrameworkList
             ).frameworkProviderRepositories;
         }
         $repositories.search = search;

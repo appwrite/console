@@ -22,20 +22,18 @@
         }
 
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .storage.updateBucket(
-                    values.$id,
-                    values.name,
-                    values.$permissions,
-                    values.fileSecurity,
-                    values.enabled,
-                    values.maximumFileSize,
-                    values.allowedFileExtensions,
-                    values.compression,
-                    values.encryption,
-                    values.antivirus
-                );
+            await sdk.forProject(page.params.region, page.params.project).storage.updateBucket({
+                bucketId: values.$id,
+                name: values.name,
+                permissions: values.$permissions,
+                fileSecurity: values.fileSecurity,
+                enabled: values.enabled,
+                maximumFileSize: values.maximumFileSize,
+                allowedFileExtensions: values.allowedFileExtensions,
+                compression: values.compression,
+                encryption: values.encryption,
+                antivirus: values.antivirus
+            });
 
             await invalidate(Dependencies.BUCKET);
 

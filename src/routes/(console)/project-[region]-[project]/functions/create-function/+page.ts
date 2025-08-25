@@ -3,9 +3,7 @@ import { sdk } from '$lib/stores/sdk';
 export const load = async ({ parent, url, params }) => {
     const [{ installations }, { templates }] = await Promise.all([
         parent(),
-        sdk
-            .forProject(params.region, params.project)
-            .functions.listTemplates(undefined, undefined, 100)
+        sdk.forProject(params.region, params.project).functions.listTemplates({ limit: 100 })
     ]);
 
     return {

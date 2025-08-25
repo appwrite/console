@@ -18,9 +18,10 @@
 
     async function updateName() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .messaging.updateTopic($topic.$id, name);
+            await sdk.forProject(page.params.region, page.params.project).messaging.updateTopic({
+                topicId: $topic.$id,
+                name
+            });
             await invalidate(Dependencies.MESSAGING_TOPIC);
             addNotification({
                 message: 'Name has been updated',

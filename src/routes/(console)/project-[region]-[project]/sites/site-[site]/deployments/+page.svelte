@@ -45,28 +45,23 @@
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.update(
-                    data.site.$id,
-                    data.site.name,
-                    data.site.framework as Framework,
-                    data.site.enabled,
-                    data.site.logging || undefined,
-                    data.site.timeout,
-                    data.site.installCommand,
-                    data.site.buildCommand,
-                    data.site.outputDirectory,
-                    data.site.buildRuntime as BuildRuntime,
-                    data.site.adapter as Adapter,
-                    data.site.fallbackFile,
-                    selectedInstallationId,
-                    selectedRepository,
-                    'main',
-                    undefined,
-                    undefined,
-                    undefined
-                );
+            await sdk.forProject(page.params.region, page.params.project).sites.update({
+                siteId: data.site.$id,
+                name: data.site.name,
+                framework: data.site.framework as Framework,
+                enabled: data.site.enabled,
+                logging: data.site.logging || undefined,
+                timeout: data.site.timeout,
+                installCommand: data.site.installCommand,
+                buildCommand: data.site.buildCommand,
+                outputDirectory: data.site.outputDirectory,
+                buildRuntime: data.site.buildRuntime as BuildRuntime,
+                adapter: data.site.adapter as Adapter,
+                fallbackFile: data.site.fallbackFile,
+                installationId: selectedInstallationId,
+                providerRepositoryId: selectedRepository,
+                providerBranch: 'main'
+            });
             invalidate(Dependencies.SITE);
         } catch {
             return;

@@ -18,9 +18,9 @@ const getUserCommand = (user: Models.User<Models.Preferences>, region: string, p
     }) satisfies Command;
 
 export const userSearcher = (async (query: string) => {
-    const { users } = await sdk
-        .forProject(page.params.region, page.params.project)
-        .users.list([], query || undefined);
+    const { users } = await sdk.forProject(page.params.region, page.params.project).users.list({
+        search: query || undefined
+    });
 
     if (users.length === 1) {
         return [

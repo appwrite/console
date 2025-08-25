@@ -27,8 +27,14 @@
             await Promise.all(
                 keyIds.map((key) =>
                     isApiKey
-                        ? sdk.forConsole.projects.deleteKey(projectId, key)
-                        : sdk.forConsole.projects.deleteDevKey(projectId, key)
+                        ? sdk.forConsole.projects.deleteKey({
+                              projectId,
+                              keyId: key
+                          })
+                        : sdk.forConsole.projects.deleteDevKey({
+                              projectId,
+                              keyId: key
+                          })
                 )
             );
 

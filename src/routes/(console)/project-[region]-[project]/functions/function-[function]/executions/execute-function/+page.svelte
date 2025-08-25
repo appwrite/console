@@ -97,15 +97,15 @@
 
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.createExecution(
-                    func.$id,
+                .functions.createExecution({
+                    functionId: func.$id,
                     body,
-                    true,
-                    path,
+                    async: true,
+                    xpath: path,
                     method,
-                    headersObject,
-                    isScheduled ? dateTime.toISOString() : undefined
-                );
+                    headers: headersObject,
+                    scheduledAt: isScheduled ? dateTime.toISOString() : undefined
+                });
             await goto(
                 `${base}/project-${page.params.region}-${page.params.project}/functions/function-${func.$id}/executions`
             );

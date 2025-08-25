@@ -371,6 +371,8 @@ export async function checkForUsageLimit(org: Organization) {
             return;
         }
     }
+
+    // TODO: @itznotabug - check with @abnegate, what do we do here? this is billing!
     const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
     const resources = [
         { value: bandwidth, name: 'bandwidth' },
@@ -383,6 +385,7 @@ export async function checkForUsageLimit(org: Organization) {
     const members = org.total;
     const plan = get(currentPlan);
     const membersOverflow =
+        // `plan` can be null on `onboarding/create-organization` route.
         // nested null checks needed: GitHub Education plan have empty addons.
         members > plan?.addons?.seats?.limit
             ? members - (plan?.addons?.seats?.limit || members)

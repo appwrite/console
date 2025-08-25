@@ -13,7 +13,10 @@
 
     async function updateSessionAlerts() {
         try {
-            await sdk.forConsole.projects.updateSessionAlerts($project.$id, authSessionAlerts);
+            await sdk.forConsole.projects.updateSessionAlerts({
+                projectId: $project.$id,
+                alerts: authSessionAlerts
+            });
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',

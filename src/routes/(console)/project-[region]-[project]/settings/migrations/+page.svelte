@@ -88,17 +88,20 @@
     const deployToCloud = async () => {
         const currEndpoint = getCurrentEndpoint();
         // Create API key
-        const { secret } = await sdk.forConsole.projects.createKey(
-            $project.$id,
-            `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
-            [
+        const { secret } = await sdk.forConsole.projects.createKey({
+            projectId: $project.$id,
+            name: `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
+            scopes: [
                 'users.read',
                 'teams.read',
                 'databases.read',
-                'collections.read',
-                'attributes.read',
+                'collections.read' /* legacy */,
+                'attributes.read' /* legacy */,
                 'indexes.read',
-                'documents.read',
+                'documents.read' /* legacy */,
+                'tables.read',
+                'columns.read',
+                'rows.read',
                 'files.read',
                 'buckets.read',
                 'functions.read',
@@ -106,9 +109,8 @@
                 'locale.read',
                 'avatars.read',
                 'health.read'
-            ],
-            undefined
-        );
+            ]
+        });
 
         const migrationData = {
             endpoint: currEndpoint,

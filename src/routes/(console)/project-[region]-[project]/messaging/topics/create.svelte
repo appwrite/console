@@ -21,7 +21,10 @@
         try {
             const topic = await sdk
                 .forProject(page.params.region, page.params.project)
-                .messaging.createTopic(id ?? ID.unique(), name);
+                .messaging.createTopic({
+                    topicId: id ?? ID.unique(),
+                    name
+                });
             name = '';
             showCreate = false;
             showCustomId = false;

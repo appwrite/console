@@ -21,7 +21,10 @@
 
     async function create() {
         try {
-            const org = await sdk.forConsole.teams.create(ID.unique(), name);
+            const org = await sdk.forConsole.teams.create({
+                teamId: ID.unique(),
+                name
+            });
             await invalidate(Dependencies.ACCOUNT);
             dispatch('created');
             await goto(`${base}/organization-${org.$id}`);

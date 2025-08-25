@@ -12,6 +12,8 @@ export const load: PageLoad = async ({ url, route }) => {
     return {
         offset,
         limit,
-        logs: await sdk.forConsole.account.listLogs([Query.offset(offset), Query.limit(limit)])
+        logs: await sdk.forConsole.account.listLogs({
+            queries: [Query.offset(offset), Query.limit(limit)]
+        })
     };
 };

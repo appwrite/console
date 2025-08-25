@@ -3,13 +3,29 @@
     import Pagination from './pagination.svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
 
-    export let limit: number;
-    export let offset: number;
-    export let total: number;
-    export let name: string;
+    let {
+        limit,
+        offset,
+        total,
+        name,
+        useCreateLink = true
+    }: {
+        limit: number;
+        offset: number;
+        total: number;
+        name: string;
+        useCreateLink?: boolean;
+    } = $props();
+
+    const showLimit = $derived(!!useCreateLink);
+    const direction = $derived(showLimit ? 'row' : 'column');
+    const alignItems = $derived(showLimit ? 'center' : 'flex-end');
 </script>
 
-<Layout.Stack direction="row" alignItems="center" wrap="wrap" justifyContent="space-between">
-    <Limit {limit} sum={total} {name} />
-    <Pagination {limit} {offset} sum={total} />
+<Layout.Stack wrap="wrap" {direction} {alignItems} justifyContent="space-between">
+    {#if showLimit}
+        <Limit {limit} sum={total} {name} />
+    {/if}
+
+    <Pagination on:page {limit} {offset} sum={total} {useCreateLink} />
 </Layout.Stack>

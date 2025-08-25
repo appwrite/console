@@ -22,7 +22,10 @@
             const file = files[0];
             const content = await file.text();
 
-            await sdk.forConsole.domains.updateZone(page.params.domain, content);
+            await sdk.forConsole.domains.updateZone({
+                domainId: page.params.domain,
+                content
+            });
             invalidate(Dependencies.DOMAIN);
             show = false;
             addNotification({

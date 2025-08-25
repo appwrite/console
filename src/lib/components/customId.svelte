@@ -1,26 +1,40 @@
 <script lang="ts">
-    import { Click, trackEvent } from '$lib/actions/analytics';
     import { InputId } from '$lib/elements/forms';
     import { InputProjectId } from '$lib/elements/forms';
     import Button from '$lib/elements/forms/button.svelte';
     import { IconX } from '@appwrite.io/pink-icons-svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { Card, Divider, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
-    export let show = false;
-    export let name: string;
-    export let id: string;
-    export let autofocus = true;
-    export let isProject = false;
-    $: if (!show) {
-        id = null;
-    }
 
-    $: if (!id?.length) {
-        id = null;
-    }
+    let {
+        show = $bindable(false),
+        name,
+        id = $bindable(null),
+        autofocus = true,
+        isProject = false,
+        required = true
+    }: {
+        show: boolean;
+        name: string;
+        id: string;
+        autofocus?: boolean;
+        isProject?: boolean;
+        required?: boolean;
+    } = $props();
 
-    $: if (show) {
-        trackEvent(Click.ShowCustomIdClick);
-    }
+    $effect(() => {
+        if (!show) {
+            id = null;
+        }
+
+        if (!id?.length) {
+            id = null;
+        }
+
+        if (show) {
+            trackEvent(Click.ShowCustomIdClick);
+        }
+    });
 </script>
 
 {#if show}
@@ -45,9 +59,9 @@
                 <Divider />
             </span>
             {#if isProject}
-                <InputProjectId bind:value={id} {autofocus} />
+                <InputProjectId on:input bind:value={id} {autofocus} />
             {:else}
-                <InputId required bind:value={id} {autofocus} />
+                <InputId {required} on:input bind:value={id} {autofocus} />
             {/if}
         </Layout.Stack>
     </Card.Base>

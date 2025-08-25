@@ -51,4 +51,5 @@
     on:input
     bind:value>
     <slot name="info" slot="info" />
+    <slot name="end" slot="end" />
 </Input.Textarea>

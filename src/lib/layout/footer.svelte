@@ -12,11 +12,17 @@
         Badge
     } from '@appwrite.io/pink-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { page } from '$app/state';
 
     const currentYear = new Date().getFullYear();
+
+    const hideFooter = $derived.by(() => {
+        const endings = ['table-[table]', 'table-[table]/columns', 'table-[table]/indexes'];
+        return endings.some((end) => page.route.id?.endsWith(end));
+    });
 </script>
 
-<footer>
+<footer class:hide={hideFooter}>
     <Divider />
     <Layout.Stack direction={$isSmallViewport ? 'column-reverse' : 'row'}>
         <Layout.Stack
@@ -171,12 +177,20 @@
         flex-direction: column;
         gap: var(--gap-l);
         margin-inline: 2rem;
+
+        &.hide {
+            display: none;
+        }
     }
 
     :global(main:has(.sub-navigation)) footer {
         @media (min-width: 1024px) {
-            margin-inline-start: -1.5rem;
             margin-inline-end: 2rem;
+            margin-inline-start: -1.5rem;
         }
+    }
+
+    :global(main:has(.wide-screen-wrapper)) footer {
+        margin-inline-start: 2rem !important;
     }
 </style>

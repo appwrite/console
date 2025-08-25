@@ -1,14 +1,15 @@
 import { sdk } from '$lib/stores/sdk';
-import { FunctionUsageRange } from '@appwrite.io/console';
+import { UsageRange } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import { isValueOfStringEnum } from '$lib/helpers/types';
 
 export const load: PageLoad = async ({ params }) => {
-    const period = isValueOfStringEnum(FunctionUsageRange, params.period)
+    const period = isValueOfStringEnum(UsageRange, params.period)
         ? params.period
-        : FunctionUsageRange.ThirtyDays;
+        : UsageRange.ThirtyDays;
 
-    return sdk
-        .forProject(params.region, params.project)
-        .functions.getUsage(params.function, period);
+    return sdk.forProject(params.region, params.project).functions.getUsage({
+        functionId: params.function,
+        range: period
+    });
 };

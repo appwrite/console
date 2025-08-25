@@ -10,7 +10,7 @@ const handleGithubEducationMembership = async (name: string, email: string) => {
         if (result.error.code === 409) {
             redirect(303, `${base}/account/organizations`);
         } else {
-            await sdk.forConsole.account.deleteSession('current');
+            await sdk.forConsole.account.deleteSession({ sessionId: 'current' });
             redirect(
                 303,
                 `${base}/education/error?message=${result.error.message}&code=${result.error.code}`

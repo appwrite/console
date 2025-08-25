@@ -15,7 +15,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .users.deleteSession(page.params.user, selectedSessionId);
+                .users.deleteSession({ userId: page.params.user, sessionId: selectedSessionId });
             await invalidate(Dependencies.SESSIONS);
             showDelete = false;
             addNotification({

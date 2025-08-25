@@ -1,22 +1,25 @@
 <script context="module" lang="ts">
-    import type {
-        SmsTemplateLocale,
-        SmsTemplateType,
+    import {
+        EmailTemplateLocale,
         EmailTemplateType,
-        EmailTemplateLocale
+        SmsTemplateLocale,
+        SmsTemplateType
     } from '@appwrite.io/console';
 
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
 
-    export async function loadEmailTemplate(projectId: string, type: string, locale: string) {
+    export async function loadEmailTemplate(
+        projectId: string,
+        type: EmailTemplateType,
+        locale: EmailTemplateLocale
+    ) {
         try {
-            // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
-            return await sdk.forConsole.projects.getEmailTemplate(
+            return await sdk.forConsole.projects.getEmailTemplate({
                 projectId,
-                type as EmailTemplateType,
-                locale as EmailTemplateLocale
-            );
+                type: type,
+                locale: locale
+            });
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -24,14 +27,17 @@
             });
         }
     }
-    export async function loadSmsTemplate(projectId: string, type: string, locale: string) {
+    export async function loadSmsTemplate(
+        projectId: string,
+        type: SmsTemplateType,
+        locale: SmsTemplateLocale
+    ) {
         try {
-            // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
-            return await sdk.forConsole.projects.getSmsTemplate(
+            return await sdk.forConsole.projects.getSMSTemplate({
                 projectId,
-                type as SmsTemplateType,
-                locale as SmsTemplateLocale
-            );
+                type,
+                locale
+            });
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -59,22 +65,22 @@
     let isTemplateLoading = false;
     let openStates = Object.fromEntries(templates.map(({ key }) => [key, false]));
 
-    loadTemplateFor('verification');
+    loadTemplateFor(EmailTemplateType.Verification);
 
-    async function loadTemplateFor(type: string) {
+    async function loadTemplateFor(type: EmailTemplateType) {
         // return, already loaded!
         if (templateType === type) return;
 
         templateType = type;
         isTemplateLoading = true;
 
-        $emailTemplate = await loadEmailTemplate(page.params.project, type, 'en');
+        $emailTemplate = await loadEmailTemplate(page.params.project, type, EmailTemplateLocale.En);
         $baseEmailTemplate = { ...$emailTemplate };
 
         isTemplateLoading = false;
     }
 
-    function toggleAccordion(type: string) {
+    function toggleAccordion(type: EmailTemplateType) {
         for (const key in openStates) {
             openStates[key] = false;
         }

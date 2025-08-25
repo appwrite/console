@@ -30,7 +30,9 @@
                     ? LockedBackupsDarkMobile
                     : LockedBackupsLightMobile}
                 alt="create"
-                aria-hidden="true" />
+                aria-hidden="true"
+                height="425"
+                style:width="100vw" />
         </div>
 
         <!-- tablet, only policies are shown but bigger table-->
@@ -46,9 +48,11 @@
                     ? LockedBackupsDarkTablet
                     : LockedBackupsLightTablet}
                 alt="create"
-                aria-hidden="true" />
+                height="425"
+                aria-hidden="true"
+                style:width="100vw" />
         </div>
-
+        <!-- desktop, policies and backups table is shown -->
         <div class="is-desktop u-flex-vertical u-gap-16">
             <div class="desktop-locked-card-buttons u-flex u-gap-24">
                 <div style="width: 31%">
@@ -73,7 +77,9 @@
                     ? LockedBackupsDarkDesktop
                     : LockedBackupsLightDesktop}
                 alt="create"
-                aria-hidden="true" />
+                aria-hidden="true"
+                height="580"
+                style:width="100vw" />
         </div>
     </div>
 </div>

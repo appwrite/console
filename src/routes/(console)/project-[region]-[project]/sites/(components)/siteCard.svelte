@@ -46,23 +46,13 @@
     }
 
     function getFilePreview(fileId: string) {
-        return sdk
-            .forConsoleIn(page.params.region)
-            .storage.getFilePreview(
-                'screenshots',
-                fileId,
-                1024,
-                576,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                ImageFormat.Webp
-            );
+        return sdk.forConsoleIn(page.params.region).storage.getFilePreview({
+            bucketId: 'screenshots',
+            fileId,
+            width: 1024,
+            height: 576,
+            output: ImageFormat.Webp
+        });
     }
 </script>
 

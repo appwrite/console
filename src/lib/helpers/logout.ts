@@ -6,7 +6,7 @@ import { base } from '$app/paths';
 import { uploader } from '$lib/stores/uploader';
 
 export async function logout(redirect: boolean = true) {
-    await sdk.forConsole.account.deleteSession('current');
+    await sdk.forConsole.account.deleteSession({ sessionId: 'current' });
     await invalidate(Dependencies.ACCOUNT);
     uploader.reset();
     trackEvent(Submit.AccountLogout);

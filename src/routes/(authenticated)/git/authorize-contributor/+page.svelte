@@ -38,11 +38,11 @@
         success = '';
 
         try {
-            await vcs.updateExternalDeployments(
+            await vcs.updateExternalDeployments({
                 installationId,
                 repositoryId,
                 providerPullRequestId
-            );
+            });
             success = 'Deployment approved successfully! Build will start soon.';
         } catch (e) {
             error = e.message;

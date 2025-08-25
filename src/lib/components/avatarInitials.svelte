@@ -9,7 +9,9 @@
     export let size: AvatarProps['size'] = 'm';
     export let background: string | undefined = undefined;
 
-    $: src = sdk.forConsole.avatars.getInitials(name, 192, 192, background).toString();
+    $: src = sdk.forConsole.avatars
+        .getInitials({ name, width: 192, height: 192, background })
+        .toString();
 </script>
 
 <Avatar alt={name} {size} {src} />

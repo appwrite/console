@@ -7,7 +7,10 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ params, depends }) => {
     depends(Dependencies.DEV_KEY);
 
-    const key = await sdk.forConsole.projects.getDevKey(params.project, params.key);
+    const key = await sdk.forConsole.projects.getDevKey({
+        projectId: params.project,
+        keyId: params.key
+    });
     if (key.expire) {
         key.expire = new Date(key.expire).toISOString().slice(0, 23);
     } else {

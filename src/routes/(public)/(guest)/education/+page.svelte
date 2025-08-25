@@ -10,12 +10,12 @@
 
     function onGithubLogin() {
         localStorage.setItem('githubEducationProgram', 'true');
-        sdk.forConsole.account.createOAuth2Session(
-            OAuthProvider.Github,
-            window.location.origin + '/console/education?success',
-            window.location.origin + '/console/education?failure',
-            ['read:user', 'user:email']
-        );
+        sdk.forConsole.account.createOAuth2Session({
+            provider: OAuthProvider.Github,
+            success: window.location.origin + '/console/education?success',
+            failure: window.location.origin + '/console/education?failure',
+            scopes: ['read:user', 'user:email']
+        });
     }
 </script>
 

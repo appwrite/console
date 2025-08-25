@@ -36,7 +36,11 @@
 
     const beforeSubmit = async () => {
         if (projectType === 'existing') return;
-        const project = await sdk.forConsole.projects.create(ID.unique(), newProjName, selectedOrg);
+        const project = await sdk.forConsole.projects.create({
+            projectId: ID.unique(),
+            name: newProjName,
+            teamId: selectedOrg
+        });
         selectedProject.set(project.$id);
     };
 </script>

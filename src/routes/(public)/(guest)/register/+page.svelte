@@ -29,8 +29,16 @@
     async function register() {
         try {
             disabled = true;
-            await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
-            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
+            await sdk.forConsole.account.create({
+                userId: ID.unique(),
+                email: mail,
+                password: pass,
+                name: name ?? ''
+            });
+            await sdk.forConsole.account.createEmailPasswordSession({
+                email: mail,
+                password: pass
+            });
 
             trackEvent(Submit.AccountCreate, {
                 campaign_name: data?.couponData?.code,
@@ -73,12 +81,12 @@
     }
 
     function onGithubLogin() {
-        sdk.forConsole.account.createOAuth2Session(
-            OAuthProvider.Github,
-            window.location.origin,
-            window.location.origin,
-            ['read:user', 'user:email']
-        );
+        sdk.forConsole.account.createOAuth2Session({
+            provider: OAuthProvider.Github,
+            success: window.location.origin,
+            failure: window.location.origin,
+            scopes: ['read:user', 'user:email']
+        });
     }
 </script>
 

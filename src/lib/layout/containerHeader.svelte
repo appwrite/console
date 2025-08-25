@@ -45,6 +45,8 @@
         users: 1,
         executions: 1
     };
+
+    // TODO: @itznotabug - check with @abnegate, what do we do here? this is billing!
     const limitedServices = [
         { name: 'bandwidth', value: bandwidth },
         { name: 'documents', value: documents },

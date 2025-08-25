@@ -58,7 +58,7 @@
     async function sdkCreateVariable(key: string, value: string, secret: boolean) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .projectApi.createVariable(key, value, secret);
+            .projectApi.createVariable({ key, value, secret });
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
 
@@ -70,14 +70,14 @@
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .projectApi.updateVariable(variableId, key, value, secret);
+            .projectApi.updateVariable({ variableId, key, value, secret });
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
 
     async function sdkDeleteVariable(variableId: string) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .projectApi.deleteVariable(variableId);
+            .projectApi.deleteVariable({ variableId });
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
 </script>

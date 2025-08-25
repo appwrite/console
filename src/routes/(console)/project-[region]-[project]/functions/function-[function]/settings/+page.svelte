@@ -28,9 +28,12 @@
     let showAlert = true;
 
     const sdkCreateVariable = async (key: string, value: string, secret?: boolean) => {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .functions.createVariable(data.function.$id, key, value, secret);
+        await sdk.forProject(page.params.region, page.params.project).functions.createVariable({
+            functionId: data.function.$id,
+            key,
+            value,
+            secret
+        });
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 
@@ -40,16 +43,20 @@
         value: string,
         secret?: boolean
     ) => {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .functions.updateVariable(data.function.$id, variableId, key, value, secret);
+        await sdk.forProject(page.params.region, page.params.project).functions.updateVariable({
+            functionId: data.function.$id,
+            variableId,
+            key,
+            value,
+            secret
+        });
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 
     const sdkDeleteVariable = async (variableId: string) => {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .functions.deleteVariable(data.function.$id, variableId);
+            .functions.deleteVariable({ functionId: data.function.$id, variableId });
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 </script>

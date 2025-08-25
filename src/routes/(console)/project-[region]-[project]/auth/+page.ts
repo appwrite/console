@@ -20,8 +20,9 @@ export const load: PageLoad = async ({ url, route, params }) => {
         limit,
         search,
         page,
-        users: await sdk
-            .forProject(params.region, params.project)
-            .users.list([Query.limit(limit), Query.offset(offset), Query.orderDesc('')], search)
+        users: await sdk.forProject(params.region, params.project).users.list({
+            queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+            search
+        })
     };
 };

@@ -35,7 +35,7 @@ function updateNotificationPrefs(parsedPrefs: Record<string, NotificationPrefIte
         notificationPrefs: parsedPrefs
     };
 
-    sdk.forConsole.account.updatePrefs(newPrefs);
+    sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
 }
 
 /**

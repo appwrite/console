@@ -56,7 +56,11 @@
             if (repositoryBehaviour === 'new') {
                 const repo = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .vcs.createRepository($installation.$id, repositoryName, repositoryPrivate);
+                    .vcs.createRepository({
+                        installationId: $installation.$id,
+                        name: repositoryName,
+                        xprivate: repositoryPrivate
+                    });
                 repository.set(repo);
                 selectedRepository = repo.id;
             }

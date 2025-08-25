@@ -33,17 +33,15 @@ export const load: PageLoad = async ({ depends, url, route, params }) => {
         query,
         page,
         view,
-        messages: (await sdk
-            .forProject(params.region, params.project)
-            .messaging.listMessages(
-                [
-                    Query.limit(limit),
-                    Query.offset(offset),
-                    Query.orderDesc(''),
-                    ...parsedQueries.values()
-                ],
-                search || undefined
-            )) as {
+        messages: (await sdk.forProject(params.region, params.project).messaging.listMessages({
+            queries: [
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.orderDesc(''),
+                ...parsedQueries.values()
+            ],
+            search: search || undefined
+        })) as {
             total: number;
             messages: (Models.Message & { data: Record<string, string> })[]; // Add typing for message.data
         }

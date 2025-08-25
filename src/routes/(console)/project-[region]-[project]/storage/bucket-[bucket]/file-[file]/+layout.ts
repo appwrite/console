@@ -13,9 +13,9 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         breadcrumbs: Breadcrumbs,
         file: await sdk
             .forProject(params.region, params.project)
-            .storage.getFile(params.bucket, params.file),
+            .storage.getFile({ bucketId: params.bucket, fileId: params.file }),
         tokens: await sdk
             .forProject(params.region, params.project)
-            .tokens.list(params.bucket, params.file)
+            .tokens.list({ bucketId: params.bucket, fileId: params.file })
     };
 };

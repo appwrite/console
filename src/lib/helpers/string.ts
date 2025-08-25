@@ -60,3 +60,12 @@ export const hostnameRegex = String.raw`(\*)|(\*\.)?(?!-)[A-Za-z0-9\-]+([\-\.]{1
  * Supports domains, localhost, wildcards, ip-addresses and Chrome extension IDs!
  */
 export const extendedHostnameRegex = String.raw`(\*)|(\*\.)?((?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}|localhost|(\d{1,3}\.){3}\d{1,3}|[a-z0-9]{32})`;
+
+export function hash(input: string | string[], delimiter: string = ','): string {
+    const str = Array.isArray(input) ? input.join(delimiter) : input;
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash + str.charCodeAt(i)) & 0xffffffff;
+    }
+    return Math.abs(hash).toString(36);
+}

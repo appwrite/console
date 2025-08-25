@@ -22,7 +22,7 @@
         const code = clientCode.toLowerCase();
         if (!isValueOfStringEnum(Browser, code)) return '';
 
-        return sdk.forConsole.avatars.getBrowser(code, 40, 40);
+        return sdk.forConsole.avatars.getBrowser({ code, width: 40, height: 40 });
     }
 
     function logoutSessionId(sessionId: string) {
@@ -35,7 +35,9 @@
     async function logout(session: Models.Session) {
         let result;
         try {
-            result = await sdk.forConsole.account.deleteSession(session.$id);
+            result = await sdk.forConsole.account.deleteSession({
+                sessionId: session.$id
+            });
         } catch (e) {
             addNotification({
                 type: 'error',

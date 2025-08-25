@@ -33,7 +33,10 @@
         async function deleteSubscriber(subscriberId: string) {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .messaging.deleteSubscriber(page.params.topic, subscriberId);
+                .messaging.deleteSubscriber({
+                    topicId: page.params.topic,
+                    subscriberId
+                });
             const { target } = subscribers[subscriberId];
             const { [target.$id]: _, ...rest } = $targetsById;
             $targetsById = rest;

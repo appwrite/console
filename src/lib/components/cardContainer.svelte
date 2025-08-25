@@ -17,7 +17,7 @@
 
     $: planLimit = getServiceLimit(serviceId) || Infinity;
 
-    $: limit = preferences.get(page.route)?.limit ?? CARD_LIMIT;
+    $: limit = preferences.getForRoute(page.route)?.limit ?? CARD_LIMIT;
 
     $: gridItemStyle = $isSmallViewport
         ? undefined

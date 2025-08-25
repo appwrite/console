@@ -110,11 +110,13 @@
 
         // null on non-org/project path like `onboarding`.
         loadedProjects =
-            (await sdk.forConsole.projects.list([
-                Query.equal('teamId', organizationId ?? page.data.currentOrgId),
-                Query.limit(5),
-                Query.orderDesc('$updatedAt')
-            ])) ?? loadedProjects;
+            (await sdk.forConsole.projects.list({
+                queries: [
+                    Query.equal('teamId', organizationId ?? page.data.currentOrgId),
+                    Query.limit(5),
+                    Query.orderDesc('$updatedAt')
+                ]
+            })) ?? loadedProjects;
 
         for (const project of loadedProjects.projects) {
             project.region ??= 'default';
