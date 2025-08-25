@@ -56,16 +56,16 @@
             if (selectedTab !== 'nameserver') {
                 const ruleData = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.updateRuleVerification(ruleId);
+                    .proxy.updateRuleVerification({ ruleId });
                 verified = ruleData.status === 'verified';
             } else if (isNewDomain && isCloud) {
-                const domainData = await sdk.forConsole.domains.create(
-                    $organization.$id,
-                    page.params.domain
-                );
+                const domainData = await sdk.forConsole.domains.create({
+                    teamId: $organization.$id,
+                    domain: page.params.domain
+                });
                 verified = domainData.nameservers.toLowerCase() === 'appwrite';
             } else if (!isNewDomain && isCloud) {
-                const domain = await sdk.forConsole.domains.updateNameservers(domainId);
+                const domain = await sdk.forConsole.domains.updateNameservers({ domainId });
                 verified = domain.nameservers.toLowerCase() === 'appwrite';
                 if (!verified)
                     throw new Error(

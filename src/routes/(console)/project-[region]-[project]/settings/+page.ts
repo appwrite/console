@@ -11,9 +11,9 @@ export const load: PageLoad = async ({ depends, url, params }) => {
 
     const [variables, installations] = await Promise.all([
         sdk.forProject(params.region, params.project).projectApi.listVariables(),
-        sdk
-            .forProject(params.region, params.project)
-            .vcs.listInstallations([Query.limit(limit), Query.offset(offset)])
+        sdk.forProject(params.region, params.project).vcs.listInstallations({
+            queries: [Query.limit(limit), Query.offset(offset)]
+        })
     ]);
 
     return {

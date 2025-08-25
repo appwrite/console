@@ -38,12 +38,12 @@
 
         try {
             const teamId = data.organization.$id;
-            const project = await sdk.forConsole.projects.create(
-                id ?? ID.unique(),
-                projectName,
+            const project = await sdk.forConsole.projects.create({
+                projectId: id ?? ID.unique(),
+                name: projectName,
                 teamId,
-                isCloud ? region : undefined
-            );
+                region: isCloud ? region : undefined
+            });
 
             markOnboardingComplete();
 

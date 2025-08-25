@@ -9,12 +9,12 @@ export const load = async ({ parent, depends, params }) => {
     depends(Dependencies.DOMAINS, Dependencies.FUNCTION_DOMAINS);
 
     const [rules, installations, domains] = await Promise.all([
-        sdk
-            .forProject(params.region, params.project)
-            .proxy.listRules([
+        sdk.forProject(params.region, params.project).proxy.listRules({
+            queries: [
                 Query.equal('type', RuleType.DEPLOYMENT),
                 Query.equal('trigger', RuleTrigger.MANUAL)
-            ]),
+            ]
+        }),
         sdk.forProject(params.region, params.project).vcs.listInstallations(),
         isCloud
             ? sdk.forConsole.domains.list({ queries: [Query.equal('teamId', organization.$id)] })
@@ -28,9 +28,10 @@ export const load = async ({ parent, depends, params }) => {
         installations,
         branches:
             func?.installationId && func?.providerRepositoryId
-                ? await sdk
-                      .forProject(params.region, params.project)
-                      .vcs.listRepositoryBranches(func.installationId, func.providerRepositoryId)
+                ? await sdk.forProject(params.region, params.project).vcs.listRepositoryBranches({
+                      installationId: func.installationId,
+                      providerRepositoryId: func.providerRepositoryId
+                  })
                 : undefined
     };
 };

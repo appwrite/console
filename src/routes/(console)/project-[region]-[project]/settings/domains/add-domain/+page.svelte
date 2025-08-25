@@ -54,7 +54,7 @@
         try {
             const rule = await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.createAPIRule(domainName.toLocaleLowerCase());
+                .proxy.createAPIRule({ domain: domainName.toLocaleLowerCase() });
             if (rule?.status === 'verified') {
                 await goto(routeBase);
                 await invalidate(Dependencies.DOMAINS);

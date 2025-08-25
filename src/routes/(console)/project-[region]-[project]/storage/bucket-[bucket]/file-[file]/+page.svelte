@@ -53,12 +53,17 @@
     const getPreview = (fileId: string) =>
         sdk
             .forProject(page.params.region, page.params.project)
-            .storage.getFilePreview($file.bucketId, fileId, 640, 300)
+            .storage.getFilePreview({
+                bucketId: $file.bucketId,
+                fileId,
+                width: 640,
+                height: 300
+            })
             .toString() + '&mode=admin';
     const getView = (fileId: string) =>
         sdk
             .forProject(page.params.region, page.params.project)
-            .storage.getFileView($file.bucketId, fileId)
+            .storage.getFileView({ bucketId: $file.bucketId, fileId })
             .toString() + '&mode=admin';
 
     $: if (filePermissions) {
@@ -69,16 +74,20 @@
         return (
             sdk
                 .forProject(page.params.region, page.params.project)
-                .storage.getFileDownload($file.bucketId, $file.$id)
+                .storage.getFileDownload({ bucketId: $file.bucketId, fileId: $file.$id })
                 .toString() + '&mode=admin'
         );
     }
 
     async function updatePermissions() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .storage.updateFile($file.bucketId, $file.$id, $file.name, filePermissions);
+            await sdk.forProject(page.params.region, page.params.project).storage.updateFile({
+                bucketId: $file.bucketId,
+                fileId: $file.$id,
+                name: $file.name,
+                permissions: filePermissions
+            });
+
             await invalidate(Dependencies.FILE);
             arePermsDisabled = true;
             addNotification({
@@ -119,11 +128,13 @@
         }
     }
 
-    async function createFileToken(expiry: string) {
+    async function createFileToken(expire: string) {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .tokens.createFileToken($file.bucketId, $file.$id, expiry);
+            await sdk.forProject(page.params.region, page.params.project).tokens.createFileToken({
+                bucketId: $file.bucketId,
+                fileId: $file.$id,
+                expire
+            });
 
             await invalidate(Dependencies.FILE_TOKENS);
             addNotification({

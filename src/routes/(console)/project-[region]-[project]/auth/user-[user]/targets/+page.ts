@@ -31,7 +31,7 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
         if (target.providerId && !promisesById[target.providerId]) {
             promisesById[target.providerId] = sdk
                 .forProject(params.region, params.project)
-                .messaging.getProvider(target.providerId);
+                .messaging.getProvider({ providerId: target.providerId });
         }
     });
 

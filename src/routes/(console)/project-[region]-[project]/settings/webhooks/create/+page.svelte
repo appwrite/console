@@ -25,16 +25,16 @@
     export let data;
     async function create() {
         try {
-            const webhook = await sdk.forConsole.projects.createWebhook(
-                data.project.$id,
+            const webhook = await sdk.forConsole.projects.createWebhook({
+                projectId: data.project.$id,
                 name,
                 events,
                 url,
                 security,
-                true,
-                httpUser || undefined,
-                httpPass || undefined
-            );
+                enabled: true,
+                httpUser: httpUser || undefined,
+                httpPass: httpPass || undefined
+            });
             addNotification({
                 message: 'Webhook has been created',
                 type: 'success'

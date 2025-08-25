@@ -81,12 +81,12 @@
     }
 
     function onGithubLogin() {
-        sdk.forConsole.account.createOAuth2Session(
-            OAuthProvider.Github,
-            window.location.origin,
-            window.location.origin,
-            ['read:user', 'user:email']
-        );
+        sdk.forConsole.account.createOAuth2Session({
+            provider: OAuthProvider.Github,
+            success: window.location.origin,
+            failure: window.location.origin,
+            scopes: ['read:user', 'user:email']
+        });
     }
 </script>
 

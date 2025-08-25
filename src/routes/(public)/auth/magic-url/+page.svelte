@@ -16,7 +16,12 @@
         const userId = page.url.searchParams.get('userId');
         const secret = page.url.searchParams.get('secret');
 
-        await account.updateMagicURLSession(userId, secret);
+        // what's the replacement?
+        await account.updateMagicURLSession({
+            userId,
+            secret
+        });
+
         window.location.href = `appwrite-callback-${projectId}://${page.url.search}`;
     });
 </script>

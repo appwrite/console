@@ -45,12 +45,12 @@
     }
 
     function onGithubLogin() {
-        sdk.forConsole.account.createOAuth2Session(
-            OAuthProvider.Github,
-            window.location.origin,
-            window.location.origin,
-            ['read:user', 'user:email']
-        );
+        sdk.forConsole.account.createOAuth2Session({
+            provider: OAuthProvider.Github,
+            success: window.location.origin,
+            failure: window.location.origin,
+            scopes: ['read:user', 'user:email']
+        });
     }
 
     async function fetchProjects() {
@@ -71,12 +71,12 @@
     async function handleSubmit() {
         if (selectedProject === null) {
             try {
-                const p = await sdk.forConsole.projects.create(
-                    id ?? ID.unique(),
-                    projectName,
-                    selectedOrg,
-                    isCloud ? (region as Region) : undefined
-                );
+                const p = await sdk.forConsole.projects.create({
+                    projectId: id ?? ID.unique(),
+                    name: projectName,
+                    teamId: selectedOrg,
+                    region: isCloud ? (region as Region) : undefined
+                });
                 trackEvent(Submit.ProjectCreate, {
                     customId: !!id,
                     selectedOrg,

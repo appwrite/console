@@ -76,12 +76,12 @@
                 url = `${base}${page.url.search ?? ''}`;
             }
         }
-        sdk.forConsole.account.createOAuth2Session(
-            OAuthProvider.Github,
-            window.location.origin + url,
-            window.location.origin,
-            ['read:user', 'user:email']
-        );
+        sdk.forConsole.account.createOAuth2Session({
+            provider: OAuthProvider.Github,
+            success: window.location.origin + url,
+            failure: window.location.origin,
+            scopes: ['read:user', 'user:email']
+        });
     }
 </script>
 

@@ -19,15 +19,15 @@ export const load: PageLoad = async ({ url, depends, params }) => {
             siteId,
             deploymentId
         }),
-        sdk
-            .forProject(params.region, params.project)
-            .proxy.listRules([
+        sdk.forProject(params.region, params.project).proxy.listRules({
+            queries: [
                 Query.equal('type', RuleType.DEPLOYMENT),
                 Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
                 Query.equal('deploymentResourceId', siteId),
                 Query.equal('deploymentId', deploymentId),
                 Query.equal('trigger', RuleTrigger.MANUAL)
-            ])
+            ]
+        })
     ]);
 
     return {
@@ -35,9 +35,10 @@ export const load: PageLoad = async ({ url, depends, params }) => {
         deployment,
         proxyRuleList,
         repository: site?.installationId
-            ? await sdk
-                  .forProject(params.region, params.project)
-                  .vcs.getRepository(site.installationId, site.providerRepositoryId)
+            ? await sdk.forProject(params.region, params.project).vcs.getRepository({
+                  installationId: site.installationId,
+                  providerRepositoryId: site.providerRepositoryId
+              })
             : undefined
     };
 };

@@ -64,45 +64,31 @@
         try {
             const func = await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.create(
-                    id || ID.unique(),
+                .functions.create({
+                    functionId: id || ID.unique(),
                     name,
                     runtime,
-                    roles?.length ? roles : undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    true,
-                    undefined,
+                    execute: roles?.length ? roles : undefined,
+                    enabled: true,
                     entrypoint,
-                    buildCommand,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    specification || undefined
-                );
+                    commands: buildCommand,
+                    specification: specification || undefined
+                });
 
             // Add domain
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .proxy.createFunctionRule(
-                    `${ID.unique()}.${$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS}`,
-                    func.$id
-                );
+            await sdk.forProject(page.params.region, page.params.project).proxy.createFunctionRule({
+                domain: `${ID.unique()}.${$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS}`,
+                functionId: func.$id
+            });
 
             //Add variables
             const promises = variables.map((variable) =>
-                sdk
-                    .forProject(page.params.region, page.params.project)
-                    .functions.createVariable(
-                        func.$id,
-                        variable.key,
-                        variable.value,
-                        variable?.secret ?? false
-                    )
+                sdk.forProject(page.params.region, page.params.project).functions.createVariable({
+                    functionId: func.$id,
+                    key: variable.key,
+                    value: variable.value,
+                    secret: variable?.secret ?? false
+                })
             );
             await Promise.all(promises);
 

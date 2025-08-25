@@ -52,10 +52,10 @@ export const load: PageLoad = async ({ parent }) => {
             } else {
                 return {
                     accountPrefs,
-                    organization: await sdk.forConsole.teams.create(
-                        ID.unique(),
-                        'Personal projects'
-                    )
+                    organization: await sdk.forConsole.teams.create({
+                        teamId: ID.unique(),
+                        name: 'Personal projects'
+                    })
                 };
             }
         } catch (e) {

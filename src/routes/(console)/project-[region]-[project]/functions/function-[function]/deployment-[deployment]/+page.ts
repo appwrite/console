@@ -8,7 +8,10 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
 
     const deployment = await sdk
         .forProject(params.region, params.project)
-        .functions.getDeployment(params.function, params.deployment);
+        .functions.getDeployment({
+            functionId: params.function,
+            deploymentId: params.deployment
+        });
 
     return {
         func,

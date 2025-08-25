@@ -10,31 +10,35 @@ export const load = async ({ params, depends, parent }) => {
     const { site } = await parent();
 
     const [deploymentList, prodReadyDeployments, proxyRuleList] = await Promise.all([
-        sdk
-            .forProject(params.region, params.project)
-            .sites.listDeployments(params.site, [Query.limit(4), Query.orderDesc('')]),
-        sdk
-            .forProject(params.region, params.project)
-            .sites.listDeployments(params.site, [
+        sdk.forProject(params.region, params.project).sites.listDeployments({
+            siteId: params.site,
+            queries: [Query.limit(4), Query.orderDesc('')]
+        }),
+        sdk.forProject(params.region, params.project).sites.listDeployments({
+            siteId: params.site,
+            queries: [
                 Query.equal('status', 'ready'),
                 Query.equal('activate', true),
                 Query.orderDesc('')
-            ]),
+            ]
+        }),
         sdk
             .forProject(params.region, params.project)
-            .proxy.listRules([
-                Query.equal('type', RuleType.DEPLOYMENT),
-                Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
-                Query.equal('deploymentResourceId', site.$id),
-                Query.equal('deploymentId', site.deploymentId),
-                Query.orderDesc('')
-            ])
+            .proxy.listRules({
+                queries: [
+                    Query.equal('type', RuleType.DEPLOYMENT),
+                    Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
+                    Query.equal('deploymentResourceId', site.$id),
+                    Query.equal('deploymentId', site.deploymentId),
+                    Query.orderDesc('')
+                ]
+            })
     ]);
 
     const deployment = deploymentList?.total
         ? await sdk
               .forProject(params.region, params.project)
-              .sites.getDeployment(params.site, site.deploymentId)
+              .sites.getDeployment({ siteId: params.site, deploymentId: site.deploymentId })
         : null;
     return {
         site,

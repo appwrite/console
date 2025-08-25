@@ -74,21 +74,28 @@
             if (behaviour === 'BRANCH') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createFunctionRule(domainName, page.params.function, branch);
+                    .proxy.createFunctionRule({
+                        domain: domainName,
+                        functionId: page.params.function,
+                        branch
+                    });
             } else if (behaviour === 'REDIRECT') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createRedirectRule(
-                        domainName,
-                        redirect,
+                    .proxy.createRedirectRule({
+                        domain: domainName,
+                        url: redirect,
                         statusCode,
-                        page.params.function,
-                        ProxyResourceType.Function
-                    );
+                        resourceId: page.params.function,
+                        resourceType: ProxyResourceType.Function
+                    });
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .proxy.createFunctionRule(domainName, page.params.function);
+                    .proxy.createFunctionRule({
+                        domain: domainName,
+                        functionId: page.params.function
+                    });
             }
             if (rule?.status === 'verified') {
                 await goto(routeBase);
@@ -112,28 +119,24 @@
             if (!isValueOfStringEnum(Runtime, data.func.runtime)) {
                 throw new Error(`Invalid runtime: ${data.func.runtime}`);
             }
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .functions.update(
-                    data.func.$id,
-                    data.func.name,
-                    data.func.runtime as Runtime,
-                    data.func.execute || undefined,
-                    data.func.events || undefined,
-                    data.func.schedule || undefined,
-                    data.func.timeout || undefined,
-                    data.func.enabled || undefined,
-                    data.func.logging || undefined,
-                    data.func.entrypoint,
-                    data.func.commands || undefined,
-                    data.func.scopes || undefined,
-                    selectedInstallationId,
-                    selectedRepository,
-                    'main',
-                    undefined,
-                    undefined,
-                    undefined
-                );
+
+            await sdk.forProject(page.params.region, page.params.project).functions.update({
+                functionId: data.func.$id,
+                name: data.func.name,
+                runtime: data.func.runtime as Runtime,
+                execute: data.func.execute || undefined,
+                events: data.func.events || undefined,
+                schedule: data.func.schedule || undefined,
+                timeout: data.func.timeout || undefined,
+                enabled: data.func.enabled || undefined,
+                logging: data.func.logging || undefined,
+                entrypoint: data.func.entrypoint,
+                commands: data.func.commands || undefined,
+                scopes: data.func.scopes || undefined,
+                installationId: selectedInstallationId,
+                providerRepositoryId: selectedRepository,
+                providerBranch: 'main'
+            });
             await invalidate(Dependencies.FUNCTION);
         } catch {
             return;

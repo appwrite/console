@@ -60,12 +60,12 @@
         try {
             const response = await sdk
                 .forProject(page.params.region, page.params.project)
-                .vcs.createRepositoryDetection(
-                    $installation.$id,
-                    page.params.repository,
-                    VCSDetectionType.Framework,
-                    rootDir
-                );
+                .vcs.createRepositoryDetection({
+                    installationId: $installation.$id,
+                    providerRepositoryId: page.params.repository,
+                    type: VCSDetectionType.Framework,
+                    providerRootDirectory: rootDir
+                });
             framework = data.frameworks.frameworks.find((f) => f.key === response.framework);
             adapter = framework?.adapters[0];
             installCommand = adapter?.installCommand;
@@ -94,47 +94,37 @@
             const buildRuntime = Object.values(BuildRuntime).find(
                 (f) => f === framework.buildRuntime
             );
-            let site = await sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.create(
-                    id || ID.unique(),
-                    name,
-                    fr,
-                    buildRuntime,
-                    undefined,
-                    undefined,
-                    undefined,
-                    installCommand,
-                    buildCommand,
-                    outputDirectory,
-                    undefined,
-                    data.installation.$id,
-                    undefined,
-                    data.repository.id,
-                    branch,
-                    silentMode,
-                    rootDir
-                );
+            let site = await sdk.forProject(page.params.region, page.params.project).sites.create({
+                siteId: id || ID.unique(),
+                name,
+                framework: fr,
+                buildRuntime,
+                installCommand,
+                buildCommand,
+                outputDirectory,
+                installationId: data.installation.$id,
+                providerRepositoryId: data.repository.id,
+                providerBranch: branch,
+                providerSilentMode: silentMode,
+                providerRootDirectory: rootDir
+            });
 
             // Add domain
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .proxy.createSiteRule(
-                    `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
-                    site.$id
-                );
+            await sdk.forProject(page.params.region, page.params.project).proxy.createSiteRule({
+                domain: `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
+                siteId: site.$id
+            });
 
-            //Add variables
+            // Add variables
             const promises = variables.map((variable) =>
-                sdk
-                    .forProject(page.params.region, page.params.project)
-                    .sites.createVariable(
-                        site.$id,
-                        variable.key,
-                        variable.value,
-                        variable?.secret ?? false
-                    )
+                sdk.forProject(page.params.region, page.params.project).sites.createVariable({
+                    siteId: site.$id,
+                    key: variable.key,
+                    value: variable.value,
+                    secret: variable?.secret ?? false
+                })
             );
+
             await Promise.all(promises);
 
             const deployment = await sdk
