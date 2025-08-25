@@ -22,9 +22,12 @@
                 .forProject(page.params.region, page.params.project)
                 .users.updateEmailVerification($user.$id, !$user.emailVerification);
             await invalidate(Dependencies.USER);
+
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    !$user.emailVerification ? 'unverified' : 'verified'
+                message: `${
+                    $user.name && $user.name.trim() !== ''
+                        ? `The email for ${$user.name} has been ${!$user.emailVerification ? 'no longer verified' : 'verified'}`
+                        : `The email has been ${!$user.emailVerification ? 'no longer verified' : 'verified'}`
                 }`,
                 type: 'success'
             });
@@ -44,9 +47,12 @@
                 .forProject(page.params.region, page.params.project)
                 .users.updatePhoneVerification($user.$id, !$user.phoneVerification);
             await invalidate(Dependencies.USER);
+
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.phoneVerification ? 'unverified' : 'verified'
+                message: `${
+                    $user.name && $user.name.trim() !== ''
+                        ? `The phone for ${$user.name} has been ${!$user.phoneVerification ? 'no longer verified' : 'verified'}`
+                        : `The phone has been ${!$user.phoneVerification ? 'no longer verified' : 'verified'}`
                 }`,
                 type: 'success'
             });
