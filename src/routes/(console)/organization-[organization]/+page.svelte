@@ -40,6 +40,7 @@
     import CreateProjectCloud from './createProjectCloud.svelte';
     import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
+    import ArchiveProject from '$lib/components/archiveProject.svelte';
     import { toLocaleDate } from '$lib/helpers/date';
 
     export let data;
@@ -138,6 +139,10 @@
     $: projectsToArchive = data.projects.projects.filter(
         (project) => !data.organization.projects?.includes(project.$id)
     );
+
+    $: activeProjects = data.projects.projects.filter((project) =>
+        data.organization.projects?.includes(project.$id)
+    );
 </script>
 
 <SelectProjectCloud selectedProjects={data.organization.projects || []} bind:showSelectProject />
@@ -167,9 +172,9 @@
         </DropList>
     </div>
 
-    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && data.projects.total > 2 && $canWriteProjects}
+    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && projectsToArchive.length > 0 && $canWriteProjects}
         <Alert.Inline
-            title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
+            title={`${projectsToArchive.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
             <Typography.Text>
                 {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
                     {@html text}{index == projectsToArchive.length - 2
@@ -199,13 +204,13 @@
         </Alert.Inline>
     {/if}
 
-    {#if data.projects.total}
+    {#if activeProjects.length > 0}
         <CardContainer
             disableEmpty={!$canWriteProjects}
-            total={data.projects.total}
+            total={activeProjects.length}
             offset={data.offset}
             on:click={handleCreateProject}>
-            {#each data.projects.projects as project}
+            {#each activeProjects as project}
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
@@ -270,7 +275,7 @@
                 <p>Create a new project</p>
             </svelte:fragment>
         </CardContainer>
-    {:else}
+    {:else if data.projects.total === 0}
         <Empty
             single
             allowCreate={$canWriteProjects}
@@ -283,7 +288,10 @@
         name="Projects"
         limit={data.limit}
         offset={data.offset}
-        total={data.projects.total} />
+        total={activeProjects.length} />
+
+    <!-- Archived Projects Section -->
+    <ArchiveProject {projectsToArchive} />
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />

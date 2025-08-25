@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
-    export let href: string;
+    export let href: string = null;
 </script>
 
 <Card.Link class="card" {href}>
