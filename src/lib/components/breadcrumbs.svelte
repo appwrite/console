@@ -25,6 +25,7 @@
     import { type Models, Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     type Organization = {
         name: string;
@@ -132,7 +133,7 @@
             const projectLinks = loadedProjects.projects.slice(0, 4).map((project) => {
                 return {
                     name: project.name,
-                    href: `${base}/project-${project.region}-${project.$id}/overview/platforms`
+                    href: getProjectRoute(project, '/overview/platforms')
                 };
             });
 
@@ -371,8 +372,7 @@
                             {#if index < 4}
                                 <div use:melt={$itemProjects}>
                                     <ActionMenu.Root>
-                                        <ActionMenu.Item.Anchor
-                                            href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
+                                        <ActionMenu.Item.Anchor href={getProjectRoute(project)}>
                                             <span class="projectName dropdown">{project.name}</span>
                                         </ActionMenu.Item.Anchor>
                                     </ActionMenu.Root>

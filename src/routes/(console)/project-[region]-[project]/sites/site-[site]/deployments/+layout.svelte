@@ -5,11 +5,10 @@
     import { Dependencies } from '$lib/constants';
     import { invalidate, goto } from '$app/navigation';
     import { registerCommands } from '$lib/commandCenter';
-    import { project } from '../../../store';
     import type { Models } from '@appwrite.io/console';
-    import { base } from '$app/paths';
     import { canWriteSites } from '$lib/stores/roles';
     import { IconList, IconPlus, IconSearch } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     onMount(() => {
         let previousStatus: string = null;
@@ -41,9 +40,7 @@
             label: 'Create deployment',
             async callback() {
                 if (!page.url.pathname.endsWith(page.params.site)) {
-                    await goto(
-                        `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}`
-                    );
+                    await goto(getProjectRoute(`/sites/site-${page.params.site}`));
                 }
             },
             keys: page.url.pathname.endsWith(page.params.site) ? ['c'] : ['c', 'd'],
@@ -54,9 +51,7 @@
         {
             label: 'Permissions',
             async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}/settings#permissions`
-                );
+                await goto(getProjectRoute(`/sites/site-${page.params.site}/settings#permissions`));
                 scrollBy({ top: -100 });
             },
             icon: IconSearch,
@@ -67,9 +62,7 @@
         {
             label: 'Variables',
             async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}/settings#variables`
-                );
+                await goto(getProjectRoute(`/sites/site-${page.params.site}/settings#variables`));
             },
             icon: IconList,
             group: 'sites',
@@ -78,9 +71,7 @@
         {
             label: 'Go to deployments',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}/deployments`
-                );
+                goto(getProjectRoute(`/sites/site-${page.params.site}/deployments`));
             },
             keys: ['g', 'd'],
             group: 'navigation',
@@ -90,9 +81,7 @@
         {
             label: 'Go to usage',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}/usage`
-                );
+                goto(getProjectRoute(`/sites/site-${page.params.site}/usage`));
             },
             keys: ['g', 'u'],
             group: 'navigation',
@@ -102,9 +91,7 @@
         {
             label: 'Go to logs',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}/logs`
-                );
+                goto(getProjectRoute(`/sites/site-${page.params.site}/logs`));
             },
             keys: ['g', 'e'],
             group: 'navigation',
@@ -114,9 +101,7 @@
         {
             label: 'Go to settings',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}/settings`
-                );
+                goto(getProjectRoute(`/sites/site-${page.params.site}/settings`));
             },
             keys: ['g', 's'],
             group: 'navigation',

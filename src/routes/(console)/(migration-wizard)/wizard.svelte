@@ -23,7 +23,6 @@
     import { regions } from '$lib/stores/organization';
     import { addNotification } from '$lib/stores/notifications';
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { migrationFormToResources } from '$lib/stores/migration';
     import { EyebrowHeading } from '$lib/components';
     import {
@@ -35,6 +34,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { Dependencies } from '$lib/constants';
     import { filterRegions } from '$lib/helpers/regions';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     const onExit = () => {
         formData.reset();
@@ -123,9 +123,7 @@
             });
             onExit();
             await invalidate(Dependencies.PROJECTS);
-            await goto(
-                `${base}/project-${currentSelectedProject.region}-${currentSelectedProject.$id}/settings/migrations`
-            );
+            await goto(`${getProjectRoute(currentSelectedProject, '/settings/migrations')}`);
         } catch (error) {
             addNotification({
                 type: 'error',

@@ -8,12 +8,11 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { project } from '../store';
     import { wizard } from '$lib/stores/wizard';
     import { providerType, messageParams } from './wizard/store';
     import { ID, MessagingProviderType, type Models } from '@appwrite.io/console';
     import { page } from '$app/state';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     async function create() {
         try {
@@ -109,9 +108,7 @@
                 providerType: $providerType,
                 status: response.status
             });
-            await goto(
-                `${base}/project-${$project.region}-${$project.$id}/messaging/message-${response.$id}`
-            );
+            await goto(getProjectRoute(`/messaging/message-${response.$id}`));
         } catch (error) {
             addNotification({
                 type: 'error',

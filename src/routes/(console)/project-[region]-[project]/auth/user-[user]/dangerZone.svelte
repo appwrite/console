@@ -1,13 +1,12 @@
 <script lang="ts" context="module">
-    import { page } from '$app/state';
-    import { base } from '$app/paths';
     import { goto } from '$app/navigation';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let showDelete = writable(false);
 
     export const promptDeleteUser = (id: string) => {
         showDelete.set(true);
-        goto(`${base}/project-${page.params.region}-${page.params.project}/auth/user-${id}`);
+        goto(getProjectRoute(`/auth/user-${id}`));
     };
 </script>
 

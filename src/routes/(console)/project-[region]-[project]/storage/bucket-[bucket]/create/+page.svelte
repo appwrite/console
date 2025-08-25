@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import {
@@ -28,6 +27,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { InvalidFileType, removeFile } from '$lib/helpers/files';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: PageData;
 
@@ -53,9 +53,7 @@
                 files[0],
                 permissions
             );
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}`
-            );
+            await goto(getProjectRoute(`/storage/bucket-${page.params.bucket}`));
             addNotification({
                 type: 'success',
                 message: `File upload in progress`
@@ -93,7 +91,7 @@
 
 <Wizard
     title="Create file"
-    href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/`}
+    href={getProjectRoute(`/storage/bucket-${page.params.bucket}/`)}
     bind:showExitModal
     column
     confirmExit>
@@ -110,7 +108,9 @@
                                 size.value
                             )}{size.unit}. You can adjust it in your
                             <a
-                                href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/settings`}
+                                href={getProjectRoute(
+                                    `/storage/bucket-${page.params.bucket}/settings`
+                                )}
                                 style:text-decoration="underline">bucket settings</a
                             >.
                         </Alert.Inline>

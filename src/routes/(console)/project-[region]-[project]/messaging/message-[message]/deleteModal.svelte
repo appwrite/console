@@ -1,12 +1,12 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import Confirm from '$lib/components/confirm.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let show = false;
     export let message: Models.Message & { data: Record<string, unknown> };
@@ -38,7 +38,7 @@
                 message: notificationMessage
             });
             trackEvent(Submit.MessagingMessageDelete);
-            await goto(`${base}/project-${page.params.region}-${page.params.project}/messaging`);
+            await goto(getProjectRoute('/messaging'));
         } catch (e) {
             error = e.message;
             trackError(e, Submit.MessagingMessageDelete);

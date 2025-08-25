@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
     import {
@@ -11,6 +9,7 @@
     } from '@appwrite.io/pink-icons-svelte';
 
     import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let site: Models.Site;
     export let showAddCollaborator = false;
@@ -40,12 +39,12 @@
                 Add collaborator
             </ActionMenu.Item.Button>
             <ActionMenu.Item.Anchor
-                href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${site.$id}/domains`}
+                href={getProjectRoute(`/sites/site-${site.$id}/domains`)}
                 leadingIcon={IconGlobeAlt}>
                 Domains
             </ActionMenu.Item.Anchor>
             <ActionMenu.Item.Anchor
-                href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${site.$id}/settings`}
+                href={getProjectRoute(`/sites/site-${site.$id}/settings`)}
                 leadingIcon={IconCog}>
                 Settings
             </ActionMenu.Item.Anchor>

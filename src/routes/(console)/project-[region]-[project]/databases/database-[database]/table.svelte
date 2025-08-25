@@ -1,6 +1,5 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Id } from '$lib/components';
@@ -14,6 +13,7 @@
     import type { PageData } from './$types';
     import { columns } from './store';
     import Confirm from '$lib/components/confirm.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: PageData;
     const databaseId = page.params.database;
@@ -61,7 +61,9 @@
         <Table.Row.Link
             {root}
             id={collection.$id}
-            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collection.$id}`}>
+            href={getProjectRoute(
+                `/databases/database-${databaseId}/collection-${collection.$id}`
+            )}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

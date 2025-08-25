@@ -1,25 +1,22 @@
 <script lang="ts" context="module">
-    import { page } from '$app/state';
-    import { base } from '$app/paths';
     import { goto } from '$app/navigation';
     import { writable } from 'svelte/store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let showDelete = writable(false);
 
     export const promptDeleteProvider = (id: string) => {
         showDelete.set(true);
-        goto(
-            `${base}/project-${page.params.region}-${page.params.$id}/messaging/providers/provider-${id}`
-        );
+        goto(getProjectRoute(`/messaging/providers/provider-${id}`));
     };
 </script>
 
 <script lang="ts">
-    import { CardGrid, BoxAvatar } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
     import { provider } from './store';
+    import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import DeleteProvider from './deleteProvider.svelte';
+    import { CardGrid, BoxAvatar } from '$lib/components';
 </script>
 
 <CardGrid>

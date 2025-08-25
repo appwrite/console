@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Confirm, Trim } from '$lib/components';
@@ -11,6 +10,7 @@
     import { attributes, collection } from '../store';
     import { isRelationship, isRelationshipToMany } from './attributes/store';
     import type { Models } from '@appwrite.io/console';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let showDelete = false;
     const databaseId = page.params.database;
@@ -28,7 +28,9 @@
             });
             trackEvent(Submit.DocumentDelete);
             await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}`
+                getProjectRoute(
+                    `/databases/database-${page.params.database}/collection-${page.params.collection}`
+                )
             );
         } catch (error) {
             addNotification({

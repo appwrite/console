@@ -10,7 +10,6 @@
 
 <script lang="ts">
     import { afterNavigate, goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { PlatformsPanel } from '$lib/commandCenter/panels';
@@ -28,9 +27,10 @@
     import { writable, type Writable } from 'svelte/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let period: UsagePeriods = '30d';
-    $: path = `${base}/project-${page.params.region}-${page.params.project}/overview`;
+    $: path = getProjectRoute('/overview');
 
     onMount(handle);
     afterNavigate(handle);
@@ -118,7 +118,7 @@
                 <Layout.Stack gap="xl" direction={$isSmallViewport ? 'column' : 'row'}>
                     <Card.Link
                         padding="s"
-                        href={`${base}/project-${page.params.region}-${page.params.project}/databases`}
+                        href={getProjectRoute('/databases')}
                         class="is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
@@ -140,7 +140,7 @@
                     </Card.Link>
                     <Card.Link
                         padding="s"
-                        href={`${base}/project-${page.params.region}-${page.params.project}/storage`}
+                        href={getProjectRoute('/storage')}
                         class="is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
@@ -163,7 +163,7 @@
                     </Card.Link>
                     <Card.Link
                         padding="s"
-                        href={`${base}/project-${page.params.region}-${page.params.project}/auth`}
+                        href={getProjectRoute('/auth')}
                         class="is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
@@ -185,7 +185,7 @@
                     </Card.Link>
                     <Card.Link
                         padding="s"
-                        href={`${base}/project-${page.params.region}-${page.params.project}/functions`}
+                        href={getProjectRoute('/functions')}
                         class="is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">

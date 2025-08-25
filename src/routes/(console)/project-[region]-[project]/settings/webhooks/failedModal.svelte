@@ -1,22 +1,15 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
-
     import Code from '$lib/components/code.svelte';
     import Modal from '$lib/components/modal.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { type Models } from '@appwrite.io/console';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let show: boolean;
     export let webhook: Models.Webhook;
     export let showUpdateButton: boolean = true;
 
-    const projectId = page.params.project;
-
-    $: webhookPath = webhook
-        ? `${base}/project-${page.params.region}-${projectId}/settings/webhooks/` +
-          (webhook['$id'] ?? '')
-        : '';
+    $: webhookPath = webhook ? getProjectRoute('/settings/webhooks/') + (webhook['$id'] ?? '') : '';
 
     let enabled = webhook ? webhook.enabled : false;
 

@@ -1,15 +1,13 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { canWriteBuckets } from '$lib/stores/roles';
     import { bucket } from './store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
-    const projectId = page.params.project;
-    const bucketId = page.params.bucket;
-    const path = `${base}/project-${page.params.region}-${projectId}/storage/bucket-${bucketId}`;
+    const path = getProjectRoute(`/storage/bucket-${page.params.bucket}`);
     const tabs = [
         {
             href: path,
@@ -34,7 +32,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/storage`}>
+        <CoverTitle href={getProjectRoute('/storage')}>
             {$bucket?.name}
         </CoverTitle>
         {#if $bucket?.$id}

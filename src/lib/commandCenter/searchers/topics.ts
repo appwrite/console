@@ -1,9 +1,9 @@
 import { goto } from '$app/navigation';
 import type { Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
-import { base } from '$app/paths';
 import { IconChevronRight } from '@appwrite.io/pink-icons-svelte';
 import { page } from '$app/state';
+import { getProjectRoute } from '$lib/helpers/project';
 
 export const topicsSearcher = (async (query: string) => {
     const { topics } = await sdk
@@ -17,11 +17,7 @@ export const topicsSearcher = (async (query: string) => {
                 ({
                     group: 'topics',
                     label: topic.name,
-                    callback: () => {
-                        goto(
-                            `${base}/project-${page.params.region}-${page.params.project}/messaging/topics/topic-${topic.$id}`
-                        );
-                    },
+                    callback: () => goto(getProjectRoute(`/messaging/topics/topic-${topic.$id}`)),
                     icon: IconChevronRight // TODO: @itznotabug - 'send' no replacement yet.
                 }) as const
         );

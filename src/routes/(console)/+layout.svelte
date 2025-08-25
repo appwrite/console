@@ -55,6 +55,7 @@
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: LayoutData;
 
@@ -165,9 +166,7 @@
                 ({
                     label: kebabToSentenceCase(heading),
                     async callback() {
-                        await goto(
-                            `${base}/project-${$project.region}-${$project.$id}/auth/security#${heading}`
-                        );
+                        await goto(getProjectRoute($project, `/auth/security#${heading}`));
                         scrollBy({ top: -100 });
                     },
                     disabled: !$project?.$id,
@@ -181,7 +180,7 @@
 
             keys: isOnSettingsLayout ? ['g', 'o'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/settings`);
+                goto(getProjectRoute('/settings'));
             },
             disabled:
                 !$project?.$id || (isOnSettingsLayout && page.url.pathname.endsWith('settings')),
@@ -193,7 +192,7 @@
 
             keys: isOnSettingsLayout ? ['g', 'd'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/settings/domains`);
+                goto(getProjectRoute('/settings/domains'));
             },
             disabled:
                 !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('domains')),
@@ -204,7 +203,7 @@
             label: 'Go to webhooks',
             keys: isOnSettingsLayout ? ['g', 'w'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/settings/webhooks`);
+                goto(getProjectRoute('/settings/webhooks'));
             },
             disabled:
                 !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('webhooks')),
@@ -216,7 +215,7 @@
             label: 'Go to migrations',
             keys: isOnSettingsLayout ? ['g', 'm'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/settings/migrations`);
+                goto(getProjectRoute('/settings/migrations'));
             },
             disabled:
                 !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('migrations')),
@@ -228,7 +227,7 @@
             label: 'Go to SMTP settings',
             keys: isOnSettingsLayout ? ['g', 's'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/settings/smtp`);
+                goto(getProjectRoute('/settings/smtp'));
             },
             disabled: !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('smtp')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',

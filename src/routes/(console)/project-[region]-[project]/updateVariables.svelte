@@ -12,7 +12,6 @@
     import PromoteVariableModal from './promoteVariableModal.svelte';
     import CreateVariable from './createVariableModal.svelte';
     import RawVariableEditor from './rawVariableEditor.svelte';
-    import { base } from '$app/paths';
     import {
         ActionMenu,
         Badge,
@@ -39,6 +38,7 @@
     import UpdateVariablesModal from './updateVariablesModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
     import { Confirm } from '$lib/components';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let variableList: Models.VariableList;
     export let globalVariableList: Models.VariableList | undefined = undefined;
@@ -210,11 +210,8 @@
                 message: `Variable has been ${isConflicting ? 'overwritten' : 'promoted'}. You can find it in the project settings.`,
                 buttons: [
                     {
-                        method: () =>
-                            goto(
-                                `${base}/project-${page.params.region}-${page.params.project}/settings`
-                            ),
-                        name: 'Go to settings'
+                        name: 'Go to settings',
+                        method: () => goto(getProjectRoute('/settings'))
                     }
                 ]
             });
@@ -253,8 +250,7 @@
         within your project.
     {:else}
         Set the environment variables or secret keys that will be passed to your {product}. Global
-        variables can be found in <Link
-            href={`${base}/project-${$project.region}-${$project.$id}/settings#variables`}>
+        variables can be found in <Link href={getProjectRoute('/settings#variables')}>
             project settings</Link
         >.
     {/if}
@@ -304,7 +300,7 @@
                             {/if}
                             a naming conflict with a global variable. View global variables in
                             <a
-                                href={`${base}/project-${$project.region}-${$project.$id}/settings`}
+                                href={getProjectRoute('/settings')}
                                 title="Project settings"
                                 class="link">
                                 project settings</a

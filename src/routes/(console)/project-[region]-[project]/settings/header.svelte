@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
@@ -8,8 +7,9 @@
     import { canWriteProjects } from '$lib/stores/roles';
     import { isCloud } from '$lib/system';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
-    const path = `${base}/project-${page.params.region}-${page.params.project}/settings`;
+    const path = getProjectRoute('/settings');
     const tabs: TabElement[] = [
         {
             href: path,

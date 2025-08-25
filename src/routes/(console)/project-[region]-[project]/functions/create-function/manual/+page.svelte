@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Button, Form } from '$lib/elements/forms';
@@ -23,6 +22,7 @@
     import { isCloud } from '$lib/system';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { currentPlan } from '$lib/stores/organization';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -115,9 +115,7 @@
                 runtime: runtime
             });
 
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/functions/function-${func.$id}`
-            );
+            await goto(getProjectRoute(`/functions/function-${func.$id}`));
 
             invalidate(Dependencies.FUNCTION);
         } catch (e) {
@@ -176,7 +174,7 @@
 <Wizard
     title="Create function"
     bind:showExitModal
-    href={`${base}/project-${page.params.region}-${page.params.project}/functions`}
+    href={getProjectRoute('/functions')}
     column
     columnSize="s"
     confirmExit>

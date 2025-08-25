@@ -49,6 +49,7 @@
     import { beforeNavigate } from '$app/navigation';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let showSupport = false;
 
@@ -136,8 +137,7 @@
                 <Button.Anchor
                     size="xs"
                     variant="secondary"
-                    href={`${base}/project-${currentProject.region}-${currentProject.$id}/get-started`}
-                    >Connect</Button.Anchor>
+                    href={getProjectRoute(currentProject, '/get-started')}>Connect</Button.Anchor>
             </div>
         {/if}
     </div>

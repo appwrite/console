@@ -9,8 +9,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
-    import { base } from '$app/paths';
-    import { getProjectId } from '$lib/helpers/project';
+    import { getProjectId, getProjectRoute } from '$lib/helpers/project';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Typography } from '@appwrite.io/pink-svelte';
 
@@ -34,8 +33,6 @@
 
     function showRestoreNotification(newDatabaseId: string, newDatabaseName: string) {
         if (newDatabaseId && newDatabaseName && lastDatabaseRestorationId !== newDatabaseId) {
-            const region = page.params.region;
-            const project = page.params.project;
             lastDatabaseRestorationId = newDatabaseId;
 
             addNotification({
@@ -46,9 +43,7 @@
                     {
                         name: 'View restored data',
                         method: () => {
-                            goto(
-                                `${base}/project-${region}-${project}/databases/database-${newDatabaseId}`
-                            );
+                            goto(getProjectRoute(`/databases/database-${newDatabaseId}`));
                         }
                     }
                 ]

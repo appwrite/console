@@ -4,10 +4,9 @@
     import { InputText } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import type { Models } from '@appwrite.io/console';
-    import { project } from './store';
-    import { base } from '$app/paths';
     import { Alert, Layout, Selector } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let isGlobal: boolean;
     export let product: 'function' | 'site' = 'function';
@@ -54,7 +53,7 @@
         {#if !isGlobal}
             <Alert.Inline>
                 When there is a naming conflict with a global variable in your <Link
-                    href={`${base}/project-${$project.region}-${$project.$id}/settings/variables`}>
+                    href={getProjectRoute('/settings/variables')}>
                     project settings</Link>
                 and a {product} environment variable, the global variable will be ignored.
             </Alert.Inline>

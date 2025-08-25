@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
+    import { app } from '$lib/stores/app';
     import { Card } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { app } from '$lib/stores/app';
     import type { Models } from '@appwrite.io/console';
+    import { getProjectRoute } from '$lib/helpers/project';
     import { Image, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let template: Models.TemplateSite;
@@ -29,7 +28,7 @@
         <Button
             fullWidth
             secondary
-            href={`${base}/project-${page.params.region}-${page.params.project}/sites/create-site/templates/template-${template.key}`}>
+            href={getProjectRoute(`/sites/create-site/templates/template-${template.key}`)}>
             Use template
         </Button>
     </Layout.Stack>

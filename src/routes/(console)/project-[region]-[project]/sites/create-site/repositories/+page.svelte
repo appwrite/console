@@ -1,7 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics.js';
     import Card from '$lib/components/card.svelte';
     import { Repositories } from '$lib/components/git/index.js';
@@ -10,6 +8,7 @@
     import { installation, repository } from '$lib/stores/vcs.js';
     import type { Models } from '@appwrite.io/console';
     import { Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let { data } = $props();
 
@@ -20,15 +19,14 @@
             from: 'cover'
         });
         repository.set(e);
-        const target = `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/repositories/repository-${e.id}?installation=${$installation.$id}`;
+        const target = getProjectRoute(
+            `/sites/create-site/repositories/repository-${e.id}?installation=${$installation.$id}`
+        );
         goto(target);
     }
 </script>
 
-<Wizard
-    title="Create site"
-    href={`${base}/project-${page.params.region}-${page.params.project}/sites/`}
-    hideFooter>
+<Wizard title="Create site" href={getProjectRoute('/sites/')} hideFooter>
     {#if !!data?.installations?.total}
         <Fieldset legend="Git repository">
             <Repositories
@@ -51,9 +49,8 @@
                             all your favorite frameworks, and deploy in seconds.
                         </Typography.Text>
                     </Layout.Stack>
-                    <Button
-                        href={`${base}/project-${page.params.region}-${page.params.project}/sites/create-site/templates`}
-                        secondary>View templates</Button>
+                    <Button href={getProjectRoute('/sites/create-site/templates')} secondary
+                        >View templates</Button>
                 {:else}
                     <Layout.Stack gap="s">
                         <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">

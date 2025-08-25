@@ -3,10 +3,9 @@
     import { Modal } from '$lib/components';
     import { InputText } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { base } from '$app/paths';
     import { Layout, Selector } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
-    import { page } from '$app/state';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let show = false;
     export let selectedVar: Partial<Models.Variable>;
@@ -42,8 +41,7 @@
     <span slot="description">
         Update the environment variable for your site. Global variables can be set in <Link
             variant="muted"
-            href={`${base}/project-${page.params.region}-${page.params.project}/settings`}
-            >project settings</Link
+            href={getProjectRoute('/settings')}>project settings</Link
         >.
     </span>
     <Layout.Stack gap="xxl">

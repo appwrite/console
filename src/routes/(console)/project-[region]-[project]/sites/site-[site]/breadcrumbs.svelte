@@ -4,6 +4,7 @@
     import { Breadcrumbs } from '$lib/layout';
     import { organization } from '$lib/stores/organization';
     import { project } from '../../store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     $: breadcrumbs = [
         {
@@ -11,15 +12,15 @@
             title: $organization?.name
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}`,
+            href: getProjectRoute(),
             title: $project?.name
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/sites`,
+            href: getProjectRoute('/sites'),
             title: 'Sites'
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}`,
+            href: getProjectRoute(`/sites/site-${page.params.site}`),
             title: page.params.site
         }
     ];

@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
@@ -7,6 +6,7 @@
     import { canWriteCollections } from '$lib/stores/roles';
     import { collection } from './store';
     import { isTabletViewport } from '$lib/stores/viewport';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let databaseId = $derived.by(() => {
         return page.params.database;
@@ -16,7 +16,7 @@
     });
 
     let path = $derived.by(() => {
-        return `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}`;
+        return getProjectRoute(`/databases/database-${databaseId}/collection-${collectionId}`);
     });
 
     let tabs = $derived.by(() => {
@@ -62,8 +62,7 @@
 <div style:margin-top={$isTabletViewport ? '48px' : 0}>
     <Cover>
         <svelte:fragment slot="header">
-            <CoverTitle
-                href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`}>
+            <CoverTitle href={getProjectRoute(`/databases/database-${databaseId}`)}>
                 {$collection?.name}
             </CoverTitle>
             {#key $collection?.$id}

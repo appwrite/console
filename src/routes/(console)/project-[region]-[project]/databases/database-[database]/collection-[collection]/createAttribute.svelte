@@ -6,9 +6,9 @@
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
-    import { base } from '$app/paths';
     import type { Attributes } from './store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let showCreate = false;
     export let selectedOption: Option['name'] = null;
@@ -30,7 +30,9 @@
 
             if (!page.url.pathname.includes('attributes')) {
                 await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
+                    getProjectRoute(
+                        `/databases/database-${databaseId}/collection-${collectionId}/attributes`
+                    )
                 );
             }
             addNotification({

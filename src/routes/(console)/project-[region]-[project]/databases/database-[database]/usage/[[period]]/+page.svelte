@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Container, Usage, UsageMultiple } from '$lib/layout';
     import { Layout } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -19,13 +19,13 @@
 <Container>
     <Layout.Stack gap="l">
         <Usage
-            path={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/usage`}
             {total}
             {count}
             countMetadata={{
                 legend: 'Collections',
                 title: 'Total collections'
-            }} />
+            }}
+            path={getProjectRoute(`/databases/database-${page.params.database}/usage`)} />
 
         <UsageMultiple
             title="Reads and writes"

@@ -1,10 +1,10 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { Breadcrumbs } from '$lib/layout';
     import { organization } from '$lib/stores/organization';
     import { project } from '../../store';
     import { func } from './store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     $: breadcrumbs = [
         {
@@ -12,15 +12,15 @@
             title: $organization?.name
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}`,
+            href: getProjectRoute(),
             title: $project?.name
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/functions`,
+            href: getProjectRoute('/functions'),
             title: 'Functions'
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func?.$id}`,
+            href: getProjectRoute(`/functions/function-${$func?.$id}`),
             title: $func?.name
         }
     ];

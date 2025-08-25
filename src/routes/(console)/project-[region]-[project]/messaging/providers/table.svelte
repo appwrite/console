@@ -1,12 +1,10 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Id } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
     import { columns } from './store';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import Provider from '../provider.svelte';
     import ProviderType from '../providerType.svelte';
     import { invalidate } from '$app/navigation';
@@ -17,6 +15,7 @@
     import { IconCheckCircle } from '@appwrite.io/pink-icons-svelte';
     import Confirm from '$lib/components/confirm.svelte';
     import { page } from '$app/state';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: PageData;
 
@@ -71,7 +70,7 @@
             this={$canWriteProviders ? Table.Row.Link : Table.Row.Base}
             id={provider.$id}
             href={$canWriteProviders
-                ? `${base}/project-${$project.region}-${$project.$id}/messaging/providers/provider-${provider.$id}`
+                ? getProjectRoute(`/messaging/providers/provider-${provider.$id}`)
                 : undefined}
             {root}>
             {#each $columns as column}

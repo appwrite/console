@@ -1,6 +1,5 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { timeFromNow } from '$lib/helpers/date';
     import { ImageFormat, type Models } from '@appwrite.io/console';
     import { Card, Icon, Layout, Popover, Tooltip, Typography } from '@appwrite.io/pink-svelte';
@@ -14,6 +13,8 @@
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Link } from '$lib/elements';
     import { getFrameworkIcon } from '$lib/stores/sites';
+    import { getProjectRoute } from '$lib/helpers/project';
+    import { page } from '$app/state';
 
     export let siteList: Models.SiteList;
 
@@ -55,9 +56,7 @@
 
 <Layout.Grid columns={3} columnsXS={1} columnsXXS={1}>
     {#each siteList.sites as site (site.$id)}
-        <Card.Link
-            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${site.$id}`}
-            padding="xxs">
+        <Card.Link href={getProjectRoute(`/sites/site-${site.$id}`)} padding="xxs">
             <Card.Media
                 title={site.name}
                 description={generateSiteDeploymentDesc(site)}
@@ -90,7 +89,9 @@
                                     Last deployment failed {timeFromNow(
                                         site?.latestDeploymentCreatedAt
                                     )}. <Link
-                                        href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`}>
+                                        href={getProjectRoute(
+                                            `/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`
+                                        )}>
                                         View logs
                                     </Link>
                                 </Typography.Text>

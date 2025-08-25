@@ -2,7 +2,7 @@
     import { BackupRestoreBox, MigrationBox, UploadBox } from '$lib/components';
     import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { project, stats } from './store';
+    import { stats } from './store';
 
     import { goto } from '$app/navigation';
     import { registerCommands, registerSearchers } from '$lib/commandCenter';
@@ -15,7 +15,6 @@
         userSearcher
     } from '$lib/commandCenter/searchers';
     import { page } from '$app/state';
-    import { base } from '$app/paths';
     import {
         canSeeBuckets,
         canSeeDatabases,
@@ -25,6 +24,7 @@
         canWriteSites
     } from '$lib/stores/roles';
     import CsvImportBox from '$lib/components/csvImportBox.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     onMount(() => {
         return realtime
@@ -42,7 +42,7 @@
         {
             label: 'Go to Auth',
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/auth`);
+                goto(getProjectRoute('/auth'));
             },
             keys: ['g', 'a'],
             group: 'navigation'
@@ -50,7 +50,7 @@
         {
             label: 'Go to Databases',
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/databases`);
+                goto(getProjectRoute('/databases'));
             },
             keys: ['g', 'd'],
             group: 'navigation',
@@ -59,7 +59,7 @@
         {
             label: 'Go to Functions',
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/functions`);
+                goto(getProjectRoute('/functions'));
             },
             keys: ['g', 'f'],
             group: 'navigation',
@@ -68,7 +68,7 @@
         {
             label: 'Go to Messaging',
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/messaging`);
+                goto(getProjectRoute('/messaging'));
             },
             keys: ['g', 'm'],
             disabled: page.url.pathname.endsWith('messaging') || !$canSeeMessages,
@@ -77,7 +77,7 @@
         {
             label: 'Go to Storage',
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/storage`);
+                goto(getProjectRoute('/storage'));
             },
             keys: ['g', 's'],
             group: 'navigation',
@@ -86,7 +86,7 @@
         {
             label: 'Go to Settings',
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/settings`);
+                goto(getProjectRoute('/settings'));
             },
             keys: ['g', 'e'],
             group: 'navigation',
@@ -95,7 +95,7 @@
         {
             label: 'Go to Sites',
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/sites`);
+                goto(getProjectRoute('/sites'));
             },
             keys: ['g', 'i'],
             group: 'navigation',
@@ -104,7 +104,7 @@
         {
             label: 'Go to Overview',
             callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}`);
+                goto(getProjectRoute());
             },
             keys: ['g', 'o'],
             group: 'navigation'

@@ -23,6 +23,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { filterRegions } from '$lib/helpers/regions';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let { data } = $props();
 
@@ -63,9 +64,15 @@
 
     function generateUrl(project: Models.Project) {
         if (isSiteTemplate(data.template, data.product)) {
-            return `${base}/project-${project.region}-${project.$id}/sites/create-site/templates/template-${data.template.key}`;
+            return getProjectRoute(
+                project,
+                `/sites/create-site/templates/template-${data.template.key}`
+            );
         } else {
-            return `${base}/project-${project.region}-${project.$id}/functions/create-function/templates/template-${data.template.name}`;
+            return getProjectRoute(
+                project,
+                `/functions/create-function/templates/template-${data.template.name}`
+            );
         }
     }
 

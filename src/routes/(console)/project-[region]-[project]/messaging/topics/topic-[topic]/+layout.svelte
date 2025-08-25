@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
+    import { goto } from '$app/navigation';
     import { registerCommands } from '$lib/commandCenter';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     const topicId = page.params.topic;
 
@@ -11,9 +10,7 @@
         {
             label: 'Go to Subscribers',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/messaging/topics/topic-${topicId}/subscribers`
-                );
+                goto(getProjectRoute(`/messaging/topics/topic-${topicId}/subscribers`));
             },
             keys: ['g', 's'],
             disabled: page.url.pathname.endsWith('subscribers'),
@@ -23,9 +20,7 @@
         {
             label: 'Go to Activity',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/messaging/topics/topic-${topicId}/activity`
-                );
+                goto(getProjectRoute(`/messaging/topics/topic-${topicId}/activity`));
             },
             keys: ['g', 'a'],
             disabled: page.url.pathname.endsWith('activity'),
@@ -35,9 +30,7 @@
         {
             label: 'Go to Overview',
             callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/messaging/topics/topic-${topicId}`
-                );
+                goto(getProjectRoute(`/messaging/topics/topic-${topicId}`));
             },
             keys: ['g', 'o'],
             disabled: page.url.pathname.endsWith(`topic-${topicId}`),

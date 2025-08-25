@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
+    import { Wizard } from '$lib/layout';
     import { Fieldset, Card, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import Aside from '../aside.svelte';
@@ -12,6 +11,7 @@
     import { onMount } from 'svelte';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import type { Models, RealtimeResponseEvent } from '@appwrite.io/console';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     let { data } = $props();
 
@@ -31,7 +31,7 @@
                         deployment = response.payload;
                         if (response.payload.status === 'ready') {
                             goto(
-                                `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/finish?site=${data.site.$id}`
+                                getProjectRoute(`/sites/create-site/finish?site=${data.site.$id}`)
                             );
                         }
                     }
@@ -40,9 +40,7 @@
     });
 </script>
 
-<Wizard
-    title="Create site"
-    href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${data.site.$id}`}>
+<Wizard title="Create site" href={getProjectRoute(`/sites/site-${data.site.$id}`)}>
     <Layout.Stack gap="xl">
         <Card.Base padding="s" radius="s">
             <Layout.Stack direction="row">
@@ -86,7 +84,7 @@
                 size="s"
                 fullWidthMobile
                 secondary
-                href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${data.site.$id}`}>
+                href={getProjectRoute(`/sites/site-${data.site.$id}`)}>
                 Go to dashboard
             </Button>
         </Layout.Stack>

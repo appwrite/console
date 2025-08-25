@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
@@ -8,6 +7,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { file } from './store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let showDelete = false;
     let error: string;
@@ -24,9 +24,7 @@
                 message: `${fileName} has been deleted`
             });
             trackEvent(Submit.FileDelete);
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${$file.bucketId}`
-            );
+            await goto(getProjectRoute(`/storage/bucket-${$file.bucketId}`));
         } catch (error) {
             addNotification({
                 type: 'error',

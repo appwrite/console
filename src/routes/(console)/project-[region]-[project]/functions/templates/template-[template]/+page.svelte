@@ -20,10 +20,9 @@
         Divider,
         Icon
     } from '@appwrite.io/pink-svelte';
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { capitalize } from '$lib/helpers/string';
     import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     $: buttonDisabled =
         isCloud && isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
@@ -92,7 +91,9 @@
                         <ContainerButton
                             title="functions"
                             disabled={buttonDisabled}
-                            buttonHref={`${base}/project-${page.params.region}-${page.params.project}/functions/create-function/template-${$template.id}`}
+                            buttonHref={getProjectRoute(
+                                `/functions/create-function/template-${$template.id}`
+                            )}
                             showIcon={false}
                             buttonText="Create function"
                             buttonEvent="create_function" />
