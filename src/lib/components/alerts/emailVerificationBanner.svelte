@@ -9,19 +9,31 @@
     import { wizard } from '$lib/stores/wizard';
     import { page } from '$app/state';
 
-    export let emailBannerClosed: boolean;
-    export let onEmailBannerClose: (closed: boolean) => void;
+    const { emailBannerClosed, onEmailBannerClose } = $props<{
+        emailBannerClosed: boolean;
+        onEmailBannerClose: (closed: boolean) => void;
+    }>();
 
-    $: isOnOnboarding = page.route?.id?.includes('/(console)/onboarding');
+    const isOnOnboarding = $derived.by(() => page.route?.id?.includes('/(console)/onboarding'));
 
-    $: shouldShowEmailBanner =
-        $user &&
-        !$user.emailVerification &&
-        shouldShowNotification('email-verification-banner') &&
-        !$wizard.show &&
-        !$wizard.cover &&
-        !emailBannerClosed &&
-        !isOnOnboarding;
+    const hasUser = $derived.by(() => !!$user);
+    const needsEmailVerification = $derived.by(() => $user && !$user.emailVerification);
+    const shouldShowNotificationBanner = $derived.by(() =>
+        shouldShowNotification('email-verification-banner')
+    );
+    const wizardNotActive = $derived.by(() => !$wizard.show && !$wizard.cover);
+    const bannerNotClosed = $derived.by(() => !emailBannerClosed);
+    const notOnOnboarding = $derived.by(() => !isOnOnboarding);
+
+    const shouldShowEmailBanner = $derived.by(
+        () =>
+            hasUser &&
+            needsEmailVerification &&
+            shouldShowNotificationBanner &&
+            wizardNotActive &&
+            bannerNotClosed &&
+            notOnOnboarding
+    );
 
     function navigateToAccount() {
         goto(`${base}/account`);
@@ -29,7 +41,7 @@
 
     function handleDismiss() {
         onEmailBannerClose(true);
-        hideNotification('email-verification-banner', { coolOffPeriod: 24 });
+        hideNotification('email-verification-banner', { coolOffPeriod: 24 * 365 * 100 });
     }
 </script>
 
