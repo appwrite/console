@@ -30,8 +30,8 @@ export const presetPolicies = writable<UserBackupPolicy[]>([
 
 export const columns = writable<Column[]>([
     { id: 'backups', title: 'Backups', type: 'string', width: { min: 180 } },
-    { id: 'size', title: 'Size', type: 'integer', width: { min: 163 } },
+    { id: 'size', title: 'Size', type: 'integer', width: { min: 100 } },
     { id: 'status', title: 'Status', type: 'enum', width: { min: 163 } },
-    { id: 'policy', title: 'Policy', type: 'string', width: { min: 163 } },
-    { id: 'actions', title: '', type: 'string', width: 48 }
+    { id: 'policy', title: 'Policy', type: 'string', width: { min: 100 } },
+    { id: 'actions', title: '', type: 'string', width: 64 }
 ]);

@@ -2,9 +2,11 @@
     import { DropList } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Badge, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { goto } from '$app/navigation';
     import { upgradeURL } from '$lib/stores/billing';
+    import { BillingPlan } from '$lib/constants';
+    import { organization } from '$lib/stores/organization';
 
     export let isFlex = true;
     export let title: string;
@@ -39,13 +41,32 @@
 
         {#if title === 'Policies' && policiesCreated >= maxPolicies}
             <div style:height="40px;" style:padding-block-start="4px">
-                <DropList bind:show={showDropdown} width="16">
-                    <Badge
-                        variant="secondary"
-                        content={`${policiesCreated}/${maxPolicies} created`}
-                        on:click={() => (showDropdown = true)}>
-                        <Icon icon={IconInfo} size="s" slot="start" />
-                    </Badge>
+                <DropList
+                    bind:show={showDropdown}
+                    width="16"
+                    noArrow
+                    placement="bottom-start"
+                    gap="6px"
+                    paddingBlock="var(--space-5, 12px)"
+                    paddingInline="var(--space-6, 16px)"
+                    resetListPadding>
+                    {#if $organization?.billingPlan === BillingPlan.PRO}
+                        <Tag
+                            size="s"
+                            style="white-space: nowrap; max-width: none;"
+                            on:click={() => (showDropdown = true)}>
+                            <Icon icon={IconInfo} size="s" />
+                            {policiesCreated}/{maxPolicies} created
+                        </Tag>
+                    {:else}
+                        <Badge
+                            style="white-space: nowrap; max-width: none;"
+                            variant="secondary"
+                            content={`${policiesCreated}/${maxPolicies} created`}
+                            on:click={() => (showDropdown = true)}>
+                            <Icon icon={IconInfo} size="s" slot="start" />
+                        </Badge>
+                    {/if}
                     <svelte:fragment slot="list">
                         <slot name="tooltip">
                             <span>
