@@ -155,7 +155,7 @@
     <FloatingActionBar>
         <svelte:fragment slot="start">
             <Badge content={selectedRows.length.toString()} />
-            <span style="white-space: nowrap">
+            <span>
                 {selectedRows.length > 1 ? 'deployments' : 'deployment'}
                 selected
             </span>
