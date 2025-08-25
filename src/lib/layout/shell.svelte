@@ -138,6 +138,8 @@
 
         return undefined;
     };
+
+    isNewWizardStatusOpen.subscribe((value) => (showHeader = !value));
 </script>
 
 <svelte:window on:resize={handleResize} />
@@ -158,15 +160,20 @@
     {#if showHeader}
         <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
     {/if}
-    <Sidebar
-        project={selectedProject}
-        progressCard={progressCard()}
-        avatar={navbarProps.avatar}
-        bind:subNavigation
-        bind:sideBarIsOpen={$isSidebarOpen}
-        bind:showAccountMenu
-        bind:state />
+
+    {#if !$isNewWizardStatusOpen}
+        <Sidebar
+            project={selectedProject}
+            progressCard={progressCard()}
+            avatar={navbarProps.avatar}
+            bind:subNavigation
+            bind:sideBarIsOpen={$isSidebarOpen}
+            bind:showAccountMenu
+            bind:state />
+    {/if}
+
     <SideNavigation bind:subNavigation />
+
     <div
         class="content"
         class:has-transition={showContentTransition}
