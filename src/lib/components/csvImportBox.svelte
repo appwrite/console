@@ -131,7 +131,7 @@
     }
 
     function text(status: string, collectionName = '') {
-        const name = collectionName ? collectionName : '';
+        const name = collectionName ? `<b>${collectionName}</b>` : '';
         switch (status) {
             case 'completed':
             case 'failed':
@@ -197,7 +197,7 @@
                                 <div
                                     class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                     <Typography.Text>
-                                        {text(value.status, value.collection)}
+                                        {@html text(value.status, value.collection)}
                                     </Typography.Text>
                                 </div>
                                 <div
