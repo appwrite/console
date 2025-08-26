@@ -1,7 +1,5 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, CopyInput } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -11,7 +9,7 @@
     import { onMount } from 'svelte';
     import { project } from '../store';
     import { canWriteProjects } from '$lib/stores/roles';
-    import { getProjectEndpoint } from '$lib/helpers/project';
+    import { getProjectEndpoint, getProjectRoute } from '$lib/helpers/project';
 
     let name: string = null;
 
@@ -50,7 +48,7 @@
         <Button
             secondary
             event="view_api_keys"
-            href={`${base}/project-${page.params.region}-${page.params.project}/overview/api-keys#integrations`}>
+            href={getProjectRoute('/overview/api-keys#integrations')}>
             View API keys
         </Button>
     </svelte:fragment>

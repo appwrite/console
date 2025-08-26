@@ -7,8 +7,6 @@
     import { Empty, PaginationWithLimit, SearchQuery } from '$lib/components';
     import Create from './create.svelte';
     import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import { canWriteBuckets } from '$lib/stores/roles';
@@ -19,16 +17,13 @@
     import Table from './table.svelte';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
-    const project = page.params.project;
-
     async function bucketCreated(event: CustomEvent<Models.Bucket>) {
         showCreateBucket.set(false);
-        await goto(
-            `${base}/project-${page.params.region}-${project}/storage/bucket-${event.detail.$id}`
-        );
+        await goto(getProjectRoute(`/storage/bucket-${event.detail.$id}`));
     }
 </script>
 

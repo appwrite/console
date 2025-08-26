@@ -1,16 +1,13 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
+    import { webhook } from './store';
     import { Id } from '$lib/components';
     import { Cover, CoverTitle } from '$lib/layout';
-    import { webhook } from './store';
-
-    const projectId = page.params.project;
+    import { getProjectRoute } from '$lib/helpers/project';
 </script>
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/settings/webhooks`}>
+        <CoverTitle href={getProjectRoute('/settings/webhooks')}>
             {$webhook?.name}
         </CoverTitle>
         <Id value={$webhook?.$id} event="webhook">{$webhook?.$id}</Id>

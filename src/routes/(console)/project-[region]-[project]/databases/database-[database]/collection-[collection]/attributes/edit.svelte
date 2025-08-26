@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
@@ -10,6 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { Attributes } from '../store';
     import { attributeOptions, type Option } from './store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let showEdit = false;
     export let selectedAttribute: Attributes;
@@ -37,7 +37,9 @@
             await invalidate(Dependencies.COLLECTION);
             if (!page.url.pathname.includes('attributes')) {
                 await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
+                    getProjectRoute(
+                        `/databases/database-${databaseId}/collection-${collectionId}/attributes`
+                    )
                 );
             }
             addNotification({

@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -11,6 +9,7 @@
     import { Badge, FloatingActionBar, Layout, Table } from '@appwrite.io/pink-svelte';
     import DeleteBatch from './deleteBatch.svelte';
     import { capitalize } from '$lib/helpers/string';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let keyType: 'api' | 'dev' = 'api';
     export let keys: Models.KeyList | Models.DevKeyList;
@@ -100,9 +99,7 @@
         description={getDescription()}
         on:click={() => {
             if (isApiKey) {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/overview/${slug}/create`
-                );
+                goto(getProjectRoute(`/overview/${slug}/create`));
             } else {
                 $showDevKeysCreateModal = true;
             }

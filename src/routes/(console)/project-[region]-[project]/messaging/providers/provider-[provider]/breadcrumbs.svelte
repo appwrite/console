@@ -4,6 +4,7 @@
     import { organization } from '$lib/stores/organization';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { provider } from './store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     $: breadcrumbs = [
         {
@@ -11,15 +12,15 @@
             title: $organization.name
         },
         {
-            href: `${base}/project-${$project.region}-${$project.$id}`,
+            href: getProjectRoute(),
             title: $project.name
         },
         {
-            href: `${base}/project-${$project.region}-${$project.$id}/messaging`,
+            href: getProjectRoute('/messaging'),
             title: 'Messaging'
         },
         {
-            href: `${base}/project-${$project.region}-${$project.$id}/messaging/providers/provider-${$provider?.$id}`,
+            href: getProjectRoute(`/messaging/providers/provider-${$provider?.$id}`),
             title: $provider?.name
         }
     ];

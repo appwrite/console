@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { user } from './store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
-    const path = `${base}/project-${page.params.region}-${page.params.project}/auth/user-${page.params.user}`;
+    const path = getProjectRoute(`/auth/user-${page.params.user}`);
     const tabs = [
         {
             href: path,
@@ -44,7 +44,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${page.params.region}-${page.params.project}/auth`}>
+        <CoverTitle href={getProjectRoute('/auth')}>
             {$user.name ? $user.name : '-'}
         </CoverTitle>
         <Id value={$user.$id} event="user">{$user.$id}</Id>

@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { Container, Usage } from '$lib/layout';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
     $: total = data.usersTotal;
@@ -10,7 +9,7 @@
 
 <Container>
     <Usage
-        path={`${base}/project-${page.params.region}-${page.params.project}/auth/usage`}
+        path={getProjectRoute('/auth/usage')}
         countMetadata={{
             legend: 'Users',
             title: 'Registered users'

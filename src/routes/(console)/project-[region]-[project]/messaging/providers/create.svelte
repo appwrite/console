@@ -5,8 +5,6 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { project } from '../../store';
     import { wizard } from '$lib/stores/wizard';
     import { provider, providerParams, providerType } from './wizard/store';
     import { ID, MessagingProviderType, type Models } from '@appwrite.io/console';
@@ -20,6 +18,7 @@
     import { getProviderText } from '../helper';
     import { providers } from './store';
     import CreateMember from '$routes/(console)/organization-[organization]/createMember.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     async function create() {
         try {
@@ -169,9 +168,7 @@
             trackEvent(Submit.MessagingProviderCreate, {
                 provider: $provider
             });
-            await goto(
-                `${base}/project-${$project.region}-${$project.$id}/messaging/providers/provider-${response.$id}`
-            );
+            await goto(getProjectRoute(`/messaging/providers/provider-${response.$id}`));
         } catch (error) {
             addNotification({
                 type: 'error',

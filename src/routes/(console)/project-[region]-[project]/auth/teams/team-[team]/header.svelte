@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { team } from './store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
-    const path = `${base}/project-${page.params.region}-${page.params.project}/auth/teams/team-${page.params.team}`;
+    const path = getProjectRoute(`/auth/teams/team-${page.params.team}`);
     const tabs = [
         {
             href: path,
@@ -30,8 +30,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle
-            href={`${base}/project-${page.params.region}-${page.params.project}/auth/teams`}>
+        <CoverTitle href={getProjectRoute('/auth/teams')}>
             {$team?.name}
         </CoverTitle>
         <Id value={$team?.$id} event="team">{$team?.$id}</Id>

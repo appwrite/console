@@ -1,23 +1,22 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { TeamsPanel, UsersPanel } from '$lib/commandCenter/panels';
     import { readOnly } from '$lib/stores/billing';
     import { canWriteTeams, canWriteUsers } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE } from '$lib/system';
-    import { project } from '../store';
     import { showCreateUser } from './+page.svelte';
     import { showCreateTeam } from './teams/+page.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     $: $registerCommands([
         {
             label: 'Create user',
             callback: async () => {
                 if (!page.url.pathname.endsWith('auth')) {
-                    await goto(`${base}/project-${$project.region}-${$project.$id}/auth`);
+                    await goto(getProjectRoute('/auth'));
                 }
                 showCreateUser.set(true);
             },
@@ -31,7 +30,7 @@
             label: 'Create team',
             callback: async () => {
                 if (!page.url.pathname.endsWith('teams')) {
-                    await goto(`${base}/project-${$project.region}-${$project.$id}/auth/teams`);
+                    await goto(getProjectRoute('/auth/teams'));
                 }
                 showCreateTeam.set(true);
             },
@@ -46,7 +45,7 @@
             label: 'Go to teams',
             keys: ['g', 't'],
             callback() {
-                goto(`${base}/project-${$project.region}-${$project.$id}/auth/teams`);
+                goto(getProjectRoute('/auth/teams'));
             },
             group: 'navigation',
             rank: 1,
@@ -56,7 +55,7 @@
             label: 'Go to usage',
             keys: ['g', 'u'],
             callback() {
-                goto(`${base}/project-${$project.region}-${$project.$id}/auth/usage`);
+                goto(getProjectRoute('/auth/usage'));
             },
             group: 'navigation',
             rank: 1,
@@ -66,7 +65,7 @@
             label: 'Go to security',
             keys: ['g', 'e'],
             callback() {
-                goto(`${base}/project-${$project.region}-${$project.$id}/auth/security`);
+                goto(getProjectRoute('/auth/security'));
             },
             group: 'navigation',
             rank: 1,
@@ -76,7 +75,7 @@
             label: 'Go to settings',
             keys: ['g', 's'],
             callback() {
-                goto(`${base}/project-${$project.region}-${$project.$id}/auth/settings`);
+                goto(getProjectRoute('/auth/settings'));
             },
             group: 'navigation',
             rank: 1,

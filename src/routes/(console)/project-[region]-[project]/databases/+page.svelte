@@ -1,7 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import { Empty, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -17,18 +15,16 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import EmptySearch from '$lib/components/emptySearch.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: PageData;
 
     let showCreate = false;
     let isCreationDisabled = false;
-    const project = page.params.project;
 
     async function handleCreate(event: CustomEvent<Models.Database>) {
         showCreate = false;
-        await goto(
-            `${base}/project-${page.params.region}-${project}/databases/database-${event.detail.$id}`
-        );
+        await goto(getProjectRoute(`/databases/database-${event.detail.$id}`));
     }
 
     $: $registerCommands([
@@ -83,10 +79,7 @@
             total={data.databases.total} />
     {:else if data.search}
         <EmptySearch target="databases" hidePagination>
-            <Button
-                href={`${base}/project-${page.params.region}-${page.params.project}/databases`}
-                size="s"
-                secondary>Clear Search</Button>
+            <Button href={getProjectRoute('/databases')} size="s" secondary>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty

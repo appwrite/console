@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
-    $: path = `${base}/project-${page.params.region}-${page.params.project}/sites`;
+    $: path = getProjectRoute('/sites');
     $: tabs = [
         {
             href: path,

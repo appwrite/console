@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Container, Usage } from '$lib/layout';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
-    $: total = data.deploymentsTotal;
     $: count = data.deployments;
+    $: total = data.deploymentsTotal;
 
     // $: totalBuilds = data.buildsTotal;
     // $: countBuilds = data.builds;
@@ -13,7 +13,7 @@
 
 <Container>
     <Usage
-        path={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/usage`}
+        path={getProjectRoute(`/sites/site-${page.params.site}/usage`)}
         countMetadata={{
             legend: 'Deployments',
             title: 'Total deployments'
@@ -23,7 +23,7 @@
 
     <!-- <Usage
     title="Builds"
-    path={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/usage`}
+    path={getProjectRoute(`/sites/site-${page.params.site}/usage`)}
     countMetadata={{
         legend: 'Builds',
         title: 'Total builds'

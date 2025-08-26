@@ -5,8 +5,8 @@
     import { canSeeProjects } from '$lib/stores/roles';
     import { onMount } from 'svelte';
     import { Accordion, Table } from '@appwrite.io/pink-svelte';
-    import { base } from '$app/paths';
     import type { UsageProjectInfo } from '../../store';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     type Metric =
         | 'users'
@@ -39,7 +39,7 @@
 
     function getProjectUsageLink(projectId: string): string {
         const region = usageProjects[projectId]?.region ?? 'default';
-        return `${base}/project-${region}-${projectId}/settings/usage`;
+        return getProjectRoute({ region, $id: projectId }, '/settings/usage');
     }
 
     function groupByProject(

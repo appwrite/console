@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
-    import { Container, Usage, UsageMultiple } from '$lib/layout';
-    import { Layout } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
+    import { Layout } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
+    import { Container, Usage, UsageMultiple } from '$lib/layout';
 
     export let data: PageData;
     $: total = data.databasesTotal;
@@ -19,7 +18,7 @@
 <Container>
     <Layout.Stack gap="l">
         <Usage
-            path={`${base}/project-${page.params.region}-${page.params.project}/databases/usage`}
+            path={getProjectRoute('/databases/usage')}
             {total}
             {count}
             countMetadata={{

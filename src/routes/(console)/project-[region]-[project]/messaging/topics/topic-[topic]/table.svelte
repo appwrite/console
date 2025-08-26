@@ -1,6 +1,5 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Id } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -9,7 +8,6 @@
     import type { PageData } from './$types';
     import ProviderType from '../../providerType.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
     import { targetsById } from '../../store';
@@ -17,6 +15,7 @@
     import type { Column } from '$lib/helpers/types';
     import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
     import Confirm from '$lib/components/confirm.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let columns: Column[];
     export let data: PageData;
@@ -84,7 +83,7 @@
         <Table.Row.Link
             {root}
             id={subscriber.$id}
-            href={`${base}/project-${$project.region}-${$project.$id}/auth/user-${subscriber.target.userId}`}>
+            href={getProjectRoute(`/auth/user-${subscriber.target.userId}`)}>
             {#each columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

@@ -1,20 +1,19 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { BucketsPanel } from '$lib/commandCenter/panels';
     import { canWriteBuckets } from '$lib/stores/roles';
-    import { project } from '../store';
     import { showCreateBucket } from './+page.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     $: $registerCommands([
         {
             label: 'Create bucket',
             callback: () => {
                 if (!page.url.pathname.endsWith('storage')) {
-                    goto(`${base}/project-${$project.region}-${$project.$id}/storage`);
+                    goto(getProjectRoute('/storage'));
                 }
                 $showCreateBucket = true;
             },
@@ -26,7 +25,7 @@
         {
             label: 'Go to usage',
             callback() {
-                goto(`${base}/project-${$project.region}-${$project.$id}/storage/usage`);
+                goto(getProjectRoute('/storage/usage'));
             },
             keys: ['g', 'u'],
             disabled: page.url.pathname.endsWith('usage') || page.url.pathname.includes('bucket-'),

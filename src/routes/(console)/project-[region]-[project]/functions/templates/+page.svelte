@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { EmptyFilter, EmptySearch, Paginator, SearchQuery, SvgIcon } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -24,6 +23,7 @@
     import Link from '$lib/elements/link.svelte';
     import Avatar from '$lib/components/avatar.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data;
 
@@ -210,7 +210,9 @@
                                                 alignItems="center"
                                                 inline>
                                                 <Button
-                                                    href={`${base}/project-${page.params.region}-${page.params.project}/functions/templates/template-${template.id}`}
+                                                    href={getProjectRoute(
+                                                        `/functions/templates/template-${template.id}`
+                                                    )}
                                                     text>
                                                     <span class="text">Details</span>
                                                 </Button>
@@ -219,7 +221,9 @@
                                                         title="functions"
                                                         disabled={buttonDisabled}
                                                         buttonType="secondary"
-                                                        buttonHref={`${base}/project-${page.params.region}-${page.params.project}/functions/create-function/template-${template.id}`}
+                                                        buttonHref={getProjectRoute(
+                                                            `/functions/create-function/template-${template.id}`
+                                                        )}
                                                         showIcon={false}
                                                         buttonText="Create"
                                                         buttonEventData={{

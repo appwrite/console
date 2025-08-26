@@ -36,6 +36,7 @@
     import { app, iconPath } from '$lib/stores/app';
     import { connectGitHub } from '$lib/stores/git';
     import { getFrameworkIcon } from '$lib/stores/sites';
+    import { getProjectRoute } from '$lib/helpers/project';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { getTemplateSourceUrl } from '$lib/helpers/templateSource';
 
@@ -173,7 +174,9 @@
                 });
 
                 await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                    getProjectRoute(
+                        `/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                    )
                 );
             } catch (e) {
                 addNotification({
@@ -199,11 +202,7 @@
     <title>Create site - Appwrite</title>
 </svelte:head>
 
-<Wizard
-    title="Create site"
-    bind:showExitModal
-    href={`${base}/project-${page.params.region}-${page.params.project}/sites/`}
-    confirmExit>
+<Wizard title="Create site" bind:showExitModal href={getProjectRoute('/sites/')} confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
             {#if selectedRepository && showSiteConfig}

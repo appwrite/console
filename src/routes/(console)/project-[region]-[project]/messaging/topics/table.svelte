@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Id } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -14,6 +13,7 @@
     import { canWriteTopics } from '$lib/stores/roles';
     import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
     import Confirm from '$lib/components/confirm.svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let columns: Column[];
     export let data: PageData;
@@ -62,7 +62,7 @@
         <Table.Row.Link
             {root}
             id={topic.$id}
-            href={`${base}/project-${page.params.region}-${page.params.project}/messaging/topics/topic-${topic.$id}`}>
+            href={getProjectRoute(`/messaging/topics/topic-${topic.$id}`)}>
             {#each columns as column (column.id)}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

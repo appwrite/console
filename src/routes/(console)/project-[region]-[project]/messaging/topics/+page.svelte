@@ -1,11 +1,9 @@
 <script lang="ts">
-    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { Empty, EmptySearch, PaginationWithLimit, EmptyFilter } from '$lib/components';
     import Create from './create.svelte';
     import { goto } from '$app/navigation';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
-    import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { showCreate } from './store';
@@ -18,11 +16,10 @@
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { getProjectRoute } from '$lib/helpers/project';
 
     export let data: PageData;
 
-    const region = page.params.region;
-    const project = page.params.project;
     const columns = writable<Column[]>([
         { id: '$id', title: 'Topic ID', type: 'string', width: 200 },
         { id: 'name', title: 'Name', type: 'string', width: { min: 140 } },
@@ -58,9 +55,7 @@
     ]);
 
     const topicCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
-        await goto(
-            `${base}/project-${region}-${project}/messaging/topics/topic-${event.detail.$id}`
-        );
+        await goto(getProjectRoute(`/messaging/topics/topic-${event.detail.$id}`));
     };
 </script>
 
@@ -102,11 +97,7 @@
                 <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no topics that match your search.</p>
             </div>
-            <Button
-                secondary
-                href={`${base}/project-${page.params.region}-${page.params.project}/messaging/topics`}>
-                Clear Search
-            </Button>
+            <Button secondary href={getProjectRoute('/messaging/topics')}>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty

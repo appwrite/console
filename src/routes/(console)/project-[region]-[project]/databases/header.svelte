@@ -1,13 +1,12 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { getProjectRoute } from '$lib/helpers/project';
 
-    const projectId = page.params.project;
-    const path = `${base}/project-${page.params.region}-${projectId}/databases`;
+    const path = getProjectRoute('/databases');
     const tabs = [
         {
             href: path,
