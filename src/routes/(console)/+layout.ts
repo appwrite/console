@@ -48,7 +48,6 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         plansInfo,
         roles: [],
         scopes: [],
-        projects,
         preferences,
         currentOrgId,
         organizations,
