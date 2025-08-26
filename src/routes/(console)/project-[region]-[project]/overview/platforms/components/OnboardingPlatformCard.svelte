@@ -49,6 +49,10 @@
             height: var(--icon-size);
             color: var(--icon-color);
         }
+
+        & :global(img) {
+            inline-size: var(--icon-size) !important;
+        }
     }
 
     :global(.theme-dark) {

@@ -114,9 +114,8 @@
             trackError(e, Submit.ProjectCreate);
         }
     };
-    onMount(async () => {
-        checkPricingRefAndRedirect(page.url.searchParams);
-    });
+
+    onMount(async () => checkPricingRefAndRedirect(page.url.searchParams));
 
     function findRegion(project: Models.Project) {
         return $regionsStore.regions.find((region) => region.$id === project.region);
@@ -140,7 +139,10 @@
     );
 </script>
 
-<SelectProjectCloud selectedProjects={data.organization.projects || []} bind:showSelectProject />
+<SelectProjectCloud
+    bind:showSelectProject
+    organizationId={page.params.organization}
+    selectedProjects={data.organization.projects || []} />
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
@@ -167,7 +169,7 @@
         </DropList>
     </div>
 
-    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && data.projects.total > 2 && $canWriteProjects}
+    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && data.projects.total > $currentPlan.projects && $canWriteProjects}
         <Alert.Inline
             title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
             <Typography.Text>

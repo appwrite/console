@@ -9,8 +9,8 @@
     import { page } from '$app/state';
 
     export let billingPlan: Tier;
-    export let anyOrgFree = false;
     export let isNewOrg = false;
+    export let anyOrgFree = false;
     export let selfService = true;
 
     $: plans = Object.values(page.data.plans.plans) as Plan[];

@@ -15,8 +15,15 @@ export function filterRegions(regions: Models.ConsoleRegion[]): RegionOption[] {
     return regions
         .filter((region) => region.$id !== 'default')
         .sort((a, b) => {
-            if (a.disabled && !b.disabled) return 1;
-            if (!a.disabled && b.disabled) return -1;
+            // Check if regions are truly available (not disabled and available)
+            const aAvailable = !a.disabled && a.available;
+            const bAvailable = !b.disabled && b.available;
+
+            // Prioritize truly available regions
+            if (aAvailable && !bAvailable) return -1;
+            if (!aAvailable && bAvailable) return 1;
+
+            // Within the same availability group, sort alphabetically
             return a.name.localeCompare(b.name);
         })
         .map((region) => ({

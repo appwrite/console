@@ -22,7 +22,6 @@
     export let showFooter = true;
     export let showSideNavigation = false;
     export let selectedProject: Models.Project = null;
-    export let projects: Promise<Models.ProjectList> = undefined;
 
     let yOnMenuOpen: number;
     let showContentTransition = false;
@@ -103,8 +102,6 @@
                 isSelected: $organization?.$id === org.$id
             };
         }),
-
-        projects: projects,
 
         currentProject: selectedProject
     };

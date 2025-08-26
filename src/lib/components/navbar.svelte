@@ -1,15 +1,6 @@
 <script lang="ts" context="module">
     import type { HTMLAttributes } from 'svelte/elements';
 
-    export type NavbarProject = {
-        name: string;
-        $id: string;
-        region: string;
-        isSelected: boolean;
-        platformCount: number;
-        pingCount: number;
-    };
-
     export type BaseNavbarProps = HTMLAttributes<HTMLHeadElement> & {
         logo: {
             src: string;
@@ -106,7 +97,6 @@
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
     export let showAccountMenu = false;
     export let currentProject: Models.Project = undefined;
-    export let projects: Promise<Models.ProjectList> = undefined;
 
     let activeTheme = $app.theme;
     let shouldAnimateThemeToggle = false;
@@ -138,7 +128,9 @@
             class="only-desktop">
             <img src={logo.src} alt={logo.alt} />
         </a>
-        <Breadcrumbs {organizations} {projects} {currentProject} />
+
+        <Breadcrumbs {organizations} {currentProject} />
+
         {#if page.route?.id?.includes('/project-[region]-[project]') && currentProject && currentProject.pingCount === 0}
             <div class="only-desktop" style:margin-inline-start="-16px">
                 <Button.Anchor
