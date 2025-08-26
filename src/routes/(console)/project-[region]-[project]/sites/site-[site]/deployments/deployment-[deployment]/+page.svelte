@@ -30,18 +30,20 @@
     let showCancel = $state(false);
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe(
-            'console',
-            async (response: RealtimeResponseEvent<Models.Deployment>) => {
-                if (
-                    response.events.includes(
-                        `sites.${page.params.site}.deployments.${page.params.deployment}.update`
-                    )
-                ) {
-                    await invalidate(Dependencies.DEPLOYMENT);
+        return sdk
+            .forConsoleIn(page.params.region)
+            .client.subscribe(
+                'console',
+                async (response: RealtimeResponseEvent<Models.Deployment>) => {
+                    if (
+                        response.events.includes(
+                            `sites.${page.params.site}.deployments.${page.params.deployment}.update`
+                        )
+                    ) {
+                        await invalidate(Dependencies.DEPLOYMENT);
+                    }
                 }
-            }
-        );
+            );
     });
 </script>
 

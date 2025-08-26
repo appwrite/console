@@ -102,7 +102,7 @@ export async function submitStripeCard(name: string, organizationId?: string) {
         }
 
         if (setupIntent && setupIntent.status === 'succeeded') {
-            if ((setupIntent.payment_method as PaymentMethod).card.country === 'US') {
+            if ((setupIntent.payment_method as PaymentMethod).card?.country === 'US') {
                 // need to get state
                 return setupIntent.payment_method as PaymentMethod;
             }

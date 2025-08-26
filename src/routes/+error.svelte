@@ -1,16 +1,16 @@
 <script>
     import { base } from '$app/paths';
-    import { page } from '$app/state';
-    import { Button } from '$lib/elements/forms';
     import { Unauthenticated } from '$lib/layout';
-    import { Typography } from '@appwrite.io/pink-svelte';
+    import { Button } from '$lib/elements/forms';
+    import { Badge, Typography, Layout } from '@appwrite.io/pink-svelte';
 </script>
 
 <Unauthenticated>
-    <Typography.Title size="xl"
-        >{'status' in page.error
-            ? page.error.status || 'Invalid Argument'
-            : 'Invalid Argument'}</Typography.Title>
-    <Typography.Title>{page.error.message}</Typography.Title>
-    <Button href={base}>Back to the console</Button>
+    <Layout.Stack gap="l" alignItems="center">
+        <Badge variant="secondary" content="404 Page not found" />
+        <Typography.Title size="l" align="center">
+            The page you're looking for doesn't exist.
+        </Typography.Title>
+        <Button href={base}>Back to console</Button>
+    </Layout.Stack>
 </Unauthenticated>
