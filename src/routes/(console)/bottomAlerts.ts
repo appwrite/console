@@ -73,11 +73,7 @@ if (isCloud) {
         show: true
     };
 
-    listOfPromotions.push(
-        tablesApiPromo, 
-        timestampOverridesPromo,
-        appwriteGeneralAvailabiltyPromo
-    );
+    listOfPromotions.push(tablesApiPromo, timestampOverridesPromo, appwriteGeneralAvailabiltyPromo);
 }
 
 export function addBottomModalAlerts() {
