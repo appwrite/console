@@ -1,16 +1,58 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import AtomicNumericOperationsDark from '$lib/images/promos/atomic-numeric-operations-dark.png';
-import AtomicNumericOperationsLight from '$lib/images/promos/atomic-numeric-operations-light.png';
-import AppwriteGeneralAvailabiltyLight from '$lib/images/promos/appwrite-general-availability-light.png';
-import AppwriteGeneralAvailabiltyDark from '$lib/images/promos/appwrite-general-availability-dark.png';
 import TablesApiLight from '$lib/images/promos/tables-api-light.png';
 import TablesApiDark from '$lib/images/promos/tables-api-dark.png';
+import TimestampOverridesDark from '$lib/images/promos/timestamp-overrides-dark.png';
+import TimestampOverridesLight from '$lib/images/promos/timestamp-overrides-light.png';
+import AppwriteGeneralAvailabiltyLight from '$lib/images/promos/appwrite-general-availability-light.png';
+import AppwriteGeneralAvailabiltyDark from '$lib/images/promos/appwrite-general-availability-dark.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
+    const tablesApiPromo: BottomModalAlertItem = {
+        id: 'modal:tables_api_announcement',
+        src: {
+            dark: TablesApiDark,
+            light: TablesApiLight
+        },
+        title: 'Announcing the new Grids UI and more!',
+        message:
+            'This is Appwrite Databases’ most significant update so far, introducing new terminology, a new UI, and a supporting Grids API.',
+        plan: 'free',
+        importance: 8,
+        scope: 'project',
+        cta: {
+            text: 'Read announcement',
+            link: () => 'https://apwr.dev/E64A90f',
+            external: true,
+            hideOnClick: true
+        },
+        show: true
+    };
+
+    const timestampOverridesPromo: BottomModalAlertItem = {
+        id: 'modal:timestamp_overrides_announcement',
+        src: {
+            dark: TimestampOverridesDark,
+            light: TimestampOverridesLight
+        },
+        title: 'Announcing Timestamp Overrides',
+        message:
+            'Move historical data into Appwrite without losing context or disrupting chronological accuracy.',
+        plan: 'free',
+        importance: 8,
+        scope: 'project',
+        cta: {
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-timestamp-overrides',
+            external: true,
+            hideOnClick: true
+        },
+        show: true
+    };
+
     const appwriteGeneralAvailabiltyPromo: BottomModalAlertItem = {
         id: 'modal:appwrite_general_availability_announcement',
         src: {
@@ -30,50 +72,11 @@ if (isCloud) {
         },
         show: true
     };
-    const tablesApiPromo: BottomModalAlertItem = {
-        id: 'modal:tables_api_announcement',
-        src: {
-            dark: TablesApiDark,
-            light: TablesApiLight
-        },
-        title: 'Announcing the new Grids UI and more!',
-        message:
-            'This is Appwrite Databases\u2019 most significant update so far, introducing new terminology, a new UI, and a supporting Grids API.',
-        plan: 'free',
-        importance: 8,
-        scope: 'project',
-        cta: {
-            text: 'Read announcement',
-            link: () => 'https://apwr.dev/E64A90f',
-            external: true,
-            hideOnClick: true
-        },
-        show: true
-    };
-    const atomicNumericOperationsPromo: BottomModalAlertItem = {
-        id: 'modal:atomic_numeric_operations_announcement',
-        src: {
-            dark: AtomicNumericOperationsDark,
-            light: AtomicNumericOperationsLight
-        },
-        title: 'Announcing Atomic Numeric Operations',
-        message:
-            'Safely update numeric fields directly on the server, without conflicts or race conditions.',
-        plan: 'free',
-        importance: 8,
-        scope: 'project',
-        cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-atomic-numeric-operations',
-            external: true,
-            hideOnClick: true
-        },
-        show: true
-    };
+
     listOfPromotions.push(
-        tablesApiPromo,
-        appwriteGeneralAvailabiltyPromo,
-        atomicNumericOperationsPromo
+        tablesApiPromo, 
+        timestampOverridesPromo,
+        appwriteGeneralAvailabiltyPromo
     );
 }
 

@@ -23,9 +23,10 @@
 
     async function update() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .messaging.updateSms(message.$id, undefined, undefined, undefined, content);
+            await sdk.forProject(page.params.region, page.params.project).messaging.updateSMS({
+                messageId: message.$id,
+                content
+            });
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({
                 message: 'Message has been updated',

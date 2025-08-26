@@ -8,7 +8,9 @@ import { page } from '$app/state';
 export const topicsSearcher = (async (query: string) => {
     const { topics } = await sdk
         .forProject(page.params.region, page.params.project)
-        .messaging.listTopics([], query || undefined);
+        .messaging.listTopics({
+            search: query || undefined
+        });
 
     return topics
         .filter((topic) => topic.name.toLowerCase().includes(query.toLowerCase()))

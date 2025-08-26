@@ -12,8 +12,8 @@
     import { Dependencies } from '$lib/constants';
 
     export let teamId: string;
-    export let showCreateProjectCloud: boolean;
     export let projects: number;
+    export let showCreateProjectCloud: boolean;
     export let regions: Array<Models.ConsoleRegion> = [];
 
     let id: string = null;
@@ -29,7 +29,12 @@
         showSubmissionLoader = true;
 
         try {
-            project = await sdk.forConsole.projects.create(id ?? ID.unique(), name, teamId, region);
+            project = await sdk.forConsole.projects.create({
+                projectId: id ?? ID.unique(),
+                name,
+                teamId,
+                region
+            });
 
             await goto(`${base}/project-${project.region}-${project.$id}`);
             trackEvent(Submit.ProjectCreate, { customId: !!id, teamId, region: region });

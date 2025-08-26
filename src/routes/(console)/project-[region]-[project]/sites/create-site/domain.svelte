@@ -31,10 +31,10 @@
             return;
         }
         try {
-            await sdk.forConsole.console.getResource(
-                `${value}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
-                ConsoleResourceType.Rules
-            );
+            await sdk.forConsole.console.getResource({
+                value: `${value}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
+                type: ConsoleResourceType.Rules
+            });
             domainStatus = 'complete';
             domainIsValid = true;
         } catch {

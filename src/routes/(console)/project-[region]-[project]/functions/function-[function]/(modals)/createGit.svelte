@@ -43,12 +43,18 @@
             if (!$repository?.id && hasRepository) {
                 $repository = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .vcs.getRepository($installation.$id, $func.providerRepositoryId);
+                    .vcs.getRepository({
+                        installationId: $installation.$id,
+                        providerRepositoryId: $func.providerRepositoryId
+                    });
             }
             selectedRepository = $repository?.id;
             const branchList = await sdk
                 .forProject(page.params.region, page.params.project)
-                .vcs.listRepositoryBranches($installation.$id, selectedRepository);
+                .vcs.listRepositoryBranches({
+                    installationId: $installation.$id,
+                    providerRepositoryId: selectedRepository
+                });
 
             const sorted = sortBranches(branchList.branches);
 
@@ -69,47 +75,42 @@
     async function createDeployment() {
         try {
             if (!$func?.providerRepositoryId) {
-                await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .functions.update(
-                        $func.$id,
-                        $func.name,
-                        $func.runtime as Runtime,
-                        $func.execute || undefined,
-                        $func.events || undefined,
-                        $func.schedule || undefined,
-                        $func.timeout || undefined,
-                        $func.enabled || undefined,
-                        $func.logging || undefined,
-                        $func.entrypoint,
-                        $func.commands || undefined,
-                        $func.scopes || undefined,
-                        $installation.$id || undefined,
-                        selectedRepository || undefined,
-                        branch || undefined,
-                        undefined,
-                        undefined,
-                        undefined
-                    );
+                await sdk.forProject(page.params.region, page.params.project).functions.update({
+                    functionId: $func.$id,
+                    name: $func.name,
+                    runtime: $func.runtime as Runtime,
+                    execute: $func.execute || undefined,
+                    events: $func.events || undefined,
+                    schedule: $func.schedule || undefined,
+                    timeout: $func.timeout || undefined,
+                    enabled: $func.enabled || undefined,
+                    logging: $func.logging || undefined,
+                    entrypoint: $func.entrypoint,
+                    commands: $func.commands || undefined,
+                    scopes: $func.scopes || undefined,
+                    installationId: $installation.$id || undefined,
+                    providerRepositoryId: selectedRepository || undefined,
+                    providerBranch: branch || undefined
+                });
             }
             if (commit) {
                 await sdk
                     .forProject(page.params.region, page.params.project)
-                    .functions.createVcsDeployment(
-                        $func.$id,
-                        VCSDeploymentType.Commit,
-                        commit,
+                    .functions.createVcsDeployment({
+                        functionId: $func.$id,
+                        type: VCSDeploymentType.Commit,
+                        reference: commit,
                         activate
-                    );
+                    });
             } else if (branch) {
                 await sdk
                     .forProject(page.params.region, page.params.project)
-                    .functions.createVcsDeployment(
-                        $func.$id,
-                        VCSDeploymentType.Branch,
-                        branch,
+                    .functions.createVcsDeployment({
+                        functionId: $func.$id,
+                        type: VCSDeploymentType.Branch,
+                        reference: branch,
                         activate
-                    );
+                    });
             }
             show = false;
             invalidate(Dependencies.DEPLOYMENTS);

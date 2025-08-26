@@ -4,13 +4,19 @@ import { writable } from 'svelte/store';
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Execution ID', type: 'string', width: { min: 200, max: 250 } },
     {
+        id: 'deploymentId',
+        title: 'Deployment ID',
+        type: 'string',
+        width: { min: 210 },
+        hide: true
+    },
+    {
         id: 'requestPath',
         title: 'Path',
         type: 'string',
         width: { min: 200 },
         format: 'string'
     },
-
     {
         id: 'trigger',
         title: 'Trigger',

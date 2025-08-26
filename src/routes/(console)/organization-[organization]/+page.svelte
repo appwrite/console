@@ -98,12 +98,12 @@
     const importProject = async () => {
         try {
             loading.set(true);
-            const project = await sdk.forConsole.projects.create(
-                ID.unique(),
-                `Imported project ${new Date().toISOString()}`,
-                page.params.organization,
-                Region.Fra // default
-            );
+            const project = await sdk.forConsole.projects.create({
+                projectId: ID.unique(),
+                name: `Imported project ${new Date().toISOString()}`,
+                teamId: page.params.organization,
+                region: Region.Fra
+            });
             trackEvent(Submit.ProjectCreate, {
                 teamId: page.params.organization
             });
@@ -114,9 +114,8 @@
             trackError(e, Submit.ProjectCreate);
         }
     };
-    onMount(async () => {
-        checkPricingRefAndRedirect(page.url.searchParams);
-    });
+
+    onMount(async () => checkPricingRefAndRedirect(page.url.searchParams));
 
     function findRegion(project: Models.Project) {
         return $regionsStore.regions.find((region) => region.$id === project.region);
@@ -140,7 +139,10 @@
     );
 </script>
 
-<SelectProjectCloud selectedProjects={data.organization.projects || []} bind:showSelectProject />
+<SelectProjectCloud
+    bind:showSelectProject
+    organizationId={page.params.organization}
+    selectedProjects={data.organization.projects || []} />
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">

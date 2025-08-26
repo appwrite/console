@@ -27,7 +27,7 @@
     let addOrganization = false;
 
     const getMemberships = async (teamId: string) => {
-        const memberships = await sdk.forConsole.teams.listMemberships(teamId);
+        const memberships = await sdk.forConsole.teams.listMemberships({ teamId });
         return memberships.memberships.map((team) => team.userName || team.userEmail);
     };
 

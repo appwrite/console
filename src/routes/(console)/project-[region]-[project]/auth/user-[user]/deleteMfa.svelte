@@ -17,7 +17,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .users.deleteMfaAuthenticator($user.$id, AuthenticatorType.Totp);
+                .users.deleteMFAAuthenticator({ userId: $user.$id, type: AuthenticatorType.Totp });
             await invalidate(Dependencies.USER);
             showDelete = false;
             addNotification({

@@ -19,10 +19,10 @@
 
     async function addDomain() {
         try {
-            domain = await sdk.forConsole.domains.create(
-                page.params.organization,
-                domainName.toLocaleLowerCase()
-            );
+            domain = await sdk.forConsole.domains.create({
+                teamId: page.params.organization,
+                domain: domainName.toLocaleLowerCase()
+            });
             invalidate(Dependencies.DOMAINS);
         } catch (error) {
             addNotification({

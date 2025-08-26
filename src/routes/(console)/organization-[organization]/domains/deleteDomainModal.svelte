@@ -17,7 +17,9 @@
 
     async function deleteDomain() {
         try {
-            await sdk.forConsole.domains.delete(selectedDomain.$id);
+            await sdk.forConsole.domains.delete({
+                domainId: selectedDomain.$id
+            });
             show = false;
             addNotification({
                 type: 'success',

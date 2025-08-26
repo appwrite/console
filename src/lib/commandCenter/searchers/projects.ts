@@ -7,10 +7,9 @@ import type { Searcher } from '../commands';
 import { base } from '$app/paths';
 
 export const projectsSearcher = (async (query: string) => {
-    const { projects } = await sdk.forConsole.projects.list([
-        Query.equal('teamId', get(organization).$id),
-        Query.orderDesc('')
-    ]);
+    const { projects } = await sdk.forConsole.projects.list({
+        queries: [Query.equal('teamId', get(organization).$id), Query.orderDesc('')]
+    });
 
     return projects
         .filter((project) => project.name.toLowerCase().includes(query.toLowerCase()))

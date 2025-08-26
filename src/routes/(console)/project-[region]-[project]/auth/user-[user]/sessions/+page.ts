@@ -8,6 +8,6 @@ export const load: PageLoad = async ({ params, depends }) => {
     return {
         sessions: await sdk
             .forProject(params.region, params.project)
-            .users.listSessions(params.user)
+            .users.listSessions({ userId: params.user })
     };
 };

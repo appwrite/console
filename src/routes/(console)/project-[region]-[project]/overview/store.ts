@@ -15,7 +15,11 @@ export const usage = cachedStore<
         load: async (start, end, period) => {
             const usages = await sdk
                 .forProject(page.params.region, page.params.project)
-                .project.getUsage(start, end, period);
+                .project.getUsage({
+                    startDate: start,
+                    endDate: end,
+                    period
+                });
             set(usages);
         }
     };

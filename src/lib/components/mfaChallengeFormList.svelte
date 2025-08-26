@@ -4,11 +4,14 @@
     export async function verify(challenge: Models.MfaChallenge, code: string) {
         try {
             if (challenge === null) {
-                challenge = await sdk.forConsole.account.createMfaChallenge(
-                    AuthenticationFactor.Totp
-                );
+                challenge = await sdk.forConsole.account.createMFAChallenge({
+                    factor: AuthenticationFactor.Totp
+                });
             }
-            await sdk.forConsole.account.updateMfaChallenge(challenge.$id, code);
+            await sdk.forConsole.account.updateMFAChallenge({
+                challengeId: challenge.$id,
+                otp: code
+            });
             await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountLogin, { mfa_used: true });
         } catch (error) {
@@ -46,7 +49,7 @@
         disabled = true;
         challengeType = factor;
         try {
-            challenge = await sdk.forConsole.account.createMfaChallenge(factor);
+            challenge = await sdk.forConsole.account.createMFAChallenge({ factor });
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -63,9 +66,9 @@
         );
         if (enabledNonRecoveryFactors.length === 1) {
             if (factors.phone) {
-                createChallenge(AuthenticationFactor.Phone);
+                await createChallenge(AuthenticationFactor.Phone);
             } else if (factors.email) {
-                createChallenge(AuthenticationFactor.Email);
+                await createChallenge(AuthenticationFactor.Email);
             }
         }
     });

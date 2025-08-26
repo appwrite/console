@@ -17,56 +17,27 @@
             if (message.providerType == MessagingProviderType.Email) {
                 await sdk
                     .forProject(page.params.region, page.params.project)
-                    .messaging.updateEmail(
-                        message.$id,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        true
-                    );
+                    .messaging.updateEmail({
+                        messageId: message.$id,
+                        draft: true
+                    });
             } else if (message.providerType == MessagingProviderType.Sms) {
-                await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .messaging.updateSms(
-                        message.$id,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        true
-                    );
+                await sdk.forProject(page.params.region, page.params.project).messaging.updateSMS({
+                    messageId: message.$id,
+                    draft: true
+                });
             } else if (message.providerType == MessagingProviderType.Push) {
-                await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .messaging.updatePush(
-                        message.$id,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        true
-                    );
+                await sdk.forProject(page.params.region, page.params.project).messaging.updatePush({
+                    messageId: message.$id,
+                    draft: true
+                });
             }
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({
                 message: `The scheduling has been cancelled.`,
                 type: 'success'
             });
-            trackEvent(Submit.MessagingMessageUpdate, {
-                providerType: message.providerType,
-                status
-            });
+            trackEvent(Submit.MessagingMessageUpdate, { providerType: message.providerType });
             show = false;
         } catch (error) {
             addNotification({

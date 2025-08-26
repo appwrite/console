@@ -49,12 +49,18 @@
             if (!$repository?.id && hasRepository) {
                 $repository = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .vcs.getRepository($installation.$id, site.providerRepositoryId);
+                    .vcs.getRepository({
+                        installationId: $installation.$id,
+                        providerRepositoryId: site.providerRepositoryId
+                    });
             }
             selectedRepository = $repository?.id;
             const branchList = await sdk
                 .forProject(page.params.region, page.params.project)
-                .vcs.listRepositoryBranches($installation.$id, selectedRepository);
+                .vcs.listRepositoryBranches({
+                    installationId: $installation.$id,
+                    providerRepositoryId: selectedRepository
+                });
 
             const sorted = sortBranches(branchList.branches);
 
@@ -75,46 +81,44 @@
     async function createDeployment() {
         try {
             if (!site?.providerRepositoryId) {
-                await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .sites.update(
-                        site.$id,
-                        site.name,
-                        site.framework as Framework,
-                        site.enabled || undefined,
-                        site.logging || undefined,
-                        site.timeout || undefined,
-                        site.installCommand || undefined,
-                        site.buildCommand || undefined,
-                        site.outputDirectory || undefined,
-                        (site?.buildRuntime as BuildRuntime) || undefined,
-                        (site.adapter as Adapter) || undefined,
-                        site.fallbackFile || undefined,
-                        $installation.$id || undefined,
-                        selectedRepository || undefined,
-                        branch || undefined,
-                        site.providerSilentMode || undefined,
-                        site.providerRootDirectory || undefined
-                    );
+                await sdk.forProject(page.params.region, page.params.project).sites.update({
+                    siteId: site.$id,
+                    name: site.name,
+                    framework: site.framework as Framework,
+                    enabled: site.enabled || undefined,
+                    logging: site.logging || undefined,
+                    timeout: site.timeout || undefined,
+                    installCommand: site.installCommand || undefined,
+                    buildCommand: site.buildCommand || undefined,
+                    outputDirectory: site.outputDirectory || undefined,
+                    buildRuntime: (site?.buildRuntime as BuildRuntime) || undefined,
+                    adapter: (site.adapter as Adapter) || undefined,
+                    fallbackFile: site.fallbackFile || undefined,
+                    installationId: $installation.$id || undefined,
+                    providerRepositoryId: selectedRepository || undefined,
+                    providerBranch: branch || undefined,
+                    providerSilentMode: site.providerSilentMode || undefined,
+                    providerRootDirectory: site.providerRootDirectory || undefined
+                });
             }
             if (commit) {
                 await sdk
                     .forProject(page.params.region, page.params.project)
-                    .sites.createVcsDeployment(
-                        site.$id,
-                        VCSDeploymentType.Commit,
-                        commit,
+                    .sites.createVcsDeployment({
+                        siteId: site.$id,
+                        type: VCSDeploymentType.Commit,
+                        reference: commit,
                         activate
-                    );
+                    });
             } else if (branch) {
                 await sdk
                     .forProject(page.params.region, page.params.project)
-                    .sites.createVcsDeployment(
-                        site.$id,
-                        VCSDeploymentType.Branch,
-                        branch,
+                    .sites.createVcsDeployment({
+                        siteId: site.$id,
+                        type: VCSDeploymentType.Branch,
+                        reference: branch,
                         activate
-                    );
+                    });
             }
             show = false;
             invalidate(Dependencies.DEPLOYMENTS);

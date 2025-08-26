@@ -50,16 +50,16 @@
                     break;
             }
             // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
-            await sdk.forConsole.projects.updateEmailTemplate(
-                $project.$id,
-                $emailTemplate.type ? ($emailTemplate.type as EmailTemplateType) : undefined,
-                $emailTemplate.locale ? ($emailTemplate.locale as EmailTemplateLocale) : undefined,
-                $emailTemplate.subject ? $emailTemplate.subject : undefined,
-                $emailTemplate.message ? $emailTemplate.message : undefined,
-                $emailTemplate.senderName ? $emailTemplate.senderName : undefined,
-                $emailTemplate.senderEmail ? $emailTemplate.senderEmail : undefined,
-                $emailTemplate.replyTo ? $emailTemplate.replyTo : undefined
-            );
+            await sdk.forConsole.projects.updateEmailTemplate({
+                projectId: $project.$id,
+                type: $emailTemplate.type as EmailTemplateType,
+                locale: $emailTemplate.locale as EmailTemplateLocale,
+                subject: $emailTemplate.subject || undefined,
+                message: $emailTemplate.message || undefined,
+                senderName: $emailTemplate.senderName || undefined,
+                senderEmail: $emailTemplate.senderEmail || undefined,
+                replyTo: $emailTemplate.replyTo || undefined
+            });
 
             $baseEmailTemplate = {
                 ...$emailTemplate

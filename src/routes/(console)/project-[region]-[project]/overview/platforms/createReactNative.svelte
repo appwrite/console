@@ -79,18 +79,21 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
     async function createReactNativePlatform() {
         try {
             isCreatingPlatform = true;
-            await sdk.forConsole.projects.createPlatform(
+            await sdk.forConsole.projects.createPlatform({
                 projectId,
-                platform,
-                $createPlatform.name,
-                $createPlatform.key || undefined,
-                undefined,
-                undefined
-            );
+                type: platform,
+                name: $createPlatform.name,
+                key: $createPlatform.key || undefined
+            });
 
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {
                 type: platform
+            });
+
+            addNotification({
+                type: 'success',
+                message: 'Platform created.'
             });
 
             invalidate(Dependencies.PROJECT);
@@ -212,7 +215,7 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
 
         <!-- Step Three -->
         {#if isPlatformCreated}
-            <Fieldset legend="Clone starter">
+            <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
@@ -298,7 +301,7 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
                 secondary
                 disabled={isCreatingPlatform}
                 href={location.pathname}>
-                Go to dashboard
+                Skip, go to dashboard
             </Button>
         {/if}
     </svelte:fragment>

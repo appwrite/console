@@ -161,18 +161,22 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 
         try {
             isCreatingPlatform = true;
-            await sdk.forConsole.projects.createPlatform(
+            await sdk.forConsole.projects.createPlatform({
                 projectId,
-                PlatformType.Web,
-                `${selectedFramework.label} app`,
-                selectedFrameworkKey,
-                undefined,
-                hostname === '' ? undefined : hostname
-            );
+                type: PlatformType.Web,
+                name: `${selectedFramework.label} app`,
+                key: selectedFrameworkKey,
+                hostname: hostname === '' ? undefined : hostname
+            });
 
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {
                 type: platform
+            });
+
+            addNotification({
+                type: 'success',
+                message: 'Platform created.'
             });
 
             invalidate(Dependencies.PROJECT);
@@ -281,7 +285,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 
         <!-- Step Three -->
         {#if isPlatformCreated && !isChangingFramework}
-            <Fieldset legend="Clone starter">
+            <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
@@ -402,7 +406,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                 secondary
                 fullWidthMobile
                 href={location.pathname}
-                disabled={isCreatingPlatform}>Go to dashboard</Button>
+                disabled={isCreatingPlatform}>Skip, go to dashboard</Button>
         {/if}
     </svelte:fragment>
 </Wizard>

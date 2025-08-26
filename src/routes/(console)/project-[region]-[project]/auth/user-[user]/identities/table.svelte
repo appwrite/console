@@ -26,7 +26,9 @@
         showDelete = false;
 
         const promises = selectedIds.map((id) =>
-            sdk.forProject(page.params.region, page.params.project).users.deleteIdentity(id)
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .users.deleteIdentity({ identityId: id })
         );
 
         try {

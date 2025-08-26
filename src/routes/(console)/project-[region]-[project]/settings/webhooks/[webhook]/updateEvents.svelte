@@ -26,17 +26,17 @@
 
     async function updateEvents() {
         try {
-            await sdk.forConsole.projects.updateWebhook(
+            await sdk.forConsole.projects.updateWebhook({
                 projectId,
-                $webhook.$id,
-                $webhook.name,
-                Array.from($eventSet),
-                $webhook.url,
-                $webhook.security,
-                true,
-                $webhook.httpUser || undefined,
-                $webhook.httpPass || undefined
-            );
+                webhookId: $webhook.$id,
+                name: $webhook.name,
+                events: Array.from($eventSet),
+                url: $webhook.url,
+                security: $webhook.security,
+                enabled: true,
+                httpUser: $webhook.httpUser || undefined,
+                httpPass: $webhook.httpPass || undefined
+            });
             await invalidate(Dependencies.WEBHOOK);
             areEventsDisabled = true;
             addNotification({

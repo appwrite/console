@@ -11,9 +11,13 @@
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { type Models, type Payload, Query } from '@appwrite.io/console';
 
+    // re-render the key for sheet UI.
+    import { hash } from '$lib/helpers/string';
+    import { spreadsheetRenderKey } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/store';
+
     type ImportItem = {
         status: string;
-        collection?: string;
+        table?: string;
     };
 
     type ImportItemsMap = Map<string, ImportItem>;
@@ -22,15 +26,11 @@
      * Keeps a track of the active and ongoing csv migrations.
      *
      * The structure is as follows -
-     * `{ migrationId: { status: status, collection: collection } }`
+     * `{ migrationId: { status: status, table: table } }`
      */
     const importItems: Writable<ImportItemsMap> = writable(new Map());
 
-    async function showCompletionNotification(
-        database: string,
-        collection: string,
-        payload: Payload
-    ) {
+    async function showCompletionNotification(database: string, table: string, payload: Payload) {
         const isSuccess = payload.status === 'completed';
         const isError = !isSuccess && !!payload.errors;
 
@@ -48,20 +48,21 @@
 
         const type = isSuccess ? 'success' : 'error';
         const message = isError ? errorMessage : 'CSV import finished successfully.';
-        const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${database}/collection-${collection}`;
+        const url = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${database}/table-${table}`;
 
         addNotification({
             type,
             message,
             isHtml: true,
             buttons:
-                isSuccess && collection !== page.params.collection
-                    ? [{ name: 'View documents', method: () => goto(url) }]
+                isSuccess && table !== page.params.table
+                    ? [{ name: 'View rows', method: () => goto(url) }]
                     : undefined
         });
 
         if (isSuccess) {
-            await invalidate(Dependencies.DOCUMENTS);
+            await invalidate(Dependencies.ROWS);
+            $spreadsheetRenderKey = hash(Date.now().toString());
         }
     }
 
@@ -70,19 +71,22 @@
 
         const status = importData.status;
         const resourceId = importData.resourceId ?? '';
-        const [databaseId, collectionId] = resourceId.split(':') ?? [];
+        const [databaseId, tableId] = resourceId.split(':') ?? [];
 
         const current = $importItems.get(importData.$id);
-        let collectionName = current?.collection ?? null;
+        let tableName = current?.table ?? null;
 
-        if (!collectionName && collectionId) {
+        if (!tableName && tableId) {
             try {
-                const collection = await sdk
+                const table = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .databases.getCollection(databaseId, collectionId);
-                collectionName = collection.name;
+                    .tablesDB.getTable({
+                        databaseId,
+                        tableId
+                    });
+                tableName = table.name;
             } catch {
-                collectionName = null;
+                tableName = null;
             }
         }
 
@@ -99,12 +103,12 @@
             if (shouldSkip) return items;
 
             const next = new Map(items);
-            next.set(importData.$id, { status, collection: collectionName ?? undefined });
+            next.set(importData.$id, { status, table: tableName ?? undefined });
             return next;
         });
 
         if (status === 'completed' || status === 'failed') {
-            await showCompletionNotification(databaseId, collectionId, importData);
+            await showCompletionNotification(databaseId, tableId, importData);
         }
     }
 
@@ -146,10 +150,12 @@
 
     onMount(() => {
         sdk.forProject(page.params.region, page.params.project)
-            .migrations.list([
-                Query.equal('source', 'CSV'),
-                Query.equal('status', ['pending', 'processing'])
-            ])
+            .migrations.list({
+                queries: [
+                    Query.equal('source', 'CSV'),
+                    Query.equal('status', ['pending', 'processing'])
+                ]
+            })
             .then((migrations) => {
                 migrations.migrations.forEach(updateOrAddItem);
             });
@@ -172,7 +178,7 @@
             <header class="upload-box-header">
                 <h4 class="upload-box-title">
                     <Typography.Text variant="m-500">
-                        Importing documents ({$importItems.size})
+                        Importing rows ({$importItems.size})
                     </Typography.Text>
                 </h4>
                 <button
@@ -190,39 +196,54 @@
                 </button>
             </header>
 
-            {#each [...$importItems.entries()] as [key, value] (key)}
-                <div class="upload-box-content" class:is-open={isOpen}>
-                    <ul class="upload-box-list">
-                        <li class="upload-box-item">
-                            <section class="progress-bar u-width-full-line">
-                                <div
-                                    class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
-                                    <Typography.Text>
-                                        {@html text(value.status, value.collection)}
-                                    </Typography.Text>
-                                </div>
-                                <div
-                                    class="progress-bar-container"
-                                    class:is-danger={value.status === 'failed'}
-                                    style="--graph-size:{graphSize(value.status)}%">
-                                </div>
-                            </section>
-                        </li>
-                    </ul>
-                </div>
-            {/each}
+            <div class="upload-box-content-list">
+                {#each [...$importItems.entries()] as [key, value] (key)}
+                    <div class="upload-box-content" class:is-open={isOpen}>
+                        <ul class="upload-box-list">
+                            <li class="upload-box-item">
+                                <section class="progress-bar u-width-full-line">
+                                    <div
+                                        class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
+                                        <Typography.Text>
+                                            {@html text(value.status, value.table)}
+                                        </Typography.Text>
+                                    </div>
+                                    <div
+                                        class="progress-bar-container"
+                                        class:is-danger={value.status === 'failed'}
+                                        style="--graph-size:{graphSize(value.status)}%">
+                                    </div>
+                                </section>
+                            </li>
+                        </ul>
+                    </div>
+                {/each}
+            </div>
         </section>
     </Layout.Stack>
 {/if}
 
 <style lang="scss">
+    .upload-box {
+        display: flex;
+        max-height: 320px;
+        flex-direction: column;
+    }
+
+    .upload-box-header {
+        flex-shrink: 0;
+    }
+
     .upload-box-title {
         font-size: 11px;
     }
 
+    .upload-box-content-list {
+        overflow-y: auto;
+    }
+
     .upload-box-content {
-        min-width: 400px;
-        max-width: 100vw;
+        width: 304px;
     }
 
     .upload-box-button {
