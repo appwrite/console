@@ -17,7 +17,7 @@
     const isOnOnboarding = $derived(() => page.route?.id?.includes('/(console)/onboarding'));
 
     const hasUser = $derived(!!$user);
-    const needsEmailVerification = $derived($user && !$user.emailVerification);
+    const needsEmailVerification = $derived(hasUser && !$user.emailVerification);
     const shouldShowNotificationBanner = $derived.by(() =>
         shouldShowNotification('email-verification-banner')
     );
