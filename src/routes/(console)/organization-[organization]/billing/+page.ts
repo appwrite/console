@@ -59,42 +59,26 @@ export const load: PageLoad = async ({ parent, depends }) => {
               organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))
         : false;
 
-    // load organization usage data for planSummary component
+    // load organization usage data and project metadata for planSummary component
     let organizationUsage = null;
     let usageProjects: Record<string, UsageProjectInfo> = {};
 
-    // load projects directly for the planSummary component
+    try {
+        organizationUsage = await sdk.forConsole.billing.listUsage(organization.$id);
+    } catch (e) {
+        organizationUsage = null;
+    }
+
     try {
         const projectsResponse = await sdk.forConsole.projects.list([
             Query.equal('teamId', organization.$id),
             Query.limit(1000)
         ]);
-
-        if (projectsResponse.projects.length > 0) {
-            // mock data since organizationUsage is not availlable due to some reason
-            organizationUsage = {
-                projects: projectsResponse.projects.map((project, index) => ({
-                    projectId: project.$id,
-                    storage: 0,
-                    executions: 0,
-                    executionsMBSeconds: 0,
-                    bandwidth: 0,
-                    databasesReads: 0,
-                    databasesWrites: 0,
-                    users: 0,
-                    authPhoneTotal: 40102,
-                    authPhoneEstimate: 8.4,
-                    imageTransformations: 0
-                }))
+        for (const project of projectsResponse.projects) {
+            usageProjects[project.$id] = {
+                name: project.name,
+                region: project.region
             };
-
-            // Create usageProjects mapping
-            for (const project of projectsResponse.projects) {
-                usageProjects[project.$id] = {
-                    name: project.name,
-                    region: project.region
-                };
-            }
         }
     } catch (e) {
         // ignore error

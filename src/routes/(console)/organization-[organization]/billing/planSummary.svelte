@@ -10,7 +10,6 @@
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { Divider, Typography, Expandable as ExpandableTable } from '@appwrite.io/pink-svelte';
-    import { getServiceLimit } from '$lib/stores/billing';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
 
@@ -37,6 +36,57 @@
         { id: 'price', align: 'right' as const, width: '0fr' }
     ];
 
+    $: projectIdToBreakdown = new Map(
+        (currentAggregation?.projectBreakdown || []).map((p) => [p.$id, p])
+    );
+
+    function formatHumanSize(bytes: number): string {
+        const size = humanFileSize(bytes || 0);
+        return `${size.value} ${size.unit}`;
+    }
+
+    function resourceEntry(p: any, id: string): any {
+        const res = p?.resources;
+        if (!res) return undefined;
+        if (Array.isArray(res)) {
+            return res.find((r: any) => r.resourceId === id);
+        }
+        return res[id];
+    }
+    function valueOf(p: any, id: string): number {
+        const entry = resourceEntry(p, id);
+        return (entry?.value ?? 0) as number;
+    }
+    function amountOf(p: any, id: string): number {
+        const entry = resourceEntry(p, id);
+        return (entry?.amount ?? 0) as number;
+    }
+    function storageTotal(p: any): number {
+        const ids = [
+            'filesStorage',
+            'deploymentsStorage',
+            'buildsStorage',
+            'backupsStorage',
+            'databasesStorage'
+        ];
+        return ids.reduce((sum, rid) => sum + (valueOf(p, rid) || 0), 0);
+    }
+
+    $: projectsList = organizationUsage?.projects?.length
+        ? organizationUsage.projects
+        : (currentAggregation?.projectBreakdown || []).map((p) => ({
+              projectId: p.$id,
+              storage: storageTotal(p),
+              executions: valueOf(p, 'executions'),
+              executionsMBSeconds: 0,
+              bandwidth: valueOf(p, 'bandwidth'),
+              databasesReads: valueOf(p, 'databasesReads'),
+              databasesWrites: valueOf(p, 'databasesWrites'),
+              users: valueOf(p, 'users'),
+              authPhoneTotal: valueOf(p, 'authPhone'),
+              authPhoneEstimate: amountOf(p, 'authPhone')
+          }));
+
     $: billingData = [
         {
             id: 'base-plan',
@@ -47,13 +97,13 @@
                 price: formatCurrency(currentPlan?.price || 0)
             }
         },
-        ...(organizationUsage?.projects?.map((project) => ({
+        ...(projectsList?.map((project) => ({
             id: `project-${project.projectId}`,
             expandable: true,
             cells: {
                 item: usageProjects[project.projectId]?.name || `Project ${project.projectId}`,
                 usage: '',
-                price: formatCurrency(0) // Calculate based on usage
+                price: formatCurrency(projectIdToBreakdown.get(project.projectId)?.amount || 0)
             },
             children: [
                 // Bandwidth
@@ -61,7 +111,7 @@
                     id: `project-${project.projectId}-bandwidth`,
                     cells: {
                         item: 'Bandwidth',
-                        usage: `${project.bandwidth?.toLocaleString() || 0} / ${getServiceLimit('bandwidth')?.toLocaleString() || '∞'}`,
+                        usage: `${project.bandwidth?.toLocaleString() || 0} / ${currentPlan?.bandwidth?.toLocaleString() || '∞'}`,
                         price: formatCurrency(0)
                     }
                 },
@@ -70,7 +120,7 @@
                     id: `project-${project.projectId}-users`,
                     cells: {
                         item: 'Users',
-                        usage: `${project.users?.toLocaleString() || 0} / ${getServiceLimit('users')?.toLocaleString() || '∞'}`,
+                        usage: `${project.users?.toLocaleString() || 0} / ${currentPlan?.users?.toLocaleString() || '∞'}`,
                         price: formatCurrency(0)
                     }
                 },
@@ -97,7 +147,7 @@
                     id: `project-${project.projectId}-executions`,
                     cells: {
                         item: 'Executions',
-                        usage: `${project.executions?.toLocaleString() || 0} / ${getServiceLimit('executions')?.toLocaleString() || '∞'}`,
+                        usage: `${project.executions?.toLocaleString() || 0} / ${currentPlan?.executions?.toLocaleString() || '∞'}`,
                         price: formatCurrency(0)
                     }
                 },
@@ -106,7 +156,7 @@
                     id: `project-${project.projectId}-storage`,
                     cells: {
                         item: 'Storage',
-                        usage: `${humanFileSize(project.storage || 0)} / ${humanFileSize(getServiceLimit('storage') || 0)}`,
+                        usage: `${formatHumanSize(project.storage || 0)} / ${currentPlan?.storage?.toString() || '0'} GB`,
                         price: formatCurrency(0)
                     }
                 },
@@ -115,7 +165,7 @@
                     id: `project-${project.projectId}-gb-hours`,
                     cells: {
                         item: 'GB-hours',
-                        usage: `${((project.executionsMBSeconds || 0) / 1000 / 3600).toFixed(0)} / ${getServiceLimit('executions') ? ((getServiceLimit('executions') * 1000 * 3600) / 1000 / 3600).toFixed(0) : '∞'}`,
+                        usage: `${((project.executionsMBSeconds || 0) / 1000 / 3600).toFixed(0)} / ${currentPlan?.executions ? ((currentPlan.executions * 1000 * 3600) / 1000 / 3600).toFixed(0) : '∞'}`,
                         price: formatCurrency(0)
                     }
                 },
@@ -138,15 +188,13 @@
                     cells: {
                         item: `<a href="${base}/project-${usageProjects[project.projectId]?.region || 'default'}-${project.projectId}/settings/usage" style="text-decoration: underline; font-weight: bold; color: var(--fgcolor-neutral-primary);">Usage details</a>`,
                         usage: '',
-                        price: formatCurrency(0)
+                        price: ''
                     }
                 }
             ]
         })) || []),
         // Show info if no projects found
-        ...(organizationUsage &&
-        organizationUsage.projects &&
-        organizationUsage.projects.length === 0
+        ...(projectsList && projectsList.length === 0
             ? [
                   {
                       id: 'no-projects',

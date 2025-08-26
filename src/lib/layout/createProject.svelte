@@ -54,8 +54,8 @@
     {#if projectsLimited}
         {#if isProPlan}
             <Alert.Inline status="info" title="Extra projects cost $15/month">
-                You've reached your limit of 2 projects included on the Pro plan. Each extra
-                project costs $15/month.
+                You've reached your limit of 2 projects included on the Pro plan. Each extra project
+                costs $15/month.
             </Alert.Inline>
         {:else}
             <Alert.Inline
