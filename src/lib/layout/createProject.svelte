@@ -51,29 +51,6 @@
         <Typography.Title size="l">Create your project</Typography.Title>
     {/if}
 
-    {#if projectsLimited}
-        {#if isProPlan}
-            <Alert.Inline status="info" title="Extra projects cost $15/month">
-                You've reached your limit of 2 projects included on the Pro plan. Each extra project
-                costs $15/month.
-            </Alert.Inline>
-        {:else}
-            <Alert.Inline
-                status="warning"
-                title={`You've reached your limit of ${$currentPlan?.projects || 2} projects`}>
-                Extra projects are available on paid plans for an additional fee
-                <svelte:fragment slot="actions">
-                    <Button
-                        compact
-                        size="s"
-                        href={`${base}/organization-${page.params.organization}/billing`}
-                        external
-                        text>Upgrade</Button>
-                </svelte:fragment>
-            </Alert.Inline>
-        {/if}
-    {/if}
-
     <Layout.Stack direction="column" gap="xxl">
         <Layout.Stack direction="column" gap="xxl">
             <Layout.Stack direction="column" gap="s">
@@ -107,6 +84,28 @@
                         label="Region" />
                     <Typography.Text>Region cannot be changed after creation</Typography.Text>
                 </Layout.Stack>
+            {/if}
+            {#if projectsLimited}
+                {#if isProPlan}
+                    <Alert.Inline status="info" title="Extra projects cost $15/month">
+                        You've reached your limit of 2 projects included on the Pro plan. Each extra
+                        project costs $15/month.
+                    </Alert.Inline>
+                {:else}
+                    <Alert.Inline
+                        status="warning"
+                        title={`You've reached your limit of ${$currentPlan?.projects || 2} projects`}>
+                        Extra projects are available on paid plans for an additional fee
+                        <svelte:fragment slot="actions">
+                            <Button
+                                compact
+                                size="s"
+                                href={`${base}/organization-${page.params.organization}/billing`}
+                                external
+                                text>Upgrade</Button>
+                        </svelte:fragment>
+                    </Alert.Inline>
+                {/if}
             {/if}
         </Layout.Stack>
     </Layout.Stack>

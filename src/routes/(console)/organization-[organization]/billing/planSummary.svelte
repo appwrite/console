@@ -11,6 +11,9 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { Divider, Typography, Expandable as ExpandableTable } from '@appwrite.io/pink-svelte';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { formatNum } from '$lib/helpers/string';
+    import { ProgressBar } from '$lib/components';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
 
     export let currentPlan: Plan;
@@ -31,7 +34,7 @@
 
     // define columns for the expandable table
     const columns = [
-        { id: 'item', align: 'left' as const, width: '20fr' },
+        { id: 'item', align: 'left' as const, width: '10fr' },
         { id: 'usage', align: 'left' as const, width: '20fr' },
         { id: 'price', align: 'right' as const, width: '0fr' }
     ];
@@ -43,6 +46,11 @@
     function formatHumanSize(bytes: number): string {
         const size = humanFileSize(bytes || 0);
         return `${size.value} ${size.unit}`;
+    }
+
+    function truncateForSmall(name: string): string {
+        if (!name) return name;
+        return name.length > 12 ? `${name.slice(0, 12)}…` : name;
     }
 
     function resourceEntry(p: any, id: string): any {
@@ -70,6 +78,61 @@
             'databasesStorage'
         ];
         return ids.reduce((sum, rid) => sum + (valueOf(p, rid) || 0), 0);
+    }
+
+    function getProgressColor(_percentage: number): string {
+        return 'var(--bgcolor-neutral-invert)';
+    }
+
+    function createProgressData(
+        currentValue: number,
+        maxValue: number | string
+    ): Array<{ size: number; color: string; tooltip?: { title: string; label: string } }> {
+        if (maxValue === '∞' || maxValue === null || maxValue === undefined) {
+            //just show usage without progress bar
+            return [];
+        }
+
+        const max = typeof maxValue === 'string' ? parseFloat(maxValue) : maxValue;
+        if (max <= 0) return [];
+
+        const percentage = Math.min((currentValue / max) * 100, 100);
+        const progressColor = getProgressColor(percentage);
+
+        return [
+            {
+                size: currentValue,
+                color: progressColor,
+                tooltip: {
+                    title: `${percentage.toFixed(1)}% used`,
+                    label: `${currentValue.toLocaleString()} of ${max.toLocaleString()}`
+                }
+            }
+        ];
+    }
+
+    function createStorageProgressData(
+        currentBytes: number,
+        maxGB: number
+    ): Array<{ size: number; color: string; tooltip?: { title: string; label: string } }> {
+        if (maxGB <= 0) return [];
+
+        const maxBytes = maxGB * 1024 * 1024 * 1024; // Convert GB to bytes
+        const percentage = Math.min((currentBytes / maxBytes) * 100, 100);
+        const progressColor = getProgressColor(percentage);
+
+        const currentSize = humanFileSize(currentBytes);
+
+        return [
+            {
+                size: currentBytes,
+                color: progressColor,
+                tooltip: {
+                    title: `${percentage.toFixed(0)}% used`,
+                    label: `${currentSize.value} ${currentSize.unit} of ${maxGB} GB`
+                }
+            }
+        ];
     }
 
     $: projectsList = organizationUsage?.projects?.length
@@ -101,7 +164,11 @@
             id: `project-${project.projectId}`,
             expandable: true,
             cells: {
-                item: usageProjects[project.projectId]?.name || `Project ${project.projectId}`,
+                item: $isSmallViewport
+                    ? truncateForSmall(
+                          usageProjects[project.projectId]?.name || `Project ${project.projectId}`
+                      )
+                    : usageProjects[project.projectId]?.name || `Project ${project.projectId}`,
                 usage: '',
                 price: formatCurrency(projectIdToBreakdown.get(project.projectId)?.amount || 0)
             },
@@ -111,45 +178,61 @@
                     id: `project-${project.projectId}-bandwidth`,
                     cells: {
                         item: 'Bandwidth',
-                        usage: `${project.bandwidth?.toLocaleString() || 0} / ${currentPlan?.bandwidth?.toLocaleString() || '∞'}`,
+                        usage: `${formatNum(project.bandwidth || 0)} / ${currentPlan?.bandwidth ? formatNum(currentPlan.bandwidth) : '∞'}`,
                         price: formatCurrency(0)
-                    }
+                    },
+                    progressData: createProgressData(
+                        project.bandwidth || 0,
+                        currentPlan?.bandwidth
+                    ),
+                    maxValue: currentPlan?.bandwidth
                 },
                 // Users
                 {
                     id: `project-${project.projectId}-users`,
                     cells: {
                         item: 'Users',
-                        usage: `${project.users?.toLocaleString() || 0} / ${currentPlan?.users?.toLocaleString() || '∞'}`,
+                        usage: `${formatNum(project.users || 0)} / ${currentPlan?.users ? formatNum(currentPlan.users) : '∞'}`,
                         price: formatCurrency(0)
-                    }
+                    },
+                    progressData: createProgressData(project.users || 0, currentPlan?.users),
+                    maxValue: currentPlan?.users
                 },
                 // Database reads
                 {
                     id: `project-${project.projectId}-reads`,
                     cells: {
                         item: 'Database reads',
-                        usage: `${project.databasesReads?.toLocaleString() || 0} / ∞`,
+                        usage: `${formatNum(project.databasesReads || 0)} / ∞`,
                         price: formatCurrency(0)
-                    }
+                    },
+                    progressData: [], // Unlimited, no progress bar
+                    maxValue: null
                 },
                 // Database writes
                 {
                     id: `project-${project.projectId}-writes`,
                     cells: {
                         item: 'Database writes',
-                        usage: `${project.databasesWrites?.toLocaleString() || 0} / ∞`,
+                        usage: `${formatNum(project.databasesWrites || 0)} / ∞`,
                         price: formatCurrency(0)
-                    }
+                    },
+                    progressData: [], // Unlimited, no progress bar
+                    maxValue: null
                 },
                 // Executions
                 {
                     id: `project-${project.projectId}-executions`,
                     cells: {
                         item: 'Executions',
-                        usage: `${project.executions?.toLocaleString() || 0} / ${currentPlan?.executions?.toLocaleString() || '∞'}`,
+                        usage: `${formatNum(project.executions || 0)} / ${currentPlan?.executions ? formatNum(currentPlan.executions) : '∞'}`,
                         price: formatCurrency(0)
-                    }
+                    },
+                    progressData: createProgressData(
+                        project.executions || 0,
+                        currentPlan?.executions
+                    ),
+                    maxValue: currentPlan?.executions
                 },
                 // Storage
                 {
@@ -158,30 +241,40 @@
                         item: 'Storage',
                         usage: `${formatHumanSize(project.storage || 0)} / ${currentPlan?.storage?.toString() || '0'} GB`,
                         price: formatCurrency(0)
-                    }
+                    },
+                    progressData: createStorageProgressData(
+                        project.storage || 0,
+                        currentPlan?.storage || 0
+                    ),
+                    maxValue: currentPlan?.storage ? currentPlan.storage * 1024 * 1024 * 1024 : 0 // Convert GB to bytes
                 },
                 // GB-hours (executions time)
                 {
                     id: `project-${project.projectId}-gb-hours`,
                     cells: {
                         item: 'GB-hours',
-                        usage: `${((project.executionsMBSeconds || 0) / 1000 / 3600).toFixed(0)} / ${currentPlan?.executions ? ((currentPlan.executions * 1000 * 3600) / 1000 / 3600).toFixed(0) : '∞'}`,
+                        usage: `${formatNum((project.executionsMBSeconds || 0) / 1000 / 3600 || 0)} / ${currentPlan?.executions ? formatNum((currentPlan.executions * 1000 * 3600) / 1000 / 3600) : '∞'}`,
                         price: formatCurrency(0)
+                    },
+                    progressData: currentPlan?.executions
+                        ? createProgressData(
+                              (project.executionsMBSeconds || 0) / 1000 / 3600,
+                              (currentPlan.executions * 1000 * 3600) / 1000 / 3600
+                          )
+                        : [],
+                    maxValue: currentPlan?.executions
+                        ? (currentPlan.executions * 1000 * 3600) / 1000 / 3600
+                        : null
+                },
+                // Phone OTP (no progress bar)
+                {
+                    id: `project-${project.projectId}-sms`,
+                    cells: {
+                        item: 'Phone OTP',
+                        usage: `${formatNum(project.authPhoneTotal || 0)} SMS messages`,
+                        price: formatCurrency(project.authPhoneEstimate || 0)
                     }
                 },
-                // Phone OTP
-                ...(project.authPhoneTotal
-                    ? [
-                          {
-                              id: `project-${project.projectId}-sms`,
-                              cells: {
-                                  item: 'Phone OTP',
-                                  usage: `${project.authPhoneTotal?.toLocaleString() || 0} SMS messages`,
-                                  price: formatCurrency(project.authPhoneEstimate || 0)
-                              }
-                          }
-                      ]
-                    : []),
                 // Usage details link
                 {
                     id: `project-${project.projectId}-usage-details`,
@@ -245,88 +338,124 @@
             </Typography.Text>
         </div>
         <!-- Billing breakdown table -->
-        <ExpandableTable.Root {columns} showHeader={false} let:root>
-            {#each billingData as row}
-                <ExpandableTable.Row {root} id={row.id} expandable={row.expandable ?? false}>
-                    {#each columns as col}
-                        <ExpandableTable.Cell
-                            {root}
-                            column={col.id}
-                            expandable={row.expandable ?? false}
-                            isOpen={root.isOpen(row.id)}
-                            toggle={() => root.toggle(row.id)}>
-                            <Typography.Text>
-                                {row.cells?.[col.id] ?? ''}
-                            </Typography.Text>
-                        </ExpandableTable.Cell>
-                    {/each}
+        <div class="table-wrapper" class:is-mobile={$isSmallViewport}>
+            <ExpandableTable.Root {columns} showHeader={false} let:root>
+                {#each billingData as row}
+                    <ExpandableTable.Row {root} id={row.id} expandable={row.expandable ?? false}>
+                        {#each columns as col}
+                            <ExpandableTable.Cell
+                                {root}
+                                column={col.id}
+                                expandable={row.expandable ?? false}
+                                isOpen={root.isOpen(row.id)}
+                                toggle={() => root.toggle(row.id)}>
+                                {#if col.id === 'item'}
+                                    <div class="cell-item-text">
+                                        <Typography.Text>
+                                            {row.cells?.[col.id] ?? ''}
+                                        </Typography.Text>
+                                    </div>
+                                {:else}
+                                    <Typography.Text>
+                                        {row.cells?.[col.id] ?? ''}
+                                    </Typography.Text>
+                                {/if}
+                            </ExpandableTable.Cell>
+                        {/each}
 
-                    <svelte:fragment slot="summary">
-                        {#if row.children}
-                            {#each row.children as child (child.id)}
-                                <div
-                                    class="child-row"
-                                    style="grid-template-columns: {root.childGridTemplate};">
-                                    {#each columns as col}
-                                        <div
-                                            class="child-cell"
-                                            style="justify-content: {root.alignment(col.align)};">
-                                            {#if child.cells?.[col.id]?.includes('<a href=')}
-                                                {@html child.cells?.[col.id] ?? ''}
-                                            {:else}
-                                                <Typography.Text
-                                                    variant="m-400"
-                                                    color="--fgcolor-neutral-primary">
-                                                    {child.cells?.[col.id] ?? ''}
-                                                </Typography.Text>
-                                            {/if}
-                                        </div>
-                                    {/each}
-                                </div>
-                            {/each}
-                        {/if}
-                    </svelte:fragment>
+                        <svelte:fragment slot="summary">
+                            {#if row.children}
+                                {#each row.children as child (child.id)}
+                                    <div
+                                        class="child-row"
+                                        class:is-tablet={$isTabletViewport && !$isSmallViewport}
+                                        style="grid-template-columns: {root.childGridTemplate}; --original-grid-template: {root.childGridTemplate};">
+                                        {#each columns as col}
+                                            <div
+                                                class="child-cell"
+                                                class:price={col.id === 'price'}
+                                                class:is-mobile={$isSmallViewport}
+                                                style="justify-content: {root.alignment(
+                                                    col.align
+                                                )};">
+                                                {#if child.cells?.[col.id]?.includes('<a href=')}
+                                                    {@html child.cells?.[col.id] ?? ''}
+                                                {:else if col.id === 'usage'}
+                                                    <div
+                                                        class="usage-cell-content"
+                                                        class:is-mobile={$isSmallViewport}
+                                                        class:is-tablet={$isTabletViewport &&
+                                                            !$isSmallViewport}>
+                                                        <div class="usage-progress-section">
+                                                            {#if child.progressData && child.progressData.length > 0 && child.maxValue}
+                                                                <ProgressBar
+                                                                    maxSize={child.maxValue}
+                                                                    data={child.progressData} />
+                                                            {/if}
+                                                        </div>
+                                                        <div class="usage-text-section">
+                                                            <Typography.Text
+                                                                variant="m-400"
+                                                                color="--fgcolor-neutral-primary">
+                                                                {child.cells?.[col.id] ?? ''}
+                                                            </Typography.Text>
+                                                        </div>
+                                                    </div>
+                                                {:else}
+                                                    <Typography.Text
+                                                        variant="m-400"
+                                                        color="--fgcolor-neutral-primary">
+                                                        {child.cells?.[col.id] ?? ''}
+                                                    </Typography.Text>
+                                                {/if}
+                                            </div>
+                                        {/each}
+                                    </div>
+                                {/each}
+                            {/if}
+                        </svelte:fragment>
+                    </ExpandableTable.Row>
+                {/each}
+
+                <ExpandableTable.Row {root} id="total-row" expandable={false}>
+                    <ExpandableTable.Cell
+                        {root}
+                        column="item"
+                        expandable={false}
+                        isOpen={false}
+                        toggle={() => {}}>
+                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                            Total
+                        </Typography.Text>
+                    </ExpandableTable.Cell>
+                    <ExpandableTable.Cell
+                        {root}
+                        column="usage"
+                        expandable={false}
+                        isOpen={false}
+                        toggle={() => {}}>
+                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                        </Typography.Text>
+                    </ExpandableTable.Cell>
+                    <ExpandableTable.Cell
+                        {root}
+                        column="price"
+                        expandable={false}
+                        isOpen={false}
+                        toggle={() => {}}>
+                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                            {formatCurrency(totalAmount)}
+                        </Typography.Text>
+                    </ExpandableTable.Cell>
                 </ExpandableTable.Row>
-            {/each}
-
-            <ExpandableTable.Row {root} id="total-row" expandable={false}>
-                <ExpandableTable.Cell
-                    {root}
-                    column="item"
-                    expandable={false}
-                    isOpen={false}
-                    toggle={() => {}}>
-                    <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                        Total
-                    </Typography.Text>
-                </ExpandableTable.Cell>
-                <ExpandableTable.Cell
-                    {root}
-                    column="usage"
-                    expandable={false}
-                    isOpen={false}
-                    toggle={() => {}}>
-                    <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                    </Typography.Text>
-                </ExpandableTable.Cell>
-                <ExpandableTable.Cell
-                    {root}
-                    column="price"
-                    expandable={false}
-                    isOpen={false}
-                    toggle={() => {}}>
-                    <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                        {formatCurrency(totalAmount)}
-                    </Typography.Text>
-                </ExpandableTable.Cell>
-            </ExpandableTable.Row>
-        </ExpandableTable.Root>
+            </ExpandableTable.Root>
+        </div>
 
         <!-- Actions -->
         <div class="actions-container">
             {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                 <div
-                    class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
+                    class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
                     <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
                         View estimated usage
                     </Button>
@@ -343,7 +472,7 @@
                 </div>
             {:else}
                 <div
-                    class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
+                    class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
                     {#if $organization?.billingPlanDowngrade !== null}
                         <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
                     {:else}
@@ -395,7 +524,148 @@
         border-block-start: solid 0.0625rem hsl(var(--p-toggle-border-color));
     }
 
+    /* indent child rows on tablet */
+    :global(.child-row.is-tablet) {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    /* prevent wrapping on desktop; truncate on small/tablet */
+    .cell-item-text {
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    :global(.theme-dark) .cell-item-text,
+    :global(.theme-light) .cell-item-text {
+        display: block;
+    }
+
+    /* Small and tablet: allow truncation to avoid multi-line wrapping */
+    @media (max-width: 1024px) {
+        .cell-item-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .usage-cell-content {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: 1.5rem;
+        gap: 0.75rem;
+        width: 100%;
+        min-height: 2rem;
+    }
+
+    /* tablet tweaks */
+    :global(.usage-cell-content.is-tablet) {
+        padding-left: 1rem;
+        gap: 0.5rem;
+    }
+
+    /* mobile tweaks: compact inline layout with proper spacing */
+    :global(.usage-cell-content.is-mobile) {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+        padding-left: 0;
+        min-height: 2rem;
+        flex-wrap: nowrap;
+    }
+
+    .usage-text-section {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: 1rem;
+        flex: 1;
+        text-align: left;
+    }
+
+    :global(.usage-cell-content.is-mobile .usage-text-section),
+    :global(.usage-cell-content.is-tablet .usage-text-section) {
+        padding-left: 0;
+    }
+
+    .usage-progress-section {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 264px;
+    }
+
+    :global(.usage-progress-section .progressbar__container) {
+        margin-top: 0;
+        width: 264px;
+        max-width: 264px;
+        /* Neutral background for unfilled track */
+        --progressbar-background-color: var(--bgcolor-neutral-tertiary);
+    }
+
+    /* smaller bars for tablet/mobile */
+    :global(.usage-cell-content.is-tablet .usage-progress-section .progressbar__container) {
+        width: 200px;
+        max-width: 200px;
+    }
+    :global(.usage-cell-content.is-mobile .usage-progress-section .progressbar__container) {
+        width: 120px;
+        max-width: 120px;
+    }
+
+    :global(.usage-cell-content.is-mobile .usage-progress-section) {
+        width: 120px;
+        flex-shrink: 0;
+    }
+
+    /* mobile table wrapper for horizontal scroll */
+    .table-wrapper.is-mobile {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -1rem;
+        padding: 0 1rem;
+    }
+
+    /* reset mobile overrides - use desktop layout in scrollable container */
+    .table-wrapper.is-mobile :global(.child-row) {
+        grid-template-columns: var(--original-grid-template) !important;
+        min-width: 600px; /* ensure minimum width for proper layout */
+    }
+
+    .table-wrapper.is-mobile :global(.usage-cell-content) {
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 0.75rem !important;
+        padding-left: 1rem !important;
+        min-height: 2rem !important;
+    }
+
+    .table-wrapper.is-mobile :global(.usage-progress-section) {
+        width: 200px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .table-wrapper.is-mobile :global(.usage-progress-section .progressbar__container) {
+        width: 200px !important;
+        max-width: 200px !important;
+    }
+
     @media (max-width: 768px) {
+        .actions-mobile {
+            justify-content: flex-start !important;
+            gap: 8px !important;
+        }
+
+        .actions-mobile :global(a),
+        .actions-mobile :global(button) {
+            padding: 6px 12px !important;
+            font-size: 14px !important;
+            border-radius: 8px !important;
+        }
         .billing-cycle-header {
             flex-direction: column;
             gap: 8px;
