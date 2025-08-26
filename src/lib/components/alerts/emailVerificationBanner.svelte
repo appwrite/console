@@ -47,7 +47,7 @@
 {#if shouldShowEmailBanner}
     <HeaderAlert
         type="warning"
-        title="Your email address needs to be verified"
+        title="To keep your account safe, ensure your email is valid"
         dismissible
         on:dismiss={handleDismiss}>
         <svelte:fragment>
