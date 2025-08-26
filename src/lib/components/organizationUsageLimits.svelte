@@ -3,12 +3,12 @@
     import { getServiceLimit } from '$lib/stores/billing';
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { Badge, Icon, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
-    import { IconArrowUp } from '@appwrite.io/pink-icons-svelte';
+    import { Badge, Icon, Layout, Table, Typography, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconArrowUp, IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { Modal } from '$lib/components';
-    import { organization, currentPlan } from '$lib/stores/organization';
+    import { currentPlan } from '$lib/stores/organization';
     import { Alert } from '@appwrite.io/pink-svelte';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
@@ -16,52 +16,65 @@
     import { Dependencies } from '$lib/constants';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { billingProjectsLimitDate } from '$lib/stores/billing';
-    import { page } from '$app/state';
+    import type { Organization } from '$lib/stores/organization';
+    import type { Models } from '@appwrite.io/console';
 
-    let showSelectProject = false;
-    let selectedProjects: string[] = [];
-    let error: string | null = null;
-    let showSelectionReminder = false;
+    // Props
+    let {
+        organization,
+        projects = [],
+        members = [],
+        storageUsage = 0
+    }: {
+        organization: Organization;
+        projects?: Models.Project[];
+        members?: any[];
+        storageUsage?: number;
+    } = $props();
 
-    // Get data from layout
-    $: projects = page.data.allProjects?.projects || [];
-    $: members = page.data.members?.memberships || [];
-    $: storageUsage = page.data.billingAggregation?.usageStorage || 0;
+    let showSelectProject = $state(false);
+    let selectedProjects = $state<string[]>([]);
+    let error = $state<string | null>(null);
+    let showSelectionReminder = $state(false);
 
-    $: freePlanLimits = {
+    // Derived state using runes
+    let freePlanLimits = $derived({
         projects: 2, // fallback
         members: getServiceLimit('members', BillingPlan.FREE),
         storage: getServiceLimit('storage', BillingPlan.FREE)
-    };
+    });
 
     //fallback to free limit when undefined
-    $: allowedProjectsToKeep =
+    let allowedProjectsToKeep = $derived(
         $currentPlan?.projects && $currentPlan.projects > 0
             ? $currentPlan.projects
-            : freePlanLimits.projects;
+            : freePlanLimits.projects
+    );
 
-    $: currentUsage = {
+    let currentUsage = $derived({
         projects: projects?.length || 0,
         members: members?.length || 0,
         storage: storageUsage || 0
-    };
+    });
 
-    $: storageUsageGB = storageUsage / (1024 * 1024 * 1024);
+    let storageUsageGB = $derived(storageUsage / (1024 * 1024 * 1024));
 
-    $: isLimitExceeded = {
+    let isLimitExceeded = $derived({
         projects: currentUsage.projects > freePlanLimits.projects,
         members: currentUsage.members > freePlanLimits.members,
         storage: storageUsageGB > freePlanLimits.storage
-    };
+    });
 
-    $: excessUsage = {
+    let excessUsage = $derived({
         projects: Math.max(0, currentUsage.projects),
         members: Math.max(0, currentUsage.members - freePlanLimits.members),
         storage: Math.max(0, storageUsageGB - freePlanLimits.storage)
-    };
+    });
 
     // projects that would be archived with the current selection
-    $: projectsToArchive = projects.filter((project) => !selectedProjects.includes(project.$id));
+    let projectsToArchive = $derived(
+        projects.filter((project) => !selectedProjects.includes(project.$id))
+    );
 
     function formatProjectsToArchive(): string {
         let result = '';
@@ -90,9 +103,9 @@
 
     // Expose validation for parent to call before submitting downgrade
     export function validateOrAlert(): boolean {
-        const normalizedSelection = Array.from(new Set((selectedProjects || []).map(String)));
-        const validIds = new Set(projects.map((p) => p.$id));
-        const filteredSelection = normalizedSelection.filter((id) => validIds.has(id));
+        const filteredSelection = selectedProjects.filter((id) =>
+            projects.some((p) => p.$id === id)
+        );
         const isValid = filteredSelection.length === allowedProjectsToKeep;
         showSelectionReminder = !isValid && isLimitExceeded.projects;
         return isValid;
@@ -101,14 +114,14 @@
     async function updateSelected() {
         error = null;
 
-        if (!$organization?.$id) {
+        if (!organization?.$id) {
             error = 'Missing organization ID.';
             return;
         }
 
-        const normalizedSelection = Array.from(new Set((selectedProjects || []).map(String)));
-        const validIds = new Set(projects.map((p) => p.$id));
-        const filteredSelection = normalizedSelection.filter((id) => validIds.has(id));
+        const filteredSelection = selectedProjects.filter((id) =>
+            projects.some((p) => p.$id === id)
+        );
 
         if (filteredSelection.length !== allowedProjectsToKeep) {
             error = `You must select exactly ${allowedProjectsToKeep} projects to keep.`;
@@ -117,7 +130,7 @@
 
         try {
             await sdk.forConsole.billing.updateSelectedProjects(
-                $organization.$id,
+                organization.$id,
                 filteredSelection
             );
             showSelectProject = false;
@@ -127,8 +140,7 @@
                 message: `Projects updated for archiving`
             });
         } catch (e) {
-            console.error('Error updating projects:', e);
-            error = e.message || 'Failed to update projects.';
+            error = e.message;
         }
     }
 </script>
@@ -137,9 +149,13 @@
     {#if showSelectionReminder}
         <Alert.Inline status="warning" title="Choose projects to keep">
             The Free plan lets you keep {allowedProjectsToKeep} projects. Select them before continuing.
-            <div class="u-mt-2" style="pointer-events: auto; z-index: 10; position: relative;">
+            <Layout.Stack
+                direction="row"
+                justifyContent="flex-start"
+                gap="xs"
+                style="position: relative; z-index: 10; pointer-events: auto;">
                 <Button compact on:click={handleManageProjects}>Manage projects</Button>
-            </div>
+            </Layout.Stack>
         </Alert.Inline>
     {/if}
     <div class="u-overflow-x-auto">
@@ -155,14 +171,13 @@
                 <Table.Header.Cell column="resource" {root}>Resource</Table.Header.Cell>
                 <Table.Header.Cell column="freeLimit" {root}>Free limit</Table.Header.Cell>
                 <Table.Header.Cell column="excessUsage" {root}>
-                    <div style="overflow: visible; position: relative;">
+                    <div style="overflow: visible; position: relative; z-index: 10;">
                         <Layout.Stack direction="row" alignItems="center" gap="xs">
-                            Excess usage
-                            <!-- TODO: add tooltip which is not working due to some overflow issue-->
-                            <!-- <Tooltip placement="top">
-                        <Icon icon={IconInfo} size="s" />
-                        <span slot="tooltip">Usage beyond the Free plan limits.</span>
-                    </Tooltip> -->
+                            <Typography.Text>Excess usage</Typography.Text>
+                            <Tooltip placement="top">
+                                <Icon icon={IconInfo} size="s" />
+                                <span slot="tooltip">Usage beyond the Free plan limits.</span>
+                            </Tooltip>
                         </Layout.Stack>
                     </div>
                 </Table.Header.Cell>
@@ -172,7 +187,7 @@
             <!-- Projects Row -->
             <Table.Row.Base {root}>
                 <Table.Cell column="resource" {root}>
-                    <div class="u-flex u-items-center u-gap-2 u-flex-wrap">
+                    <Layout.Stack direction="row" alignItems="center" gap="xs">
                         <Typography.Text>Projects</Typography.Text>
                         {#if isLimitExceeded.projects}
                             <Badge
@@ -181,7 +196,7 @@
                                 variant="secondary"
                                 type="warning" />
                         {/if}
-                    </div>
+                    </Layout.Stack>
                 </Table.Cell>
                 <Table.Cell column="freeLimit" {root}>
                     <Typography.Text
@@ -205,13 +220,14 @@
                 </Table.Cell>
                 <Table.Cell column="manage" {root}>
                     {#if isLimitExceeded.projects}
-                        <div class="u-w-full u-flex u-justify-end">
-                            <div style="pointer-events: auto; z-index: 10; position: relative;">
-                                <Button size="xs" secondary on:click={handleManageProjects}>
-                                    Manage projects
-                                </Button>
-                            </div>
-                        </div>
+                        <Layout.Stack
+                            direction="row"
+                            justifyContent="flex-start"
+                            style="position: relative; z-index: 10; pointer-events: auto;">
+                            <Button size="xs" secondary on:click={handleManageProjects}>
+                                Manage projects
+                            </Button>
+                        </Layout.Stack>
                     {/if}
                 </Table.Cell>
             </Table.Row.Base>
@@ -305,7 +321,7 @@
         <Alert.Inline
             status="warning"
             title={`${projects.length - selectedProjects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
-            <span>{formatProjectsToArchive()} will be archived</span>
+            {formatProjectsToArchive()} will be archived
         </Alert.Inline>
     {/if}
 

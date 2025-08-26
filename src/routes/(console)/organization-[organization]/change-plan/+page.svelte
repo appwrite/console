@@ -35,6 +35,7 @@
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
     import OrganizationUsageLimits from '$lib/components/organizationUsageLimits.svelte';
     import { Query } from '@appwrite.io/console';
+    import type { OrganizationUsage } from '$lib/sdk/billing';
 
     export let data;
 
@@ -57,6 +58,7 @@
     let showCreditModal = false;
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
+    let orgUsage: OrganizationUsage;
 
     $: paymentMethods = null;
 
@@ -93,6 +95,12 @@
 
         selectedPlan =
             $currentPlan?.$id === BillingPlan.SCALE ? BillingPlan.SCALE : BillingPlan.PRO;
+
+        try {
+            orgUsage = await sdk.forConsole.billing.listUsage(data.organization.$id);
+        } catch {
+            orgUsage = undefined;
+        }
     });
 
     async function loadPaymentMethods() {
@@ -327,7 +335,12 @@
                     {/if}
 
                     {#if isDowngrade && selectedPlan === BillingPlan.FREE}
-                        <OrganizationUsageLimits bind:this={usageLimitsComponent} />
+                        <OrganizationUsageLimits
+                            bind:this={usageLimitsComponent}
+                            organization={data.organization}
+                            projects={data.allProjects?.projects || []}
+                            members={data.members?.memberships || []}
+                            storageUsage={orgUsage?.storageTotal ?? 0} />
                     {/if}
                 </Layout.Stack>
             </Fieldset>
