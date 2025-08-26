@@ -17,9 +17,9 @@ if (isCloud) {
             dark: TablesApiDark,
             light: TablesApiLight
         },
-        title: 'Announcing the new Grids UI and more!',
+        title: 'Announcing the new TablesDB UI and more!',
         message:
-            'This is Appwrite Databases’ most significant update so far, introducing new terminology, a new UI, and a supporting Grids API.',
+            'This is Appwrite Databases’ most significant update so far, introducing new terminology, a new UI, and a supporting TablesDB API.',
         plan: 'free',
         importance: 8,
         scope: 'project',
