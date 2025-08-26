@@ -80,17 +80,17 @@
                 case Providers.SMTP:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateSmtpProvider(providerId, providerName);
+                        .messaging.updateSMTPProvider({ providerId, name: providerName });
                     break;
                 case Providers.FCM:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateFcmProvider(providerId, providerName);
+                        .messaging.updateFCMProvider({ providerId, name: providerName });
                     break;
                 case Providers.APNS:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateApnsProvider(providerId, providerName);
+                        .messaging.updateAPNSProvider({ providerId, name: providerName });
                     break;
             }
             await invalidate(Dependencies.MESSAGING_PROVIDER);

@@ -21,28 +21,26 @@
 
     async function updateLogging() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.update(
-                    site.$id,
-                    site.name,
-                    site.framework as Framework,
-                    site?.enabled || undefined,
-                    site?.logging || undefined,
-                    site?.timeout || undefined,
-                    site?.installCommand || undefined,
-                    site?.buildCommand || undefined,
-                    site?.outputDirectory || undefined,
-                    (site?.buildRuntime as BuildRuntime) || undefined,
-                    site?.adapter as Adapter,
-                    site?.fallbackFile || undefined,
-                    site?.installationId || undefined,
-                    site?.providerRepositoryId || undefined,
-                    site?.providerBranch || undefined,
-                    site?.providerSilentMode || undefined,
-                    site?.providerRootDirectory || undefined,
-                    specification || undefined
-                );
+            await sdk.forProject(page.params.region, page.params.project).sites.update({
+                siteId: site.$id,
+                name: site.name,
+                framework: site.framework as Framework,
+                enabled: site?.enabled || undefined,
+                logging: site?.logging || undefined,
+                timeout: site?.timeout || undefined,
+                installCommand: site?.installCommand || undefined,
+                buildCommand: site?.buildCommand || undefined,
+                outputDirectory: site?.outputDirectory || undefined,
+                buildRuntime: (site?.buildRuntime as BuildRuntime) || undefined,
+                adapter: site?.adapter as Adapter,
+                fallbackFile: site?.fallbackFile || undefined,
+                installationId: site?.installationId || undefined,
+                providerRepositoryId: site?.providerRepositoryId || undefined,
+                providerBranch: site?.providerBranch || undefined,
+                providerSilentMode: site?.providerSilentMode || undefined,
+                providerRootDirectory: site?.providerRootDirectory || undefined,
+                specification: specification || undefined
+            });
             await invalidate(Dependencies.SITE);
             originalSpecification = specification;
 

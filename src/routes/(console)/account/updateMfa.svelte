@@ -36,7 +36,7 @@
         creatingVerification = true;
 
         try {
-            await sdk.forConsole.account.createVerification(cleanUrl);
+            await sdk.forConsole.account.createVerification({ url: cleanUrl });
             addNotification({
                 message: 'Verification email has been sent',
                 type: 'success'
@@ -60,7 +60,7 @@
 
         if (userId && secret) {
             try {
-                await sdk.forConsole.account.updateVerification(userId, secret);
+                await sdk.forConsole.account.updateVerification({ userId, secret });
                 addNotification({
                     message: 'Email verified successfully',
                     type: 'success'
@@ -80,7 +80,7 @@
 
     async function updateMfa() {
         try {
-            await sdk.forConsole.account.updateMFA(!$user.mfa);
+            await sdk.forConsole.account.updateMFA({ mfa: !$user.mfa });
             await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: `Multi-factor authentication has been ${$user.mfa ? 'enabled' : 'disabled'}`,
@@ -98,9 +98,9 @@
 
     async function createRecoveryCodes() {
         try {
-            codes = await sdk.forConsole.account.createMfaRecoveryCodes();
+            codes = await sdk.forConsole.account.createMFARecoveryCodes();
             showRecoveryCodes = true;
-            Promise.all([invalidate(Dependencies.ACCOUNT), invalidate(Dependencies.FACTORS)]);
+            await Promise.all([invalidate(Dependencies.ACCOUNT), invalidate(Dependencies.FACTORS)]);
             trackEvent(Submit.AccountRecoveryCodesCreate);
         } catch (error) {
             addNotification({
@@ -113,9 +113,9 @@
 
     async function regenerateRecoveryCodes() {
         try {
-            codes = await sdk.forConsole.account.updateMfaRecoveryCodes();
+            codes = await sdk.forConsole.account.updateMFARecoveryCodes();
             showRecoveryCodes = true;
-            Promise.all([invalidate(Dependencies.ACCOUNT), invalidate(Dependencies.FACTORS)]);
+            await Promise.all([invalidate(Dependencies.ACCOUNT), invalidate(Dependencies.FACTORS)]);
             trackEvent(Submit.AccountRecoveryCodesUpdate);
         } catch (error) {
             addNotification({

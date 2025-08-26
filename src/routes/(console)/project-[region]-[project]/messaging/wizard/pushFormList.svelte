@@ -59,23 +59,15 @@
 
     async function sendTestMessage() {
         // TODO: replace with test method
-        sdk.forProject(page.params.region, page.params.project).messaging.createPush(
-            ID.unique(),
-            $messageParams[MessagingProviderType.Push]?.title || undefined,
-            $messageParams[MessagingProviderType.Push]?.body || undefined,
-            $messageParams[MessagingProviderType.Push]?.topics || [],
-            $messageParams[MessagingProviderType.Push]?.users || [],
-            $messageParams[MessagingProviderType.Push]?.targets || [],
-            $messageParams[MessagingProviderType.Push]?.data || undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-        );
+        sdk.forProject(page.params.region, page.params.project).messaging.createPush({
+            messageId: ID.unique(),
+            title: $messageParams[MessagingProviderType.Push]?.title || undefined,
+            body: $messageParams[MessagingProviderType.Push]?.body || undefined,
+            topics: $messageParams[MessagingProviderType.Push]?.topics || [],
+            users: $messageParams[MessagingProviderType.Push]?.users || [],
+            targets: $messageParams[MessagingProviderType.Push]?.targets || [],
+            data: $messageParams[MessagingProviderType.Push]?.data || undefined
+        });
     }
 
     $: otherEmail = selected === 'self' ? '' : otherEmail;

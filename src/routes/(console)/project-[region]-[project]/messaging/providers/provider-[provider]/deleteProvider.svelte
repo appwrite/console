@@ -13,9 +13,9 @@
     let error: string;
     const deleteProvider = async () => {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .messaging.deleteProvider($provider.$id);
+            await sdk.forProject(page.params.region, page.params.project).messaging.deleteProvider({
+                providerId: $provider.$id
+            });
             showDelete = false;
             addNotification({
                 type: 'success',

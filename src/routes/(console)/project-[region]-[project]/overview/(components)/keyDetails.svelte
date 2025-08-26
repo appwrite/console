@@ -42,20 +42,23 @@
 
     async function updateName() {
         try {
-            isApiKey
-                ? await sdk.forConsole.projects.updateKey(
-                      $project.$id,
-                      key.$id,
-                      name,
-                      scopes,
-                      key.expire
-                  )
-                : await sdk.forConsole.projects.updateDevKey(
-                      $project.$id,
-                      key.$id,
-                      name,
-                      key.expire
-                  );
+            if (isApiKey) {
+                await sdk.forConsole.projects.updateKey({
+                    projectId: $project.$id,
+                    keyId: key.$id,
+                    name,
+                    scopes,
+                    expire: key.expire
+                });
+            } else {
+                await sdk.forConsole.projects.updateDevKey({
+                    projectId: $project.$id,
+                    keyId: key.$id,
+                    name,
+                    expire: key.expire
+                });
+            }
+
             await invalidate(dependency);
             trackEvent(event);
             addNotification({
@@ -73,13 +76,13 @@
 
     async function updateScopes() {
         try {
-            await sdk.forConsole.projects.updateKey(
-                $project.$id,
-                key.$id,
-                key.name,
+            await sdk.forConsole.projects.updateKey({
+                projectId: $project.$id,
+                keyId: key.$id,
+                name: key.name,
                 scopes,
-                key.expire
-            );
+                expire: key.expire
+            });
             await invalidate(Dependencies.KEY);
             trackEvent(Submit.KeyUpdateScopes, {
                 scopes

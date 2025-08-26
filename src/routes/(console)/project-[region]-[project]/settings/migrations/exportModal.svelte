@@ -87,10 +87,10 @@
 
         const currEndpoint = getCurrentEndpoint();
         // Create API key
-        const { secret } = await sdk.forConsole.projects.createKey(
-            $project.$id,
-            `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
-            [
+        const { secret } = await sdk.forConsole.projects.createKey({
+            projectId: $project.$id,
+            name: `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
+            scopes: [
                 'users.read',
                 'teams.read',
                 'databases.read',
@@ -108,9 +108,8 @@
                 'locale.read',
                 'avatars.read',
                 'health.read'
-            ],
-            undefined
-        );
+            ]
+        });
 
         const migrationData = {
             endpoint: currEndpoint,

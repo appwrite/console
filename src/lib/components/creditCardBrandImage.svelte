@@ -10,7 +10,11 @@
     export let height = 16;
 
     $: ccImage = isValueOfStringEnum(CreditCard, brand)
-        ? sdk.forConsole.avatars.getCreditCard(brand, width, height)
+        ? sdk.forConsole.avatars.getCreditCard({
+              code: brand,
+              width,
+              height
+          })
         : '';
 </script>
 

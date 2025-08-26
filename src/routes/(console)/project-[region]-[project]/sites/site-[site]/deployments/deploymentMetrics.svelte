@@ -66,7 +66,10 @@
             try {
                 const usage = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .sites.getUsage(page.params.site, range);
+                    .sites.getUsage({
+                        siteId: page.params.site,
+                        range
+                    });
                 metrics = metrics.map((metric) => {
                     if (metric.id === 'buildsStorageTotal') {
                         const size = humanFileSize(usage[metric.id]);

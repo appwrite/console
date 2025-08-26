@@ -13,10 +13,10 @@
 
     async function updateSessionInvalidation() {
         try {
-            await sdk.forConsole.projects.updateSessionInvalidation(
-                $project.$id,
-                sessionInvalidation
-            );
+            await sdk.forConsole.projects.updateSessionInvalidation({
+                projectId: $project.$id,
+                enabled: sessionInvalidation
+            });
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',

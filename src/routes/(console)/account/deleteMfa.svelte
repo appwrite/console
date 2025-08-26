@@ -13,7 +13,7 @@
 
     async function deleteAuthenticator() {
         try {
-            await sdk.forConsole.account.deleteMfaAuthenticator({
+            await sdk.forConsole.account.deleteMFAAuthenticator({
                 type: AuthenticatorType.Totp
             });
             await invalidate(Dependencies.ACCOUNT);

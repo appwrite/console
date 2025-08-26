@@ -18,27 +18,24 @@
 
     async function handleSubmit() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.update(
-                    site.$id,
-                    site.name,
-                    site.framework as Framework,
-                    site.enabled || undefined,
-                    site.logging || undefined,
-                    site.timeout || undefined,
-                    site.installCommand || undefined,
-                    site.buildCommand || undefined,
-                    site.outputDirectory || undefined,
-                    (site?.buildRuntime as BuildRuntime) || undefined,
-                    (site?.adapter as Adapter) || undefined,
-                    site.fallbackFile || undefined,
-                    '',
-                    '',
-                    '',
-                    undefined,
-                    ''
-                );
+            await sdk.forProject(page.params.region, page.params.project).sites.update({
+                siteId: site.$id,
+                name: site.name,
+                framework: site.framework as Framework,
+                enabled: site.enabled || undefined,
+                logging: site.logging || undefined,
+                timeout: site.timeout || undefined,
+                installCommand: site.installCommand || undefined,
+                buildCommand: site.buildCommand || undefined,
+                outputDirectory: site.outputDirectory || undefined,
+                buildRuntime: (site?.buildRuntime as BuildRuntime) || undefined,
+                adapter: (site?.adapter as Adapter) || undefined,
+                fallbackFile: site.fallbackFile || undefined,
+                installationId: '',
+                providerRepositoryId: '',
+                providerBranch: '',
+                providerRootDirectory: ''
+            });
             await invalidate(Dependencies.SITE);
             dispatch('success');
             addNotification({

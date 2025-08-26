@@ -47,11 +47,11 @@
 
     async function submit() {
         try {
-            const membership = await sdk.forConsole.teams.updateMembership(
-                $organization.$id,
-                selectedMember.$id,
-                [role]
-            );
+            const membership = await sdk.forConsole.teams.updateMembership({
+                teamId: $organization.$id,
+                membershipId: selectedMember.$id,
+                roles: [role]
+            });
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
             await invalidate(Dependencies.MEMBERS);

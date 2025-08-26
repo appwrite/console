@@ -17,7 +17,7 @@
     let error = '';
 
     async function addAuthenticator(): Promise<string> {
-        type = await sdk.forConsole.account.createMfaAuthenticator({
+        type = await sdk.forConsole.account.createMFAAuthenticator({
             type: AuthenticatorType.Totp
         });
         trackEvent(Submit.AccountAuthenticatorCreate);
@@ -27,7 +27,7 @@
 
     async function verifyAuthenticator() {
         try {
-            await sdk.forConsole.account.updateMfaAuthenticator({
+            await sdk.forConsole.account.updateMFAAuthenticator({
                 type: AuthenticatorType.Totp,
                 otp: code
             });

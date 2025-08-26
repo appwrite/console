@@ -29,28 +29,26 @@
 
             // an error is shown if invalid.
             parseExpression(functionSchedule);
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .functions.update(
-                    functionId,
-                    $func.name,
-                    $func.runtime,
-                    $func.execute || undefined,
-                    $func.events || undefined,
-                    functionSchedule,
-                    $func.timeout || undefined,
-                    $func.enabled || undefined,
-                    $func.logging || undefined,
-                    $func.entrypoint || undefined,
-                    $func.commands || undefined,
-                    $func.scopes || undefined,
-                    $func.installationId || undefined,
-                    $func.providerRepositoryId || undefined,
-                    $func.providerBranch || undefined,
-                    $func.providerSilentMode || undefined,
-                    $func.providerRootDirectory || undefined,
-                    $func.specification || undefined
-                );
+            await sdk.forProject(page.params.region, page.params.project).functions.update({
+                functionId,
+                name: $func.name,
+                runtime: $func.runtime,
+                execute: $func.execute || undefined,
+                events: $func.events || undefined,
+                schedule: functionSchedule,
+                timeout: $func.timeout || undefined,
+                enabled: $func.enabled || undefined,
+                logging: $func.logging || undefined,
+                entrypoint: $func.entrypoint || undefined,
+                commands: $func.commands || undefined,
+                scopes: $func.scopes || undefined,
+                installationId: $func.installationId || undefined,
+                providerRepositoryId: $func.providerRepositoryId || undefined,
+                providerBranch: $func.providerBranch || undefined,
+                providerSilentMode: $func.providerSilentMode || undefined,
+                providerRootDirectory: $func.providerRootDirectory || undefined,
+                specification: $func.specification || undefined
+            });
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',

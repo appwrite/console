@@ -27,20 +27,22 @@
 
     async function updateExpire() {
         try {
-            isApiKey
-                ? await sdk.forConsole.projects.updateKey(
-                      projectId,
-                      key.$id,
-                      key.name,
-                      (key as Models.Key).scopes,
-                      expiration
-                  )
-                : await sdk.forConsole.projects.updateDevKey(
-                      projectId,
-                      key.$id,
-                      key.name,
-                      expiration
-                  );
+            if (isApiKey) {
+                await sdk.forConsole.projects.updateKey({
+                    projectId,
+                    keyId: key.$id,
+                    name: key.name,
+                    scopes: (key as Models.Key).scopes,
+                    expire: expiration
+                });
+            } else {
+                await sdk.forConsole.projects.updateDevKey({
+                    projectId,
+                    keyId: key.$id,
+                    name: key.name,
+                    expire: expiration
+                });
+            }
 
             await invalidate(dependency);
             trackEvent(event);

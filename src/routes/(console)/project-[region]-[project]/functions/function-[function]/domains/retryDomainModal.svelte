@@ -23,7 +23,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.updateRuleVerification(selectedProxyRule.$id);
+                .proxy.updateRuleVerification({ ruleId: selectedProxyRule.$id });
             await invalidate(Dependencies.FUNCTION_DOMAINS);
             show = false;
             addNotification({

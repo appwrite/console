@@ -119,7 +119,7 @@
                 case Providers.SMTP:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.createSmtpProvider({
+                        .messaging.createSMTPProvider({
                             providerId,
                             name: $providerParams[$provider].name,
                             host: $providerParams[$provider].host,
@@ -139,7 +139,7 @@
                 case Providers.FCM:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.createFcmProvider({
+                        .messaging.createFCMProvider({
                             providerId,
                             name: $providerParams[$provider].name,
                             serviceAccountJSON: JSON.parse(
@@ -151,7 +151,7 @@
                 case Providers.APNS:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.createApnsProvider({
+                        .messaging.createAPNSProvider({
                             providerId,
                             name: $providerParams[$provider].name,
                             authKey: $providerParams[$provider].authKey,
@@ -208,8 +208,8 @@
                         <ActionList.Item.Accordion
                             hasDivider
                             title={`How to enable ${getProviderText($provider)} ${
-                                $providerType == MessagingProviderType.Push ||
-                                $providerType == MessagingProviderType.Sms
+                                $providerType === MessagingProviderType.Push ||
+                                $providerType === MessagingProviderType.Sms
                                     ? `${getProviderDisplayNameAndIcon($provider).displayName} notifications`
                                     : getProviderText($provider)
                             }?`}

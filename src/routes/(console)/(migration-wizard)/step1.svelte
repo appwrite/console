@@ -23,7 +23,9 @@
         } else {
             loadingProjects = true;
             projects = await sdk.forConsole.projects
-                .list([Query.equal('teamId', orgId), Query.orderDesc('$createdAt')])
+                .list({
+                    queries: [Query.equal('teamId', orgId), Query.orderDesc('$createdAt')]
+                })
                 .then((res) => res.projects);
             projectType = projects.length ? 'existing' : 'new';
             loadingProjects = false;

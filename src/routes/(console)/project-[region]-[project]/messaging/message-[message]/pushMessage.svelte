@@ -50,19 +50,13 @@
                 }
                 return acc;
             }, {});
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .messaging.updatePush(
-                    message.$id,
-                    undefined,
-                    undefined,
-                    undefined,
-                    title,
-                    body,
-                    data,
-                    undefined,
-                    fileCompoundId
-                );
+            await sdk.forProject(page.params.region, page.params.project).messaging.updatePush({
+                messageId: message.$id,
+                title,
+                body,
+                data,
+                image: fileCompoundId
+            });
             originalCustomData = structuredClone(customData);
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({

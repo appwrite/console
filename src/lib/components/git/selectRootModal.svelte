@@ -111,12 +111,15 @@
                 }));
                 const runtime = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .vcs.createRepositoryDetection(
-                        $installation.$id,
-                        $repository.id,
-                        product === 'sites' ? VCSDetectionType.Framework : VCSDetectionType.Runtime,
-                        path
-                    );
+                    .vcs.createRepositoryDetection({
+                        installationId: $installation.$id,
+                        providerRepositoryId: $repository.id,
+                        type:
+                            product === 'sites'
+                                ? VCSDetectionType.Framework
+                                : VCSDetectionType.Runtime,
+                        providerRootDirectory: path
+                    });
                 if (product === 'sites') {
                     currentDir.children.forEach((dir) => {
                         dir.thumbnailUrl = $iconPath(runtime.framework, 'color');

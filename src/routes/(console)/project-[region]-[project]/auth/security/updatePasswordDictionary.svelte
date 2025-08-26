@@ -13,10 +13,10 @@
 
     async function updatePasswordDictionary() {
         try {
-            await sdk.forConsole.projects.updateAuthPasswordDictionary(
-                $project.$id,
-                passwordDictionary
-            );
+            await sdk.forConsole.projects.updateAuthPasswordDictionary({
+                projectId: $project.$id,
+                enabled: passwordDictionary
+            });
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',

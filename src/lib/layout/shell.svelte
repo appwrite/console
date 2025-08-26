@@ -90,7 +90,13 @@
             alt: 'Logo Appwrite'
         },
 
-        avatar: sdk.forConsole.avatars.getInitials($user?.name, 80, 80).toString(),
+        avatar: sdk.forConsole.avatars
+            .getInitials({
+                name: $user?.name,
+                width: 80,
+                height: 80
+            })
+            .toString(),
 
         organizations: $organizationList.teams.map((org) => {
             const billingPlan = org['billingPlan'];

@@ -22,13 +22,13 @@
         try {
             const user = await sdk
                 .forProject(page.params.region, page.params.project)
-                .users.create(
-                    id ?? ID.unique(),
-                    mail || undefined,
-                    phone || undefined,
-                    pass || undefined,
-                    name || undefined
-                );
+                .users.create({
+                    userId: id ?? ID.unique(),
+                    email: mail || undefined,
+                    phone: phone || undefined,
+                    password: pass || undefined,
+                    name: name || undefined
+                });
             mail = pass = name = '';
             showCreate = false;
             showDropdown = false;

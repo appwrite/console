@@ -25,18 +25,12 @@
 
     async function update() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .messaging.updateEmail(
-                    message.$id,
-                    undefined,
-                    undefined,
-                    undefined,
-                    subject,
-                    content,
-                    undefined,
-                    html
-                );
+            await sdk.forProject(page.params.region, page.params.project).messaging.updateEmail({
+                messageId: message.$id,
+                subject,
+                content,
+                html
+            });
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({
                 message: 'Message has been updated',

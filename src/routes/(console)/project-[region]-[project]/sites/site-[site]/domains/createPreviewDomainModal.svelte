@@ -21,12 +21,10 @@
     let error: string = null;
     async function onSubmit() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .proxy.createSiteRule(
-                    `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
-                    page.params.site
-                );
+            await sdk.forProject(page.params.region, page.params.project).proxy.createSiteRule({
+                domain: `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
+                siteId: page.params.site
+            });
 
             await invalidate(Dependencies.SITES_DOMAINS);
             show = false;
@@ -58,10 +56,10 @@
             return;
         }
         try {
-            await sdk.forConsole.console.getResource(
-                `${value}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
-                ConsoleResourceType.Rules
-            );
+            await sdk.forConsole.console.getResource({
+                type: ConsoleResourceType.Rules,
+                value: `${value}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`
+            });
             domainStatus = 'complete';
             baseDomain = domain;
         } catch {
