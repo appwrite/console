@@ -16,8 +16,7 @@
         const userId = page.url.searchParams.get('userId');
         const secret = page.url.searchParams.get('secret');
 
-        // what's the replacement?
-        await account.updateMagicURLSession({
+        await account.createSession({
             userId,
             secret
         });
