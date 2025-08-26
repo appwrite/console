@@ -4,7 +4,6 @@ import { redirect } from '@sveltejs/kit';
 import { AppwriteException } from '@appwrite.io/console';
 
 const LEGACY_ROUTE_MAPPINGS = [
-    { pattern: /^collections$/, replacement: 'tables' },
     { pattern: /^collection-([^/]+)/, replacement: 'table-$1' },
     // document detail page redirect to their parent table
     { pattern: /^document-([^/]+)/, replacement: 'table-$1' },
