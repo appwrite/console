@@ -18,15 +18,13 @@
 
     async function sendTestSMS() {
         // const email = selected === 'self' ? $user.email : otherEmail;
-        sdk.forProject(page.params.region, page.params.project).messaging.createSms(
-            ID.unique(),
-            $messageParams[MessagingProviderType.Sms]?.content || undefined,
-            $messageParams[MessagingProviderType.Sms]?.topics || [],
-            $messageParams[MessagingProviderType.Sms]?.users || [],
-            $messageParams[MessagingProviderType.Sms]?.targets || [],
-            undefined,
-            undefined
-        );
+        sdk.forProject(page.params.region, page.params.project).messaging.createSMS({
+            messageId: ID.unique(),
+            content: $messageParams[MessagingProviderType.Sms]?.content || undefined,
+            topics: $messageParams[MessagingProviderType.Sms]?.topics || [],
+            users: $messageParams[MessagingProviderType.Sms]?.users || [],
+            targets: $messageParams[MessagingProviderType.Sms]?.targets || []
+        });
     }
 
     $: otherEmail = selected === 'self' ? '' : otherEmail;

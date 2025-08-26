@@ -1,16 +1,17 @@
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import { isValueOfStringEnum } from '$lib/helpers/types';
-import { StorageUsageRange, type Models } from '@appwrite.io/console';
+import { UsageRange, type Models } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ params }) => {
-    const period = isValueOfStringEnum(StorageUsageRange, params.period)
+    const period = isValueOfStringEnum(UsageRange, params.period)
         ? params.period
-        : StorageUsageRange.ThirtyDays;
+        : UsageRange.ThirtyDays;
 
-    const response = (await sdk
-        .forProject(params.region, params.project)
-        .storage.getBucketUsage(params.bucket, period)) as unknown as Models.UsageBuckets;
+    const response = await sdk.forProject(params.region, params.project).storage.getBucketUsage({
+        bucketId: params.bucket,
+        range: period
+    });
 
     return {
         filesTotal: response.filesTotal,

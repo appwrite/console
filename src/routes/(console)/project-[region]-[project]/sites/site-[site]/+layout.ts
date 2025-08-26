@@ -6,7 +6,7 @@ import { sdk } from '$lib/stores/sdk';
 export const load = async ({ depends, params }) => {
     depends(Dependencies.SITE);
     const [site] = await Promise.all([
-        sdk.forProject(params.region, params.project).sites.get(params.site)
+        sdk.forProject(params.region, params.project).sites.get({ siteId: params.site })
     ]);
 
     return {

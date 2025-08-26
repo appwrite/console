@@ -16,21 +16,22 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
 
-    const targets = await sdk
-        .forProject(params.region, params.project)
-        .users.listTargets(params.user, [
+    const targets = await sdk.forProject(params.region, params.project).users.listTargets({
+        userId: params.user,
+        queries: [
             Query.limit(limit),
             Query.offset(offset),
             Query.orderDesc(''),
             ...parsedQueries.values()
-        ]);
+        ]
+    });
 
     const promisesById: Record<string, Promise<Models.Provider>> = {};
     targets.targets.forEach((target) => {
         if (target.providerId && !promisesById[target.providerId]) {
             promisesById[target.providerId] = sdk
                 .forProject(params.region, params.project)
-                .messaging.getProvider(target.providerId);
+                .messaging.getProvider({ providerId: target.providerId });
         }
     });
 

@@ -1,4 +1,7 @@
 <script lang="ts" context="module">
+    import { writable } from 'svelte/store';
+    import { browser } from '$app/environment';
+
     type Consent = {
         key: string;
         accepted: Record<string, boolean>;
@@ -19,8 +22,6 @@
     import { createEventDispatcher, onMount } from 'svelte';
     import { Modal } from '.';
     import { Button } from '$lib/elements/forms';
-    import { writable } from 'svelte/store';
-    import { browser } from '$app/environment';
 
     const key = new Date('2023-11-07');
     const dispatch = createEventDispatcher();

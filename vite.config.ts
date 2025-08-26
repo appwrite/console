@@ -38,7 +38,7 @@ export default defineConfig({
         port: 3000
     },
     test: {
-        workspace: [
+        projects: [
             {
                 extends: './vite.config.ts',
                 plugins: [svelteTesting()],

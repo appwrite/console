@@ -293,10 +293,7 @@
                         </Alert.Inline>
                     {/if}
 
-                    <PlanSelection
-                        bind:billingPlan={selectedPlan}
-                        selfService={data.selfService}
-                        anyOrgFree={data.hasFreeOrgs} />
+                    <PlanSelection bind:billingPlan={selectedPlan} selfService={data.selfService} />
 
                     {#if isDowngrade && selectedPlan === BillingPlan.FREE && data.hasFreeOrgs}
                         <Alert.Inline

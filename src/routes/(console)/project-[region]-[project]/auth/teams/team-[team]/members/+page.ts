@@ -17,12 +17,10 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
         offset,
         search,
         limit,
-        memberships: await sdk
-            .forProject(params.region, params.project)
-            .teams.listMemberships(
-                teamId,
-                [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-                search
-            )
+        memberships: await sdk.forProject(params.region, params.project).teams.listMemberships({
+            teamId,
+            queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+            search
+        })
     };
 };

@@ -16,10 +16,10 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.updateDeploymentStatus(
-                    selectedDeployment.resourceId,
-                    selectedDeployment.$id
-                );
+                .functions.updateDeploymentStatus({
+                    functionId: selectedDeployment.resourceId,
+                    deploymentId: selectedDeployment.$id
+                });
 
             await invalidate(Dependencies.FUNCTION);
             showCancel = false;

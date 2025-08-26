@@ -25,17 +25,17 @@
 
     async function setEnabled() {
         try {
-            await sdk.forConsole.projects.updateWebhook(
+            await sdk.forConsole.projects.updateWebhook({
                 projectId,
-                $webhook.$id,
-                $webhook.name,
-                $webhook.events,
-                $webhook.url,
-                $webhook.security,
+                webhookId: $webhook.$id,
+                name: $webhook.name,
+                events: $webhook.events,
+                url: $webhook.url,
+                security: $webhook.security,
                 enabled,
-                $webhook.httpUser || undefined,
-                $webhook.httpPass || undefined
-            );
+                httpUser: $webhook.httpUser || undefined,
+                httpPass: $webhook.httpPass || undefined
+            });
             await invalidate(Dependencies.WEBHOOK);
             addNotification({
                 type: 'success',

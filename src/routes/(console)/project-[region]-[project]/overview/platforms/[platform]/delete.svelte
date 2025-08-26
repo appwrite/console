@@ -13,7 +13,10 @@
     let error: string;
     async function handleDelete() {
         try {
-            await sdk.forConsole.projects.deletePlatform($project.$id, $platform.$id);
+            await sdk.forConsole.projects.deletePlatform({
+                projectId: $project.$id,
+                platformId: $platform.$id
+            });
             await invalidate(Dependencies.PLATFORMS);
             showDelete = false;
             addNotification({

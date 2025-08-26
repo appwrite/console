@@ -11,7 +11,12 @@
 
     $: flagSrc =
         region && isValueOfStringEnum(Flag, region.flag)
-            ? sdk.forConsole.avatars.getFlag(region.flag, 30, 20, 100)
+            ? sdk.forConsole.avatars.getFlag({
+                  code: region.flag,
+                  width: 30,
+                  height: 20,
+                  quality: 100
+              })
             : '';
 </script>
 

@@ -10,6 +10,6 @@ export const load: PageLoad = async ({ params, url, depends }) => {
 
     return {
         page,
-        webhooks: await sdk.forConsole.projects.listWebhooks(params.project)
+        webhooks: await sdk.forConsole.projects.listWebhooks({ projectId: params.project })
     };
 };

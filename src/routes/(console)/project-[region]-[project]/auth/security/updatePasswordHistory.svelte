@@ -16,10 +16,10 @@
 
     async function updatePasswordHistoryLimit() {
         try {
-            await sdk.forConsole.projects.updateAuthPasswordHistory(
-                $project.$id,
-                passwordHistoryEnabled ? passwordHistory : 0
-            );
+            await sdk.forConsole.projects.updateAuthPasswordHistory({
+                projectId: $project.$id,
+                limit: passwordHistoryEnabled ? passwordHistory : 0
+            });
             await invalidate(Dependencies.PROJECT);
             initialPasswordHistoryEnabled = passwordHistoryEnabled;
             addNotification({

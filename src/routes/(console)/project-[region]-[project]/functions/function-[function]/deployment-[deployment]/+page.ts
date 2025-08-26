@@ -6,9 +6,10 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
     const { function: func } = await parent();
     depends(Dependencies.DEPLOYMENT);
 
-    const deployment = await sdk
-        .forProject(params.region, params.project)
-        .functions.getDeployment(params.function, params.deployment);
+    const deployment = await sdk.forProject(params.region, params.project).functions.getDeployment({
+        functionId: params.function,
+        deploymentId: params.deployment
+    });
 
     return {
         func,

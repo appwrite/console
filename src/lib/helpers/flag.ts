@@ -4,5 +4,7 @@ import { sdk } from '$lib/stores/sdk';
 
 export function getFlagUrl(countryCode: string) {
     if (!isValueOfStringEnum(Flag, countryCode)) return '';
-    return sdk.forConsole.avatars.getFlag(countryCode, 22, 15, 100)?.toString();
+    return sdk.forConsole.avatars
+        .getFlag({ code: countryCode, width: 22, height: 15, quality: 100 })
+        ?.toString();
 }

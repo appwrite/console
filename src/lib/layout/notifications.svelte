@@ -31,7 +31,7 @@
         position: fixed;
         top: calc(var(--main-header-height) + 12px);
         right: 12px;
-        z-index: 1000;
+        z-index: 1001;
     }
 
     @media (min-width: 768px) {

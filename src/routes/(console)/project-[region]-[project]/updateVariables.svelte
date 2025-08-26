@@ -167,31 +167,51 @@
             if (isConflicting) {
                 await sdk
                     .forProject(page.params.region, page.params.project)
-                    .projectApi.deleteVariable(globalVariable.$id);
+                    .projectApi.deleteVariable({ variableId: globalVariable.$id });
                 await sdk
                     .forProject(page.params.region, page.params.project)
-                    .projectApi.createVariable(variable.key, variable.value, variable.secret);
+                    .projectApi.createVariable({
+                        key: variable.key,
+                        value: variable.value,
+                        secret: variable.secret
+                    });
                 if (product === 'site') {
                     await sdk
                         .forProject(page.params.region, page.params.project)
-                        .sites.deleteVariable(variable.resourceId, variable.$id);
+                        .sites.deleteVariable({
+                            siteId: variable.resourceId,
+                            variableId: variable.$id
+                        });
                 } else {
                     await sdk
                         .forProject(page.params.region, page.params.project)
-                        .functions.deleteVariable(variable.resourceId, variable.$id);
+                        .functions.deleteVariable({
+                            functionId: variable.resourceId,
+                            variableId: variable.$id
+                        });
                 }
             } else {
                 await sdk
                     .forProject(page.params.region, page.params.project)
-                    .projectApi.createVariable(variable.key, variable.value, variable.secret);
+                    .projectApi.createVariable({
+                        key: variable.key,
+                        value: variable.value,
+                        secret: variable.secret
+                    });
                 if (product === 'site') {
                     await sdk
                         .forProject(page.params.region, page.params.project)
-                        .sites.deleteVariable(variable.resourceId, variable.$id);
+                        .sites.deleteVariable({
+                            siteId: variable.resourceId,
+                            variableId: variable.$id
+                        });
                 } else {
                     await sdk
                         .forProject(page.params.region, page.params.project)
-                        .functions.deleteVariable(variable.resourceId, variable.$id);
+                        .functions.deleteVariable({
+                            functionId: variable.resourceId,
+                            variableId: variable.$id
+                        });
                 }
             }
 

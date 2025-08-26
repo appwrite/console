@@ -16,7 +16,10 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.deleteDeployment(selectedDeployment.resourceId, selectedDeployment.$id);
+                .functions.deleteDeployment({
+                    functionId: selectedDeployment.resourceId,
+                    deploymentId: selectedDeployment.$id
+                });
             await invalidate(Dependencies.FUNCTION);
             showDelete = false;
             addNotification({

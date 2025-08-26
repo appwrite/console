@@ -16,10 +16,10 @@ export const load = async ({ parent, depends, url, route }) => {
 
     return {
         domain,
-        recordList: await sdk.forConsole.domains.listRecords(domain.$id, [
-            Query.offset(offset),
-            Query.limit(limit)
-        ]),
+        recordList: await sdk.forConsole.domains.listRecords({
+            domainId: domain.$id,
+            queries: [Query.offset(offset), Query.limit(limit)]
+        }),
         offset,
         limit
     };

@@ -4,23 +4,49 @@
     import { preferences } from '$lib/stores/preferences';
     import { onMount, type Snippet } from 'svelte';
     import type { Column } from '$lib/helpers/types';
-    import { ActionMenu, Layout, Popover, Selector } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Divider,
+        Layout,
+        Popover,
+        Selector,
+        Typography
+    } from '@appwrite.io/pink-svelte';
+    import { Button } from '$lib/elements/forms';
 
     let {
         columns,
-        isCustomCollection = false,
+        isCustomTable = false,
+        ui = 'legacy',
         allowNoColumns = false,
-        children
+        showAnyway = false,
+        children,
+        onPreferencesUpdated = null
     }: {
         columns: Writable<Column[]>;
-        isCustomCollection?: boolean;
+        isCustomTable?: boolean;
         allowNoColumns?: boolean;
+        ui?: 'legacy' | 'new';
+        showAnyway?: boolean;
         children: Snippet<[toggle: () => void, selectedColumnsNumber: number]>;
+        onPreferencesUpdated?: () => void;
     } = $props();
+
+    let search = $state('');
+    let filteredColumns = $derived(
+        $columns
+            .filter((column) => !column.isAction && column.id !== '$sequence')
+            .filter(
+                (col) =>
+                    !col.exclude &&
+                    (col.title?.toLowerCase().includes(search.toLowerCase()) ||
+                        col.id?.toLowerCase().includes(search.toLowerCase()))
+            )
+    );
 
     let maxHeight = $state('none');
     let containerRef = $state<HTMLElement>(null);
-    const collectionId = $derived(page.params.collection);
+    const isNewStyle = ui === 'new';
 
     const calcMaxHeight = () => {
         if (containerRef) {
@@ -35,16 +61,17 @@
     const saveColumnPreferences = () => {
         const shownColumns = $columns.filter((n) => n.hide === true).map((n) => n.id);
 
-        if (isCustomCollection) {
-            preferences.setCustomCollectionColumns(collectionId, shownColumns);
+        if (isCustomTable) {
+            onPreferencesUpdated?.();
+            preferences.setCustomTableColumns(page.params.table, shownColumns);
         } else {
             preferences.setColumns(shownColumns);
         }
     };
 
     onMount(() => {
-        if (isCustomCollection) {
-            const shownColumns = preferences.getCustomCollectionColumns(collectionId);
+        if (isCustomTable) {
+            const shownColumns = preferences.getCustomTableColumns(page.params.table);
 
             columns.update((n) =>
                 n.map((column) => {
@@ -53,7 +80,7 @@
                 })
             );
         } else {
-            const prefs = preferences.get(page.route);
+            const prefs = preferences.getForRoute(page.route);
 
             if (prefs?.columns) {
                 columns.update((n) =>
@@ -70,7 +97,7 @@
 
     let selectedColumnsNumber = $derived(
         $columns.reduce((acc, column) => {
-            if (column.hide) return acc;
+            if (column.hide || column.isAction) return acc;
 
             return ++acc;
         }, 0)
@@ -78,45 +105,169 @@
 
     function toggleColumn(column: Column) {
         columns.update((cols) =>
-            cols.map((col) => {
-                if (col.id === column.id) {
-                    column.hide = !column.hide;
-                }
-                return col;
-            })
+            cols.map((col) => (col.id === column.id ? { ...col, hide: !col.hide } : col))
         );
-
         saveColumnPreferences();
     }
+
+    function selectAll() {
+        columns.update((cols) =>
+            cols.map((col) =>
+                col.exclude
+                    ? col
+                    : filteredColumns.some((fc) => fc.id === col.id)
+                      ? { ...col, hide: false }
+                      : col
+            )
+        );
+        saveColumnPreferences();
+    }
+
+    function deselectAll() {
+        columns.update((cols) => {
+            const realColumns = cols.filter((col) => !col.exclude && !col.isAction);
+            const filtered = filteredColumns.filter((col) => !col.exclude && !col.isAction);
+
+            if (filtered.length === 0) return cols;
+
+            const visibleRealColumns = realColumns.filter((col) => !col.hide);
+
+            if (!allowNoColumns && visibleRealColumns.length <= 1) {
+                return cols;
+            }
+
+            const willHideCount = filtered.filter((col) => !col.hide).length;
+
+            if (!allowNoColumns && visibleRealColumns.length - willHideCount < 1) {
+                const [keep] = filtered;
+                return cols.map((col) => {
+                    if (col.exclude || col.isAction) return col;
+                    if (!filtered.some((fc) => fc.id === col.id)) return col;
+
+                    if (col.id === keep.id) {
+                        const stillVisible = cols
+                            .filter((c) => !c.exclude && !c.isAction)
+                            .filter((c) =>
+                                c.id === keep.id
+                                    ? true
+                                    : filtered.some((fc) => fc.id === c.id)
+                                      ? false
+                                      : !c.hide
+                            );
+                        if (stillVisible.length === 1 && typeof col.width === 'number') {
+                            return { ...col, hide: false, width: { min: col.width } };
+                        }
+                        return { ...col, hide: false };
+                    }
+
+                    return { ...col, hide: true };
+                });
+            }
+
+            return cols.map((col) =>
+                col.exclude || col.isAction
+                    ? col
+                    : filtered.some((fc) => fc.id === col.id)
+                      ? { ...col, hide: true }
+                      : col
+            );
+        });
+        saveColumnPreferences();
+    }
+
+    let visibleRealColumns = $derived(
+        $columns.filter((col) => !col.exclude && !col.isAction && !col.hide)
+    );
 </script>
 
 <svelte:window on:resize={calcMaxHeight} />
 
-{#if $columns?.length}
-    <Popover let:toggle placement="bottom-end" padding="none">
+{#if $columns?.length || showAnyway}
+    {@const showActions = $columns.length > 1}
+    {@const placement = isNewStyle ? 'bottom-start' : 'bottom-end'}
+    <Popover let:toggle {placement} padding="none">
         {@render children(toggle, selectedColumnsNumber)}
         <svelte:fragment slot="tooltip">
-            <div style:max-height={maxHeight} style:overflow="scroll" bind:this={containerRef}>
+            <div bind:this={containerRef} class="actions-menu-wrapper" style:max-height={maxHeight}>
                 <ActionMenu.Root>
-                    {#each $columns as column}
-                        {#if !column?.exclude}
-                            <ActionMenu.Item.Button
-                                on:click={() => toggleColumn(column)}
-                                disabled={allowNoColumns
-                                    ? false
-                                    : selectedColumnsNumber <= 1 && column.hide !== true}>
-                                <Layout.Stack direction="row" gap="s">
-                                    <Selector.Checkbox
-                                        checked={!column.hide}
-                                        size="s"
-                                        on:click={() => toggleColumn(column)} />
-                                    {column.title}
+                    {#if isNewStyle && showActions}
+                        <Layout.Stack gap="xs">
+                            <ActionMenu.Item.Input
+                                id="columns"
+                                placeholder="Search"
+                                bind:value={search} />
+
+                            {#if filteredColumns.length > 0}
+                                <Layout.Stack
+                                    gap="s"
+                                    direction="row"
+                                    alignItems="center"
+                                    style="padding-block-end: 0.5rem">
+                                    <Button size="xs" icon extraCompact on:click={selectAll}
+                                        >Select all</Button>
+
+                                    <div style:height="1rem">
+                                        <Divider vertical />
+                                    </div>
+
+                                    <Button size="xs" icon extraCompact on:click={deselectAll}
+                                        >Deselect all</Button>
                                 </Layout.Stack>
-                            </ActionMenu.Item.Button>
-                        {/if}
-                    {/each}
+                            {:else}
+                                <div style:padding-inline="0.6rem" style:padding-block-end="0.5rem">
+                                    <Typography.Text>No results found</Typography.Text>
+                                </div>
+                            {/if}
+                        </Layout.Stack>
+                    {/if}
+
+                    <Layout.Stack
+                        gap="none"
+                        direction="column"
+                        class="filter-modal-actions-menu {showActions ? 'has-actions' : ''}">
+                        {#each filteredColumns as column}
+                            {#if !column?.exclude}
+                                <ActionMenu.Item.Button
+                                    on:click={() => toggleColumn(column)}
+                                    disabled={allowNoColumns
+                                        ? false
+                                        : visibleRealColumns.length <= 1 && !column.hide}>
+                                    <Layout.Stack direction="row" gap="s">
+                                        <Selector.Checkbox
+                                            size="s"
+                                            checked={!column.hide}
+                                            on:change={() => toggleColumn(column)} />
+                                        {column.title}
+                                    </Layout.Stack>
+                                </ActionMenu.Item.Button>
+                            {/if}
+                        {/each}
+                    </Layout.Stack>
                 </ActionMenu.Root>
             </div>
         </svelte:fragment>
     </Popover>
 {/if}
+
+<!-- svelte-ignore css_unused_selector -->
+<style lang="scss">
+    /* global because its on a tooltip slot, nested */
+    :global(.actions-menu-wrapper) {
+        overflow: scroll;
+        margin-bottom: -0.35rem;
+
+        & :global(.filter-modal-actions-menu) {
+            overflow: scroll;
+            max-height: 150px;
+            padding-bottom: unset;
+
+            &.has-actions {
+                margin-bottom: -0.5rem;
+            }
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+    }
+</style>

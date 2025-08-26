@@ -20,7 +20,7 @@
     let code = '';
 
     async function back() {
-        await sdk.forConsole.account.deleteSession('current');
+        await sdk.forConsole.account.deleteSession({ sessionId: 'current' });
         await goto(base);
     }
 
