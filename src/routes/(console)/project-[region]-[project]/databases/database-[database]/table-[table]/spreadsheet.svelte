@@ -763,8 +763,7 @@
                                         direction="row"
                                         alignItems="center"
                                         alignContent="center"
-                                        style="min-width: 0;"
-                                    >
+                                        style="min-width: 0;">
                                         <Typography.Text truncate>
                                             {column.title}
                                         </Typography.Text>
