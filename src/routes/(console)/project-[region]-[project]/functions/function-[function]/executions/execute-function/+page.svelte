@@ -74,7 +74,8 @@
         { label: 'PUT', value: ExecutionMethod.PUT },
         { label: 'PATCH', value: ExecutionMethod.PATCH },
         { label: 'DELETE', value: ExecutionMethod.DELETE },
-        { label: 'OPTIONS', value: ExecutionMethod.OPTIONS }
+        { label: 'OPTIONS', value: ExecutionMethod.OPTIONS },
+        { label: 'HEAD', value: ExecutionMethod.HEAD }
     ];
 
     let formComponent: Form;
