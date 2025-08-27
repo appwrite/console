@@ -14,7 +14,7 @@
         onEmailBannerClose: (closed: boolean) => void;
     }>();
 
-    const isOnOnboarding = $derived(() => page.route?.id?.includes('/(console)/onboarding'));
+    const isOnOnboarding = $derived(page.url?.pathname?.includes('/console/onboarding'));
 
     const hasUser = $derived(!!$user);
     const needsEmailVerification = $derived(hasUser && !$user.emailVerification);
