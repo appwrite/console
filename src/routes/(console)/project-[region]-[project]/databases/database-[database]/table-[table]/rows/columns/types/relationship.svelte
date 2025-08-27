@@ -34,22 +34,16 @@
     let offset = 0;
 
     onMount(async () => {
-        if (value && typeof value === 'object') {
-            row = value as Models.Row;
-            singleRel = row?.$id;
-        }
-
-        if (value && isRelationshipToMany(column)) {
-            // TODO: test this
-            relatedList = (value as string[]).slice();
-        }
-
-        if (editing && row?.[column.key]) {
-            if (row[column.key]?.length) {
-                relatedList =
-                    row[column.key]?.map((d: Record<string, unknown>) => {
-                        return d?.$id;
-                    }) ?? [];
+        if (isRelationshipToMany(column)) {
+            if (Array.isArray(value)) {
+                relatedList = value.map((item: object | string) => {
+                    return typeof item === 'string' ? item : item['$id'];
+                });
+            }
+        } else {
+            if (value && typeof value === 'object') {
+                row = value as Models.Row;
+                singleRel = row?.$id;
             }
         }
     });

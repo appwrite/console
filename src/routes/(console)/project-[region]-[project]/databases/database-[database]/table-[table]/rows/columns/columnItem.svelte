@@ -5,33 +5,44 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import Column from './column.svelte';
     import type { Columns } from '../../store';
+    import { writable } from 'svelte/store';
 
     let {
         column,
         formValues = $bindable({}),
         label,
         editing = false,
-        fromSpreadsheet = false
+        fromSpreadsheet = false,
+        onUpdateFormValues = null
     }: {
         column: Columns;
         formValues: object;
         label: string;
         editing?: boolean;
         fromSpreadsheet?: boolean;
+        onUpdateFormValues?: (formValues: object) => void;
     } = $props();
 
+    let formStore = writable(formValues);
+
     function removeArrayItem(key: string, index: number) {
-        formValues = {
-            ...formValues,
-            [key]: formValues[key].filter((_, i) => i !== index)
+        const next = {
+            ...$formStore,
+            [key]: $formStore[key].filter((_, i) => i !== index)
         };
+
+        formStore.set(next);
+        onUpdateFormValues?.(next);
     }
 
     function addArrayItem(key: string) {
-        formValues = {
-            ...formValues,
-            [key]: [...formValues[key], null]
+        const next = {
+            ...$formStore,
+            [key]: [...($formStore[key] ?? []), null]
         };
+
+        formStore.set(next);
+        onUpdateFormValues?.(next);
     }
 
     function getColumnType(column: Columns) {
@@ -52,10 +63,12 @@
         }
         return `${capitalize(column.type)}${column.array ? '[]' : ''}`;
     }
+
+    formStore.subscribe((values) => onUpdateFormValues?.(values));
 </script>
 
 {#if column.array}
-    {#if formValues[column.key]?.length === 0}
+    {#if $formStore[column.key]?.length === 0}
         {#if fromSpreadsheet}
             <Column
                 array
@@ -65,7 +78,7 @@
                 id={column.key}
                 limited={fromSpreadsheet}
                 optionalText={getColumnType(column)}
-                bind:value={formValues[column.key]}
+                bind:value={$formStore[column.key]}
                 on:click />
         {:else}
             <Layout.Stack direction="row" alignContent="space-between">
@@ -90,11 +103,11 @@
             id={column.key}
             limited={fromSpreadsheet}
             optionalText={getColumnType(column)}
-            bind:value={formValues[column.key]}
+            bind:value={$formStore[column.key]}
             on:click />
     {:else}
         <Layout.Stack>
-            {#each [...(formValues[column.key]?.keys() ?? [])] as index}
+            {#each [...($formStore[column.key]?.keys() ?? [])] as index}
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                     <Column
                         {column}
@@ -102,7 +115,7 @@
                         id={`${column.key}-${index}`}
                         optionalText={index === 0 ? getColumnType(column) : undefined}
                         label={index === 0 ? label : ''}
-                        bind:value={formValues[column.key][index]} />
+                        bind:value={$formStore[column.key][index]} />
                     <Button text icon on:click={() => removeArrayItem(column.key, index)}>
                         <span class="icon-x" aria-hidden="true"></span>
                     </Button>
@@ -124,6 +137,6 @@
         id={column.key}
         limited={fromSpreadsheet}
         optionalText={getColumnType(column)}
-        bind:value={formValues[column.key]}
+        bind:value={$formStore[column.key]}
         on:click />
 {/if}

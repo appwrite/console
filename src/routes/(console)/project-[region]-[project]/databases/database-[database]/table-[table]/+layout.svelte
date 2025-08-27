@@ -397,7 +397,7 @@
     }}>
     <EditRelatedRow
         bind:this={editRelatedRow}
-        rowId={$databaseRelatedRowSheetOptions.rowId}
+        rows={$databaseRelatedRowSheetOptions.rows}
         tableId={$databaseRelatedRowSheetOptions.tableId} />
 </SideSheet>
 
