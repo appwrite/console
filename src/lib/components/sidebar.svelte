@@ -72,7 +72,7 @@
         }
     }
 
-    onMount(() => state = getSidebarState($page));
+    onMount(() => (state = getSidebarState($page)));
 
     $: if ($isTabletViewport && state !== 'closed') {
         state = 'closed';
