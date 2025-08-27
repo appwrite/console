@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
     import { Button, Form } from '$lib/elements/forms';
-    import { Divider, Layout, Sheet, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Divider, Layout, Sheet, Typography } from '@appwrite.io/pink-svelte';
 
     let {
         show = $bindable(false),
@@ -9,10 +9,12 @@
         closeOnBlur = false,
         submit,
         children = null,
-        footer = null
+        footer = null,
+        titleBadge = null
     }: {
         show: boolean;
         title: string;
+        titleBadge?: string;
         closeOnBlur?: boolean;
         submit?:
             | {
@@ -32,6 +34,9 @@
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Layout.Stack direction="row" gap="m" alignItems="center">
                     <Typography.Text variant="m-400">{title}</Typography.Text>
+                    {#if titleBadge}
+                        <Badge variant="secondary" content={titleBadge} size="s" />
+                    {/if}
                 </Layout.Stack>
             </Layout.Stack>
         </div>

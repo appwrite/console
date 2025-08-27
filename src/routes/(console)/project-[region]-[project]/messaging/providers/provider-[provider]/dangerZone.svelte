@@ -9,7 +9,7 @@
     export const promptDeleteProvider = (id: string) => {
         showDelete.set(true);
         goto(
-            `${base}/project-${page.params.region}-${page.params.$id}/messaging/providers/provider-${id}`
+            `${base}/project-${page.params.region}-${page.params.project}/messaging/providers/provider-${id}`
         );
     };
 </script>

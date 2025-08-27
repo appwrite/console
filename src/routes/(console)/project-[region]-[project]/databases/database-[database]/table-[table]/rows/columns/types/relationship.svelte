@@ -25,6 +25,7 @@
     let showInput = false;
     let singleRel: string;
     let search: string = null;
+    let loadingRelationships = false;
 
     let newItemValue: string = '';
     let relatedList: string[] = [];
@@ -54,6 +55,8 @@
     });
 
     async function getRows(search: string = null) {
+        loadingRelationships = true;
+
         // already includes the `$id`, dw!
         const displayNames = preferences.getDisplayNames(column.relatedTable);
 
@@ -61,11 +64,17 @@
             ? [Query.select(displayNames), Query.startsWith('$id', search), Query.orderDesc('')]
             : [Query.select(displayNames)];
 
-        return await sdk.forProject(page.params.region, page.params.project).tablesDB.listRows({
-            databaseId,
-            tableId: column.relatedTable,
-            queries
-        });
+        const rows = await sdk
+            .forProject(page.params.region, page.params.project)
+            .tablesDB.listRows({
+                databaseId,
+                tableId: column.relatedTable,
+                queries
+            });
+
+        loadingRelationships = false;
+
+        return rows;
     }
 
     function getAvailableOptions(excludeIndex?: number) {
@@ -119,34 +128,42 @@
 
     $: totalCount = relatedList?.length ?? 0;
 
-    $: options =
-        rowList?.rows?.map((row) => {
-            const names = preferences
-                .getDisplayNames(column?.relatedTable)
-                .filter((name) => name !== '$id');
+    $: options = loadingRelationships
+        ? [
+              {
+                  label: 'Loading...',
+                  value: null,
+                  disabled: true
+              }
+          ]
+        : (rowList?.rows?.map((row) => {
+              const names = preferences
+                  .getDisplayNames(column?.relatedTable)
+                  .filter((name) => name !== '$id');
 
-            const values = names
-                .map((name) => row?.[name])
-                // always supposed to be a string but just being a bit safe here
-                .filter((value) => value != null && typeof value === 'string' && value !== '');
+              const values = names
+                  .map((name) => row?.[name])
+                  // always supposed to be a string but just being a bit safe here
+                  .filter((value) => value != null && typeof value === 'string' && value !== '');
 
-            const displayValues = !editing
-                ? values
-                : // on non edit routes like create, there's enough space!
-                  values.map((value) => (value.length > 5 ? value.slice(0, 5) + '...' : value));
+              const displayValues = !editing
+                  ? values
+                  : // on non edit routes like create, there's enough space!
+                    values.map((value) => (value.length > 5 ? value.slice(0, 5) + '...' : value));
 
-            const label = !values.length
-                ? row.$id
-                : // values are in `$id (a | b)` format
-                  // previously used to have a `$id a | b`.
-                  `${row.$id} (${displayValues.join(' | ')})`;
+              let label: string;
+              if (!values.length) {
+                  label = row.$id;
+              } else {
+                  label = `${row.$id} (${displayValues.join(' | ')})`;
+              }
 
-            return {
-                label,
-                value: row.$id,
-                data: names.map((name) => row?.[name])
-            };
-        }) ?? [];
+              return {
+                  label,
+                  value: row.$id,
+                  data: names.map((name) => row?.[name])
+              };
+          }) ?? []);
 
     $: hasItems = totalCount > 0;
 

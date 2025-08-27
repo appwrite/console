@@ -218,7 +218,7 @@ function createPreferences() {
         loadTeamPrefs: loadTeamPreferences,
 
         getDisplayNames: (tableId: string) => {
-            return teamPreferences?.displayNames?.[tableId];
+            return teamPreferences?.displayNames?.[tableId] ?? ['$id'];
         },
 
         setDisplayNames: async (

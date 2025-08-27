@@ -313,6 +313,7 @@
 <SideSheet
     closeOnBlur
     title={$showCreateColumnSheet.title}
+    titleBadge={selectedOption === 'Relationship' ? 'Experimental' : undefined}
     bind:show={$showCreateColumnSheet.show}
     submit={{
         text: 'Create',
