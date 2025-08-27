@@ -346,22 +346,40 @@
                 });
             } else {
                 if (selectedRows.length) {
-                    const batches: string[][] = [];
-                    for (let i = 0; i < selectedRows.length; i += 100) {
-                        batches.push(selectedRows.slice(i, i + 100));
-                    }
-
-                    await Promise.all(
-                        batches.map((batch) =>
-                            sdk
-                                .forProject(page.params.region, page.params.project)
-                                .tablesDB.deleteRows({
-                                    databaseId,
-                                    tableId,
-                                    queries: [Query.equal('$id', batch)]
-                                })
-                        )
+                    const hasAnyRelationships = $table.columns.some((column) =>
+                        isRelationship(column)
                     );
+
+                    if (hasAnyRelationships) {
+                        await Promise.all(
+                            selectedRows.map((rowId) =>
+                                sdk
+                                    .forProject(page.params.region, page.params.project)
+                                    .tablesDB.deleteRow({
+                                        databaseId,
+                                        tableId,
+                                        rowId
+                                    })
+                            )
+                        );
+                    } else {
+                        const batches: string[][] = [];
+                        for (let i = 0; i < selectedRows.length; i += 100) {
+                            batches.push(selectedRows.slice(i, i + 100));
+                        }
+
+                        await Promise.all(
+                            batches.map((batch) =>
+                                sdk
+                                    .forProject(page.params.region, page.params.project)
+                                    .tablesDB.deleteRows({
+                                        databaseId,
+                                        tableId,
+                                        queries: [Query.equal('$id', batch)]
+                                    })
+                            )
+                        );
+                    }
                 }
             }
 
