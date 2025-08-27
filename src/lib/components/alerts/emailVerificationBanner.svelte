@@ -51,7 +51,7 @@
         dismissible
         on:dismiss={handleDismiss}>
         <svelte:fragment>
-            To avoid losing access to your account, make sure <Typography.Text
+            To avoid losing access to your projects, make sure <Typography.Text
                 variant="m-500"
                 style="display:inline">{$user.email}</Typography.Text> is valid and up to date. Email
             verification will be required soon.
