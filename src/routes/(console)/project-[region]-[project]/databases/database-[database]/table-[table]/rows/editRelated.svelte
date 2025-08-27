@@ -41,14 +41,16 @@
         loading = true;
 
         try {
-            relatedTable =
-                page.data.tables?.[tableId] ??
-                (await sdk.forProject(page.params.region, page.params.project).tablesDB.getTable({
-                    databaseId,
-                    tableId: tableId
-                }));
-
             if (isSingleStore()) {
+                relatedTable =
+                    page.data.tables?.[tableId] ??
+                    (await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .tablesDB.getTable({
+                            databaseId,
+                            tableId: tableId
+                        }));
+
                 const fetchedRow = await sdk
                     .forProject(page.params.region, page.params.project)
                     .tablesDB.getRow({
@@ -63,6 +65,8 @@
                 let fetchedTables = [];
                 const processedRows = [];
                 const existingRows = rows as Models.Row[];
+
+                const firstTableId = existingRows[0].$tableId;
 
                 const uniqueTableIds = [...new Set(existingRows.map((row) => row.$tableId))];
                 const missingTableIds = uniqueTableIds.filter((tableId) => {
@@ -83,6 +87,8 @@
                 }
 
                 const allTables = [...(page.data.tables || []), ...fetchedTables];
+                relatedTable = allTables.find((table) => table.$id === firstTableId) || null;
+
                 let rowsMissingData = [];
 
                 for (const row of existingRows) {
