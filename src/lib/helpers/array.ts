@@ -102,3 +102,11 @@ export function total(set: Array<number>): number {
     if (!set) return 0;
     return set.reduce((prev, curr) => prev + curr, 0);
 }
+
+export function chunks<T>(array: T[], size: number = 10): T[][] {
+    const output: T[][] = [];
+    for (let i = 0; i < array.length; i += size) {
+        output.push(array.slice(i, i + size));
+    }
+    return output;
+}

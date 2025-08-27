@@ -61,6 +61,7 @@
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
     import { isRelationship } from './rows/store';
+    import { chunks } from '$lib/helpers/array';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -275,20 +276,27 @@
             const { rows, ids } = generateFakeRecords(columns, $randomDataModalState.value);
 
             rowIds = ids;
+            const tablesSDK = sdk.forProject(page.params.region, page.params.project).tablesDB;
 
             if (hasAnyRelationships) {
-                await Promise.all(
-                    rows.map((row) =>
-                        sdk.forProject(page.params.region, page.params.project).tablesDB.createRow({
-                            databaseId: page.params.database,
-                            tableId: page.params.table,
-                            rowId: row.$id,
-                            data: row
-                        })
-                    )
-                );
+                for (const batch of chunks(rows)) {
+                    try {
+                        await Promise.all(
+                            batch.map((row) =>
+                                tablesSDK.createRow({
+                                    databaseId: page.params.database,
+                                    tableId: page.params.table,
+                                    rowId: row.$id,
+                                    data: row
+                                })
+                            )
+                        );
+                    } catch (error) {
+                        // ignore, its sample data.
+                    }
+                }
             } else {
-                await sdk.forProject(page.params.region, page.params.project).tablesDB.createRows({
+                await tablesSDK.createRows({
                     databaseId: page.params.database,
                     tableId: page.params.table,
                     rows

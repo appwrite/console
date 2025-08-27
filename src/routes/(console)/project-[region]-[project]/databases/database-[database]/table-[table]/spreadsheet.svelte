@@ -80,6 +80,7 @@
     import { debounce } from '$lib/helpers/debounce';
     import { hash } from '$lib/helpers/string';
     import { abbreviateNumber } from '$lib/helpers/numbers';
+    import { chunks } from '$lib/helpers/array';
 
     export let data: PageData;
     export let showRowCreateSheet: {
@@ -337,6 +338,8 @@
 
     async function handleDelete() {
         showDelete = false;
+        let hadErrors = false;
+
         try {
             if (selectedRowForDelete) {
                 await sdk.forProject(page.params.region, page.params.project).tablesDB.deleteRow({
@@ -350,45 +353,57 @@
                         isRelationship(column)
                     );
 
+                    const tablesSDK = sdk.forProject(
+                        page.params.region,
+                        page.params.project
+                    ).tablesDB;
+
                     if (hasAnyRelationships) {
-                        await Promise.all(
-                            selectedRows.map((rowId) =>
-                                sdk
-                                    .forProject(page.params.region, page.params.project)
-                                    .tablesDB.deleteRow({
-                                        databaseId,
-                                        tableId,
-                                        rowId
-                                    })
-                            )
-                        );
-                    } else {
-                        const batches: string[][] = [];
-                        for (let i = 0; i < selectedRows.length; i += 100) {
-                            batches.push(selectedRows.slice(i, i + 100));
+                        for (const batch of chunks(selectedRows)) {
+                            try {
+                                await Promise.all(
+                                    batch.map((rowId) =>
+                                        tablesSDK.deleteRow({
+                                            databaseId,
+                                            tableId,
+                                            rowId
+                                        })
+                                    )
+                                );
+                            } catch (e) {
+                                hadErrors = true;
+                                // ignore but keep proceeding!
+                            }
                         }
 
-                        await Promise.all(
-                            batches.map((batch) =>
-                                sdk
-                                    .forProject(page.params.region, page.params.project)
-                                    .tablesDB.deleteRows({
-                                        databaseId,
-                                        tableId,
-                                        queries: [Query.equal('$id', batch)]
-                                    })
-                            )
-                        );
+                        if (hadErrors) {
+                            addNotification({
+                                type: 'error',
+                                message: 'Some rows could not be deleted'
+                            });
+                        }
+                    } else {
+                        for (const batch of chunks(selectedRows, 100)) {
+                            await tablesSDK.deleteRows({
+                                databaseId,
+                                tableId,
+                                queries: [Query.equal('$id', batch)]
+                            });
+                        }
                     }
                 }
             }
 
             await invalidate(Dependencies.ROWS);
             trackEvent(Submit.RowDelete);
-            addNotification({
-                type: 'success',
-                message: `${selectedRows.length ? selectedRows.length : 1} row${selectedRows.length > 1 ? 's' : ''} deleted`
-            });
+
+            if (!hadErrors) {
+                // error is already shown above!
+                addNotification({
+                    type: 'success',
+                    message: `${selectedRows.length ? selectedRows.length : 1} row${selectedRows.length > 1 ? 's' : ''} deleted`
+                });
+            }
 
             spreadsheetRenderKey.set(
                 hash([
