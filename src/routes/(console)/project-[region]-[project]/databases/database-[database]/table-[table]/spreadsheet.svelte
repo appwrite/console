@@ -852,11 +852,11 @@
                                                 <Link.Button
                                                     variant="muted"
                                                     on:click={() => {
-                                                        $databaseRelatedRowSheetOptions.show = true;
                                                         $databaseRelatedRowSheetOptions.tableId =
-                                                            columnId;
-                                                        $databaseRelatedRowSheetOptions.rowId =
+                                                            row[columnId]?.['$tableId'];
+                                                        $databaseRelatedRowSheetOptions.rows =
                                                             row[columnId]?.['$id'];
+                                                        $databaseRelatedRowSheetOptions.show = true;
                                                     }}>
                                                     {displayValue}
                                                 </Link.Button>
@@ -877,9 +877,9 @@
                                             badge={itemsNum ?? 0}
                                             on:click={() => {
                                                 $databaseRelatedRowSheetOptions.show = true;
+                                                $databaseRelatedRowSheetOptions.rows =
+                                                    row[columnId];
                                                 $databaseRelatedRowSheetOptions.tableId = columnId;
-                                                $databaseRelatedRowSheetOptions.rowId =
-                                                    row[columnId]?.['$id'];
                                             }}>
                                             Items
                                         </Button.Button>
