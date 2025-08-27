@@ -19,8 +19,7 @@ type ConsolePreferences = {
 type TeamPreferences = {
     names?: string[];
     order?: string[];
-    /* old `widths` got corrupted */
-    widths_v2?: { [columnId: string]: { fixed: number | { min: number }; resized: number } };
+    widths?: { [columnId: string]: { fixed: number | { min: number }; resized: number } };
 };
 
 type ConsolePreferencesStore = {
@@ -39,7 +38,7 @@ type ConsolePreferencesStore = {
         [key: string]: TeamPreferences['order'];
     };
     columnWidths?: {
-        [key: string]: TeamPreferences['widths_v2'];
+        [key: string]: TeamPreferences['widths'];
     };
     miscellaneous?: {
         [key: string]: string | number | boolean;
@@ -58,6 +57,13 @@ async function updateConsolePreferences(store: ConsolePreferencesStore): Promise
     };
 
     await sdk.forConsole.account.updatePrefs({ prefs: currentPreferences });
+}
+
+function safePrefsKey(widthPreferences: TeamPreferences['widths'], from: string, to: string) {
+    if (widthPreferences?.[from]) {
+        widthPreferences[to] = widthPreferences[from];
+        delete widthPreferences[from];
+    }
 }
 
 function createPreferences() {
@@ -256,35 +262,26 @@ function createPreferences() {
             });
         },
 
-        getColumnWidths(tableId: string): TeamPreferences['widths_v2'] {
+        getColumnWidths(tableId: string): TeamPreferences['widths'] {
             const columnWidths = teamPreferences?.columnWidths?.[tableId] ?? {};
-
-            if (columnWidths['$uid']) {
-                columnWidths['$id'] = columnWidths['$uid'];
-                delete columnWidths['$uid'];
-            }
-
+            safePrefsKey(columnWidths, '$uid', '$id');
             return columnWidths;
         },
 
-        async saveColumnWidths(
-            orgId: string,
-            tableId: string,
-            width: TeamPreferences['widths_v2']
-        ) {
+        async saveColumnWidths(orgId: string, tableId: string, width: TeamPreferences['widths']) {
             if (!teamPreferences.columnWidths) {
                 teamPreferences.columnWidths = {};
-            }
-
-            if (width['$id']) {
-                width['$uid'] = width['$id'];
-                delete width['$id'];
             }
 
             teamPreferences.columnWidths[tableId] = {
                 ...teamPreferences.columnWidths[tableId],
                 ...width
             };
+
+            // older version could still have the problematic key!
+            for (const tableWidths of Object.values(teamPreferences.columnWidths)) {
+                safePrefsKey(tableWidths, '$id', '$uid');
+            }
 
             await sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,
