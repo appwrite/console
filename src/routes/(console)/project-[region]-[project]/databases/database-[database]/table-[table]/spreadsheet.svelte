@@ -132,6 +132,11 @@
             paginatedRows.clear();
             paginatedRows.setPage(1, data.rows.rows);
         }
+
+        // rowId exists, we have someone from old url format!
+        if ($databaseRowSheetOptions && $databaseRowSheetOptions.rowId) {
+            setTimeout(() => ($databaseRowSheetOptions.show = true), 250);
+        }
     });
 
     onDestroy(() => ($showCreateColumnSheet.show = false));

@@ -383,7 +383,10 @@
         disabled: editRow?.isDisabled(),
         onClick: async () => await editRow?.update()
     }}>
-    <EditRow bind:row={$databaseRowSheetOptions.row} bind:this={editRow} />
+    <EditRow
+        bind:this={editRow}
+        bind:row={$databaseRowSheetOptions.row}
+        bind:rowId={$databaseRowSheetOptions.rowId} />
 </SideSheet>
 
 <SideSheet

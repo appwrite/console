@@ -10,18 +10,22 @@
     import { invalidate } from '$app/navigation';
     import { table, type Columns, PROHIBITED_ROW_KEYS } from '../store';
     import ColumnItem from './columns/columnItem.svelte';
-    import { isRelationship, isRelationshipToMany } from './store';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { buildWildcardColumnsQuery, isRelationship, isRelationshipToMany } from './store';
+    import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
 
     const tableId = page.params.table;
     const databaseId = page.params.database;
 
     let {
-        row = $bindable()
+        row = $bindable(),
+        rowId = $bindable(null)
     }: {
-        row: Models.Row;
+        row?: Models.Row | null;
+        rowId?: string | null;
     } = $props();
+
+    let loading = $state(false);
 
     let work = $state<Writable<Models.Row> | null>(null);
     let columnFormWrapper = $state<HTMLElement | null>(null);
@@ -39,10 +43,42 @@
         return writable(deepClone(result as Models.Row));
     }
 
+    async function loadRowFromId() {
+        if (!rowId) return;
+        loading = true;
+
+        try {
+            row = await sdk.forProject(page.params.region, page.params.project).tablesDB.getRow({
+                databaseId,
+                tableId,
+                rowId,
+                queries: buildWildcardColumnsQuery($table)
+            });
+        } catch (error) {
+            addNotification({
+                message: `Failed to load row: ${error.message}`,
+                type: 'error'
+            });
+
+            row = null;
+        } finally {
+            rowId = null;
+            loading = false;
+        }
+    }
+
+    $effect(() => {
+        if (!row && rowId) {
+            loadRowFromId();
+        }
+    });
+
     $effect(() => {
         if (row) {
             work = initWork();
             focusFirstInput();
+        } else {
+            work = null;
         }
     });
 
@@ -81,6 +117,8 @@
     }
 
     export async function update() {
+        if (!row || !work) return;
+
         try {
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId,
@@ -106,7 +144,7 @@
     }
 
     export function isDisabled(): boolean {
-        if (!work || !$table?.columns?.length) return true;
+        if (!work || !row || !$table?.columns?.length) return true;
 
         return $table.columns.every((column) => compareColumns(column, $work, row));
     }
@@ -120,7 +158,11 @@
     }
 </script>
 
-{#if $table.columns?.length && work}
+{#if loading}
+    <div style:margin-block="" style:margin-inline-end="2.25rem">
+        <Skeleton variant="line" height={40} width="auto" />
+    </div>
+{:else if $table.columns?.length && work}
     <div bind:this={columnFormWrapper}>
         <Layout.Stack direction="column" gap="l">
             {#each $table.columns as column}
