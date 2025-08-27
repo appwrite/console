@@ -7,11 +7,17 @@
 <script lang="ts">
     import { onDestroy, onMount } from 'svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
+    import { createEventDispatcher } from 'svelte';
+    import { Button } from '$lib/elements/forms';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconX } from '@appwrite.io/pink-icons-svelte';
 
     export let title: string;
     export let type: 'info' | 'success' | 'warning' | 'error' | 'default' = 'info';
+    export let dismissible = false;
 
     let container: HTMLElement | null = null;
+    const dispatch = createEventDispatcher();
 
     function setNavigationHeight() {
         const alertHeight = container ? container.getBoundingClientRect().height : 0;
@@ -75,9 +81,14 @@
                 <slot />
             </p>
         </div>
-        {#if $$slots.buttons}
+        {#if $$slots.buttons || dismissible}
             <div class="alert-buttons u-flex u-gap-16 u-cross-child-center">
                 <slot name="buttons" />
+                {#if dismissible}
+                    <Button text icon size="s" on:click={() => dispatch('dismiss')}>
+                        <Icon icon={IconX} slot="start" size="s" />
+                    </Button>
+                {/if}
             </div>
         {/if}
     </div>
