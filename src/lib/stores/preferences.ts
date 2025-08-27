@@ -19,7 +19,8 @@ type ConsolePreferences = {
 type TeamPreferences = {
     names?: string[];
     order?: string[];
-    widths?: { [columnId: string]: { fixed: number | { min: number }; resized: number } };
+    /* old `widths` got corrupted */
+    widths_v2?: { [columnId: string]: { fixed: number | { min: number }; resized: number } };
 };
 
 type ConsolePreferencesStore = {
@@ -38,7 +39,7 @@ type ConsolePreferencesStore = {
         [key: string]: TeamPreferences['order'];
     };
     columnWidths?: {
-        [key: string]: TeamPreferences['widths'];
+        [key: string]: TeamPreferences['widths_v2'];
     };
     miscellaneous?: {
         [key: string]: string | number | boolean;
@@ -242,16 +243,12 @@ function createPreferences() {
             return teamPreferences?.columnOrder?.[tableId] ?? [];
         },
 
-        async saveColumnOrder(
-            orgId: string,
-            collectionId: string,
-            columnIds: TeamPreferences['order']
-        ) {
+        async saveColumnOrder(orgId: string, tableId: string, columnIds: TeamPreferences['order']) {
             if (!teamPreferences.columnOrder) {
                 teamPreferences.columnOrder = {};
             }
 
-            teamPreferences.columnOrder[collectionId] = columnIds;
+            teamPreferences.columnOrder[tableId] = columnIds;
 
             await sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,
@@ -259,21 +256,33 @@ function createPreferences() {
             });
         },
 
-        getColumnWidths(collectionId: string): TeamPreferences['widths'] {
-            return teamPreferences?.columnWidths?.[collectionId] ?? {};
+        getColumnWidths(tableId: string): TeamPreferences['widths_v2'] {
+            const columnWidths = teamPreferences?.columnWidths?.[tableId] ?? {};
+
+            if (columnWidths['$uid']) {
+                columnWidths['$id'] = columnWidths['$uid'];
+                delete columnWidths['$uid'];
+            }
+
+            return columnWidths;
         },
 
         async saveColumnWidths(
             orgId: string,
-            collectionId: string,
-            width: TeamPreferences['widths']
+            tableId: string,
+            width: TeamPreferences['widths_v2']
         ) {
             if (!teamPreferences.columnWidths) {
                 teamPreferences.columnWidths = {};
             }
 
-            teamPreferences.columnWidths[collectionId] = {
-                ...teamPreferences.columnWidths[collectionId],
+            if (width['$id']) {
+                width['$uid'] = width['$id'];
+                delete width['$id'];
+            }
+
+            teamPreferences.columnWidths[tableId] = {
+                ...teamPreferences.columnWidths[tableId],
                 ...width
             };
 
