@@ -119,12 +119,6 @@
             createMore = false;
         }
     });
-
-    $effect(() => {
-        if ($createRow) {
-            console.log($createRow.row);
-        }
-    });
 </script>
 
 {#if $createRow}
