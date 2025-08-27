@@ -5,7 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { get, type Writable, writable } from 'svelte/store';
-    import { type Models } from '@appwrite.io/console';
+    import { type Models, Query } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
     import { type Columns, PROHIBITED_ROW_KEYS } from '../store';
@@ -60,44 +60,76 @@
 
                 fetchedRows = [fetchedRow];
             } else {
-                const existingRows = rows as Models.Row[];
+                let fetchedTables = [];
                 const processedRows = [];
+                const existingRows = rows as Models.Row[];
+
+                const uniqueTableIds = [...new Set(existingRows.map((row) => row.$tableId))];
+                const missingTableIds = uniqueTableIds.filter((tableId) => {
+                    return !page.data.tables?.find((table: Models.Table) => table.$id === tableId);
+                });
+
+                if (missingTableIds.length > 0) {
+                    const tablesResponse = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .tablesDB.listTables({
+                            databaseId,
+                            queries: [
+                                Query.equal('$id', missingTableIds),
+                                Query.limit(missingTableIds.length)
+                            ]
+                        });
+                    fetchedTables = tablesResponse.tables;
+                }
+
+                const allTables = [...(page.data.tables || []), ...fetchedTables];
+                let rowsMissingData = [];
 
                 for (const row of existingRows) {
-                    const rowTableId = row.$tableId;
+                    const rowTable = allTables.find((table) => table.$id === row.$tableId);
 
-                    let rowTable = page.data.tables?.find(
-                        (table: Models.Table) => table.$id === rowTableId
-                    );
-
-                    if (!rowTable) {
-                        // not in upstream cache, fetch it
-                        rowTable = await sdk
-                            .forProject(page.params.region, page.params.project)
-                            .tablesDB.getTable({
-                                databaseId,
-                                tableId: rowTableId
-                            });
-                    }
-
-                    // check if row has all columns from table.columns
                     const hasAllColumns = rowTable.columns.every(
                         (column: Columns) => column.key in row
                     );
 
                     if (!hasAllColumns) {
-                        const completeRow = await sdk
-                            .forProject(page.params.region, page.params.project)
-                            .tablesDB.getRow({
-                                databaseId,
-                                tableId: rowTableId,
-                                rowId: row.$id,
-                                queries: buildWildcardColumnsQuery(rowTable)
-                            });
-                        processedRows.push(completeRow);
+                        rowsMissingData.push({ row, rowTable });
                     } else {
                         processedRows.push(row);
                     }
+                }
+
+                if (rowsMissingData.length > 0) {
+                    const rowsByTable = new Map();
+
+                    for (const { row, rowTable } of rowsMissingData) {
+                        if (!rowsByTable.has(row.$tableId)) {
+                            rowsByTable.set(row.$tableId, { rows: [], rowTable });
+                        }
+
+                        rowsByTable.get(row.$tableId).rows.push(row);
+                    }
+
+                    const fetchPromises = Array.from(rowsByTable.entries()).map(
+                        async ([tableId, { rows, rowTable }]) => {
+                            const rowIds: string[] = rows.map((row: Models.Row) => row.$id);
+                            const response = await sdk
+                                .forProject(page.params.region, page.params.project)
+                                .tablesDB.listRows({
+                                    databaseId,
+                                    tableId,
+                                    queries: [
+                                        Query.equal('$id', rowIds),
+                                        Query.limit(rowIds.length),
+                                        ...buildWildcardColumnsQuery(rowTable)
+                                    ]
+                                });
+                            return response.rows;
+                        }
+                    );
+
+                    const allCompleteRows = await Promise.all(fetchPromises);
+                    processedRows.push(...allCompleteRows.flat());
                 }
 
                 fetchedRows = processedRows;
@@ -307,7 +339,7 @@
         {:else}
             <Layout.Stack direction="column" gap="m" class="column-item-stack">
                 <Typography.Text variant="l-400">{relatedTable.name}</Typography.Text>
-                <Layout.Stack direction="column" gap="xxl" class="column-item-stack">
+                <Layout.Stack direction="column" gap="l" class="column-item-stack">
                     {#each fetchedRows as row, index (row.$id)}
                         {@const workStore = getStore(row.$id)}
                         {#if workStore}
