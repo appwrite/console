@@ -21,6 +21,5 @@
 {#if ccImage}
     <img alt={brand} src={ccImage} {width} {height} style:border-radius="2.5px" />
 {:else}
-    <!-- fallback: unionpay image not in Avatars API -->
     <Icon icon={IconCreditCard} color="--fgcolor-neutral-tertiary" />
 {/if}
