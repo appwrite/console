@@ -9,6 +9,6 @@ export const load: PageLoad = async ({ parent }) => {
         redirect(303, base);
     }
     return {
-        factors: await sdk.forConsole.account.listMfaFactors()
+        factors: await sdk.forConsole.account.listMFAFactors()
     };
 };

@@ -7,8 +7,10 @@ export const load = async ({ depends, params }) => {
     depends(Dependencies.DOMAIN);
 
     return {
-        domain: await sdk.forConsole.domains.get(params.domain),
         header: Header,
-        breadcrumbs: Breadcrumbs
+        breadcrumbs: Breadcrumbs,
+        domain: await sdk.forConsole.domains.get({
+            domainId: params.domain
+        })
     };
 };

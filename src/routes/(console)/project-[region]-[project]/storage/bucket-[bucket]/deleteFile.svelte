@@ -14,9 +14,10 @@
 
     const onSubmit = async () => {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .storage.deleteFile(file.bucketId, file.$id);
+            await sdk.forProject(page.params.region, page.params.project).storage.deleteFile({
+                bucketId: file.bucketId,
+                fileId: file.$id
+            });
             showDelete = false;
             dispatch('deleted', file);
             addNotification({

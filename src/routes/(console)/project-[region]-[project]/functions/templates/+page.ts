@@ -14,7 +14,11 @@ export const load: PageLoad = async ({ url, depends, params }) => {
 
     const { templates: allTemplates } = await sdk
         .forProject(params.region, params.project)
-        .functions.listTemplates(undefined, undefined, 100);
+        .functions.listTemplates({
+            runtimes: undefined,
+            useCases: undefined,
+            limit: 100
+        });
 
     const runtimes = new Set<string>();
     const useCases = new Set<string>();

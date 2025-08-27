@@ -150,8 +150,7 @@
             await goto(previousPage);
             addNotification({
                 type: 'success',
-                isHtml: true,
-                message: `<b>${$organization.name}</b> plan has been successfully updated.`
+                message: `${$organization.name} plan has been successfully updated.`
             });
 
             trackEvent(Submit.OrganizationDowngrade, {
@@ -262,9 +261,11 @@
         }
     }
 
-    $: isUpgrade = $plansInfo.get(selectedPlan)?.order > $currentPlan?.order;
-    $: isDowngrade = $plansInfo.get(selectedPlan)?.order < $currentPlan?.order;
-    $: isButtonDisabled = $organization?.billingPlan === selectedPlan;
+    $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan?.order;
+    $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan?.order;
+    $: isButtonDisabled =
+        $organization?.billingPlan === selectedPlan ||
+        (isDowngrade && selectedPlan === BillingPlan.FREE && data.hasFreeOrgs);
 </script>
 
 <svelte:head>
@@ -292,13 +293,23 @@
                         </Alert.Inline>
                     {/if}
 
-                    <PlanSelection
-                        bind:billingPlan={selectedPlan}
-                        selfService={data.selfService}
-                        anyOrgFree={data.hasFreeOrgs} />
+                    <PlanSelection bind:billingPlan={selectedPlan} selfService={data.selfService} />
+
+                    {#if isDowngrade && selectedPlan === BillingPlan.FREE && data.hasFreeOrgs}
+                        <Alert.Inline
+                            status="warning"
+                            title="You can only have one free organization per account">
+                            To downgrade this organization, first migrate or delete one of your
+                            existing paid organizations.
+                            <Button
+                                compact
+                                href="https://appwrite.io/docs/advanced/migrations/cloud"
+                                >Migration guide</Button>
+                        </Alert.Inline>
+                    {/if}
 
                     {#if isDowngrade}
-                        {#if selectedPlan === BillingPlan.FREE}
+                        {#if selectedPlan === BillingPlan.FREE && !data.hasFreeOrgs}
                             <PlanExcess tier={BillingPlan.FREE} />
                         {:else if selectedPlan === BillingPlan.PRO && data.organization.billingPlan === BillingPlan.SCALE && collaborators?.length > 0}
                             {@const extraMembers = collaborators?.length ?? 0}
@@ -364,7 +375,7 @@
                         id="members" />
                 </Fieldset>
             {/if}
-            {#if isDowngrade && selectedPlan === BillingPlan.FREE}
+            {#if isDowngrade && selectedPlan === BillingPlan.FREE && !data.hasFreeOrgs}
                 <Fieldset legend="Feedback">
                     <Layout.Stack gap="xl">
                         <InputSelect
@@ -395,7 +406,7 @@
                 bind:billingBudget
                 organizationId={data.organization.$id} />
         {:else if data.organization.billingPlan !== BillingPlan.CUSTOM}
-            <PlanComparisonBox downgrade={isDowngrade} />
+            <PlanComparisonBox downgrade={data.hasFreeOrgs ? false : isDowngrade} />
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="footer">

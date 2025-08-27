@@ -21,7 +21,10 @@
 
     async function updateName() {
         try {
-            await sdk.forConsole.projects.update($project.$id, name);
+            await sdk.forConsole.projects.update({
+                projectId: $project.$id,
+                name
+            });
             await invalidate(Dependencies.PROJECT);
             await invalidate(Dependencies.ORGANIZATION);
             addNotification({

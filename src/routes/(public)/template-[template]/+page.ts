@@ -23,10 +23,14 @@ export const load = async ({ parent, url, params }) => {
 
     switch (product) {
         case 'function':
-            template = await sdk.forConsole.functions.getTemplate(params.template);
+            template = await sdk.forConsole.functions.getTemplate({
+                templateId: params.template
+            });
             break;
         case 'site':
-            template = await sdk.forConsole.sites.getTemplate(params.template);
+            template = await sdk.forConsole.sites.getTemplate({
+                templateId: params.template
+            });
             break;
         default:
             error(404, 'Type is not valid');

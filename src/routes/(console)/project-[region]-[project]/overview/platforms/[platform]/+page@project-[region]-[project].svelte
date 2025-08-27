@@ -46,14 +46,14 @@
 
     async function updateName() {
         try {
-            await sdk.forConsole.projects.updatePlatform(
-                $project.$id,
-                $platform.$id,
+            await sdk.forConsole.projects.updatePlatform({
+                projectId: $project.$id,
+                platformId: $platform.$id,
                 name,
-                $platform.key || undefined,
-                $platform.store || undefined,
-                $platform.hostname || undefined
-            );
+                key: $platform.key || undefined,
+                store: $platform.store || undefined,
+                hostname: $platform.hostname || undefined
+            });
             await invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',

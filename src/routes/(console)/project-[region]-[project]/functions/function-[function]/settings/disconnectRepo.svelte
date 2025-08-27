@@ -23,27 +23,25 @@
             if (!isValueOfStringEnum(Runtime, $func.runtime)) {
                 throw new Error(`Invalid runtime: ${$func.runtime}`);
             }
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .functions.update(
-                    functionId,
-                    $func.name,
-                    $func.runtime,
-                    $func.execute || undefined,
-                    $func.events || undefined,
-                    $func.schedule || undefined,
-                    $func.timeout || undefined,
-                    $func.enabled || undefined,
-                    $func.logging || undefined,
-                    $func.entrypoint,
-                    $func.commands || undefined,
-                    $func.scopes || undefined,
-                    '',
-                    '',
-                    '',
-                    true,
-                    ''
-                );
+            await sdk.forProject(page.params.region, page.params.project).functions.update({
+                functionId,
+                name: $func.name,
+                runtime: $func.runtime,
+                execute: $func.execute || undefined,
+                events: $func.events || undefined,
+                schedule: $func.schedule || undefined,
+                timeout: $func.timeout || undefined,
+                enabled: $func.enabled || undefined,
+                logging: $func.logging || undefined,
+                entrypoint: $func.entrypoint,
+                commands: $func.commands || undefined,
+                scopes: $func.scopes || undefined,
+                installationId: '',
+                providerRepositoryId: '',
+                providerBranch: '',
+                providerSilentMode: true,
+                providerRootDirectory: ''
+            });
             await invalidate(Dependencies.FUNCTION);
             dispatch('success');
             addNotification({

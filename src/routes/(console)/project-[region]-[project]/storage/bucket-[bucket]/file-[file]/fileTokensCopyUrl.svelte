@@ -21,15 +21,15 @@
         if (method === 'view') {
             url = sdk
                 .forProject(page.params.region, page.params.project)
-                .storage.getFileView(file.bucketId, file.$id);
+                .storage.getFileView({ bucketId: file.bucketId, fileId: file.$id });
         } else if (method === 'download') {
             url = sdk
                 .forProject(page.params.region, page.params.project)
-                .storage.getFileDownload(file.bucketId, file.$id);
+                .storage.getFileDownload({ bucketId: file.bucketId, fileId: file.$id });
         } else {
             url = sdk
                 .forProject(page.params.region, page.params.project)
-                .storage.getFilePreview(file.bucketId, file.$id);
+                .storage.getFilePreview({ bucketId: file.bucketId, fileId: file.$id });
         }
 
         url = `${url}&token=${token}`;

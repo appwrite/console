@@ -146,25 +146,21 @@ export const columns = writable<Column[]>([
 export function getOutputDownload(funcId: string, deploymentId: string) {
     const p = get(page);
     return (
-        sdk
-            .forProject(p.params.region, p.params.project)
-            .functions.getDeploymentDownload(
-                funcId,
-                deploymentId.toString(),
-                DeploymentDownloadType.Output
-            ) + '&mode=admin'
+        sdk.forProject(p.params.region, p.params.project).functions.getDeploymentDownload({
+            functionId: funcId,
+            deploymentId,
+            type: DeploymentDownloadType.Output
+        }) + '&mode=admin'
     );
 }
 export function getSourceDownload(funcId: string, deploymentId: string) {
     const p = get(page);
 
     return (
-        sdk
-            .forProject(p.params.region, p.params.project)
-            .functions.getDeploymentDownload(
-                funcId,
-                deploymentId.toString(),
-                DeploymentDownloadType.Source
-            ) + '&mode=admin'
+        sdk.forProject(p.params.region, p.params.project).functions.getDeploymentDownload({
+            functionId: funcId,
+            deploymentId,
+            type: DeploymentDownloadType.Source
+        }) + '&mode=admin'
     );
 }

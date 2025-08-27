@@ -22,13 +22,14 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         limit,
         query,
         func,
-        executions: await sdk
-            .forProject(params.region, params.project)
-            .functions.listExecutions(params.function, [
+        executions: await sdk.forProject(params.region, params.project).functions.listExecutions({
+            functionId: params.function,
+            queries: [
                 Query.limit(limit),
                 Query.offset(offset),
                 Query.orderDesc(''),
                 ...parsedQueries.values()
-            ])
+            ]
+        })
     };
 };

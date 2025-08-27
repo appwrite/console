@@ -10,12 +10,10 @@ export const load: PageLoad = async ({ url, route, params }) => {
     const view = getView(url, route, View.Grid);
     const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
-    const buckets = await sdk
-        .forProject(params.region, params.project)
-        .storage.listBuckets(
-            [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-            search || undefined
-        );
+    const buckets = await sdk.forProject(params.region, params.project).storage.listBuckets({
+        queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+        search: search || undefined
+    });
 
     return {
         offset,

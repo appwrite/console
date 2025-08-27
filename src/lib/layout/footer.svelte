@@ -11,19 +11,24 @@
         Button,
         Badge
     } from '@appwrite.io/pink-svelte';
-    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
+    import { isSmallViewport } from '$lib/stores/viewport';
+    import { page } from '$app/state';
 
     const currentYear = new Date().getFullYear();
+
+    const hideFooter = $derived.by(() => {
+        const endings = ['table-[table]', 'table-[table]/columns', 'table-[table]/indexes'];
+        return endings.some((end) => page.route.id?.endsWith(end));
+    });
 </script>
 
-<footer>
+<footer class:hide={hideFooter}>
     <Divider />
     <Layout.Stack direction={$isSmallViewport ? 'column-reverse' : 'row'}>
         <Layout.Stack
             direction="row"
             alignItems="center"
             gap={$isSmallViewport ? 'm' : 'l'}
-            inline={$isTabletViewport}
             justifyContent="flex-start">
             <Typography.Caption variant="400">
                 ⓒ {currentYear} Appwrite. All rights reserved.
@@ -54,63 +59,37 @@
                 </Button.Anchor>
             </Layout.Stack>
         </Layout.Stack>
-        {#if isCloud && $isSmallViewport}
-            <div class="extra-margin">
-                <Layout.Stack direction="row" justifyContent={'flex-start'} alignItems="center">
-                    {#if $version}
-                        {#if isCloud}
-                            <Icon size="s" icon={IconCloud} />
-                        {/if}
-                        <Link.Anchor
-                            size="s"
-                            variant="quiet"
-                            href="https://github.com/appwrite/appwrite/releases"
-                            aria-label="Appwrite releases on Github"
-                            target="_blank"
-                            rel="noreferrer">
-                            Version {$version}
-                        </Link.Anchor>
-                        <span class="divider-wrapper">
-                            <Divider vertical />
-                        </span>
-                    {/if}
-                    <Badge
-                        size="xs"
-                        type="success"
-                        variant="secondary"
-                        content="Generally Available"
-                        style="white-space: nowrap;" />
-                </Layout.Stack>
-            </div>
-        {/if}
+
         <Layout.Stack
             direction="row"
             justifyContent={$isSmallViewport ? 'flex-start' : 'flex-end'}
-            alignItems="center">
-            {#if isCloud}
-                {#if !$isSmallViewport}
+            alignItems="center"
+            wrap={$isSmallViewport ? 'wrap' : 'normal'}>
+            {#if !$isSmallViewport}
+                {#if isCloud}
                     <Badge
                         size="xs"
                         type="success"
                         variant="secondary"
                         content="Generally Available"
                         style="white-space: nowrap;" />
-
                     <Icon size="s" icon={IconCloud} />
-                    {#if $version}
-                        <Link.Anchor
-                            size="s"
-                            variant="quiet"
-                            href="https://github.com/appwrite/appwrite/releases"
-                            aria-label="Appwrite releases on Github"
-                            target="_blank"
-                            rel="noreferrer">
-                            Version {$version}
-                        </Link.Anchor>
-                        <span class="divider-wrapper">
-                            <Divider vertical />
-                        </span>
-                    {/if}
+                {/if}
+
+                {#if $version}
+                    <Link.Anchor
+                        size="s"
+                        variant="quiet"
+                        href="https://github.com/appwrite/appwrite/releases"
+                        aria-label="Appwrite releases on Github"
+                        target="_blank"
+                        rel="noreferrer"
+                        style="white-space: nowrap;">
+                        Version {$version}
+                    </Link.Anchor>
+                    <span class="divider-wrapper">
+                        <Divider vertical />
+                    </span>
                 {/if}
             {/if}
 
@@ -157,6 +136,32 @@
                     Cookies
                 </Link.Anchor>
             {/if}
+            {#if $isSmallViewport}
+                {#if $version}
+                    <span class="divider-wrapper">
+                        <Divider vertical />
+                    </span>
+                    <Link.Anchor
+                        size="s"
+                        variant="quiet"
+                        href="https://github.com/appwrite/appwrite/releases"
+                        aria-label="Appwrite releases on Github"
+                        target="_blank"
+                        rel="noreferrer"
+                        style="white-space: nowrap;">
+                        Version {$version}
+                    </Link.Anchor>
+                    {#if isCloud}
+                        <Icon size="s" icon={IconCloud} />
+                        <Badge
+                            size="xs"
+                            type="success"
+                            variant="secondary"
+                            content="Generally Available"
+                            style="white-space: nowrap;" />
+                    {/if}
+                {/if}
+            {/if}
         </Layout.Stack>
     </Layout.Stack>
 </footer>
@@ -172,15 +177,20 @@
         flex-direction: column;
         gap: var(--gap-l);
         margin-inline: 2rem;
+
+        &.hide {
+            display: none;
+        }
     }
 
     :global(main:has(.sub-navigation)) footer {
         @media (min-width: 1024px) {
-            margin-inline-start: -1.5rem;
             margin-inline-end: 2rem;
+            margin-inline-start: -1.5rem;
         }
     }
-    .extra-margin {
-        margin-block-start: var(--space-2, 4px);
+
+    :global(main:has(.wide-screen-wrapper)) footer {
+        margin-inline-start: 2rem !important;
     }
 </style>

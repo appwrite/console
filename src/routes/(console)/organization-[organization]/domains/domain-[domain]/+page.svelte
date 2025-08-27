@@ -37,7 +37,9 @@
 
     async function downloadRecords() {
         try {
-            const zone = await sdk.forConsole.domains.getZone(data.domain.$id);
+            const zone = await sdk.forConsole.domains.getZone({
+                domainId: data.domain.$id
+            });
 
             if ('message' in zone) {
                 const blob = new Blob([zone.message as string], { type: 'text/plain' });

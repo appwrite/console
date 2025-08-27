@@ -17,18 +17,16 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
 
-    const identities = await sdk
-        .forProject(params.region, params.project)
-        .users.listIdentities(
-            [
-                Query.equal('userId', params.user),
-                Query.limit(limit),
-                Query.offset(offset),
-                Query.orderDesc(''),
-                ...parsedQueries.values()
-            ],
-            search
-        );
+    const identities = await sdk.forProject(params.region, params.project).users.listIdentities({
+        queries: [
+            Query.equal('userId', params.user),
+            Query.limit(limit),
+            Query.offset(offset),
+            Query.orderDesc(''),
+            ...parsedQueries.values()
+        ],
+        search
+    });
 
     return {
         offset,

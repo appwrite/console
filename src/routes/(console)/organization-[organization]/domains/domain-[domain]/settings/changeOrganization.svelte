@@ -15,7 +15,7 @@
 
     async function moveDomain() {
         try {
-            await sdk.forConsole.domains.updateTeam(domain.$id, selectedOrg);
+            await sdk.forConsole.domains.updateTeam({ domainId: domain.$id, teamId: selectedOrg });
             addNotification({
                 type: 'success',
                 message: 'Domain moved successfully'

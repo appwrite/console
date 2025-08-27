@@ -22,10 +22,15 @@
 
     const acceptInvite = async () => {
         try {
-            await sdk.forConsole.teams.updateMembershipStatus(teamId, membershipId, userId, secret);
+            await sdk.forConsole.teams.updateMembershipStatus({
+                teamId,
+                membershipId,
+                userId,
+                secret
+            });
             addNotification({
                 type: 'success',
-                message: 'Successfully logged in.'
+                message: 'Successfully joined the organization.'
             });
             await goto(`${base}/organization-${teamId}`);
             trackEvent(Submit.MembershipUpdateStatus);

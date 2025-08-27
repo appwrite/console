@@ -28,28 +28,26 @@
             if (!isValueOfStringEnum(Runtime, runtime)) {
                 throw new Error(`Invalid runtime: ${runtime}`);
             }
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .functions.update(
-                    functionId,
-                    $func.name,
-                    runtime,
-                    $func.execute || undefined,
-                    $func.events || undefined,
-                    $func.schedule || undefined,
-                    $func.timeout || undefined,
-                    $func.enabled || undefined,
-                    $func.logging || undefined,
-                    entrypoint || undefined,
-                    $func.commands || undefined,
-                    $func.scopes || undefined,
-                    $func.installationId || undefined,
-                    $func.providerRepositoryId || undefined,
-                    $func.providerBranch || undefined,
-                    $func.providerSilentMode || undefined,
-                    $func.providerRootDirectory || undefined,
-                    $func.specification || undefined
-                );
+            await sdk.forProject(page.params.region, page.params.project).functions.update({
+                functionId,
+                name: $func.name,
+                runtime,
+                execute: $func.execute || undefined,
+                events: $func.events || undefined,
+                schedule: $func.schedule || undefined,
+                timeout: $func.timeout || undefined,
+                enabled: $func.enabled || undefined,
+                logging: $func.logging || undefined,
+                entrypoint: entrypoint || undefined,
+                commands: $func.commands || undefined,
+                scopes: $func.scopes || undefined,
+                installationId: $func.installationId || undefined,
+                providerRepositoryId: $func.providerRepositoryId || undefined,
+                providerBranch: $func.providerBranch || undefined,
+                providerSilentMode: $func.providerSilentMode || undefined,
+                providerRootDirectory: $func.providerRootDirectory || undefined,
+                specification: $func.specification || undefined
+            });
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Runtime settings have been updated',

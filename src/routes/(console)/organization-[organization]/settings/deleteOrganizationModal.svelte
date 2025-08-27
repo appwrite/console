@@ -30,11 +30,13 @@
             if (isCloud) {
                 await sdk.forConsole.billing.deleteOrganization($organization.$id);
             } else {
-                await sdk.forConsole.teams.delete($organization.$id);
+                await sdk.forConsole.teams.delete({
+                    teamId: $organization.$id
+                });
             }
             const prefs = await sdk.forConsole.account.getPrefs();
             const newPrefs = { ...prefs, organization: null };
-            await sdk.forConsole.account.updatePrefs(newPrefs);
+            await sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
             if ($organizationList?.total > 1) {
                 await goto(`${base}/account/organizations`);
             } else {

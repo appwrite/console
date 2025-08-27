@@ -40,9 +40,10 @@
         showBatchDeletion = false;
 
         const promises = selectedRows.map((deploymentId) =>
-            sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.deleteDeployment(page.params.site, deploymentId)
+            sdk.forProject(page.params.region, page.params.project).sites.deleteDeployment({
+                siteId: page.params.site,
+                deploymentId
+            })
         );
         try {
             await Promise.all(promises);
@@ -155,7 +156,7 @@
     <FloatingActionBar>
         <svelte:fragment slot="start">
             <Badge content={selectedRows.length.toString()} />
-            <span>
+            <span style="white-space: nowrap">
                 {selectedRows.length > 1 ? 'deployments' : 'deployment'}
                 selected
             </span>

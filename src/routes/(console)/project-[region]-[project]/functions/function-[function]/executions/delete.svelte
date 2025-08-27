@@ -18,7 +18,10 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.deleteExecution($func.$id, selectedExecution.$id);
+                .functions.deleteExecution({
+                    functionId: $func.$id,
+                    executionId: selectedExecution.$id
+                });
             await invalidate(Dependencies.EXECUTIONS);
             showDelete = false;
             addNotification({

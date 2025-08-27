@@ -28,7 +28,10 @@
 
     async function updateLimit() {
         try {
-            await sdk.forConsole.projects.updateAuthLimit($project?.$id, isLimited ? newLimit : 0);
+            await sdk.forConsole.projects.updateAuthLimit({
+                projectId: $project?.$id,
+                limit: isLimited ? newLimit : 0
+            });
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',

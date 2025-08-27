@@ -7,7 +7,10 @@ function toURLSafe(s: string) {
 
 export async function checkDomain(domain: string, apex: string) {
     try {
-        await sdk.forConsole.console.getResource(`${domain}.${apex}`, ConsoleResourceType.Rules);
+        await sdk.forConsole.console.getResource({
+            value: `${domain}.${apex}`,
+            type: ConsoleResourceType.Rules
+        });
         return true;
     } catch {
         return false;

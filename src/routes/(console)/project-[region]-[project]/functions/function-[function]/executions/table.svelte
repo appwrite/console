@@ -38,9 +38,10 @@
         showBatchDeletion = false;
 
         const promises = selectedRows.map((executionId) =>
-            sdk
-                .forProject(page.params.region, page.params.project)
-                .functions.deleteExecution(page.params.function, executionId)
+            sdk.forProject(page.params.region, page.params.project).functions.deleteExecution({
+                functionId: page.params.function,
+                executionId
+            })
         );
         try {
             await Promise.all(promises);
@@ -84,6 +85,8 @@
                         {#key column.id}
                             <Id value={log.$id}>{log.$id}</Id>
                         {/key}
+                    {:else if column.id === 'deploymentId'}
+                        <Id value={log.deploymentId}>{log.deploymentId}</Id>
                     {:else if column.id === '$createdAt'}
                         <DualTimeView time={log.$createdAt} />
                     {:else if column.id === 'requestPath'}

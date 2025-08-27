@@ -13,10 +13,10 @@
 
     async function updatePersonalDataCheck() {
         try {
-            await sdk.forConsole.projects.updatePersonalDataCheck(
-                $project.$id,
-                authPersonalDataCheck
-            );
+            await sdk.forConsole.projects.updatePersonalDataCheck({
+                projectId: $project.$id,
+                enabled: authPersonalDataCheck
+            });
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',

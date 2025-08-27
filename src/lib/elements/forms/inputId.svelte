@@ -31,6 +31,7 @@
     maxlength={36}
     autocomplete="off"
     bind:value
+    on:input
     on:invalid={handleInvalid}
     state={error ? 'error' : 'default'}
     helper="Allowed characters: alphanumeric, non-leading hyphen, underscore, period" />
