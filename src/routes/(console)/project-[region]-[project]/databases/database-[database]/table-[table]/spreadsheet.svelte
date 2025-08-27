@@ -718,7 +718,6 @@
             on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}
             bind:currentPage
             nextPageTriggerOffset={2}
-            paginationBufferSpace={35}
             jumpToPageNumber={jumpToPageReactive}
             loadingMore={$paginatedRowsLoading}
             itemsPerPage={SPREADSHEET_PAGE_LIMIT}
