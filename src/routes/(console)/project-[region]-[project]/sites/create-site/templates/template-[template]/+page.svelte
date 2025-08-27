@@ -37,6 +37,7 @@
     import { connectGitHub } from '$lib/stores/git';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { getTemplateSourceUrl } from '$lib/helpers/templateSource';
 
     export let data;
 
@@ -76,7 +77,11 @@
             isCreatingRepository = true;
             const repo = await sdk
                 .forProject(page.params.region, page.params.project)
-                .vcs.createRepository($installation.$id, repositoryName, repositoryPrivate);
+                .vcs.createRepository({
+                    installationId: $installation.$id,
+                    name: repositoryName,
+                    xprivate: repositoryPrivate
+                });
             repository.set(repo);
             selectedRepository = repo.id;
             showSiteConfig = true;
@@ -111,59 +116,52 @@
                 );
                 let site = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .sites.create(
-                        id || ID.unique(),
+                    .sites.create({
+                        siteId: id || ID.unique(),
                         name,
-                        fr,
+                        framework: fr,
                         buildRuntime,
-                        undefined,
-                        undefined,
-                        undefined,
-                        framework.installCommand,
-                        framework.buildCommand,
-                        framework.outputDirectory,
-                        framework.adapter as unknown as Adapter,
-                        connectBehaviour === 'later'
-                            ? undefined
-                            : selectedInstallationId || undefined,
-                        framework?.fallbackFile || undefined,
-                        selectedRepository || undefined,
-                        branch || undefined,
-                        selectedRepository ? silentMode : undefined,
-                        rootDir || undefined
-                    );
+                        installCommand: framework.installCommand,
+                        buildCommand: framework.buildCommand,
+                        outputDirectory: framework.outputDirectory,
+                        adapter: framework.adapter as unknown as Adapter,
+                        installationId:
+                            connectBehaviour === 'later' ? undefined : selectedInstallationId,
+                        fallbackFile: framework?.fallbackFile || undefined,
+                        providerRepositoryId: selectedRepository || undefined,
+                        providerBranch: branch || undefined,
+                        providerSilentMode: selectedRepository ? silentMode : undefined,
+                        providerRootDirectory: rootDir || undefined
+                    });
 
                 // Add domain
-                await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .proxy.createSiteRule(
-                        `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
-                        site.$id
-                    );
+                await sdk.forProject(page.params.region, page.params.project).proxy.createSiteRule({
+                    domain: `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
+                    siteId: site.$id
+                });
 
-                //Add variables
+                // Add variables
                 const promises = variables.map((variable) =>
-                    sdk
-                        .forProject(page.params.region, page.params.project)
-                        .sites.createVariable(
-                            site.$id,
-                            variable.name,
-                            variable.value,
-                            variable?.secret ?? false
-                        )
+                    sdk.forProject(page.params.region, page.params.project).sites.createVariable({
+                        siteId: site.$id,
+                        key: variable.name,
+                        value: variable.value,
+                        secret: variable?.secret ?? false
+                    })
                 );
+
                 await Promise.all(promises);
 
                 const deployment = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .sites.createTemplateDeployment(
-                        site.$id,
-                        data.template.providerRepositoryId || undefined,
-                        data.template.providerOwner || undefined,
-                        framework.providerRootDirectory || undefined,
-                        data.template.providerVersion || undefined,
-                        true
-                    );
+                    .sites.createTemplateDeployment({
+                        siteId: site.$id,
+                        repository: data.template.providerRepositoryId,
+                        owner: data.template.providerOwner,
+                        rootDirectory: framework.providerRootDirectory,
+                        version: data.template.providerVersion,
+                        activate: true
+                    });
 
                 trackEvent(Submit.SiteCreate, {
                     source: 'template',
@@ -351,6 +349,16 @@
                     alt={data.template.name}
                     ratio="16/9" />
             </Layout.Stack>
+
+            <svelte:fragment slot="framework-actions">
+                {@const sourceUrl = getTemplateSourceUrl(data.template)}
+                {#if sourceUrl}
+                    <Button secondary size="s" external href={sourceUrl}>
+                        View source
+                        <Icon icon={IconExternalLink} slot="end" size="s" />
+                    </Button>
+                {/if}
+            </svelte:fragment>
         </Aside>
     </svelte:fragment>
 

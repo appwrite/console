@@ -72,12 +72,12 @@
             detectingRuntime = true;
 
             const detections = (await sdk
-                .forProject(page.params.regionn, page.params.project)
-                .vcs.createRepositoryDetection(
-                    data.installation.$id,
-                    page.params.repository,
-                    VCSDetectionType.Runtime
-                )) as unknown as Models.DetectionRuntime; /* SDK return type is wrong atm */
+                .forProject(page.params.region, page.params.project)
+                .vcs.createRepositoryDetection({
+                    installationId: data.installation.$id,
+                    providerRepositoryId: page.params.repository,
+                    type: VCSDetectionType.Runtime
+                })) as unknown as Models.DetectionRuntime; /* SDK return type is wrong atm */
 
             entrypoint = detections.entrypoint;
             buildCommand = detections.commands;
@@ -95,51 +95,47 @@
         try {
             const func = await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.create(
-                    id || ID.unique(),
+                .functions.create({
+                    functionId: id || ID.unique(),
                     name,
                     runtime,
-                    roles?.length ? roles : undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    true,
-                    undefined,
+                    execute: roles?.length ? roles : undefined,
+                    enabled: true,
                     entrypoint,
-                    buildCommand,
-                    undefined,
-                    $installation.$id,
-                    $repository.id,
-                    branch,
-                    silentMode,
-                    rootDir,
-                    specification || undefined
-                );
+                    commands: buildCommand,
+                    installationId: $installation.$id,
+                    providerRepositoryId: $repository.id,
+                    providerBranch: branch,
+                    providerSilentMode: silentMode,
+                    providerRootDirectory: rootDir,
+                    specification: specification || undefined
+                });
 
             // Add domain
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .proxy.createFunctionRule(
-                    `${ID.unique()}.${$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS}`,
-                    func.$id
-                );
+            await sdk.forProject(page.params.region, page.params.project).proxy.createFunctionRule({
+                domain: `${ID.unique()}.${$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS}`,
+                functionId: func.$id
+            });
 
             //Add variables
             const promises = variables.map((variable) =>
-                sdk
-                    .forProject(page.params.region, page.params.project)
-                    .functions.createVariable(
-                        func.$id,
-                        variable.key,
-                        variable.value,
-                        variable?.secret ?? false
-                    )
+                sdk.forProject(page.params.region, page.params.project).functions.createVariable({
+                    functionId: func.$id,
+                    key: variable.key,
+                    value: variable.value,
+                    secret: variable?.secret ?? false
+                })
             );
             await Promise.all(promises);
 
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.createVcsDeployment(func.$id, VCSDeploymentType.Branch, branch, true);
+                .functions.createVcsDeployment({
+                    functionId: func.$id,
+                    type: VCSDeploymentType.Branch,
+                    reference: branch,
+                    activate: true
+                });
 
             trackEvent(Submit.FunctionCreate, {
                 source: 'repository',

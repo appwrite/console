@@ -18,14 +18,14 @@
 
     async function updateHostname() {
         try {
-            await sdk.forConsole.projects.updatePlatform(
-                $project.$id,
-                $platform.$id,
-                $platform.name,
+            await sdk.forConsole.projects.updatePlatform({
+                projectId: $project.$id,
+                platformId: $platform.$id,
+                name: $platform.name,
                 key,
-                $platform.store || undefined,
-                $platform.hostname || undefined
-            );
+                store: $platform.store || undefined,
+                hostname: $platform.hostname || undefined
+            });
             await invalidate(Dependencies.PLATFORM);
             trackEvent(Submit.PlatformUpdate, {
                 type: 'apple-ios'

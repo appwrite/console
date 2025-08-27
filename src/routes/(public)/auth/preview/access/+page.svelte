@@ -50,7 +50,10 @@
 
     async function login() {
         try {
-            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
+            await sdk.forConsole.account.createEmailPasswordSession({
+                email: mail,
+                password: pass
+            });
             await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountLogin);
 
@@ -63,8 +66,16 @@
 
     async function register() {
         try {
-            await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
-            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
+            await sdk.forConsole.account.create({
+                userId: ID.unique(),
+                email: mail,
+                password: pass,
+                name: name ?? ''
+            });
+            await sdk.forConsole.account.createEmailPasswordSession({
+                email: mail,
+                password: pass
+            });
 
             await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountCreate);
@@ -87,12 +98,12 @@
                 url = `${base}${page.url.search ?? ''}`;
             }
         }
-        sdk.forConsole.account.createOAuth2Session(
-            OAuthProvider.Github,
-            window.location.origin + url,
-            window.location.origin,
-            ['read:user', 'user:email']
-        );
+        sdk.forConsole.account.createOAuth2Session({
+            provider: OAuthProvider.Github,
+            success: window.location.origin + url,
+            failure: window.location.origin,
+            scopes: ['read:user', 'user:email']
+        });
     }
 
     async function handleSubmit() {

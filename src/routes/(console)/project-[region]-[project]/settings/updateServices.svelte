@@ -18,11 +18,11 @@
 
     async function serviceUpdate(service: Service) {
         try {
-            await sdk.forConsole.projects.updateServiceStatus(
-                $project.$id,
-                service.method,
-                service.value
-            );
+            await sdk.forConsole.projects.updateServiceStatus({
+                projectId: $project.$id,
+                service: service.method,
+                status: service.value
+            });
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
@@ -54,7 +54,10 @@
         }
 
         try {
-            await sdk.forConsole.projects.updateServiceStatusAll($project.$id, status);
+            await sdk.forConsole.projects.updateServiceStatusAll({
+                projectId: $project.$id,
+                status
+            });
             invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',

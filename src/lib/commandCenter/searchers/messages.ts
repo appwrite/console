@@ -35,7 +35,7 @@ const getIcon = (message: Models.Message) => {
 export const messagesSearcher = (async (query: string) => {
     const { messages } = await sdk
         .forProject(page.params.region, page.params.project)
-        .messaging.listMessages([], query || undefined);
+        .messaging.listMessages({ search: query || undefined });
 
     return messages
         .filter((message) => getLabel(message).toLowerCase().includes(query.toLowerCase()))

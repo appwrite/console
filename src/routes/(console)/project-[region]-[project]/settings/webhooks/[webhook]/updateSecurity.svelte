@@ -24,17 +24,17 @@
 
     async function updateSecurity() {
         try {
-            await sdk.forConsole.projects.updateWebhook(
+            await sdk.forConsole.projects.updateWebhook({
                 projectId,
-                $webhook.$id,
-                $webhook.name,
-                $webhook.events,
-                $webhook.url,
+                webhookId: $webhook.$id,
+                name: $webhook.name,
+                events: $webhook.events,
+                url: $webhook.url,
                 security,
-                true,
-                httpUser || undefined,
-                httpPass || undefined
-            );
+                enabled: true,
+                httpUser: httpUser || undefined,
+                httpPass: httpPass || undefined
+            });
             await invalidate(Dependencies.WEBHOOK);
             addNotification({
                 type: 'success',

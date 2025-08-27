@@ -13,12 +13,10 @@ export const load = async ({ url, depends, route, params }) => {
     return {
         offset,
         limit,
-        functions: await sdk
-            .forProject(params.region, params.project)
-            .functions.list(
-                [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-                search
-            ),
+        functions: await sdk.forProject(params.region, params.project).functions.list({
+            queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+            search
+        }),
         search
     };
 };

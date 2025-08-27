@@ -22,7 +22,10 @@
 
     const deleteMembership = async () => {
         try {
-            await sdk.forConsole.teams.deleteMembership(selectedMember.teamId, selectedMember.$id);
+            await sdk.forConsole.teams.deleteMembership({
+                teamId: selectedMember.teamId,
+                membershipId: selectedMember.$id
+            });
 
             if (isUser) {
                 logout();

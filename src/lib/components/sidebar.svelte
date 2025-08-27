@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { fade } from 'svelte/transition';
-    import { page } from '$app/state';
+    import { page } from '$app/stores';
     import { app } from '$lib/stores/app';
+    import { fade } from 'svelte/transition';
     import {
         Icon,
         Sidebar,
@@ -30,13 +30,14 @@
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import { feedback } from '$lib/stores/feedback';
     import { DropList } from '$lib/components/index';
-    import type { ComponentType } from 'svelte';
+    import { type ComponentType, onMount } from 'svelte';
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
     import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
 
     import type { HTMLAttributes } from 'svelte/elements';
     import type { Models } from '@appwrite.io/console';
@@ -71,7 +72,11 @@
         }
     }
 
-    $: state = $isTabletViewport ? 'closed' : getSidebarState();
+    onMount(() => (state = getSidebarState($page)));
+
+    $: if ($isTabletViewport && state !== 'closed') {
+        state = 'closed';
+    }
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth', category: 'build' },
@@ -89,7 +94,7 @@
     ];
 
     const isSelected = (service: string): boolean => {
-        return page.route.id?.includes(service);
+        return $page.route.id?.includes(service);
     };
 </script>
 
@@ -101,7 +106,7 @@
     <Sidebar.Base
         {...$$props}
         bind:state
-        on:resize={(event) => updateSidebarState(event.detail)}
+        on:resize={(event) => updateSidebarState($page, event.detail)}
         resizable>
         <div slot="top">
             <div class="only-mobile-tablet top">
@@ -240,7 +245,9 @@
                             <span slot="tooltip">{projectOption.name}</span>
                         </Tooltip>
                     {/each}
-                    {#if project}
+                    {#if project && $isSmallViewport}
+                        <Divider />
+
                         <div class="mobile-tablet-settings">
                             <Tooltip placement="right" disabled={state !== 'icons'}>
                                 <a
@@ -354,7 +361,10 @@
 </div>
 
 {#if subNavigation}
-    <div class="sub-navigation" class:icons={state === 'icons'}>
+    <div
+        class="sub-navigation"
+        class:icons={state === 'icons'}
+        style:--banner-spacing={$bannerSpacing ? $bannerSpacing : undefined}>
         <svelte:component this={subNavigation} />
     </div>
 {/if}
@@ -608,8 +618,9 @@
 
     .sub-navigation {
         margin-top: 48px;
+
         @media (min-width: 1024px) {
-            margin-top: 0;
+            margin-top: var(--banner-spacing, 0px);
             width: 400px;
             height: calc(100vh - 48px);
             display: flex;
@@ -623,6 +634,17 @@
             &.icons {
                 width: 266px;
                 transition: width 0.3s linear;
+
+                & :global(nav) {
+                    margin-top: var(--banner-spacing);
+                }
+            }
+        }
+
+        /* when in small or tablet viewport and there's a banner */
+        @media (max-width: 1023px) {
+            & :global(header) {
+                margin-top: var(--banner-spacing);
             }
         }
     }

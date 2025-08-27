@@ -39,20 +39,17 @@
 
             const response = await sdk
                 .forProject(page.params.region, page.params.project)
-                .messaging.createEmail(
+                .messaging.createEmail({
                     messageId,
                     subject,
                     content,
                     topics,
                     users,
                     targets,
-                    undefined,
-                    undefined,
-                    undefined,
                     draft,
                     html,
                     scheduledAt
-                );
+                });
             let message = '';
             switch (response.status) {
                 case 'draft':

@@ -24,7 +24,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .users.updateMfa($user.$id, userMfa);
+                .users.updateMFA({ userId: $user.$id, mfa: userMfa });
             await invalidate(Dependencies.USER);
             addNotification({
                 message: `Multi-factor authentication has been ${userMfa ? 'enabled' : 'disabled'}`,

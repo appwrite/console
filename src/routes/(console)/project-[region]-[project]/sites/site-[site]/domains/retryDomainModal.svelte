@@ -46,7 +46,7 @@
         try {
             const domain = await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.updateRuleVerification(selectedProxyRule.$id);
+                .proxy.updateRuleVerification({ ruleId: selectedProxyRule.$id });
 
             show = false;
             verified = domain.status === 'verified';

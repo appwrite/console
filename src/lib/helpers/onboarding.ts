@@ -26,5 +26,5 @@ export async function setHasOnboardingDismissed(projectId: string, account?: Acc
         onboardingDismissed: onboardingDismissed
     };
 
-    await sdk.forConsole.account.updatePrefs(newPrefs);
+    await sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
 }

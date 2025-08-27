@@ -24,7 +24,6 @@
     import ConnectionLine from './components/ConnectionLine.svelte';
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
-    import { isCloud } from '$lib/system';
     import { project } from '../../store';
 
     let showExitModal = false;
@@ -36,26 +35,19 @@
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-android\ncd starter-for-android\n';
 
-    const baseConfig = `const val APPWRITE_PROJECT_ID = "${projectId}"
-const val APPWRITE_PROJECT_NAME = ${$project.name}`;
-
-    const updateConfigCode = isCloud
-        ? baseConfig
-        : `${baseConfig}
-const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
-        `;
+    const configCode = `const val APPWRITE_PROJECT_ID = "${projectId}"
+const val APPWRITE_PROJECT_NAME = "${$project.name}"
+const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"`;
 
     async function createAndroidPlatform() {
         try {
             isCreatingPlatform = true;
-            await sdk.forConsole.projects.createPlatform(
+            await sdk.forConsole.projects.createPlatform({
                 projectId,
-                PlatformType.Android,
-                $createPlatform.name,
-                $createPlatform.key || undefined,
-                undefined,
-                undefined
-            );
+                type: PlatformType.Android,
+                name: $createPlatform.name,
+                key: $createPlatform.key || undefined
+            });
 
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {
@@ -186,7 +178,7 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
 
                     <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                     <div class="pink2-code-margin-fix">
-                        <Code lang="kotlin" lineNumbers code={updateConfigCode} />
+                        <Code lang="kotlin" lineNumbers code={configCode} />
                     </div>
 
                     <Typography.Text variant="m-500"
