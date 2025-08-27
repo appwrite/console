@@ -113,16 +113,15 @@
     };
 
     let showAccountMenu = false;
-    let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
-
     $: subNavigation = $page.data.subNavigation;
+    let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
+    $: state = $isSidebarOpen ? 'open' : 'closed';
 
-    $: $isSidebarOpen = state === 'open';
-
+    let isProjectPage;
     $: isProjectPage = $page.route?.id?.includes('project-');
 
     function handleResize() {
-        state = 'closed';
+        $isSidebarOpen = false;
         showAccountMenu = false;
     }
 

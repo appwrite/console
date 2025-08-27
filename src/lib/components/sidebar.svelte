@@ -30,7 +30,7 @@
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import { feedback } from '$lib/stores/feedback';
     import { DropList } from '$lib/components/index';
-    import { type ComponentType, onMount } from 'svelte';
+    import type { ComponentType } from 'svelte';
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
@@ -72,11 +72,7 @@
         }
     }
 
-    onMount(() => (state = getSidebarState($page)));
-
-    $: if ($isTabletViewport && state !== 'closed') {
-        state = 'closed';
-    }
+    $: state = $isTabletViewport ? 'closed' : getSidebarState($page);
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth', category: 'build' },
