@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { CardContainer, DropList, GridItem1 } from '$lib/components';
+    import { DropList, GridItem1 } from '$lib/components';
     import {
         Badge,
         Icon,
@@ -8,7 +8,8 @@
         Tag,
         Accordion,
         ActionMenu,
-        Popover
+        Popover,
+        Layout
     } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
@@ -70,8 +71,8 @@
                 data.
             </Typography.Text>
 
-            <div style="margin-top: 16px; margin-bottom: 36px;">
-                <CardContainer>
+            <Layout.Stack gap="l" style="margin-top: 16px; margin-bottom: 36px;">
+                <Layout.Grid gap="xl" columns={3} columnsL={2} columnsS={1}>
                     {#each projectsToArchive as project}
                         {@const platforms = filterPlatforms(
                             project.platforms.map((platform) => getPlatformInfo(platform.type))
@@ -147,8 +148,8 @@
                             {/each}
                         </GridItem1>
                     {/each}
-                </CardContainer>
-            </div>
+                </Layout.Grid>
+            </Layout.Stack>
         </Accordion>
     </div>
 {/if}
