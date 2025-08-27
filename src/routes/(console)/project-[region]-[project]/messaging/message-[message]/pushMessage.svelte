@@ -27,9 +27,10 @@
         title = message.data.title;
         body = message.data.body;
         if (message.data?.image) {
-            file = await sdk
-                .forProject(page.params.region, page.params.project)
-                .storage.getFile(message.data.image?.bucketId, message.data.image?.fileId);
+            file = await sdk.forProject(page.params.region, page.params.project).storage.getFile({
+                bucketId: message.data.image?.bucketId,
+                fileId: message.data.image?.fileId
+            });
         }
 
         const dataEntries: [string, string][] = [];
@@ -49,19 +50,13 @@
                 }
                 return acc;
             }, {});
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .messaging.updatePush(
-                    message.$id,
-                    undefined,
-                    undefined,
-                    undefined,
-                    title,
-                    body,
-                    data,
-                    undefined,
-                    fileCompoundId
-                );
+            await sdk.forProject(page.params.region, page.params.project).messaging.updatePush({
+                messageId: message.$id,
+                title,
+                body,
+                data,
+                image: fileCompoundId
+            });
             originalCustomData = structuredClone(customData);
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({

@@ -5,47 +5,43 @@
 
     export async function submitString(
         databaseId: string,
-        collectionId: string,
+        tableId: string,
         key: string,
-        data: Partial<Models.AttributeString>
+        data: Partial<Models.ColumnString>
     ) {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .databases.createStringAttribute(
-                databaseId,
-                collectionId,
-                key,
-                data.size,
-                data.required,
-                data.default,
-                data.array
-            );
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.createStringColumn({
+            databaseId,
+            tableId,
+            key,
+            size: data.size,
+            required: data.required,
+            xdefault: data.default,
+            array: data.array
+        });
     }
     export async function updateString(
         databaseId: string,
-        collectionId: string,
-        data: Partial<Models.AttributeString>,
+        tableId: string,
+        data: Partial<Models.ColumnString>,
         originalKey?: string
     ) {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .databases.updateStringAttribute(
-                databaseId,
-                collectionId,
-                originalKey,
-                data.required,
-                data.default,
-                data.size,
-                data.key !== originalKey ? data.key : undefined
-            );
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateStringColumn({
+            databaseId,
+            tableId,
+            key: originalKey,
+            required: data.required,
+            xdefault: data.default,
+            size: data.size,
+            newKey: data.key !== originalKey ? data.key : undefined
+        });
     }
 </script>
 
 <script lang="ts">
-    import { InputChoice, InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
     import { createConservative } from '$lib/helpers/stores';
+    import { InputChoice, InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
 
-    export let data: Partial<Models.AttributeString> = {
+    export let data: Partial<Models.ColumnString> = {
         required: false,
         size: 0,
         default: null,
@@ -67,11 +63,12 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.AttributeString>>({
+    } = createConservative<Partial<Models.ColumnString>>({
         required: false,
         array: false,
         ...data
     });
+
     $: listen(data);
 
     $: handleDefaultState($required || $array);
@@ -104,9 +101,9 @@
         bind:value={data.default} />
 {/if}
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
-    Indicate whether this is a required attribute
+    Indicate whether this is a required column
 </InputChoice>
 <InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
-    Indicate whether this attribute should act as an array, with the default value set as an empty
+    Indicate whether this column should act as an array, with the default value set as an empty
     array.
 </InputChoice>

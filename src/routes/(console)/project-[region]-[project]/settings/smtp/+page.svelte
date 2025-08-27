@@ -60,18 +60,18 @@
                 password = undefined;
             }
 
-            await sdk.forConsole.projects.updateSmtp(
-                $project.$id,
+            await sdk.forConsole.projects.updateSMTP({
+                projectId: $project.$id,
                 enabled,
-                senderName ? senderName : undefined,
-                senderEmail ? senderEmail : undefined,
-                replyTo ? replyTo : undefined,
-                host ? host : undefined,
-                port ? port : undefined,
-                username ? username : undefined,
-                password ? password : undefined,
-                secure ? (secure as SMTPSecure) : undefined
-            );
+                senderName: senderName || undefined,
+                senderEmail: senderEmail || undefined,
+                replyTo: replyTo || undefined,
+                host: host || undefined,
+                port: port || undefined,
+                username: username || undefined,
+                password: password || undefined,
+                secure: secure ? (secure as SMTPSecure) : undefined
+            });
 
             invalidate(Dependencies.PROJECT);
             addNotification({

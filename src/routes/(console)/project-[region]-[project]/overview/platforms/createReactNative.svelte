@@ -79,14 +79,12 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
     async function createReactNativePlatform() {
         try {
             isCreatingPlatform = true;
-            await sdk.forConsole.projects.createPlatform(
+            await sdk.forConsole.projects.createPlatform({
                 projectId,
-                platform,
-                $createPlatform.name,
-                $createPlatform.key || undefined,
-                undefined,
-                undefined
-            );
+                type: platform,
+                name: $createPlatform.name,
+                key: $createPlatform.key || undefined
+            });
 
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {

@@ -5,6 +5,8 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ params, depends }) => {
     depends(Dependencies.KEYS);
     return {
-        keys: await sdk.forConsole.projects.listKeys(params.project)
+        keys: await sdk.forConsole.projects.listKeys({
+            projectId: params.project
+        })
     };
 };

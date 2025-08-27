@@ -27,7 +27,7 @@
         const promises = selectedIds.map((id) =>
             sdk
                 .forProject(page.params.region, page.params.project)
-                .users.deleteTarget(page.params.user, id)
+                .users.deleteTarget({ userId: page.params.user, targetId: id })
         );
 
         try {

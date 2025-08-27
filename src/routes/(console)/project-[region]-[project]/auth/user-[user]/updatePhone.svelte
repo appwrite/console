@@ -17,9 +17,10 @@
 
     async function updatePhone() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .users.updatePhone($user.$id, userPhone);
+            await sdk.forProject(page.params.region, page.params.project).users.updatePhone({
+                userId: $user.$id,
+                number: userPhone
+            });
             await invalidate(Dependencies.USER);
             addNotification({
                 message: 'Phone has been updated',

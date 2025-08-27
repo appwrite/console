@@ -33,16 +33,14 @@ export const load: PageLoad = async ({ depends, url, route, params }) => {
         query,
         page,
         view,
-        providers: await sdk
-            .forProject(params.region, params.project)
-            .messaging.listProviders(
-                [
-                    Query.limit(limit),
-                    Query.offset(offset),
-                    Query.orderDesc(''),
-                    ...parsedQueries.values()
-                ],
-                search || undefined
-            )
+        providers: await sdk.forProject(params.region, params.project).messaging.listProviders({
+            queries: [
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.orderDesc(''),
+                ...parsedQueries.values()
+            ],
+            search: search || undefined
+        })
     };
 };

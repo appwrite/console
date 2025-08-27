@@ -19,17 +19,18 @@
 
     async function updateUrl() {
         try {
-            await sdk.forConsole.projects.updateWebhook(
+            await sdk.forConsole.projects.updateWebhook({
                 projectId,
-                $webhook.$id,
-                $webhook.name,
-                $webhook.events,
+                webhookId: $webhook.$id,
+                name: $webhook.name,
+                events: $webhook.events,
                 url,
-                $webhook.security,
-                true,
-                $webhook.httpUser || undefined,
-                $webhook.httpPass || undefined
-            );
+                security: $webhook.security,
+                enabled: true,
+                httpUser: $webhook.httpUser || undefined,
+                httpPass: $webhook.httpPass || undefined
+            });
+
             await invalidate(Dependencies.WEBHOOK);
             addNotification({
                 type: 'success',

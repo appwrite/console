@@ -118,28 +118,26 @@
             : enabledSpecs[0]?.slug;
         site.specification = specToSend;
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.update(
-                    site.$id,
-                    site.name,
-                    selectedFramework.key as Framework,
-                    site.enabled || undefined,
-                    site.logging || undefined,
-                    site.timeout || undefined,
-                    installCommand || undefined,
-                    buildCommand || undefined,
-                    outputDirectory || undefined,
-                    (site?.buildRuntime as BuildRuntime) || undefined,
-                    (adptr?.key as Adapter) || undefined,
-                    adptr?.key === 'static' ? fallback || undefined : undefined,
-                    site.installationId || undefined,
-                    site.providerRepositoryId || undefined,
-                    site.providerBranch || undefined,
-                    site.providerSilentMode || undefined,
-                    site.providerRootDirectory || undefined,
-                    specToSend || undefined
-                );
+            await sdk.forProject(page.params.region, page.params.project).sites.update({
+                siteId: site.$id,
+                name: site.name,
+                framework: selectedFramework.key as Framework,
+                enabled: site.enabled || undefined,
+                logging: site.logging || undefined,
+                timeout: site.timeout || undefined,
+                installCommand: installCommand || undefined,
+                buildCommand: buildCommand || undefined,
+                outputDirectory: outputDirectory || undefined,
+                buildRuntime: (site?.buildRuntime as BuildRuntime) || undefined,
+                adapter: (adptr?.key as Adapter) || undefined,
+                fallbackFile: adptr?.key === 'static' ? fallback || undefined : undefined,
+                installationId: site.installationId || undefined,
+                providerRepositoryId: site.providerRepositoryId || undefined,
+                providerBranch: site.providerBranch || undefined,
+                providerSilentMode: site.providerSilentMode || undefined,
+                providerRootDirectory: site.providerRootDirectory || undefined,
+                specification: specToSend || undefined
+            });
             await invalidate(Dependencies.SITE);
             addNotification({
                 message: 'Build settings have been updated',

@@ -22,20 +22,18 @@ export const load = async ({ params, depends, url, route }) => {
         limit,
         query,
         search,
-        proxyRules: await sdk
-            .forProject(params.region, params.project)
-            .proxy.listRules(
-                [
-                    Query.equal('type', [RuleType.DEPLOYMENT, RuleType.REDIRECT]),
-                    Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
-                    Query.equal('deploymentResourceId', params.site),
-                    Query.equal('trigger', RuleTrigger.MANUAL),
-                    Query.limit(limit),
-                    Query.offset(offset),
-                    Query.orderDesc(''),
-                    ...parsedQueries.values()
-                ],
-                search || undefined
-            )
+        proxyRules: await sdk.forProject(params.region, params.project).proxy.listRules({
+            queries: [
+                Query.equal('type', [RuleType.DEPLOYMENT, RuleType.REDIRECT]),
+                Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
+                Query.equal('deploymentResourceId', params.site),
+                Query.equal('trigger', RuleTrigger.MANUAL),
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.orderDesc(''),
+                ...parsedQueries.values()
+            ],
+            search: search || undefined
+        })
     };
 };

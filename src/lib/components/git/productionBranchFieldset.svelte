@@ -18,13 +18,19 @@
     async function loadBranches() {
         const repo = await sdk
             .forProject(page.params.region, page.params.project)
-            .vcs.getRepository(installationId, repositoryId);
+            .vcs.getRepository({
+                installationId,
+                providerRepositoryId: repositoryId
+            });
 
         branch = repo.defaultBranch ?? 'main';
 
         const { branches } = await sdk
             .forProject(page.params.region, page.params.project)
-            .vcs.listRepositoryBranches(installationId, repositoryId);
+            .vcs.listRepositoryBranches({
+                installationId,
+                providerRepositoryId: repositoryId
+            });
 
         return sortBranches(branches);
     }

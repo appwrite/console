@@ -17,12 +17,14 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
 
-    const projects = await sdk.forConsole.projects.list([
-        Query.offset(offset),
-        Query.equal('teamId', params.organization),
-        Query.limit(limit),
-        Query.orderDesc('')
-    ]);
+    const projects = await sdk.forConsole.projects.list({
+        queries: [
+            Query.offset(offset),
+            Query.equal('teamId', params.organization),
+            Query.limit(limit),
+            Query.orderDesc('')
+        ]
+    });
 
     // set `default` if no region!
     for (const project of projects.projects) {

@@ -55,7 +55,10 @@
             if (func.installationId && func.providerRepositoryId) {
                 repository = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .vcs.getRepository(func.installationId, func.providerRepositoryId);
+                    .vcs.getRepository({
+                        installationId: func.installationId,
+                        providerRepositoryId: func.providerRepositoryId
+                    });
                 repositoryStore.set(repository);
             }
         } catch (err) {
@@ -71,27 +74,25 @@
             if (!isValueOfStringEnum(Runtime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
             }
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .functions.update(
-                    func.$id,
-                    func.name,
-                    func.runtime,
-                    func.execute || undefined,
-                    func.events || undefined,
-                    func.schedule || undefined,
-                    func.timeout || undefined,
-                    func.enabled || undefined,
-                    func.logging || undefined,
-                    func.entrypoint || undefined,
-                    func.commands || undefined,
-                    func.scopes || undefined,
-                    func.installationId || undefined,
-                    func.providerRepositoryId || undefined,
-                    selectedBranch,
-                    silentMode,
-                    selectedDir
-                );
+            await sdk.forProject(page.params.region, page.params.project).functions.update({
+                functionId: func.$id,
+                name: func.name,
+                runtime: func.runtime,
+                execute: func.execute || undefined,
+                events: func.events || undefined,
+                schedule: func.schedule || undefined,
+                timeout: func.timeout || undefined,
+                enabled: func.enabled || undefined,
+                logging: func.logging || undefined,
+                entrypoint: func.entrypoint || undefined,
+                commands: func.commands || undefined,
+                scopes: func.scopes || undefined,
+                installationId: func.installationId || undefined,
+                providerRepositoryId: func.providerRepositoryId || undefined,
+                providerBranch: selectedBranch,
+                providerSilentMode: silentMode,
+                providerRootDirectory: selectedDir
+            });
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',
@@ -109,7 +110,10 @@
     async function getBranches(installation: string, repo: string) {
         branchesList = await sdk
             .forProject(page.params.region, page.params.project)
-            .vcs.listRepositoryBranches(installation, repo);
+            .vcs.listRepositoryBranches({
+                installationId: installation,
+                providerRepositoryId: repo
+            });
         branchesList.branches = sortBranches(branchesList.branches);
 
         selectedBranch = func?.providerBranch ?? branchesList.branches[0].name;
@@ -129,28 +133,23 @@
             if (!isValueOfStringEnum(Runtime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
             }
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .functions.update(
-                    func.$id,
-                    func.name,
-                    func.runtime as Runtime,
-                    func.execute || undefined,
-                    func.events || undefined,
-                    func.schedule || undefined,
-                    func.timeout || undefined,
-                    func.enabled || undefined,
-                    func.logging || undefined,
-                    func.entrypoint,
-                    func.commands || undefined,
-                    func.scopes || undefined,
-                    selectedInstallationId,
-                    selectedRepository,
-                    'main',
-                    undefined,
-                    undefined,
-                    undefined
-                );
+            await sdk.forProject(page.params.region, page.params.project).functions.update({
+                functionId: func.$id,
+                name: func.name,
+                runtime: func.runtime as Runtime,
+                execute: func.execute || undefined,
+                events: func.events || undefined,
+                schedule: func.schedule || undefined,
+                timeout: func.timeout || undefined,
+                enabled: func.enabled || undefined,
+                logging: func.logging || undefined,
+                entrypoint: func.entrypoint,
+                commands: func.commands || undefined,
+                scopes: func.scopes || undefined,
+                installationId: selectedInstallationId,
+                providerRepositoryId: selectedRepository,
+                providerBranch: 'main'
+            });
             await invalidate(Dependencies.FUNCTION);
         } catch {
             return;

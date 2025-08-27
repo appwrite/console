@@ -23,12 +23,13 @@ export const load: PageLoad = async ({ depends, url, route, params }) => {
     queries.set(parsedQueries);
 
     return {
-        rules: await sdk
-            .forProject(params.region, params.project)
-            .proxy.listRules(
-                [Query.equal('type', RuleType.API), Query.equal('trigger', RuleTrigger.MANUAL)],
-                search || undefined
-            ),
+        rules: await sdk.forProject(params.region, params.project).proxy.listRules({
+            queries: [
+                Query.equal('type', RuleType.API),
+                Query.equal('trigger', RuleTrigger.MANUAL)
+            ],
+            search: search || undefined
+        }),
         offset,
         limit,
         query,

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
     import { Typography, Button, Icon, Layout } from '@appwrite.io/pink-svelte';
 
@@ -8,8 +8,7 @@
 
 <Layout.Stack justifyContent="center" alignItems="center" direction="row" gap="xs" inline>
     {#if href}
-        <span
-            style={$isTabletViewport ? 'position: relative' : 'position: absolute; left: -2.75rem'}>
+        <span style:position="relative">
             <Button.Anchor size="s" icon variant="text" {href} aria-label="page back">
                 <Icon icon={IconChevronLeft} />
             </Button.Anchor>

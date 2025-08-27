@@ -29,9 +29,10 @@
         showBatchDeletion = false;
 
         const promises = selectedRows.map((logId) =>
-            sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.deleteLog(page.params.site, logId)
+            sdk.forProject(page.params.region, page.params.project).sites.deleteLog({
+                siteId: page.params.site,
+                logId
+            })
         );
         try {
             await Promise.all(promises);

@@ -26,7 +26,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     const [invoices, usage] = await Promise.all([
         sdk.forConsole.billing.listInvoices(organization.$id, [Query.orderDesc('from')]),
-        sdk.forProject(region, project).project.getUsage(startDate, endDate)
+        sdk.forProject(region, project).project.getUsage({ startDate, endDate })
     ]);
 
     if (invoice) {

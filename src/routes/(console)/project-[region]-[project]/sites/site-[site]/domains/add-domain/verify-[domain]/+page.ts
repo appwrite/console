@@ -9,7 +9,9 @@ export const load = async ({ parent, depends }) => {
 
     let domainsList: Models.DomainsList;
     if (isCloud) {
-        domainsList = await sdk.forConsole.domains.list([Query.equal('teamId', organization.$id)]);
+        domainsList = await sdk.forConsole.domains.list({
+            queries: [Query.equal('teamId', organization.$id)]
+        });
     }
 
     return {

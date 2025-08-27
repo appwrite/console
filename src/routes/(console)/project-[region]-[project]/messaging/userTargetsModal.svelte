@@ -46,9 +46,10 @@
             queries.push(Query.notEqual('phone', ''));
         }
 
-        const response = await sdk
-            .forProject(page.params.region, page.params.project)
-            .users.list(queries, search || undefined);
+        const response = await sdk.forProject(page.params.region, page.params.project).users.list({
+            queries,
+            search: search || undefined
+        });
 
         totalResults = response.total;
         userResultsById = {};

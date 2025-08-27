@@ -20,7 +20,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .teams.updateName(page.params.team, teamName);
+                .teams.updateName({ teamId: page.params.team, name: teamName });
             await invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Name has been updated',
