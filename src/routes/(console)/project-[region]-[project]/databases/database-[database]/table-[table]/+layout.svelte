@@ -60,6 +60,7 @@
     import CreateIndex from './indexes/createIndex.svelte';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
+    import { isRelationship } from './rows/store';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -249,6 +250,8 @@
         $randomDataModalState.show = false;
 
         let columns = $table.columns;
+        const hasAnyRelationships = columns.some((column) => isRelationship(column));
+
         if (!columns.length) {
             try {
                 columns = await generateColumns($project, page.params.database, page.params.table);
@@ -273,11 +276,24 @@
 
             rowIds = ids;
 
-            await sdk.forProject(page.params.region, page.params.project).tablesDB.createRows({
-                databaseId: page.params.database,
-                tableId: page.params.table,
-                rows
-            });
+            if (hasAnyRelationships) {
+                await Promise.all(
+                    rows.map((row) =>
+                        sdk.forProject(page.params.region, page.params.project).tablesDB.createRow({
+                            databaseId: page.params.database,
+                            tableId: page.params.table,
+                            rowId: row.$id,
+                            data: row
+                        })
+                    )
+                );
+            } else {
+                await sdk.forProject(page.params.region, page.params.project).tablesDB.createRows({
+                    databaseId: page.params.database,
+                    tableId: page.params.table,
+                    rows
+                });
+            }
 
             addNotification({
                 type: 'success',
