@@ -135,13 +135,16 @@
         return name ? (name.length > actualLimit ? `${name.slice(0, actualLimit)}...` : name) : '-';
     }
 
-    $: projectsToArchive = data.projects.projects.filter(
-        (project) => !data.organization.projects?.includes(project.$id)
-    );
+    $: selectedProjects = data.organization.projects ?? [];
+    $: hasSelection = Array.isArray(selectedProjects) && selectedProjects.length > 0;
 
-    $: activeProjects = data.projects.projects.filter((project) =>
-        data.organization.projects?.includes(project.$id)
-    );
+    $: projectsToArchive = hasSelection
+        ? data.projects.projects.filter((project) => !selectedProjects.includes(project.$id))
+        : [];
+
+    $: activeProjects = hasSelection
+        ? data.projects.projects.filter((project) => selectedProjects.includes(project.$id))
+        : data.projects.projects;
 </script>
 
 <SelectProjectCloud
@@ -174,18 +177,11 @@
         </DropList>
     </div>
 
-    {#if isCloud 
-        && $currentPlan?.projects 
-        && $currentPlan?.projects > 0 
-        && data.organization.projects.length > 0 
-        && $canWriteProjects 
-        && (projectsToArchive.length > 0 || data.projects.total > $currentPlan.projects)}
+    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects && (projectsToArchive.length > 0 || data.projects.total > $currentPlan.projects)}
         <Alert.Inline
-            title={
-                projectsToArchive.length > 0
-                    ? `${projectsToArchive.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`
-                    : `Your organization has exceeded the project limit. Projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`
-            }>
+            title={projectsToArchive.length > 0
+                ? `${projectsToArchive.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`
+                : `Your organization has exceeded the project limit. Projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
             <Typography.Text>
                 {#if projectsToArchive.length > 0}
                     {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
@@ -314,5 +310,3 @@
     bind:showCreateProjectCloud
     regions={$regionsStore.regions}
     teamId={page.params.organization} />
-
-  
