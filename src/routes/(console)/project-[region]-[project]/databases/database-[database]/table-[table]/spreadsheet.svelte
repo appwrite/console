@@ -79,7 +79,7 @@
     import { pageToOffset } from '$lib/helpers/load';
     import { debounce } from '$lib/helpers/debounce';
     import { hash } from '$lib/helpers/string';
-    import { abbreviateNumber } from '$lib/helpers/numbers';
+    import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { chunks } from '$lib/helpers/array';
 
     export let data: PageData;
@@ -966,7 +966,7 @@
                             <span style:white-space="nowrap">
                                 {selectedRows.length
                                     ? `${selectedRows.length} row${selectedRows.length === 1 ? '' : 's'} selected`
-                                    : `${abbreviateNumber($rows.total)} row${$rows.total === 1 ? '' : 's'}`}
+                                    : `${formatNumberWithCommas($rows.total)} row${$rows.total === 1 ? '' : 's'}`}
                             </span>
                         </Typography.Text>
 
