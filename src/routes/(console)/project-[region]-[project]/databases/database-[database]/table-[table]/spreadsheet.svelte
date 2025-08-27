@@ -141,7 +141,7 @@
 
         const baseColumns = $table.columns.map((col) => ({
             id: col.key,
-            title: col.array ? `${col.key} []` : col.key,
+            title: col.key,
             type: col.type as ColumnType,
             hide: !!selectedColumnsToHide?.includes(col.key),
             array: col?.array,
@@ -762,8 +762,14 @@
                                         gap="xs"
                                         direction="row"
                                         alignItems="center"
-                                        alignContent="center">
-                                        {column.title}
+                                        alignContent="center"
+                                        style="min-width: 0;">
+                                        <Typography.Text truncate>
+                                            {column.title}
+                                        </Typography.Text>
+
+                                        <!-- array indicator -->
+                                        {#if column.array}[]{/if}
 
                                         <SortButton
                                             onSort={sort}
