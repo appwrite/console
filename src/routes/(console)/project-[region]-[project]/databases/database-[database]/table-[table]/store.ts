@@ -57,11 +57,13 @@ export const databaseColumnSheetOptions = writable<DatabaseSheetOptions>({
 export const databaseRowSheetOptions = writable<
     DatabaseSheetOptions & {
         row: Models.Row;
+        rowId?: string;
     }
 >({
     title: null,
     show: false,
-    row: null
+    row: null,
+    rowId: null // for loading from a given id
 });
 
 export const databaseRelatedRowSheetOptions = writable<
