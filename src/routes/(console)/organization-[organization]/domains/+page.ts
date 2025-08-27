@@ -22,12 +22,14 @@ export const load = async ({ depends, url, route, parent }) => {
         limit,
         query,
         search,
-        domains: await sdk.forConsole.domains.list([
-            Query.limit(limit),
-            Query.offset(offset),
-            Query.orderDesc(''),
-            Query.equal('teamId', organization.$id),
-            ...parsedQueries.values()
-        ])
+        domains: await sdk.forConsole.domains.list({
+            queries: [
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.orderDesc(''),
+                Query.equal('teamId', organization.$id),
+                ...parsedQueries.values()
+            ]
+        })
     };
 };

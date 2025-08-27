@@ -23,7 +23,10 @@
         try {
             const bucket = await sdk
                 .forProject(page.params.region, page.params.project)
-                .storage.createBucket(id ? id : ID.unique(), name);
+                .storage.createBucket({
+                    bucketId: id ? id : ID.unique(),
+                    name
+                });
             showCreate = false;
             dispatch('created', bucket);
             addNotification({

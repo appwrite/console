@@ -28,15 +28,13 @@
 
     async function create() {
         try {
-            const team = await sdk.forConsole.teams.createMembership(
-                $organization.$id,
-                [role],
+            const team = await sdk.forConsole.teams.createMembership({
+                teamId: $organization.$id,
+                roles: [role],
                 email,
-                undefined,
-                undefined,
                 url,
-                name || undefined
-            );
+                name: name || undefined
+            });
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
             await invalidate(Dependencies.MEMBERS);

@@ -21,11 +21,11 @@
         try {
             const deployment = await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.createDuplicateDeployment(
-                    $func.$id,
-                    selectedDeployment.$id,
-                    selectedDeployment?.buildId || undefined
-                );
+                .functions.createDuplicateDeployment({
+                    functionId: $func.$id,
+                    deploymentId: selectedDeployment.$id,
+                    buildId: selectedDeployment?.buildId || undefined
+                });
 
             await Promise.all([
                 invalidate(Dependencies.FUNCTION),

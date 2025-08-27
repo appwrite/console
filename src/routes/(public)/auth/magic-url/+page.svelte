@@ -16,7 +16,11 @@
         const userId = page.url.searchParams.get('userId');
         const secret = page.url.searchParams.get('secret');
 
-        await account.updateMagicURLSession(userId, secret);
+        await account.createSession({
+            userId,
+            secret
+        });
+
         window.location.href = `appwrite-callback-${projectId}://${page.url.search}`;
     });
 </script>

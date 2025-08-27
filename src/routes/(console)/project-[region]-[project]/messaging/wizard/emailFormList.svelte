@@ -25,19 +25,15 @@
 
     async function sendTestEmail() {
         // TODO: replace with test method
-        sdk.forProject(page.params.region, page.params.project).messaging.createEmail(
-            ID.unique(),
-            $messageParams[MessagingProviderType.Email]?.subject || undefined,
-            $messageParams[MessagingProviderType.Email]?.content || undefined,
-            $messageParams[MessagingProviderType.Email]?.topics || [],
-            $messageParams[MessagingProviderType.Email]?.users || [],
-            $messageParams[MessagingProviderType.Email]?.targets || [],
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            $messageParams[MessagingProviderType.Email]?.html || false
-        );
+        sdk.forProject(page.params.region, page.params.project).messaging.createEmail({
+            messageId: ID.unique(),
+            subject: $messageParams[MessagingProviderType.Email]?.subject || undefined,
+            content: $messageParams[MessagingProviderType.Email]?.content || undefined,
+            topics: $messageParams[MessagingProviderType.Email]?.topics || [],
+            users: $messageParams[MessagingProviderType.Email]?.users || [],
+            targets: $messageParams[MessagingProviderType.Email]?.targets || [],
+            html: $messageParams[MessagingProviderType.Email]?.html || false
+        });
     }
 
     $: otherEmail = selected === 'self' ? '' : otherEmail;

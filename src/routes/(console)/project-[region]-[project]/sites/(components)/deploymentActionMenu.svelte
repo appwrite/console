@@ -27,24 +27,20 @@
 
     function getOutputDownload(deploymentId: string) {
         return (
-            sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.getDeploymentDownload(
-                    page.params.site,
-                    deploymentId.toString(),
-                    DeploymentDownloadType.Output
-                ) + '&mode=admin'
+            sdk.forProject(page.params.region, page.params.project).sites.getDeploymentDownload({
+                siteId: page.params.site,
+                deploymentId: deploymentId,
+                type: DeploymentDownloadType.Output
+            }) + '&mode=admin'
         );
     }
     function getSourceDownload(deploymentId: string) {
         return (
-            sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.getDeploymentDownload(
-                    page.params.site,
-                    deploymentId.toString(),
-                    DeploymentDownloadType.Source
-                ) + '&mode=admin'
+            sdk.forProject(page.params.region, page.params.project).sites.getDeploymentDownload({
+                siteId: page.params.site,
+                deploymentId: deploymentId,
+                type: DeploymentDownloadType.Source
+            }) + '&mode=admin'
         );
     }
 </script>

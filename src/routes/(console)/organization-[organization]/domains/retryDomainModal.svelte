@@ -29,7 +29,9 @@
     async function retryDomain() {
         try {
             error = null;
-            const domain = await sdk.forConsole.domains.updateNameservers(selectedDomain.$id);
+            const domain = await sdk.forConsole.domains.updateNameservers({
+                domainId: selectedDomain.$id
+            });
             if (domain.nameservers.toLowerCase() === 'appwrite') {
                 show = false;
                 addNotification({

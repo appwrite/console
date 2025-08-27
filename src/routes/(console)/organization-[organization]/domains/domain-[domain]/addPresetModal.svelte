@@ -18,24 +18,25 @@
     let records: Models.DnsRecordsList;
     let error = '';
     async function fetchPreset() {
+        const domainId = page.params.domain;
         switch (selectedPreset.toLowerCase()) {
             case 'zoho':
-                records = await sdk.forConsole.domains.getPresetZoho(page.params.domain);
+                records = await sdk.forConsole.domains.getPresetZoho({ domainId });
                 return records;
             case 'mailgun':
-                records = await sdk.forConsole.domains.getPresetMailgun(page.params.domain);
+                records = await sdk.forConsole.domains.getPresetMailgun({ domainId });
                 return records;
             case 'outlook':
-                records = await sdk.forConsole.domains.getPresetOutlook(page.params.domain);
+                records = await sdk.forConsole.domains.getPresetOutlook({ domainId });
                 return records;
             case 'proton mail':
-                records = await sdk.forConsole.domains.getPresetProtonMail(page.params.domain);
+                records = await sdk.forConsole.domains.getPresetProtonMail({ domainId });
                 return records;
             case 'icloud':
-                records = await sdk.forConsole.domains.getPresetICloud(page.params.domain);
+                records = await sdk.forConsole.domains.getPresetICloud({ domainId });
                 return records;
             case 'google workspace':
-                records = await sdk.forConsole.domains.getPresetGoogleWorkspace(page.params.domain);
+                records = await sdk.forConsole.domains.getPresetGoogleWorkspace({ domainId });
                 return records;
         }
     }

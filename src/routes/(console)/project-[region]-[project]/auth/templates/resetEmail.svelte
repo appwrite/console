@@ -16,15 +16,15 @@
     async function reset() {
         try {
             // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
-            await sdk.forConsole.projects.deleteEmailTemplate(
+            await sdk.forConsole.projects.deleteEmailTemplate({
+                projectId: $project.$id,
+                type: $emailTemplate.type as EmailTemplateType,
+                locale: $emailTemplate.locale as EmailTemplateLocale
+            });
+            $emailTemplate = await loadEmailTemplate(
                 $project.$id,
                 $emailTemplate.type as EmailTemplateType,
                 $emailTemplate.locale as EmailTemplateLocale
-            );
-            $emailTemplate = await loadEmailTemplate(
-                $project.$id,
-                $emailTemplate.type,
-                $emailTemplate.locale
             );
             $baseEmailTemplate = { ...$emailTemplate };
             addNotification({

@@ -18,9 +18,9 @@
 
     async function deleteDomain() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .proxy.deleteRule(selectedProxyRule.$id);
+            await sdk.forProject(page.params.region, page.params.project).proxy.deleteRule({
+                ruleId: selectedProxyRule.$id
+            });
             await invalidate(Dependencies.FUNCTION_DOMAINS);
             show = false;
             addNotification({

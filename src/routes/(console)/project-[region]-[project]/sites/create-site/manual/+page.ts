@@ -18,6 +18,6 @@ export const load = async ({ parent, params }) => {
         frameworks,
         template: await sdk
             .forProject(params.region, params.project)
-            .sites.getTemplate('starter-for-js')
+            .sites.getTemplate({ templateId: 'starter-for-js' })
     };
 };

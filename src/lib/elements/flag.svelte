@@ -14,7 +14,12 @@
     export function getFlag(country: string, width: number, height: number, quality: number) {
         if (!isValueOfStringEnum(Flag, country)) return '';
         return sdk.forConsole.avatars
-            .getFlag(country, width * 2, height * 2, quality)
+            .getFlag({
+                code: country,
+                width: width * 2,
+                height: height * 2,
+                quality
+            })
             ?.toString()
             ?.replace('&project=console', '&mode=admin');
     }

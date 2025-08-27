@@ -19,7 +19,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .vcs.deleteInstallation(selectedInstallation.$id);
+                .vcs.deleteInstallation({ installationId: selectedInstallation.$id });
             await invalidate(Dependencies.PROJECT_INSTALLATIONS);
             addNotification({
                 message: `${selectedInstallation.organization} has been disconnected from this project`,
@@ -40,21 +40,15 @@
     }
 
     async function loadFunctions() {
-        return await sdk
-            .forProject(page.params.region, page.params.project)
-            .functions.list([
-                Query.limit(100),
-                Query.equal('installationId', selectedInstallation.$id)
-            ]);
+        return await sdk.forProject(page.params.region, page.params.project).functions.list({
+            queries: [Query.limit(100), Query.equal('installationId', selectedInstallation.$id)]
+        });
     }
 
     async function loadSites() {
-        return await sdk
-            .forProject(page.params.region, page.params.project)
-            .sites.list([
-                Query.limit(100),
-                Query.equal('installationId', selectedInstallation.$id)
-            ]);
+        return await sdk.forProject(page.params.region, page.params.project).sites.list({
+            queries: [Query.limit(100), Query.equal('installationId', selectedInstallation.$id)]
+        });
     }
 </script>
 

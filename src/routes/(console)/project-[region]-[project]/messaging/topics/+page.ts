@@ -22,16 +22,14 @@ export const load: PageLoad = async ({ depends, url, route, params }) => {
         search,
         query,
         page,
-        topics: await sdk
-            .forProject(params.region, params.project)
-            .messaging.listTopics(
-                [
-                    Query.limit(limit),
-                    Query.offset(offset),
-                    Query.orderDesc(''),
-                    ...parsedQueries.values()
-                ],
-                search || undefined
-            )
+        topics: await sdk.forProject(params.region, params.project).messaging.listTopics({
+            queries: [
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.orderDesc(''),
+                ...parsedQueries.values()
+            ],
+            search: search || undefined
+        })
     };
 };

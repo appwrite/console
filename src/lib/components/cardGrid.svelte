@@ -16,7 +16,7 @@
                     </Typography.Text>
                 {/if}
             </Layout.Stack>
-            <div style:overflow="hidden">
+            <div style:overflow="visible">
                 <Layout.Stack {gap}>
                     <slot name="aside" />
                 </Layout.Stack>

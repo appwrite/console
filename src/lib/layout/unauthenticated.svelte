@@ -10,6 +10,7 @@
     import type { Campaign } from '$lib/stores/campaigns';
     import { Typography, Layout, Avatar } from '@appwrite.io/pink-svelte';
     import { getCampaignImageUrl } from '$routes/(public)/card/helpers';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
@@ -44,7 +45,7 @@
 
 <main class="grid-1-1 is-full-page" id="main">
     <section
-        class={`u-flex u-flex-vertical ${variation !== 'default' ? 'u-cross-center u-main-center u-height-100-percent u-width-full-line side-bg' : 'side-default'}`}
+        class={`u-flex u-flex-vertical ${variation !== 'default' ? 'u-cross-center u-main-center u-height-100-percent u-width-full-line side-bg' : !$isSmallViewport ? 'side-default' : ''}`}
         style:--url={variation !== 'default'
             ? ''
             : `url(${$app.themeInUse === 'dark' ? imgDark : imgLight})`}>
@@ -159,7 +160,6 @@
                 <div class="u-margin-block-start-24">
                     <slot />
                 </div>
-
                 <ul
                     class="inline-links is-center is-with-sep u-margin-block-start-32"
                     class:u-hide={!$$slots?.links}>
@@ -167,18 +167,18 @@
                 </ul>
             </div>
             <div
-                class="logo u-flex u-gap-16 u-margin-inline-auto is-only-mobile u-margin-block-start-32">
+                class="logo u-flex u-gap-16 u-margin-inline-auto is-only-mobile u-margin-block-start-32 mobile-logo">
                 <a href={base}>
                     {#if $app.themeInUse === 'dark'}
                         <img
                             src={AppwriteLogoDark}
-                            width="93"
+                            width="120"
                             class="u-block u-only-dark"
                             alt="Appwrite Logo" />
                     {:else}
                         <img
                             src={AppwriteLogoLight}
-                            width="93"
+                            width="120"
                             class="u-block u-only-light"
                             alt="Appwrite Logo" />
                     {/if}
@@ -357,6 +357,28 @@
         padding-block-start: 10rem;
         @media #{devices.$break1} {
             padding-block-start: 5rem;
+        }
+    }
+
+    // mobile logo positioned at bottom in mobile view
+    .mobile-logo {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 100%;
+        margin-block-start: 0 !important;
+    }
+
+    @media #{devices.$break1} {
+        .auth-container {
+            margin-block-end: 5rem;
+            margin-block-start: 2rem;
+        }
+
+        .container {
+            min-height: 100%;
+            position: relative;
         }
     }
 </style>
