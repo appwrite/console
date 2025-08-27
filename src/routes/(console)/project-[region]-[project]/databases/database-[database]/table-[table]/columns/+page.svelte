@@ -58,7 +58,7 @@
                 key: '$id',
                 type: 'string',
                 required: true,
-                name: 'ID',
+                name: '$id',
                 selectable: false,
                 system: true
             } as Models.ColumnString & {
