@@ -60,17 +60,47 @@
 
                 fetchedRows = [fetchedRow];
             } else {
-                const rowIds = (rows as Models.Row[]).map((row) => row.$id);
-                const fetchPromises = rowIds.map(async (rowId) => {
-                    return sdk.forProject(page.params.region, page.params.project).tablesDB.getRow({
-                        databaseId,
-                        tableId: tableId,
-                        rowId: rowId,
-                        queries: buildWildcardColumnsQuery(relatedTable)
-                    });
-                });
+                const existingRows = rows as Models.Row[];
+                const processedRows = [];
 
-                fetchedRows = await Promise.all(fetchPromises);
+                for (const row of existingRows) {
+                    const rowTableId = row.$tableId;
+
+                    let rowTable = page.data.tables?.find(
+                        (table: Models.Table) => table.$id === rowTableId
+                    );
+
+                    if (!rowTable) {
+                        // not in upstream cache, fetch it
+                        rowTable = await sdk
+                            .forProject(page.params.region, page.params.project)
+                            .tablesDB.getTable({
+                                databaseId,
+                                tableId: rowTableId
+                            });
+                    }
+
+                    // check if row has all columns from table.columns
+                    const hasAllColumns = rowTable.columns.every(
+                        (column: Columns) => column.key in row
+                    );
+
+                    if (!hasAllColumns) {
+                        const completeRow = await sdk
+                            .forProject(page.params.region, page.params.project)
+                            .tablesDB.getRow({
+                                databaseId,
+                                tableId: rowTableId,
+                                rowId: row.$id,
+                                queries: buildWildcardColumnsQuery(rowTable)
+                            });
+                        processedRows.push(completeRow);
+                    } else {
+                        processedRows.push(row);
+                    }
+                }
+
+                fetchedRows = processedRows;
             }
 
             const newWorkData = new Map();
