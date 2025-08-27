@@ -44,12 +44,12 @@
     let showFiltersDesktop = false;
     let showFiltersMobile = false;
 
-    let applied = $tags.length;
+    $: filtersAppliedCount = $tags.length;
 
     beforeNavigate(() => {
-        applied = $tags.length;
         showFiltersDesktop = false;
         showFiltersMobile = false;
+        filtersAppliedCount = $tags.length;
     });
 
     function clearAll() {
@@ -87,7 +87,7 @@
             applied: number;
         }>
     ) {
-        applied = e.detail.applied;
+        filtersAppliedCount = e.detail.applied;
         if (singleCondition) {
             showFiltersDesktop = false;
             showFiltersMobile = false;
@@ -135,8 +135,8 @@
             {#if !onlyIcon}
                 <Icon icon={IconFilterLine} slot="start" size={onlyIcon ? 'm' : 's'} />
                 Filters
-                {#if applied > 0}
-                    <Badge size="xs" variant="secondary" content={applied.toString()} />
+                {#if filtersAppliedCount > 0}
+                    <Badge size="xs" variant="secondary" content={filtersAppliedCount.toString()} />
                 {/if}
             {:else}
                 <Icon
@@ -144,8 +144,8 @@
                     size={onlyIcon ? 'm' : 's'}
                     color="--fgcolor-neutral-tertiary" />
 
-                {#if applied > 0}
-                    <Badge content={applied.toString()} size="xs" variant="secondary" />
+                {#if filtersAppliedCount > 0}
+                    <Badge content={filtersAppliedCount.toString()} size="xs" variant="secondary" />
                 {/if}
             {/if}
         </Button>
@@ -167,7 +167,7 @@
                                 {columns}
                                 {singleCondition}
                                 on:apply={afterApply}
-                                on:clear={() => (applied = 0)} />
+                                on:clear={() => (filtersAppliedCount = 0)} />
                         {/if}
                         <div
                             class="u-flex u-cross-center u-margin-block-start-16"
@@ -187,7 +187,7 @@
                                 {:else}
                                     <Button
                                         size="s"
-                                        disabled={applied === 0}
+                                        disabled={filtersAppliedCount === 0}
                                         text
                                         on:click={clearAll}>
                                         Clear all
@@ -209,10 +209,8 @@
         <Button size="s" secondary on:click={toggleMobileModal} {fullWidthMobile}>
             <Icon icon={IconFilter} slot="start" size="s" />
             Filters
-            {#if applied > 0}
-                <span class="inline-tag">
-                    {applied}
-                </span>
+            {#if filtersAppliedCount > 0}
+                <Badge content={filtersAppliedCount.toString()} size="xs" variant="secondary" />
             {/if}
         </Button>
     </slot>
@@ -230,7 +228,7 @@
                 bind:arrayValues
                 {singleCondition}
                 on:apply={afterApply}
-                on:clear={() => (applied = 0)} />
+                on:clear={() => (filtersAppliedCount = 0)} />
         {/if}
         <svelte:fragment slot="footer">
             <div
