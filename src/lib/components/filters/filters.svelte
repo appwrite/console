@@ -14,7 +14,7 @@
         ValidOperators
     } from './store';
     import { createEventDispatcher } from 'svelte';
-    import { Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
     import { IconFilter, IconFilterLine } from '@appwrite.io/pink-icons-svelte';
     import { Click, Submit, trackEvent } from '$lib/actions/analytics';
 
@@ -132,13 +132,20 @@
                 trackEvent(Click.FilterApplyClick, { source: analyticsSource });
             }}
             {disabled}>
-            <Icon icon={IconFilterLine} slot="start" size={onlyIcon ? 'm' : 's'} />
             {#if !onlyIcon}
+                <Icon icon={IconFilterLine} slot="start" size={onlyIcon ? 'm' : 's'} />
                 Filters
                 {#if applied > 0}
-                    <span class="inline-tag">
-                        {applied}
-                    </span>
+                    <Badge size="xs" variant="secondary" content={applied.toString()} />
+                {/if}
+            {:else}
+                <Icon
+                    icon={IconFilterLine}
+                    size={onlyIcon ? 'm' : 's'}
+                    color="--fgcolor-neutral-tertiary" />
+
+                {#if applied > 0}
+                    <Badge content={applied.toString()} size="xs" variant="secondary" />
                 {/if}
             {/if}
         </Button>
