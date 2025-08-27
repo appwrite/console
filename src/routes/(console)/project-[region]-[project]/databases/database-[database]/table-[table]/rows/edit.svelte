@@ -118,6 +118,10 @@
 
         firstInput?.focus({ preventScroll: true });
     }
+
+    function updateRowData(values: object) {
+        work.set(values as Models.Row);
+    }
 </script>
 
 {#if $table.columns?.length && work}
@@ -125,7 +129,12 @@
         <Layout.Stack direction="column" gap="l">
             {#each $table.columns as column}
                 {@const label = column.key}
-                <ColumnItem {column} bind:formValues={$work} {label} editing />
+                <ColumnItem
+                    {column}
+                    {label}
+                    editing
+                    formValues={$work}
+                    onUpdateFormValues={updateRowData} />
             {/each}
         </Layout.Stack>
     </div>
