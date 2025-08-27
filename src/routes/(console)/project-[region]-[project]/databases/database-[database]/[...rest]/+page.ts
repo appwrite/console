@@ -9,14 +9,14 @@ const ROUTE_MAPPINGS: {
     replacement?: string;
     sheet?: 'row' | 'column';
 }[] = [
+    // collection page redirect to table
     { pattern: /^collection-([^/]+)/, replacement: 'table-$1' },
+
     // document detail page redirect to their parent table
     { pattern: /^document-([^/]+)/, sheet: 'row' },
-    // attribute detail redirect to table columns
-    { pattern: /^attribute-([^/]+)/, replacement: 'table-$1/columns' },
+
     // attributes list page redirect to table columns
     { pattern: /^attributes$/, replacement: 'columns' },
-
 
     // New format routes,
     { pattern: /^row-([^/]+)/, sheet: 'row' }
@@ -40,7 +40,6 @@ function rewriteLegacySegments(segments: string[]): string[] {
                                 ...options,
                                 rowId: match[1],
                                 title: 'Update row',
-                                mode: 'redirect'
                             }));
                         }
                     }
