@@ -7,19 +7,19 @@ import { databaseRowSheetOptions } from '../table-[table]/store';
 const ROUTE_MAPPINGS: {
     pattern: RegExp;
     replacement?: string;
-    sheet?: 'row' | 'column';
+    sheet?: boolean;
 }[] = [
     // collection page redirect to table
     { pattern: /^collection-([^/]+)/, replacement: 'table-$1' },
 
     // document detail page redirect to their parent table
-    { pattern: /^document-([^/]+)/, sheet: 'row' },
+    { pattern: /^document-([^/]+)/, sheet: true },
 
     // attributes list page redirect to table columns
     { pattern: /^attributes$/, replacement: 'columns' },
 
     // New format routes,
-    { pattern: /^row-([^/]+)/, sheet: 'row' }
+    { pattern: /^row-([^/]+)/, sheet: true }
 ] as const;
 
 function isLegacyRoute(segments: string[]): boolean {
@@ -33,13 +33,13 @@ function rewriteLegacySegments(segments: string[]): string[] {
         .map((segment) => {
             for (const mapping of ROUTE_MAPPINGS) {
                 if (mapping.pattern.test(segment)) {
-                    if (mapping.sheet && mapping.sheet === 'row') {
+                    if (mapping.sheet) {
                         const match = segment.match(mapping.pattern);
                         if (match && match[1]) {
                             databaseRowSheetOptions.update((options) => ({
                                 ...options,
                                 rowId: match[1],
-                                title: 'Update row',
+                                title: 'Update row'
                             }));
                         }
                     }
