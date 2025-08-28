@@ -35,7 +35,22 @@
     const bodyStyle = writable({ position: 'static', top: '' });
     const hasSubNavigation = setContext('hasSubNavigation', writable(false));
 
-    const progressCard = function getProgressCard() {
+    onMount(() => (state = getSidebarState()));
+
+    // user defined functions
+    function style(node: HTMLElement, { position, top }) {
+        node.style.position = position;
+        node.style.top = top;
+
+        return {
+            update: ({ position, top }) => {
+                node.style.position = position;
+                node.style.top = top;
+            }
+        };
+    }
+
+    function getProgressCard() {
         if (selectedProject && !hasOnboardingDismissed(selectedProject.$id, $user)) {
             const { platforms, pingCount } = selectedProject;
             let percentage = 33;
@@ -53,21 +68,6 @@
         }
 
         return undefined;
-    };
-
-    onMount(() => (state = getSidebarState()));
-
-    // user defined functions
-    function style(node: HTMLElement, { position, top }) {
-        node.style.position = position;
-        node.style.top = top;
-
-        return {
-            update: ({ position, top }) => {
-                node.style.position = position;
-                node.style.top = top;
-            }
-        };
     }
 
     function handleResize() {
@@ -200,7 +200,7 @@
     {#if !$isNewWizardStatusOpen}
         <Sidebar
             project={selectedProject}
-            progressCard={progressCard()}
+            progressCard={getProgressCard()}
             avatar={navbarProps.avatar}
             bind:subNavigation
             bind:sideBarIsOpen={$isSidebarOpen}
