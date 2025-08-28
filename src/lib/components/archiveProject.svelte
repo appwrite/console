@@ -155,7 +155,7 @@
 </script>
 
 {#if projectsToArchive.length > 0}
-    <div style="margin-top: 36px;">
+    <div class="archive-projects-margin-top">
         <Accordion title="Archived projects" badge={`${projectsToArchive.length}`}>
             <Typography.Text tag="p" size="s">
                 These projects have been archived and are read-only. You can view and migrate their
