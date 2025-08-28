@@ -136,13 +136,12 @@
     }
 
     $: selectedProjects = data.organization.projects ?? [];
-    $: hasSelection = Array.isArray(selectedProjects) && selectedProjects.length > 0;
 
-    $: projectsToArchive = hasSelection
+    $: projectsToArchive = Array.isArray(selectedProjects) && selectedProjects.length > 0
         ? data.projects.projects.filter((project) => !selectedProjects.includes(project.$id))
         : [];
 
-    $: activeProjects = hasSelection
+    $: activeProjects = Array.isArray(selectedProjects) && selectedProjects.length > 0
         ? data.projects.projects.filter((project) => selectedProjects.includes(project.$id))
         : data.projects.projects;
 </script>
