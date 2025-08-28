@@ -41,6 +41,7 @@
 
     import type { HTMLAttributes } from 'svelte/elements';
     import type { Models } from '@appwrite.io/console';
+    import { noWidthTransition } from '$lib/stores/sidebar';
 
     type $$Props = HTMLAttributes<HTMLElement> & {
         state?: 'closed' | 'open' | 'icons';
@@ -72,7 +73,7 @@
         }
     }
 
-    $: state = $isTabletViewport ? 'closed' : getSidebarState($page);
+    $: state = $isTabletViewport ? 'closed' : getSidebarState();
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth', category: 'build' },
@@ -95,14 +96,16 @@
 </script>
 
 <div
+    class="sidebar"
     class:only-mobile-tablet={!project}
+    class:no-transitions={$noWidthTransition}
     style:--overlay-on-neutral={$app.themeInUse === 'dark'
         ? 'var(--neutral-750)'
         : 'var(--neutral-100)'}>
     <Sidebar.Base
         {...$$props}
         bind:state
-        on:resize={(event) => updateSidebarState($page, event.detail)}
+        on:resize={(event) => updateSidebarState(event.detail)}
         resizable>
         <div slot="top">
             <div class="only-mobile-tablet top">
@@ -360,12 +363,19 @@
     <div
         class="sub-navigation"
         class:icons={state === 'icons'}
+        class:no-transitions={$noWidthTransition}
         style:--banner-spacing={$bannerSpacing ? $bannerSpacing : undefined}>
         <svelte:component this={subNavigation} />
     </div>
 {/if}
 
 <style lang="scss">
+    .sidebar {
+        &.no-transitions :global(nav) {
+            transition: none !important;
+        }
+    }
+
     .middle-container {
         flex: 1;
         overflow-y: visible;
@@ -630,6 +640,10 @@
             &.icons {
                 width: 266px;
                 transition: width 0.3s linear;
+
+                &.no-transitions {
+                    transition: none !important;
+                }
 
                 & :global(nav) {
                     margin-top: var(--banner-spacing);

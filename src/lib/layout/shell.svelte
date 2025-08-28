@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { beforeNavigate } from '$app/navigation';
+    import { afterNavigate, beforeNavigate } from '$app/navigation';
     import { Navbar, Sidebar } from '$lib/components';
     import { isNewWizardStatusOpen, wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
-    import { setContext } from 'svelte';
+    import { onMount, setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -13,19 +13,109 @@
     import { isCloud } from '$lib/system';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
-    import { isSidebarOpen } from '$lib/stores/sidebar';
+    import { isSidebarOpen, noWidthTransition } from '$lib/stores/sidebar';
     import { BillingPlan } from '$lib/constants';
     import { page } from '$app/stores';
     import type { Models } from '@appwrite.io/console';
+    import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
 
     export let showHeader = true;
     export let showFooter = true;
     export let showSideNavigation = false;
     export let selectedProject: Models.Project = null;
 
+    // variables
     let yOnMenuOpen: number;
+    let showAccountMenu = false;
     let showContentTransition = false;
     let timeoutId: ReturnType<typeof setTimeout>;
+    let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
+
+    const isNarrow = setContext('isNarrow', writable(false));
+    const bodyStyle = writable({ position: 'static', top: '' });
+    const hasSubNavigation = setContext('hasSubNavigation', writable(false));
+
+    onMount(() => (state = getSidebarState()));
+
+    // user defined functions
+    function style(node: HTMLElement, { position, top }) {
+        node.style.position = position;
+        node.style.top = top;
+
+        return {
+            update: ({ position, top }) => {
+                node.style.position = position;
+                node.style.top = top;
+            }
+        };
+    }
+
+    function getProgressCard() {
+        if (selectedProject && !hasOnboardingDismissed(selectedProject.$id, $user)) {
+            const { platforms, pingCount } = selectedProject;
+            let percentage = 33;
+
+            if (platforms.length > 0 && pingCount === 0) {
+                percentage = 66;
+            } else if (pingCount > 0) {
+                percentage = 100;
+            }
+
+            return {
+                title: 'Get started',
+                percentage
+            };
+        }
+
+        return undefined;
+    }
+
+    function handleResize() {
+        $isSidebarOpen = false;
+        showAccountMenu = false;
+    }
+
+    /**
+     * Cancel navigation when wizard is open and triggered by popstate
+     */
+    beforeNavigate((navigation) => {
+        if (navigation.willUnload) return;
+        if (!($wizard.show || $wizard.cover)) return;
+        if (navigation.type === 'popstate') {
+            navigation.cancel();
+        }
+        if (navigation.type !== 'leave') {
+            wizard.hide();
+        }
+
+        if (!isInDatabasesRoute(navigation.from.route)) {
+            updateSidebarState(state);
+        } else if (isInDatabasesRoute(navigation.to.route)) {
+            $noWidthTransition = true;
+        }
+    });
+
+    /**
+     * Maintain the sidebar state after a navigation!
+     *
+     * This needs to be handled like this because
+     * the setup around the sidebar is very tightly configured with 2 states sync.
+     */
+    afterNavigate((navigation) => {
+        const isEnteringDatabase = isInDatabasesRoute(navigation.to.route);
+        const isLeavingDatabase =
+            isInDatabasesRoute(navigation.from.route) && !isInDatabasesRoute(navigation.to.route);
+
+        if (isEnteringDatabase) {
+            state = 'icons';
+        } else if (isLeavingDatabase) {
+            state = getSidebarState();
+            $noWidthTransition = false;
+        }
+    });
+
+    // subscriptions
+    isNewWizardStatusOpen.subscribe((value) => (showHeader = !value));
 
     page.subscribe(({ url }) => {
         $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
@@ -40,50 +130,9 @@
         }
     });
 
-    const bodyStyle = writable({ position: 'static', top: '' });
-
-    function style(node, { position, top }) {
-        node.style.position = position;
-        node.style.top = top;
-
-        return {
-            update: ({ position, top }) => {
-                node.style.position = position;
-                node.style.top = top;
-            }
-        };
-    }
-
-    $: {
-        if ($isSidebarOpen) {
-            yOnMenuOpen = window.scrollY;
-            bodyStyle.set({ position: 'fixed', top: `-${window.scrollY}px` });
-        } else if (!$isSidebarOpen) {
-            bodyStyle.set({ position: 'static', top: '' });
-            requestAnimationFrame(() => {
-                window.scrollTo(0, yOnMenuOpen);
-            });
-        }
-    }
-
-    /**
-     * Cancel navigation when wizard is open and triggered by popstate
-     */
-    beforeNavigate((n) => {
-        if (n.willUnload) return;
-        if (!($wizard.show || $wizard.cover)) return;
-        if (n.type === 'popstate') {
-            n.cancel();
-        }
-        if (n.type !== 'leave') {
-            wizard.hide();
-        }
-    });
-
-    const isNarrow = setContext('isNarrow', writable(false));
-    const hasSubNavigation = setContext('hasSubNavigation', writable(false));
-
+    // reactive blocks
     $: sideSize = $hasSubNavigation ? ($isNarrow ? '17rem' : '25rem') : '12.5rem';
+
     $: navbarProps = {
         logo: {
             src: 'https://appwrite.io/images/logos/logo.svg',
@@ -112,40 +161,21 @@
         currentProject: selectedProject
     };
 
-    let showAccountMenu = false;
-    $: subNavigation = $page.data.subNavigation;
-    let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = $isSidebarOpen ? 'open' : 'closed';
 
-    let isProjectPage;
+    $: subNavigation = $page.data.subNavigation;
+
     $: isProjectPage = $page.route?.id?.includes('project-');
 
-    function handleResize() {
-        $isSidebarOpen = false;
-        showAccountMenu = false;
-    }
-
-    const progressCard = function getProgressCard() {
-        if (selectedProject && !hasOnboardingDismissed(selectedProject.$id, $user)) {
-            const { platforms, pingCount } = selectedProject;
-            let percentage = 33;
-
-            if (platforms.length > 0 && pingCount === 0) {
-                percentage = 66;
-            } else if (pingCount > 0) {
-                percentage = 100;
-            }
-
-            return {
-                title: 'Get started',
-                percentage
-            };
+    $: {
+        if ($isSidebarOpen) {
+            yOnMenuOpen = window.scrollY;
+            bodyStyle.set({ position: 'fixed', top: `-${window.scrollY}px` });
+        } else if (!$isSidebarOpen) {
+            bodyStyle.set({ position: 'static', top: '' });
+            requestAnimationFrame(() => window.scrollTo(0, yOnMenuOpen));
         }
-
-        return undefined;
-    };
-
-    isNewWizardStatusOpen.subscribe((value) => (showHeader = !value));
+    }
 </script>
 
 <svelte:window on:resize={handleResize} />
@@ -170,7 +200,7 @@
     {#if !$isNewWizardStatusOpen}
         <Sidebar
             project={selectedProject}
-            progressCard={progressCard()}
+            progressCard={getProgressCard()}
             avatar={navbarProps.avatar}
             bind:subNavigation
             bind:sideBarIsOpen={$isSidebarOpen}
