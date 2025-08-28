@@ -129,21 +129,22 @@
         return !data.organization.projects?.includes(project.$id);
     }
 
+    import { formatName as formatNameHelper } from '$lib/helpers/string';
     function formatName(name: string, limit: number = 19) {
-        const mobileLimit = 16;
-        const actualLimit = $isSmallViewport ? mobileLimit : limit;
-        return name ? (name.length > actualLimit ? `${name.slice(0, actualLimit)}...` : name) : '-';
+        return formatNameHelper(name, limit, $isSmallViewport);
     }
 
     $: selectedProjects = data.organization.projects ?? [];
 
-    $: projectsToArchive = Array.isArray(selectedProjects) && selectedProjects.length > 0
-        ? data.projects.projects.filter((project) => !selectedProjects.includes(project.$id))
-        : [];
+    $: projectsToArchive =
+        Array.isArray(selectedProjects) && selectedProjects.length > 0
+            ? data.projects.projects.filter((project) => !selectedProjects.includes(project.$id))
+            : [];
 
-    $: activeProjects = Array.isArray(selectedProjects) && selectedProjects.length > 0
-        ? data.projects.projects.filter((project) => selectedProjects.includes(project.$id))
-        : data.projects.projects;
+    $: activeProjects =
+        Array.isArray(selectedProjects) && selectedProjects.length > 0
+            ? data.projects.projects.filter((project) => selectedProjects.includes(project.$id))
+            : data.projects.projects;
 </script>
 
 <SelectProjectCloud

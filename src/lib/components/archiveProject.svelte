@@ -147,10 +147,9 @@
         return $regionsStore.regions.find((region) => region.$id === project.region);
     }
 
+    import { formatName as formatNameHelper } from '$lib/helpers/string';
     function formatName(name: string, limit: number = 19) {
-        const mobileLimit = 16;
-        const actualLimit = $isSmallViewport ? mobileLimit : limit;
-        return name ? (name.length > actualLimit ? `${name.slice(0, actualLimit)}...` : name) : '-';
+        return formatNameHelper(name, limit, $isSmallViewport);
     }
 </script>
 
@@ -162,7 +161,7 @@
                 data.
             </Typography.Text>
 
-            <div style="margin-top: 16px; margin-bottom: 36px;">
+            <div class="archive-projects-margin">
                 <CardContainer disableEmpty={true} total={projectsToArchive.length}>
                     {#each projectsToArchive as project}
                         {@const platforms = filterPlatforms(
@@ -267,10 +266,8 @@
 
 <!-- Unarchive Confirmation Modal -->
 <Modal bind:show={showUnarchiveModal} title="Unarchive project">
-    <div class="modal-content">
-        <p>Are you sure you want to unarchive <strong>{projectToUnarchive?.name}</strong>?</p>
-        <p>This will move the project back to your active projects list.</p>
-    </div>
+    <p>Are you sure you want to unarchive <strong>{projectToUnarchive?.name}</strong>?</p>
+    <p>This will move the project back to your active projects list.</p>
 
     <svelte:fragment slot="actions">
         <Button secondary on:click={cancelUnarchive}>Cancel</Button>
@@ -279,17 +276,17 @@
 </Modal>
 
 <style>
+    .archive-projects-margin-top {
+        margin-top: 36px;
+    }
+
+    .archive-projects-margin {
+        margin-top: 16px;
+        margin-bottom: 36px;
+    }
     .status-container {
         display: flex;
         align-items: center;
         gap: 8px;
-    }
-
-    .modal-content {
-        padding: var(--space-4) 0;
-    }
-
-    .modal-content p {
-        margin-bottom: var(--space-3);
     }
 </style>

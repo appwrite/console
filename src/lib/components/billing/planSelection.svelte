@@ -11,9 +11,10 @@
     export let billingPlan: Tier;
     export let isNewOrg = false;
     export let selfService = true;
+    export let anyOrgFree = false;
 
     $: plans = Object.values(page.data.plans.plans) as Plan[];
-    $: currentPlanInList = plans.filter((plan) => plan.$id === $currentPlan?.$id).length > 0;
+    $: currentPlanInList = plans.some((plan) => plan.$id === $currentPlan?.$id);
 </script>
 
 <Layout.Stack>
