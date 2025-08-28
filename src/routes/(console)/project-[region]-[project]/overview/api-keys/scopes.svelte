@@ -1,3 +1,30 @@
+<script lang="ts" context="module">
+    const compatPairs = [
+        { newer: 'tables.', legacy: 'collections.' },
+        { newer: 'columns.', legacy: 'attributes.' },
+        { newer: 'rows.', legacy: 'documents.' }
+    ] as const;
+
+    export function getEffectiveScopes(scopes: string[]): string[] {
+        const effectiveScopes = new Set<string>();
+
+        for (const scope of scopes) {
+            let effectiveScope = scope;
+
+            for (const pair of compatPairs) {
+                if (scope.startsWith(pair.legacy)) {
+                    effectiveScope = scope.replace(pair.legacy, pair.newer);
+                    break;
+                }
+            }
+
+            effectiveScopes.add(effectiveScope);
+        }
+
+        return Array.from(effectiveScopes);
+    }
+</script>
+
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { scopes as allScopes } from '$lib/constants';
@@ -7,37 +34,14 @@
 
     export let scopes: string[];
 
-    const newScopes = ['tables.', 'columns.', 'rows.'];
-    const legacyScopes = ['attributes.', 'collections.', 'documents.'];
-    const compatPairs = [
-        { newer: 'tables.', legacy: 'collections.' },
-        { newer: 'columns.', legacy: 'attributes.' },
-        { newer: 'rows.', legacy: 'documents.' }
-    ] as const;
-
-    const isCreateMode = scopes.length === 0;
     const scopeCatalog = new Set(allScopes.map((s) => s.scope));
-
-    const hasLegacyScopes = !isCreateMode
-        ? scopes.some((scope) => legacyScopes.some((prefix) => scope?.startsWith(prefix)))
-        : false;
 
     const filteredScopes = allScopes.filter((scope) => {
         const val = scope.scope;
-
         if (!val) return false;
 
-        if (isCreateMode) {
-            return !legacyScopes.some((prefix) => val.startsWith(prefix));
-        }
-
-        if (hasLegacyScopes) {
-            // In edit mode, if legacy scopes exist, exclude new ones
-            return !newScopes.some((prefix) => val.startsWith(prefix));
-        } else {
-            // In edit mode, if new scopes exist, exclude new ones
-            return !legacyScopes.some((prefix) => val.startsWith(prefix));
-        }
+        const legacyPrefixes = ['collections.', 'attributes.', 'documents.'];
+        return !legacyPrefixes.some((prefix) => val.startsWith(prefix));
     });
 
     enum Category {
@@ -62,13 +66,18 @@
 
     let mounted = false;
 
-    onMount(() => {
-        const computedScopes = syncScopes(scopes);
-        if (symmetricDifference(scopes, computedScopes).length) {
-            scopes = computedScopes;
-        }
+    const activeScopes = filteredScopes.reduce((prev, next) => {
+        prev[next.scope] = false;
+        return prev;
+    }, {});
 
-        scopes.forEach((scope) => (activeScopes[scope] = true));
+    onMount(() => {
+        scopes.forEach((scope) => {
+            const newerScope = toNewerScope(scope);
+            if (newerScope in activeScopes) {
+                activeScopes[newerScope] = true;
+            }
+        });
 
         mounted = true;
     });
@@ -85,14 +94,43 @@
         }
     }
 
+    function toNewerScope(scope: string): string {
+        for (const pair of compatPairs) {
+            if (scope.startsWith(pair.legacy)) {
+                return scope.replace(pair.legacy, pair.newer);
+            }
+        }
+        return scope;
+    }
+
+    function getAllScopeVariants(scope: string): string[] {
+        const variants = new Set([scope]);
+
+        for (const pair of compatPairs) {
+            if (scope.startsWith(pair.newer)) {
+                variants.add(scope.replace(pair.newer, pair.legacy));
+            } else if (scope.startsWith(pair.legacy)) {
+                variants.add(scope.replace(pair.legacy, pair.newer));
+            }
+        }
+
+        return Array.from(variants);
+    }
+
     function categoryState(category: string, s: string[]): boolean | 'indeterminate' {
         const scopesByCategory = filteredScopes.filter((n) => n.category === category);
-        const filtered = scopesByCategory.filter((n) => s.includes(n.scope));
-        if (filtered.length === 0) {
+
+        const activeInCategory = scopesByCategory.filter((scopeItem) => {
+            const newerScope = scopeItem.scope;
+            return s.some((scope) => toNewerScope(scope) === newerScope);
+        });
+
+        if (activeInCategory.length === 0) {
             return false;
-        } else if (filtered.length === scopesByCategory.length) {
+        } else if (activeInCategory.length === scopesByCategory.length) {
             return true;
         }
+
         return 'indeterminate';
     }
 
@@ -105,41 +143,29 @@
         });
     }
 
-    function syncScopes(list: string[]): string[] {
-        const out = new Set(list);
-        const pairs = compatPairs.map((pair) =>
-            hasLegacyScopes
-                ? ([pair.legacy, pair.newer] as const)
-                : ([pair.newer, pair.legacy] as const)
-        );
+    function generateSyncedScopes(activeScopesObj: Record<string, boolean>): string[] {
+        const result = new Set<string>();
 
-        for (const scope of list) {
-            for (const [from, to] of pairs) {
-                if (scope.startsWith(from)) {
-                    const counterpart = scope.replace(from, to);
-                    if (scopeCatalog.has(counterpart)) out.add(counterpart);
-                }
+        Object.entries(activeScopesObj).forEach(([scope, isActive]) => {
+            if (isActive) {
+                const variants = getAllScopeVariants(scope);
+                variants.forEach((variant) => {
+                    if (scopeCatalog.has(variant)) {
+                        result.add(variant);
+                    }
+                });
             }
-        }
-        return Array.from(out);
+        });
+
+        return Array.from(result);
     }
-
-    const activeScopes = filteredScopes.reduce((prev, next) => {
-        prev[next.scope] = false;
-
-        return prev;
-    }, {});
 
     $: {
         if (mounted) {
-            const newScopeSet = filteredScopes
-                .filter((scope) => activeScopes[scope.scope])
-                .map(({ scope }) => scope);
+            const newScopes = generateSyncedScopes(activeScopes);
 
-            const updatedScopes = hasLegacyScopes ? newScopeSet : syncScopes(newScopeSet);
-
-            if (symmetricDifference(scopes, updatedScopes).length) {
-                scopes = updatedScopes;
+            if (symmetricDifference(scopes, newScopes).length) {
+                scopes = newScopes;
             }
         }
     }
@@ -160,7 +186,9 @@
             {@const checked = categoryState(category, scopes)}
             {@const isLastItem = index === categories.length - 1}
             {@const scopesLength = filteredScopes.filter(
-                (n) => n.category === category && scopes.includes(n.scope)
+                (n) =>
+                    n.category === category &&
+                    scopes.some((scope) => toNewerScope(scope) === n.scope)
             ).length}
             <Accordion
                 selectable
