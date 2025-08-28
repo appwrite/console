@@ -11,7 +11,12 @@
     import { type Models, Query } from '@appwrite.io/console';
     import { type ComponentType, onDestroy, onMount } from 'svelte';
     import type { PageData } from './$types';
-    import { buildWildcardColumnsQuery, isRelationship, isRelationshipToMany, isString } from './rows/store';
+    import {
+        buildWildcardColumnsQuery,
+        isRelationship,
+        isRelationshipToMany,
+        isString
+    } from './rows/store';
     import {
         columns,
         table,
