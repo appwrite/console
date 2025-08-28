@@ -2,12 +2,13 @@
     import { Container } from '$lib/layout';
     import BudgetCap from './budgetCap.svelte';
     import PlanSummary from './planSummary.svelte';
+    import PlanSummaryOld from './planSummaryOld.svelte';
     import BillingAddress from './billingAddress.svelte';
     import PaymentMethods from './paymentMethods.svelte';
     import AvailableCredit from './availableCredit.svelte';
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
-    import { failedInvoice, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { failedInvoice, tierToPlan, upgradeURL, useNewPricingModal } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
@@ -127,13 +128,21 @@
             until your billing period ends on {toLocaleDate(organization.billingNextInvoiceDate)}.
         </Alert.Inline>
     {/if}
-    <PlanSummary
-        availableCredit={data?.availableCredit}
-        currentPlan={data?.currentPlan}
-        currentAggregation={data?.billingAggregation}
-        currentInvoice={data?.billingInvoice}
-        organizationUsage={data?.organizationUsage}
-        usageProjects={data?.usageProjects} />
+    {#if $useNewPricingModal}
+        <PlanSummary
+            availableCredit={data?.availableCredit}
+            currentPlan={data?.currentPlan}
+            currentAggregation={data?.billingAggregation}
+            currentInvoice={data?.billingInvoice}
+            organizationUsage={data?.organizationUsage}
+            usageProjects={data?.usageProjects} />
+    {:else}
+        <PlanSummaryOld
+            availableCredit={data?.availableCredit}
+            currentPlan={data?.currentPlan}
+            currentAggregation={data?.billingAggregation}
+            currentInvoice={data?.billingInvoice} />
+    {/if}
     <PaymentHistory />
     <PaymentMethods organization={data?.organization} methods={data?.paymentMethods} />
     <BillingAddress

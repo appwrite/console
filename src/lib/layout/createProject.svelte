@@ -19,6 +19,7 @@
         regions = [],
         region = $bindable(''),
         showTitle = true,
+        billingPlan = undefined,
         projects = undefined,
         submit
     }: {
@@ -27,12 +28,13 @@
         regions: Array<Models.ConsoleRegion>;
         region: string;
         showTitle: boolean;
+        billingPlan?: BillingPlan;
         projects?: number;
         submit?: Snippet;
     } = $props();
 
     let showCustomId = $state(false);
-    let isProPlan = $derived($organization?.billingPlan === BillingPlan.PRO);
+    let isProPlan = $derived((billingPlan ?? $organization?.billingPlan) === BillingPlan.PRO);
     let projectsLimited = $derived(
         isProPlan
             ? projects && projects >= 2

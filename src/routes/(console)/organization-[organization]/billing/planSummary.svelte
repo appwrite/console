@@ -19,16 +19,8 @@
     export let currentPlan: Plan;
     export let currentInvoice: Invoice | undefined = undefined;
     export let currentAggregation: AggregationTeam | undefined = undefined;
-    export let availableCredit: number | undefined = undefined;
     export let organizationUsage: any = undefined;
     export let usageProjects: Record<string, any> = {};
-
-    $: {
-        currentAggregation;
-        availableCredit;
-        organizationUsage;
-        usageProjects;
-    }
 
     let showCancel: boolean = false;
 

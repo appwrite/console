@@ -70,15 +70,27 @@ export const load: PageLoad = async ({ parent, depends }) => {
     }
 
     try {
-        const projectsResponse = await sdk.forConsole.projects.list([
-            Query.equal('teamId', organization.$id),
-            Query.limit(1000)
-        ]);
-        for (const project of projectsResponse.projects) {
-            usageProjects[project.$id] = {
-                name: project.name,
-                region: project.region
-            };
+        const neededIds = new Set<string>();
+        const addId = (id?: string) => id && neededIds.add(id);
+
+        if (organizationUsage?.projects?.length) {
+            for (const p of organizationUsage.projects) addId(p.projectId);
+        } else if (billingAggregation?.projectBreakdown?.length) {
+            for (const p of billingAggregation.projectBreakdown) addId(p.$id);
+        }
+
+        if (neededIds.size > 0) {
+            const ids = Array.from(neededIds);
+            const projectsResponse = await sdk.forConsole.projects.list([
+                Query.equal('$id', ids),
+                Query.limit(ids.length)
+            ]);
+            for (const project of projectsResponse.projects) {
+                usageProjects[project.$id] = {
+                    name: project.name,
+                    region: project.region
+                };
+            }
         }
     } catch (e) {
         // ignore error
