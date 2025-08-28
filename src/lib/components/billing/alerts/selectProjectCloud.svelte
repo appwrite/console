@@ -78,10 +78,12 @@
             loading = true;
 
             sdk.forConsole.projects
-                .list([
-                    Query.equal('teamId', organizationId),
-                    Query.limit(1000) // Get all projects for organization
-                ])
+                .list({
+                    queries: [
+                        Query.equal('teamId', organizationId),
+                        Query.limit(1000) // Get all projects for organization
+                    ]
+                })
                 .then((loadedProjects) => (projects = loadedProjects.projects))
                 .catch((err) => (projectsLoadingError = err.message))
                 .finally(() => (loading = false));

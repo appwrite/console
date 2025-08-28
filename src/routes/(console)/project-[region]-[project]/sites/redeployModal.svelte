@@ -21,7 +21,10 @@
         try {
             const deployment = await sdk
                 .forProject(page.params.region, page.params.project)
-                .sites.createDuplicateDeployment(site.$id, selectedDeploymentId);
+                .sites.createDuplicateDeployment({
+                    siteId: site.$id,
+                    deploymentId: selectedDeploymentId
+                });
 
             await Promise.all([
                 invalidate(Dependencies.SITE),

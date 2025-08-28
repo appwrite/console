@@ -30,13 +30,14 @@ export async function updateOAuth({
         if (!isValueOfStringEnum(OAuthProvider, provider.key)) {
             throw new Error(`Invalid OAuth2 provider: ${provider.key}`);
         }
-        await sdk.forConsole.projects.updateOAuth2(
+
+        await sdk.forConsole.projects.updateOAuth2({
             projectId,
-            provider.key,
-            appId || undefined,
-            secret || undefined,
+            provider: provider.key,
+            appId: appId || undefined,
+            secret: secret || undefined,
             enabled
-        );
+        });
         await invalidate(Dependencies.PROJECT);
 
         addNotification({

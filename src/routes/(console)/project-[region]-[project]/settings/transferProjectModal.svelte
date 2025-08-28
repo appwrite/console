@@ -15,7 +15,10 @@
 
     const handleTransfer = async () => {
         try {
-            await sdk.forConsole.projects.updateTeam($project.$id, teamId);
+            await sdk.forConsole.projects.updateTeam({
+                projectId: $project.$id,
+                teamId
+            });
             show = false;
             addNotification({
                 type: 'success',

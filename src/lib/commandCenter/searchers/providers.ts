@@ -13,7 +13,9 @@ const getIcon = (provider: string) => {
 export const providersSearcher = (async (query: string) => {
     const { providers } = await sdk
         .forProject(page.params.region, page.params.project)
-        .messaging.listProviders([], query || undefined);
+        .messaging.listProviders({
+            search: query || undefined
+        });
 
     return providers
         .filter((provider) => provider.name.toLowerCase().includes(query.toLowerCase()))

@@ -44,53 +44,55 @@
                 case 'appwrite': {
                     await sdk
                         .forProject(page.params.region, page.params.project)
-                        .migrations.createAppwriteMigration(
+                        .migrations.createAppwriteMigration({
                             resources,
-                            $provider.endpoint,
-                            $provider.projectID,
-                            $provider.apiKey
-                        );
+                            endpoint: $provider.endpoint,
+                            projectId: $provider.projectID,
+                            apiKey: $provider.apiKey
+                        });
 
-                    invalidate(Dependencies.MIGRATIONS);
+                    await invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'supabase': {
                     await sdk
                         .forProject(page.params.region, page.params.project)
-                        .migrations.createSupabaseMigration(
+                        .migrations.createSupabaseMigration({
                             resources,
-                            $provider.endpoint,
-                            $provider.apiKey,
-                            $provider.host,
-                            $provider.username || 'postgres',
-                            $provider.password,
-                            $provider.port || 5432
-                        );
-
-                    invalidate(Dependencies.MIGRATIONS);
+                            endpoint: $provider.endpoint,
+                            apiKey: $provider.apiKey,
+                            databaseHost: $provider.host,
+                            username: $provider.username || 'postgres',
+                            password: $provider.password,
+                            port: $provider.port || 5432
+                        });
+                    await invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'firebase': {
                     await sdk
                         .forProject(page.params.region, page.params.project)
-                        .migrations.createFirebaseMigration(resources, $provider.serviceAccount);
-                    invalidate(Dependencies.MIGRATIONS);
+                        .migrations.createFirebaseMigration({
+                            resources,
+                            serviceAccount: $provider.serviceAccount
+                        });
+                    await invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'nhost': {
                     await sdk
                         .forProject(page.params.region, page.params.project)
-                        .migrations.createNHostMigration(
+                        .migrations.createNHostMigration({
                             resources,
-                            $provider.subdomain,
-                            $provider.region,
-                            $provider.adminSecret,
-                            $provider.database || $provider.subdomain,
-                            $provider.username || 'postgres',
-                            $provider.password
-                        );
+                            subdomain: $provider.subdomain,
+                            region: $provider.region,
+                            adminSecret: $provider.adminSecret,
+                            database: $provider.database || $provider.subdomain,
+                            username: $provider.username || 'postgres',
+                            password: $provider.password
+                        });
 
-                    invalidate(Dependencies.MIGRATIONS);
+                    await invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
             }

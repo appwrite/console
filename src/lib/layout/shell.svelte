@@ -90,7 +90,13 @@
             alt: 'Logo Appwrite'
         },
 
-        avatar: sdk.forConsole.avatars.getInitials($user?.name, 80, 80).toString(),
+        avatar: sdk.forConsole.avatars
+            .getInitials({
+                name: $user?.name,
+                width: 80,
+                height: 80
+            })
+            .toString(),
 
         organizations: $organizationList.teams.map((org) => {
             const billingPlan = org['billingPlan'];
@@ -138,13 +144,18 @@
 
         return undefined;
     };
+
+    isNewWizardStatusOpen.subscribe((value) => (showHeader = !value));
 </script>
 
 <svelte:window on:resize={handleResize} />
+
 <svelte:body use:style={$bodyStyle} />
+
 {#if $activeHeaderAlert?.show && !$isNewWizardStatusOpen}
     <svelte:component this={$activeHeaderAlert.component} />
 {/if}
+
 <main
     class:has-alert={$activeHeaderAlert?.show}
     class:is-open={$showSubNavigation}
@@ -155,15 +166,20 @@
     {#if showHeader}
         <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
     {/if}
-    <Sidebar
-        project={selectedProject}
-        progressCard={progressCard()}
-        avatar={navbarProps.avatar}
-        bind:subNavigation
-        bind:sideBarIsOpen={$isSidebarOpen}
-        bind:showAccountMenu
-        bind:state />
+
+    {#if !$isNewWizardStatusOpen}
+        <Sidebar
+            project={selectedProject}
+            progressCard={progressCard()}
+            avatar={navbarProps.avatar}
+            bind:subNavigation
+            bind:sideBarIsOpen={$isSidebarOpen}
+            bind:showAccountMenu
+            bind:state />
+    {/if}
+
     <SideNavigation bind:subNavigation />
+
     <div
         class="content"
         class:has-transition={showContentTransition}
@@ -171,7 +187,9 @@
         class:no-sidebar={!showSideNavigation}>
         <section class="main-content" data-test={showSideNavigation}>
             {#if $page.data?.header}
-                <svelte:component this={$page.data.header} />
+                <div class="layout-header">
+                    <svelte:component this={$page.data.header} />
+                </div>
             {/if}
             <slot />
             {#if showFooter}
@@ -232,6 +250,27 @@
         .main-content {
             @media (min-width: 1024px) {
                 padding-left: 255px;
+            }
+        }
+    }
+
+    :global(main:has(.databases-spreadsheet)) {
+        /* avoids the unnecessary sheet slide animation */
+        .has-transition {
+            transition: none !important;
+        }
+
+        @media (min-width: 1024px) {
+            .main-content {
+                height: auto;
+                padding-left: 210px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content:not(:has(.wide-screen-wrapper)) {
+                width: 100%;
+                position: fixed;
             }
         }
     }

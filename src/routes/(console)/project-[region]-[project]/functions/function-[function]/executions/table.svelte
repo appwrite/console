@@ -38,9 +38,10 @@
         showBatchDeletion = false;
 
         const promises = selectedRows.map((executionId) =>
-            sdk
-                .forProject(page.params.region, page.params.project)
-                .functions.deleteExecution(page.params.function, executionId)
+            sdk.forProject(page.params.region, page.params.project).functions.deleteExecution({
+                functionId: page.params.function,
+                executionId
+            })
         );
         try {
             await Promise.all(promises);

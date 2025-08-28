@@ -7,7 +7,7 @@ export const load = async ({ parent, params }) => {
         await parent();
     const template = await sdk
         .forProject(params.region, params.project)
-        .sites.getTemplate(params.template);
+        .sites.getTemplate({ templateId: params.template });
     const domain = await buildVerboseDomain(
         regionalConsoleVariables._APP_DOMAIN_SITES,
         template.name,

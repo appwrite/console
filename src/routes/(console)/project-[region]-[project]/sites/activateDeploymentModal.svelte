@@ -17,7 +17,10 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .sites.updateSiteDeployment(siteId, selectedDeploymentId);
+                .sites.updateSiteDeployment({
+                    siteId,
+                    deploymentId: selectedDeploymentId
+                });
             addNotification({
                 type: 'success',
                 message: `Deployment has been activated`

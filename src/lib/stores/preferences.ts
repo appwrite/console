@@ -3,7 +3,6 @@ import type { View } from '$lib/helpers/load';
 import type { Page } from '@sveltejs/kit';
 import { get, writable } from 'svelte/store';
 import { sdk } from './sdk';
-import type { Models } from '@appwrite.io/console';
 import { page } from '$app/state';
 import { user } from '$lib/stores/user';
 import deepEqual from 'deep-equal';
@@ -19,15 +18,30 @@ type ConsolePreferences = {
 
 type TeamPreferences = {
     names?: string[];
+    order?: string[];
+    widths?: { [columnId: string]: { fixed: number | { min: number }; resized: number } };
 };
 
 type ConsolePreferencesStore = {
     [key: string]: ConsolePreferences;
+    // kept for backwards compatibility
     collections?: {
+        [key: string]: ConsolePreferences['columns'];
+    };
+    tables?: {
         [key: string]: ConsolePreferences['columns'];
     };
     displayNames?: {
         [key: string]: TeamPreferences['names'];
+    };
+    columnOrder?: {
+        [key: string]: TeamPreferences['order'];
+    };
+    columnWidths?: {
+        [key: string]: TeamPreferences['widths'];
+    };
+    miscellaneous?: {
+        [key: string]: string | number | boolean;
     };
 } & { hideAiDisclaimer?: boolean };
 
@@ -42,12 +56,13 @@ async function updateConsolePreferences(store: ConsolePreferencesStore): Promise
         ...store
     };
 
-    await sdk.forConsole.account.updatePrefs(currentPreferences);
+    await sdk.forConsole.account.updatePrefs({ prefs: currentPreferences });
 }
 
 function createPreferences() {
     const { subscribe, set, update } = writable<ConsolePreferencesStore>({});
     let preferences: ConsolePreferencesStore = {};
+    let teamPreferences: ConsolePreferencesStore = {};
 
     if (browser) {
         // fresh fetch.
@@ -72,6 +87,17 @@ function createPreferences() {
             globalThis.localStorage.setItem('preferences', JSON.stringify(v));
         }
     });
+
+    async function loadTeamPreferences(orgId: string) {
+        try {
+            const teamPrefs = await sdk.forConsole.teams.getPrefs({ teamId: orgId });
+            teamPreferences = teamPrefs ?? {};
+            return teamPreferences;
+        } catch (error) {
+            teamPreferences = {};
+            return teamPreferences;
+        }
+    }
 
     /**
      * Update the local store and then synchronizes them on user prefs.
@@ -99,7 +125,7 @@ function createPreferences() {
         subscribe,
         set,
         update,
-        get: (route?: Page['route']): ConsolePreferences => {
+        getForRoute: (route?: Page['route']): ConsolePreferences => {
             const parsedRoute = route ?? page.route;
             return (
                 preferences?.[parsedRoute.id] ?? {
@@ -109,9 +135,11 @@ function createPreferences() {
                 }
             );
         },
-        getCustomCollectionColumns: (collectionId: string): ConsolePreferences['columns'] => {
-            return preferences?.collections?.[collectionId] ?? [];
+
+        getCustomTableColumns: (tableId: string): ConsolePreferences['columns'] => {
+            return preferences?.tables?.[tableId] ?? preferences?.collections?.[tableId] ?? [];
         },
+
         setLimit: (limit: ConsolePreferences['limit']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
@@ -125,6 +153,7 @@ function createPreferences() {
 
                 return n;
             }),
+
         setView: (view: ConsolePreferences['view']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
@@ -138,6 +167,7 @@ function createPreferences() {
 
                 return n;
             }),
+
         setColumns: (columns: ConsolePreferences['columns']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
@@ -151,50 +181,122 @@ function createPreferences() {
 
                 return n;
             }),
-        setCustomCollectionColumns: (
-            collectionId: string,
-            columns: ConsolePreferences['columns']
-        ) =>
-            updateAndSync((n) => {
-                if (!n?.collections?.[collectionId]) {
-                    n ??= {};
-                    n.collections ??= {};
-                }
 
-                n.collections[collectionId] = Array.from(new Set(columns));
+        setCustomTableColumns: (tableId: string, columns: ConsolePreferences['columns']) =>
+            updateAndSync((n) => {
+                n ??= {};
+                n.tables ??= {};
+
+                n.tables[tableId] = Array.from(new Set(columns));
                 return n;
             }),
-        loadTeamPrefs: async (id: string) => {
-            const teamPrefs = await sdk.forConsole.teams.getPrefs(id);
-            update((n) => {
-                n[id] = teamPrefs;
-                return n;
-            });
 
-            return teamPrefs;
-        },
-        getDisplayNames: () => {
-            return preferences?.displayNames ?? {};
-        },
-        setDisplayNames: async (
-            orgId: string,
-            collectionId: string,
-            names: TeamPreferences['names']
-        ) => {
-            let teamPrefs: Models.Preferences;
-            await updateAndSync((n) => {
-                if (!n?.displayNames) {
+        deleteTableDetails: async (orgId: string, tableId: string) => {
+            // remove from account preferences
+            const removeCustomTableColumns = updateAndSync((n) => {
+                if (!n?.tables) {
                     n ??= {};
-                    n.displayNames ??= {};
+                    n.tables ??= {};
                 }
 
-                teamPrefs = n;
-                n.displayNames[collectionId] = names;
-
+                delete n.tables[tableId];
                 return n;
             });
 
-            await sdk.forConsole.teams.updatePrefs(orgId, teamPrefs);
+            delete teamPreferences?.displayNames?.[tableId];
+            delete teamPreferences?.columnOrder?.[tableId];
+            delete teamPreferences?.columnWidths?.[tableId];
+
+            const removeTablePreferences = sdk.forConsole.teams.updatePrefs({
+                teamId: orgId,
+                prefs: teamPreferences
+            });
+
+            await Promise.all([removeCustomTableColumns, removeTablePreferences]);
+        },
+
+        loadTeamPrefs: loadTeamPreferences,
+
+        getDisplayNames: (tableId: string) => {
+            return teamPreferences?.displayNames?.[tableId];
+        },
+
+        setDisplayNames: async (
+            orgId: string,
+            tableId: string,
+            displayNames: TeamPreferences['names']
+        ) => {
+            if (!teamPreferences.displayNames) {
+                teamPreferences.displayNames = {};
+            }
+
+            teamPreferences.displayNames[tableId] = displayNames;
+
+            await sdk.forConsole.teams.updatePrefs({
+                teamId: orgId,
+                prefs: teamPreferences
+            });
+        },
+
+        getColumnOrder(tableId: string): TeamPreferences['order'] {
+            return teamPreferences?.columnOrder?.[tableId] ?? [];
+        },
+
+        async saveColumnOrder(
+            orgId: string,
+            collectionId: string,
+            columnIds: TeamPreferences['order']
+        ) {
+            if (!teamPreferences.columnOrder) {
+                teamPreferences.columnOrder = {};
+            }
+
+            teamPreferences.columnOrder[collectionId] = columnIds;
+
+            await sdk.forConsole.teams.updatePrefs({
+                teamId: orgId,
+                prefs: teamPreferences
+            });
+        },
+
+        getColumnWidths(collectionId: string): TeamPreferences['widths'] {
+            return teamPreferences?.columnWidths?.[collectionId] ?? {};
+        },
+
+        async saveColumnWidths(
+            orgId: string,
+            collectionId: string,
+            width: TeamPreferences['widths']
+        ) {
+            if (!teamPreferences.columnWidths) {
+                teamPreferences.columnWidths = {};
+            }
+
+            teamPreferences.columnWidths[collectionId] = {
+                ...teamPreferences.columnWidths[collectionId],
+                ...width
+            };
+
+            await sdk.forConsole.teams.updatePrefs({
+                teamId: orgId,
+                prefs: teamPreferences
+            });
+        },
+
+        getKey<T>(key: string, _default: T): T {
+            return (preferences?.miscellaneous?.[key] ?? _default) as T;
+        },
+
+        async setKey(key: string, value: string | number | boolean) {
+            await updateAndSync((n) => {
+                if (!n?.miscellaneous) {
+                    n ??= {};
+                    n.miscellaneous ??= {};
+                }
+
+                n.miscellaneous[key] = value;
+                return n;
+            });
         }
     };
 }

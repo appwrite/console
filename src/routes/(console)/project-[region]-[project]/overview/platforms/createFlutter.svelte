@@ -111,16 +111,19 @@
     async function createFlutterPlatform() {
         try {
             isCreatingPlatform = true;
-            await sdk.forConsole.projects.createPlatform(
+            await sdk.forConsole.projects.createPlatform({
                 projectId,
-                platform,
-                $createPlatform.name,
-                platform === PlatformType.Flutterweb ? undefined : $createPlatform.key || undefined,
-                undefined,
-                platform === PlatformType.Flutterweb
-                    ? $createPlatform.hostname || undefined
-                    : undefined
-            );
+                type: platform,
+                name: $createPlatform.name,
+                key:
+                    platform === PlatformType.Flutterweb
+                        ? undefined
+                        : $createPlatform.key || undefined,
+                hostname:
+                    platform === PlatformType.Flutterweb
+                        ? $createPlatform.hostname || undefined
+                        : undefined
+            });
 
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {

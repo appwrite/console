@@ -40,6 +40,7 @@
     import CreateProjectCloud from './createProjectCloud.svelte';
     import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
+    import ArchiveProject from '$lib/components/archiveProject.svelte';
     import { toLocaleDate } from '$lib/helpers/date';
 
     export let data;
@@ -98,12 +99,12 @@
     const importProject = async () => {
         try {
             loading.set(true);
-            const project = await sdk.forConsole.projects.create(
-                ID.unique(),
-                `Imported project ${new Date().toISOString()}`,
-                page.params.organization,
-                Region.Fra // default
-            );
+            const project = await sdk.forConsole.projects.create({
+                projectId: ID.unique(),
+                name: `Imported project ${new Date().toISOString()}`,
+                teamId: page.params.organization,
+                region: Region.Fra
+            });
             trackEvent(Submit.ProjectCreate, {
                 teamId: page.params.organization
             });
@@ -128,15 +129,22 @@
         return !data.organization.projects?.includes(project.$id);
     }
 
+    import { formatName as formatNameHelper } from '$lib/helpers/string';
     function formatName(name: string, limit: number = 19) {
-        const mobileLimit = 16;
-        const actualLimit = $isSmallViewport ? mobileLimit : limit;
-        return name ? (name.length > actualLimit ? `${name.slice(0, actualLimit)}...` : name) : '-';
+        return formatNameHelper(name, limit, $isSmallViewport);
     }
 
-    $: projectsToArchive = data.projects.projects.filter(
-        (project) => !data.organization.projects?.includes(project.$id)
-    );
+    $: selectedProjects = data.organization.projects ?? [];
+
+    $: projectsToArchive =
+        Array.isArray(selectedProjects) && selectedProjects.length > 0
+            ? data.projects.projects.filter((project) => !selectedProjects.includes(project.$id))
+            : [];
+
+    $: activeProjects =
+        Array.isArray(selectedProjects) && selectedProjects.length > 0
+            ? data.projects.projects.filter((project) => selectedProjects.includes(project.$id))
+            : data.projects.projects;
 </script>
 
 <SelectProjectCloud
@@ -169,18 +177,22 @@
         </DropList>
     </div>
 
-    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && data.projects.total > $currentPlan.projects && $canWriteProjects}
+    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects && (projectsToArchive.length > 0 || data.projects.total > $currentPlan.projects)}
         <Alert.Inline
-            title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
+            title={projectsToArchive.length > 0
+                ? `${projectsToArchive.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`
+                : `Your organization has exceeded the project limit. Projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
             <Typography.Text>
-                {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
-                    {@html text}{index == projectsToArchive.length - 2
-                        ? ', and '
-                        : index < projectsToArchive.length - 1
-                          ? ', '
-                          : ''}
-                {/each}
-                will be archived
+                {#if projectsToArchive.length > 0}
+                    {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
+                        {@html text}{index == projectsToArchive.length - 2
+                            ? ', and '
+                            : index < projectsToArchive.length - 1
+                              ? ', '
+                              : ''}
+                    {/each}
+                    will be archived
+                {/if}
             </Typography.Text>
             <svelte:fragment slot="actions">
                 <Button secondary size="s" on:click={() => (showSelectProject = true)}>
@@ -201,13 +213,13 @@
         </Alert.Inline>
     {/if}
 
-    {#if data.projects.total}
+    {#if activeProjects.length > 0}
         <CardContainer
             disableEmpty={!$canWriteProjects}
-            total={data.projects.total}
+            total={activeProjects.length}
             offset={data.offset}
             on:click={handleCreateProject}>
-            {#each data.projects.projects as project}
+            {#each activeProjects as project}
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
@@ -272,7 +284,7 @@
                 <p>Create a new project</p>
             </svelte:fragment>
         </CardContainer>
-    {:else}
+    {:else if data.projects.total === 0}
         <Empty
             single
             allowCreate={$canWriteProjects}
@@ -285,7 +297,10 @@
         name="Projects"
         limit={data.limit}
         offset={data.offset}
-        total={data.projects.total} />
+        total={activeProjects.length} />
+
+    <!-- Archived Projects Section -->
+    <ArchiveProject {projectsToArchive} />
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />

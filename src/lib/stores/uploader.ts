@@ -1,4 +1,4 @@
-import { Client, type Models, Sites, Storage } from '@appwrite.io/console';
+import { Client, ID, type Models, Sites, Storage } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
 import { getApiEndpoint } from '$lib/stores/sdk';
 import { page } from '$app/state';
@@ -93,20 +93,18 @@ const createUploader = () => {
                 n.files.unshift(newFile);
                 return n;
             });
-            const uploadedFile = await temporaryStorage(region, projectId).createFile(
+            const uploadedFile = await temporaryStorage(region, projectId).createFile({
                 bucketId,
-                id ?? 'unique()',
+                fileId: id ?? ID.unique(),
                 file,
                 permissions,
-                (p) => {
-                    newFile.$id = p.$id;
-                    newFile.progress = p.progress;
-                    newFile.status = p.progress === 100 ? 'success' : 'pending';
-                    updateFile(p.$id, newFile);
-
-                    return {};
+                onProgress: (progress) => {
+                    newFile.$id = progress.$id;
+                    newFile.progress = progress.progress;
+                    newFile.status = progress.progress === 100 ? 'success' : 'pending';
+                    updateFile(progress.$id, newFile);
                 }
-            );
+            });
             newFile.$id = uploadedFile.$id;
             newFile.progress = 100;
             newFile.status = 'success';
@@ -130,13 +128,16 @@ const createUploader = () => {
             const uploadedFile = await temporarySites(
                 page.params.region,
                 page.params.project
-            ).createDeployment(siteId, code, true, undefined, undefined, undefined, (p) => {
-                newDeployment.$id = p.$id;
-                newDeployment.progress = p.progress;
-                newDeployment.status = p.progress === 100 ? 'success' : 'pending';
-                updateFile(p.$id, newDeployment);
-
-                return {};
+            ).createDeployment({
+                siteId,
+                code,
+                activate: true,
+                onProgress: (progress) => {
+                    newDeployment.$id = progress.$id;
+                    newDeployment.progress = progress.progress;
+                    newDeployment.status = progress.progress === 100 ? 'success' : 'pending';
+                    updateFile(progress.$id, newDeployment);
+                }
             });
             newDeployment.$id = uploadedFile.$id;
             newDeployment.progress = 100;

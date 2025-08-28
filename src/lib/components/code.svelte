@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
     const langArr = ['js', 'html', 'dart', 'kotlin', 'json', 'sh', 'yml', 'swift'] as const;
     export type Language = (typeof langArr)[number];
 
@@ -20,11 +20,31 @@
     import 'prismjs/plugins/autoloader/prism-autoloader';
     import 'prismjs/plugins/custom-class/prism-custom-class';
     import 'prismjs/plugins/line-numbers/prism-line-numbers';
-    import { afterUpdate } from 'svelte';
     import { Copy } from '.';
 
-    export let label: string = null;
-    export let labelIcon: 'code' | 'android' | 'flutter' | 'apple' = null;
+    let {
+        label = null,
+        labelIcon = null,
+        code,
+        language,
+        withLineNumbers = false,
+        withCopy = false,
+        noMargin = false,
+        noBoxPadding = false,
+        allowScroll = false,
+        class: classes = ''
+    }: {
+        label?: string;
+        labelIcon?: 'code' | 'android' | 'flutter' | 'apple';
+        code: string;
+        language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh' | 'yml' | 'swift';
+        withLineNumbers?: boolean;
+        withCopy?: boolean;
+        noMargin?: boolean;
+        noBoxPadding?: boolean;
+        allowScroll?: boolean;
+        class?: string;
+    } = $props();
 
     function getIcon(iconName: string) {
         switch (iconName) {
@@ -40,22 +60,10 @@
                 return null;
         }
     }
-    export let code: string;
-    export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh' | 'yml' | 'swift';
-    export let withLineNumbers = false;
-    export let withCopy = false;
-    export let noMargin = false;
-    export let noBoxPadding = false;
-    export let allowScroll = false;
-
-    let classes = '';
-    export { classes as class };
 
     Prism.plugins.customClass.prefix('prism-');
 
-    afterUpdate(async () => {
-        Prism.highlightAll();
-    });
+    $effect(() => Prism.highlightAll());
 </script>
 
 <section
@@ -85,7 +93,7 @@
         class:line-numbers={withLineNumbers}><code>{code}</code></pre>
 </section>
 
-<!-- svelte-ignore css-unused-selector -->
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss" global>
     @import 'prismjs/themes/prism.css';
     @import 'prismjs/plugins/line-numbers/prism-line-numbers.css';

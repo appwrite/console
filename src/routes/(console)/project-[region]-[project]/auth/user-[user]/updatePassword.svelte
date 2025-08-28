@@ -13,7 +13,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .users.updatePassword($user.$id, newPassword);
+                .users.updatePassword({ userId: $user.$id, password: newPassword });
             newPassword = null;
             addNotification({
                 message: 'Password has been updated',

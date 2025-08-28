@@ -42,14 +42,12 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
     async function createAndroidPlatform() {
         try {
             isCreatingPlatform = true;
-            await sdk.forConsole.projects.createPlatform(
+            await sdk.forConsole.projects.createPlatform({
                 projectId,
-                PlatformType.Android,
-                $createPlatform.name,
-                $createPlatform.key || undefined,
-                undefined,
-                undefined
-            );
+                type: PlatformType.Android,
+                name: $createPlatform.name,
+                key: $createPlatform.key || undefined
+            });
 
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {

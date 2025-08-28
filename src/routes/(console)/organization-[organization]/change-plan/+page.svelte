@@ -33,7 +33,9 @@
     import { onMount } from 'svelte';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
+    import OrganizationUsageLimits from '$lib/components/organizationUsageLimits.svelte';
     import { Query } from '@appwrite.io/console';
+    import type { OrganizationUsage } from '$lib/sdk/billing';
 
     export let data;
 
@@ -43,6 +45,9 @@
     let previousPage: string = base;
     let showExitModal = false;
     let formComponent: Form;
+    let usageLimitsComponent:
+        | { validateOrAlert: () => boolean; getSelectedProjects: () => string[] }
+        | undefined;
     let isSubmitting = writable(false);
     let collaborators: string[] =
         data?.members?.memberships
@@ -55,6 +60,7 @@
     let showCreditModal = false;
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
+    let orgUsage: OrganizationUsage;
 
     $: paymentMethods = null;
 
@@ -91,6 +97,12 @@
 
         selectedPlan =
             $currentPlan?.$id === BillingPlan.SCALE ? BillingPlan.SCALE : BillingPlan.PRO;
+
+        try {
+            orgUsage = await sdk.forConsole.billing.listUsage(data.organization.$id);
+        } catch {
+            orgUsage = undefined;
+        }
     });
 
     async function loadPaymentMethods() {
@@ -100,6 +112,12 @@
 
     async function handleSubmit() {
         if (isDowngrade) {
+            if (selectedPlan === BillingPlan.FREE && usageLimitsComponent?.validateOrAlert) {
+                const ok = usageLimitsComponent.validateOrAlert();
+                if (!ok) {
+                    return;
+                }
+            }
             await downgrade();
         } else if (isUpgrade) {
             await upgrade();
@@ -136,6 +154,18 @@
 
     async function downgrade() {
         try {
+            // If downgrading to FREE and we have project limits, select projects first
+            if (selectedPlan === BillingPlan.FREE && usageLimitsComponent) {
+                const selected = usageLimitsComponent.getSelectedProjects();
+                if (selected.length > 0) {
+                    // Send selected projects BEFORE downgrading
+                    await sdk.forConsole.billing.updateSelectedProjects(
+                        data.organization.$id,
+                        selected
+                    );
+                }
+            }
+
             await sdk.forConsole.billing.updatePlan(
                 data.organization.$id,
                 selectedPlan,
@@ -293,10 +323,7 @@
                         </Alert.Inline>
                     {/if}
 
-                    <PlanSelection
-                        bind:billingPlan={selectedPlan}
-                        selfService={data.selfService}
-                        anyOrgFree={data.hasFreeOrgs} />
+                    <PlanSelection bind:billingPlan={selectedPlan} selfService={data.selfService} />
 
                     {#if isDowngrade && selectedPlan === BillingPlan.FREE && data.hasFreeOrgs}
                         <Alert.Inline
@@ -330,6 +357,15 @@
                                 This will be reflected in your next invoice.
                             </Alert.Inline>
                         {/if}
+                    {/if}
+
+                    {#if isDowngrade && selectedPlan === BillingPlan.FREE}
+                        <OrganizationUsageLimits
+                            bind:this={usageLimitsComponent}
+                            organization={data.organization}
+                            projects={data.allProjects?.projects || []}
+                            members={data.members?.memberships || []}
+                            storageUsage={orgUsage?.storageTotal ?? 0} />
                     {/if}
                 </Layout.Stack>
             </Fieldset>

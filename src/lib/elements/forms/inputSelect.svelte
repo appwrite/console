@@ -6,6 +6,7 @@
     export let label: string | undefined = undefined;
     export let value: string | number | boolean | null;
     export let helper: string | undefined = undefined;
+    export let autofocus: boolean | undefined = undefined;
     export let optionalText: string | number | boolean | null | undefined = undefined;
     export let placeholder = '';
     export let required = false;
@@ -54,6 +55,7 @@
     {optionalText}
     {placeholder}
     {disabled}
+    {autofocus}
     helper={error ?? helper}
     {required}
     state={error ? 'error' : 'default'}
