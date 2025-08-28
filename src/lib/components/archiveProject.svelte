@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { DropList, GridItem1 } from '$lib/components';
+    import { DropList, GridItem1, CardContainer } from '$lib/components';
     import {
         Badge,
         Icon,
@@ -8,8 +8,7 @@
         Tag,
         Accordion,
         ActionMenu,
-        Popover,
-        Layout
+        Popover
     } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
@@ -26,6 +25,18 @@
     import { getPlatformInfo } from '$lib/helpers/platform';
     import type { Models } from '@appwrite.io/console';
     import type { ComponentType } from 'svelte';
+    import { organization, currentPlan } from '$lib/stores/organization';
+    import { BillingPlan } from '$lib/constants';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { sdk } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { Modal } from '$lib/components';
+    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isCloud } from '$lib/system';
+    import { regions as regionsStore } from '$lib/stores/organization';
 
     // props
     interface Props {
@@ -36,6 +47,8 @@
 
     // Track Read-only info droplist per archived project
     let readOnlyInfoOpen = $state<Record<string, boolean>>({});
+    let showUnarchiveModal = $state(false);
+    let projectToUnarchive = $state<Models.Project | null>(null);
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -61,6 +74,84 @@
                 return IconCode;
         }
     }
+
+    // Check if unarchive should be disabled
+    function isUnarchiveDisabled(): boolean {
+        const org = $organization;
+        const plan = $currentPlan;
+
+        if (!org || !plan) return true;
+
+        if (org.billingPlan === BillingPlan.FREE) {
+            const currentProjectCount = org.projects?.length || 0;
+            const projectLimit = plan.projects || 0;
+
+            return currentProjectCount >= projectLimit;
+        }
+
+        return false;
+    }
+
+    function handleMigrateProject(project: Models.Project) {
+        goto(`${base}/project-${project.region}-${project.$id}/settings/migrations`);
+    }
+
+    // Handle unarchive project action
+    async function handleUnarchiveProject(project: Models.Project) {
+        projectToUnarchive = project;
+        showUnarchiveModal = true;
+    }
+
+    // Confirm unarchive action
+    async function confirmUnarchive() {
+        if (!projectToUnarchive) return;
+
+        try {
+            const org = $organization;
+            if (!org) {
+                addNotification({
+                    type: 'error',
+                    message: 'Organization not found'
+                });
+                return;
+            }
+
+            const currentSelectedProjects = org.projects || [];
+            const updatedProjects = [...currentSelectedProjects, projectToUnarchive.$id];
+
+            await sdk.forConsole.billing.updateSelectedProjects(org.$id, updatedProjects);
+
+            await invalidate(Dependencies.ORGANIZATION);
+
+            addNotification({
+                type: 'success',
+                message: `${projectToUnarchive.name} has been unarchived`
+            });
+
+            showUnarchiveModal = false;
+            projectToUnarchive = null;
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message || 'Failed to unarchive project'
+            });
+        }
+    }
+
+    function cancelUnarchive() {
+        showUnarchiveModal = false;
+        projectToUnarchive = null;
+    }
+
+    function findRegion(project: Models.Project) {
+        return $regionsStore.regions.find((region) => region.$id === project.region);
+    }
+
+    function formatName(name: string, limit: number = 19) {
+        const mobileLimit = 16;
+        const actualLimit = $isSmallViewport ? mobileLimit : limit;
+        return name ? (name.length > actualLimit ? `${name.slice(0, actualLimit)}...` : name) : '-';
+    }
 </script>
 
 {#if projectsToArchive.length > 0}
@@ -71,26 +162,27 @@
                 data.
             </Typography.Text>
 
-            <Layout.Stack gap="l" style="margin-top: 16px; margin-bottom: 36px;">
-                <Layout.Grid gap="xl" columns={3} columnsL={2} columnsS={1}>
+            <div style="margin-top: 16px; margin-bottom: 36px;">
+                <CardContainer disableEmpty={true} total={projectsToArchive.length}>
                     {#each projectsToArchive as project}
                         {@const platforms = filterPlatforms(
                             project.platforms.map((platform) => getPlatformInfo(platform.type))
                         )}
+                        {@const formatted = formatName(project.name)}
                         <GridItem1>
                             <svelte:fragment slot="eyebrow">
                                 {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
                             </svelte:fragment>
-                            <svelte:fragment slot="title">{project.name}</svelte:fragment>
+                            <svelte:fragment slot="title">{formatted}</svelte:fragment>
                             <svelte:fragment slot="status">
-                                <span style="display: flex; align-items: center; gap: 8px;">
+                                <div class="status-container">
                                     <DropList
                                         bind:show={readOnlyInfoOpen[project.$id]}
                                         placement="bottom-start"
                                         noArrow>
                                         <Tag
                                             size="s"
-                                            style="white-space: nowrap; max-width: none;"
+                                            style="white-space: nowrap;"
                                             on:click={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -128,15 +220,20 @@
                                             <Icon icon={IconDotsHorizontal} size="s" />
                                         </Button>
                                         <ActionMenu.Root slot="tooltip">
-                                            <ActionMenu.Item.Button leadingIcon={IconInboxIn}
+                                            <ActionMenu.Item.Button
+                                                leadingIcon={IconInboxIn}
+                                                disabled={isUnarchiveDisabled()}
+                                                on:click={() => handleUnarchiveProject(project)}
                                                 >Unarchive project</ActionMenu.Item.Button>
                                             <ActionMenu.Item.Button
                                                 leadingIcon={IconSwitchHorizontal}
+                                                on:click={() => handleMigrateProject(project)}
                                                 >Migrate project</ActionMenu.Item.Button>
                                         </ActionMenu.Root>
                                     </Popover>
-                                </span>
+                                </div>
                             </svelte:fragment>
+
                             {#each platforms.slice(0, 2) as platform}
                                 {@const icon = getIconForPlatform(platform.icon)}
                                 <Badge
@@ -146,10 +243,53 @@
                                     <Icon {icon} size="s" slot="start" />
                                 </Badge>
                             {/each}
+
+                            {#if platforms.length > 3}
+                                <Badge
+                                    variant="secondary"
+                                    content={`+${platforms.length - 2}`}
+                                    style="width: max-content;" />
+                            {/if}
+
+                            <svelte:fragment slot="icons">
+                                {#if isCloud && $regionsStore?.regions}
+                                    {@const region = findRegion(project)}
+                                    <Typography.Text>{region.name}</Typography.Text>
+                                {/if}
+                            </svelte:fragment>
                         </GridItem1>
                     {/each}
-                </Layout.Grid>
-            </Layout.Stack>
+                </CardContainer>
+            </div>
         </Accordion>
     </div>
 {/if}
+
+<!-- Unarchive Confirmation Modal -->
+<Modal bind:show={showUnarchiveModal} title="Unarchive project">
+    <div class="modal-content">
+        <p>Are you sure you want to unarchive <strong>{projectToUnarchive?.name}</strong>?</p>
+        <p>This will move the project back to your active projects list.</p>
+    </div>
+
+    <svelte:fragment slot="actions">
+        <Button secondary on:click={cancelUnarchive}>Cancel</Button>
+        <Button on:click={confirmUnarchive}>Unarchive</Button>
+    </svelte:fragment>
+</Modal>
+
+<style>
+    .status-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .modal-content {
+        padding: var(--space-4) 0;
+    }
+
+    .modal-content p {
+        margin-bottom: var(--space-3);
+    }
+</style>
