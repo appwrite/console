@@ -61,6 +61,7 @@
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
     let orgUsage: OrganizationUsage;
+    let allProjects: { projects: any[] } | undefined;
 
     $: paymentMethods = null;
 
@@ -102,6 +103,15 @@
             orgUsage = await sdk.forConsole.billing.listUsage(data.organization.$id);
         } catch {
             orgUsage = undefined;
+        }
+
+        try {
+            allProjects = await sdk.forConsole.projects.list([
+                Query.equal('teamId', data.organization.$id),
+                Query.limit(1000)
+            ]);
+        } catch {
+            allProjects = { projects: [] } as any;
         }
     });
 
@@ -363,7 +373,7 @@
                         <OrganizationUsageLimits
                             bind:this={usageLimitsComponent}
                             organization={data.organization}
-                            projects={data.allProjects?.projects || []}
+                            projects={allProjects?.projects || []}
                             members={data.members?.memberships || []}
                             storageUsage={orgUsage?.storageTotal ?? 0} />
                     {/if}
