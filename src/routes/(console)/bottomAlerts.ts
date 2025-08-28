@@ -5,8 +5,6 @@ import TablesApiLight from '$lib/images/promos/tables-api-light.png';
 import TablesApiDark from '$lib/images/promos/tables-api-dark.png';
 import TimestampOverridesDark from '$lib/images/promos/timestamp-overrides-dark.png';
 import TimestampOverridesLight from '$lib/images/promos/timestamp-overrides-light.png';
-import AppwriteGeneralAvailabiltyLight from '$lib/images/promos/appwrite-general-availability-light.png';
-import AppwriteGeneralAvailabiltyDark from '$lib/images/promos/appwrite-general-availability-dark.png';
 import OptInRelationDark from '$lib/images/promos/opt-relation-dark.png';
 import OptInRelationLight from '$lib/images/promos/opt-relation-light.png';
 
