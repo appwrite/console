@@ -7,6 +7,8 @@ import TimestampOverridesDark from '$lib/images/promos/timestamp-overrides-dark.
 import TimestampOverridesLight from '$lib/images/promos/timestamp-overrides-light.png';
 import AppwriteGeneralAvailabiltyLight from '$lib/images/promos/appwrite-general-availability-light.png';
 import AppwriteGeneralAvailabiltyDark from '$lib/images/promos/appwrite-general-availability-dark.png';
+import OptInRelationDark from '$lib/images/promos/opt-relation-dark.png';
+import OptInRelationLight from '$lib/images/promos/opt-relation-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -53,27 +55,27 @@ if (isCloud) {
         show: true
     };
 
-    const appwriteGeneralAvailabiltyPromo: BottomModalAlertItem = {
-        id: 'modal:appwrite_general_availability_announcement',
+    const optInRelationPromo: BottomModalAlertItem = {
+        id: 'modal:opt_in_relation_announcement',
         src: {
-            dark: AppwriteGeneralAvailabiltyDark,
-            light: AppwriteGeneralAvailabiltyLight
+            dark: OptInRelationDark,
+            light: OptInRelationLight
         },
-        title: 'Now Generally Available',
-        message: 'After 26 months of Appwrite Cloud, we are ready to remove the beta tag.',
+        title: 'Introducing Opt-in relationship loading',
+        message:
+            'Gain full control over which related documents to fetch and drastically reduce payload sizes.',
         plan: 'free',
         importance: 8,
-        scope: 'everywhere',
+        scope: 'project',
         cta: {
-            text: 'Learn more',
-            link: () => 'https://apwr.dev/ygTXfxA',
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-opt-in-relationship-loading',
             external: true,
             hideOnClick: true
         },
         show: true
     };
-
-    listOfPromotions.push(tablesApiPromo, timestampOverridesPromo, appwriteGeneralAvailabiltyPromo);
+    listOfPromotions.push(optInRelationPromo, tablesApiPromo, timestampOverridesPromo);
 }
 
 export function addBottomModalAlerts() {
