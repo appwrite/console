@@ -4,10 +4,19 @@
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
+    import { type ComponentType, onMount } from 'svelte';
     import { isRelationshipToMany } from '../../store';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+
+    type SelectOption = {
+        label: string;
+        value: string | null;
+        data?: string[];
+        disabled?: boolean;
+        badge?: string;
+        leadingIcon?: ComponentType;
+    };
 
     export let id: string;
     export let label: string;
@@ -110,6 +119,58 @@
         showInput = false;
     }
 
+    function generateOptions(
+        loading: boolean,
+        rows: Models.Row[] | undefined,
+        column: Models.ColumnRelationship,
+        editing: boolean
+    ): SelectOption[] {
+        if (loading) {
+            return [{ label: 'Loading...', value: null, disabled: true }];
+        }
+
+        let baseOptions: SelectOption[] =
+            rows?.map((row) => {
+                const names = preferences
+                    .getDisplayNames(column?.relatedTable)
+                    .filter((name) => name !== '$id');
+
+                const values = names
+                    .map((name) => row?.[name])
+                    .filter((value) => value != null && typeof value === 'string' && value !== '');
+
+                const displayValues = !editing
+                    ? values
+                    : values.map((value) => (value.length > 5 ? value.slice(0, 5) + '...' : value));
+
+                let label: string;
+                if (!values.length) {
+                    label = row.$id;
+                } else {
+                    label = `${row.$id} (${displayValues.join(' | ')})`;
+                }
+
+                return {
+                    label,
+                    value: row.$id,
+                    data: names.map((name) => row?.[name])
+                };
+            }) ?? [];
+
+        if (!isRelationshipToMany(column) && baseOptions.length && value && limited) {
+            baseOptions = [
+                {
+                    value: null,
+                    badge: 'Unlink',
+                    label: 'Remove relationship'
+                },
+                ...baseOptions
+            ];
+        }
+
+        return baseOptions;
+    }
+
     // Reactive statements
     $: getRows(search).then((res) => (rowList = res));
 
@@ -122,42 +183,7 @@
 
     $: totalCount = relatedList?.length ?? 0;
 
-    $: options = loadingRelationships
-        ? [
-              {
-                  label: 'Loading...',
-                  value: null,
-                  disabled: true
-              }
-          ]
-        : (rowList?.rows?.map((row) => {
-              const names = preferences
-                  .getDisplayNames(column?.relatedTable)
-                  .filter((name) => name !== '$id');
-
-              const values = names
-                  .map((name) => row?.[name])
-                  // always supposed to be a string but just being a bit safe here
-                  .filter((value) => value != null && typeof value === 'string' && value !== '');
-
-              const displayValues = !editing
-                  ? values
-                  : // on non edit routes like create, there's enough space!
-                    values.map((value) => (value.length > 5 ? value.slice(0, 5) + '...' : value));
-
-              let label: string;
-              if (!values.length) {
-                  label = row.$id;
-              } else {
-                  label = `${row.$id} (${displayValues.join(' | ')})`;
-              }
-
-              return {
-                  label,
-                  value: row.$id,
-                  data: names.map((name) => row?.[name])
-              };
-          }) ?? []);
+    $: options = generateOptions(loadingRelationships, rowList?.rows, column, editing);
 
     $: hasItems = totalCount > 0;
 
@@ -297,13 +323,35 @@
         </Layout.Stack>
     </Layout.Stack>
 {:else}
-    <InputSelect
-        {id}
-        {options}
-        autofocus={limited}
-        bind:value={singleRel}
-        required={column.required}
-        label={limited ? undefined : label}
-        placeholder={`Select ${column.key}`}
-        on:change={() => (value = rowList.rows.find((row) => row.$id === singleRel))} />
+    <Layout.Stack direction="row" alignItems="center" gap="s">
+        <InputSelect
+            {id}
+            {options}
+            autofocus={limited}
+            bind:value={singleRel}
+            required={column.required}
+            label={limited ? undefined : label}
+            placeholder={`Select ${column.key}`}
+            on:change={() => {
+                if (singleRel === null) {
+                    value = null;
+                } else {
+                    value = rowList.rows.find((row) => row.$id === singleRel);
+                }
+            }} />
+
+        {#if !limited && singleRel}
+            <div style:padding-block-start="2.25rem">
+                <Button
+                    icon
+                    extraCompact
+                    on:click={() => {
+                        value = null;
+                        singleRel = null;
+                    }}>
+                    <Icon icon={IconX} size="s" />
+                </Button>
+            </div>
+        {/if}
+    </Layout.Stack>
 {/if}
