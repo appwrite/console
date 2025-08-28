@@ -111,6 +111,10 @@
         return isValid;
     }
 
+    export function getSelectedProjects(): string[] {
+        return selectedProjects.filter((id) => projects.some((p) => p.$id === id));
+    }
+
     async function updateSelected() {
         error = null;
 
@@ -158,20 +162,20 @@
             </Layout.Stack>
         </Alert.Inline>
     {/if}
-    <div class="u-overflow-x-auto">
+    <div class="responsive-table">
         <Table.Root
             columns={[
-                { id: 'resource' },
-                { id: 'freeLimit' },
-                { id: 'excessUsage' },
-                { id: 'manage' }
+                { id: 'resource', width: { min: 160 } },
+                { id: 'freeLimit', width: { min: 100 } },
+                { id: 'excessUsage', width: { min: 120 } },
+                { id: 'manage', width: { min: 110 } }
             ]}
             let:root>
             <svelte:fragment slot="header" let:root>
                 <Table.Header.Cell column="resource" {root}>Resource</Table.Header.Cell>
                 <Table.Header.Cell column="freeLimit" {root}>Free limit</Table.Header.Cell>
                 <Table.Header.Cell column="excessUsage" {root}>
-                    <div style="overflow: visible; position: relative; z-index: 10;">
+                    <div class="tooltip-container">
                         <Layout.Stack direction="row" alignItems="center" gap="xs">
                             <Typography.Text>Excess usage</Typography.Text>
                             <Tooltip placement="top">
@@ -336,3 +340,57 @@
         </div>
     </svelte:fragment>
 </Modal>
+
+<style>
+    /* Responsive table container */
+    .responsive-table {
+        overflow-x: auto;
+        width: 100%;
+        min-width: 0;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* toooltip positioning fix */
+    .tooltip-container {
+        position: absolute;
+        z-index: 1000;
+        overflow: visible;
+    }
+
+    .tooltip-container :global(.tooltip) {
+        z-index: 1001 !important;
+    }
+
+    /* Small viewport optimizations */
+    @media (max-width: 640px) {
+        .responsive-table {
+            margin-inline: -1rem;
+            padding-inline: 1rem;
+            z-index: 5;
+        }
+
+        .responsive-table :global(td),
+        .responsive-table :global(th) {
+            padding: 0.5rem 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .responsive-table :global(td:nth-child(1) .badge) {
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .responsive-table :global(td:nth-child(1) .layout-stack) {
+            flex-wrap: nowrap;
+            gap: 6px !important;
+        }
+
+        .responsive-table :global(th:nth-child(4)),
+        .responsive-table :global(td:nth-child(4)) {
+            width: 96px;
+            min-width: 96px;
+        }
+    }
+</style>

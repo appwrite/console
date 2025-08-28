@@ -45,7 +45,9 @@
     let previousPage: string = base;
     let showExitModal = false;
     let formComponent: Form;
-    let usageLimitsComponent: any;
+    let usageLimitsComponent:
+        | { validateOrAlert: () => boolean; getSelectedProjects: () => string[] }
+        | undefined;
     let isSubmitting = writable(false);
     let collaborators: string[] =
         data?.members?.memberships
@@ -152,6 +154,18 @@
 
     async function downgrade() {
         try {
+            // If downgrading to FREE and we have project limits, select projects first
+            if (selectedPlan === BillingPlan.FREE && usageLimitsComponent) {
+                const selected = usageLimitsComponent.getSelectedProjects();
+                if (selected.length > 0) {
+                    // Send selected projects BEFORE downgrading
+                    await sdk.forConsole.billing.updateSelectedProjects(
+                        data.organization.$id,
+                        selected
+                    );
+                }
+            }
+
             await sdk.forConsole.billing.updatePlan(
                 data.organization.$id,
                 selectedPlan,
