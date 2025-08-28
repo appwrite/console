@@ -7,13 +7,21 @@
     import { writable } from 'svelte/store';
     import ColumnForm from './columns/columnForm.svelte';
     import { Permissions } from '$lib/components/permissions';
-    import type { Columns } from '../store';
+    import { type Columns } from '../store';
     import { ID, type Models } from '@appwrite.io/console';
     import { Alert, Layout, Typography, Selector } from '@appwrite.io/pink-svelte';
     import SideSheet from '../layout/sidesheet.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { tick } from 'svelte';
+    import { isRelationship, isRelationshipToMany } from './store';
+
+    type CreateRow = {
+        id?: string;
+        row: object;
+        permissions: string[];
+        columns: Columns[];
+    };
 
     let {
         table,
@@ -25,16 +33,15 @@
         existingData: Models.Row | null;
     } = $props();
 
+    let createMore = $state(false);
     let isSubmitting = $state(false);
     let columnFormWrapper: HTMLDivElement | null = $state(null);
-    let createMore = $state(false);
 
-    type CreateRow = {
-        id?: string;
-        row: object;
-        permissions: string[];
-        columns: Columns[];
-    };
+    let createRow = writable<CreateRow>(computeInitialCreateRow());
+
+    function resetCreateRow(): void {
+        createRow.set(computeInitialCreateRow());
+    }
 
     function computeInitialCreateRow(): CreateRow {
         const availableColumns = table.columns.filter((a) => a.status === 'available');
@@ -55,14 +62,38 @@
         };
     }
 
-    function resetCreateRow(): void {
-        createRow.set(computeInitialCreateRow());
-    }
+    // for one to *, we need the IDs,
+    // for many to *, we need the full row object.
+    function prepareRowPayload(createRowObject: CreateRow): object {
+        const { row, columns } = createRowObject;
 
-    let createRow = writable<CreateRow>(computeInitialCreateRow());
+        const payload = structuredClone(row);
+
+        for (const column of columns) {
+            if (
+                isRelationship(column) &&
+                !isRelationshipToMany(column)
+            ) {
+                const key = column.key;
+                const value = payload[key];
+
+                if (value && typeof value === 'object') {
+                    if (Array.isArray(value)) {
+                        payload[key] = value.map((item) => item?.$id).filter(Boolean);
+                    } else {
+                        payload[key] = (value as { $id: string })['$id'];
+                    }
+                }
+            }
+        }
+
+        return payload;
+    }
 
     async function create(): Promise<boolean> {
         isSubmitting = true;
+
+        $createRow.row = prepareRowPayload($createRow);
 
         try {
             await sdk.forProject(page.params.region, page.params.project).tablesDB.createRow({
