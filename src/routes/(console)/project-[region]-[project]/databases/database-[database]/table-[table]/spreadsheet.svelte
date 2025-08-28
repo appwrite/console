@@ -11,7 +11,12 @@
     import { type Models, Query } from '@appwrite.io/console';
     import { type ComponentType, onDestroy, onMount } from 'svelte';
     import type { PageData } from './$types';
-    import { isRelationship, isRelationshipToMany, isString } from './rows/store';
+    import {
+        buildWildcardColumnsQuery,
+        isRelationship,
+        isRelationshipToMany,
+        isString
+    } from './rows/store';
     import {
         columns,
         table,
@@ -607,7 +612,8 @@
                 queries: [
                     getCorrectOrderQuery(),
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
-                    Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT))
+                    Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
+                    ...buildWildcardColumnsQuery($table)
                 ]
             });
 
@@ -633,7 +639,8 @@
                     queries: [
                         getCorrectOrderQuery(),
                         Query.limit(SPREADSHEET_PAGE_LIMIT),
-                        Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT))
+                        Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
+                        ...buildWildcardColumnsQuery($table)
                     ]
                 });
 
