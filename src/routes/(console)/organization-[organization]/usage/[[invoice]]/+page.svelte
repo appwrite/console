@@ -8,7 +8,8 @@
         getServiceLimit,
         showUsageRatesModal,
         type Tier,
-        upgradeURL
+        upgradeURL,
+        useNewPricingModal
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
@@ -76,13 +77,15 @@
     {#if $organization.billingPlan === BillingPlan.SCALE}
         <p class="text">
             On the Scale plan, you'll be charged only for any usage that exceeds the thresholds per
-            resource listed below. <Link.Button on:click={() => ($showUsageRatesModal = true)}
+            resource listed below. <Link.Button
+                on:click={() => ($showUsageRatesModal = $useNewPricingModal)}
                 >Learn more</Link.Button>
         </p>
     {:else if $organization.billingPlan === BillingPlan.PRO}
         <p class="text">
             On the Pro plan, you'll be charged only for any usage that exceeds the thresholds per
-            resource listed below. <Link.Button on:click={() => ($showUsageRatesModal = true)}
+            resource listed below. <Link.Button
+                on:click={() => ($showUsageRatesModal = $useNewPricingModal)}
                 >Learn more</Link.Button>
         </p>
     {:else if $organization.billingPlan === BillingPlan.FREE}

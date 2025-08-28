@@ -235,6 +235,7 @@ export const tierEnterprise: TierData = {
 };
 
 export const showUsageRatesModal = writable<boolean>(false);
+export const useNewPricingModal = derived(currentPlan, ($plan) => $plan?.usagePerProject === true);
 
 export function checkForUsageFees(plan: Tier, id: PlanServices) {
     if (plan === BillingPlan.PRO || plan === BillingPlan.SCALE) {

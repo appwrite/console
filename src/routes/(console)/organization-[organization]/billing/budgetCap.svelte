@@ -4,7 +4,7 @@
     import { CardGrid } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, InputNumber, InputSwitch } from '$lib/elements/forms';
-    import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
+    import { showUsageRatesModal, upgradeURL, useNewPricingModal } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -72,7 +72,7 @@
                         Budget cap limits do not include the base amount of your plan. <button
                             class="link"
                             type="button"
-                            on:click={() => ($showUsageRatesModal = true)}
+                            on:click={() => ($showUsageRatesModal = $useNewPricingModal)}
                             >Learn more about usage rates.
                         </button>
                     </svelte:fragment>

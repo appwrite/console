@@ -5,6 +5,8 @@ import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
+import { Query } from '@appwrite.io/console';
+import type { UsageProjectInfo } from '../store';
 
 export const load: PageLoad = async ({ parent, depends }) => {
     const { organization, scopes, currentPlan, countryList, locale } = await parent();
@@ -57,6 +59,43 @@ export const load: PageLoad = async ({ parent, depends }) => {
               organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))
         : false;
 
+    // load organization usage data and project metadata for planSummary component
+    let organizationUsage = null;
+    let usageProjects: Record<string, UsageProjectInfo> = {};
+
+    try {
+        organizationUsage = await sdk.forConsole.billing.listUsage(organization.$id);
+    } catch (e) {
+        organizationUsage = null;
+    }
+
+    try {
+        const neededIds = new Set<string>();
+        const addId = (id?: string) => id && neededIds.add(id);
+
+        if (organizationUsage?.projects?.length) {
+            for (const p of organizationUsage.projects) addId(p.projectId);
+        } else if (billingAggregation?.projectBreakdown?.length) {
+            for (const p of billingAggregation.projectBreakdown) addId(p.$id);
+        }
+
+        if (neededIds.size > 0) {
+            const ids = Array.from(neededIds);
+            const projectsResponse = await sdk.forConsole.projects.list([
+                Query.equal('$id', ids),
+                Query.limit(ids.length)
+            ]);
+            for (const project of projectsResponse.projects) {
+                usageProjects[project.$id] = {
+                    name: project.name,
+                    region: project.region
+                };
+            }
+        }
+    } catch (e) {
+        // ignore error
+    }
+
     const [paymentMethods, addressList, billingAddress, availableCredit] = await Promise.all([
         sdk.forConsole.billing.listPaymentMethods(),
         sdk.forConsole.billing.listAddresses(),
@@ -76,6 +115,8 @@ export const load: PageLoad = async ({ parent, depends }) => {
         billingInvoice,
         areCreditsSupported,
         countryList,
-        locale
+        locale,
+        organizationUsage,
+        usageProjects
     };
 };

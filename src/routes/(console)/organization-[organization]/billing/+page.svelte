@@ -2,12 +2,13 @@
     import { Container } from '$lib/layout';
     import BudgetCap from './budgetCap.svelte';
     import PlanSummary from './planSummary.svelte';
+    import PlanSummaryOld from './planSummaryOld.svelte';
     import BillingAddress from './billingAddress.svelte';
     import PaymentMethods from './paymentMethods.svelte';
     import AvailableCredit from './availableCredit.svelte';
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
-    import { failedInvoice, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { failedInvoice, tierToPlan, upgradeURL, useNewPricingModal } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
@@ -17,7 +18,7 @@
     import RetryPaymentModal from './retryPaymentModal.svelte';
     import { selectedInvoice, showRetryModal } from './store';
     import { Button } from '$lib/elements/forms';
-    import { Alert, Typography } from '@appwrite.io/pink-svelte';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { base } from '$app/paths';
@@ -127,12 +128,21 @@
             until your billing period ends on {toLocaleDate(organization.billingNextInvoiceDate)}.
         </Alert.Inline>
     {/if}
-    <Typography.Title>Billing</Typography.Title>
-    <PlanSummary
-        availableCredit={data?.availableCredit}
-        currentPlan={data?.currentPlan}
-        currentAggregation={data?.billingAggregation}
-        currentInvoice={data?.billingInvoice} />
+    {#if $useNewPricingModal}
+        <PlanSummary
+            availableCredit={data?.availableCredit}
+            currentPlan={data?.currentPlan}
+            currentAggregation={data?.billingAggregation}
+            currentInvoice={data?.billingInvoice}
+            organizationUsage={data?.organizationUsage}
+            usageProjects={data?.usageProjects} />
+    {:else}
+        <PlanSummaryOld
+            availableCredit={data?.availableCredit}
+            currentPlan={data?.currentPlan}
+            currentAggregation={data?.billingAggregation}
+            currentInvoice={data?.billingInvoice} />
+    {/if}
     <PaymentHistory />
     <PaymentMethods organization={data?.organization} methods={data?.paymentMethods} />
     <BillingAddress
