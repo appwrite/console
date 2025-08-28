@@ -207,7 +207,7 @@ export type AggregationTeam = {
      * Aggregation billing plan
      */
     plan: string;
-    projectBreakdown: ProjectBreakdown[]
+    projectBreakdown: ProjectBreakdown[];
 };
 
 export type ProjectBreakdown = {
@@ -215,13 +215,13 @@ export type ProjectBreakdown = {
     name: string;
     amount: number;
     resources: InvoiceUsage[];
-}
+};
 
 export type InvoiceUsage = {
     resourceId: string;
     value: number;
     amount: number;
-}
+};
 
 export type AvailableCredit = {
     available: number;
@@ -388,6 +388,8 @@ export type Plan = {
     projects: number;
     databases: number;
     databasesAllowEncrypt: boolean;
+    databasesReads: number;
+    databasesWrites: number;
     buckets: number;
     fileSize: number;
     functions: number;
@@ -402,6 +404,10 @@ export type Plan = {
         realtime: AdditionalResource;
         storage: AdditionalResource;
         users: AdditionalResource;
+        databasesReads: AdditionalResource;
+        databasesWrites: AdditionalResource;
+        GBHours: AdditionalResource;
+        imageTransformations: AdditionalResource;
     };
     addons: {
         seats: PlanAddon;

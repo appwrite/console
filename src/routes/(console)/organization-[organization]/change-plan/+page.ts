@@ -7,9 +7,7 @@ export const load: PageLoad = async ({ depends, parent }) => {
     const { members, currentPlan, organizations } = await parent();
     depends(Dependencies.UPGRADE_PLAN);
 
-    const [plans] = await Promise.all([
-        sdk.forConsole.billing.listPlans()
-    ]);
+    const [plans] = await Promise.all([sdk.forConsole.billing.listPlans()]);
     let plan: BillingPlan;
 
     if (currentPlan?.$id === BillingPlan.SCALE) {
