@@ -70,10 +70,7 @@
         const payload = structuredClone(row);
 
         for (const column of columns) {
-            if (
-                isRelationship(column) &&
-                !isRelationshipToMany(column)
-            ) {
+            if (isRelationship(column) && !isRelationshipToMany(column)) {
                 const key = column.key;
                 const value = payload[key];
 
