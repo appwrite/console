@@ -19,6 +19,7 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { currentPlan } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
+    import { noWidthTransition } from '$lib/stores/sidebar';
 
     const project = page.params.project;
     const databaseId = page.params.database;
@@ -141,6 +142,8 @@
     $registerSearchers(tablesSearcher);
 
     $: $updateCommandGroupRanks({ tables: 10 });
+
+    $noWidthTransition = true;
 </script>
 
 <svelte:head>
