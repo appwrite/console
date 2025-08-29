@@ -252,8 +252,9 @@
 
         let columns = $table.columns;
         const hasAnyRelationships = columns.some((column) => isRelationship(column));
+        const filteredColumns = columns.filter((col) => col.type !== 'relationship');
 
-        if (!columns.length) {
+        if (!filteredColumns.length) {
             try {
                 columns = await generateColumns($project, page.params.database, page.params.table);
 
