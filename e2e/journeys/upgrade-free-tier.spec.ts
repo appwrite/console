@@ -13,7 +13,9 @@ test('upgrade - free tier', async ({ page }) => {
 
         await page
             .locator('#no-payments-card-stack')
-            .getByRole('button', { name: 'add' }).first().click();
+            .getByRole('button', { name: 'add' })
+            .first()
+            .click();
 
         await enterCreditCard(page);
 
