@@ -11,6 +11,7 @@
     import { Button } from '$lib/elements/forms';
     import { Icon } from '@appwrite.io/pink-svelte';
     import { IconX } from '@appwrite.io/pink-icons-svelte';
+    import { afterNavigate } from '$app/navigation';
 
     export let title: string;
     export let type: 'info' | 'success' | 'warning' | 'error' | 'default' = 'info';
@@ -33,8 +34,12 @@
             sidebar.style.top = `${alertHeight + ($isTabletViewport ? 0 : header.getBoundingClientRect().height)}px`;
             sidebar.style.height = `calc(100vh - (${alertHeight + ($isTabletViewport ? 0 : header.getBoundingClientRect().height)}px))`;
 
-            // for sidebar and sub-navigation!
-            bannerSpacing.set(`${alertHeight}px`);
+            if (alertHeight) {
+                // for sidebar and sub-navigation!
+                bannerSpacing.set(`${alertHeight}px`);
+            } else {
+                bannerSpacing.set(undefined);
+            }
         }
 
         if (contentSection) {
@@ -50,6 +55,8 @@
         container = null;
         setNavigationHeight();
     });
+
+    afterNavigate(() => setNavigationHeight());
 </script>
 
 <svelte:window on:resize={setNavigationHeight} />

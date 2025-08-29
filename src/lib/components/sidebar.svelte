@@ -34,7 +34,7 @@
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
-    import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
+    import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
@@ -73,8 +73,6 @@
         }
     }
 
-    $: state = $isTabletViewport ? 'closed' : getSidebarState();
-
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth', category: 'build' },
         { name: 'Databases', icon: IconDatabase, slug: 'databases', category: 'build' },
@@ -93,6 +91,13 @@
     const isSelected = (service: string): boolean => {
         return $page.route.id?.includes(service);
     };
+
+    $: state = $isTabletViewport
+        ? 'closed'
+        : // example: manual resize
+          isInDatabasesRoute($page.route)
+          ? 'icons'
+          : getSidebarState();
 </script>
 
 <div
@@ -359,15 +364,16 @@
     </Sidebar.Base>
 </div>
 
-{#if subNavigation}
-    <div
-        class="sub-navigation"
-        class:icons={state === 'icons'}
-        class:no-transitions={$noWidthTransition}
-        style:--banner-spacing={$bannerSpacing ? $bannerSpacing : undefined}>
-        <svelte:component this={subNavigation} />
-    </div>
-{/if}
+<div style:--banner-spacing={$bannerSpacing ? $bannerSpacing : undefined}>
+    {#if subNavigation}
+        <div
+            class="sub-navigation"
+            class:icons={state === 'icons'}
+            class:no-transitions={$noWidthTransition}>
+            <svelte:component this={subNavigation} />
+        </div>
+    {/if}
+</div>
 
 <style lang="scss">
     .sidebar {
@@ -634,7 +640,7 @@
             background-color: var(--bgcolor-neutral-primary, #fff);
             z-index: 14;
             position: fixed;
-            top: 48px;
+            top: var(--banner-spacing, 48px);
             transition: width 0.2s linear;
 
             &.icons {
