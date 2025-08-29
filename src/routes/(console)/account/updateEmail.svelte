@@ -28,6 +28,7 @@
                 type: 'success'
             });
             trackEvent(Submit.AccountUpdateEmail);
+            emailPassword = null;
         } catch (error) {
             addNotification({
                 message: error.message,
