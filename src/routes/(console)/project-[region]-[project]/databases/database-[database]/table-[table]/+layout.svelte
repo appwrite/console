@@ -62,7 +62,6 @@
     import { preferences } from '$lib/stores/preferences';
     import { buildRowUrl, isRelationship } from './rows/store';
     import { chunks } from '$lib/helpers/array';
-    import { copy } from '$lib/helpers/copy';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
