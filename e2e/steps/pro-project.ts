@@ -7,7 +7,7 @@ type Metadata = {
 };
 
 export async function enterCreditCard(page: Page) {
-    // click the add payment method and open the modal
+    // click the `add` button inside correct view layer
     await page
         .locator('#no-payments-card-stack')
         .getByRole('button', { name: 'add' })
