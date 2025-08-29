@@ -123,11 +123,11 @@
 
     async function handleSubmit() {
         if (isDowngrade) {
-            if (selectedPlan === BillingPlan.FREE && usageLimitsComponent?.validateOrAlert) {
+            // If target plan has a non-zero project limit, ensure selection made
+            const targetProjectsLimit = $plansInfo?.get(selectedPlan)?.projects ?? 0;
+            if (targetProjectsLimit > 0 && usageLimitsComponent?.validateOrAlert) {
                 const ok = usageLimitsComponent.validateOrAlert();
-                if (!ok) {
-                    return;
-                }
+                if (!ok) return;
             }
             await downgrade();
         } else if (isUpgrade) {
@@ -165,24 +165,29 @@
 
     async function downgrade() {
         try {
-            // If downgrading to FREE and we have project limits, select projects first
-            if (selectedPlan === BillingPlan.FREE && usageLimitsComponent) {
-                const selected = usageLimitsComponent.getSelectedProjects();
-                if (selected.length > 0) {
-                    // Send selected projects BEFORE downgrading
-                    await sdk.forConsole.billing.updateSelectedProjects(
-                        data.organization.$id,
-                        selected
-                    );
-                }
-            }
-
+            // 1) ppdate the plan first
             await sdk.forConsole.billing.updatePlan(
                 data.organization.$id,
                 selectedPlan,
                 paymentMethodId,
                 null
             );
+
+            // 2) If the target plan has a project limit, apply selected projects now
+            const targetProjectsLimit = $plansInfo?.get(selectedPlan)?.projects ?? 0;
+            if (targetProjectsLimit > 0 && usageLimitsComponent) {
+                const selected = usageLimitsComponent.getSelectedProjects();
+                if (selected?.length) {
+                    try {
+                        await sdk.forConsole.billing.updateSelectedProjects(
+                            data.organization.$id,
+                            selected
+                        );
+                    } catch (projectError) {
+                        console.warn('Project selection failed after plan update:', projectError);
+                    }
+                }
+            }
 
             trackDowngradeFeedback();
 

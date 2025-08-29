@@ -8,12 +8,8 @@
 
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { Modal } from '$lib/components';
-    import { currentPlan } from '$lib/stores/organization';
     import { Alert } from '@appwrite.io/pink-svelte';
-    import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { billingProjectsLimitDate } from '$lib/stores/billing';
     import type { Organization } from '$lib/stores/organization';
@@ -21,7 +17,6 @@
 
     // Props
     let {
-        organization,
         projects = [],
         members = [],
         storageUsage = 0
@@ -44,12 +39,8 @@
         storage: getServiceLimit('storage', BillingPlan.FREE)
     });
 
-    //fallback to free limit when undefined
-    let allowedProjectsToKeep = $derived(
-        $currentPlan?.projects && $currentPlan.projects > 0
-            ? $currentPlan.projects
-            : freePlanLimits.projects
-    );
+    // When preparing to downgrade to Free, enforce Free plan limit locally (2)
+    let allowedProjectsToKeep = $derived(freePlanLimits.projects);
 
     let currentUsage = $derived({
         projects: projects?.length || 0,
@@ -115,37 +106,18 @@
         return selectedProjects.filter((id) => projects.some((p) => p.$id === id));
     }
 
-    async function updateSelected() {
+    function updateSelected() {
         error = null;
-
-        if (!organization?.$id) {
-            error = 'Missing organization ID.';
-            return;
-        }
-
         const filteredSelection = selectedProjects.filter((id) =>
             projects.some((p) => p.$id === id)
         );
-
         if (filteredSelection.length !== allowedProjectsToKeep) {
             error = `You must select exactly ${allowedProjectsToKeep} projects to keep.`;
             return;
         }
-
-        try {
-            await sdk.forConsole.billing.updateSelectedProjects(
-                organization.$id,
-                filteredSelection
-            );
-            showSelectProject = false;
-            invalidate(Dependencies.ORGANIZATION);
-            addNotification({
-                type: 'success',
-                message: `Projects updated for archiving`
-            });
-        } catch (e) {
-            error = e.message;
-        }
+        // Keep selection locally; parent flow will apply after plan change
+        showSelectProject = false;
+        addNotification({ type: 'success', message: `Projects selected for archiving` });
     }
 </script>
 
