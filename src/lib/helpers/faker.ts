@@ -148,6 +148,14 @@ function generateSingleValue(column: Columns): string | number | boolean | null 
                     case 'url': {
                         return faker.internet.url();
                     }
+
+                    case 'enum': {
+                        const enumAttr = column as Models.ColumnEnum;
+                        if (enumAttr.elements?.length > 0) {
+                            return faker.helpers.arrayElement(enumAttr.elements);
+                        }
+                        return null;
+                    }
                 }
                 return '';
             } else {
@@ -180,14 +188,6 @@ function generateSingleValue(column: Columns): string | number | boolean | null 
 
         case 'datetime': {
             return faker.date.recent({ days: 365 }).toISOString();
-        }
-
-        case 'enum': {
-            const enumAttr = column as Models.ColumnEnum;
-            if (enumAttr.elements && enumAttr.elements.length > 0) {
-                return faker.helpers.arrayElement(enumAttr.elements);
-            }
-            return null;
         }
 
         default: {
