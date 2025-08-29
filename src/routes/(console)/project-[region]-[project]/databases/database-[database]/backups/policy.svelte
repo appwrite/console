@@ -198,7 +198,7 @@
 
                     <!-- Prev / Next section -->
                     <div class="policy-cycles u-flex u-gap-24 u-padding-block-2">
-                        <div style="width: 128px" class="u-flex-vertical policy-item-caption">
+                        <div style="width: 160px" class="u-flex-vertical policy-item-caption">
                             <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary"
                                 >Previous
                             </Typography.Caption>
@@ -225,7 +225,7 @@
                             <Divider vertical />
                         </div>
 
-                        <div style="width: 128px" class="u-flex-vertical policy-item-caption">
+                        <div style="width: 140px" class="u-flex-vertical policy-item-caption">
                             <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary"
                                 >Next
                             </Typography.Caption>

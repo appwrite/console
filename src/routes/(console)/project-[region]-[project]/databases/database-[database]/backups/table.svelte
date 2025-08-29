@@ -205,7 +205,7 @@
                 <!--{/if}-->
             </Table.Cell>
             <Table.Cell column="policy" {root}>
-                <div class="u-flex u-main-space-between u-cross-baseline">
+                <div class="u-flex u-cross-baseline">
                     <Tooltip maxWidth="fit-content">
                         <span>
                             {policy?.name || 'Manual'}
@@ -217,51 +217,53 @@
                     </Tooltip>
                 </div>
             </Table.Cell>
-            <Table.Cell column="action" {root}>
-                <Popover let:toggle padding="m" placement="bottom-end">
-                    <Button extraCompact on:click={toggle}>
-                        <Icon icon={IconDotsHorizontal} />
-                    </Button>
-                    <svelte:fragment slot="tooltip" let:toggle>
-                        <ActionMenu.Root width="180px" noPadding>
-                            {#if backup.status === 'completed'}
+            <Table.Cell column="actions" {root}>
+                <div class="action-cell u-flex u-main-end u-width-full-line">
+                    <Popover let:toggle padding="m" placement="bottom-end">
+                        <Button extraCompact on:click={toggle}>
+                            <Icon icon={IconDotsHorizontal} />
+                        </Button>
+                        <svelte:fragment slot="tooltip" let:toggle>
+                            <ActionMenu.Root width="180px" noPadding>
+                                {#if backup.status === 'completed'}
+                                    <ActionMenu.Item.Button
+                                        trailingIcon={IconRefresh}
+                                        on:click={(e) => {
+                                            toggle(e);
+                                            showRestore = true;
+                                            selectedBackup = backup;
+                                            showDropdown[index] = false;
+                                            trackEvent(Click.BackupRestoreClick);
+                                        }}>
+                                        Restore
+                                    </ActionMenu.Item.Button>
+                                {/if}
                                 <ActionMenu.Item.Button
-                                    trailingIcon={IconRefresh}
+                                    trailingIcon={IconDuplicate}
                                     on:click={(e) => {
                                         toggle(e);
-                                        showRestore = true;
+                                        copy(backup.$id);
+                                        showDropdown[index] = false;
+                                        trackEvent(Click.BackupCopyIdClick);
+                                    }}>
+                                    Copy ID
+                                </ActionMenu.Item.Button>
+                                <ActionMenu.Item.Button
+                                    status="danger"
+                                    trailingIcon={IconTrash}
+                                    on:click={(e) => {
+                                        toggle(e);
+                                        showDelete = true;
                                         selectedBackup = backup;
                                         showDropdown[index] = false;
-                                        trackEvent(Click.BackupRestoreClick);
+                                        trackEvent(Click.BackupDeleteClick);
                                     }}>
-                                    Restore
+                                    Delete
                                 </ActionMenu.Item.Button>
-                            {/if}
-                            <ActionMenu.Item.Button
-                                trailingIcon={IconDuplicate}
-                                on:click={(e) => {
-                                    toggle(e);
-                                    copy(backup.$id);
-                                    showDropdown[index] = false;
-                                    trackEvent(Click.BackupCopyIdClick);
-                                }}>
-                                Copy ID
-                            </ActionMenu.Item.Button>
-                            <ActionMenu.Item.Button
-                                status="danger"
-                                trailingIcon={IconTrash}
-                                on:click={(e) => {
-                                    toggle(e);
-                                    showDelete = true;
-                                    selectedBackup = backup;
-                                    showDropdown[index] = false;
-                                    trackEvent(Click.BackupDeleteClick);
-                                }}>
-                                Delete
-                            </ActionMenu.Item.Button>
-                        </ActionMenu.Root>
-                    </svelte:fragment>
-                </Popover>
+                            </ActionMenu.Root>
+                        </svelte:fragment>
+                    </Popover>
+                </div>
             </Table.Cell>
         </Table.Row.Base>
     {/each}
