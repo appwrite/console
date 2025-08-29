@@ -1,14 +1,7 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
     import { Button, Form } from '$lib/elements/forms';
-    import {
-        Badge,
-        Divider,
-        Layout,
-        Sheet,
-        Tag,
-        Typography
-    } from '@appwrite.io/pink-svelte';
+    import { Badge, Divider, Layout, Sheet, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { Copy } from '$lib/components';
 
     let {
