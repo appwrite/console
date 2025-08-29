@@ -40,6 +40,15 @@
         return `${size.value} ${size.unit}`;
     }
 
+    function formatBandwidthUsage(currentBytes: number, maxGB?: number): string {
+        const currentSize = humanFileSize(currentBytes || 0);
+        if (!maxGB) {
+            return `${currentSize.value} ${currentSize.unit} / Unlimited`;
+        }
+        const maxSize = humanFileSize(maxGB * 1024 * 1024 * 1024);
+        return `${currentSize.value} ${currentSize.unit} / ${maxSize.value} ${maxSize.unit}`;
+    }
+
     function truncateForSmall(name: string): string {
         if (!name) return name;
         return name.length > 12 ? `${name.slice(0, 12)}…` : name;
@@ -189,7 +198,7 @@
                     id: `project-${project.projectId}-bandwidth`,
                     cells: {
                         item: 'Bandwidth',
-                        usage: `${formatNum(project.bandwidth || 0)} / ${currentPlan?.bandwidth ? formatNum(currentPlan.bandwidth) : 'Unlimited'}`,
+                        usage: `${formatBandwidthUsage(project.bandwidth || 0, currentPlan?.bandwidth)}`,
                         price: formatCurrency(
                             calculateResourcePrice(
                                 (project.bandwidth || 0) / (1024 * 1024 * 1024),
@@ -198,11 +207,13 @@
                             )
                         )
                     },
-                    progressData: createProgressData(
+                    progressData: createStorageProgressData(
                         project.bandwidth || 0,
-                        currentPlan?.bandwidth
+                        currentPlan?.bandwidth || 0
                     ),
                     maxValue: currentPlan?.bandwidth
+                        ? currentPlan.bandwidth * 1024 * 1024 * 1024
+                        : 0
                 },
                 // Users
                 {
