@@ -14,6 +14,7 @@
     import { uploader } from '$lib/stores/uploader';
     import { sdk } from '$lib/stores/sdk.js';
     import DeleteFile from './deleteFile.svelte';
+    import DeleteAllFiles from './deleteAllFiles.svelte';
     import { Layout, Table, Icon, Popover, ActionMenu } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
@@ -27,6 +28,7 @@
     export let data;
 
     let showDelete = false;
+    let showDeleteAll = false;
     let selectedFile: Models.File = null;
 
     const bucketId = page.params.bucket;
@@ -99,6 +101,11 @@
             <SearchQuery placeholder="Search files" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            {#if data.files.total}
+                <Button secondary on:click={() => (showDeleteAll = true)} size="s">
+                    <span class="text">Delete All</span>
+                </Button>
+            {/if}
             <Button
                 href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`}
                 event="create_file"
@@ -247,3 +254,5 @@
 {#if selectedFile}
     <DeleteFile file={selectedFile} bind:showDelete on:deleted={fileDeleted} />
 {/if}
+
+<DeleteAllFiles bind:showDeleteAll />

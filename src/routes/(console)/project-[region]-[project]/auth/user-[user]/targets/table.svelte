@@ -15,6 +15,9 @@
     import { MessagingProviderType } from '@appwrite.io/console';
     import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
     import Confirm from '$lib/components/confirm.svelte';
+    import DeleteAllTargets from '../deleteAllTargets.svelte';
+
+    let showDeleteAll = false;
 
     export let data: PageData;
 
@@ -52,6 +55,15 @@
         }
     }
 </script>
+
+<div class="u-flex u-main-space-between u-cross-center u-padding-inline-16 u-padding-block-12">
+    <span class="text u-font-weight-semibold">Targets</span>
+    {#if data.targets.total}
+        <Button secondary on:click={() => (showDeleteAll = true)} size="s">
+            <span class="text">Delete All</span>
+        </Button>
+    {/if}
+</div>
 
 <Table.Root columns={$columns} allowSelection let:root bind:selectedRows={selectedIds}>
     <svelte:fragment slot="header" let:root>
@@ -115,3 +127,13 @@
         {selectedIds.length > 1 ? 'targets' : 'target'}?
     </Typography.Text>
 </Confirm>
+
+{#if data.targets.total}
+    <div class="u-flex u-main-end u-margin-block-start-16">
+        <Button secondary on:click={() => (showDeleteAll = true)} size="s">
+            <span class="text">Delete All</span>
+        </Button>
+    </div>
+{/if}
+
+<DeleteAllTargets bind:showDeleteAll />

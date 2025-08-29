@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
     export let showCreateUser = writable(false);
+    export let showDeleteAllUsers = writable(false);
 </script>
 
 <script lang="ts">
@@ -20,6 +21,7 @@
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import Create from './createUser.svelte';
+    import DeleteAllUsers from './deleteAllUsers.svelte';
     import { Badge, Icon, Table, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Tag } from '@appwrite.io/pink-svelte';
     import { IconDuplicate, IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -60,6 +62,11 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <ViewSelector view={View.Table} {columns} hideView />
+            {#if data.users.total}
+                <Button secondary on:click={() => ($showDeleteAllUsers = true)} size="s">
+                    <span class="text">Delete All</span>
+                </Button>
+            {/if}
             <Button on:click={() => ($showCreateUser = true)} event="create_user" size="s">
                 <Icon size="s" icon={IconPlus} slot="start" />
                 <span class="text">Create user</span>
@@ -178,3 +185,4 @@
 </Container>
 
 <Create bind:showCreate={$showCreateUser} on:created={userCreated} />
+<DeleteAllUsers bind:showDeleteAll={$showDeleteAllUsers} />
