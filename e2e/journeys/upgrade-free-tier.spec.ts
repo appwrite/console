@@ -11,12 +11,6 @@ test('upgrade - free tier', async ({ page }) => {
         await page.waitForURL(/\/organization-[^/]+\/change-plan/);
         await page.locator('input[value="tier-1"]').click();
 
-        await page
-            .locator('#no-payments-card-stack')
-            .getByRole('button', { name: 'add' })
-            .first()
-            .click();
-
         await enterCreditCard(page);
 
         // wait for a second after adding a card to update the UI.

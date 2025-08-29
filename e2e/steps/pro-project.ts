@@ -7,12 +7,15 @@ type Metadata = {
 };
 
 export async function enterCreditCard(page: Page) {
-    const dialog = page.locator('.modal').filter({
-        hasText: 'add payment method'
-    });
-    await dialog.waitFor({
-        state: 'visible'
-    });
+    // click the add payment method and open the modal
+    await page
+        .locator('#no-payments-card-stack')
+        .getByRole('button', { name: 'add' })
+        .first()
+        .click();
+
+    const dialog = page.locator('.modal').filter({ hasText: 'add payment method' });
+    await dialog.waitFor({ state: 'visible' });
     await page.getByPlaceholder('cardholder').fill('Test User');
     const stripe = page.locator('[title="Secure payment input frame"]').nth(0).contentFrame();
     await stripe.locator('id=Field-numberInput').fill('4242424242424242');
@@ -35,7 +38,6 @@ export async function createProProject(page: Page): Promise<Metadata> {
         await page.getByRole('radio', { name: /^Pro\b/ }).check();
         // `create organization` because there's already free created on start!
         await page.getByRole('button', { name: 'create organization' }).click();
-        await page.getByRole('button', { name: 'add' }).first().click();
         await enterCreditCard(page);
         // skip members
         await page.getByRole('button', { name: 'create organization' }).click();
