@@ -1,14 +1,13 @@
 <script lang="ts">
     import { BillingPlan } from '$lib/constants';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { type Tier } from '$lib/stores/billing';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { Badge, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { LabelCard } from '..';
     import type { Plan } from '$lib/sdk/billing';
     import { page } from '$app/state';
 
-    export let billingPlan: Tier;
+    export let billingPlan: BillingPlan;
     export let isNewOrg = false;
     export let selfService = true;
     export let anyOrgFree = false;

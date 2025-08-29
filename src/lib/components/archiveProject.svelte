@@ -116,8 +116,10 @@
                 return;
             }
 
-            const currentSelectedProjects = org.projects || [];
-            const updatedProjects = [...currentSelectedProjects, projectToUnarchive.$id];
+            const currentSelectedProjects = org.projects ?? [];
+            const updatedProjects = Array.from(
+                new Set([...currentSelectedProjects, projectToUnarchive.$id])
+            );
 
             await sdk.forConsole.billing.updateSelectedProjects(org.$id, updatedProjects);
 
@@ -131,10 +133,11 @@
             showUnarchiveModal = false;
             projectToUnarchive = null;
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message || 'Failed to unarchive project'
-            });
+            const msg =
+                error && typeof error === 'object' && 'message' in error
+                    ? String((error as any).message)
+                    : 'Failed to unarchive project';
+            addNotification({ type: 'error', message: msg });
         }
     }
 
@@ -253,7 +256,7 @@
                             <svelte:fragment slot="icons">
                                 {#if isCloud && $regionsStore?.regions}
                                     {@const region = findRegion(project)}
-                                    <Typography.Text>{region.name}</Typography.Text>
+                                    <Typography.Text>{region?.name}</Typography.Text>
                                 {/if}
                             </svelte:fragment>
                         </GridItem1>

@@ -36,6 +36,7 @@
     import OrganizationUsageLimits from '$lib/components/organizationUsageLimits.svelte';
     import { Query } from '@appwrite.io/console';
     import type { OrganizationUsage } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
 
     export let data;
 
@@ -61,7 +62,7 @@
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
     let orgUsage: OrganizationUsage;
-    let allProjects: { projects: any[] } | undefined;
+    let allProjects: { projects: Models.Project[] } | undefined;
 
     $: paymentMethods = null;
 
@@ -111,7 +112,7 @@
                 Query.limit(1000)
             ]);
         } catch {
-            allProjects = { projects: [] } as any;
+            allProjects = { projects: [] };
         }
     });
 

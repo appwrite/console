@@ -362,10 +362,13 @@
     ];
 
     $: totalAmount = billingData.reduce((sum, item) => {
-        const itemPrice = parseFloat(item.cells.price.replace(/[^0-9.-]+/g, ''));
+        let itemPrice = parseFloat(item.cells.price.replace(/[^0-9.-]+/g, ''));
+        if (isNaN(itemPrice)) itemPrice = 0;
+
         const childrenPrice =
             item.children?.reduce((childSum, child) => {
-                const childPrice = parseFloat(child.cells.price.replace(/[^0-9.-]+/g, ''));
+                let childPrice = parseFloat(child.cells.price.replace(/[^0-9.-]+/g, ''));
+                if (isNaN(childPrice)) childPrice = 0;
                 return childSum + childPrice;
             }, 0) || 0;
         return sum + itemPrice + childrenPrice;

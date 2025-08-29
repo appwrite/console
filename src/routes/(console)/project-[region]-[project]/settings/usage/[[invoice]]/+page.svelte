@@ -1,12 +1,7 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { CardGrid, Card, ProgressBarBig } from '$lib/components';
-    import {
-        showUsageRatesModal,
-        tierToPlan,
-        upgradeURL,
-        useNewPricingModal
-    } from '$lib/stores/billing';
+    import { showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
@@ -68,14 +63,14 @@
             <p class="text">
                 On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <Link.Button
-                    on:click={() => ($showUsageRatesModal = $useNewPricingModal)}
+                    on:click={() => ($showUsageRatesModal = true)}
                     >Learn more about plan usage limits.</Link.Button>
             </p>
         {:else if $organization.billingPlan === BillingPlan.PRO}
             <p class="text">
                 On the Pro plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <Link.Button
-                    on:click={() => ($showUsageRatesModal = $useNewPricingModal)}
+                    on:click={() => ($showUsageRatesModal = true)}
                     >Learn more about plan usage limits.</Link.Button>
             </p>
         {:else if $organization.billingPlan === BillingPlan.FREE}

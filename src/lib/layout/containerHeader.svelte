@@ -11,7 +11,6 @@
         getServiceLimit,
         readOnly,
         showUsageRatesModal,
-        useNewPricingModal,
         tierToPlan,
         upgradeURL,
         type PlanServices
@@ -104,7 +103,7 @@
                 <Alert.Inline status="info">
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan.
-                        <Link on:mousedown={() => ($showUsageRatesModal = $useNewPricingModal)}
+                        <Link on:mousedown={() => ($showUsageRatesModal = true)}
                             >Excess usage fees will apply</Link
                         >.
                     </span>
@@ -162,9 +161,7 @@
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per organization on the {tier} plan.
-                                <Link
-                                    on:mousedown={() =>
-                                        ($showUsageRatesModal = $useNewPricingModal)}
+                                <Link on:mousedown={() => ($showUsageRatesModal = true)}
                                     >Excess usage fees will apply</Link
                                 >.
                             </p>
