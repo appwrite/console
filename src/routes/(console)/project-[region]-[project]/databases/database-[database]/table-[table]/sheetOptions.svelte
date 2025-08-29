@@ -14,6 +14,7 @@
         | 'duplicate-row'
         | 'permissions'
         | 'activity'
+        | 'copy-url'
         | 'copy-json'
         // | 'copy-snippet'
         | 'delete';
@@ -29,6 +30,7 @@
         IconClipboardCopy,
         IconDuplicate,
         IconKey,
+        IconLink,
         IconPencil,
         IconSortAscending,
         IconSortDescending,
@@ -67,6 +69,7 @@
         { label: 'Manage permissions', icon: IconKey, action: 'permissions' },
         { label: 'View activity', icon: IconChartBar, action: 'activity' },
         { divider: true },
+        { label: 'Copy URL', icon: IconLink, action: 'copy-url' },
         { label: 'Copy as JSON', icon: IconClipboardCopy, action: 'copy-json' },
         { divider: true },
         { label: 'Delete', icon: IconTrash, action: 'delete', danger: true }
@@ -156,21 +159,29 @@
         <!-- hacky, i know! -->
         <span bind:this={htmlSpanElement}> </span>
 
-        <ActionMenu.Root width="180px">
-            {#each menuItems as item, index (index)}
-                {#if item.divider}
-                    <div style:padding-block="0.25rem">
-                        <Divider />
-                    </div>
-                {:else if shouldShow(item)}
-                    <ActionMenu.Item.Button
-                        leadingIcon={item.icon}
-                        status={item.danger ? 'danger' : undefined}
-                        on:click={() => item.action && handleSelect(item.action, hide)}>
-                        {item.label}
-                    </ActionMenu.Item.Button>
-                {/if}
-            {/each}
-        </ActionMenu.Root>
+        <div class="action-menu-root">
+            <ActionMenu.Root width="180px">
+                {#each menuItems as item, index (index)}
+                    {#if item.divider}
+                        <div style:padding-block="0.5rem" style:margin-inline="-1rem;">
+                            <Divider />
+                        </div>
+                    {:else if shouldShow(item)}
+                        <ActionMenu.Item.Button
+                            leadingIcon={item.icon}
+                            status={item.danger ? 'danger' : undefined}
+                            on:click={() => item.action && handleSelect(item.action, hide)}>
+                            {item.label}
+                        </ActionMenu.Item.Button>
+                    {/if}
+                {/each}
+            </ActionMenu.Root>
+        </div>
     </svelte:fragment>
 </Popover>
+
+<style>
+    .action-menu-root :global(:first-child) {
+        overflow: visible;
+    }
+</style>

@@ -12,6 +12,7 @@
     import { type ComponentType, onDestroy, onMount } from 'svelte';
     import type { PageData } from './$types';
     import {
+        buildRowUrl,
         buildWildcardColumnsQuery,
         isRelationship,
         isRelationshipToMany,
@@ -528,6 +529,21 @@
             if (action === 'permissions') {
                 $rowPermissionSheet.row = row;
                 $rowPermissionSheet.show = true;
+            }
+
+            if (action === 'copy-url') {
+                try {
+                    await copy(buildRowUrl(row.$id));
+                    addNotification({
+                        type: 'success',
+                        message: 'Row url copied'
+                    });
+                } catch (e) {
+                    addNotification({
+                        type: 'error',
+                        message: e.message
+                    });
+                }
             }
 
             if (action === 'copy-json') {

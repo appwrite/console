@@ -1,7 +1,8 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
     import { Button, Form } from '$lib/elements/forms';
-    import { Badge, Divider, Layout, Sheet, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Divider, Layout, Sheet, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import { Copy } from '$lib/components';
 
     let {
         show = $bindable(false),
@@ -10,12 +11,22 @@
         submit,
         children = null,
         footer = null,
-        titleBadge = null
+        titleBadge = null,
+        topAction = null
     }: {
         show: boolean;
         title: string;
         titleBadge?: string;
         closeOnBlur?: boolean;
+        topAction?:
+            | {
+                  text: string;
+                  value: string;
+                  show?: boolean;
+                  mode?: 'copy-tag' | 'plaintext';
+                  onClick?: () => string | Promise<string>;
+              }
+            | undefined;
         submit?:
             | {
                   text: string;
@@ -26,6 +37,8 @@
         children?: Snippet;
         footer?: Snippet | null;
     } = $props();
+
+    let copyText = $state(undefined);
 </script>
 
 <div class="sheet-container">
@@ -36,6 +49,24 @@
                     <Typography.Text variant="m-400">{title}</Typography.Text>
                     {#if titleBadge}
                         <Badge variant="secondary" content={titleBadge} size="s" />
+                    {/if}
+
+                    {#if topAction && topAction.text && topAction.show}
+                        {#if topAction.mode === 'copy-tag'}
+                            <Copy value={topAction.value} {copyText}>
+                                <Tag size="xs" variant="code">
+                                    {topAction.text}
+                                </Tag>
+                            </Copy>
+                        {:else}
+                            <Button
+                                extraCompact
+                                text
+                                size="xs"
+                                on:click={topAction.onClick ?? undefined}>
+                                {topAction.text}
+                            </Button>
+                        {/if}
                     {/if}
                 </Layout.Stack>
             </Layout.Stack>
