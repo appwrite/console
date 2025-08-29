@@ -61,7 +61,7 @@ if (isCloud) {
         },
         title: 'Introducing Opt-in relationship loading',
         message:
-            'Gain full control over which related documents to fetch and drastically reduce payload sizes.',
+            'Gain full control over which related rows to fetch and drastically reduce payload sizes.',
         plan: 'free',
         importance: 8,
         scope: 'project',
