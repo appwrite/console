@@ -9,6 +9,9 @@ import Ip, { submitIp, updateIp } from './ip.svelte';
 import String, { submitString, updateString } from './string.svelte';
 import Url, { submitUrl, updateUrl } from './url.svelte';
 import Datetime, { submitDatetime, updateDatetime } from './datetime.svelte';
+import Point, { submitPoint, updatePoint } from './point.svelte';
+import Line, { submitLine, updateLine } from './line.svelte';
+import Polygon, { submitPolygon, updatePolygon } from './polygon.svelte';
 import type { Columns } from '../store';
 import Relationship, { submitRelationship, updateRelationship } from './relationship.svelte';
 import {
@@ -20,7 +23,8 @@ import {
     IconMail,
     IconRelationship,
     IconText,
-    IconToggle
+    IconToggle,
+    IconGlobe
 } from '@appwrite.io/pink-icons-svelte';
 import type { ComponentType } from 'svelte';
 
@@ -35,10 +39,13 @@ export type Option = {
         | 'IP'
         | 'URL'
         | 'Enum'
-        | 'Relationship';
+        | 'Relationship'
+        | 'Point'
+        | 'Line'
+        | 'Polygon';
     sentenceName: string;
     component: Component;
-    type: 'string' | 'integer' | 'double' | 'boolean' | 'datetime' | 'relationship';
+    type: 'string' | 'integer' | 'double' | 'boolean' | 'datetime' | 'relationship' | 'point' | 'line' | 'polygon';
     create: (
         databaseId: string,
         tableId: string,
@@ -100,6 +107,33 @@ export const columnOptions: Option[] = [
         create: submitDatetime,
         update: updateDatetime,
         icon: IconCalendar
+    },
+    {
+        name: 'Point',
+        sentenceName: 'point',
+        component: Point,
+        type: 'point',
+        create: submitPoint,
+        update: updatePoint,
+        icon: IconGlobe
+    },
+    {
+        name: 'Line',
+        sentenceName: 'line',
+        component: Line,
+        type: 'line',
+        create: submitLine,
+        update: updateLine,
+        icon: IconGlobe
+    },
+    {
+        name: 'Polygon',
+        sentenceName: 'polygon',
+        component: Polygon,
+        type: 'polygon',
+        create: submitPolygon,
+        update: updatePolygon,
+        icon: IconGlobe
     },
     {
         name: 'Email',
