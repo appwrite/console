@@ -19,6 +19,8 @@
         expandTabs
     } from '../store';
     import SpreadsheetContainer from './spreadsheet.svelte';
+    import { onDestroy, onMount } from 'svelte';
+    import { debounce } from '$lib/helpers/debounce';
 
     type Mode = 'rows' | 'rows-filtered' | 'indexes';
 
@@ -47,7 +49,9 @@
 
     let spreadsheetContainer: HTMLElement;
     let headerElement: HTMLElement | null = null;
-    let dynamicOverlayHeight = $state('70.5vh');
+
+    let resizeObserver: ResizeObserver;
+    let dynamicOverlayHeight = $state('60.5vh');
 
     const baseColProps = { draggable: false, resizable: false };
 
@@ -70,7 +74,21 @@
         }
     };
 
-    updateOverlayHeight();
+    // the first render is in a pretty quick succession, delay helps!
+    const debouncedUpdateOverlayHeight = debounce(() => updateOverlayHeight(), 250);
+
+    onMount(async () => {
+        if (spreadsheetContainer) {
+            resizeObserver = new ResizeObserver(debouncedUpdateOverlayHeight);
+            resizeObserver.observe(spreadsheetContainer);
+        }
+    });
+
+    onDestroy(() => {
+        if (resizeObserver) {
+            resizeObserver.disconnect();
+        }
+    });
 
     const getCustomColumns = (): Column[] =>
         customColumns.map((col: Column) => ({
@@ -140,8 +158,6 @@
 
     const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
 </script>
-
-<svelte:window on:resize={updateOverlayHeight} />
 
 <div
     class="databases-spreadsheet spreadsheet-container-outer"
