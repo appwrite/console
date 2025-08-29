@@ -175,15 +175,13 @@
                 <Table.Header.Cell column="resource" {root}>Resource</Table.Header.Cell>
                 <Table.Header.Cell column="freeLimit" {root}>Free limit</Table.Header.Cell>
                 <Table.Header.Cell column="excessUsage" {root}>
-                    <div class="tooltip-container">
-                        <Layout.Stack direction="row" alignItems="center" gap="xs">
-                            <Typography.Text>Excess usage</Typography.Text>
-                            <Tooltip placement="top">
-                                <Icon icon={IconInfo} size="s" />
-                                <span slot="tooltip">Usage beyond the Free plan limits.</span>
-                            </Tooltip>
-                        </Layout.Stack>
-                    </div>
+                    <Layout.Stack direction="row" alignItems="center" gap="xs">
+                        <Typography.Text>Excess usage</Typography.Text>
+                        <Tooltip placement="bottom" portal>
+                            <Icon icon={IconInfo} size="s" />
+                            <span slot="tooltip">Usage beyond the Free plan limits.</span>
+                        </Tooltip>
+                    </Layout.Stack>
                 </Table.Header.Cell>
                 <Table.Header.Cell column="manage" {root}></Table.Header.Cell>
             </svelte:fragment>
@@ -351,17 +349,6 @@
         scrollbar-width: thin;
         position: relative;
         z-index: 2;
-    }
-
-    /* toooltip positioning fix */
-    .tooltip-container {
-        position: absolute;
-        z-index: 1000;
-        overflow: visible;
-    }
-
-    .tooltip-container :global(.tooltip) {
-        z-index: 1001 !important;
     }
 
     /* Small viewport optimizations */
