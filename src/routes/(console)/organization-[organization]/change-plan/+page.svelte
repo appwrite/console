@@ -143,11 +143,10 @@
                 null
             );
 
-            trackDowngradeFeedback();
-
-            await invalidate(Dependencies.ORGANIZATION);
+            await Promise.all([trackDowngradeFeedback(), invalidate(Dependencies.ORGANIZATION)]);
 
             await goto(previousPage);
+
             addNotification({
                 type: 'success',
                 message: `${$organization.name} plan has been successfully updated.`
