@@ -162,7 +162,12 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
     // the correct info for members/seats, resides in `addons`.
     // plan > addons > seats/others
     if (serviceId === 'members') {
-        // some don't include `limit`, so we fallback!
+        // pro and scale plans have unlimited seats (per-project NEW pricing model)
+        const currentTier = tier ?? get(organization)?.billingPlan;
+        if (currentTier === BillingPlan.PRO || currentTier === BillingPlan.SCALE) {
+            return Infinity; // unlimited seats for Pro and Scale plans
+        }
+        // Free plan still has 1 member limit
         return (plan?.['addons']['seats'] || [])['limit'] ?? 1;
     }
 
@@ -254,11 +259,19 @@ export function checkForUsageFees(plan: Tier, id: PlanServices) {
 }
 
 export function checkForProjectLimitation(id: PlanServices) {
+    // Members are no longer limited on Pro and Scale plans (unlimited seats)
+    if (id === 'members') {
+        const currentTier = get(organization)?.billingPlan;
+        if (currentTier === BillingPlan.PRO || currentTier === BillingPlan.SCALE) {
+            return false; // No project limitation for members on Pro/Scale plans
+        }
+    }
+
     switch (id) {
         case 'databases':
         case 'functions':
         case 'buckets':
-        case 'members':
+        case 'members': // Only applies to Free plan now
         case 'platforms':
         case 'webhooks':
         case 'teams':
@@ -385,13 +398,8 @@ export async function checkForUsageLimit(org: Organization) {
     ];
 
     const members = org.total;
-    const plan = get(currentPlan);
-    const membersOverflow =
-        // `plan` can be null on `onboarding/create-organization` route.
-        // nested null checks needed: GitHub Education plan have empty addons.
-        members > plan?.addons?.seats?.limit
-            ? members - (plan?.addons?.seats?.limit || members)
-            : 0;
+    const memberLimit = getServiceLimit('members');
+    const membersOverflow = memberLimit === Infinity ? 0 : Math.max(0, members - memberLimit);
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);

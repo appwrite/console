@@ -1,5 +1,11 @@
 <script lang="ts">
-    import { calculateExcess, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
+    import {
+        calculateExcess,
+        plansInfo,
+        tierToPlan,
+        getServiceLimit,
+        type Tier
+    } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { toLocaleDate } from '$lib/helpers/date';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -64,7 +70,7 @@
         {#if excess?.members}
             <Table.Row.Base {root}>
                 <Table.Cell {root}>Organization members</Table.Cell>
-                <Table.Cell {root}>{plan.addons.seats.limit} members</Table.Cell>
+                <Table.Cell {root}>{getServiceLimit('members', tier)} members</Table.Cell>
                 <Table.Cell {root}>
                     <p class="u-color-text-danger u-flex u-cross-center u-gap-4">
                         <span class="icon-arrow-up"></span>

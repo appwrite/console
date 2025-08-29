@@ -21,9 +21,9 @@
 
     // equal or above means unlimited!
     const getCorrectSeatsCountValue = (count: number): string | number => {
-        // php int max is always larger than js
-        const exceedsSafeLimit = count >= Number.MAX_SAFE_INTEGER;
-        return exceedsSafeLimit ? 'Unlimited' : count || 0;
+        // Check for Infinity or very large numbers
+        const isUnlimited = count === Infinity || count >= Number.MAX_SAFE_INTEGER;
+        return isUnlimited ? 'Unlimited' : count || 0;
     };
 
     function getPlanLimit(key: string): number | false {
