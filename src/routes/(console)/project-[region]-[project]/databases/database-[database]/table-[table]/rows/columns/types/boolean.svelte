@@ -13,40 +13,18 @@
         label = undefined;
         optionalText = undefined;
     }
-
-    const onChange = (event: CustomEvent) => {
-        if (limited) {
-            value = event.detail as boolean;
-        }
-    };
 </script>
 
-{#if limited}
-    <InputSelect
-        {id}
-        {label}
-        {value}
-        {optionalText}
-        autofocus={limited}
-        placeholder="Select a value"
-        required={column.required}
-        options={[
-            { label: 'True', value: true },
-            { label: 'False', value: false }
-        ].filter(Boolean)}
-        on:change={onChange} />
-{:else}
-    <InputSelect
-        {id}
-        {label}
-        bind:value
-        {optionalText}
-        autofocus={limited}
-        placeholder="Select a value"
-        required={column.required}
-        options={[
-            !column.required && { label: 'NULL', value: null },
-            { label: 'True', value: true },
-            { label: 'False', value: false }
-        ].filter(Boolean)} />
-{/if}
+<InputSelect
+    {id}
+    {label}
+    bind:value
+    {optionalText}
+    autofocus={limited}
+    placeholder="Select a value"
+    required={column.required}
+    options={[
+        !column.required && { label: 'NULL', value: null },
+        { label: 'True', value: true },
+        { label: 'False', value: false }
+    ].filter(Boolean)} />
