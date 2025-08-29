@@ -144,8 +144,8 @@
             );
 
             await Promise.all([
-                await trackDowngradeFeedback(),
-                await invalidate(Dependencies.ORGANIZATION)
+                trackDowngradeFeedback(),
+                invalidate(Dependencies.ORGANIZATION)
             ]);
 
             await goto(previousPage);
