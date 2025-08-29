@@ -1,3 +1,4 @@
+import { page } from '$app/state';
 import type { Columns } from '../store';
 import { type Models, Query } from '@appwrite.io/console';
 
@@ -32,4 +33,8 @@ export function buildWildcardColumnsQuery(table: Models.Table | null = null): st
 
         Query.select(['*'])
     ];
+}
+
+export function buildRowUrl(rowId: string) {
+    return `${page.url}/row-${rowId}`;
 }
