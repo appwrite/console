@@ -32,3 +32,7 @@ export function formatCurrency(number: number, locale = 'en-US', currency = 'USD
     });
     return formatter.format(number);
 }
+
+export function isWithinSafeRange(val: number) {
+    return Math.abs(val) < Number.MAX_SAFE_INTEGER;
+}
