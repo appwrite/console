@@ -38,10 +38,15 @@
         showBulkDelete = false;
         deleting = true;
 
+        // Precompute a lookup map from membershipId to teamId for efficient access
+        const membershipIdToTeamId: Record<string, string> = {};
+        for (const m of data.memberships.memberships) {
+            membershipIdToTeamId[m.$id] = m.teamId;
+        }
+
         const promises = selectedMemberships.map((membershipId) =>
             sdk.forProject(page.params.region, page.params.project).teams.deleteMembership({
-                teamId:
-                    data.memberships.memberships.find((m) => m.$id === membershipId)?.teamId || '',
+                teamId: membershipIdToTeamId[membershipId] || '',
                 membershipId
             })
         );
