@@ -61,7 +61,7 @@
 </script>
 
 {#if $database}
-    <Container>
+    <Container expanded slotSpacing paddingInlineEndDouble>
         <CardGrid>
             <svelte:fragment slot="title">{$database.name}</svelte:fragment>
             <svelte:fragment slot="aside">
