@@ -14,7 +14,7 @@ import { cachedStore } from '$lib/helpers/cache';
 import { type Size, sizeToBytes } from '$lib/helpers/sizeConvertion';
 import type {
     AddressesList,
-    Aggregation,
+    AggregationTeam,
     Invoice,
     InvoiceList,
     PaymentList,
@@ -619,7 +619,7 @@ export const billingURL = derived(
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
 
-export function calculateExcess(addon: Aggregation, plan: Plan) {
+export function calculateExcess(addon: AggregationTeam, plan: Plan) {
     return {
         bandwidth: calculateResourceSurplus(addon.usageBandwidth, plan.bandwidth),
         storage: calculateResourceSurplus(addon.usageStorage, plan.storage, 'GB'),

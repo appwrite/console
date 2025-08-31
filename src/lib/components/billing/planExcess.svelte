@@ -12,11 +12,11 @@
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { formatNum } from '$lib/helpers/string';
     import { onMount } from 'svelte';
-    import type { Aggregation } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { BillingPlan } from '$lib/constants';
     import { Alert, Icon, Table, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import type { AggregationTeam } from '$lib/sdk/billing';
 
     export let tier: Tier;
 
