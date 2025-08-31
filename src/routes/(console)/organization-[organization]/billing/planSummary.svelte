@@ -484,9 +484,11 @@
             {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                 <div
                     class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
-                    <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
-                        View estimated usage
-                    </Button>
+                    {#if !currentPlan?.usagePerProject}
+                        <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
+                            View estimated usage
+                        </Button>
+                    {/if}
                     <Button
                         disabled={$organization?.markedForDeletion}
                         href={$upgradeURL}
@@ -516,9 +518,11 @@
                             Change plan
                         </Button>
                     {/if}
-                    <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
-                        View estimated usage
-                    </Button>
+                    {#if !currentPlan?.usagePerProject}
+                        <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
+                            View estimated usage
+                        </Button>
+                    {/if}
                 </div>
             {/if}
         </div>
