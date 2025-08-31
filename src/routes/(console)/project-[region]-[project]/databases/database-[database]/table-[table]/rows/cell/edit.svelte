@@ -10,11 +10,13 @@
         row = $bindable(null),
         onChange = null,
         onRevert = null,
+        noInlineEdit = false,
         openSideSheet = null,
         onRowStructureUpdate = null
     }: {
         row: Models.Row;
         column: Columns;
+        noInlineEdit?: boolean;
         openSideSheet?: () => void;
         onChange?: (row: Models.DefaultRow) => void;
         onRevert?: (row: Models.DefaultRow) => void;
@@ -26,6 +28,11 @@
 
     onMount(() => {
         original = structuredClone(row);
+
+        if (noInlineEdit) {
+            openSideSheet?.();
+            return;
+        }
 
         const trigger = wrapperEl.querySelector('button.input') as HTMLButtonElement;
         if (trigger) {

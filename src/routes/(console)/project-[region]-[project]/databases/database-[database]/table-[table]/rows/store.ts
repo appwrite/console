@@ -2,8 +2,12 @@ import { page } from '$app/state';
 import type { Columns } from '../store';
 import { type Models, Query } from '@appwrite.io/console';
 
-export function isRelationshipToMany(column: Models.ColumnRelationship) {
-    if (!column) return false;
+export function isRelationshipToMany(col: Columns) {
+    if (!col) return false;
+    if (!isRelationship(col)) return false;
+
+    const column = col as Models.ColumnRelationship;
+
     if (!column?.relationType) return false;
     if (column?.side === 'child') {
         return !['oneToOne', 'oneToMany'].includes(column?.relationType);
