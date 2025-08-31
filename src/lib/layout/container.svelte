@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Layout } from '@appwrite.io/pink-svelte';
     import type { Snippet } from 'svelte';
+    import type { HTMLAttributes } from 'svelte/elements';
 
     let {
         expanded = false,
@@ -23,9 +24,9 @@
         insideSideSheet?: boolean;
         databasesScreen?: boolean;
         expandHeightButton?: boolean;
-        children: Snippet;
+        children?: Snippet;
         size?: 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl' | null;
-    } = $props();
+    } & HTMLAttributes<HTMLDivElement> = $props();
 
     const style = $derived(
         size
