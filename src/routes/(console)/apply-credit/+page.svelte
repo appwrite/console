@@ -123,7 +123,7 @@
     }
 
     async function handleSubmit() {
-        if (!couponForm.checkValidity()) return;
+        if (couponForm && !couponForm.checkValidity()) return;
         isSubmitting.set(true);
         try {
             let org: Organization | OrganizationError;
@@ -392,7 +392,7 @@
         <Button
             fullWidthMobile
             on:click={() => {
-                if (formComponent.checkValidity() && couponForm.checkValidity()) {
+                if (formComponent.checkValidity() && (!couponForm || couponForm.checkValidity())) {
                     handleSubmit();
                 }
             }}
