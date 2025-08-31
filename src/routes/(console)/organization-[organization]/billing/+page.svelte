@@ -133,9 +133,7 @@
             availableCredit={data?.availableCredit}
             currentPlan={data?.currentPlan}
             currentAggregation={data?.billingAggregation}
-            currentInvoice={data?.billingInvoice}
-            organizationUsage={data?.organizationUsage}
-            usageProjects={data?.usageProjects} />
+            currentInvoice={data?.billingInvoice} />
     {:else}
         <PlanSummaryOld
             availableCredit={data?.availableCredit}

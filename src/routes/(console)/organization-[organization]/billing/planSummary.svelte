@@ -19,6 +19,7 @@
     export let currentPlan: Plan;
     export let currentInvoice: Invoice | undefined = undefined;
     export let currentAggregation: AggregationTeam | undefined = undefined;
+    export let availableCredit: number | undefined = undefined;
 
     let showCancel: boolean = false;
 

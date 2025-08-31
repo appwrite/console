@@ -28,7 +28,7 @@
         executions?: number;
         members?: number;
     } = null;
-    let aggregation: Aggregation = null;
+    let aggregation: AggregationTeam = null;
     let showExcess = false;
 
     onMount(async () => {
