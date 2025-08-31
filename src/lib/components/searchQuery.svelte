@@ -7,13 +7,24 @@
     import { IconSearch, IconX } from '@appwrite.io/pink-icons-svelte';
     import { debounce as createDebounce } from '$lib/helpers/debounce.js';
 
-    export let placeholder = '';
-    export let debounce = 250;
-    export let required = false;
-    export let disabled = false;
-    export let autofocus = false;
+    interface Props {
+        placeholder?: string;
+        debounce?: number;
+        required?: boolean;
+        disabled?: boolean;
+        autofocus?: boolean;
+    }
 
-    let inputValue = page.url.searchParams.get('search') ?? '';
+    let {
+        placeholder = '',
+        debounce = 250,
+        required = false,
+        disabled = false,
+        autofocus = false
+    }: Props = $props();
+
+    let inputValue = $state(page.url.searchParams.get('search') ?? '');
+    let lastUrlSearch = $state(page.url.searchParams.get('search') ?? '');
 
     const runSearch = createDebounce((value: string) => {
         const trimmed = value.trim();
@@ -36,14 +47,26 @@
         goto(url, { keepFocus: true });
     }, debounce);
 
-    $: runSearch(inputValue);
-
     function clearInput() {
         inputValue = '';
     }
 
     onDestroy(() => {
         runSearch.cancel?.();
+    });
+
+    $effect(() => {
+        const urlSearch = page.url.searchParams.get('search') ?? '';
+
+        // url changed
+        if (urlSearch !== lastUrlSearch) {
+            inputValue = urlSearch;
+            lastUrlSearch = urlSearch;
+        }
+        // input changed by user typing
+        else if (inputValue !== urlSearch) {
+            runSearch(inputValue);
+        }
     });
 </script>
 

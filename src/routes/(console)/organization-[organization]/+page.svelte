@@ -9,23 +9,19 @@
     import { registerCommands } from '$lib/commandCenter';
     import {
         CardContainer,
-        DropList,
-        DropListItem,
         Empty,
+        EmptySearch,
         GridItem1,
-        PaginationWithLimit
+        PaginationWithLimit,
+        SearchQuery
     } from '$lib/components';
-    import { goto } from '$app/navigation';
-    import { Submit, trackError, trackEvent, Click } from '$lib/actions/analytics';
-    import { sdk } from '$lib/stores/sdk';
-    import { loading } from '$routes/store';
-    import { ID, Region, type Models } from '@appwrite.io/console';
-    import { openImportWizard } from '../project-[region]-[project]/settings/migrations/(import)';
+    import { trackEvent, Click } from '$lib/actions/analytics';
+    import { type Models } from '@appwrite.io/console';
     import { billingProjectsLimitDate, readOnly, upgradeURL } from '$lib/stores/billing';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Badge, Icon, Typography, Alert, Tag, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Alert, Badge, Icon, Layout, Tag, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAndroid,
@@ -93,28 +89,6 @@
         }
     ]);
 
-    let showDropdown = false;
-
-    const importProject = async () => {
-        try {
-            loading.set(true);
-            const project = await sdk.forConsole.projects.create({
-                projectId: ID.unique(),
-                name: `Imported project ${new Date().toISOString()}`,
-                teamId: page.params.organization,
-                region: Region.Fra
-            });
-            trackEvent(Submit.ProjectCreate, {
-                teamId: page.params.organization
-            });
-            await goto(`${base}/project-${project.region}-${project.$id}/settings/migrations`);
-            openImportWizard();
-            loading.set(false);
-        } catch (e) {
-            trackError(e, Submit.ProjectCreate);
-        }
-    };
-
     onMount(async () => checkPricingRefAndRedirect(page.url.searchParams));
 
     function findRegion(project: Models.Project) {
@@ -145,36 +119,26 @@
     selectedProjects={data.organization.projects || []} />
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Typography.Title>Projects</Typography.Title>
+    <Layout.Stack direction="row" justifyContent="space-between" class="common-section">
+        <SearchQuery placeholder="Search by name or ID" />
 
-        <DropList bind:show={showDropdown} placement="bottom-end">
-            {#if $canWriteProjects}
-                <Button
-                    on:click={handleCreateProject}
-                    event="create_project"
-                    disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create project
-                </Button>
-            {/if}
-            <svelte:fragment slot="list">
-                <DropListItem on:click={() => (showCreate = true)}>Empty project</DropListItem>
-                <DropListItem on:click={importProject}>
-                    <div class="u-flex u-gap-8 u-cross-center">
-                        Import project <span class="tag eyebrow-heading-3">Experimental</span>
-                    </div>
-                </DropListItem>
-            </svelte:fragment>
-        </DropList>
-    </div>
+        {#if $canWriteProjects}
+            <Button
+                on:click={handleCreateProject}
+                event="create_project"
+                disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create project
+            </Button>
+        {/if}
+    </Layout.Stack>
 
     {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && data.projects.total > $currentPlan.projects && $canWriteProjects}
         <Alert.Inline
             title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
             <Typography.Text>
                 {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
-                    {@html text}{index == projectsToArchive.length - 2
+                    {@html text}{index === projectsToArchive.length - 2
                         ? ', and '
                         : index < projectsToArchive.length - 1
                           ? ', '
@@ -272,6 +236,11 @@
                 <p>Create a new project</p>
             </svelte:fragment>
         </CardContainer>
+    {:else if data.search}
+        <EmptySearch target="projects" hidePagination>
+            <Button size="s" secondary href={`${base}/organization-${page.params.organization}`}
+                >Clear Search</Button>
+        </EmptySearch>
     {:else}
         <Empty
             single
