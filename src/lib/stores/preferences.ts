@@ -66,6 +66,21 @@ function safePrefsKey(widthPreferences: TeamPreferences['widths'], from: string,
     }
 }
 
+// rare cases where the value was an array, probably due to PHP backend.
+function ensureObjectProperty<T extends Record<string, unknown>, K extends keyof T>(
+    obj: T | null | undefined,
+    key: K
+): T {
+    if (!obj || typeof obj !== 'object') {
+        obj = {} as T;
+    }
+    if (obj[key] == null || typeof obj[key] !== 'object' || Array.isArray(obj[key])) {
+        obj[key] = {} as T[K];
+    }
+
+    return obj;
+}
+
 function createPreferences() {
     const { subscribe, set, update } = writable<ConsolePreferencesStore>({});
     let preferences: ConsolePreferencesStore = {};
@@ -121,7 +136,7 @@ function createPreferences() {
         });
 
         if (deepEqual(oldPrefsSnapshot, newPrefsSnapshot)) {
-            return;
+            return Promise.resolve();
         }
 
         // sync the preferences.
@@ -150,11 +165,7 @@ function createPreferences() {
         setLimit: (limit: ConsolePreferences['limit']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
-
-                if (!n?.[path]) {
-                    n ??= {};
-                    n[path] ??= {};
-                }
+                n = ensureObjectProperty(n, path);
 
                 n[path].limit = limit;
 
@@ -164,48 +175,32 @@ function createPreferences() {
         setView: (view: ConsolePreferences['view']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
-
-                if (!n?.[path]) {
-                    n ??= {};
-                    n[path] ??= {};
-                }
+                n = ensureObjectProperty(n, path);
 
                 n[path].view = view;
-
                 return n;
             }),
 
         setColumns: (columns: ConsolePreferences['columns']) =>
             updateAndSync((n) => {
                 const path = page.route.id;
-
-                if (!n?.[path]) {
-                    n ??= {};
-                    n[path] ??= {};
-                }
+                n = ensureObjectProperty(n, path);
 
                 n[path].columns = columns;
-
                 return n;
             }),
 
         setCustomTableColumns: (tableId: string, columns: ConsolePreferences['columns']) =>
             updateAndSync((n) => {
-                n ??= {};
-                n.tables ??= {};
-
-                n.tables[tableId] = Array.from(new Set(columns));
+                n = ensureObjectProperty(n, 'tables');
+                n.tables[tableId] = Array.from(new Set(columns ?? []));
                 return n;
             }),
 
         deleteTableDetails: async (orgId: string, tableId: string) => {
             // remove from account preferences
             const removeCustomTableColumns = updateAndSync((n) => {
-                if (!n?.tables) {
-                    n ??= {};
-                    n.tables ??= {};
-                }
-
+                n = ensureObjectProperty(n, 'tables');
                 delete n.tables[tableId];
                 return n;
             });
@@ -233,10 +228,7 @@ function createPreferences() {
             tableId: string,
             displayNames: TeamPreferences['names']
         ) => {
-            if (!teamPreferences.displayNames) {
-                teamPreferences.displayNames = {};
-            }
-
+            teamPreferences = ensureObjectProperty(teamPreferences, 'displayNames');
             teamPreferences.displayNames[tableId] = displayNames;
 
             await sdk.forConsole.teams.updatePrefs({
@@ -250,9 +242,7 @@ function createPreferences() {
         },
 
         async saveColumnOrder(orgId: string, tableId: string, columnIds: TeamPreferences['order']) {
-            if (!teamPreferences.columnOrder) {
-                teamPreferences.columnOrder = {};
-            }
+            teamPreferences = ensureObjectProperty(teamPreferences, 'columnOrder');
 
             teamPreferences.columnOrder[tableId] = columnIds;
 
@@ -269,9 +259,7 @@ function createPreferences() {
         },
 
         async saveColumnWidths(orgId: string, tableId: string, width: TeamPreferences['widths']) {
-            if (!teamPreferences.columnWidths) {
-                teamPreferences.columnWidths = {};
-            }
+            teamPreferences = ensureObjectProperty(teamPreferences, 'columnWidths');
 
             teamPreferences.columnWidths[tableId] = {
                 ...teamPreferences.columnWidths[tableId],
@@ -295,11 +283,7 @@ function createPreferences() {
 
         async setKey(key: string, value: string | number | boolean) {
             await updateAndSync((n) => {
-                if (!n?.miscellaneous) {
-                    n ??= {};
-                    n.miscellaneous ??= {};
-                }
-
+                n = ensureObjectProperty(n, 'miscellaneous');
                 n.miscellaneous[key] = value;
                 return n;
             });

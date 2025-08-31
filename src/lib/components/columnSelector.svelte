@@ -59,23 +59,23 @@
     };
 
     const saveColumnPreferences = () => {
-        const shownColumns = $columns.filter((n) => n.hide === true).map((n) => n.id);
+        const hiddenColumns = $columns.filter((n) => n.hide === true).map((n) => n.id);
 
         if (isCustomTable) {
             onPreferencesUpdated?.();
-            preferences.setCustomTableColumns(page.params.table, shownColumns);
+            preferences.setCustomTableColumns(page.params.table, hiddenColumns);
         } else {
-            preferences.setColumns(shownColumns);
+            preferences.setColumns(hiddenColumns);
         }
     };
 
     onMount(() => {
         if (isCustomTable) {
-            const shownColumns = preferences.getCustomTableColumns(page.params.table);
+            const hiddenColumns = preferences.getCustomTableColumns(page.params.table);
 
             columns.update((n) =>
                 n.map((column) => {
-                    column.hide = shownColumns?.includes(column.id) ?? false;
+                    column.hide = hiddenColumns?.includes(column.id) ?? false;
                     return column;
                 })
             );
