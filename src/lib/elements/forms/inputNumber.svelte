@@ -18,8 +18,9 @@
 
     let error: string;
 
-    function coerceToNumber(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
-        const raw = event.currentTarget?.value ?? '';
+    function coerceToNumber(event: CustomEvent) {
+        const raw = event.detail ?? '';
+
         if (raw === '') {
             value = nullable ? null : (undefined as unknown as number);
             return;
@@ -74,7 +75,6 @@
     helper={error || helper}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}
-    on:input={coerceToNumber}
     on:change={coerceToNumber}>
     <svelte:fragment slot="info">
         <slot name="info" slot="info" />
