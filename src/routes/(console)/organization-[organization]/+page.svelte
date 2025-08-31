@@ -41,9 +41,11 @@
     export let data;
 
     let showCreate = false;
-    let showCreateProjectCloud = false;
     let addOrganization = false;
     let showSelectProject = false;
+    let showCreateProjectCloud = false;
+
+    let searchQuery: SearchQuery;
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -108,6 +110,10 @@
         return name ? (name.length > actualLimit ? `${name.slice(0, actualLimit)}...` : name) : '-';
     }
 
+    function clearSearch() {
+        searchQuery?.clearInput();
+    }
+
     $: projectsToArchive = data.projects.projects.filter(
         (project) => !data.organization.projects?.includes(project.$id)
     );
@@ -120,7 +126,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between" class="common-section">
-        <SearchQuery placeholder="Search by name or ID" />
+        <SearchQuery bind:this={searchQuery} placeholder="Search by name or ID" />
 
         {#if $canWriteProjects}
             <Button
@@ -238,8 +244,7 @@
         </CardContainer>
     {:else if data.search}
         <EmptySearch target="projects" hidePagination>
-            <Button size="s" secondary href={`${base}/organization-${page.params.organization}`}
-                >Clear Search</Button>
+            <Button size="s" secondary on:click={clearSearch}>Clear search</Button>
         </EmptySearch>
     {:else}
         <Empty
