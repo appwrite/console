@@ -95,7 +95,7 @@
                 {:else}
                     <Alert.Inline
                         status="warning"
-                        title={`You've reached your limit of ${$currentPlan?.projects || 2} projects`}>
+                        title={`You've reached your limit of ${$currentPlan?.projects} projects`}>
                         Extra projects are available on paid plans for an additional fee
                         <svelte:fragment slot="actions">
                             <Button

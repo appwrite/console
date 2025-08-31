@@ -207,13 +207,14 @@ export type AggregationTeam = {
      * Aggregation billing plan
      */
     plan: string;
-    projectBreakdown: ProjectBreakdown[];
+    breakdown: AggregationBreakdown[];
 };
 
-export type ProjectBreakdown = {
+export type AggregationBreakdown = {
     $id: string;
     name: string;
     amount: number;
+    region: string;
     resources: InvoiceUsage[];
 };
 
@@ -394,6 +395,7 @@ export type Plan = {
     fileSize: number;
     functions: number;
     executions: number;
+    GBHours: number;
     realtime: number;
     logs: number;
     authPhone: number;
