@@ -41,9 +41,7 @@ export const load: PageLoad = async ({ params, parent }) => {
     if (currentAggregation) {
         let projectSpecificData = null;
         if (currentAggregation.breakdown) {
-            projectSpecificData = currentAggregation.breakdown.find(
-                (p) => p.$id === project
-            );
+            projectSpecificData = currentAggregation.breakdown.find((p) => p.$id === project);
         }
 
         if (projectSpecificData) {

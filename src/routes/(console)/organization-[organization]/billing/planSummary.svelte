@@ -9,15 +9,21 @@
     import { formatCurrency } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { Divider, Typography, Expandable as ExpandableTable } from '@appwrite.io/pink-svelte';
+    import {
+        Divider,
+        Typography,
+        Expandable as ExpandableTable,
+        Icon,
+        Layout
+    } from '@appwrite.io/pink-svelte';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatNum } from '$lib/helpers/string';
     import { ProgressBar } from '$lib/components';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
+    import { IconTag } from '@appwrite.io/pink-icons-svelte';
 
     export let currentPlan: Plan;
-    export let currentInvoice: Invoice | undefined = undefined;
     export let currentAggregation: AggregationTeam | undefined = undefined;
     export let availableCredit: number | undefined = undefined;
 
@@ -323,7 +329,10 @@
             : [])
     ];
 
-    $: totalAmount = currentInvoice?.amount || currentPlan?.price || 0;
+    $: totalAmount = Math.max(
+        (currentAggregation?.amount || currentPlan?.price || 0) - availableCredit,
+        0
+    );
 </script>
 
 {#if $organization}
@@ -331,8 +340,7 @@
         <Typography.Title size="s">{currentPlan.name} plan</Typography.Title>
 
         <Typography.Text color="--fgcolor-neutral-primary">
-            Next payment of <span class="text u-bold"
-                >{formatCurrency(currentInvoice?.amount || currentPlan?.price || 0)}</span>
+            Next payment of <span class="text u-bold">{formatCurrency(totalAmount)}</span>
             will occur on
             <span class="text u-bold">{toLocaleDate($organization?.billingNextInvoiceDate)}</span>.
         </Typography.Text>
@@ -450,6 +458,47 @@
                         </svelte:fragment>
                     </ExpandableTable.Row>
                 {/each}
+                {#if availableCredit > 0}
+                    <ExpandableTable.Row {root} id="total-row" expandable={false}>
+                        <ExpandableTable.Cell
+                            {root}
+                            column="item"
+                            expandable={false}
+                            isOpen={false}
+                            toggle={() => {}}>
+                            <Layout.Stack
+                                inline
+                                direction="row"
+                                gap="xxs"
+                                alignItems="center"
+                                alignContent="center">
+                                <Icon icon={IconTag} color="--fgcolor-success" size="s" />
+
+                                <Typography.Text color="--fgcolor-neutral-primary"
+                                    >Credits</Typography.Text>
+                            </Layout.Stack>
+                        </ExpandableTable.Cell>
+                        <ExpandableTable.Cell
+                            {root}
+                            column="usage"
+                            expandable={false}
+                            isOpen={false}
+                            toggle={() => {}}>
+                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                            </Typography.Text>
+                        </ExpandableTable.Cell>
+                        <ExpandableTable.Cell
+                            {root}
+                            column="price"
+                            expandable={false}
+                            isOpen={false}
+                            toggle={() => {}}>
+                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                -{formatCurrency(availableCredit)}
+                            </Typography.Text>
+                        </ExpandableTable.Cell>
+                    </ExpandableTable.Row>
+                {/if}
 
                 <ExpandableTable.Row {root} id="total-row" expandable={false}>
                     <ExpandableTable.Cell
