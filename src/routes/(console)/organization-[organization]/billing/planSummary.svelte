@@ -31,8 +31,16 @@
         { id: 'price', align: 'right' as const, width: '0fr' }
     ];
 
-    $: projectIdToBreakdown = new Map(
-        (currentAggregation?.projectBreakdown || []).map((p) => [p.$id, p])
+    // Create a map for all projects to their breakdown data
+    $: allProjectsBreakdown = new Map(
+        projectsList.map((project) => [
+            project.projectId,
+            project.breakdown || {
+                $id: project.projectId,
+                amount: 0,
+                resources: {}
+            }
+        ])
     );
 
     function formatHumanSize(bytes: number): string {
@@ -63,6 +71,16 @@
             : projectBreakdown.resources[resourceId];
 
         return resource?.amount || 0;
+    }
+
+    function getResourceUsage(projectBreakdown: any, resourceId: string): number {
+        if (!projectBreakdown?.resources) return 0;
+
+        const resource = Array.isArray(projectBreakdown.resources)
+            ? projectBreakdown.resources.find((r: any) => r.resourceId === resourceId)
+            : projectBreakdown.resources[resourceId];
+
+        return resource?.value || 0;
     }
 
     function getProgressColor(_percentage: number): string {
@@ -123,28 +141,40 @@
         ];
     }
 
-    $: projectsList = organizationUsage?.projects?.length
-        ? organizationUsage.projects
-        : (currentAggregation?.projectBreakdown || []).map((p) => {
-              // Find the corresponding project data from organizationUsage
-              const projectData = organizationUsage?.projects?.find(
-                  (proj: any) => proj.projectId === p.$id
-              );
+    $: projectsList = (() => {
+        // Get all projects from usageProjects (which now contains all organization projects)
+        const allProjectIds = Object.keys(usageProjects);
 
-              return {
-                  projectId: p.$id,
-                  storage: projectData?.storage || 0,
-                  executions: projectData?.executions || 0,
-                  executionsMBSeconds: projectData?.executionsMBSeconds || 0,
-                  bandwidth: projectData?.bandwidth || 0,
-                  databasesReads: projectData?.databasesReads || 0,
-                  databasesWrites: projectData?.databasesWrites || 0,
-                  users: projectData?.users || 0,
-                  authPhoneTotal: projectData?.authPhoneTotal || 0,
-                  authPhoneEstimate: projectData?.authPhoneEstimate || 0,
-                  breakdown: p
-              };
-          });
+        if (allProjectIds.length === 0) {
+            return [];
+        }
+
+        return allProjectIds.map((projectId) => {
+            // Find the corresponding project data from organizationUsage
+            const projectData = organizationUsage?.projects?.find(
+                (proj: any) => proj.projectId === projectId
+            );
+
+            // Find the corresponding breakdown data
+            const breakdownData = currentAggregation?.projectBreakdown?.find(
+                (p: any) => p.$id === projectId
+            );
+
+            return {
+                projectId: projectId,
+                storage: projectData?.storage || 0,
+                executions: projectData?.executions || 0,
+                executionsMBSeconds: projectData?.executionsMBSeconds || 0,
+                bandwidth: projectData?.bandwidth || 0,
+                databasesReads: projectData?.databasesReads || 0,
+                databasesWrites: projectData?.databasesWrites || 0,
+                users: projectData?.users || 0,
+                authPhoneTotal: projectData?.authPhoneTotal || 0,
+                authPhoneEstimate: projectData?.authPhoneEstimate || 0,
+                breakdown: breakdownData
+            };
+        });
+    })();
 
     $: billingData = [
         {
@@ -154,10 +184,34 @@
                 item: 'Base plan',
                 usage: '',
                 price: formatCurrency(currentPlan?.price || 0)
-            }
+            },
+            children: []
         },
+        ...(currentAggregation?.resources
+            ?.filter(
+                (r) =>
+                    r.amount &&
+                    r.amount > 0 &&
+                    Object.keys(currentPlan.addons || {}).includes(r.resourceId) &&
+                    currentPlan.addons[r.resourceId]?.price > 0
+            )
+            ?.map((excess) => ({
+                id: `addon-${excess.resourceId}`,
+                expandable: false,
+                cells: {
+                    item:
+                        excess.resourceId === 'seats'
+                            ? 'Additional members'
+                            : excess.resourceId === 'projects'
+                              ? `Additional Projects (${formatNum(excess.value)})`
+                              : `${excess.resourceId} overage (${formatNum(excess.value)})`,
+                    usage: '',
+                    price: formatCurrency(excess.amount)
+                },
+                children: []
+            })) || []),
         ...(projectsList?.map((project) => {
-            const projectBreakdown = projectIdToBreakdown.get(project.projectId);
+            const projectBreakdown = allProjectsBreakdown.get(project.projectId);
 
             return {
                 id: `project-${project.projectId}`,
@@ -178,11 +232,13 @@
                         id: `project-${project.projectId}-bandwidth`,
                         cells: {
                             item: 'Bandwidth',
-                            usage: `${formatBandwidthUsage(project.bandwidth || 0, currentPlan?.bandwidth)}`,
+                            usage: `${formatBandwidthUsage(getResourceUsage(projectBreakdown, 'bandwidth') || project.bandwidth || 0, currentPlan?.bandwidth)}`,
                             price: formatCurrency(getResourceAmount(projectBreakdown, 'bandwidth'))
                         },
                         progressData: createStorageProgressData(
-                            project.bandwidth || 0,
+                            getResourceUsage(projectBreakdown, 'bandwidth') ||
+                                project.bandwidth ||
+                                0,
                             currentPlan?.bandwidth || 0
                         ),
                         maxValue: currentPlan?.bandwidth
@@ -194,10 +250,13 @@
                         id: `project-${project.projectId}-users`,
                         cells: {
                             item: 'Users',
-                            usage: `${formatNum(project.users || 0)} / ${currentPlan?.users ? formatNum(currentPlan.users) : 'Unlimited'}`,
+                            usage: `${formatNum(getResourceUsage(projectBreakdown, 'users') || project.users || 0)} / ${currentPlan?.users ? formatNum(currentPlan.users) : 'Unlimited'}`,
                             price: formatCurrency(getResourceAmount(projectBreakdown, 'users'))
                         },
-                        progressData: createProgressData(project.users || 0, currentPlan?.users),
+                        progressData: createProgressData(
+                            getResourceUsage(projectBreakdown, 'users') || project.users || 0,
+                            currentPlan?.users
+                        ),
                         maxValue: currentPlan?.users
                     },
                     // Database reads
@@ -205,13 +264,15 @@
                         id: `project-${project.projectId}-reads`,
                         cells: {
                             item: 'Database reads',
-                            usage: `${formatNum(project.databasesReads || 0)} / ${currentPlan?.databasesReads ? formatNum(currentPlan.databasesReads) : 'Unlimited'}`,
+                            usage: `${formatNum(getResourceUsage(projectBreakdown, 'databasesReads') || project.databasesReads || 0)} / ${currentPlan?.databasesReads ? formatNum(currentPlan.databasesReads) : 'Unlimited'}`,
                             price: formatCurrency(
                                 getResourceAmount(projectBreakdown, 'databasesReads')
                             )
                         },
                         progressData: createProgressData(
-                            project.databasesReads || 0,
+                            getResourceUsage(projectBreakdown, 'databasesReads') ||
+                                project.databasesReads ||
+                                0,
                             currentPlan?.databasesReads
                         ),
                         maxValue: currentPlan?.databasesReads
@@ -221,13 +282,15 @@
                         id: `project-${project.projectId}-writes`,
                         cells: {
                             item: 'Database writes',
-                            usage: `${formatNum(project.databasesWrites || 0)} / ${currentPlan?.databasesWrites ? formatNum(currentPlan.databasesWrites) : 'Unlimited'}`,
+                            usage: `${formatNum(getResourceUsage(projectBreakdown, 'databasesWrites') || project.databasesWrites || 0)} / ${currentPlan?.databasesWrites ? formatNum(currentPlan.databasesWrites) : 'Unlimited'}`,
                             price: formatCurrency(
                                 getResourceAmount(projectBreakdown, 'databasesWrites')
                             )
                         },
                         progressData: createProgressData(
-                            project.databasesWrites || 0,
+                            getResourceUsage(projectBreakdown, 'databasesWrites') ||
+                                project.databasesWrites ||
+                                0,
                             currentPlan?.databasesWrites
                         ),
                         maxValue: currentPlan?.databasesWrites
@@ -237,11 +300,13 @@
                         id: `project-${project.projectId}-executions`,
                         cells: {
                             item: 'Executions',
-                            usage: `${formatNum(project.executions || 0)} / ${currentPlan?.executions ? formatNum(currentPlan.executions) : 'Unlimited'}`,
+                            usage: `${formatNum(getResourceUsage(projectBreakdown, 'executions') || project.executions || 0)} / ${currentPlan?.executions ? formatNum(currentPlan.executions) : 'Unlimited'}`,
                             price: formatCurrency(getResourceAmount(projectBreakdown, 'executions'))
                         },
                         progressData: createProgressData(
-                            project.executions || 0,
+                            getResourceUsage(projectBreakdown, 'executions') ||
+                                project.executions ||
+                                0,
                             currentPlan?.executions
                         ),
                         maxValue: currentPlan?.executions
@@ -251,11 +316,11 @@
                         id: `project-${project.projectId}-storage`,
                         cells: {
                             item: 'Storage',
-                            usage: `${formatHumanSize(project.storage || 0)} / ${currentPlan?.storage?.toString() || '0'} GB`,
+                            usage: `${formatHumanSize(getResourceUsage(projectBreakdown, 'storage') || project.storage || 0)} / ${currentPlan?.storage?.toString() || '0'} GB`,
                             price: formatCurrency(getResourceAmount(projectBreakdown, 'storage'))
                         },
                         progressData: createStorageProgressData(
-                            project.storage || 0,
+                            getResourceUsage(projectBreakdown, 'storage') || project.storage || 0,
                             currentPlan?.storage || 0
                         ),
                         maxValue: currentPlan?.storage
@@ -267,12 +332,16 @@
                         id: `project-${project.projectId}-gb-hours`,
                         cells: {
                             item: 'GB-hours',
-                            usage: `${formatNum((project.executionsMBSeconds || 0) / 1000 / 3600 || 0)} / ${currentPlan?.executions ? formatNum((currentPlan.executions * 1000 * 3600) / 1000 / 3600) : 'Unlimited'}`,
+                            usage: `${formatNum((getResourceUsage(projectBreakdown, 'GBHours') || project.executionsMBSeconds || 0) / 1000 / 3600 || 0)} / ${currentPlan?.executions ? formatNum((currentPlan.executions * 1000 * 3600) / 1000 / 3600) : 'Unlimited'}`,
                             price: formatCurrency(getResourceAmount(projectBreakdown, 'GBHours'))
                         },
                         progressData: currentPlan?.executions
                             ? createProgressData(
-                                  (project.executionsMBSeconds || 0) / 1000 / 3600,
+                                  (getResourceUsage(projectBreakdown, 'GBHours') ||
+                                      project.executionsMBSeconds ||
+                                      0) /
+                                      1000 /
+                                      3600,
                                   (currentPlan.executions * 1000 * 3600) / 1000 / 3600
                               )
                             : [],
@@ -311,7 +380,8 @@
                           item: 'No projects found',
                           usage: '',
                           price: formatCurrency(0)
-                      }
+                      },
+                      children: []
                   }
               ]
             : [])
@@ -701,6 +771,12 @@
         .billing-cycle-header {
             flex-direction: column;
             gap: 8px;
+        }
+
+        :global([data-expandable-row-id='additional-projects']),
+        :global([data-expandable-row-id^='addon-']) {
+            background-color: var(--bgcolor-neutral-tertiary);
+            border-left: 3px solid var(--bgcolor-accent-neutral);
         }
 
         :global(.card-only-on-desktop) {
