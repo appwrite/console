@@ -11,6 +11,7 @@
     import { menuOpen } from '$lib/components/menu/store';
 
     export let time: string | null = null;
+    export let showDatetime: boolean = false;
     export let canShowPopover: boolean = true;
     export let placement: ComponentProps<Popover>['placement'] = 'bottom';
 
@@ -85,7 +86,7 @@
                 }
             }}
             on:mouseleave={() => hidePopover(hide)}>
-            <slot>{capitalize(timeFromNow(time))}</slot>
+            <slot>{showDatetime ? toLocaleDateTime(time) : capitalize(timeFromNow(time))}</slot>
         </button>
 
         <div

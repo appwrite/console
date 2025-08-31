@@ -3,6 +3,7 @@
     import { BillingPlan, INTERVAL } from '$lib/constants';
     import Footer from '$lib/layout/footer.svelte';
     import Shell from '$lib/layout/shell.svelte';
+
     import { app } from '$lib/stores/app';
     import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
     import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
@@ -39,11 +40,12 @@
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
     import { activeHeaderAlert, consoleVariables } from './store';
+
+    import { base } from '$app/paths';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
-    import { base } from '$app/paths';
     import { canSeeProjects } from '$lib/stores/roles';
-    import { BottomModalAlert } from '$lib/components';
+    import { BottomModalAlert, EmailVerificationBanner } from '$lib/components';
     import {
         IconAnnotation,
         IconBookOpen,
@@ -57,6 +59,7 @@
     import type { LayoutData } from './$types';
 
     export let data: LayoutData;
+    let emailBannerClosed = false;
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -331,7 +334,7 @@
 
 <CommandCenter />
 <Shell
-    showSideNavigation={page.url.pathname !== '/console' &&
+    showSideNavigation={page.url.pathname !== '/' &&
         !page?.params.organization &&
         !page.url.pathname.includes('/console/account') &&
         !page.url.pathname.includes('/console/card') &&
@@ -343,6 +346,10 @@
     <slot />
     <Footer slot="footer" />
 </Shell>
+
+<EmailVerificationBanner
+    {emailBannerClosed}
+    onEmailBannerClose={(closed) => (emailBannerClosed = closed)} />
 
 {#if $wizard.show && $wizard.component}
     <svelte:component this={$wizard.component} {...$wizard.props} />

@@ -72,7 +72,7 @@
             detectingRuntime = true;
 
             const detections = (await sdk
-                .forProject(page.params.regionn, page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .vcs.createRepositoryDetection({
                     installationId: data.installation.$id,
                     providerRepositoryId: page.params.repository,

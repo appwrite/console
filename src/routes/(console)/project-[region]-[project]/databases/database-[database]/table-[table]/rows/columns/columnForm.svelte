@@ -16,7 +16,11 @@
     <Layout.Stack>
         {#each columns as column}
             {@const label = column.key}
-            <ColumnItem {column} bind:formValues {label} />
+            <ColumnItem
+                {label}
+                {column}
+                {formValues}
+                onUpdateFormValues={(values) => (formValues = values)} />
         {/each}
 
         {#if customId !== undefined}

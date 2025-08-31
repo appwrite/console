@@ -11,6 +11,7 @@
     import Confirm from '$lib/components/confirm.svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';
+    import type { Models } from '@appwrite.io/console';
 
     let {
         showDelete = $bindable(false),
@@ -70,6 +71,10 @@
             trackError(e, Submit.ColumnDelete);
         }
     }
+
+    function getAsRelationship(column: string | Columns): Models.ColumnRelationship {
+        return column as Models.ColumnRelationship;
+    }
 </script>
 
 <Confirm
@@ -93,7 +98,7 @@
 
     {#if requiresTwoWayConfirm}
         <!-- not allowed on multi selections, safe to assume that this isn't a string! -->
-        {@const attribute = selectedColumn[0]}
+        {@const column = getAsRelationship(selectedColumns[0])}
         <Layout.Stack direction="column" gap="xl">
             <p>
                 This is a two way relationship and the corresponding relationship will also be
@@ -102,8 +107,8 @@
             <p><b>This action is irreversible.</b></p>
             <ul>
                 <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
-                    Delete relationship between <b data-private>{attribute.key}</b> to
-                    <b data-private>{attribute.twoWayKey}</b>
+                    Delete relationship between <b data-private>{column.key}</b> to
+                    <b data-private>{column.twoWayKey}</b>
                 </InputChoice>
             </ul>
         </Layout.Stack>

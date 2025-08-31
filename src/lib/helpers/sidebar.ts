@@ -1,18 +1,15 @@
 import { get } from 'svelte/store';
 import { user } from '$lib/stores/user';
 import { sdk } from '$lib/stores/sdk';
-import type { Page } from '@sveltejs/kit';
 
 const userPreferences = () => get(user)?.prefs;
 
 // for spreadsheet, closed with icons
-const isInDatabasesRoute = (page: Page) => {
-    return page.route.id?.includes('databases/database-[database]');
+export const isInDatabasesRoute = (route: { id?: string }) => {
+    return route.id?.includes('databases/database-[database]');
 };
 
-export function updateSidebarState(page: Page, state: 'closed' | 'open' | 'icons') {
-    if (isInDatabasesRoute(page)) return;
-
+export function updateSidebarState(state: 'closed' | 'open' | 'icons') {
     if (state === 'open' || state === 'icons') {
         const currentPrefs = userPreferences();
 
@@ -25,9 +22,7 @@ export function updateSidebarState(page: Page, state: 'closed' | 'open' | 'icons
     }
 }
 
-export function getSidebarState(page: Page): 'open' | 'icons' {
-    if (isInDatabasesRoute(page)) return 'icons';
-
+export function getSidebarState(): 'open' | 'icons' {
     const currentPrefs = userPreferences();
     if (currentPrefs && currentPrefs.sidebarState) {
         if (currentPrefs.sidebarState === 'open' || currentPrefs.sidebarState === 'icons') {

@@ -57,22 +57,24 @@ export const databaseColumnSheetOptions = writable<DatabaseSheetOptions>({
 export const databaseRowSheetOptions = writable<
     DatabaseSheetOptions & {
         row: Models.Row;
+        rowId?: string;
     }
 >({
     title: null,
     show: false,
-    row: null
+    row: null,
+    rowId: null // for loading from a given id
 });
 
 export const databaseRelatedRowSheetOptions = writable<
     DatabaseSheetOptions & {
-        rowId: string;
+        rows: string | Models.Row[];
         tableId: string;
     }
 >({
     title: 'Update related row',
     show: false,
-    rowId: null,
+    rows: null,
     tableId: null
 });
 
@@ -177,6 +179,7 @@ export const paginatedRows = createSparsePagedDataStore<Models.DefaultRow>(SPREA
 
 export const PROHIBITED_ROW_KEYS = [
     '$id',
+    '$sequence',
     '$collection',
     '$tableId',
     '$databaseId',

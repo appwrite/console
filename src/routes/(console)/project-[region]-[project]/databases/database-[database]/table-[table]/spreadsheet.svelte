@@ -11,7 +11,13 @@
     import { type Models, Query } from '@appwrite.io/console';
     import { type ComponentType, onDestroy, onMount } from 'svelte';
     import type { PageData } from './$types';
-    import { isRelationship, isRelationshipToMany, isString } from './rows/store';
+    import {
+        buildRowUrl,
+        buildWildcardColumnsQuery,
+        isRelationship,
+        isRelationshipToMany,
+        isString
+    } from './rows/store';
     import {
         columns,
         table,
@@ -79,7 +85,8 @@
     import { pageToOffset } from '$lib/helpers/load';
     import { debounce } from '$lib/helpers/debounce';
     import { hash } from '$lib/helpers/string';
-    import { abbreviateNumber } from '$lib/helpers/numbers';
+    import { formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { chunks } from '$lib/helpers/array';
 
     export let data: PageData;
     export let showRowCreateSheet: {
@@ -131,6 +138,11 @@
             paginatedRows.clear();
             paginatedRows.setPage(1, data.rows.rows);
         }
+
+        // rowId exists, we have someone from old url format!
+        if ($databaseRowSheetOptions && $databaseRowSheetOptions.rowId) {
+            setTimeout(() => ($databaseRowSheetOptions.show = true), 250);
+        }
     });
 
     onDestroy(() => ($showCreateColumnSheet.show = false));
@@ -140,7 +152,7 @@
 
         const baseColumns = $table.columns.map((col) => ({
             id: col.key,
-            title: col.array ? `${col.key} []` : col.key,
+            title: col.key,
             type: col.type as ColumnType,
             hide: !!selectedColumnsToHide?.includes(col.key),
             array: col?.array,
@@ -337,6 +349,8 @@
 
     async function handleDelete() {
         showDelete = false;
+        let hadErrors = false;
+
         try {
             if (selectedRowForDelete) {
                 await sdk.forProject(page.params.region, page.params.project).tablesDB.deleteRow({
@@ -346,31 +360,61 @@
                 });
             } else {
                 if (selectedRows.length) {
-                    const batches: string[][] = [];
-                    for (let i = 0; i < selectedRows.length; i += 100) {
-                        batches.push(selectedRows.slice(i, i + 100));
-                    }
-
-                    await Promise.all(
-                        batches.map((batch) =>
-                            sdk
-                                .forProject(page.params.region, page.params.project)
-                                .tablesDB.deleteRows({
-                                    databaseId,
-                                    tableId,
-                                    queries: [Query.equal('$id', batch)]
-                                })
-                        )
+                    const hasAnyRelationships = $table.columns.some((column) =>
+                        isRelationship(column)
                     );
+
+                    const tablesSDK = sdk.forProject(
+                        page.params.region,
+                        page.params.project
+                    ).tablesDB;
+
+                    if (hasAnyRelationships) {
+                        for (const batch of chunks(selectedRows)) {
+                            try {
+                                await Promise.all(
+                                    batch.map((rowId) =>
+                                        tablesSDK.deleteRow({
+                                            databaseId,
+                                            tableId,
+                                            rowId
+                                        })
+                                    )
+                                );
+                            } catch (e) {
+                                hadErrors = true;
+                                // ignore but keep proceeding!
+                            }
+                        }
+
+                        if (hadErrors) {
+                            addNotification({
+                                type: 'error',
+                                message: 'Some rows could not be deleted'
+                            });
+                        }
+                    } else {
+                        for (const batch of chunks(selectedRows, 100)) {
+                            await tablesSDK.deleteRows({
+                                databaseId,
+                                tableId,
+                                queries: [Query.equal('$id', batch)]
+                            });
+                        }
+                    }
                 }
             }
 
             await invalidate(Dependencies.ROWS);
             trackEvent(Submit.RowDelete);
-            addNotification({
-                type: 'success',
-                message: `${selectedRows.length ? selectedRows.length : 1} row${selectedRows.length > 1 ? 's' : ''} deleted`
-            });
+
+            if (!hadErrors) {
+                // error is already shown above!
+                addNotification({
+                    type: 'success',
+                    message: `${selectedRows.length ? selectedRows.length : 1} row${selectedRows.length > 1 ? 's' : ''} deleted`
+                });
+            }
 
             spreadsheetRenderKey.set(
                 hash([
@@ -487,6 +531,21 @@
                 $rowPermissionSheet.show = true;
             }
 
+            if (action === 'copy-url') {
+                try {
+                    await copy(buildRowUrl(row.$id));
+                    addNotification({
+                        type: 'success',
+                        message: 'Row url copied'
+                    });
+                } catch (e) {
+                    addNotification({
+                        type: 'error',
+                        message: e.message
+                    });
+                }
+            }
+
             if (action === 'copy-json') {
                 const stringified = JSON.stringify(row, null, 2);
                 try {
@@ -569,7 +628,8 @@
                 queries: [
                     getCorrectOrderQuery(),
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
-                    Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT))
+                    Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
+                    ...buildWildcardColumnsQuery($table)
                 ]
             });
 
@@ -595,7 +655,8 @@
                     queries: [
                         getCorrectOrderQuery(),
                         Query.limit(SPREADSHEET_PAGE_LIMIT),
-                        Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT))
+                        Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
+                        ...buildWildcardColumnsQuery($table)
                     ]
                 });
 
@@ -680,7 +741,6 @@
             on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}
             bind:currentPage
             nextPageTriggerOffset={2}
-            paginationBufferSpace={35}
             jumpToPageNumber={jumpToPageReactive}
             loadingMore={$paginatedRowsLoading}
             itemsPerPage={SPREADSHEET_PAGE_LIMIT}
@@ -729,8 +789,14 @@
                                         gap="xs"
                                         direction="row"
                                         alignItems="center"
-                                        alignContent="center">
-                                        {column.title}
+                                        alignContent="center"
+                                        style="min-width: 0;">
+                                        <Typography.Text truncate>
+                                            {column.title}
+                                        </Typography.Text>
+
+                                        <!-- array indicator -->
+                                        {#if column.array}[]{/if}
 
                                         <SortButton
                                             onSort={sort}
@@ -778,6 +844,7 @@
                                         >{row.$id}</Id>
                                 {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
                                     <DualTimeView
+                                        showDatetime
                                         time={row[columnId]}
                                         canShowPopover={canShowDatetimePopover} />
                                 {:else if columnId === 'actions'}
@@ -813,11 +880,11 @@
                                                 <Link.Button
                                                     variant="muted"
                                                     on:click={() => {
-                                                        $databaseRelatedRowSheetOptions.show = true;
                                                         $databaseRelatedRowSheetOptions.tableId =
-                                                            columnId;
-                                                        $databaseRelatedRowSheetOptions.rowId =
+                                                            row[columnId]?.['$tableId'];
+                                                        $databaseRelatedRowSheetOptions.rows =
                                                             row[columnId]?.['$id'];
+                                                        $databaseRelatedRowSheetOptions.show = true;
                                                     }}>
                                                     {displayValue}
                                                 </Link.Button>
@@ -838,9 +905,9 @@
                                             badge={itemsNum ?? 0}
                                             on:click={() => {
                                                 $databaseRelatedRowSheetOptions.show = true;
+                                                $databaseRelatedRowSheetOptions.rows =
+                                                    row[columnId];
                                                 $databaseRelatedRowSheetOptions.tableId = columnId;
-                                                $databaseRelatedRowSheetOptions.rowId =
-                                                    row[columnId]?.['$id'];
                                             }}>
                                             Items
                                         </Button.Button>
@@ -922,7 +989,7 @@
                             <span style:white-space="nowrap">
                                 {selectedRows.length
                                     ? `${selectedRows.length} row${selectedRows.length === 1 ? '' : 's'} selected`
-                                    : `${abbreviateNumber($rows.total)} row${$rows.total === 1 ? '' : 's'}`}
+                                    : `${formatNumberWithCommas($rows.total)} row${$rows.total === 1 ? '' : 's'}`}
                             </span>
                         </Typography.Text>
 

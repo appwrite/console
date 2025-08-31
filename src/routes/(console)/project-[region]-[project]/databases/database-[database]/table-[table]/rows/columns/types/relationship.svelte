@@ -4,10 +4,19 @@
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
+    import { type ComponentType, onMount } from 'svelte';
     import { isRelationshipToMany } from '../../store';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+
+    type SelectOption = {
+        label: string;
+        value: string | null;
+        data?: string[];
+        disabled?: boolean;
+        badge?: string;
+        leadingIcon?: ComponentType;
+    };
 
     export let id: string;
     export let label: string;
@@ -25,6 +34,7 @@
     let showInput = false;
     let singleRel: string;
     let search: string = null;
+    let loadingRelationships = false;
 
     let newItemValue: string = '';
     let relatedList: string[] = [];
@@ -33,27 +43,23 @@
     let offset = 0;
 
     onMount(async () => {
-        if (value && typeof value === 'object') {
-            row = value as Models.Row;
-            singleRel = row?.$id;
-        }
-
-        if (value && isRelationshipToMany(column)) {
-            // TODO: test this
-            relatedList = (value as string[]).slice();
-        }
-
-        if (editing && row?.[column.key]) {
-            if (row[column.key]?.length) {
-                relatedList =
-                    row[column.key]?.map((d: Record<string, unknown>) => {
-                        return d?.$id;
-                    }) ?? [];
+        if (isRelationshipToMany(column)) {
+            if (Array.isArray(value)) {
+                relatedList = value.map((item: object | string) => {
+                    return typeof item === 'string' ? item : item['$id'];
+                });
+            }
+        } else {
+            if (value && typeof value === 'object') {
+                row = value as Models.Row;
+                singleRel = row?.$id;
             }
         }
     });
 
     async function getRows(search: string = null) {
+        loadingRelationships = true;
+
         // already includes the `$id`, dw!
         const displayNames = preferences.getDisplayNames(column.relatedTable);
 
@@ -61,11 +67,17 @@
             ? [Query.select(displayNames), Query.startsWith('$id', search), Query.orderDesc('')]
             : [Query.select(displayNames)];
 
-        return await sdk.forProject(page.params.region, page.params.project).tablesDB.listRows({
-            databaseId,
-            tableId: column.relatedTable,
-            queries
-        });
+        const rows = await sdk
+            .forProject(page.params.region, page.params.project)
+            .tablesDB.listRows({
+                databaseId,
+                tableId: column.relatedTable,
+                queries
+            });
+
+        loadingRelationships = false;
+
+        return rows;
     }
 
     function getAvailableOptions(excludeIndex?: number) {
@@ -107,6 +119,58 @@
         showInput = false;
     }
 
+    function generateOptions(
+        loading: boolean,
+        rows: Models.Row[] | undefined,
+        column: Models.ColumnRelationship,
+        editing: boolean
+    ): SelectOption[] {
+        if (loading) {
+            return [{ label: 'Loading...', value: null, disabled: true }];
+        }
+
+        let baseOptions: SelectOption[] =
+            rows?.map((row) => {
+                const names = preferences
+                    .getDisplayNames(column?.relatedTable)
+                    .filter((name) => name !== '$id');
+
+                const values = names
+                    .map((name) => row?.[name])
+                    .filter((value) => value != null && typeof value === 'string' && value !== '');
+
+                const displayValues = !editing
+                    ? values
+                    : values.map((value) => (value.length > 5 ? value.slice(0, 5) + '...' : value));
+
+                let label: string;
+                if (!values.length) {
+                    label = row.$id;
+                } else {
+                    label = `${row.$id} (${displayValues.join(' | ')})`;
+                }
+
+                return {
+                    label,
+                    value: row.$id,
+                    data: names.map((name) => row?.[name])
+                };
+            }) ?? [];
+
+        if (!isRelationshipToMany(column) && baseOptions.length && value && limited) {
+            baseOptions = [
+                {
+                    value: null,
+                    badge: 'Unlink',
+                    label: 'Remove relationship'
+                },
+                ...baseOptions
+            ];
+        }
+
+        return baseOptions;
+    }
+
     // Reactive statements
     $: getRows(search).then((res) => (rowList = res));
 
@@ -119,34 +183,7 @@
 
     $: totalCount = relatedList?.length ?? 0;
 
-    $: options =
-        rowList?.rows?.map((row) => {
-            const names = preferences
-                .getDisplayNames(column?.relatedTable)
-                .filter((name) => name !== '$id');
-
-            const values = names
-                .map((name) => row?.[name])
-                // always supposed to be a string but just being a bit safe here
-                .filter((value) => value != null && typeof value === 'string' && value !== '');
-
-            const displayValues = !editing
-                ? values
-                : // on non edit routes like create, there's enough space!
-                  values.map((value) => (value.length > 5 ? value.slice(0, 5) + '...' : value));
-
-            const label = !values.length
-                ? row.$id
-                : // values are in `$id (a | b)` format
-                  // previously used to have a `$id a | b`.
-                  `${row.$id} (${displayValues.join(' | ')})`;
-
-            return {
-                label,
-                value: row.$id,
-                data: names.map((name) => row?.[name])
-            };
-        }) ?? [];
+    $: options = generateOptions(loadingRelationships, rowList?.rows, column, editing);
 
     $: hasItems = totalCount > 0;
 
@@ -286,13 +323,35 @@
         </Layout.Stack>
     </Layout.Stack>
 {:else}
-    <InputSelect
-        {id}
-        {options}
-        autofocus={limited}
-        bind:value={singleRel}
-        required={column.required}
-        label={limited ? undefined : label}
-        placeholder={`Select ${column.key}`}
-        on:change={() => (value = rowList.rows.find((row) => row.$id === singleRel))} />
+    <Layout.Stack direction="row" alignItems="center" gap="s">
+        <InputSelect
+            {id}
+            {options}
+            autofocus={limited}
+            bind:value={singleRel}
+            required={column.required}
+            label={limited ? undefined : label}
+            placeholder={`Select ${column.key}`}
+            on:change={() => {
+                if (singleRel === null) {
+                    value = null;
+                } else {
+                    value = rowList.rows.find((row) => row.$id === singleRel);
+                }
+            }} />
+
+        {#if !limited && singleRel}
+            <div style:padding-block-start="2.25rem">
+                <Button
+                    icon
+                    extraCompact
+                    on:click={() => {
+                        value = null;
+                        singleRel = null;
+                    }}>
+                    <Icon icon={IconX} size="s" />
+                </Button>
+            </div>
+        {/if}
+    </Layout.Stack>
 {/if}

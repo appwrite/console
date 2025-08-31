@@ -59,6 +59,13 @@ async function updateConsolePreferences(store: ConsolePreferencesStore): Promise
     await sdk.forConsole.account.updatePrefs({ prefs: currentPreferences });
 }
 
+function safePrefsKey(widthPreferences: TeamPreferences['widths'], from: string, to: string) {
+    if (widthPreferences?.[from]) {
+        widthPreferences[to] = widthPreferences[from];
+        delete widthPreferences[from];
+    }
+}
+
 function createPreferences() {
     const { subscribe, set, update } = writable<ConsolePreferencesStore>({});
     let preferences: ConsolePreferencesStore = {};
@@ -218,7 +225,7 @@ function createPreferences() {
         loadTeamPrefs: loadTeamPreferences,
 
         getDisplayNames: (tableId: string) => {
-            return teamPreferences?.displayNames?.[tableId];
+            return teamPreferences?.displayNames?.[tableId] ?? ['$id'];
         },
 
         setDisplayNames: async (
@@ -242,16 +249,12 @@ function createPreferences() {
             return teamPreferences?.columnOrder?.[tableId] ?? [];
         },
 
-        async saveColumnOrder(
-            orgId: string,
-            collectionId: string,
-            columnIds: TeamPreferences['order']
-        ) {
+        async saveColumnOrder(orgId: string, tableId: string, columnIds: TeamPreferences['order']) {
             if (!teamPreferences.columnOrder) {
                 teamPreferences.columnOrder = {};
             }
 
-            teamPreferences.columnOrder[collectionId] = columnIds;
+            teamPreferences.columnOrder[tableId] = columnIds;
 
             await sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,
@@ -259,23 +262,26 @@ function createPreferences() {
             });
         },
 
-        getColumnWidths(collectionId: string): TeamPreferences['widths'] {
-            return teamPreferences?.columnWidths?.[collectionId] ?? {};
+        getColumnWidths(tableId: string): TeamPreferences['widths'] {
+            const columnWidths = teamPreferences?.columnWidths?.[tableId] ?? {};
+            safePrefsKey(columnWidths, '$uid', '$id');
+            return columnWidths;
         },
 
-        async saveColumnWidths(
-            orgId: string,
-            collectionId: string,
-            width: TeamPreferences['widths']
-        ) {
+        async saveColumnWidths(orgId: string, tableId: string, width: TeamPreferences['widths']) {
             if (!teamPreferences.columnWidths) {
                 teamPreferences.columnWidths = {};
             }
 
-            teamPreferences.columnWidths[collectionId] = {
-                ...teamPreferences.columnWidths[collectionId],
+            teamPreferences.columnWidths[tableId] = {
+                ...teamPreferences.columnWidths[tableId],
                 ...width
             };
+
+            // older version could still have the problematic key!
+            for (const tableWidths of Object.values(teamPreferences.columnWidths)) {
+                safePrefsKey(tableWidths, '$id', '$uid');
+            }
 
             await sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,

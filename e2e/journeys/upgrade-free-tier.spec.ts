@@ -10,7 +10,6 @@ test('upgrade - free tier', async ({ page }) => {
         await page.getByRole('link', { name: 'Upgrade', exact: true }).click();
         await page.waitForURL(/\/organization-[^/]+\/change-plan/);
         await page.locator('input[value="tier-1"]').click();
-        await page.getByRole('button', { name: 'add' }).first().click();
 
         await enterCreditCard(page);
 

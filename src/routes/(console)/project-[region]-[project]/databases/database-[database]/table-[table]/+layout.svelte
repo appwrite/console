@@ -60,6 +60,8 @@
     import CreateIndex from './indexes/createIndex.svelte';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
+    import { buildRowUrl, isRelationship } from './rows/store';
+    import { chunks } from '$lib/helpers/array';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -249,7 +251,10 @@
         $randomDataModalState.show = false;
 
         let columns = $table.columns;
-        if (!columns.length) {
+        const hasAnyRelationships = columns.some((column) => isRelationship(column));
+        const filteredColumns = columns.filter((col) => col.type !== 'relationship');
+
+        if (!filteredColumns.length) {
             try {
                 columns = await generateColumns($project, page.params.database, page.params.table);
 
@@ -272,12 +277,32 @@
             const { rows, ids } = generateFakeRecords(columns, $randomDataModalState.value);
 
             rowIds = ids;
+            const tablesSDK = sdk.forProject(page.params.region, page.params.project).tablesDB;
 
-            await sdk.forProject(page.params.region, page.params.project).tablesDB.createRows({
-                databaseId: page.params.database,
-                tableId: page.params.table,
-                rows
-            });
+            if (hasAnyRelationships) {
+                for (const batch of chunks(rows)) {
+                    try {
+                        await Promise.all(
+                            batch.map((row) =>
+                                tablesSDK.createRow({
+                                    databaseId: page.params.database,
+                                    tableId: page.params.table,
+                                    rowId: row.$id,
+                                    data: row
+                                })
+                            )
+                        );
+                    } catch (error) {
+                        // ignore, its sample data.
+                    }
+                }
+            } else {
+                await tablesSDK.createRows({
+                    databaseId: page.params.database,
+                    tableId: page.params.table,
+                    rows
+                });
+            }
 
             addNotification({
                 type: 'success',
@@ -313,6 +338,7 @@
 <SideSheet
     closeOnBlur
     title={$showCreateColumnSheet.title}
+    titleBadge={selectedOption === 'Relationship' ? 'Experimental' : undefined}
     bind:show={$showCreateColumnSheet.show}
     submit={{
         text: 'Create',
@@ -357,8 +383,17 @@
         text: 'Update',
         disabled: editRow?.isDisabled(),
         onClick: async () => await editRow?.update()
+    }}
+    topAction={{
+        mode: 'copy-tag',
+        text: 'Row URL',
+        show: !!($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id),
+        value: buildRowUrl($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id)
     }}>
-    <EditRow bind:row={$databaseRowSheetOptions.row} bind:this={editRow} />
+    <EditRow
+        bind:this={editRow}
+        bind:row={$databaseRowSheetOptions.row}
+        bind:rowId={$databaseRowSheetOptions.rowId} />
 </SideSheet>
 
 <SideSheet
@@ -372,7 +407,7 @@
     }}>
     <EditRelatedRow
         bind:this={editRelatedRow}
-        rowId={$databaseRelatedRowSheetOptions.rowId}
+        rows={$databaseRelatedRowSheetOptions.rows}
         tableId={$databaseRelatedRowSheetOptions.tableId} />
 </SideSheet>
 

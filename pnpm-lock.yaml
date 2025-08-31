@@ -34,7 +34,7 @@ importers:
         version: 2.11.8
       '@sentry/sveltekit':
         specifier: ^8.38.0
-        version: 8.55.0(@opentelemetry/api@1.9.0)(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.30.0)(@sveltejs/kit@2.20.2(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))
+        version: 8.55.0(@opentelemetry/api@1.9.0)(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.30.0)(@sveltejs/kit@2.36.3(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))
       '@stripe/stripe-js':
         specifier: ^3.5.0
         version: 3.5.0
@@ -101,10 +101,10 @@ importers:
         version: 1.51.1
       '@sveltejs/adapter-static':
         specifier: ^3.0.8
-        version: 3.0.8(@sveltejs/kit@2.20.2(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))
+        version: 3.0.8(@sveltejs/kit@2.36.3(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))
       '@sveltejs/kit':
-        specifier: ^2.20.2
-        version: 2.20.2(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))
+        specifier: ^2.36.2
+        version: 2.36.3(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
         version: 5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))
@@ -1247,6 +1247,9 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
+  '@standard-schema/spec@1.0.0':
+    resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
+
   '@stripe/stripe-js@3.5.0':
     resolution: {integrity: sha512-pKS3wZnJoL1iTyGBXAvCwduNNeghJHY6QSRSNNvpYnrrQrLZ6Owsazjyynu0e0ObRgks0i7Rv+pe2M7/MBTZpQ==}
     engines: {node: '>=12.16'}
@@ -1261,14 +1264,18 @@ packages:
     peerDependencies:
       '@sveltejs/kit': ^2.0.0
 
-  '@sveltejs/kit@2.20.2':
-    resolution: {integrity: sha512-Dv8TOAZC9vyfcAB9TMsvUEJsRbklRTeNfcYBPaeH6KnABJ99i3CvCB2eNx8fiiliIqe+9GIchBg4RodRH5p1BQ==}
+  '@sveltejs/kit@2.36.3':
+    resolution: {integrity: sha512-MVzwZz1GFznEQbL3f0i2v9AIc3lZH01izQj6XfIrthmZAwOzyXJCgXbLRss8vk//HfYsE4w6Tz+ukbf3rScPNQ==}
     engines: {node: '>=18.13'}
     hasBin: true
     peerDependencies:
-      '@sveltejs/vite-plugin-svelte': ^3.0.0 || ^4.0.0-next.1 || ^5.0.0
+      '@opentelemetry/api': ^1.0.0
+      '@sveltejs/vite-plugin-svelte': ^3.0.0 || ^4.0.0-next.1 || ^5.0.0 || ^6.0.0-next.0
       svelte: ^4.0.0 || ^5.0.0-next.0
-      vite: ^5.0.3 || ^6.0.0
+      vite: ^5.0.3 || ^6.0.0 || ^7.0.0-beta.0
+    peerDependenciesMeta:
+      '@opentelemetry/api':
+        optional: true
 
   '@sveltejs/vite-plugin-svelte-inspector@4.0.1':
     resolution: {integrity: sha512-J/Nmb2Q2y7mck2hyCX4ckVHcR5tu2J+MtBEQqpDrrgELZ2uvraQcK/ioCV61AqkdXFgriksOKIceDcQmqnGhVw==}
@@ -2009,8 +2016,8 @@ packages:
     engines: {node: '>=0.10'}
     hasBin: true
 
-  devalue@5.1.1:
-    resolution: {integrity: sha512-maua5KUiapvEwiEAe+XnlZ3Rh0GD+qI1J/nb9vrJc3muPXvcF/8gXYTWF76+5DAqHyDUtOIImEuo0YKE9mshVw==}
+  devalue@5.3.2:
+    resolution: {integrity: sha512-UDsjUbpQn9kvm68slnrs+mfxwFkIflOhkanmyabZ8zOYk8SMEIbJ3TK+88g70hSIeytu4y18f0z/hYHMTrXIWw==}
 
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
@@ -2392,9 +2399,6 @@ packages:
 
   import-in-the-middle@1.13.1:
     resolution: {integrity: sha512-k2V9wNm9B+ysuelDTHjI9d5KPc4l8zAZTGqj+pcynvWkypZd857ryzN8jNC7Pg2YZXNMJcHRPpaDyCBbNyVRpA==}
-
-  import-meta-resolve@4.1.0:
-    resolution: {integrity: sha512-I6fiaX09Xivtk+THaMfAwnA3MVA5Big1WHF1Dfx9hFuvNIWpXnorlkzhcQf6ehrqQiiZECRt1poOAkPmer3ruw==}
 
   imurmurhash@0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
@@ -4667,14 +4671,14 @@ snapshots:
       magic-string: 0.30.7
       svelte: 5.25.3
 
-  '@sentry/sveltekit@8.55.0(@opentelemetry/api@1.9.0)(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.30.0)(@sveltejs/kit@2.20.2(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))':
+  '@sentry/sveltekit@8.55.0(@opentelemetry/api@1.9.0)(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.30.0)(@sveltejs/kit@2.36.3(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))':
     dependencies:
       '@sentry/core': 8.55.0
       '@sentry/node': 8.55.0
       '@sentry/opentelemetry': 8.55.0(@opentelemetry/api@1.9.0)(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.30.0)
       '@sentry/svelte': 8.55.0(svelte@5.25.3)
       '@sentry/vite-plugin': 2.22.6
-      '@sveltejs/kit': 2.20.2(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))
+      '@sveltejs/kit': 2.36.3(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))
       magic-string: 0.30.7
       magicast: 0.2.8
       sorcery: 1.0.0
@@ -4734,32 +4738,42 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
+  '@standard-schema/spec@1.0.0': {}
+
   '@stripe/stripe-js@3.5.0': {}
 
   '@sveltejs/acorn-typescript@1.0.5(acorn@8.14.1)':
     dependencies:
       acorn: 8.14.1
 
-  '@sveltejs/adapter-static@3.0.8(@sveltejs/kit@2.20.2(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))':
+  '@sveltejs/acorn-typescript@1.0.5(acorn@8.15.0)':
     dependencies:
-      '@sveltejs/kit': 2.20.2(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))
+      acorn: 8.15.0
 
-  '@sveltejs/kit@2.20.2(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))':
+  '@sveltejs/adapter-static@3.0.8(@sveltejs/kit@2.36.3(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))':
     dependencies:
+      '@sveltejs/kit': 2.36.3(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))
+
+  '@sveltejs/kit@2.36.3(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))':
+    dependencies:
+      '@standard-schema/spec': 1.0.0
+      '@sveltejs/acorn-typescript': 1.0.5(acorn@8.15.0)
       '@sveltejs/vite-plugin-svelte': 5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))
       '@types/cookie': 0.6.0
+      acorn: 8.15.0
       cookie: 0.6.0
-      devalue: 5.1.1
+      devalue: 5.3.2
       esm-env: 1.2.2
-      import-meta-resolve: 4.1.0
       kleur: 4.1.5
-      magic-string: 0.30.17
+      magic-string: 0.30.18
       mrmime: 2.0.1
       sade: 1.8.1
       set-cookie-parser: 2.7.1
       sirv: 3.0.1
       svelte: 5.25.3
       vite: 7.0.6(@types/node@22.13.14)(sass@1.86.0)
+    optionalDependencies:
+      '@opentelemetry/api': 1.9.0
 
   '@sveltejs/vite-plugin-svelte-inspector@4.0.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0)))(svelte@5.25.3)(vite@7.0.6(@types/node@22.13.14)(sass@1.86.0))':
     dependencies:
@@ -5641,7 +5655,7 @@ snapshots:
   detect-libc@1.0.3:
     optional: true
 
-  devalue@5.1.1: {}
+  devalue@5.3.2: {}
 
   devlop@1.1.0:
     dependencies:
@@ -6068,8 +6082,6 @@ snapshots:
       acorn-import-attributes: 1.9.5(acorn@8.14.1)
       cjs-module-lexer: 1.4.3
       module-details-from-path: 1.0.3
-
-  import-meta-resolve@4.1.0: {}
 
   imurmurhash@0.1.4: {}
 
