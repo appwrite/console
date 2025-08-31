@@ -401,17 +401,38 @@
                                                             {/if}
                                                         </div>
                                                         <div class="usage-text-section">
-                                                            <Typography.Text
-                                                                variant="m-400"
-                                                                color="--fgcolor-neutral-primary">
-                                                                {child.cells?.[col.id] ?? ''}
-                                                            </Typography.Text>
+                                                            {#if child.cells?.[col.id]?.includes(' / ')}
+                                                                {@const usageParts = (
+                                                                    child.cells?.[col.id] ?? ''
+                                                                ).split(' / ')}
+                                                                <Typography.Text
+                                                                    variant="m-400"
+                                                                    color="--fgcolor-neutral-secondary">
+                                                                    {usageParts[0]}
+                                                                </Typography.Text>
+                                                                <Typography.Text
+                                                                    variant="m-400"
+                                                                    color="--fgcolor-neutral-tertiary">
+                                                                    {' / '}
+                                                                </Typography.Text>
+                                                                <Typography.Text
+                                                                    variant="m-400"
+                                                                    color="--fgcolor-neutral-tertiary">
+                                                                    {usageParts[1]}
+                                                                </Typography.Text>
+                                                            {:else}
+                                                                <Typography.Text
+                                                                    variant="m-400"
+                                                                    color="--fgcolor-neutral-secondary">
+                                                                    {child.cells?.[col.id] ?? ''}
+                                                                </Typography.Text>
+                                                            {/if}
                                                         </div>
                                                     </div>
                                                 {:else}
                                                     <Typography.Text
                                                         variant="m-400"
-                                                        color="--fgcolor-neutral-primary">
+                                                        color="--fgcolor-neutral-secondary">
                                                         {child.cells?.[col.id] ?? ''}
                                                     </Typography.Text>
                                                 {/if}
