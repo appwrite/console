@@ -19,6 +19,4 @@ function isFlagEnabled(name: string) {
     };
 }
 
-export const flags = {
-
-};
+export const flags = {};
