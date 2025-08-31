@@ -844,6 +844,7 @@
                                         >{row.$id}</Id>
                                 {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
                                     <DualTimeView
+                                        showDatetime
                                         time={row[columnId]}
                                         canShowPopover={canShowDatetimePopover} />
                                 {:else if columnId === 'actions'}
