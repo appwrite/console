@@ -101,22 +101,13 @@
 
     function isSetToArchive(project: Models.Project): boolean {
         if (!isCloud) return false;
-        if (data.organization.projects?.length === 0) return false;
         if (!project || !project.$id) return false;
-        return !data.organization.projects?.includes(project.$id);
+        return project.status !== 'active';
     }
 
-    $: selectedProjects = data.organization.projects ?? [];
+    $: projectsToArchive = data.projects.projects.filter((project) => project.status !== 'active');
 
-    $: projectsToArchive =
-        Array.isArray(selectedProjects) && selectedProjects.length > 0
-            ? data.projects.projects.filter((project) => !selectedProjects.includes(project.$id))
-            : [];
-
-    $: activeProjects =
-        Array.isArray(selectedProjects) && selectedProjects.length > 0
-            ? data.projects.projects.filter((project) => selectedProjects.includes(project.$id))
-            : data.projects.projects;
+    $: activeProjects = data.projects.projects.filter((project) => project.status === 'active');
     function clearSearch() {
         searchQuery?.clearInput();
     }

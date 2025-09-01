@@ -24,7 +24,7 @@
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
-    import type { Models } from '@appwrite.io/console';
+    import { Status, type Models } from '@appwrite.io/console';
     import type { ComponentType } from 'svelte';
     import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
@@ -117,12 +117,7 @@
                 return;
             }
 
-            const currentSelectedProjects = organization.projects ?? [];
-            const updatedProjects = Array.from(
-                new Set([...currentSelectedProjects, projectToUnarchive.$id])
-            );
-
-            await sdk.forConsole.billing.updateSelectedProjects(organization.$id, updatedProjects);
+            await sdk.forConsole.projects.updateStatus(projectToUnarchive.$id, Status.Active);
 
             await invalidate(Dependencies.ORGANIZATION);
 
