@@ -372,6 +372,7 @@ export type PlanAddon = {
     limit: number;
     value: number;
     type: string;
+    planIncluded: number;
 };
 
 export type Plan = {

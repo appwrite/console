@@ -37,9 +37,12 @@
     let showCustomId = $state(false);
     let isProPlan = $derived((billingPlan ?? $organization?.billingPlan) === BillingPlan.PRO);
     let projectsLimited = $derived(
-        isProPlan
-            ? projects && projects >= 2
-            : $currentPlan?.projects > 0 && projects && projects >= $currentPlan?.projects
+        $currentPlan?.projects > 0 && projects && projects >= $currentPlan?.projects
+    );
+    let isAddonProject = $derived(
+        $currentPlan?.addons?.projects?.supported &&
+            projects &&
+            projects >= $currentPlan?.addons?.projects?.planIncluded
     );
 </script>
 
@@ -88,29 +91,28 @@
                     <Typography.Text>Region cannot be changed after creation</Typography.Text>
                 </Layout.Stack>
             {/if}
+            {#if isAddonProject}
+                <Alert.Inline
+                    status="info"
+                    title="Expand for {formatCurrency(
+                        $currentPlan?.addons?.projects?.price || 15
+                    )}/project per month">
+                    Each added project comes with its own dedicated pool of resources.
+                </Alert.Inline>
+            {/if}
             {#if projectsLimited}
-                {#if isProPlan}
-                    <Alert.Inline
-                        status="info"
-                        title="Expand for {formatCurrency(
-                            $currentPlan?.addons?.projects?.price || 15
-                        )}/project per month">
-                        Each added project comes with its own dedicated pool of resources.
-                    </Alert.Inline>
-                {:else}
-                    <Alert.Inline
-                        status="warning"
-                        title={`You've reached your limit of ${$currentPlan?.projects} projects`}>
-                        Extra projects are available on paid plans for an additional fee
-                        <svelte:fragment slot="actions">
-                            <Button
-                                compact
-                                size="s"
-                                href={`${base}/organization-${page.params.organization}/billing`}
-                                external>Upgrade</Button>
-                        </svelte:fragment>
-                    </Alert.Inline>
-                {/if}
+                <Alert.Inline
+                    status="warning"
+                    title={`You've reached your limit of ${$currentPlan?.projects} projects`}>
+                    Extra projects are available on paid plans for an additional fee
+                    <svelte:fragment slot="actions">
+                        <Button
+                            compact
+                            size="s"
+                            href={`${base}/organization-${page.params.organization}/billing`}
+                            external>Upgrade</Button>
+                    </svelte:fragment>
+                </Alert.Inline>
             {/if}
         </Layout.Stack>
     </Layout.Stack>
