@@ -107,8 +107,7 @@
                                 compact
                                 size="s"
                                 href={`${base}/organization-${page.params.organization}/billing`}
-                                external
-                                text>Upgrade</Button>
+                                external>Upgrade</Button>
                         </svelte:fragment>
                     </Alert.Inline>
                 {/if}
