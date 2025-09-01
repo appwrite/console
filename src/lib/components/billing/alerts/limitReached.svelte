@@ -20,9 +20,14 @@
             plan. Consider upgrading to increase your resource usage.
         </svelte:fragment>
         <svelte:fragment slot="buttons">
-            <Button href={`${base}/organization-${$organization.$id}/usage`} text fullWidthMobile>
-                <span class="text">View usage</span>
-            </Button>
+            {#if !page.data.currentPlan?.usagePerProject}
+                <Button
+                    href={`${base}/organization-${$organization.$id}/usage`}
+                    text
+                    fullWidthMobile>
+                    <span class="text">View usage</span>
+                </Button>
+            {/if}
             <Button
                 href={$upgradeURL}
                 on:click={() => {
