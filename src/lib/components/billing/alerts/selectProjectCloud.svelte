@@ -6,9 +6,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { billingProjectsLimitDate } from '$lib/stores/billing';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { currentPlan } from '$lib/stores/organization';
+    import { currentPlan, organization } from '$lib/stores/organization';
 
     let {
         showSelectProject = $bindable(false),
@@ -149,9 +148,12 @@
         {/if}
 
         {#if selectedProjects.length === $currentPlan?.projects}
+            {@const difference = projects.length - selectedProjects.length}
+            {@const messagePrefix =
+                difference > 1 ? `${difference} projects` : `${difference} project`}
             <Alert.Inline
                 status="warning"
-                title={`${projects.length - selectedProjects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
+                title={`${messagePrefix} will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
                 <span>
                     {@html formatProjectsToArchive()}
                     will be archived.

@@ -1,77 +1,46 @@
 <script lang="ts">
-    import { BASE_BILLING_PLANS, BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '$lib/constants';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { plansInfo, type Tier, tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { Badge, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { LabelCard } from '..';
+    import type { Plan } from '$lib/sdk/billing';
+    import { page } from '$app/state';
 
-    export let billingPlan: Tier;
+    export let billingPlan: BillingPlan;
     export let isNewOrg = false;
     export let selfService = true;
+    export let anyOrgFree = false;
 
-    $: freePlan = $plansInfo.get(BillingPlan.FREE);
-    $: proPlan = $plansInfo.get(BillingPlan.PRO);
-    $: scalePlan = $plansInfo.get(BillingPlan.SCALE);
-
-    $: isBasePlan = BASE_BILLING_PLANS.includes($currentPlan?.$id);
+    $: plans = Object.values(page.data.plans.plans) as Plan[];
+    $: currentPlanInList = plans.some((plan) => plan.$id === $currentPlan?.$id);
 </script>
 
 <Layout.Stack>
-    <LabelCard
-        name="plan"
-        bind:group={billingPlan}
-        disabled={!selfService}
-        value={BillingPlan.FREE}
-        title={tierFree.name}>
-        <svelte:fragment slot="action">
-            {#if $organization?.billingPlan === BillingPlan.FREE && !isNewOrg}
-                <Badge variant="secondary" size="xs" content="Current plan" />
-            {/if}
-        </svelte:fragment>
-        <Typography.Caption variant="400">
-            {tierFree.description}
-        </Typography.Caption>
-        <Typography.Text>
-            {formatCurrency(freePlan?.price ?? 0)}
-        </Typography.Text>
-    </LabelCard>
-    <LabelCard
-        name="plan"
-        disabled={!selfService}
-        bind:group={billingPlan}
-        value={BillingPlan.PRO}
-        title={tierPro.name}>
-        <svelte:fragment slot="action">
-            {#if $organization?.billingPlan === BillingPlan.PRO && !isNewOrg}
-                <Badge variant="secondary" size="xs" content="Current plan" />
-            {/if}
-        </svelte:fragment>
-        <Typography.Caption variant="400">
-            {tierPro.description}
-        </Typography.Caption>
-        <Typography.Text>
-            {formatCurrency(proPlan?.price ?? 0)} per month + usage
-        </Typography.Text>
-    </LabelCard>
-    <LabelCard
-        name="plan"
-        bind:group={billingPlan}
-        value={BillingPlan.SCALE}
-        title={tierScale.name}>
-        <svelte:fragment slot="action">
-            {#if $organization?.billingPlan === BillingPlan.SCALE && !isNewOrg}
-                <Badge variant="secondary" size="xs" content="Current plan" />
-            {/if}
-        </svelte:fragment>
-        <Typography.Caption variant="400">
-            {tierScale.description}
-        </Typography.Caption>
-        <Typography.Text>
-            {formatCurrency(scalePlan?.price ?? 0)} per month + usage
-        </Typography.Text>
-    </LabelCard>
-    {#if $currentPlan && !isBasePlan}
+    {#each plans as plan}
+        <LabelCard
+            name="plan"
+            bind:group={billingPlan}
+            disabled={!selfService || (plan.$id === BillingPlan.FREE && anyOrgFree)}
+            tooltipShow={plan.$id === BillingPlan.FREE && anyOrgFree}
+            value={plan.$id}
+            title={plan.name}>
+            <svelte:fragment slot="action">
+                {#if $organization?.billingPlan === plan.$id && !isNewOrg}
+                    <Badge variant="secondary" size="xs" content="Current plan" />
+                {/if}
+            </svelte:fragment>
+            <Typography.Caption variant="400">
+                {plan.desc}
+            </Typography.Caption>
+            <Typography.Text>
+                {@const isZeroPrice = (plan.price ?? 0) <= 0}
+                {@const price = formatCurrency(plan.price ?? 0)}
+                {isZeroPrice ? price : `${price} per month + usage`}
+            </Typography.Text>
+        </LabelCard>
+    {/each}
+    {#if $currentPlan && !currentPlanInList}
         <LabelCard
             name="plan"
             bind:group={billingPlan}

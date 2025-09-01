@@ -28,7 +28,12 @@
     }
 </script>
 
-<Modal title="Cancel plan change" onSubmit={cancelDowngrade} bind:show={showCancel} bind:error>
+<Modal
+    title="Cancel plan change"
+    onSubmit={cancelDowngrade}
+    bind:show={showCancel}
+    bind:error
+    size="s">
     <p>
         Your organization is set to change to <strong>
             {tierToPlan($organization?.billingPlanDowngrade).name}</strong>
