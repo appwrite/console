@@ -146,9 +146,14 @@
             id: 'base-plan',
             expandable: false,
             cells: {
-                item: currentPlan?.price === 0 ? 'Free plan' : 'Base plan',
+                item: 'Base plan',
                 usage: '',
-                price: formatCurrency(currentPlan?.price || 0)
+                price: formatCurrency(
+                    Math.max(
+                        (currentAggregation?.amount ?? currentPlan?.price ?? 0) - availableCredit,
+                        0
+                    )
+                )
             },
             children: []
         };
@@ -300,12 +305,12 @@
     $: billingData = getBillingData(currentPlan, currentAggregation, $isSmallViewport);
 
     $: totalAmount = Math.max(
-        (currentAggregation?.amount || currentPlan?.price || 0) - availableCredit,
+        (currentAggregation?.amount ?? currentPlan?.price ?? 0) - availableCredit,
         0
     );
 
     $: creditsApplied = Math.min(
-        currentAggregation?.amount || currentPlan?.price || 0,
+        currentAggregation?.amount ?? currentPlan?.price ?? 0,
         availableCredit
     );
 </script>
@@ -314,7 +319,7 @@
     <EstimatedCard>
         <Typography.Title size="s" gap="s">{currentPlan.name} plan</Typography.Title>
 
-        {#if currentPlan?.price > 0}
+        {#if totalAmount > 0}
             <Typography.Text color="--fgcolor-neutral-secondary">
                 Next payment of <span class="text --fgcolor-neutral-primary u-bold"
                     >{formatCurrency(totalAmount)}</span>
