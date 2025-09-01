@@ -66,7 +66,6 @@
             flex-direction: row;
             gap: 2px;
             margin-top: 1rem;
-            overflow: hidden;
         }
 
         &__content {

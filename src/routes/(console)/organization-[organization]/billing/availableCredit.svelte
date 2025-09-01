@@ -7,6 +7,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
+    import AddCreditWizard from './addCreditWizard.svelte';
     import { Button } from '$lib/elements/forms';
     import AddCreditModal from './addCreditModal.svelte';
     import { formatCurrency } from '$lib/helpers/numbers';
@@ -31,6 +32,15 @@
     onMount(request);
 
     const limit = 5;
+
+    function handleCredits() {
+        if ($organization?.paymentMethodId || $organization?.backupPaymentMethodId) {
+            show = true;
+        } else {
+            wizard.start(AddCreditWizard);
+            reloadOnWizardClose = true;
+        }
+    }
 
     async function request() {
         if (!$organization?.$id) return;
@@ -106,7 +116,7 @@
                         content={formatCurrency(creditList.available)} />
                 </div>
                 {#if creditList?.total}
-                    <Button secondary on:click={() => (show = true)}>
+                    <Button secondary on:click={handleCredits}>
                         <Icon icon={IconPlus} slot="start" size="s" />
                         Add credits
                     </Button>
@@ -166,7 +176,7 @@
                     </div>
                 {/if}
             {:else}
-                <Empty target="credits" on:click={() => (show = true)}>Add credits</Empty>
+                <Empty target="credits" on:click={handleCredits}>Add credits</Empty>
             {/if}
         {/if}
     </svelte:fragment>

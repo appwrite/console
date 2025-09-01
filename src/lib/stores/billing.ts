@@ -14,7 +14,7 @@ import { cachedStore } from '$lib/helpers/cache';
 import { type Size, sizeToBytes } from '$lib/helpers/sizeConvertion';
 import type {
     AddressesList,
-    AggregationTeam,
+    Aggregation,
     Invoice,
     InvoiceList,
     PaymentList,
@@ -69,6 +69,7 @@ export const roles = [
 
 export const teamStatusReadonly = 'readonly';
 export const billingLimitOutstandingInvoice = 'outstanding_invoice';
+export const billingProjectsLimitDate = '2025-09-01';
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
@@ -161,13 +162,8 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
     // the correct info for members/seats, resides in `addons`.
     // plan > addons > seats/others
     if (serviceId === 'members') {
-        // pro and scale plans have unlimited seats (per-project NEW pricing model)
-        const currentTier = tier ?? get(organization)?.billingPlan;
-        if (currentTier === BillingPlan.PRO || currentTier === BillingPlan.SCALE) {
-            return Infinity; // unlimited seats for Pro and Scale plans
-        }
-        // Free plan still has 1 member limit
-        return (plan?.['addons']['seats'] || [])['limit'] ?? 1;
+        // some don't include `limit`, so we fallback!
+        return plan?.['addons']['seats']['limit'] ?? 1;
     }
 
     return plan?.[serviceId] ?? 0;
@@ -239,7 +235,6 @@ export const tierEnterprise: TierData = {
 };
 
 export const showUsageRatesModal = writable<boolean>(false);
-export const useNewPricingModal = derived(currentPlan, ($plan) => $plan?.usagePerProject === true);
 
 export function checkForUsageFees(plan: Tier, id: PlanServices) {
     if (plan === BillingPlan.PRO || plan === BillingPlan.SCALE) {
@@ -258,19 +253,11 @@ export function checkForUsageFees(plan: Tier, id: PlanServices) {
 }
 
 export function checkForProjectLimitation(id: PlanServices) {
-    // Members are no longer limited on Pro and Scale plans (unlimited seats)
-    if (id === 'members') {
-        const currentTier = get(organization)?.billingPlan;
-        if (currentTier === BillingPlan.PRO || currentTier === BillingPlan.SCALE) {
-            return false; // No project limitation for members on Pro/Scale plans
-        }
-    }
-
     switch (id) {
         case 'databases':
         case 'functions':
         case 'buckets':
-        case 'members': // Only applies to Free plan now
+        case 'members':
         case 'platforms':
         case 'webhooks':
         case 'teams':
@@ -338,8 +325,7 @@ export async function checkForProjectsLimit(org: Organization, orgProjectCount?:
     if (!plan) return;
 
     if (plan.$id !== BillingPlan.FREE) return;
-    if (!org.projects) return;
-    if (org.projects.length > 0) return;
+    if (org.projects?.length > 0) return;
 
     const projectCount = orgProjectCount;
     if (projectCount === undefined) return;
@@ -397,8 +383,13 @@ export async function checkForUsageLimit(org: Organization) {
     ];
 
     const members = org.total;
-    const memberLimit = getServiceLimit('members');
-    const membersOverflow = memberLimit === Infinity ? 0 : Math.max(0, members - memberLimit);
+    const plan = get(currentPlan);
+    const membersOverflow =
+        // `plan` can be null on `onboarding/create-organization` route.
+        // nested null checks needed: GitHub Education plan have empty addons.
+        members > plan?.addons?.seats?.limit
+            ? members - (plan?.addons?.seats?.limit || members)
+            : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);
@@ -618,7 +609,7 @@ export const billingURL = derived(
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
 
-export function calculateExcess(addon: AggregationTeam, plan: Plan) {
+export function calculateExcess(addon: Aggregation, plan: Plan) {
     return {
         bandwidth: calculateResourceSurplus(addon.usageBandwidth, plan.bandwidth),
         storage: calculateResourceSurplus(addon.usageStorage, plan.storage, 'GB'),

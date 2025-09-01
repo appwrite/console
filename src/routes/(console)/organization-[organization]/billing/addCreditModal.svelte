@@ -36,7 +36,7 @@
     }
 </script>
 
-<Modal bind:show title="Add credits" onSubmit={redeem} bind:error size="s">
+<Modal bind:show title="Add credits" onSubmit={redeem} bind:error>
     <svelte:fragment slot="description">
         Apply Appwrite credits to your organization.
     </svelte:fragment>
