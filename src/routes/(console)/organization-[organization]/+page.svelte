@@ -7,7 +7,6 @@
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { page } from '$app/state';
     import { registerCommands } from '$lib/commandCenter';
-    import { formatName as formatNameHelper } from '$lib/helpers/string';
     import {
         CardContainer,
         Empty,
@@ -18,7 +17,7 @@
     } from '$lib/components';
     import { trackEvent, Click } from '$lib/actions/analytics';
     import { type Models } from '@appwrite.io/console';
-    import { readOnly, upgradeURL } from '$lib/stores/billing';
+    import { billingProjectsLimitDate, readOnly, upgradeURL } from '$lib/stores/billing';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
@@ -35,9 +34,8 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
-    import { currentPlan, organization, regions as regionsStore } from '$lib/stores/organization';
+    import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
-    import ArchiveProject from '$lib/components/archiveProject.svelte';
     import { toLocaleDate } from '$lib/helpers/date';
 
     export let data;
@@ -101,16 +99,24 @@
 
     function isSetToArchive(project: Models.Project): boolean {
         if (!isCloud) return false;
+        if (data.organization.projects?.length === 0) return false;
         if (!project || !project.$id) return false;
-        return project.status !== 'active';
+        return !data.organization.projects?.includes(project.$id);
     }
 
-    $: projectsToArchive = data.projects.projects.filter((project) => project.status !== 'active');
+    function formatName(name: string, limit: number = 19) {
+        const mobileLimit = 16;
+        const actualLimit = $isSmallViewport ? mobileLimit : limit;
+        return name ? (name.length > actualLimit ? `${name.slice(0, actualLimit)}...` : name) : '-';
+    }
 
-    $: activeProjects = data.projects.projects.filter((project) => project.status === 'active');
     function clearSearch() {
         searchQuery?.clearInput();
     }
+
+    $: projectsToArchive = data.projects.projects.filter(
+        (project) => !data.organization.projects?.includes(project.$id)
+    );
 </script>
 
 <SelectProjectCloud
@@ -133,16 +139,24 @@
         {/if}
     </Layout.Stack>
 
-    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects && (projectsToArchive.length > 0 || data.projects.total > $currentPlan.projects)}
-        {@const difference = projectsToArchive}
-        {@const messagePrefix =
-            difference.length > 1 ? `${difference} projects` : `${difference} project`}
+    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && data.projects.total > $currentPlan.projects && $canWriteProjects}
         <Alert.Inline
-            title={`${messagePrefix} will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
-            <Typography.Text>Upgrade your plan to restore archived projects</Typography.Text>
+            title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
+            <Typography.Text>
+                {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
+                    {@html text}{index === projectsToArchive.length - 2
+                        ? ', and '
+                        : index < projectsToArchive.length - 1
+                          ? ', '
+                          : ''}
+                {/each}
+                will be archived
+            </Typography.Text>
             <svelte:fragment slot="actions">
+                <Button secondary size="s" on:click={() => (showSelectProject = true)}>
+                    Manage projects
+                </Button>
                 <Button
-                    compact
                     size="s"
                     href={$upgradeURL}
                     on:click={() => {
@@ -157,18 +171,18 @@
         </Alert.Inline>
     {/if}
 
-    {#if activeProjects.length > 0}
+    {#if data.projects.total}
         <CardContainer
             disableEmpty={!$canWriteProjects}
-            total={activeProjects.length}
+            total={data.projects.total}
             offset={data.offset}
             on:click={handleCreateProject}>
-            {#each activeProjects as project}
+            {#each data.projects.projects as project}
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
                 {@const formatted = isSetToArchive(project)
-                    ? formatNameHelper(project.name, isSmallViewport ? 19 : 25)
+                    ? formatName(project.name)
                     : project.name}
                 <GridItem1
                     href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
@@ -245,14 +259,9 @@
         name="Projects"
         limit={data.limit}
         offset={data.offset}
-        total={activeProjects.length} />
-
-    <!-- Archived Projects Section -->
-    <ArchiveProject
-        {projectsToArchive}
-        organization={data.organization}
-        currentPlan={$currentPlan} />
+        total={data.projects.total} />
 </Container>
+
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />
 <CreateProjectCloud

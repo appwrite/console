@@ -17,14 +17,9 @@
             Appwrite services, update the budget limit.
         </svelte:fragment>
         <svelte:fragment slot="buttons">
-            {#if !page.data.currentPlan?.usagePerProject}
-                <Button
-                    href={`${base}/organization-${$organization.$id}/usage`}
-                    text
-                    fullWidthMobile>
-                    <span class="text">View usage</span>
-                </Button>
-            {/if}
+            <Button href={`${base}/organization-${$organization.$id}/usage`} text fullWidthMobile>
+                <span class="text">View usage</span>
+            </Button>
             <Button secondary fullWidthMobile href={redirectUrl}>
                 <span class="text">Update limit</span>
             </Button>

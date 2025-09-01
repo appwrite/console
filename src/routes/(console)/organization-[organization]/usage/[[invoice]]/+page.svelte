@@ -8,8 +8,7 @@
         getServiceLimit,
         showUsageRatesModal,
         type Tier,
-        upgradeURL,
-        useNewPricingModal
+        upgradeURL
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
@@ -77,32 +76,14 @@
     {#if $organization.billingPlan === BillingPlan.SCALE}
         <p class="text">
             On the Scale plan, you'll be charged only for any usage that exceeds the thresholds per
-            resource listed below.
-            {#if $useNewPricingModal}
-                <Link.Button on:click={() => ($showUsageRatesModal = true)}>Learn more</Link.Button>
-            {:else}
-                <Link.Anchor
-                    href="https://appwrite.io/pricing"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    Learn more
-                </Link.Anchor>
-            {/if}
+            resource listed below. <Link.Button on:click={() => ($showUsageRatesModal = true)}
+                >Learn more</Link.Button>
         </p>
     {:else if $organization.billingPlan === BillingPlan.PRO}
         <p class="text">
             On the Pro plan, you'll be charged only for any usage that exceeds the thresholds per
-            resource listed below.
-            {#if $useNewPricingModal}
-                <Link.Button on:click={() => ($showUsageRatesModal = true)}>Learn more</Link.Button>
-            {:else}
-                <Link.Anchor
-                    href="https://appwrite.io/pricing"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    Learn more
-                </Link.Anchor>
-            {/if}
+            resource listed below. <Link.Button on:click={() => ($showUsageRatesModal = true)}
+                >Learn more</Link.Button>
         </p>
     {:else if $organization.billingPlan === BillingPlan.FREE}
         <p class="text">

@@ -243,7 +243,7 @@
     </CardGrid>
     <CardGrid>
         <svelte:fragment slot="title">Executions</svelte:fragment>
-        Calculated for all functions that are executed in this project.
+        Calculated for all functions that are executed in all projects in your project.
         <svelte:fragment slot="aside">
             {#if executions}
                 {@const current = formatNum(executionsTotal)}
