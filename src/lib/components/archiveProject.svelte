@@ -263,7 +263,7 @@
 {/if}
 
 <!-- Unarchive Confirmation Modal -->
-<Modal bind:show={showUnarchiveModal} title="Unarchive project">
+<Modal bind:show={showUnarchiveModal} title="Unarchive project" size="s">
     <p>Are you sure you want to unarchive <strong>{projectToUnarchive?.name}</strong>?</p>
     <p>This will move the project back to your active projects list.</p>
 

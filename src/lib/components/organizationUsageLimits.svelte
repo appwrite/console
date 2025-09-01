@@ -11,8 +11,7 @@
     import { Alert } from '@appwrite.io/pink-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { billingProjectsLimitDate } from '$lib/stores/billing';
-    import type { Organization } from '$lib/stores/organization';
+    import { organization, type Organization } from '$lib/stores/organization';
     import type { Models } from '@appwrite.io/console';
 
     // Props
@@ -28,7 +27,7 @@
     let showSelectProject = $state(false);
     let selectedProjects = $state<string[]>([]);
     let error = $state<string | null>(null);
-    let showSelectionReminder = $derived.by(() => validateOrAlert());
+    let showSelectionReminder = $state(false);
 
     // Derived state using runes
     let freePlanLimits = $derived({
@@ -87,6 +86,7 @@
 
     function handleManageProjects() {
         showSelectProject = true;
+        showSelectionReminder = false;
         trackEvent(Click.OrganizationClickUpgrade, { source: 'usage_limits_manage_projects' });
     }
 
@@ -115,6 +115,7 @@
         }
         // Keep selection locally; parent flow will apply after plan change
         showSelectProject = false;
+        showSelectionReminder = false;
         addNotification({ type: 'success', message: `Projects selected for archiving` });
     }
 </script>
@@ -293,7 +294,7 @@
     {#if selectedProjects.length === allowedProjectsToKeep}
         <Alert.Inline
             status="warning"
-            title={`${projects.length - selectedProjects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
+            title={`${projects.length - selectedProjects.length} projects will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
             {formatProjectsToArchive()} will be archived
         </Alert.Inline>
     {/if}

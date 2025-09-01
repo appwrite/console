@@ -18,7 +18,7 @@
     } from '$lib/components';
     import { trackEvent, Click } from '$lib/actions/analytics';
     import { type Models } from '@appwrite.io/console';
-    import { billingProjectsLimitDate, readOnly, upgradeURL } from '$lib/stores/billing';
+    import { readOnly, upgradeURL } from '$lib/stores/billing';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
@@ -35,7 +35,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
-    import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
+    import { currentPlan, organization, regions as regionsStore } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
     import ArchiveProject from '$lib/components/archiveProject.svelte';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -135,7 +135,7 @@
 
     {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects && (projectsToArchive.length > 0 || data.projects.total > $currentPlan.projects)}
         <Alert.Inline
-            title={`${projectsToArchive.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
+            title={`${projectsToArchive.length} projects will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
             <Typography.Text>Upgrade your plan to restore archived projects</Typography.Text>
             <svelte:fragment slot="actions">
                 <Button

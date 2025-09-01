@@ -129,6 +129,7 @@
                 const ok = usageLimitsComponent.validateOrAlert();
                 if (!ok) return;
             }
+
             await downgrade();
         } else if (isUpgrade) {
             await upgrade();
