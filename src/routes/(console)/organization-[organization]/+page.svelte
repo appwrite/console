@@ -7,6 +7,7 @@
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { page } from '$app/state';
     import { registerCommands } from '$lib/commandCenter';
+    import { formatName as formatNameHelper } from '$lib/helpers/string';
     import {
         CardContainer,
         Empty,
@@ -105,11 +106,6 @@
         return !data.organization.projects?.includes(project.$id);
     }
 
-    import { formatName as formatNameHelper } from '$lib/helpers/string';
-    function formatName(name: string, limit: number = 19) {
-        return formatNameHelper(name, limit, $isSmallViewport);
-    }
-
     $: selectedProjects = data.organization.projects ?? [];
 
     $: projectsToArchive =
@@ -193,7 +189,7 @@
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
                 {@const formatted = isSetToArchive(project)
-                    ? formatName(project.name)
+                    ? formatNameHelper(project.name, isSmallViewport ? 19 : 25)
                     : project.name}
                 <GridItem1
                     href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
@@ -273,9 +269,11 @@
         total={activeProjects.length} />
 
     <!-- Archived Projects Section -->
-    <ArchiveProject {projectsToArchive} />
+    <ArchiveProject
+        {projectsToArchive}
+        organization={data.organization as any}
+        currentPlan={$currentPlan} />
 </Container>
-
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />
 <CreateProjectCloud

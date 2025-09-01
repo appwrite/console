@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { getServiceLimit } from '$lib/stores/billing';
+    import { getServiceLimit, plansInfo } from '$lib/stores/billing';
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { Badge, Icon, Layout, Table, Typography, Tooltip } from '@appwrite.io/pink-svelte';
@@ -16,16 +16,14 @@
     import type { Models } from '@appwrite.io/console';
 
     // Props
-    let {
-        projects = [],
-        members = [],
-        storageUsage = 0
-    }: {
+    type Props = {
         organization: Organization;
         projects?: Models.Project[];
         members?: any[];
         storageUsage?: number;
-    } = $props();
+    };
+
+    const { projects = [], members = [], storageUsage = 0 }: Props = $props();
 
     let showSelectProject = $state(false);
     let selectedProjects = $state<string[]>([]);
@@ -34,7 +32,7 @@
 
     // Derived state using runes
     let freePlanLimits = $derived({
-        projects: 2, // fallback
+        projects: $plansInfo?.get(BillingPlan.FREE)?.projects,
         members: getServiceLimit('members', BillingPlan.FREE),
         storage: getServiceLimit('storage', BillingPlan.FREE)
     });
@@ -270,7 +268,7 @@
         <Alert.Inline status="error" title="Error">{error}</Alert.Inline>
     {/if}
 
-    <div class="u-overflow-x-auto">
+    <div>
         <Table.Root
             let:root
             allowSelection
@@ -300,14 +298,8 @@
     {/if}
 
     <svelte:fragment slot="footer">
-        <div>
-            <Button secondary on:click={() => (showSelectProject = false)}>Cancel</Button>
-        </div>
-        <div>
-            <Button submit disabled={selectedProjects.length !== allowedProjectsToKeep}>
-                Save
-            </Button>
-        </div>
+        <Button secondary on:click={() => (showSelectProject = false)}>Cancel</Button>
+        <Button submit disabled={selectedProjects.length !== allowedProjectsToKeep}>Save</Button>
     </svelte:fragment>
 </Modal>
 

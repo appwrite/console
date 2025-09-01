@@ -4,7 +4,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { type Organization } from '$lib/stores/organization';
     import { plansInfo } from '$lib/stores/billing';
-    import { abbreviateNumber, formatCurrency } from '$lib/helpers/numbers';
+    import { abbreviateNumber, formatCurrency, isWithinSafeRange } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
     import { Table, Typography } from '@appwrite.io/pink-svelte';
 
@@ -22,7 +22,7 @@
     // equal or above means unlimited!
     const getCorrectSeatsCountValue = (count: number): string | number => {
         // Check for Infinity or very large numbers
-        const isUnlimited = count === Infinity || count >= Number.MAX_SAFE_INTEGER;
+        const isUnlimited = count === Infinity || !isWithinSafeRange(count);
         return isUnlimited ? 'Unlimited' : count || 0;
     };
 

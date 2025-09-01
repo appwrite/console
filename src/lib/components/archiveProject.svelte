@@ -8,7 +8,8 @@
         Tag,
         Accordion,
         ActionMenu,
-        Popover
+        Popover,
+        Layout
     } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
@@ -25,7 +26,6 @@
     import { getPlatformInfo } from '$lib/helpers/platform';
     import type { Models } from '@appwrite.io/console';
     import type { ComponentType } from 'svelte';
-    import { organization, currentPlan } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
@@ -41,9 +41,14 @@
     // props
     interface Props {
         projectsToArchive: Models.Project[];
+        organization: Models.Organization;
+        currentPlan: {
+            projects: number;
+            [key: string]: any;
+        };
     }
 
-    let { projectsToArchive }: Props = $props();
+    let { projectsToArchive, organization, currentPlan }: Props = $props();
 
     // Track Read-only info droplist per archived project
     let readOnlyInfoOpen = $state<Record<string, boolean>>({});
@@ -77,14 +82,11 @@
 
     // Check if unarchive should be disabled
     function isUnarchiveDisabled(): boolean {
-        const org = $organization;
-        const plan = $currentPlan;
+        if (!organization || !currentPlan) return true;
 
-        if (!org || !plan) return true;
-
-        if (org.billingPlan === BillingPlan.FREE) {
-            const currentProjectCount = org.projects?.length || 0;
-            const projectLimit = plan.projects || 0;
+        if (organization.billingPlan === BillingPlan.FREE) {
+            const currentProjectCount = organization.projects?.length || 0;
+            const projectLimit = currentPlan.projects || 0;
 
             return currentProjectCount >= projectLimit;
         }
@@ -107,8 +109,7 @@
         if (!projectToUnarchive) return;
 
         try {
-            const org = $organization;
-            if (!org) {
+            if (!organization) {
                 addNotification({
                     type: 'error',
                     message: 'Organization not found'
@@ -116,12 +117,12 @@
                 return;
             }
 
-            const currentSelectedProjects = org.projects ?? [];
+            const currentSelectedProjects = organization.projects ?? [];
             const updatedProjects = Array.from(
                 new Set([...currentSelectedProjects, projectToUnarchive.$id])
             );
 
-            await sdk.forConsole.billing.updateSelectedProjects(org.$id, updatedProjects);
+            await sdk.forConsole.billing.updateSelectedProjects(organization.$id, updatedProjects);
 
             await invalidate(Dependencies.ORGANIZATION);
 
@@ -272,9 +273,11 @@
     <p>Are you sure you want to unarchive <strong>{projectToUnarchive?.name}</strong>?</p>
     <p>This will move the project back to your active projects list.</p>
 
-    <svelte:fragment slot="actions">
-        <Button secondary on:click={cancelUnarchive}>Cancel</Button>
-        <Button on:click={confirmUnarchive}>Unarchive</Button>
+    <svelte:fragment slot="footer">
+        <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
+            <Button secondary on:click={cancelUnarchive}>Cancel</Button>
+            <Button on:click={confirmUnarchive}>Unarchive</Button>
+        </Layout.Stack>
     </svelte:fragment>
 </Modal>
 
