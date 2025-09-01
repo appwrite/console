@@ -148,9 +148,12 @@
         {/if}
 
         {#if selectedProjects.length === $currentPlan?.projects}
+            {@const difference = projects.length - selectedProjects.length}
+            {@const messagePrefix =
+                difference > 1 ? `${difference} projects` : `${difference} project`}
             <Alert.Inline
                 status="warning"
-                title={`${projects.length - selectedProjects.length} projects will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
+                title={`${messagePrefix} will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
                 <span>
                     {@html formatProjectsToArchive()}
                     will be archived.

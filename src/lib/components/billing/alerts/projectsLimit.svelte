@@ -3,10 +3,7 @@
     import { Click } from '$lib/actions/analytics';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
-    import {
-        hideBillingHeaderRoutes,
-        upgradeURL
-    } from '$lib/stores/billing';
+    import { hideBillingHeaderRoutes, upgradeURL } from '$lib/stores/billing';
     import { currentPlan, organization } from '$lib/stores/organization';
     import SelectProjectCloud from './selectProjectCloud.svelte';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -30,8 +27,9 @@
         type="warning"
         title="Action required: You have more than {$currentPlan.projects} projects.">
         <svelte:fragment>
-            Choose which projects to keep before {toLocaleDate($organization.billingNextInvoiceDate)} or upgrade
-            to Pro. Projects over the limit will be blocked after this date.
+            Choose which projects to keep before {toLocaleDate(
+                $organization.billingNextInvoiceDate
+            )} or upgrade to Pro. Projects over the limit will be blocked after this date.
         </svelte:fragment>
         <svelte:fragment slot="buttons">
             <Button

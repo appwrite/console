@@ -292,9 +292,11 @@
         </Table.Root>
     </div>
     {#if selectedProjects.length === allowedProjectsToKeep}
+        {@const difference = projects.length - selectedProjects.length}
+        {@const messagePrefix = difference > 1 ? `${difference} projects` : `${difference} project`}
         <Alert.Inline
             status="warning"
-            title={`${projects.length - selectedProjects.length} projects will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
+            title={`${messagePrefix} will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
             {formatProjectsToArchive()} will be archived
         </Alert.Inline>
     {/if}

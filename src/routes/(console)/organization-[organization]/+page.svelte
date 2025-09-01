@@ -134,8 +134,11 @@
     </Layout.Stack>
 
     {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects && (projectsToArchive.length > 0 || data.projects.total > $currentPlan.projects)}
+        {@const difference = projectsToArchive}
+        {@const messagePrefix =
+            difference.length > 1 ? `${difference} projects` : `${difference} project`}
         <Alert.Inline
-            title={`${projectsToArchive.length} projects will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
+            title={`${messagePrefix} will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
             <Typography.Text>Upgrade your plan to restore archived projects</Typography.Text>
             <svelte:fragment slot="actions">
                 <Button
