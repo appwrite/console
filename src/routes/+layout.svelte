@@ -14,16 +14,24 @@
     import { user } from '$lib/stores/user';
     import { loading } from '$routes/store';
     import { Root } from '@appwrite.io/pink-svelte';
-    import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
+    import {
+        ThemeDark,
+        ThemeLight,
+        ThemeDarkCloud,
+        ThemeLightCloud,
+        ThemeDarkStudio,
+        ThemeLightStudio
+    } from '../themes';
     import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
     import { feedback } from '$lib/stores/feedback';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
+        const isEmbedded = page.route.id.includes('/(embeddings)/');
         switch (theme) {
             case 'dark':
-                return isCloud ? ThemeDarkCloud : ThemeDark;
+                return isEmbedded ? ThemeDarkStudio : isCloud ? ThemeDarkCloud : ThemeDark;
             case 'light':
-                return isCloud ? ThemeLightCloud : ThemeLight;
+                return isEmbedded ? ThemeLightStudio : isCloud ? ThemeLightCloud : ThemeLight;
         }
     }
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { loadEmailTemplate } from './+page.svelte';
+    import { loadEmailTemplate } from './view.svelte';
     import EmailTemplate from './emailTemplate.svelte';
     import LocaleOptions from './localeOptions.svelte';
     import { baseEmailTemplate, emailTemplate } from './store';

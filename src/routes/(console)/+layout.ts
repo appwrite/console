@@ -34,11 +34,12 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
     if (currentOrgId) {
         try {
             projectsCount = (
-                await sdk.forConsole.projects.list({
-                    queries: [Query.equal('teamId', currentOrgId), Query.limit(1)]
-                })
+                await sdk.forConsole.projects.list([
+                    Query.equal('teamId', currentOrgId), 
+                    Query.limit(1)
+                ])
             ).total;
-        } catch (e) {
+        } catch {
             projectsCount = 0;
         }
     }
