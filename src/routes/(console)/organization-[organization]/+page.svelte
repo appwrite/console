@@ -247,7 +247,7 @@
     <!-- Archived Projects Section -->
     <ArchiveProject
         {projectsToArchive}
-        organization={data.organization as any}
+        organization={data.organization}
         currentPlan={$currentPlan} />
 </Container>
 <CreateOrganization bind:show={addOrganization} />

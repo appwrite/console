@@ -37,15 +37,14 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system';
     import { regions as regionsStore } from '$lib/stores/organization';
+    import type { Organization } from '$lib/stores/organization';
+    import type { Plan } from '$lib/sdk/billing';
 
     // props
     interface Props {
         projectsToArchive: Models.Project[];
-        organization: Models.Organization;
-        currentPlan: {
-            projects: number;
-            [key: string]: any;
-        };
+        organization: Organization;
+        currentPlan: Plan;
     }
 
     let { projectsToArchive, organization, currentPlan }: Props = $props();
@@ -131,7 +130,7 @@
         } catch (error) {
             const msg =
                 error && typeof error === 'object' && 'message' in error
-                    ? String((error as any).message)
+                    ? String((error as { message: string }).message)
                     : 'Failed to unarchive project';
             addNotification({ type: 'error', message: msg });
         }

@@ -1,4 +1,4 @@
-import type { AggregationTeam, Invoice } from '$lib/sdk/billing';
+import type { AggregationTeam, Invoice, InvoiceUsage } from '$lib/sdk/billing';
 import { accumulateUsage } from '$lib/sdk/usage';
 import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
@@ -46,7 +46,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
         if (projectSpecificData) {
             const executionsResource = projectSpecificData.resources?.find?.(
-                (r: any) => r.resourceId === 'executions'
+                (r: InvoiceUsage) => r.resourceId === 'executions'
             );
             if (executionsResource) {
                 usage.executionsTotal = executionsResource.value || usage.executionsTotal;

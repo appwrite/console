@@ -19,7 +19,7 @@
     type Props = {
         organization: Organization;
         projects?: Models.Project[];
-        members?: any[];
+        members?: Models.Membership[];
         storageUsage?: number;
     };
 
