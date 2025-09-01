@@ -29,7 +29,8 @@
     let types = [
         { value: IndexType.Key, label: 'Key' },
         { value: IndexType.Unique, label: 'Unique' },
-        { value: IndexType.Fulltext, label: 'Fulltext' }
+        { value: IndexType.Fulltext, label: 'Fulltext' },
+        { value: IndexType.Spatial, label: 'Spatial' }
     ];
 
     let selectedType = $state(IndexType.Key);
