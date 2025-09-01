@@ -55,10 +55,6 @@
         return name.length > 12 ? `${name.slice(0, 12)}…` : name;
     }
 
-    function getProgressColor(_percentage: number): string {
-        return 'var(--bgcolor-neutral-invert)';
-    }
-
     function createProgressData(
         currentValue: number,
         maxValue: number | string
@@ -75,7 +71,7 @@
         if (max <= 0) return [];
 
         const percentage = Math.min((currentValue / max) * 100, 100);
-        const progressColor = getProgressColor(percentage);
+        const progressColor = 'var(--bgcolor-neutral-invert)';
 
         return [
             {
@@ -97,7 +93,7 @@
 
         const maxBytes = maxGB * 1000 * 1000 * 1000;
         const percentage = Math.min((currentBytes / maxBytes) * 100, 100);
-        const progressColor = getProgressColor(percentage);
+        const progressColor = 'var(--bgcolor-neutral-invert)';
 
         const currentSize = humanFileSize(currentBytes);
 
@@ -113,9 +109,9 @@
         ];
     }
 
-    $: projectsList = (() => {
-        return currentAggregation?.breakdown?.map((projectData) => {
-            return {
+    function getProjectsList(currentAggregation) {
+        return (
+            currentAggregation?.breakdown?.map((projectData) => ({
                 projectId: projectData.$id,
                 name: projectData.name,
                 region: projectData.region,
@@ -140,12 +136,13 @@
                 authPhone: projectData?.resources?.find(
                     (resource) => resource.resourceId === 'authPhone'
                 )
-            };
-        });
-    })();
+            })) || []
+        );
+    }
 
-    $: billingData = [
-        {
+    function getBillingData(currentPlan, currentAggregation, isSmallViewport) {
+        const projectsList = getProjectsList(currentAggregation);
+        const base = {
             id: 'base-plan',
             expandable: false,
             cells: {
@@ -154,16 +151,16 @@
                 price: formatCurrency(currentPlan?.price || 0)
             },
             children: []
-        },
-        ...(currentAggregation?.resources
-            ?.filter(
+        };
+        const addons = (currentAggregation?.resources || [])
+            .filter(
                 (r) =>
                     r.amount &&
                     r.amount > 0 &&
                     Object.keys(currentPlan?.addons || {}).includes(r.resourceId) &&
                     currentPlan.addons[r.resourceId]?.price > 0
             )
-            ?.map((excess) => ({
+            .map((excess) => ({
                 id: `addon-${excess.resourceId}`,
                 expandable: false,
                 cells: {
@@ -177,157 +174,144 @@
                     price: formatCurrency(excess.amount)
                 },
                 children: []
-            })) || []),
-        ...(projectsList?.map((project) => {
-            return {
-                id: `project-${project.projectId}`,
-                expandable: true,
-                cells: {
-                    item: $isSmallViewport
-                        ? truncateForSmall(project.name)
-                        : project.name || `Project ${project.projectId}`,
-                    usage: '',
-                    price: formatCurrency(project.amount || 0)
+            }));
+        const projects = projectsList.map((project) => ({
+            id: `project-${project.projectId}`,
+            expandable: true,
+            cells: {
+                item: isSmallViewport
+                    ? truncateForSmall(project.name)
+                    : project.name || `Project ${project.projectId}`,
+                usage: '',
+                price: formatCurrency(project.amount || 0)
+            },
+            children: [
+                {
+                    id: `project-${project.projectId}-bandwidth`,
+                    cells: {
+                        item: 'Bandwidth',
+                        usage: `${formatBandwidthUsage(project.bandwidth.value, currentPlan?.bandwidth)}`,
+                        price: formatCurrency(project.bandwidth.amount || 0)
+                    },
+                    progressData: createStorageProgressData(
+                        project.bandwidth.value || 0,
+                        currentPlan?.bandwidth || 0
+                    ),
+                    maxValue: currentPlan?.bandwidth
+                        ? currentPlan.bandwidth * 1000 * 1000 * 1000
+                        : 0
                 },
-                children: [
-                    // Bandwidth
-                    {
-                        id: `project-${project.projectId}-bandwidth`,
-                        cells: {
-                            item: 'Bandwidth',
-                            usage: `${formatBandwidthUsage(project.bandwidth.value, currentPlan?.bandwidth)}`,
-                            price: formatCurrency(project.bandwidth.amount || 0)
-                        },
-                        progressData: createStorageProgressData(
-                            project.bandwidth.value || 0,
-                            currentPlan?.bandwidth || 0
-                        ),
-                        maxValue: currentPlan?.bandwidth
-                            ? currentPlan.bandwidth * 1000 * 1000 * 1000
-                            : 0
+                {
+                    id: `project-${project.projectId}-users`,
+                    cells: {
+                        item: 'Users',
+                        usage: `${formatNum(project.users.value || 0)} / ${currentPlan?.users ? formatNum(currentPlan.users) : 'Unlimited'}`,
+                        price: formatCurrency(project.users.amount || 0)
                     },
-                    // Users
-                    {
-                        id: `project-${project.projectId}-users`,
-                        cells: {
-                            item: 'Users',
-                            usage: `${formatNum(project.users.value || 0)} / ${currentPlan?.users ? formatNum(currentPlan.users) : 'Unlimited'}`,
-                            price: formatCurrency(project.users.amount || 0)
-                        },
-                        progressData: createProgressData(
-                            project.users.value || 0,
-                            currentPlan?.users
-                        ),
-                        maxValue: currentPlan?.users
+                    progressData: createProgressData(project.users.value || 0, currentPlan?.users),
+                    maxValue: currentPlan?.users
+                },
+                {
+                    id: `project-${project.projectId}-reads`,
+                    cells: {
+                        item: 'Database reads',
+                        usage: `${formatNum(project.databasesReads.value || 0)} / ${currentPlan?.databasesReads ? formatNum(currentPlan.databasesReads) : 'Unlimited'}`,
+                        price: formatCurrency(project.databasesReads.amount || 0)
                     },
-                    // Database reads
-                    {
-                        id: `project-${project.projectId}-reads`,
-                        cells: {
-                            item: 'Database reads',
-                            usage: `${formatNum(project.databasesReads.value || 0)} / ${currentPlan?.databasesReads ? formatNum(currentPlan.databasesReads) : 'Unlimited'}`,
-                            price: formatCurrency(project.databasesReads.amount || 0)
-                        },
-                        progressData: createProgressData(
-                            project.databasesReads.value || 0,
-                            currentPlan?.databasesReads
-                        ),
-                        maxValue: currentPlan?.databasesReads
+                    progressData: createProgressData(
+                        project.databasesReads.value || 0,
+                        currentPlan?.databasesReads
+                    ),
+                    maxValue: currentPlan?.databasesReads
+                },
+                {
+                    id: `project-${project.projectId}-writes`,
+                    cells: {
+                        item: 'Database writes',
+                        usage: `${formatNum(project.databasesWrites.value || 0)} / ${currentPlan?.databasesWrites ? formatNum(currentPlan.databasesWrites) : 'Unlimited'}`,
+                        price: formatCurrency(project.databasesWrites.amount || 0)
                     },
-                    // Database writes
-                    {
-                        id: `project-${project.projectId}-writes`,
-                        cells: {
-                            item: 'Database writes',
-                            usage: `${formatNum(project.databasesWrites.value || 0)} / ${currentPlan?.databasesWrites ? formatNum(currentPlan.databasesWrites) : 'Unlimited'}`,
-                            price: formatCurrency(project.databasesWrites.amount || 0)
-                        },
-                        progressData: createProgressData(
-                            project.databasesWrites.value || 0,
-                            currentPlan?.databasesWrites
-                        ),
-                        maxValue: currentPlan?.databasesWrites
+                    progressData: createProgressData(
+                        project.databasesWrites.value || 0,
+                        currentPlan?.databasesWrites
+                    ),
+                    maxValue: currentPlan?.databasesWrites
+                },
+                {
+                    id: `project-${project.projectId}-executions`,
+                    cells: {
+                        item: 'Executions',
+                        usage: `${formatNum(project.executions.value || 0)} / ${currentPlan?.executions ? formatNum(currentPlan.executions) : 'Unlimited'}`,
+                        price: formatCurrency(project.executions.amount || 0)
                     },
-                    // Executions
-                    {
-                        id: `project-${project.projectId}-executions`,
-                        cells: {
-                            item: 'Executions',
-                            usage: `${formatNum(project.executions.value || 0)} / ${currentPlan?.executions ? formatNum(currentPlan.executions) : 'Unlimited'}`,
-                            price: formatCurrency(project.executions.amount || 0)
-                        },
-                        progressData: createProgressData(
-                            project.executions.value || 0,
-                            currentPlan?.executions
-                        ),
-                        maxValue: currentPlan?.executions
+                    progressData: createProgressData(
+                        project.executions.value || 0,
+                        currentPlan?.executions
+                    ),
+                    maxValue: currentPlan?.executions
+                },
+                {
+                    id: `project-${project.projectId}-storage`,
+                    cells: {
+                        item: 'Storage',
+                        usage: `${formatHumanSize(project.storage.value || 0)} / ${currentPlan?.storage?.toString() || '0'} GB`,
+                        price: formatCurrency(project.storage.amount || 0)
                     },
-                    // Storage
-                    {
-                        id: `project-${project.projectId}-storage`,
-                        cells: {
-                            item: 'Storage',
-                            usage: `${formatHumanSize(project.storage.value || 0)} / ${currentPlan?.storage?.toString() || '0'} GB`,
-                            price: formatCurrency(project.storage.amount || 0)
-                        },
-                        progressData: createStorageProgressData(
-                            project.storage.value || 0,
-                            currentPlan?.storage || 0
-                        ),
-                        maxValue: currentPlan?.storage
-                            ? currentPlan.storage * 1000 * 1000 * 1000
-                            : 0
+                    progressData: createStorageProgressData(
+                        project.storage.value || 0,
+                        currentPlan?.storage || 0
+                    ),
+                    maxValue: currentPlan?.storage ? currentPlan.storage * 1000 * 1000 * 1000 : 0
+                },
+                {
+                    id: `project-${project.projectId}-gb-hours`,
+                    cells: {
+                        item: 'GB-hours',
+                        usage: `${formatNum(project.gbHours.value || 0)} / ${currentPlan?.GBHours ? formatNum(currentPlan.GBHours) : 'Unlimited'}`,
+                        price: formatCurrency(project.gbHours.amount || 0)
                     },
-                    // GB-hours (executions time)
-                    {
-                        id: `project-${project.projectId}-gb-hours`,
-                        cells: {
-                            item: 'GB-hours',
-                            usage: `${formatNum(project.gbHours.value || 0)} / ${currentPlan?.GBHours ? formatNum(currentPlan.GBHours) : 'Unlimited'}`,
-                            price: formatCurrency(project.gbHours.amount || 0)
-                        },
-                        progressData: currentPlan?.GBHours
-                            ? createProgressData(project.gbHours.value || 0, currentPlan.GBHours)
-                            : [],
-                        maxValue: currentPlan?.GBHours ? currentPlan.GBHours : null
-                    },
-                    // Phone OTP (no progress bar)
-                    {
-                        id: `project-${project.projectId}-sms`,
-                        cells: {
-                            item: 'Phone OTP',
-                            usage: `${formatNum(project.authPhone.value || 0)} SMS messages`,
-                            price: formatCurrency(project.authPhone.amount || 0)
-                        }
-                    },
-                    // Usage details link
-                    {
-                        id: `project-${project.projectId}-usage-details`,
-                        cells: {
-                            item: `<a href="${base}/project-${project.region}-${project.projectId}/settings/usage" style="text-decoration: underline; color: var(--fgcolor-accent-neutral);">Usage details</a>`,
-                            usage: '',
-                            price: ''
-                        }
+                    progressData: currentPlan?.GBHours
+                        ? createProgressData(project.gbHours.value || 0, currentPlan.GBHours)
+                        : [],
+                    maxValue: currentPlan?.GBHours ? currentPlan.GBHours : null
+                },
+                {
+                    id: `project-${project.projectId}-sms`,
+                    cells: {
+                        item: 'Phone OTP',
+                        usage: `${formatNum(project.authPhone.value || 0)} SMS messages`,
+                        price: formatCurrency(project.authPhone.amount || 0)
                     }
-                ]
-            };
-        }) || []),
-        // Show info if no projects found
-        ...(projectsList && projectsList.length === 0
-            ? [
-                  {
-                      id: 'no-projects',
-                      expandable: false,
-                      cells: {
-                          item: 'No projects found',
-                          usage: '',
-                          price: formatCurrency(0)
-                      },
-                      children: []
-                  }
-              ]
-            : [])
-    ];
+                },
+                {
+                    id: `project-${project.projectId}-usage-details`,
+                    cells: {
+                        item: `<a href="${base}/project-${project.region}-${project.projectId}/settings/usage" style="text-decoration: underline; color: var(--fgcolor-accent-neutral);">Usage details</a>`,
+                        usage: '',
+                        price: ''
+                    }
+                }
+            ]
+        }));
+        const noProjects =
+            projectsList && projectsList.length === 0
+                ? [
+                      {
+                          id: 'no-projects',
+                          expandable: false,
+                          cells: {
+                              item: 'No projects found',
+                              usage: '',
+                              price: formatCurrency(0)
+                          },
+                          children: []
+                      }
+                  ]
+                : [];
+        return [base, ...addons, ...projects, ...noProjects];
+    }
+
+    $: billingData = getBillingData(currentPlan, currentAggregation, $isSmallViewport);
 
     $: totalAmount = Math.max(
         (currentAggregation?.amount || currentPlan?.price || 0) - availableCredit,

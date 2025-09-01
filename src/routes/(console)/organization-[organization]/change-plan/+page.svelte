@@ -4,7 +4,6 @@
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
-    import PlanExcess from '$lib/components/billing/planExcess.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
@@ -354,24 +353,20 @@
                     {/if}
 
                     {#if isDowngrade}
-                        {#if selectedPlan === BillingPlan.FREE && !data.hasFreeOrgs}
-                            <PlanExcess tier={BillingPlan.FREE} />
-                        {:else if selectedPlan === BillingPlan.PRO && data.organization.billingPlan === BillingPlan.SCALE && collaborators?.length > 0}
-                            {@const extraMembers = collaborators?.length ?? 0}
-                            {@const price = formatCurrency(
-                                extraMembers *
-                                    ($plansInfo?.get(selectedPlan)?.addons?.seats?.price ?? 0)
-                            )}
-                            <Alert.Inline status="error">
-                                <svelte:fragment slot="title">
-                                    Your monthly payments will be adjusted for the Pro plan
-                                </svelte:fragment>
-                                After switching plans,
-                                <b
-                                    >you will be charged {price} monthly for {extraMembers} team members.</b>
-                                This will be reflected in your next invoice.
-                            </Alert.Inline>
-                        {/if}
+                        {@const extraMembers = collaborators?.length ?? 0}
+                        {@const price = formatCurrency(
+                            extraMembers *
+                                ($plansInfo?.get(selectedPlan)?.addons?.seats?.price ?? 0)
+                        )}
+                        <Alert.Inline status="error">
+                            <svelte:fragment slot="title">
+                                Your monthly payments will be adjusted for the Pro plan
+                            </svelte:fragment>
+                            After switching plans,
+                            <b
+                                >you will be charged {price} monthly for {extraMembers} team members.</b>
+                            This will be reflected in your next invoice.
+                        </Alert.Inline>
                     {/if}
 
                     {#if isDowngrade && selectedPlan === BillingPlan.FREE}

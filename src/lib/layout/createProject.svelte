@@ -12,6 +12,7 @@
     import { filterRegions } from '$lib/helpers/regions';
     import type { Snippet } from 'svelte';
     import { BillingPlan } from '$lib/constants';
+    import { formatCurrency } from '$lib/helpers/numbers';
 
     let {
         projectName = $bindable(''),
@@ -89,7 +90,11 @@
             {/if}
             {#if projectsLimited}
                 {#if isProPlan}
-                    <Alert.Inline status="info" title="Expand for $15/project per month">
+                    <Alert.Inline
+                        status="info"
+                        title="Expand for {formatCurrency(
+                            $currentPlan?.addons?.projects?.price || 15
+                        )}/project per month">
                         Each added project comes with its own dedicated pool of resources.
                     </Alert.Inline>
                 {:else}
