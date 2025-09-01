@@ -303,6 +303,11 @@
         (currentAggregation?.amount || currentPlan?.price || 0) - availableCredit,
         0
     );
+
+    $: creditsApplied = Math.min(
+        currentAggregation?.amount || currentPlan?.price || 0,
+        availableCredit
+    );
 </script>
 
 {#if $organization}
@@ -468,7 +473,7 @@
                             isOpen={false}
                             toggle={() => {}}>
                             <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                                -{formatCurrency(availableCredit)}
+                                -{formatCurrency(creditsApplied)}
                             </Typography.Text>
                         </ExpandableTable.Cell>
                     </ExpandableTable.Row>
