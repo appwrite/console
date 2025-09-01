@@ -144,26 +144,11 @@
 
     {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects && (projectsToArchive.length > 0 || data.projects.total > $currentPlan.projects)}
         <Alert.Inline
-            title={projectsToArchive.length > 0
-                ? `${projectsToArchive.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`
-                : `Your organization has exceeded the project limit. Projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
-            <Typography.Text>
-                {#if projectsToArchive.length > 0}
-                    {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
-                        {@html text}{index == projectsToArchive.length - 2
-                            ? ', and '
-                            : index < projectsToArchive.length - 1
-                              ? ', '
-                              : ''}
-                    {/each}
-                    will be archived
-                {/if}
-            </Typography.Text>
+            title={`${projectsToArchive.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
+            <Typography.Text>Upgrade your plan to restore archived projects</Typography.Text>
             <svelte:fragment slot="actions">
-                <Button secondary size="s" on:click={() => (showSelectProject = true)}>
-                    Manage projects
-                </Button>
                 <Button
+                    compact
                     size="s"
                     href={$upgradeURL}
                     on:click={() => {

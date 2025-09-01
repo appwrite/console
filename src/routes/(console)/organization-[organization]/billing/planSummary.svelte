@@ -10,11 +10,11 @@
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
-        Divider,
         Typography,
         Expandable as ExpandableTable,
         Icon,
-        Layout
+        Layout,
+        Divider
     } from '@appwrite.io/pink-svelte';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatNum } from '$lib/helpers/string';
@@ -146,7 +146,7 @@
             id: 'base-plan',
             expandable: false,
             cells: {
-                item: 'Base plan',
+                item: currentPlan?.price === 0 ? 'Free plan' : 'Base plan',
                 usage: '',
                 price: formatCurrency(currentPlan?.price || 0)
             },
@@ -286,28 +286,14 @@
                 {
                     id: `project-${project.projectId}-usage-details`,
                     cells: {
-                        item: `<a href="${base}/project-${project.region}-${project.projectId}/settings/usage" style="text-decoration: underline; color: var(--fgcolor-accent-neutral);">Usage details</a>`,
+                        item: `<a href="/console/project-${String(project.region || 'default')}-${project.projectId}/settings/usage" style="text-decoration: underline; color: var(--fgcolor-accent-neutral);">Usage details</a>`,
                         usage: '',
                         price: ''
                     }
                 }
             ]
         }));
-        const noProjects =
-            projectsList && projectsList.length === 0
-                ? [
-                      {
-                          id: 'no-projects',
-                          expandable: false,
-                          cells: {
-                              item: 'No projects found',
-                              usage: '',
-                              price: formatCurrency(0)
-                          },
-                          children: []
-                      }
-                  ]
-                : [];
+        const noProjects = [];
         return [base, ...addons, ...projects, ...noProjects];
     }
 
@@ -321,17 +307,21 @@
 
 {#if $organization}
     <EstimatedCard>
-        <Typography.Title size="s">{currentPlan.name} plan</Typography.Title>
+        <Typography.Title size="s" gap="s">{currentPlan.name} plan</Typography.Title>
 
-        <Typography.Text color="--fgcolor-neutral-primary">
-            Next payment of <span class="text u-bold">{formatCurrency(totalAmount)}</span>
-            will occur on
-            <span class="text u-bold">{toLocaleDate($organization?.billingNextInvoiceDate)}</span>.
-        </Typography.Text>
-
+        {#if currentPlan?.price > 0}
+            <Typography.Text color="--fgcolor-neutral-secondary">
+                Next payment of <span class="text --fgcolor-neutral-primary u-bold"
+                    >{formatCurrency(totalAmount)}</span>
+                will occur on
+                <span class="text --fgcolor-neutral-primary u-bold"
+                    >{toLocaleDate($organization?.billingNextInvoiceDate)}</span
+                >.
+            </Typography.Text>
+        {/if}
         <Divider />
         <div class="billing-cycle-header">
-            <Typography.Text color="--fgcolor-neutral-primary" variant="m-500">
+            <Typography.Text color="--fgcolor-neutral-secondary" variant="m-500">
                 Current billing cycle ({new Date(
                     $organization?.billingCurrentInvoiceDate
                 ).toLocaleDateString('en', { day: 'numeric', month: 'short' })}-{new Date(
@@ -575,8 +565,6 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 0.5rem;
-        margin-top: 1rem;
     }
 
     :global(.card-only-on-desktop) {
