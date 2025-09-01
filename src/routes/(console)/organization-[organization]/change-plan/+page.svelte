@@ -36,6 +36,7 @@
     import { Query } from '@appwrite.io/console';
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import type { Models } from '@appwrite.io/console';
+    import { toLocaleDate } from '$lib/helpers/date';
 
     export let data;
 
@@ -164,7 +165,7 @@
 
     async function downgrade() {
         try {
-            // 1) ppdate the plan first
+            // 1) update the plan first
             await sdk.forConsole.billing.updatePlan(
                 data.organization.$id,
                 selectedPlan,
@@ -358,18 +359,30 @@
                             extraMembers *
                                 ($plansInfo?.get(selectedPlan)?.addons?.seats?.price ?? 0)
                         )}
-                        <Alert.Inline status="error">
-                            <svelte:fragment slot="title">
-                                Your monthly payments will be adjusted for the Pro plan
-                            </svelte:fragment>
-                            After switching plans,
-                            <b
-                                >you will be charged {price} monthly for {extraMembers} team members.</b>
-                            This will be reflected in your next invoice.
-                        </Alert.Inline>
-                    {/if}
+                        {#if selectedPlan === BillingPlan.PRO}
+                            <Alert.Inline status="error">
+                                <svelte:fragment slot="title">
+                                    Your monthly payments will be adjusted for the Pro plan
+                                </svelte:fragment>
+                                After switching plans,
+                                <b
+                                    >you will be charged {price} monthly for {extraMembers} team members.</b>
+                                This will be reflected in your next invoice.
+                            </Alert.Inline>
+                        {:else if selectedPlan === BillingPlan.FREE}
+                            <Alert.Inline
+                                status="error"
+                                title={`Your organization will switch to ${tierToPlan(selectedPlan).name} plan on ${toLocaleDate(
+                                    $organization.billingNextInvoiceDate
+                                )}`}>
+                                You will retain access to {tierToPlan($organization.billingPlan)
+                                    .name} plan features until your billing period ends. After that,
+                                <span class="u-bold"
+                                    >all team members except the owner will be removed,</span>
+                                and service disruptions may occur if usage exceeds Free plan limits.
+                            </Alert.Inline>
+                        {/if}
 
-                    {#if isDowngrade && selectedPlan === BillingPlan.FREE}
                         <OrganizationUsageLimits
                             bind:this={usageLimitsComponent}
                             organization={data.organization}

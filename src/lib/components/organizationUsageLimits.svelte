@@ -28,7 +28,7 @@
     let showSelectProject = $state(false);
     let selectedProjects = $state<string[]>([]);
     let error = $state<string | null>(null);
-    let showSelectionReminder = $state(false);
+    let showSelectionReminder = $derived.by(() => validateOrAlert());
 
     // Derived state using runes
     let freePlanLimits = $derived({
@@ -132,6 +132,7 @@
             </Layout.Stack>
         </Alert.Inline>
     {/if}
+
     <div class="responsive-table">
         <Table.Root
             columns={[
