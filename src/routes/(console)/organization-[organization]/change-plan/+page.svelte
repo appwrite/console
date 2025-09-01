@@ -345,8 +345,8 @@
                         <Alert.Inline
                             status="warning"
                             title="You can only have one free organization per account">
-                            To downgrade this organization, first migrate or delete one of your
-                            existing paid organizations.
+                            To downgrade this organization, first migrate or delete your
+                            existing free organization.
                             <Button
                                 compact
                                 href="https://appwrite.io/docs/advanced/migrations/cloud"
