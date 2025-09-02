@@ -125,7 +125,10 @@
         if (isDowngrade) {
             // If target plan has a non-zero project limit, ensure selection made
             const targetProjectsLimit = $plansInfo?.get(selectedPlan)?.projects ?? 0;
-            if (targetProjectsLimit > 0 && usageLimitsComponent?.validateOrAlert) {
+            const shouldShowProjectSelector =
+                targetProjectsLimit > 0 && allProjects.projects.length > targetProjectsLimit;
+
+            if (shouldShowProjectSelector && usageLimitsComponent?.validateOrAlert) {
                 const ok = usageLimitsComponent.validateOrAlert();
                 if (!ok) return;
             }
