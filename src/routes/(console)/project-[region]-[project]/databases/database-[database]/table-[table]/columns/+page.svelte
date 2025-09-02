@@ -71,7 +71,7 @@
                 key: '$createdAt',
                 type: 'datetime',
                 required: true,
-                name: 'createdAt',
+                name: '$createdAt',
                 selectable: false,
                 system: true
             } as Models.ColumnDatetime & {
@@ -83,7 +83,7 @@
                 key: '$updatedAt',
                 type: 'datetime',
                 required: true,
-                name: 'updatedAt',
+                name: '$updatedAt',
                 selectable: false,
                 system: true
             } as Models.ColumnDatetime & {

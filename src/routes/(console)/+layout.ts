@@ -1,7 +1,7 @@
+import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
-import { Dependencies } from '$lib/constants';
 import type { Tier } from '$lib/stores/billing';
 import type { Plan, PlanList } from '$lib/sdk/billing';
 import { Query } from '@appwrite.io/console';

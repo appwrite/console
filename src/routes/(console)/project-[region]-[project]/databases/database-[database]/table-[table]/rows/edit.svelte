@@ -168,7 +168,7 @@
     </div>
 {:else if $table.columns?.length && work}
     <div bind:this={columnFormWrapper}>
-        <Layout.Stack direction="column" gap="l">
+        <Layout.Stack direction="column" gap="xl">
             {#each $table.columns as column}
                 {@const label = column.key}
                 <ColumnItem

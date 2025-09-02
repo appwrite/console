@@ -90,6 +90,7 @@
             <Typography.Text>Everything in the Free plan, plus:</Typography.Text>
             <ul class="un-order-list">
                 <li>Unlimited databases, buckets, functions</li>
+                <li>Unlimited seats</li>
                 <li>{plan.bandwidth}GB bandwidth</li>
                 <li>{plan.storage}GB storage</li>
                 <li>{formatNum(plan.executions)} executions</li>

@@ -50,6 +50,19 @@ export function formatNum(number: number): string {
 }
 
 /**
+ * Format a string with optional mobile-aware truncation.
+ */
+export function formatName(
+    name: string,
+    limit: number = 19,
+    isSmallViewport: boolean = false
+): string {
+    const mobileLimit = 16;
+    const actualLimit = isSmallViewport ? mobileLimit : limit;
+    return name ? (name.length > actualLimit ? `${name.slice(0, actualLimit)}...` : name) : '-';
+}
+
+/**
  * Returns a regex to check hostname validity. Supports wildcards too!
  */
 export const hostnameRegex = String.raw`(\*)|(\*\.)?(?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}|localhost`;

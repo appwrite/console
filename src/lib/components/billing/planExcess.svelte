@@ -1,16 +1,22 @@
 <script lang="ts">
-    import { calculateExcess, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
+    import {
+        calculateExcess,
+        plansInfo,
+        tierToPlan,
+        getServiceLimit,
+        type Tier
+    } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { toLocaleDate } from '$lib/helpers/date';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { formatNum } from '$lib/helpers/string';
     import { onMount } from 'svelte';
-    import type { Aggregation } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { BillingPlan } from '$lib/constants';
     import { Alert, Icon, Table, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import type { AggregationTeam } from '$lib/sdk/billing';
 
     export let tier: Tier;
 
@@ -22,7 +28,7 @@
         executions?: number;
         members?: number;
     } = null;
-    let aggregation: Aggregation = null;
+    let aggregation: AggregationTeam = null;
     let showExcess = false;
 
     onMount(async () => {
@@ -64,7 +70,7 @@
         {#if excess?.members}
             <Table.Row.Base {root}>
                 <Table.Cell {root}>Organization members</Table.Cell>
-                <Table.Cell {root}>{plan.addons.seats.limit} members</Table.Cell>
+                <Table.Cell {root}>{getServiceLimit('members', tier)} members</Table.Cell>
                 <Table.Cell {root}>
                     <p class="u-color-text-danger u-flex u-cross-center u-gap-4">
                         <span class="icon-arrow-up"></span>
