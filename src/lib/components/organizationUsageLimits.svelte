@@ -137,7 +137,7 @@
     <div class="responsive-table">
         <Table.Root
             columns={[
-                { id: 'resource', width: { min: 160 } },
+                { id: 'resource', width: { min: 215 } },
                 { id: 'freeLimit', width: { min: 100 } },
                 { id: 'excessUsage', width: { min: 120 } },
                 { id: 'manage', width: { min: 110 } }
@@ -194,13 +194,9 @@
                 </Table.Cell>
                 <Table.Cell column="manage" {root}>
                     {#if isLimitExceeded.projects}
-                        <Layout.Stack
-                            direction="row"
-                            justifyContent="flex-start"
-                            style="position: relative; z-index: 10; pointer-events: auto;">
-                            <Button size="xs" secondary on:click={handleManageProjects}>
-                                Manage projects
-                            </Button>
+                        <Layout.Stack direction="row" justifyContent="flex-end">
+                            <Button size="xs" secondary on:click={handleManageProjects}
+                                >Manage projects</Button>
                         </Layout.Stack>
                     {/if}
                 </Table.Cell>
