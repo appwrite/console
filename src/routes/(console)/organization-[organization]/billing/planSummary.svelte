@@ -360,9 +360,7 @@
                             <ExpandableTable.Cell
                                 {root}
                                 column={col.id}
-                                expandable={row.expandable ?? false}
-                                isOpen={root.isOpen(row.id)}
-                                toggle={() => root.toggle(row.id)}>
+                                expandable={row.expandable ?? false}>
                                 {#if col.id === 'item'}
                                     <div class="cell-item-text">
                                         <Typography.Text>
@@ -453,12 +451,7 @@
                 {/each}
                 {#if availableCredit > 0}
                     <ExpandableTable.Row {root} id="total-row" expandable={false}>
-                        <ExpandableTable.Cell
-                            {root}
-                            column="item"
-                            expandable={false}
-                            isOpen={false}
-                            toggle={() => {}}>
+                        <ExpandableTable.Cell {root} column="item" expandable={false}>
                             <Layout.Stack
                                 inline
                                 direction="row"
@@ -471,21 +464,11 @@
                                     >Credits</Typography.Text>
                             </Layout.Stack>
                         </ExpandableTable.Cell>
-                        <ExpandableTable.Cell
-                            {root}
-                            column="usage"
-                            expandable={false}
-                            isOpen={false}
-                            toggle={() => {}}>
+                        <ExpandableTable.Cell {root} column="usage" expandable={false}>
                             <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                             </Typography.Text>
                         </ExpandableTable.Cell>
-                        <ExpandableTable.Cell
-                            {root}
-                            column="price"
-                            expandable={false}
-                            isOpen={false}
-                            toggle={() => {}}>
+                        <ExpandableTable.Cell {root} column="price" expandable={false}>
                             <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                                 -{formatCurrency(creditsApplied)}
                             </Typography.Text>
@@ -494,31 +477,16 @@
                 {/if}
 
                 <ExpandableTable.Row {root} id="total-row" expandable={false}>
-                    <ExpandableTable.Cell
-                        {root}
-                        column="item"
-                        expandable={false}
-                        isOpen={false}
-                        toggle={() => {}}>
+                    <ExpandableTable.Cell {root} column="item" expandable={false}>
                         <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                             Total
                         </Typography.Text>
                     </ExpandableTable.Cell>
-                    <ExpandableTable.Cell
-                        {root}
-                        column="usage"
-                        expandable={false}
-                        isOpen={false}
-                        toggle={() => {}}>
+                    <ExpandableTable.Cell {root} column="usage" expandable={false}>
                         <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                         </Typography.Text>
                     </ExpandableTable.Cell>
-                    <ExpandableTable.Cell
-                        {root}
-                        column="price"
-                        expandable={false}
-                        isOpen={false}
-                        toggle={() => {}}>
+                    <ExpandableTable.Cell {root} column="price" expandable={false}>
                         <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                             {formatCurrency(totalAmount)}
                         </Typography.Text>
