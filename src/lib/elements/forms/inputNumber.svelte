@@ -18,20 +18,6 @@
 
     let error: string;
 
-    function coerceToNumber(event: CustomEvent) {
-        const raw = event.detail ?? '';
-
-        if (raw === '') {
-            value = nullable ? null : (undefined as unknown as number);
-            return;
-        }
-
-        const parsed = Number(raw);
-        if (Number.isFinite(parsed)) {
-            value = parsed;
-        }
-    }
-
     const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
         event.preventDefault();
 
@@ -74,8 +60,7 @@
     autofocus={autofocus || undefined}
     helper={error || helper}
     state={error ? 'error' : 'default'}
-    on:invalid={handleInvalid}
-    on:change={coerceToNumber}>
+    on:invalid={handleInvalid}>
     <svelte:fragment slot="info">
         <slot name="info" slot="info" />
     </svelte:fragment>

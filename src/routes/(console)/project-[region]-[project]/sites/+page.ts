@@ -1,12 +1,9 @@
-import { Query, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
-import { getLimit, getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
+import { Query } from '@appwrite.io/console';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
-import { flags } from '$lib/flags';
+import { getLimit, getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
 
-export const load = async ({ url, depends, route, params, parent }) => {
-    const data = await parent();
-
+export const load = async ({ url, depends, route, params }) => {
     depends(Dependencies.SITES);
     const page = getPage(url);
     const search = getSearch(url);
@@ -14,22 +11,7 @@ export const load = async ({ url, depends, route, params, parent }) => {
     const offset = pageToOffset(page, limit);
     const view = getView(url, route, View.Grid, View.Grid);
 
-    if (!flags.showSites(data)) {
-        return {
-            sitesLive: false,
-            offset,
-            limit,
-            search,
-            view,
-            siteList: {
-                total: 0,
-                sites: []
-            } as Models.SiteList
-        };
-    }
-
     return {
-        sitesLive: true,
         offset,
         limit,
         search,
