@@ -122,8 +122,7 @@
     function generateOptions(
         loading: boolean,
         rows: Models.Row[] | undefined,
-        column: Models.ColumnRelationship,
-        editing: boolean
+        column: Models.ColumnRelationship
     ): SelectOption[] {
         if (loading) {
             return [{ label: 'Loading...', value: null, disabled: true }];
@@ -179,7 +178,7 @@
 
     $: totalCount = relatedList?.length ?? 0;
 
-    $: options = generateOptions(loadingRelationships, rowList?.rows, column, editing);
+    $: options = generateOptions(loadingRelationships, rowList?.rows, column);
 
     $: hasItems = totalCount > 0;
 
