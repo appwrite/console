@@ -319,7 +319,7 @@
 </svelte:head>
 
 <Wizard title="Change plan" href={previousPage} bind:showExitModal confirmExit>
-    <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
+    <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting isModal>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Select plan">
                 <Layout.Stack gap="l">
@@ -347,10 +347,15 @@
                             title="You can only have one free organization per account">
                             To downgrade this organization, first migrate or delete your existing
                             free organization.
+                            <Layout.Stack
+                                gap="xs"
+                                direction="row"
+                                justifyContent="flex-start">
                             <Button
                                 compact
                                 href="https://appwrite.io/docs/advanced/migrations/cloud"
                                 >Migration guide</Button>
+                            </Layout.Stack>
                         </Alert.Inline>
                     {/if}
 
