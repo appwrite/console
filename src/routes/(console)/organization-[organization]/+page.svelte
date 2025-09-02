@@ -35,10 +35,9 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
-    import { currentPlan, organization, regions as regionsStore } from '$lib/stores/organization';
+    import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
     import ArchiveProject from '$lib/components/archiveProject.svelte';
-    import { toLocaleDate } from '$lib/helpers/date';
 
     export let data;
 
@@ -134,11 +133,9 @@
     </Layout.Stack>
 
     {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects && (projectsToArchive.length > 0 || data.projects.total > $currentPlan.projects)}
-        {@const difference = projectsToArchive}
-        {@const messagePrefix =
-            difference.length > 1 ? `${difference} projects` : `${difference} project`}
-        <Alert.Inline
-            title={`${messagePrefix} will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
+        {@const difference = projectsToArchive.length}
+        {@const messagePrefix = difference > 1 ? `${difference} projects` : `${difference} project`}
+        <Alert.Inline title={`${messagePrefix} are archived`}>
             <Typography.Text>Upgrade your plan to restore archived projects</Typography.Text>
             <svelte:fragment slot="actions">
                 <Button
