@@ -10,6 +10,7 @@
     export let disabled: boolean = false;
     export let submissionLoader = false;
     export let confirmDeletion: boolean = false;
+    export let confirmDeletionLabel: string = 'I understand and confirm';
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
     };
@@ -46,7 +47,7 @@
                         required
                         id={checkboxId}
                         bind:checked={confirm}
-                        label="I understand and confirm" />
+                        label={confirmDeletionLabel} />
                 {/if}
             </Layout.Stack>
         </Layout.Stack>
