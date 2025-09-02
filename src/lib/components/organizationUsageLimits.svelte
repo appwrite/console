@@ -261,52 +261,58 @@
     </div>
 </Layout.Stack>
 
-<Modal bind:show={showSelectProject} title="Manage projects" onSubmit={updateSelected}>
-    <svelte:fragment slot="description">
-        Choose which {freePlanLimits.projects} projects to keep. Projects over the limit will be blocked
-        after your billing cycle ends on {toLocaleDate($organization.billingNextInvoiceDate)}.
-    </svelte:fragment>
+{#if showSelectProject}
+    <Modal bind:show={showSelectProject} title="Manage projects" onSubmit={updateSelected}>
+        <svelte:fragment slot="description">
+            Choose which {freePlanLimits.projects} projects to keep. Projects over the limit will be
+            blocked after your billing cycle ends on {toLocaleDate(
+                $organization.billingNextInvoiceDate
+            )}.
+        </svelte:fragment>
 
-    {#if error}
-        <Alert.Inline status="error" title="Error">{error}</Alert.Inline>
-    {/if}
+        {#if error}
+            <Alert.Inline status="error" title="Error">{error}</Alert.Inline>
+        {/if}
 
-    <div>
-        <Table.Root
-            let:root
-            allowSelection
-            bind:selectedRows={selectedProjects}
-            columns={[{ id: 'name' }, { id: 'created' }]}>
-            <svelte:fragment slot="header" let:root>
-                <Table.Header.Cell column="name" {root}>Project Name</Table.Header.Cell>
-                <Table.Header.Cell column="created" {root}>Created</Table.Header.Cell>
-            </svelte:fragment>
-            {#each projects as project}
-                <Table.Row.Base {root} id={project.$id}>
-                    <Table.Cell column="name" {root}
-                        ><Typography.Text truncate>{project.name}</Typography.Text></Table.Cell>
-                    <Table.Cell column="created" {root}>
-                        {toLocaleDateTime(project.$createdAt)}
-                    </Table.Cell>
-                </Table.Row.Base>
-            {/each}
-        </Table.Root>
-    </div>
-    {#if selectedProjects.length === allowedProjectsToKeep}
-        {@const difference = projects.length - selectedProjects.length}
-        {@const messagePrefix = difference > 1 ? `${difference} projects` : `${difference} project`}
-        <Alert.Inline
-            status="warning"
-            title={`${messagePrefix} will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
-            {formatProjectsToArchive()} will be archived
-        </Alert.Inline>
-    {/if}
+        <div>
+            <Table.Root
+                let:root
+                allowSelection
+                bind:selectedRows={selectedProjects}
+                columns={[{ id: 'name' }, { id: 'created' }]}>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="name" {root}>Project Name</Table.Header.Cell>
+                    <Table.Header.Cell column="created" {root}>Created</Table.Header.Cell>
+                </svelte:fragment>
+                {#each projects as project}
+                    <Table.Row.Base {root} id={project.$id}>
+                        <Table.Cell column="name" {root}
+                            ><Typography.Text truncate>{project.name}</Typography.Text></Table.Cell>
+                        <Table.Cell column="created" {root}>
+                            {toLocaleDateTime(project.$createdAt)}
+                        </Table.Cell>
+                    </Table.Row.Base>
+                {/each}
+            </Table.Root>
+        </div>
+        {#if selectedProjects.length === allowedProjectsToKeep}
+            {@const difference = projects.length - selectedProjects.length}
+            {@const messagePrefix =
+                difference > 1 ? `${difference} projects` : `${difference} project`}
+            <Alert.Inline
+                status="warning"
+                title={`${messagePrefix} will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
+                {formatProjectsToArchive()} will be archived
+            </Alert.Inline>
+        {/if}
 
-    <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showSelectProject = false)}>Cancel</Button>
-        <Button submit disabled={selectedProjects.length !== allowedProjectsToKeep}>Save</Button>
-    </svelte:fragment>
-</Modal>
+        <svelte:fragment slot="footer">
+            <Button secondary on:click={() => (showSelectProject = false)}>Cancel</Button>
+            <Button submit disabled={selectedProjects.length !== allowedProjectsToKeep}
+                >Save</Button>
+        </svelte:fragment>
+    </Modal>
+{/if}
 
 <style>
     /* Responsive table container */
