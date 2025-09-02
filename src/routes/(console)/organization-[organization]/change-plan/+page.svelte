@@ -347,10 +347,13 @@
                             title="You can only have one free organization per account">
                             To downgrade this organization, first migrate or delete your existing
                             free organization.
-                            <Button
-                                compact
-                                href="https://appwrite.io/docs/advanced/migrations/cloud"
-                                >Migration guide</Button>
+                            <Layout.Stack gap="xs" direction="row" justifyContent="flex-start">
+                                <Button
+                                    compact
+                                    external
+                                    href="https://appwrite.io/docs/advanced/migrations/cloud"
+                                    >Migration guide</Button>
+                            </Layout.Stack>
                         </Alert.Inline>
                     {/if}
 
