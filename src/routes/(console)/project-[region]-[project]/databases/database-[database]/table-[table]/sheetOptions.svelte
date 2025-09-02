@@ -163,7 +163,11 @@
             <ActionMenu.Root width="180px">
                 {#each menuItems as item, index (index)}
                     {#if item.divider}
-                        <div style:padding-block="0.5rem" style:margin-inline="-1rem;">
+                        {@const isLastDivider = index === menuItems.length - 2}
+                        <div
+                            style:margin-inline="-1rem"
+                            style:padding-block-start="0.5rem"
+                            style:padding-block-end={isLastDivider ? '0.25rem' : '0.5rem'}>
                             <Divider />
                         </div>
                     {:else if shouldShow(item)}
@@ -181,7 +185,11 @@
 </Popover>
 
 <style>
-    .action-menu-root :global(:first-child) {
-        overflow: visible;
+    .action-menu-root {
+        margin-inline-start: calc(var(--space-2) * -1);
+
+        & :global(:first-child) {
+            overflow: visible;
+        }
     }
 </style>

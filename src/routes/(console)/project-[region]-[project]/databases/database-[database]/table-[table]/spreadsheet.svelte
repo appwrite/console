@@ -106,15 +106,6 @@
 
     const minimumWidth = 168;
     const emptyCellsLimit = $isSmallViewport ? 12 : 18;
-    const SYSTEM_KEYS = new Set([
-        '$tableId',
-        '$databaseId',
-        '$permissions',
-        '$createdAt',
-        '$updatedAt',
-        '$id',
-        '$sequence'
-    ]); /* TODO: should be fixed at the sdk level! */
 
     let selectedRows = [];
     let spreadsheetContainer: SpreadsheetContainer;
@@ -576,16 +567,11 @@
 
     async function updateRowContents(row: Models.Row) {
         try {
-            const onlyData = Object.fromEntries(
-                Object.entries(row).filter(([key]) => !SYSTEM_KEYS.has(key))
-            );
-
-            // TODO | BUG: related rows still have `system` columns atm!
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId,
                 tableId: $table.$id,
                 rowId: row.$id,
-                data: onlyData,
+                data: row,
                 permissions: row.$permissions
             });
 
