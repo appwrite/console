@@ -25,8 +25,8 @@
 
     export let currentPlan: Plan;
     export let nextPlan: Plan | null = null;
-    export let currentAggregation: AggregationTeam | undefined = undefined;
     export let availableCredit: number | undefined = undefined;
+    export let currentAggregation: AggregationTeam | undefined = undefined;
 
     let showCancel: boolean = false;
 
@@ -149,9 +149,7 @@
             cells: {
                 item: 'Base plan',
                 usage: '',
-                price: formatCurrency(
-                    Math.max((nextPlan?.price ?? currentPlan?.price ?? 0) - availableCredit, 0)
-                )
+                price: formatCurrency(nextPlan?.price ?? currentPlan?.price ?? 0)
             },
             children: []
         };
@@ -302,10 +300,7 @@
 
     $: billingData = getBillingData(currentPlan, currentAggregation, $isSmallViewport);
 
-    $: totalAmount = Math.max(
-        (currentAggregation?.amount ?? currentPlan?.price ?? 0) - availableCredit,
-        0
-    );
+    $: totalAmount = Math.max(currentPlan?.price - creditsApplied, 0);
 
     $: creditsApplied = Math.min(
         currentAggregation?.amount ?? currentPlan?.price ?? 0,
