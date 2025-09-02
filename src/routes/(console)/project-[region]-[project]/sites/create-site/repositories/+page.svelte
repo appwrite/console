@@ -66,7 +66,10 @@
                         </Typography.Text>
                     </Layout.Stack>
                     <Layout.Stack gap="s" direction="row">
-                        <Button href="https://appwrite.io/docs/advanced/self-hosting/sites#configure-github-app" external secondary>Docs</Button>
+                        <Button
+                            href="https://appwrite.io/docs/advanced/self-hosting/sites#configure-github-app"
+                            external
+                            secondary>Docs</Button>
                         <Button
                             href={`https://github.com/${data.installations.installations[0].organization}`}
                             external
