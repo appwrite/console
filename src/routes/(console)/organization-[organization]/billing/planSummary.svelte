@@ -149,7 +149,7 @@
             cells: {
                 item: 'Base plan',
                 usage: '',
-                price: formatCurrency(Math.max(nextPlan?.price ?? currentPlan?.price ?? 0, 0))
+                price: formatCurrency(nextPlan?.price ?? currentPlan?.price ?? 0)
             },
             children: []
         };
