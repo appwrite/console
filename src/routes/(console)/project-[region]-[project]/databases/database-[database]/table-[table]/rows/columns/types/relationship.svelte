@@ -139,15 +139,11 @@
                     .map((name) => row?.[name])
                     .filter((value) => value != null && typeof value === 'string' && value !== '');
 
-                const displayValues = !editing
-                    ? values
-                    : values.map((value) => (value.length > 5 ? value.slice(0, 5) + '...' : value));
-
                 let label: string;
                 if (!values.length) {
                     label = row.$id;
                 } else {
-                    label = `${row.$id} (${displayValues.join(' | ')})`;
+                    label = `${values.join(' | ')} (...${row.$id.slice(-5)})`;
                 }
 
                 return {
