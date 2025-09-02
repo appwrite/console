@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { DropList, GridItem1, CardContainer } from '$lib/components';
+    import { DropList, GridItem1, CardContainer, Confirm } from '$lib/components';
     import {
         Badge,
         Icon,
@@ -21,7 +21,8 @@
         IconInfo,
         IconDotsHorizontal,
         IconInboxIn,
-        IconSwitchHorizontal
+        IconSwitchHorizontal,
+        IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import { Status, type Models } from '@appwrite.io/console';
@@ -53,6 +54,8 @@
     let readOnlyInfoOpen = $state<Record<string, boolean>>({});
     let showUnarchiveModal = $state(false);
     let projectToUnarchive = $state<Models.Project | null>(null);
+    let showDeleteModal = $state(false);
+    let projectToDelete = $state<Models.Project | null>(null);
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -103,6 +106,11 @@
         showUnarchiveModal = true;
     }
 
+    function handleDeleteProject(project: Models.Project) {
+        projectToDelete = project;
+        showDeleteModal = true;
+    }
+
     // Confirm unarchive action
     async function confirmUnarchive() {
         if (!projectToUnarchive) return;
@@ -139,6 +147,32 @@
     function cancelUnarchive() {
         showUnarchiveModal = false;
         projectToUnarchive = null;
+    }
+
+    async function confirmDelete() {
+        if (!projectToDelete) return;
+
+        try {
+            await sdk.forConsoleIn(projectToDelete.region).projects.delete({
+                projectId: projectToDelete.$id
+            });
+
+            await invalidate(Dependencies.ORGANIZATION);
+
+            addNotification({
+                type: 'success',
+                message: `${projectToDelete.name} has been deleted`
+            });
+
+            showDeleteModal = false;
+            projectToDelete = null;
+        } catch (error) {
+            const msg =
+                error && typeof error === 'object' && 'message' in error
+                    ? String((error as { message: string }).message)
+                    : 'Failed to delete project';
+            addNotification({ type: 'error', message: msg });
+        }
     }
 
     function findRegion(project: Models.Project) {
@@ -226,6 +260,10 @@
                                                 leadingIcon={IconSwitchHorizontal}
                                                 on:click={() => handleMigrateProject(project)}
                                                 >Migrate project</ActionMenu.Item.Button>
+                                            <ActionMenu.Item.Button
+                                                leadingIcon={IconTrash}
+                                                on:click={() => handleDeleteProject(project)}
+                                                >Delete project</ActionMenu.Item.Button>
                                         </ActionMenu.Root>
                                     </Popover>
                                 </div>
@@ -274,6 +312,18 @@
         </Layout.Stack>
     </svelte:fragment>
 </Modal>
+
+<Confirm
+    title="Delete project"
+    bind:open={showDeleteModal}
+    onSubmit={confirmDelete}
+    confirmDeletion={true}
+    confirmDeletionLabel="I understand and confirm">
+    <p>Are you sure you want to delete <strong>{projectToDelete?.name}</strong>?</p>
+    <p>
+        This will permanently delete the project and all of its data. This action is irreversible.
+    </p>
+</Confirm>
 
 <style>
     .archive-projects-margin-top {
