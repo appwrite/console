@@ -150,10 +150,7 @@
                 item: 'Base plan',
                 usage: '',
                 price: formatCurrency(
-                    Math.max(
-                        (nextPlan?.price ?? currentPlan?.price ?? 0) - availableCredit,
-                        0
-                    )
+                    Math.max((nextPlan?.price ?? currentPlan?.price ?? 0) - availableCredit, 0)
                 )
             },
             children: []
