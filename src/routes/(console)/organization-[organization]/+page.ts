@@ -49,7 +49,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
 
     const allActiveProjects = allProjects.filter((p) => p.status === 'active');
     const allArchivedProjects = allProjects.filter((p) => p.status !== 'active');
-    
+
     const activeProjectsForPage = allActiveProjects.slice(offset, offset + limit);
 
     // set `default` if no region!

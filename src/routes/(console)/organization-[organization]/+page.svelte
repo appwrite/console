@@ -111,7 +111,11 @@
     $: activeProjects = (data.activeProjectsPage ?? data.projects.projects).filter(
         (project) => project.status === 'active'
     );
-    $: activeTotalOverall = data?.activeTotalOverall ?? data?.organization?.projects?.length ?? data?.projects?.total ?? 0;
+    $: activeTotalOverall =
+        data?.activeTotalOverall ??
+        data?.organization?.projects?.length ??
+        data?.projects?.total ??
+        0;
     function clearSearch() {
         searchQuery?.clearInput();
     }
