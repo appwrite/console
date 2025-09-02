@@ -124,6 +124,9 @@
                 gbHours: projectData?.resources?.find(
                     (resource) => resource.resourceId === 'GBHours'
                 ),
+                imageTransformations: projectData?.resources?.find(
+                    (resource) => resource.resourceId === 'imageTransformations'
+                ),
                 bandwidth: projectData?.resources?.find(
                     (resource) => resource.resourceId === 'bandwidth'
                 ),
@@ -265,6 +268,19 @@
                         currentPlan?.storage || 0
                     ),
                     maxValue: currentPlan?.storage ? currentPlan.storage * 1000 * 1000 * 1000 : 0
+                },
+                {
+                    id: `project-${project.projectId}-image-transformations`,
+                    cells: {
+                        item: 'Image transformations',
+                        usage: `${formatNum(project.imageTransformations.value || 0)} / ${currentPlan?.imageTransformations ? formatNum(currentPlan.imageTransformations) : 'Unlimited'}`,
+                        price: formatCurrency(project.imageTransformations.amount || 0)
+                    },
+                    progressData: createProgressData(
+                        project.imageTransformations.value || 0,
+                        currentPlan?.imageTransformations
+                    ),
+                    maxValue: currentPlan?.imageTransformations
                 },
                 {
                     id: `project-${project.projectId}-gb-hours`,
