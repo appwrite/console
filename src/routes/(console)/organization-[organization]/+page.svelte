@@ -134,8 +134,9 @@
 
     {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects && (projectsToArchive.length > 0 || data.projects.total > $currentPlan.projects)}
         {@const difference = projectsToArchive.length}
-        {@const messagePrefix = difference > 1 ? `${difference} projects` : `${difference} project`}
-        <Alert.Inline title={`${messagePrefix} are archived`}>
+        {@const messagePrefix =
+            difference !== 1 ? `${difference} projects are` : `${difference} project is`}
+        <Alert.Inline title={`${messagePrefix} archived`}>
             <Typography.Text>Upgrade your plan to restore archived projects</Typography.Text>
             <svelte:fragment slot="actions">
                 <Button
