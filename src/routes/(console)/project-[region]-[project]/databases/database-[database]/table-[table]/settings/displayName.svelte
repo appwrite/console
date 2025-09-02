@@ -93,8 +93,11 @@
                     {#each names as name, index}
                         <Layout.Stack direction="row" gap="xxs">
                             {@const options = getOptions(index)}
+                            {@const onlyId = names.length === 1 && name === '$id'}
                             {@const disabled =
-                                (!!names[index] && names.length > index + 1) || hasExhaustedOptions}
+                                !onlyId &&
+                                ((!!names[index] && names.length > index + 1) ||
+                                    hasExhaustedOptions)}
 
                             <InputSelect
                                 id={name}
