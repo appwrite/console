@@ -163,12 +163,11 @@
             <ActionMenu.Root width="180px">
                 {#each menuItems as item, index (index)}
                     {#if item.divider}
-                    {@const isLastDivider = index === menuItems.length - 2}
+                        {@const isLastDivider = index === menuItems.length - 2}
                         <div
                             style:margin-inline="-1rem"
                             style:padding-block-start="0.5rem"
-                            style:padding-block-end={isLastDivider ? '0.25rem' : '0.5rem'}
-                        >
+                            style:padding-block-end={isLastDivider ? '0.25rem' : '0.5rem'}>
                             <Divider />
                         </div>
                     {:else if shouldShow(item)}
