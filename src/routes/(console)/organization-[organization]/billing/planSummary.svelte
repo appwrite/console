@@ -193,7 +193,7 @@
             },
             children: [
                 {
-                    id: `project-${project.projectId}-bandwidth`,
+                    id: `bandwidth`,
                     cells: {
                         item: 'Bandwidth',
                         usage: `${formatBandwidthUsage(project.bandwidth.value, currentPlan?.bandwidth)}`,
@@ -208,7 +208,7 @@
                         : 0
                 },
                 {
-                    id: `project-${project.projectId}-users`,
+                    id: `users`,
                     cells: {
                         item: 'Users',
                         usage: `${formatNum(project.users.value || 0)} / ${currentPlan?.users ? formatNum(currentPlan.users) : 'Unlimited'}`,
@@ -218,7 +218,7 @@
                     maxValue: currentPlan?.users
                 },
                 {
-                    id: `project-${project.projectId}-reads`,
+                    id: `reads`,
                     cells: {
                         item: 'Database reads',
                         usage: `${formatNum(project.databasesReads.value || 0)} / ${currentPlan?.databasesReads ? formatNum(currentPlan.databasesReads) : 'Unlimited'}`,
@@ -231,7 +231,7 @@
                     maxValue: currentPlan?.databasesReads
                 },
                 {
-                    id: `project-${project.projectId}-writes`,
+                    id: `writes`,
                     cells: {
                         item: 'Database writes',
                         usage: `${formatNum(project.databasesWrites.value || 0)} / ${currentPlan?.databasesWrites ? formatNum(currentPlan.databasesWrites) : 'Unlimited'}`,
@@ -244,7 +244,7 @@
                     maxValue: currentPlan?.databasesWrites
                 },
                 {
-                    id: `project-${project.projectId}-executions`,
+                    id: `executions`,
                     cells: {
                         item: 'Executions',
                         usage: `${formatNum(project.executions.value || 0)} / ${currentPlan?.executions ? formatNum(currentPlan.executions) : 'Unlimited'}`,
@@ -257,7 +257,7 @@
                     maxValue: currentPlan?.executions
                 },
                 {
-                    id: `project-${project.projectId}-storage`,
+                    id: `storage`,
                     cells: {
                         item: 'Storage',
                         usage: `${formatHumanSize(project.storage.value || 0)} / ${currentPlan?.storage?.toString() || '0'} GB`,
@@ -270,7 +270,7 @@
                     maxValue: currentPlan?.storage ? currentPlan.storage * 1000 * 1000 * 1000 : 0
                 },
                 {
-                    id: `project-${project.projectId}-image-transformations`,
+                    id: `image-transformations`,
                     cells: {
                         item: 'Image transformations',
                         usage: `${formatNum(project.imageTransformations.value || 0)} / ${currentPlan?.imageTransformations ? formatNum(currentPlan.imageTransformations) : 'Unlimited'}`,
@@ -283,7 +283,7 @@
                     maxValue: currentPlan?.imageTransformations
                 },
                 {
-                    id: `project-${project.projectId}-gb-hours`,
+                    id: `gb-hours`,
                     cells: {
                         item: 'GB-hours',
                         usage: `${formatNum(project.gbHours.value || 0)} / ${currentPlan?.GBHours ? formatNum(currentPlan.GBHours) : 'Unlimited'}`,
@@ -295,7 +295,7 @@
                     maxValue: currentPlan?.GBHours ? currentPlan.GBHours : null
                 },
                 {
-                    id: `project-${project.projectId}-sms`,
+                    id: `sms`,
                     cells: {
                         item: 'Phone OTP',
                         usage: `${formatNum(project.authPhone.value || 0)} SMS messages`,
@@ -303,7 +303,7 @@
                     }
                 },
                 {
-                    id: `project-${project.projectId}-usage-details`,
+                    id: `usage-details`,
                     cells: {
                         item: `<a href="/console/project-${String(project.region || 'default')}-${project.projectId}/settings/usage" style="text-decoration: underline; color: var(--fgcolor-accent-neutral);">Usage details</a>`,
                         usage: '',
