@@ -24,6 +24,7 @@
     import { IconTag } from '@appwrite.io/pink-icons-svelte';
 
     export let currentPlan: Plan;
+    export let nextPlan: Plan | null = null;
     export let currentAggregation: AggregationTeam | undefined = undefined;
     export let availableCredit: number | undefined = undefined;
 
@@ -150,7 +151,7 @@
                 usage: '',
                 price: formatCurrency(
                     Math.max(
-                        (currentAggregation?.amount ?? currentPlan?.price ?? 0) - availableCredit,
+                        (nextPlan?.price ?? currentPlan?.price ?? 0) - availableCredit,
                         0
                     )
                 )

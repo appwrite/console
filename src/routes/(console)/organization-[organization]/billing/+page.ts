@@ -57,11 +57,12 @@ export const load: PageLoad = async ({ parent, depends }) => {
               organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))
         : false;
 
-    const [paymentMethods, addressList, billingAddress, availableCredit] = await Promise.all([
+    const [paymentMethods, addressList, billingAddress, availableCredit, billingPlanDowngrade] = await Promise.all([
         sdk.forConsole.billing.listPaymentMethods(),
         sdk.forConsole.billing.listAddresses(),
         billingAddressPromise,
-        areCreditsSupported ? sdk.forConsole.billing.getAvailableCredit(organization.$id) : null
+        areCreditsSupported ? sdk.forConsole.billing.getAvailableCredit(organization.$id) : null,
+        organization.billingPlanDowngrade ? sdk.forConsole.billing.getPlan(organization.billingPlanDowngrade) : null
     ]);
 
     // make number
@@ -76,6 +77,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
         billingInvoice,
         areCreditsSupported,
         countryList,
-        locale
+        locale,
+        nextPlan: billingPlanDowngrade
     };
 };
