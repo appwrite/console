@@ -316,7 +316,7 @@
 
     $: billingData = getBillingData(currentPlan, currentAggregation, $isSmallViewport);
 
-    $: totalAmount = Math.max(currentPlan?.price - creditsApplied, 0);
+    $: totalAmount = Math.max(currentAggregation?.amount - creditsApplied, 0);
 
     $: creditsApplied = Math.min(
         currentAggregation?.amount ?? currentPlan?.price ?? 0,
