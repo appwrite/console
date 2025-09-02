@@ -28,15 +28,42 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         search: search || undefined
     });
 
+    let allProjects: typeof projects.projects = [];
+    let fetchedCount = 0;
+    const total = projects.total;
+
+    while (fetchedCount < total) {
+        const next = await sdk.forConsole.projects.list({
+            queries: [
+                Query.offset(fetchedCount),
+                Query.equal('teamId', params.organization),
+                Query.limit(limit),
+                Query.orderDesc('')
+            ],
+            search: search || undefined
+        });
+        allProjects = allProjects.concat(next.projects);
+        fetchedCount += next.projects.length;
+        if (next.projects.length === 0) break;
+    }
+
+    const allActiveProjects = allProjects.filter((p) => p.status === 'active');
+    const allArchivedProjects = allProjects.filter((p) => p.status !== 'active');
+    
+    const activeProjectsForPage = allActiveProjects.slice(offset, offset + limit);
+
     // set `default` if no region!
-    for (const project of projects.projects) {
+    for (const project of allProjects) {
         project.region ??= 'default';
     }
 
     return {
         offset,
         limit,
-        projects,
+        projects: { ...projects, projects: allProjects, total: allActiveProjects.length },
+        activeProjectsPage: activeProjectsForPage,
+        archivedProjectsPage: allArchivedProjects,
+        activeTotalOverall: allActiveProjects.length,
         search
     };
 };

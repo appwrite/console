@@ -104,9 +104,14 @@
         return project.status !== 'active';
     }
 
-    $: projectsToArchive = data.projects.projects.filter((project) => project.status !== 'active');
+    $: projectsToArchive = (data.archivedProjectsPage ?? data.projects.projects).filter(
+        (project) => project.status !== 'active'
+    );
 
-    $: activeProjects = data.projects.projects.filter((project) => project.status === 'active');
+    $: activeProjects = (data.activeProjectsPage ?? data.projects.projects).filter(
+        (project) => project.status === 'active'
+    );
+    $: activeTotalOverall = data?.activeTotalOverall ?? data?.organization?.projects?.length ?? data?.projects?.total ?? 0;
     function clearSearch() {
         searchQuery?.clearInput();
     }
@@ -157,7 +162,7 @@
     {#if activeProjects.length > 0}
         <CardContainer
             disableEmpty={!$canWriteProjects}
-            total={data.projects.total}
+            total={activeTotalOverall}
             offset={data.offset}
             on:click={handleCreateProject}>
             {#each activeProjects as project}
@@ -242,7 +247,7 @@
         name="Projects"
         limit={data.limit}
         offset={data.offset}
-        total={data.projects.total} />
+        total={activeTotalOverall} />
 
     <!-- Archived Projects Section -->
     <ArchiveProject

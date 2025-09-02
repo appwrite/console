@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { DropList, GridItem1, CardContainer } from '$lib/components';
+    import { DropList, GridItem1, CardContainer, Paginator } from '$lib/components';
     import {
         Badge,
         Icon,
@@ -146,7 +146,7 @@
     }
 
     import { formatName as formatNameHelper } from '$lib/helpers/string';
-    function formatName(name: string, limit: number = 19) {
+    function formatName(name: string, limit: number = 16) {
         return formatNameHelper(name, limit, $isSmallViewport);
     }
 </script>
@@ -160,8 +160,14 @@
             </Typography.Text>
 
             <div class="archive-projects-margin">
-                <CardContainer disableEmpty={true} total={projectsToArchive.length}>
-                    {#each projectsToArchive as project}
+                <Paginator
+                    items={projectsToArchive}
+                    limit={6}
+                    hidePages={false}
+                    hideFooter={projectsToArchive.length <= 6}>
+                    {#snippet children(items)}
+                        <CardContainer disableEmpty={true} total={projectsToArchive.length}>
+                            {#each items as project}
                         {@const platforms = filterPlatforms(
                             project.platforms.map((platform) => getPlatformInfo(platform.type))
                         )}
@@ -255,8 +261,10 @@
                                 {/if}
                             </svelte:fragment>
                         </GridItem1>
-                    {/each}
-                </CardContainer>
+                            {/each}
+                        </CardContainer>
+                    {/snippet}
+                </Paginator>
             </div>
         </Accordion>
     </div>
