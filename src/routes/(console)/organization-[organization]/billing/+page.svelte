@@ -132,6 +132,7 @@
         <PlanSummary
             availableCredit={data?.availableCredit}
             currentPlan={data?.currentPlan}
+            nextPlan={data?.nextPlan}
             currentAggregation={data?.billingAggregation} />
     {:else}
         <PlanSummaryOld
