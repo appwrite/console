@@ -468,6 +468,12 @@
         }
     }
 
+    function openSideSheetForRelationsToMany(tableId: string, rows: string | Models.Row[]) {
+        $databaseRelatedRowSheetOptions.tableId = tableId;
+        $databaseRelatedRowSheetOptions.rows = rows;
+        $databaseRelatedRowSheetOptions.show = true;
+    }
+
     async function onSelectSheetOption(
         action: HeaderCellAction | RowCellAction,
         columnId: string,
@@ -957,7 +963,15 @@
                                         onRevert={(row) => paginatedRows.update(index, row)}
                                         openSideSheet={() => {
                                             close(); /* closes the editor */
-                                            onSelectSheetOption('update', null, 'row', row);
+
+                                            if (isRelationshipToMany(rowColumn)) {
+                                                openSideSheetForRelationsToMany(
+                                                    columnId,
+                                                    row[columnId]
+                                                );
+                                            } else {
+                                                onSelectSheetOption('update', null, 'row', row);
+                                            }
                                         }} />
                                 </svelte:fragment>
                             </Spreadsheet.Cell>
