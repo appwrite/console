@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
     import { AvatarInitials, Copy, Empty, EmptySearch, PaginationWithLimit, SearchQuery } from '$lib/components';
@@ -16,19 +15,25 @@
     import { writable } from 'svelte/store';
     import CreateUser from './createUser.svelte';
 
-    export let users: { total: number; users: Models.User<{}>[] };
-    export let limit: number;
-    export let offset: number;
-    export const pageNum: number = 0;
-    export let search: string | null;
+    let {
+        users,
+        limit,
+        offset,
+        search,
+        createUserUrl
+    }: {
+        users: { total: number; users: Models.User<{}>[] };
+        limit: number;
+        offset: number;
+        search: string | null;
+        createUserUrl: (user: Models.User<{}>) => string;
+    } = $props();
 
-    const clearSearchHref = `${base}/project-${page.params.region}-${page.params.project}/auth`;
-    const getUserUrl = (u: Models.User<{}>) =>
-        `${base}/project-${page.params.region}-${page.params.project}/auth/user-${u.$id}`;
+    const clearSearchHref = page.url.pathname;
 
-    let showCreateUser = false;
+    let showCreateUser = $state(false);
     async function onUserCreated(e: CustomEvent<Models.User<{}>>) {
-        await goto(getUserUrl(e.detail));
+        await goto(createUserUrl(e.detail));
     }
 
     const columns = writable<Column[]>([
@@ -42,8 +47,7 @@
     ]);
 </script>
 
-<Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
+<Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
             <SearchQuery placeholder="Search by name, email, phone, or ID" />
         </Layout.Stack>
@@ -65,7 +69,7 @@
             </svelte:fragment>
 
             {#each users.users as user}
-                {@const href = getUserUrl(user)}
+                {@const href = createUserUrl(user)}
                 {#if href}
                     <Table.Row.Link href={href} {root}>
                         {#each $columns as { id } (id)}
@@ -213,6 +217,5 @@
             allowCreate={true}
             on:click={() => (showCreateUser = true)} />
     {/if}
-</Container>
 
 <CreateUser bind:showCreate={showCreateUser} on:created={onUserCreated} />

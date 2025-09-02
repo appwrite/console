@@ -4,7 +4,12 @@ body {
     width: 100%;
 }
 
-[data-loading='true'] .page-loader {
+[data-embed] {
+    background: none !important;
+    background-color: none !important;
+}
+
+[data-loading='true']:not([data-embed]) .page-loader {
     pointer-events: initial;
     visibility: visible;
     opacity: 1;

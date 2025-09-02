@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Avatar, Empty, EmptySearch, PaginationWithLimit, SearchQuery } from '$lib/components';
@@ -8,7 +7,6 @@
     import { Badge } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
@@ -19,15 +17,25 @@
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { IconDotsHorizontal, IconPencil, IconPlus, IconTrash } from '@appwrite.io/pink-icons-svelte';
 
-    export let files: { total: number; files: Models.File[] };
-    export let limit: number;
-    export let offset: number;
-    export let search: string | null;
+    let {
+        files,
+        limit,
+        offset,
+        search,
+        createFileUrl
+    }: {
+        files: { total: number; files: Models.File[] };
+        limit: number;
+        offset: number;
+        search: string | null;
+        createFileUrl?: (file: Models.File) => string;
+    } = $props();
 
-    let showDelete = false;
-    let selectedFile: Models.File = null;
+    let showDelete = $state(false);
+    let selectedFile = $state<Models.File | null>(null);
 
     const bucketId = page.params.bucket;
+    const clearSearchHref = page.url.pathname;
 
     function getPreview(fileId: string) {
         return (
@@ -56,112 +64,153 @@
         }
     }
 
-    let isUploading = false;
-    const beforeunload = (event: BeforeUnloadEvent) => {
-        const message = 'An upload is in progress. Are you sure you want to leave?';
-        if (isUploading) {
+    function beforeunload(event: BeforeUnloadEvent) {
+        if (uploader.uploading) {
             event.preventDefault();
-            event.returnValue = message;
-            return message;
+            event.returnValue = '';
         }
-    };
+    }
 
-    onMount(() => {
-        return uploader.subscribe(() => {
-            isUploading = $uploader.files.some((file) => file.status !== 'success' && file.progress < 100 && file.status !== 'failed');
-        });
-    });
+    onMount(() => uploader.setBucket(bucketId));
 </script>
 
 <svelte:window on:beforeunload={beforeunload} />
 
-<Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search files" />
-        </Layout.Stack>
-        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Button href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`} event="create_file" size="s">
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create file
-            </Button>
-        </Layout.Stack>
+<Layout.Stack direction="row" justifyContent="space-between">
+    <Layout.Stack direction="row" alignItems="center">
+        <SearchQuery placeholder="Search files" />
     </Layout.Stack>
+    <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+        <Button secondary href="create" event="create_file" size="s">
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Upload
+        </Button>
+    </Layout.Stack>
+</Layout.Stack>
 
-    {#if files.total}
-        <Table.Root let:root columns={[{ id: 'filename' }, { id: 'type', width: { min: 140 } }, { id: 'size', width: { min: 100 } }, { id: 'created', width: { min: 120 } }, { id: 'actions', width: 40 }]}>
-            <svelte:fragment slot="header" let:root>
-                <Table.Header.Cell column="filename" {root}>Filename</Table.Header.Cell>
-                <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
-                <Table.Header.Cell column="size" {root}>Size</Table.Header.Cell>
-                <Table.Header.Cell column="created" {root}>Created</Table.Header.Cell>
-                <Table.Header.Cell column="actions" {root} />
-            </svelte:fragment>
-            {#each files.files as file (file.$id)}
-                {#if $uploader.files.find(({ $id }) => $id === file.$id)}
-                    <Table.Row.Base {root}>
-                        <Table.Cell column="filename" {root}>
-                            <Layout.Stack direction="row" alignItems="center">
-                                <span class="avatar is-size-small is-color-empty"></span>
-                                <span class="text u-trim">{file.name}</span>
-                                <div><Badge variant="secondary" type="warning" content="Pending" /></div>
-                            </Layout.Stack>
-                        </Table.Cell>
-                        <Table.Cell column="type" {root}>{file.mimeType}</Table.Cell>
-                        <Table.Cell column="size" {root}>{calculateSize(file.sizeOriginal)}</Table.Cell>
-                        <Table.Cell column="created" {root}><DualTimeView time={file.$createdAt} /></Table.Cell>
-                        <Table.Cell column="actions" {root}>
-                            <div class="u-flex u-main-center">
-                                <button class="button is-only-icon is-text" aria-label="Delete item" on:click|preventDefault={() => deleteFile(file)}>
-                                    <span class="icon-trash" aria-hidden="true"></span>
-                                </button>
-                            </div>
-                        </Table.Cell>
-                    </Table.Row.Base>
-                {:else}
-                    {@const href = `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${bucketId}/file-${file.$id}`}
+{#if files.total}
+    <Table.Root columns={7} let:root>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell {root}>Name</Table.Header.Cell>
+            <Table.Header.Cell {root}>Type</Table.Header.Cell>
+            <Table.Header.Cell {root}>Size</Table.Header.Cell>
+            <Table.Header.Cell {root}>Created</Table.Header.Cell>
+            <Table.Header.Cell {root}>Updated</Table.Header.Cell>
+            <Table.Header.Cell {root}></Table.Header.Cell>
+        </svelte:fragment>
+        {#each files.files as file}
+            {#if uploader.uploading && file.$id === uploader.file?.$id}
+                <Table.Row.Base {root}>
+                    <Table.Cell column="filename" {root}>
+                        <div class="u-flex u-gap-12 u-cross-center">
+                            <Avatar size="s" src={getPreview(file.$id)} alt={file.name} />
+                            <span class="text u-trim">{file.name}</span>
+                        </div>
+                    </Table.Cell>
+                    <Table.Cell column="mimeType" {root}>
+                        <Badge size="s" variant="secondary">{file.mimeType}</Badge>
+                    </Table.Cell>
+                    <Table.Cell column="sizeOriginal" {root}>
+                        {calculateSize(file.sizeOriginal)}
+                    </Table.Cell>
+                    <Table.Cell column="$createdAt" {root}>
+                        <DualTimeView time={file.$createdAt} />
+                    </Table.Cell>
+                    <Table.Cell column="$updatedAt" {root}>
+                        <DualTimeView time={file.$updatedAt} />
+                    </Table.Cell>
+                    <Table.Cell {root}>
+                        <!-- uploading state -->
+                    </Table.Cell>
+                </Table.Row.Base>
+            {:else}
+                {@const href = createFileUrl ? createFileUrl(file) : null}
+                {#if href}
                     <Table.Row.Link {href} {root}>
                         <Table.Cell column="filename" {root}>
                             <div class="u-flex u-gap-12 u-cross-center">
-                                <Avatar size="xs" src={getPreview(file.$id)} alt={file.name} />
+                                <Avatar size="s" src={getPreview(file.$id)} alt={file.name} />
                                 <span class="text u-trim">{file.name}</span>
                             </div>
                         </Table.Cell>
-                        <Table.Cell column="type" {root}>{file.mimeType}</Table.Cell>
-                        <Table.Cell column="size" {root}>{calculateSize(file.sizeOriginal)}</Table.Cell>
-                        <Table.Cell column="created" {root}><DualTimeView time={file.$createdAt} /></Table.Cell>
-                        <Table.Cell column="actions" {root}>
-                            <Popover let:toggle placement="bottom-start" padding="none">
-                                <Button text icon ariaLabel="more options" on:click={(e) => { e.stopPropagation(); e.preventDefault(); toggle(); }}>
+                        <Table.Cell column="mimeType" {root}>
+                            <Badge size="s" variant="secondary">{file.mimeType}</Badge>
+                        </Table.Cell>
+                        <Table.Cell column="sizeOriginal" {root}>
+                            {calculateSize(file.sizeOriginal)}
+                        </Table.Cell>
+                        <Table.Cell column="$createdAt" {root}>
+                            <DualTimeView time={file.$createdAt} />
+                        </Table.Cell>
+                        <Table.Cell column="$updatedAt" {root}>
+                            <DualTimeView time={file.$updatedAt} />
+                        </Table.Cell>
+                        <Table.Cell {root}>
+                            <Popover>
+                                <Button icon size="s" variant="ghost">
                                     <Icon icon={IconDotsHorizontal} size="s" />
                                 </Button>
-                                <ActionMenu.Root slot="tooltip">
-                                    <ActionMenu.Item.Anchor {href} leadingIcon={IconPencil}>Update</ActionMenu.Item.Anchor>
-                                    <ActionMenu.Item.Button leadingIcon={IconTrash} on:click={(e) => { e.stopPropagation(); e.preventDefault(); selectedFile = file; showDelete = true; }}>Delete</ActionMenu.Item.Button>
-                                </ActionMenu.Root>
+                                <svelte:fragment slot="content" let:close>
+                                    <ActionMenu.Root>
+                                        <ActionMenu.Item.Button icon={IconPencil} on:click={() => { close(); goto(href); }}>
+                                            Edit
+                                        </ActionMenu.Item.Button>
+                                        <ActionMenu.Item.Button icon={IconTrash} on:click={() => { close(); selectedFile = file; showDelete = true; }}>
+                                            Delete
+                                        </ActionMenu.Item.Button>
+                                    </ActionMenu.Root>
+                                </svelte:fragment>
                             </Popover>
                         </Table.Cell>
                     </Table.Row.Link>
+                {:else}
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="filename" {root}>
+                            <div class="u-flex u-gap-12 u-cross-center">
+                                <Avatar size="s" src={getPreview(file.$id)} alt={file.name} />
+                                <span class="text u-trim">{file.name}</span>
+                            </div>
+                        </Table.Cell>
+                        <Table.Cell column="mimeType" {root}>
+                            <Badge size="s" variant="secondary">{file.mimeType}</Badge>
+                        </Table.Cell>
+                        <Table.Cell column="sizeOriginal" {root}>
+                            {calculateSize(file.sizeOriginal)}
+                        </Table.Cell>
+                        <Table.Cell column="$createdAt" {root}>
+                            <DualTimeView time={file.$createdAt} />
+                        </Table.Cell>
+                        <Table.Cell column="$updatedAt" {root}>
+                            <DualTimeView time={file.$updatedAt} />
+                        </Table.Cell>
+                        <Table.Cell {root}>
+                            <Popover>
+                                <Button icon size="s" variant="ghost">
+                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                </Button>
+                                <svelte:fragment slot="content" let:close>
+                                    <ActionMenu.Root>
+                                        <ActionMenu.Item.Button icon={IconTrash} on:click={() => { close(); selectedFile = file; showDelete = true; }}>
+                                            Delete
+                                        </ActionMenu.Item.Button>
+                                    </ActionMenu.Root>
+                                </svelte:fragment>
+                            </Popover>
+                        </Table.Cell>
+                    </Table.Row.Base>
                 {/if}
-            {/each}
-        </Table.Root>
+            {/if}
+        {/each}
+    </Table.Root>
 
-        <PaginationWithLimit name="Files" {limit} {offset} total={files.total} />
-    {:else if search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{search}'</b>
-                <p>There are no files that match your search.</p>
-            </div>
-            <div class="u-flex u-gap-16">
-                <Button external href="https://appwrite.io/docs/products/storage/upload-download" text>Documentation</Button>
-                <Button secondary href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}`}>Clear Search</Button>
-            </div>
-        </EmptySearch>
-    {:else}
-        <Empty single target="file" href="https://appwrite.io/docs/products/storage/upload-download" on:click={() => goto(`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`)} />
-    {/if}
-</Container>
+    <PaginationWithLimit name="Files" {limit} {offset} total={files.total} />
+{:else if search}
+    <EmptySearch target="files" hidePagination>
+        <Button size="s" secondary href={clearSearchHref}>Clear Search</Button>
+    </EmptySearch>
+{:else}
+    <Empty single target="file" href="https://appwrite.io/docs/products/storage/upload-download" on:click={() => goto("create")} />
+{/if}
 
 {#if selectedFile}
     <DeleteFile file={selectedFile} bind:showDelete on:deleted={fileDeleted} />

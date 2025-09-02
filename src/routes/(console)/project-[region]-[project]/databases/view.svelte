@@ -1,37 +1,46 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Empty, PaginationWithLimit, SearchQuery, ViewSelector, Id, CardContainer, GridItem1 } from '$lib/components';
     import { canWriteDatabases } from '$lib/stores/roles';
     import { columns } from './store';
-    import { Icon, Layout, Table as PinkTable, Badge, Tooltip, Button } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Table as PinkTable, Tooltip, Button } from '@appwrite.io/pink-svelte';
     import Create from './create.svelte';
     import { goto } from '$app/navigation';
     import { IconPlus, IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import EmptySearch from '$lib/components/emptySearch.svelte';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { View } from '$lib/helpers/load';
 
-    export let databases: { total: number; databases: Models.Database[] };
-    export let tables: Record<string, string>;
-    export let policies: Record<string, any>;
-    export let lastBackups: Record<string, string>;
-    export let limit: number;
-    export let offset: number;
-    export let view: 'grid' | 'table';
-    export let search: string | null;
-    export let clearSearchHref: string | null = null;
-    export let getDatabaseUrl: (db: Models.Database, firstTableId?: string | null) => string | null = (db, t) => db ? dbHref(db.$id, t ?? null) : null;
+    let {
+        databases,
+        tables,
+        policies,
+        lastBackups,
+        limit,
+        offset,
+        view,
+        search,
+        getDatabaseUrl
+    }: {
+        databases: { total: number; databases: Models.Database[] };
+        tables: Record<string, string>;
+        policies: Record<string, Array<{ schedule: string }>>;
+        lastBackups: Record<string, string>;
+        limit: number;
+        offset: number;
+        view: View;
+        search: string | null;
+        getDatabaseUrl: (database: Models.Database, firstTableId?: string | null) => string | null;
+    } = $props();
 
-    let showCreate = false;
+    let showCreate = $state(false);
+    
+    const clearSearchHref = page.url.pathname;
     async function onCreated(e: CustomEvent<Models.Database>) {
         showCreate = false;
         const href = getDatabaseUrl(e.detail, null);
         if (href) await goto(href);
-    }
-
-    function dbHref(id: string, tableId?: string | null) {
-        const t = tableId ? `/table-${tableId}` : '';
-        return `${base}/project-${page.params.region}-${page.params.project}/databases/database-${id}${t}`;
     }
 
     function getPolicyDescription(cron: string): string {

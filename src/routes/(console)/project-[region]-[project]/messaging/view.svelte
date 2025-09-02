@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Empty, EmptyFilter, EmptySearch, Id, PaginationWithLimit } from '$lib/components';
     import { hasPageQueries } from '$lib/components/filters';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
-    import { MessagingProviderType } from '@appwrite.io/console';
+    import { MessagingProviderType, type Models } from '@appwrite.io/console';
     import CreateMessageDropdown from './createMessageDropdown.svelte';
     import FailedModal from './failedModal.svelte';
     import MessageStatusPill from './messageStatusPill.svelte';
@@ -25,21 +24,28 @@
     import { onDestroy, onMount } from 'svelte';
     import { stopPolling, pollMessagesStatus } from './helper';
 
-    export let messages: { total: number; messages: any[] };
-    export let limit: number;
-    export let offset: number;
-    export let view: 'grid' | 'table';
-    export let search: string | null;
-    export let query: string | null;
-    export let pageNum: number;
-    export let clearSearchHref: string | null = null;
-    export let getMessageUrl: (m: any) => string = (m) => `${base}/project-${region}-${project}/messaging/message-${m.$id}`;
+    let {
+        messages,
+        limit,
+        offset,
+        search,
+        createMessageUrl
+    }: {
+        messages: { total: number; messages: Models.Message[] };
+        limit: number;
+        offset: number;
+        search: string | null;
+        createMessageUrl: (message: Models.Message) => string;
+    } = $props();
 
-    let selected: string[] = [];
-    let showDelete = false;
-    let deleting = false;
-    let showFailed = false;
-    let errors: string[] = [];
+    let selected = $state<string[]>([]);
+    let showDelete = $state(false);
+    let deleting = $state(false);
+    let showFailed = $state(false);
+    let errors = $state<string[]>([]);
+
+    const region = page.params.region;
+    const project = page.params.project;
 
     const columns = writable<Column[]>([
         { id: '$id', title: 'Message ID', type: 'string', width: 200 },
@@ -49,9 +55,6 @@
         { id: 'scheduledAt', title: 'Scheduled at', type: 'datetime', width: { min: 120 } },
         { id: 'deliveredAt', title: 'Delivered at', type: 'datetime', width: { min: 120 } }
     ]);
-
-    const region = page.params.region;
-    const project = page.params.project;
 
     async function handleDelete() {
         showDelete = false;
@@ -77,19 +80,17 @@
     onDestroy(stopPolling);
 </script>
 
-<Container>
-    <ResponsiveContainerHeader
-        {columns}
-        bind:view
-        hideView
-        hasFilters
-        hasSearch
-        analyticsSource="messaging_messages"
-        searchPlaceholder="Search by description, type, status, or ID">
-        {#if $canWriteMessages}
-            <CreateMessageDropdown />
-        {/if}
-    </ResponsiveContainerHeader>
+<ResponsiveContainerHeader
+    {columns}
+    hideView
+    hasFilters
+    hasSearch
+    analyticsSource="messaging_messages"
+    searchPlaceholder="Search by description, type, status, or ID">
+    {#if $canWriteMessages}
+        <CreateMessageDropdown />
+    {/if}
+</ResponsiveContainerHeader>
 
     {#if messages.total}
         <Table.Root columns={$columns} allowSelection={$canWriteMessages} let:root bind:selectedRows={selected}>
@@ -99,7 +100,7 @@
                 {/each}
             </svelte:fragment>
             {#each messages.messages as message (message.$id)}
-                <Table.Row.Link {root} id={message.$id} href={getMessageUrl(message)}>
+                <Table.Row.Link {root} id={message.$id} href={createMessageUrl(message)}>
                     {#each $columns as column (column.id)}
                         <Table.Cell column={column.id} {root}>
                             {#if column.id === '$id'}
@@ -156,7 +157,7 @@
             </div>
             <div class="u-flex u-gap-16">
                 <Button external href="https://appwrite.io/docs/products/messaging/messages" text>Documentation</Button>
-                <Button secondary href={clearSearchHref ?? `${base}/project-${region}-${project}/messaging`}>Clear search</Button>
+                <Button secondary href={page.url.pathname}>Clear search</Button>
             </div>
         </EmptySearch>
     {:else}
@@ -171,7 +172,6 @@
             </svelte:fragment>
         </Empty>
     {/if}
-</Container>
 
 <FailedModal bind:show={showFailed} {errors} />
 <Confirm title="Delete messages" bind:open={showDelete} onSubmit={handleDelete} disabled={deleting}>

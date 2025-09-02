@@ -11,7 +11,7 @@ export type Breadcrumb = {
     title: string;
 };
 
-export type View = 'list' | 'grid';
+export type View = 'table' | 'grid';
 
 export type updateLayoutArguments = {
     header?: Component;

@@ -1,6 +1,9 @@
 <script lang="ts">
+    import { Layout } from '@appwrite.io/pink-svelte';
     import View from '$routes/(console)/project-[region]-[project]/auth/templates/view.svelte';
-    export let data;
+    let { data } = $props();
 </script>
 
-<View project={data.project} />
+<Layout.Stack>
+    <View project={data.project} />
+</Layout.Stack>

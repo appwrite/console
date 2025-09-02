@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Empty, PaginationWithLimit, SearchQuery, Id, CardContainer, GridItem1 } from '$lib/components';
     import { canWriteBuckets } from '$lib/stores/roles';
@@ -14,19 +13,27 @@
     import type { Models } from '@appwrite.io/console';
     import { showCreateBucket } from './+page.svelte';
 
-    export let buckets: { total: number; buckets: Models.Bucket[] };
-    export let limit: number;
-    export let offset: number;
-    export let view: 'grid' | 'table';
-    export let search: string | null;
+    let {
+        buckets,
+        limit,
+        offset,
+        view,
+        search,
+        createBucketUrl
+    }: {
+        buckets: { total: number; buckets: Models.Bucket[] };
+        limit: number;
+        offset: number;
+        view: 'grid' | 'table';
+        search: string | null;
+        createBucketUrl: (bucket: Models.Bucket) => string;
+    } = $props();
 
-    function bucketHref(id: string) {
-        return `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${id}`;
-    }
+    const clearSearchHref = page.url.pathname;
 
     async function bucketCreated(event: CustomEvent<Models.Bucket>) {
         showCreateBucket.set(false);
-        await goto(bucketHref(event.detail.$id));
+        await goto(createBucketUrl(event.detail));
     }
 </script>
 
@@ -49,7 +56,7 @@
     {#if view === 'grid'}
         <CardContainer disableEmpty={!$canWriteBuckets} total={buckets.total} {offset} event="bucket" service="buckets" on:click={() => ($showCreateBucket = true)}>
             {#each buckets.buckets as bucket}
-                <GridItem1 href={bucketHref(bucket.$id)}>
+                <GridItem1 href={createBucketUrl(bucket)}>
                     <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if !bucket.enabled}
@@ -77,7 +84,7 @@
                 {/each}
             </svelte:fragment>
             {#each buckets.buckets as bucket (bucket.$id)}
-                <PinkTable.Row.Link {root} href={bucketHref(bucket.$id)}>
+                <PinkTable.Row.Link {root} href={createBucketUrl(bucket)}>
                     {#each $columns as column}
                         <PinkTable.Cell column={column.id} {root}>
                             {#if column.id === '$id'}

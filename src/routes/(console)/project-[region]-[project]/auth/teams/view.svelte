@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
@@ -12,24 +11,29 @@
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import CreateTeam from '../createTeam.svelte';
 
-    export let teams: { total: number; teams: Models.Team<Record<string, unknown>>[] };
-    export let limit: number;
-    export let offset: number;
-    export const pageNum: number = 0;
-    export let search: string | null;
+    let {
+        teams,
+        limit,
+        offset,
+        search,
+        createTeamUrl
+    }: {
+        teams: { total: number; teams: Models.Team<Record<string, unknown>>[] };
+        limit: number;
+        offset: number;
+        search: string | null;
+        createTeamUrl: (team: Models.Team<Record<string, unknown>>) => string;
+    } = $props();
 
-    const clearSearchHref = `${base}/project-${page.params.region}-${page.params.project}/auth/teams`;
-    const getTeamUrl = (t: Models.Team<Record<string, unknown>>) =>
-        `${base}/project-${page.params.region}-${page.params.project}/auth/teams/team-${t.$id}`;
+    const clearSearchHref = page.url.pathname;
 
-    let showCreateTeam = false;
+    let showCreateTeam = $state(false);
     async function onTeamCreated(e: CustomEvent<Models.Team<Record<string, unknown>>>) {
-        await goto(getTeamUrl(e.detail));
+        await goto(createTeamUrl(e.detail));
     }
 </script>
 
-<Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
+<Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
             <SearchQuery placeholder="Search by name" />
         </Layout.Stack>
@@ -49,7 +53,7 @@
                 <Table.Header.Cell {root}>Created</Table.Header.Cell>
             </svelte:fragment>
             {#each teams.teams as team}
-                {@const href = getTeamUrl(team)}
+                {@const href = createTeamUrl(team)}
                 {#if href}
                 <Table.Row.Link {root} href={href}>
                     <Table.Cell {root}>
@@ -99,6 +103,5 @@
             href="https://appwrite.io/docs/references/cloud/client-web/teams"
             target="team" />
     {/if}
-</Container>
 
 <CreateTeam bind:showCreate={showCreateTeam} on:created={onTeamCreated} />

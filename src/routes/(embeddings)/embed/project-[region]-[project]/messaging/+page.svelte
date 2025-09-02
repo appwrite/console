@@ -1,21 +1,20 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/state';
+    import type { Models } from '@appwrite.io/console';
+    import { Layout } from '@appwrite.io/pink-svelte';
     import View from '$routes/(console)/project-[region]-[project]/messaging/view.svelte';
-    export let data;
+    let { data } = $props();
 
-    const clearSearchHref = `${base}/embed/project-${page.params.region}-${page.params.project}/messaging`;
-    const getMessageUrl = (m: any) => `${base}/embed/project-${page.params.region}-${page.params.project}/messaging/message-${m.$id}`;
+    const createMessageUrl = (message) => `${base}/embed/project-${page.params.region}-${page.params.project}/messaging/message-${message.$id}`;
 </script>
 
-<View
-    messages={data.messages}
-    limit={data.limit}
-    offset={data.offset}
-    view={data.view}
-    search={data.search}
-    query={data.query}
-    pageNum={data.page}
-    {clearSearchHref}
-    {getMessageUrl}
-/>
+<Layout.Stack>
+    <View
+        messages={data.messages}
+        limit={data.limit}
+        offset={data.offset}
+        search={data.search}
+        {createMessageUrl}
+    />
+</Layout.Stack>

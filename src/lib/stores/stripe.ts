@@ -174,7 +174,7 @@ export async function confirmPayment(
         if (error) {
             throw error.message;
         }
-    } catch (e) {
+    } catch {
         addNotification({
             title: 'Error',
             message:
