@@ -36,12 +36,11 @@
     let isSubmitting = writable(false);
 
     // State variables
-    let name = '';
-    let id = '';
-    let domain = '';
-    let domainIsValid = true;
+    let name = data.repository?.name || '';
+    let id = ID.unique();
+    let domain = data.repository?.name?.toLowerCase().replace(/[^a-z0-9]/g, '-') || '';
+    let domainIsValid = false;
     let framework: Framework = Framework.Nextjs;
-    let branch = '';
     let rootDir = '';
     let variables: Array<{ key: string; value: string; secret: boolean }> = [];
     let installCommand = '';
@@ -52,12 +51,6 @@
     let hasCustomCommands = false;
 
     onMount(() => {
-        // Initialize default values
-        name = data.repository.name;
-        id = ID.unique();
-        domain = data.repository.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
-
-        // Get URL params
         const preset = page.url.searchParams.get('preset') || 'nextjs';
 
         // Map preset string to Framework enum
@@ -296,10 +289,6 @@
 
             <Fieldset legend="Git configuration">
                 <Layout.Stack gap="m">
-                    <Input.Text
-                        label="Production branch"
-                        placeholder="Leave empty to use default branch"
-                        bind:value={branch} />
                     <Input.Text label="Root directory" placeholder="./" bind:value={rootDir} />
                 </Layout.Stack>
             </Fieldset>
@@ -382,7 +371,7 @@
             fullWidthMobile
             size="s"
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting || !domainIsValid}>
+            disabled={$isSubmitting || !domainIsValid || !domain}>
             Deploy
         </Button>
     </svelte:fragment>
