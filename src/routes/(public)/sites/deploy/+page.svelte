@@ -34,10 +34,10 @@
     let selectedOrg = $state(
         data?.organizations?.total ? data.organizations.teams[0].$id : undefined
     );
-    let projectName = $state<string>();
+    let projectName = $state<string>('');
     let showCustomId = $state(false);
     let region = $state<AllowedRegions>();
-    let id = $state<string>();
+    let id = $state<string>('');
     let imageLoaded = $state(false);
     let imageError = $state(false);
 
@@ -46,11 +46,11 @@
             Query.equal('teamId', selectedOrg),
             Query.orderDesc('')
         ]);
-        selectedProject = projects?.total ? projects.projects[0].$id : null;
+        selectedProject = projects?.total ? projects.projects[0].$id : 'create-new';
     }
 
     async function handleSubmit() {
-        if (selectedProject === null) {
+        if (selectedProject === 'create-new') {
             try {
                 const p = await sdk.forConsole.projects.create(
                     id ?? ID.unique(),
@@ -318,26 +318,24 @@
                                     bind:value={selectedOrg} />
 
                                 {#if projects?.total}
-                                    {#key selectedProject}
-                                        <InputSelect
-                                            id="project"
-                                            label="Project"
-                                            required
-                                            options={[
-                                                ...projects.projects.map((p) => ({
-                                                    label: p.name,
-                                                    value: p.$id
-                                                })),
-                                                {
-                                                    label: 'Create project',
-                                                    leadingIcon: IconPlusSm,
-                                                    value: null
-                                                }
-                                            ]}
-                                            bind:value={selectedProject} />
-                                    {/key}
+                                    <InputSelect
+                                        id="project"
+                                        label="Project"
+                                        required
+                                        options={[
+                                            ...projects.projects.map((p) => ({
+                                                label: p.name,
+                                                value: p.$id
+                                            })),
+                                            {
+                                                label: 'Create project',
+                                                leadingIcon: IconPlusSm,
+                                                value: 'create-new'
+                                            }
+                                        ]}
+                                        bind:value={selectedProject} />
                                 {/if}
-                                {#if selectedProject === null}
+                                {#if selectedProject === 'create-new'}
                                     <Layout.Stack direction="column" gap="s">
                                         <Input.Text
                                             label="Name"
@@ -383,7 +381,8 @@
                                     <div>
                                         <Button
                                             disabled={!selectedOrg ||
-                                                (!selectedProject && !projectName && !region)}
+                                                (selectedProject === 'create-new' &&
+                                                    (!projectName || (isCloud && !region)))}
                                             submit>
                                             <span class="text">Continue</span>
                                         </Button>
