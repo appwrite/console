@@ -81,7 +81,7 @@
 
     $: projectCreationDisabled =
         (isCloud && getServiceLimit('projects') <= data.allProjectsCount) ||
-        ($readOnly && !GRACE_PERIOD_OVERRIDE) ||
+        (isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE) ||
         !$canWriteProjects;
 
     $: $registerCommands([
@@ -106,12 +106,14 @@
     function isSetToArchive(project: Models.Project): boolean {
         if (!isCloud) return false;
         if (!project || !project.$id) return false;
-        return project.status !== 'active';
+        return project.status === 'archived';
     }
 
-    $: projectsToArchive = data.projects.projects.filter((project) => project.status !== 'active');
+    $: projectsToArchive = isCloud
+        ? data.projects.projects.filter((project) => project.status === 'archived')
+        : [];
 
-    $: activeProjects = data.projects.projects.filter((project) => project.status === 'active');
+    $: activeProjects = data.projects.projects.filter((project) => project.status !== 'archived');
     function clearSearch() {
         searchQuery?.clearInput();
     }
