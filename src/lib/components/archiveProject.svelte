@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
-    import { DropList, GridItem1, CardContainer, Confirm } from '$lib/components';
+    import { Button, InputText } from '$lib/elements/forms';
+    import { DropList, GridItem1, CardContainer, Modal } from '$lib/components';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import {
         Badge,
         Icon,
@@ -34,7 +35,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { Modal } from '$lib/components';
+
     import { isSmallViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system';
     import { regions as regionsStore } from '$lib/stores/organization';
@@ -56,6 +57,8 @@
     let projectToUnarchive = $state<Models.Project | null>(null);
     let showDeleteModal = $state(false);
     let projectToDelete = $state<Models.Project | null>(null);
+    let deleteProjectName = $state('');
+    let deleteError = $state<string | null>(null);
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -108,6 +111,7 @@
 
     function handleDeleteProject(project: Models.Project) {
         projectToDelete = project;
+        deleteProjectName = '';
         showDeleteModal = true;
     }
 
@@ -159,6 +163,7 @@
 
             await invalidate(Dependencies.ORGANIZATION);
 
+            trackEvent(Submit.ProjectDelete);
             addNotification({
                 type: 'success',
                 message: `${projectToDelete.name} has been deleted`
@@ -166,12 +171,11 @@
 
             showDeleteModal = false;
             projectToDelete = null;
+            deleteProjectName = '';
+            deleteError = null;
         } catch (error) {
-            const msg =
-                error && typeof error === 'object' && 'message' in error
-                    ? String((error as { message: string }).message)
-                    : 'Failed to delete project';
-            addNotification({ type: 'error', message: msg });
+            deleteError = error.message;
+            trackError(error, Submit.ProjectDelete);
         }
     }
 
@@ -313,17 +317,41 @@
     </svelte:fragment>
 </Modal>
 
-<Confirm
+<!-- Delete Confirmation Modal -->
+<Modal
+    size="s"
+    bind:show={showDeleteModal}
     title="Delete project"
-    bind:open={showDeleteModal}
     onSubmit={confirmDelete}
-    confirmDeletion={true}
-    confirmDeletionLabel="I understand and confirm">
-    <p>Are you sure you want to delete <strong>{projectToDelete?.name}</strong>?</p>
-    <p>
-        This will permanently delete the project and all of its data. This action is irreversible.
-    </p>
-</Confirm>
+    bind:error={deleteError}>
+    <svelte:fragment slot="description">
+        This archived project will be deleted along with all of its metadata, stats, and other
+        resources.
+        <b>This action is irreversible.</b>
+    </svelte:fragment>
+
+    <InputText
+        label={`Enter "${projectToDelete?.name}" to continue`}
+        placeholder="Enter name"
+        id="delete-project-name"
+        autofocus
+        required
+        bind:value={deleteProjectName} />
+
+    <svelte:fragment slot="footer">
+        <Button
+            text
+            on:click={() => {
+                showDeleteModal = false;
+                projectToDelete = null;
+                deleteProjectName = '';
+                deleteError = null;
+            }}>Cancel</Button>
+        <Button submissionLoader submit disabled={deleteProjectName !== projectToDelete?.name}>
+            Delete
+        </Button>
+    </svelte:fragment>
+</Modal>
 
 <style>
     .archive-projects-margin-top {
