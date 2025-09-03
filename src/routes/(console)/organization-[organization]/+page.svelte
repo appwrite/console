@@ -18,7 +18,7 @@
     } from '$lib/components';
     import { trackEvent, Click } from '$lib/actions/analytics';
     import { type Models } from '@appwrite.io/console';
-    import { readOnly, upgradeURL } from '$lib/stores/billing';
+    import { getServiceLimit, readOnly, upgradeURL } from '$lib/stores/billing';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
@@ -79,6 +79,11 @@
         }
     }
 
+    $: projectCreationDisabled =
+        (isCloud && getServiceLimit('projects') <= data.allProjectsCount) ||
+        ($readOnly && !GRACE_PERIOD_OVERRIDE) ||
+        !$canWriteProjects;
+
     $: $registerCommands([
         {
             label: 'Create project',
@@ -86,7 +91,7 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteProjects,
+            disabled: projectCreationDisabled,
             group: 'projects',
             icon: IconPlus
         }
@@ -125,7 +130,7 @@
             <Button
                 on:click={handleCreateProject}
                 event="create_project"
-                disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
+                disabled={projectCreationDisabled}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create project
             </Button>
