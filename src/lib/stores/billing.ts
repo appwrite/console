@@ -138,6 +138,7 @@ export type PlanServices =
     | 'logs'
     | 'memberAddon'
     | 'members'
+    | 'projects'
     | 'platforms'
     | 'realtime'
     | 'realtimeAddon'
@@ -156,7 +157,7 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
     if (!serviceId) return 0;
 
     plan ??= get(currentPlan);
-    
+
     if (tier) {
         const info = get(plansInfo);
         if (!info) return 0;
@@ -164,8 +165,13 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
     }
 
     if (serviceId === 'members') {
-        if (!(plan.addons.seats?.supported ?? false)) return Infinity;
+        if (!plan.addons.seats) return Infinity;
         return plan.addons.seats?.limit ?? 1;
+    }
+
+    if (serviceId === 'projects') {
+        if (!plan.addons.seats) return Infinity;
+        return plan.addons.projects?.limit ?? 1;
     }
 
     return plan?.[serviceId] ?? 0;
