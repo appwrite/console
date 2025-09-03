@@ -257,7 +257,7 @@
                                         </Badge>
                                     {/each}
 
-                                    {#if platforms.length > 3}
+                                    {#if platforms.length > 2}
                                         <Badge
                                             variant="secondary"
                                             content={`+${platforms.length - 2}`}
