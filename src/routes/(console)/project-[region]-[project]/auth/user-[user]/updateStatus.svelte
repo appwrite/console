@@ -26,8 +26,8 @@
             addNotification({
                 message: `${
                     $user.name && $user.name.trim() !== ''
-                        ? `The email for ${$user.name} has been ${!$user.emailVerification ? 'no longer verified' : 'verified'}`
-                        : `The email has been ${!$user.emailVerification ? 'no longer verified' : 'verified'}`
+                        ? `The email for ${$user.name} ${!$user.emailVerification ? 'is no longer verified' : 'has been verified'}`
+                        : `The email ${!$user.emailVerification ? 'is no longer verified' : 'has been verified'}`
                 }`,
                 type: 'success'
             });
@@ -51,8 +51,8 @@
             addNotification({
                 message: `${
                     $user.name && $user.name.trim() !== ''
-                        ? `The phone for ${$user.name} has been ${!$user.phoneVerification ? 'no longer verified' : 'verified'}`
-                        : `The phone has been ${!$user.phoneVerification ? 'no longer verified' : 'verified'}`
+                        ? `The phone for ${$user.name} ${!$user.phoneVerification ? 'is no longer verified' : 'has been verified'}`
+                        : `The phone ${!$user.phoneVerification ? 'is no longer verified' : 'has been verified'}`
                 }`,
                 type: 'success'
             });
