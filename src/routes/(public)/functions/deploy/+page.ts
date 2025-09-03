@@ -78,10 +78,9 @@ export const load: PageLoad = async ({ parent, url }) => {
 
     // Create default organization if none exists - matches console's onboarding behavior
     if (!organizations?.total) {
-        let org = null;
         try {
             if (isCloud) {
-                org = await sdk.forConsole.billing.createOrganization(
+                await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     'Personal Projects',
                     BillingPlan.FREE,
@@ -89,7 +88,7 @@ export const load: PageLoad = async ({ parent, url }) => {
                     null
                 );
             } else {
-                org = await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
+                await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
             }
 
             // Refetch organizations after creation
