@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { DropList, GridItem1, CardContainer } from '$lib/components';
+    import { DropList, GridItem1, CardContainer, Paginator } from '$lib/components';
     import {
         Badge,
         Icon,
@@ -146,7 +146,7 @@
     }
 
     import { formatName as formatNameHelper } from '$lib/helpers/string';
-    function formatName(name: string, limit: number = 19) {
+    function formatName(name: string, limit: number = 16) {
         return formatNameHelper(name, limit, $isSmallViewport);
     }
 </script>
@@ -160,103 +160,121 @@
             </Typography.Text>
 
             <div class="archive-projects-margin">
-                <CardContainer disableEmpty={true} total={projectsToArchive.length}>
-                    {#each projectsToArchive as project}
-                        {@const platforms = filterPlatforms(
-                            project.platforms.map((platform) => getPlatformInfo(platform.type))
-                        )}
-                        {@const formatted = formatName(project.name)}
-                        <GridItem1>
-                            <svelte:fragment slot="eyebrow">
-                                {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
-                            </svelte:fragment>
-                            <svelte:fragment slot="title">{formatted}</svelte:fragment>
-                            <svelte:fragment slot="status">
-                                <div class="status-container">
-                                    <DropList
-                                        bind:show={readOnlyInfoOpen[project.$id]}
-                                        placement="bottom-start"
-                                        noArrow>
-                                        <Tag
-                                            size="s"
-                                            style="white-space: nowrap;"
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                readOnlyInfoOpen = {
-                                                    ...readOnlyInfoOpen,
-                                                    [project.$id]: !readOnlyInfoOpen[project.$id]
-                                                };
-                                            }}>
-                                            <Icon icon={IconInfo} size="s" />
-                                            <span>Read only</span>
-                                        </Tag>
-                                        <svelte:fragment slot="list">
-                                            <li
-                                                class="drop-list-item u-width-250"
-                                                style="padding: var(--space-5, 12px) var(--space-6, 16px)">
-                                                <span class="u-block u-mb-8">
-                                                    Archived projects are read-only. You can view
-                                                    and migrate their data, but they no longer
-                                                    accept edits or requests.
-                                                </span>
-                                            </li>
-                                        </svelte:fragment>
-                                    </DropList>
-                                    <Popover let:toggle padding="none" placement="bottom-end">
-                                        <Button
-                                            text
-                                            icon
-                                            size="s"
-                                            ariaLabel="more options"
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                toggle(e);
-                                            }}>
-                                            <Icon icon={IconDotsHorizontal} size="s" />
-                                        </Button>
-                                        <ActionMenu.Root slot="tooltip">
-                                            <ActionMenu.Item.Button
-                                                leadingIcon={IconInboxIn}
-                                                disabled={isUnarchiveDisabled()}
-                                                on:click={() => handleUnarchiveProject(project)}
-                                                >Unarchive project</ActionMenu.Item.Button>
-                                            <ActionMenu.Item.Button
-                                                leadingIcon={IconSwitchHorizontal}
-                                                on:click={() => handleMigrateProject(project)}
-                                                >Migrate project</ActionMenu.Item.Button>
-                                        </ActionMenu.Root>
-                                    </Popover>
-                                </div>
-                            </svelte:fragment>
+                <Paginator
+                    items={projectsToArchive}
+                    limit={6}
+                    hidePages={false}
+                    hideFooter={projectsToArchive.length <= 6}>
+                    {#snippet children(items)}
+                        <CardContainer disableEmpty={true} total={projectsToArchive.length}>
+                            {#each items as project}
+                                {@const platforms = filterPlatforms(
+                                    project.platforms.map((platform) =>
+                                        getPlatformInfo(platform.type)
+                                    )
+                                )}
+                                {@const formatted = formatName(project.name)}
+                                <GridItem1>
+                                    <svelte:fragment slot="eyebrow">
+                                        {project?.platforms?.length
+                                            ? project?.platforms?.length
+                                            : 'No'} apps
+                                    </svelte:fragment>
+                                    <svelte:fragment slot="title">{formatted}</svelte:fragment>
+                                    <svelte:fragment slot="status">
+                                        <div class="status-container">
+                                            <DropList
+                                                bind:show={readOnlyInfoOpen[project.$id]}
+                                                placement="bottom-start"
+                                                noArrow>
+                                                <Tag
+                                                    size="s"
+                                                    style="white-space: nowrap;"
+                                                    on:click={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        readOnlyInfoOpen = {
+                                                            ...readOnlyInfoOpen,
+                                                            [project.$id]:
+                                                                !readOnlyInfoOpen[project.$id]
+                                                        };
+                                                    }}>
+                                                    <Icon icon={IconInfo} size="s" />
+                                                    <span>Read only</span>
+                                                </Tag>
+                                                <svelte:fragment slot="list">
+                                                    <li
+                                                        class="drop-list-item u-width-250"
+                                                        style="padding: var(--space-5, 12px) var(--space-6, 16px)">
+                                                        <span class="u-block u-mb-8">
+                                                            Archived projects are read-only. You can
+                                                            view and migrate their data, but they no
+                                                            longer accept edits or requests.
+                                                        </span>
+                                                    </li>
+                                                </svelte:fragment>
+                                            </DropList>
+                                            <Popover
+                                                let:toggle
+                                                padding="none"
+                                                placement="bottom-end">
+                                                <Button
+                                                    text
+                                                    icon
+                                                    size="s"
+                                                    ariaLabel="more options"
+                                                    on:click={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        toggle(e);
+                                                    }}>
+                                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                                </Button>
+                                                <ActionMenu.Root slot="tooltip">
+                                                    <ActionMenu.Item.Button
+                                                        leadingIcon={IconInboxIn}
+                                                        disabled={isUnarchiveDisabled()}
+                                                        on:click={() =>
+                                                            handleUnarchiveProject(project)}
+                                                        >Unarchive project</ActionMenu.Item.Button>
+                                                    <ActionMenu.Item.Button
+                                                        leadingIcon={IconSwitchHorizontal}
+                                                        on:click={() =>
+                                                            handleMigrateProject(project)}
+                                                        >Migrate project</ActionMenu.Item.Button>
+                                                </ActionMenu.Root>
+                                            </Popover>
+                                        </div>
+                                    </svelte:fragment>
 
-                            {#each platforms.slice(0, 2) as platform}
-                                {@const icon = getIconForPlatform(platform.icon)}
-                                <Badge
-                                    variant="secondary"
-                                    content={platform.name}
-                                    style="width: max-content;">
-                                    <Icon {icon} size="s" slot="start" />
-                                </Badge>
+                                    {#each platforms.slice(0, 2) as platform}
+                                        {@const icon = getIconForPlatform(platform.icon)}
+                                        <Badge
+                                            variant="secondary"
+                                            content={platform.name}
+                                            style="width: max-content;">
+                                            <Icon {icon} size="s" slot="start" />
+                                        </Badge>
+                                    {/each}
+
+                                    {#if platforms.length > 2}
+                                        <Badge
+                                            variant="secondary"
+                                            content={`+${platforms.length - 2}`}
+                                            style="width: max-content;" />
+                                    {/if}
+
+                                    <svelte:fragment slot="icons">
+                                        {#if isCloud && $regionsStore?.regions}
+                                            {@const region = findRegion(project)}
+                                            <Typography.Text>{region?.name}</Typography.Text>
+                                        {/if}
+                                    </svelte:fragment>
+                                </GridItem1>
                             {/each}
-
-                            {#if platforms.length > 3}
-                                <Badge
-                                    variant="secondary"
-                                    content={`+${platforms.length - 2}`}
-                                    style="width: max-content;" />
-                            {/if}
-
-                            <svelte:fragment slot="icons">
-                                {#if isCloud && $regionsStore?.regions}
-                                    {@const region = findRegion(project)}
-                                    <Typography.Text>{region?.name}</Typography.Text>
-                                {/if}
-                            </svelte:fragment>
-                        </GridItem1>
-                    {/each}
-                </CardContainer>
+                        </CardContainer>
+                    {/snippet}
+                </Paginator>
             </div>
         </Accordion>
     </div>
