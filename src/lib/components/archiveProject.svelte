@@ -10,7 +10,8 @@
         Accordion,
         ActionMenu,
         Popover,
-        Layout
+        Layout,
+        Divider
     } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
@@ -264,7 +265,11 @@
                                                 leadingIcon={IconSwitchHorizontal}
                                                 on:click={() => handleMigrateProject(project)}
                                                 >Migrate project</ActionMenu.Item.Button>
+                                            <div class="action-menu-divider">
+                                                <Divider />
+                                            </div>
                                             <ActionMenu.Item.Button
+                                                status="danger"
                                                 leadingIcon={IconTrash}
                                                 on:click={() => handleDeleteProject(project)}
                                                 >Delete project</ActionMenu.Item.Button>
@@ -325,8 +330,8 @@
     onSubmit={confirmDelete}
     bind:error={deleteError}>
     <svelte:fragment slot="description">
-        This archived project will be deleted along with all of its metadata, stats, and other
-        resources.
+        The archived project <strong>{projectToDelete?.name}</strong> will be deleted along with all
+        of its metadata, stats, and other resources.
         <b>This action is irreversible.</b>
     </svelte:fragment>
 
@@ -356,6 +361,11 @@
 <style>
     .archive-projects-margin-top {
         margin-top: 36px;
+    }
+    .action-menu-divider {
+        margin-inline: -1rem;
+        padding-block-start: 0.25rem;
+        padding-block-end: 0.25rem;
     }
 
     .archive-projects-margin {
