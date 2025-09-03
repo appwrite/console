@@ -11,8 +11,9 @@
     import View from './view.svelte';
 
     export let data;
-    
-    const createUserUrl = (user: Models.User<{}>) => `${base}/project-${page.params.region}-${page.params.project}/auth/user-${user.$id}`;
+
+    const createUserUrl = (user: Models.User<{}>) =>
+        `${base}/project-${page.params.region}-${page.params.project}/auth/user-${user.$id}`;
 </script>
 
 <Container>
@@ -21,6 +22,5 @@
         limit={data.limit}
         offset={data.offset}
         search={data.search}
-        {createUserUrl}
-    />
+        {createUserUrl} />
 </Container>

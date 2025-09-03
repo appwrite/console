@@ -10,8 +10,9 @@
     import { Container } from '$lib/layout';
     import View from './view.svelte';
     export let data;
-    
-    const createTeamUrl = (team: Models.Team<Record<string, unknown>>) => `${base}/project-${page.params.region}-${page.params.project}/auth/teams/team-${team.$id}`;
+
+    const createTeamUrl = (team: Models.Team<Record<string, unknown>>) =>
+        `${base}/project-${page.params.region}-${page.params.project}/auth/teams/team-${team.$id}`;
 </script>
 
 <Container>
@@ -20,6 +21,5 @@
         limit={data.limit}
         offset={data.offset}
         search={data.search}
-        {createTeamUrl}
-    />
+        {createTeamUrl} />
 </Container>

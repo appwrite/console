@@ -4,7 +4,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Layout } from '@appwrite.io/pink-svelte';
     import View from '$routes/(console)/project-[region]-[project]/storage/bucket-[bucket]/view.svelte';
-    
+
     let { data } = $props();
 
     const createFileUrl = (file: Models.File) => {
@@ -18,6 +18,5 @@
         limit={data?.limit || 25}
         offset={data?.offset || 0}
         search={data?.search || null}
-        {createFileUrl}
-    />
+        {createFileUrl} />
 </Layout.Stack>

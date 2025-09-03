@@ -17,6 +17,5 @@
         limit={data.limit}
         offset={data.offset}
         search={data.search}
-        {createFileUrl}
-    />
+        {createFileUrl} />
 </Container>

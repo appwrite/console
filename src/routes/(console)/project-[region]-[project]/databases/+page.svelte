@@ -22,6 +22,5 @@
         offset={data.offset}
         view={data.view}
         search={data.search}
-        {getDatabaseUrl}
-    />
+        {getDatabaseUrl} />
 </Container>

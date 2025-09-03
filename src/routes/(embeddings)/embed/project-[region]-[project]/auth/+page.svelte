@@ -6,7 +6,8 @@
     import View from '$routes/(console)/project-[region]-[project]/auth/view.svelte';
     let { data } = $props();
 
-    const createUserUrl = (user: Models.User<{}>) => `${base}/embed/project-${page.params.region}-${page.params.project}/auth/user-${user.$id}`;
+    const createUserUrl = (user: Models.User<{}>) =>
+        `${base}/embed/project-${page.params.region}-${page.params.project}/auth/user-${user.$id}`;
 </script>
 
 <Layout.Stack>
@@ -15,6 +16,5 @@
         limit={data.limit}
         offset={data.offset}
         search={data.search}
-        {createUserUrl}
-    />
+        {createUserUrl} />
 </Layout.Stack>

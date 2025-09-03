@@ -23,6 +23,5 @@
         offset={data.offset}
         view={data.view}
         search={data.search}
-        {createBucketUrl}
-    />
+        {createBucketUrl} />
 </Container>

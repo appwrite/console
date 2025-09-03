@@ -1,16 +1,29 @@
 <script context="module" lang="ts">
-    import { EmailTemplateLocale, EmailTemplateType, SmsTemplateLocale, SmsTemplateType } from '@appwrite.io/console';
+    import {
+        EmailTemplateLocale,
+        EmailTemplateType,
+        SmsTemplateLocale,
+        SmsTemplateType
+    } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
 
-    export async function loadEmailTemplate(projectId: string, type: EmailTemplateType, locale: EmailTemplateLocale) {
+    export async function loadEmailTemplate(
+        projectId: string,
+        type: EmailTemplateType,
+        locale: EmailTemplateLocale
+    ) {
         try {
             return await sdk.forConsole.projects.getEmailTemplate({ projectId, type, locale });
         } catch (e) {
             addNotification({ type: 'error', message: e.message });
         }
     }
-    export async function loadSmsTemplate(projectId: string, type: SmsTemplateType, locale: SmsTemplateLocale) {
+    export async function loadSmsTemplate(
+        projectId: string,
+        type: SmsTemplateType,
+        locale: SmsTemplateLocale
+    ) {
         try {
             return await sdk.forConsole.projects.getSMSTemplate({ projectId, type, locale });
         } catch (e) {
@@ -59,9 +72,16 @@
 
 <Container>
     {#if !project.smtpEnabled}
-        <Alert.Inline dismissible={false} status="info" title="Custom SMTP server is required for customizing emails">
-            Configure a custom SMTP server to enable custom email templates and prevent emails from being labeled as spam.
-            <Button compact slot="actions" href={`${base}/project-${page.params.region}-${page.params.project}/settings/smtp`}>
+        <Alert.Inline
+            dismissible={false}
+            status="info"
+            title="Custom SMTP server is required for customizing emails">
+            Configure a custom SMTP server to enable custom email templates and prevent emails from
+            being labeled as spam.
+            <Button
+                compact
+                slot="actions"
+                href={`${base}/project-${page.params.region}-${page.params.project}/settings/smtp`}>
                 SMTP settings
             </Button>
         </Alert.Inline>
@@ -72,7 +92,10 @@
             Email templates <Badge variant="secondary" content="Experimental" />
         </svelte:fragment>
         Use templates to send and process account management emails.
-        <Link.Anchor target="_blank" href="https://appwrite.io/docs/advanced/platform/message-templates">Learn more</Link.Anchor>
+        <Link.Anchor
+            target="_blank"
+            href="https://appwrite.io/docs/advanced/platform/message-templates"
+            >Learn more</Link.Anchor>
         <svelte:fragment slot="aside">
             <Layout.Stack gap="s">
                 {#each templates as section (section.key)}
@@ -83,14 +106,18 @@
                         on:toggle={(event) => event.detail && toggleAccordion(section.key)}>
                         <Layout.Stack>
                             <Typography.Text>{section.description}</Typography.Text>
-                            <svelte:component this={section.component} loading={isTemplateLoading} />
+                            <svelte:component
+                                this={section.component}
+                                loading={isTemplateLoading} />
                         </Layout.Stack>
                     </Accordion>
                 {/each}
             </Layout.Stack>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <Button href={`${base}/project-${page.params.region}-${page.params.project}/settings/smtp`} secondary>
+            <Button
+                href={`${base}/project-${page.params.region}-${page.params.project}/settings/smtp`}
+                secondary>
                 SMTP settings
             </Button>
         </svelte:fragment>

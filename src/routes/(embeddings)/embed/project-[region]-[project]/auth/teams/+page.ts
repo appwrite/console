@@ -15,12 +15,13 @@ export const load: PageLoad = async ({ url, route, params }) => {
         limit,
         search,
         page,
-        teams: await sdk.forProject(params.region, params.project).teams.list([
-            Query.limit(limit), 
-            Query.offset(offset), 
-            Query.orderDesc(''),
-            ...(search ? [Query.search('name', search)] : [])
-        ])
+        teams: await sdk
+            .forProject(params.region, params.project)
+            .teams.list([
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.orderDesc(''),
+                ...(search ? [Query.search('name', search)] : [])
+            ])
     };
 };
-

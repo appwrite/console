@@ -1,9 +1,17 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { Empty, PaginationWithLimit, SearchQuery, ViewSelector, Id, CardContainer, GridItem1 } from '$lib/components';
+    import {
+        Empty,
+        PaginationWithLimit,
+        SearchQuery,
+        ViewSelector,
+        Id,
+        CardContainer,
+        GridItem1
+    } from '$lib/components';
     import { canWriteDatabases } from '$lib/stores/roles';
     import { columns } from './store';
-    import { Icon, Layout, Table as PinkTable, Tooltip, Button } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Table as PinkTable, Tooltip } from '@appwrite.io/pink-svelte';
     import Create from './create.svelte';
     import { goto } from '$app/navigation';
     import { IconPlus, IconExclamation } from '@appwrite.io/pink-icons-svelte';
@@ -11,6 +19,8 @@
     import EmptySearch from '$lib/components/emptySearch.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { View } from '$lib/helpers/load';
+    import { base } from '$app/paths';
+    import { Button } from '$lib/elements/forms';
 
     let {
         databases,
@@ -35,7 +45,7 @@
     } = $props();
 
     let showCreate = $state(false);
-    
+
     const clearSearchHref = page.url.pathname;
     async function onCreated(e: CustomEvent<Models.Database>) {
         showCreate = false;
@@ -70,10 +80,16 @@
 
 {#if databases.total}
     {#if view === 'grid'}
-        <CardContainer disableEmpty={!$canWriteDatabases} total={databases.total} {offset} event="database" service="databases" on:click={() => (showCreate = true)}>
+        <CardContainer
+            disableEmpty={!$canWriteDatabases}
+            total={databases.total}
+            {offset}
+            event="database"
+            service="databases"
+            on:click={() => (showCreate = true)}>
             {#each databases.databases as database}
                 {@const href = getDatabaseUrl(database, tables?.[database.$id] ?? null)}
-                <GridItem1 href={href}>
+                <GridItem1 {href}>
                     <svelte:fragment slot="title">{database.name}</svelte:fragment>
                     <svelte:fragment slot="subtitle">
                         {#if lastBackups && lastBackups[database.$id]}
@@ -111,12 +127,23 @@
                             {:else if column.id === 'backup'}
                                 {@const p = policies?.[database.$id] ?? null}
                                 {@const last = lastBackups?.[database.$id] ?? null}
-                                {@const description = p?.map((policy) => getPolicyDescription(policy.schedule)).join(', ')}
-                                <Tooltip placement="bottom" disabled={!p || !last} maxWidth="fit-content">
+                                {@const description = p
+                                    ?.map((policy) => getPolicyDescription(policy.schedule))
+                                    .join(', ')}
+                                <Tooltip
+                                    placement="bottom"
+                                    disabled={!p || !last}
+                                    maxWidth="fit-content">
                                     <span class="u-trim">
                                         {#if !p}
-                                            <Layout.Stack direction="row" gap="xxs" alignItems="center">
-                                                <Icon icon={IconExclamation} size="s" color="--bgcolor-warning" />
+                                            <Layout.Stack
+                                                direction="row"
+                                                gap="xxs"
+                                                alignItems="center">
+                                                <Icon
+                                                    icon={IconExclamation}
+                                                    size="s"
+                                                    color="--bgcolor-warning" />
                                                 No backup policies
                                             </Layout.Stack>
                                         {:else}
@@ -138,15 +165,24 @@
     <PaginationWithLimit name="Databases" {limit} {offset} total={databases.total} />
 {:else if search}
     <EmptySearch target="databases" hidePagination>
-        <Button href={clearSearchHref ?? `${base}/project-${page.params.region}-${page.params.project}/databases`} size="s" secondary>Clear Search</Button>
+        <Button
+            href={clearSearchHref ??
+                `${base}/project-${page.params.region}-${page.params.project}/databases`}
+            size="s"
+            secondary>Clear Search</Button>
     </EmptySearch>
 {:else}
-    <Empty single href="https://appwrite.io/docs/products/databases/databases" target="database" allowCreate={$canWriteDatabases} />
+    <Empty
+        single
+        href="https://appwrite.io/docs/products/databases/databases"
+        target="database"
+        allowCreate={$canWriteDatabases} />
 {/if}
 
 <Create bind:showCreate on:created={onCreated} />
 
-
 <style>
-    .icon-exclamation { color: hsl(var(--color-warning-100)) !important; }
+    .icon-exclamation {
+        color: hsl(var(--color-warning-100)) !important;
+    }
 </style>

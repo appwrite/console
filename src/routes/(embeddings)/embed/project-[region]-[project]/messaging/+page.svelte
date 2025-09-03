@@ -6,7 +6,8 @@
     import View from '$routes/(console)/project-[region]-[project]/messaging/view.svelte';
     let { data } = $props();
 
-    const createMessageUrl = (message) => `${base}/embed/project-${page.params.region}-${page.params.project}/messaging/message-${message.$id}`;
+    const createMessageUrl = (message) =>
+        `${base}/embed/project-${page.params.region}-${page.params.project}/messaging/message-${message.$id}`;
 </script>
 
 <Layout.Stack>
@@ -15,6 +16,5 @@
         limit={data.limit}
         offset={data.offset}
         search={data.search}
-        {createMessageUrl}
-    />
+        {createMessageUrl} />
 </Layout.Stack>

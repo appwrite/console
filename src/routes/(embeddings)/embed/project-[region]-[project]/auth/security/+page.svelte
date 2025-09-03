@@ -22,4 +22,3 @@
     <UpdateSessionInvalidation />
     <UpdateMembershipPrivacy />
 </Layout.Stack>
-

@@ -6,7 +6,8 @@
     import View from '$routes/(console)/project-[region]-[project]/auth/teams/view.svelte';
     let { data } = $props();
 
-    const createTeamUrl = (team: Models.Team<Record<string, unknown>>) => `${base}/embed/project-${page.params.region}-${page.params.project}/auth/teams/team-${team.$id}`;
+    const createTeamUrl = (team: Models.Team<Record<string, unknown>>) =>
+        `${base}/embed/project-${page.params.region}-${page.params.project}/auth/teams/team-${team.$id}`;
 </script>
 
 <Layout.Stack>
@@ -15,6 +16,5 @@
         limit={data.limit}
         offset={data.offset}
         search={data.search}
-        {createTeamUrl}
-    />
+        {createTeamUrl} />
 </Layout.Stack>

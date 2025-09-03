@@ -9,4 +9,3 @@ export const load: PageLoad = async ({ params }) => {
 
     return { user, userFactors };
 };
-

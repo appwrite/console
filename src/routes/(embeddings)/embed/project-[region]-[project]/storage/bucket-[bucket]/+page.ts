@@ -1,11 +1,26 @@
+import { Query } from '@appwrite.io/console';
+import { sdk } from '$lib/stores/sdk';
+import { getLimit, getPage, getSearch, pageToOffset } from '$lib/helpers/load';
+import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ parent, url, params }) => {
-    const { project } = await parent();
-    
-    // Import the console page loader to reuse the same logic
-    const consoleLoader = await import('$routes/(console)/project-[region]-[project]/storage/bucket-[bucket]/+page.ts');
-    
-    // Call the console loader with the same parameters
-    return await consoleLoader.load({ parent, url, params });
+export const load: PageLoad = async ({ params, depends, url, route }) => {
+    depends(Dependencies.FILES);
+    const page = getPage(url);
+    const search = getSearch(url);
+    const limit = getLimit(url, route, PAGE_LIMIT);
+    const offset = pageToOffset(page, limit);
+
+    const files = await sdk.forProject(params.region, params.project).storage.listFiles({
+        bucketId: params.bucket,
+        queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+        search
+    });
+
+    return {
+        offset,
+        limit,
+        search,
+        files
+    };
 };

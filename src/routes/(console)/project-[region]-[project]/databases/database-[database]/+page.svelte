@@ -18,6 +18,5 @@
         offset={data.offset}
         view={data.view}
         search={data.search}
-        {createTableUrl}
-    />
+        {createTableUrl} />
 </Container>

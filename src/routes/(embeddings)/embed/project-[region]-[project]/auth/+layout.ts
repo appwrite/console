@@ -6,4 +6,3 @@ export const load: LayoutLoad = async ({ params }) => {
     const project = await sdk.forConsole.projects.get(params.project);
     return { project } as const;
 };
-

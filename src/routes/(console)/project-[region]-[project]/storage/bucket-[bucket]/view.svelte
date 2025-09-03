@@ -15,7 +15,12 @@
     import { Layout, Table, Icon, Popover, ActionMenu } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-    import { IconDotsHorizontal, IconPencil, IconPlus, IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDotsHorizontal,
+        IconPencil,
+        IconPlus,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
 
     let {
         files,
@@ -54,7 +59,9 @@
 
     async function deleteFile(file: Models.File) {
         try {
-            await sdk.forProject(page.params.region, page.params.project).storage.deleteFile({ bucketId: file.bucketId, fileId: file.$id });
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.deleteFile({ bucketId: file.bucketId, fileId: file.$id });
             await invalidate(Dependencies.FILES);
             await uploader.removeFile(file);
             trackEvent(Submit.FileDelete);
@@ -152,10 +159,21 @@
                                 </Button>
                                 <svelte:fragment slot="content" let:close>
                                     <ActionMenu.Root>
-                                        <ActionMenu.Item.Button icon={IconPencil} on:click={() => { close(); goto(href); }}>
+                                        <ActionMenu.Item.Button
+                                            icon={IconPencil}
+                                            on:click={() => {
+                                                close();
+                                                goto(href);
+                                            }}>
                                             Edit
                                         </ActionMenu.Item.Button>
-                                        <ActionMenu.Item.Button icon={IconTrash} on:click={() => { close(); selectedFile = file; showDelete = true; }}>
+                                        <ActionMenu.Item.Button
+                                            icon={IconTrash}
+                                            on:click={() => {
+                                                close();
+                                                selectedFile = file;
+                                                showDelete = true;
+                                            }}>
                                             Delete
                                         </ActionMenu.Item.Button>
                                     </ActionMenu.Root>
@@ -190,7 +208,13 @@
                                 </Button>
                                 <svelte:fragment slot="content" let:close>
                                     <ActionMenu.Root>
-                                        <ActionMenu.Item.Button icon={IconTrash} on:click={() => { close(); selectedFile = file; showDelete = true; }}>
+                                        <ActionMenu.Item.Button
+                                            icon={IconTrash}
+                                            on:click={() => {
+                                                close();
+                                                selectedFile = file;
+                                                showDelete = true;
+                                            }}>
                                             Delete
                                         </ActionMenu.Item.Button>
                                     </ActionMenu.Root>
@@ -209,7 +233,11 @@
         <Button size="s" secondary href={clearSearchHref}>Clear Search</Button>
     </EmptySearch>
 {:else}
-    <Empty single target="file" href="https://appwrite.io/docs/products/storage/upload-download" on:click={() => goto("create")} />
+    <Empty
+        single
+        target="file"
+        href="https://appwrite.io/docs/products/storage/upload-download"
+        on:click={() => goto('create')} />
 {/if}
 
 {#if selectedFile}

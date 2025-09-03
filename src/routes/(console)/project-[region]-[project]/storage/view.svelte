@@ -1,7 +1,14 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
-    import { Empty, PaginationWithLimit, SearchQuery, Id, CardContainer, GridItem1 } from '$lib/components';
+    import {
+        Empty,
+        PaginationWithLimit,
+        SearchQuery,
+        Id,
+        CardContainer,
+        GridItem1
+    } from '$lib/components';
     import { canWriteBuckets } from '$lib/stores/roles';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { columns } from './store';
@@ -44,7 +51,7 @@
     <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
         <ViewSelector {columns} {view} hideColumns={!buckets.total} hideView={!buckets.total} />
         {#if $canWriteBuckets}
-            <Button on:click={() => ( $showCreateBucket = true )} event="create_bucket" size="s">
+            <Button on:click={() => ($showCreateBucket = true)} event="create_bucket" size="s">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create bucket
             </Button>
@@ -54,7 +61,13 @@
 
 {#if buckets.total}
     {#if view === 'grid'}
-        <CardContainer disableEmpty={!$canWriteBuckets} total={buckets.total} {offset} event="bucket" service="buckets" on:click={() => ($showCreateBucket = true)}>
+        <CardContainer
+            disableEmpty={!$canWriteBuckets}
+            total={buckets.total}
+            {offset}
+            event="bucket"
+            service="buckets"
+            on:click={() => ($showCreateBucket = true)}>
             {#each buckets.buckets as bucket}
                 <GridItem1 href={createBucketUrl(bucket)}>
                     <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
@@ -68,8 +81,14 @@
                     <Id value={bucket.$id}>{bucket.$id}</Id>
                     <svelte:fragment slot="icons">
                         <Tooltip>
-                            <span class:u-opacity-20={!bucket.encryption} class="icon-lock-closed" aria-hidden="true"></span>
-                            <span slot="tooltip">{bucket.encryption ? 'Encryption enabled' : 'Encryption disabled'}</span>
+                            <span
+                                class:u-opacity-20={!bucket.encryption}
+                                class="icon-lock-closed"
+                                aria-hidden="true"></span>
+                            <span slot="tooltip"
+                                >{bucket.encryption
+                                    ? 'Encryption enabled'
+                                    : 'Encryption disabled'}</span>
                         </Tooltip>
                     </svelte:fragment>
                 </GridItem1>
@@ -105,7 +124,11 @@
 
     <PaginationWithLimit name="Buckets" {limit} {offset} total={buckets.total} />
 {:else}
-    <Empty single href="https://appwrite.io/docs/products/storage" target="bucket" on:click={() => showCreateBucket.set(true)} />
+    <Empty
+        single
+        href="https://appwrite.io/docs/products/storage"
+        target="bucket"
+        on:click={() => showCreateBucket.set(true)} />
 {/if}
 
 <Create bind:showCreate={$showCreateBucket} on:created={bucketCreated} />

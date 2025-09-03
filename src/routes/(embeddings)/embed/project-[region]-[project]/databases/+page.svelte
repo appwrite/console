@@ -22,6 +22,5 @@
         offset={data?.offset || 0}
         view={data?.view || 'grid'}
         search={data?.search || null}
-        {getDatabaseUrl}
-    />
+        {getDatabaseUrl} />
 </Layout.Stack>

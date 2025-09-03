@@ -21,8 +21,15 @@
 
     async function authUpdate(box: AuthMethod) {
         try {
-            await sdk.forConsole.projects.updateAuthStatus({ projectId, method: box.method, status: box.value });
-            addNotification({ type: 'success', message: `${box.label} authentication has been updated` });
+            await sdk.forConsole.projects.updateAuthStatus({
+                projectId,
+                method: box.method,
+                status: box.value
+            });
+            addNotification({
+                type: 'success',
+                message: `${box.label} authentication has been updated`
+            });
             trackEvent(Submit.AuthStatusUpdate, { method: box.method, value: box.value });
             invalidate(Dependencies.PROJECT);
         } catch (error) {
@@ -45,7 +52,11 @@
                     <Layout.Stack gap="l" direction="row" wrap="wrap">
                         {#each $authMethods.list as box}
                             <div style="flex-basis: 45%;">
-                                <InputSwitch label={box.label} id={box.method} bind:value={box.value} on:change={() => authUpdate(box)} />
+                                <InputSwitch
+                                    label={box.label}
+                                    id={box.method}
+                                    bind:value={box.value}
+                                    on:change={() => authUpdate(box)} />
                             </div>
                         {/each}
                     </Layout.Stack>
@@ -54,18 +65,38 @@
             <Layout.Stack>
                 <Typography.Title size="s">OAuth2 Providers</Typography.Title>
                 <ul class="grid-box" style:--grid-gap="1rem" style:--grid-item-size="15rem">
-                    {#each $project.oAuthProviders.filter((p) => p.name !== 'Mock').sort((a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1)) as provider}
+                    {#each $project.oAuthProviders
+                        .filter((p) => p.name !== 'Mock')
+                        .sort( (a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1) ) as provider}
                         {@const oAuthProvider = oAuthProviders[provider.key]}
                         {#if oAuthProvider}
-                            <Card.Button padding="s" on:click={() => { selectedProvider = provider; showProvider = true; trackEvent(`click_select_provider`, { provider: provider.key.toLowerCase() }); }}>
+                            <Card.Button
+                                padding="s"
+                                on:click={() => {
+                                    selectedProvider = provider;
+                                    showProvider = true;
+                                    trackEvent(`click_select_provider`, {
+                                        provider: provider.key.toLowerCase()
+                                    });
+                                }}>
                                 <Layout.Stack alignItems="flex-start" gap="xxl">
-                                    <Layout.Stack direction="row" justifyContent="flex-start" alignItems="center">
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="flex-start"
+                                        alignItems="center">
                                         <Avatar size="s">
-                                            <img height="20" width="20" src={`${base}/icons/${$app.themeInUse}/color/${oAuthProvider.icon}.svg`} alt={provider.name} />
+                                            <img
+                                                height="20"
+                                                width="20"
+                                                src={`${base}/icons/${$app.themeInUse}/color/${oAuthProvider.icon}.svg`}
+                                                alt={provider.name} />
                                         </Avatar>
                                         <Typography.Text>{provider.name}</Typography.Text>
                                     </Layout.Stack>
-                                    <Badge type={provider.enabled ? 'success' : undefined} variant="secondary" content={provider.enabled ? 'enabled' : 'disabled'} />
+                                    <Badge
+                                        type={provider.enabled ? 'success' : undefined}
+                                        variant="secondary"
+                                        content={provider.enabled ? 'enabled' : 'disabled'} />
                                 </Layout.Stack>
                             </Card.Button>
                         {/if}
@@ -78,5 +109,12 @@
 
 {#if selectedProvider && showProvider}
     {@const oAuthProvider = oAuthProviders[selectedProvider.key]}
-    <svelte:component this={oAuthProvider.component} bind:provider={selectedProvider} bind:show={showProvider} onclose={() => { selectedProvider = null; showProvider = false; }} />
+    <svelte:component
+        this={oAuthProvider.component}
+        bind:provider={selectedProvider}
+        bind:show={showProvider}
+        onclose={() => {
+            selectedProvider = null;
+            showProvider = false;
+        }} />
 {/if}
