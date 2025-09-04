@@ -81,7 +81,7 @@
         { id: 'dueDate', width: { min: 120 } },
         { id: 'status', width: { min: hasPaymentError ? 200 : 100 } },
         { id: 'amount', width: { min: 120 } },
-        { id: 'action', width: 40 }
+        { id: 'actions', width: 40 }
     ]);
 </script>
 
