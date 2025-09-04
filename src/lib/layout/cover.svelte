@@ -7,6 +7,7 @@
     export let expanded: boolean = false;
     export let animate: boolean = false;
     export let collapsed: boolean = false;
+    export let databasesMainScreen: boolean = false;
 
     let isAnimating = false;
     let animationTimeout: ReturnType<typeof setTimeout>;
@@ -43,6 +44,7 @@
         class="cover-container"
         {style}
         class:expanded
+        class:databasesMainScreen
         class:collapsed={animate && collapsed}
         class:animating={isAnimating}>
         <Layout.Stack direction="row" alignItems="baseline">
@@ -118,6 +120,12 @@
 
         &.animating {
             transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        &.databasesMainScreen {
+            @media (min-width: 1440px) {
+                max-width: 1200px;
+            }
         }
     }
 

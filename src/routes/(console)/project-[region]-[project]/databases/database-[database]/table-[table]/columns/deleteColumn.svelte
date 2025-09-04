@@ -1,7 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/state';
-    import { InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { table } from '../store';
     import type { Columns } from '../store';
@@ -21,7 +20,6 @@
         selectedColumn: Columns | string[];
     } = $props();
 
-    let checked = $state(false);
     let error = $state<string | null>(null);
 
     const selectedColumns = $derived(
@@ -37,8 +35,6 @@
             .filter((c): c is Columns => typeof c !== 'string')
             .some((col) => isRelationship(col) && col.twoWay)
     );
-
-    const isDeleteBtnDisabled = $derived(requiresTwoWayConfirm && !checked);
 
     async function handleDelete() {
         try {
@@ -75,6 +71,16 @@
     function getAsRelationship(column: string | Columns): Models.ColumnRelationship {
         return column as Models.ColumnRelationship;
     }
+
+    const relatedColumn = $derived(
+        requiresTwoWayConfirm ? getAsRelationship(selectedColumns[0]) : undefined
+    );
+
+    const confirmDeletionLabel = $derived(
+        !requiresTwoWayConfirm
+            ? 'I understand and confirm'
+            : `Delete relationship between ${relatedColumn.key} to ${relatedColumn.twoWayKey}`
+    );
 </script>
 
 <Confirm
@@ -83,7 +89,7 @@
     title="Delete column"
     bind:error
     confirmDeletion
-    disabled={isDeleteBtnDisabled}>
+    {confirmDeletionLabel}>
     {#if selectedColumns.length === 1}
         <p>
             Are you sure you want to delete <b data-private>{selectedKeys[0]}</b> from
@@ -98,19 +104,12 @@
 
     {#if requiresTwoWayConfirm}
         <!-- not allowed on multi selections, safe to assume that this isn't a string! -->
-        {@const column = getAsRelationship(selectedColumns[0])}
         <Layout.Stack direction="column" gap="xl">
             <p>
                 This is a two way relationship and the corresponding relationship will also be
                 deleted.
             </p>
             <p><b>This action is irreversible.</b></p>
-            <ul>
-                <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
-                    Delete relationship between <b data-private>{column.key}</b> to
-                    <b data-private>{column.twoWayKey}</b>
-                </InputChoice>
-            </ul>
         </Layout.Stack>
     {/if}
 </Confirm>

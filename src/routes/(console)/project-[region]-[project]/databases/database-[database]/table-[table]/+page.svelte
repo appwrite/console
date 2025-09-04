@@ -51,12 +51,25 @@
         }));
     }
 
+    function createFilterableColumns(columns: Column[], selected: string[] = []): Column[] {
+        const idColumn = [{ id: '$id', title: '$id', type: 'string' as ColumnType }].filter(
+            (col) => !selected.includes(col.id)
+        );
+
+        const systemColumns = [
+            { id: '$createdAt', title: '$createdAt', type: 'datetime' as ColumnType },
+            { id: '$updatedAt', title: '$updatedAt', type: 'datetime' as ColumnType }
+        ].filter((col) => !!selected.includes(col.id));
+
+        return [...idColumn, ...columns.filter((column) => !column.isAction), ...systemColumns];
+    }
+
     $: selected = preferences.getCustomTableColumns(page.params.table);
 
     $: if ($table.columns) {
         const freshColumns = createTableColumns($table.columns, selected);
         tableColumns.set(freshColumns);
-        filterColumns.set(freshColumns.filter((column) => !column.isAction));
+        filterColumns.set(createFilterableColumns(freshColumns, selected));
     }
 
     $: hasColumns = !!$table.columns.length;

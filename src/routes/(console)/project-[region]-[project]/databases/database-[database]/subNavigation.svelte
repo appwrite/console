@@ -134,7 +134,7 @@
             </div>
         </section>
     </Sidebar.Base>
-{:else}
+{:else if data?.database?.name}
     <Navbar.Base>
         <div slot="left">
             <Layout.Stack direction="row" alignItems="center" gap="s">

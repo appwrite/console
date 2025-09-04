@@ -138,6 +138,7 @@ export type PlanServices =
     | 'logs'
     | 'memberAddon'
     | 'members'
+    | 'projects'
     | 'platforms'
     | 'realtime'
     | 'realtimeAddon'
@@ -154,20 +155,23 @@ export type PlanServices =
 export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
     if (!isCloud) return 0;
     if (!serviceId) return 0;
-    const info = get(plansInfo);
-    if (!info) return 0;
-    plan ??= info.get(tier ?? get(organization)?.billingPlan);
-    // members are no longer a variable on plan itself!
-    // the correct info for members/seats, resides in `addons`.
-    // plan > addons > seats/others
+
+    plan ??= get(currentPlan);
+
+    if (tier) {
+        const info = get(plansInfo);
+        if (!info) return 0;
+        plan ??= info.get(tier);
+    }
+
     if (serviceId === 'members') {
-        // pro and scale plans have unlimited seats (per-project NEW pricing model)
-        const currentTier = tier ?? get(organization)?.billingPlan;
-        if (currentTier === BillingPlan.PRO || currentTier === BillingPlan.SCALE) {
-            return Infinity; // unlimited seats for Pro and Scale plans
-        }
-        // Free plan still has 1 member limit
-        return (plan?.['addons']['seats'] || [])['limit'] ?? 1;
+        if (!plan?.addons?.seats) return Infinity;
+        return plan.addons.seats?.limit ?? 1;
+    }
+
+    if (serviceId === 'projects') {
+        if (!plan?.addons?.projects) return Infinity;
+        return plan.addons.projects?.limit ?? 1;
     }
 
     return plan?.[serviceId] ?? 0;

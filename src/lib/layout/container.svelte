@@ -1,34 +1,56 @@
 <script lang="ts">
     import { Layout } from '@appwrite.io/pink-svelte';
+    import type { Snippet } from 'svelte';
+    import type { HTMLAttributes } from 'svelte/elements';
 
-    // TODO: needs better props
+    let {
+        expanded = false,
+        slotSpacing = false,
+        overlapCover = false,
+        paddingInlineEnd = true,
+        paddingInlineEndDouble = false,
+        insideSideSheet = false,
+        databasesScreen = false,
+        databasesMainScreen = false,
+        expandHeightButton = false,
+        size = null,
+        children,
+        ...restProps
+    }: {
+        expanded?: boolean;
+        slotSpacing?: boolean;
+        overlapCover?: boolean;
+        paddingInlineEnd?: boolean;
+        paddingInlineEndDouble?: boolean;
+        insideSideSheet?: boolean;
+        databasesScreen?: boolean;
+        databasesMainScreen?: boolean;
+        expandHeightButton?: boolean;
+        children?: Snippet;
+        size?: 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl' | null;
+    } & HTMLAttributes<HTMLDivElement> = $props();
 
-    export let expanded = false;
-    export let slotSpacing = false;
-    export let overlapCover = false;
-    export let paddingInlineEnd = true;
-    export let insideSideSheet = false;
-    export let databasesScreen = false;
-    export let expandHeightButton = false;
-    export let size: 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl' = null;
-
-    $: style = size
-        ? `--p-container-max-size: var(--container-max-size, var(--container-size-${size}))`
-        : '';
+    const style = $derived(
+        size
+            ? `--p-container-max-size: var(--container-max-size, var(--container-size-${size}))`
+            : ''
+    );
 </script>
 
-<div style:container-type="inline-size" class:overlap-cover={overlapCover} {...$$restProps}>
+<div style:container-type="inline-size" class:overlap-cover={overlapCover} {...restProps}>
     <div
         {style}
         class:expanded
         class:slotSpacing
-        class:databasesScreen
         class:insideSideSheet
+        class:databasesScreen
         class:expandHeightButton
+        class:databasesMainScreen
         class="console-container"
+        class:paddingInlineEndDouble
         class:paddingInlineEnd={!paddingInlineEnd}>
         <Layout.Stack gap="l">
-            <slot />
+            {@render children?.()}
         </Layout.Stack>
     </div>
 </div>
@@ -90,6 +112,12 @@
             }
         }
 
+        &.paddingInlineEndDouble {
+            @media (min-width: 1024px) {
+                padding-inline-end: calc(2 * 2.75rem) !important;
+            }
+        }
+
         &.databasesScreen {
             @media (min-width: 1440px) {
                 min-width: 1070px;
@@ -99,6 +127,12 @@
             @media (min-width: 1728px) {
                 min-width: 1070px;
                 padding-inline: 196px !important;
+            }
+        }
+
+        &.databasesMainScreen {
+            @media (min-width: 1440px) {
+                max-width: 1200px;
             }
         }
 
