@@ -61,6 +61,13 @@
     let deleteProjectName = $state('');
     let deleteError = $state<string | null>(null);
 
+    function resetDeleteState() {
+        showDeleteModal = false;
+        projectToDelete = null;
+        deleteProjectName = '';
+        deleteError = null;
+    }
+
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
             (value, index, self) => index === self.findIndex((t) => t.name === value.name)
@@ -170,10 +177,7 @@
                 message: `${projectToDelete.name} has been deleted`
             });
 
-            showDeleteModal = false;
-            projectToDelete = null;
-            deleteProjectName = '';
-            deleteError = null;
+            resetDeleteState();
         } catch (error) {
             deleteError = error.message;
             trackError(error, Submit.ProjectDelete);
@@ -347,10 +351,7 @@
         <Button
             text
             on:click={() => {
-                showDeleteModal = false;
-                projectToDelete = null;
-                deleteProjectName = '';
-                deleteError = null;
+                resetDeleteState();
             }}>Cancel</Button>
         <Button submissionLoader submit disabled={deleteProjectName !== projectToDelete?.name}>
             Delete
