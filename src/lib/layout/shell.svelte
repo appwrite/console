@@ -101,10 +101,10 @@
      *
      * This needs to be handled like this because
      * the setup around the sidebar is very tightly configured with 2 states sync.
+     *
+     * The sidebar is **always closed** on mobile and tablet devices!
      */
     afterNavigate((navigation) => {
-        // always closed on
-        // mobile and tablets!
         if ($isTabletViewport) {
             state = 'closed';
             return;
