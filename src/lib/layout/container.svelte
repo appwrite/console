@@ -11,6 +11,7 @@
         paddingInlineEndDouble = false,
         insideSideSheet = false,
         databasesScreen = false,
+        databasesMainScreen = false,
         expandHeightButton = false,
         size = null,
         children,
@@ -23,6 +24,7 @@
         paddingInlineEndDouble?: boolean;
         insideSideSheet?: boolean;
         databasesScreen?: boolean;
+        databasesMainScreen?: boolean;
         expandHeightButton?: boolean;
         children?: Snippet;
         size?: 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl' | null;
@@ -40,9 +42,10 @@
         {style}
         class:expanded
         class:slotSpacing
-        class:databasesScreen
         class:insideSideSheet
+        class:databasesScreen
         class:expandHeightButton
+        class:databasesMainScreen
         class="console-container"
         class:paddingInlineEndDouble
         class:paddingInlineEnd={!paddingInlineEnd}>
@@ -124,6 +127,12 @@
             @media (min-width: 1728px) {
                 min-width: 1070px;
                 padding-inline: 196px !important;
+            }
+        }
+
+        &.databasesMainScreen {
+            @media (min-width: 1440px) {
+                max-width: 1200px;
             }
         }
 

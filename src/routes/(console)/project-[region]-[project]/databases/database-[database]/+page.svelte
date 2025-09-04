@@ -18,7 +18,7 @@
     const databaseId = page.params.database;
 </script>
 
-<Container expanded slotSpacing paddingInlineEndDouble>
+<Container databasesMainScreen>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
             <SearchQuery placeholder="Search by name or ID" />

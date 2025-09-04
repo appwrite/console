@@ -177,7 +177,7 @@
     });
 </script>
 
-<Container size="xxl" expanded slotSpacing paddingInlineEndDouble>
+<Container size="xxl" databasesMainScreen>
     <div class="u-flex u-gap-32 u-flex-vertical-mobile">
         {#if !isDisabled}
             <div class="u-flex-vertical u-gap-16 policies-holder-card">
