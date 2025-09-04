@@ -103,12 +103,19 @@
      * the setup around the sidebar is very tightly configured with 2 states sync.
      */
     afterNavigate((navigation) => {
+        // always closed on
+        // mobile and tablets!
+        if ($isTabletViewport) {
+            state = 'closed';
+            return;
+        }
+
         const isEnteringDatabase = isInDatabasesRoute(navigation.to.route);
         const isLeavingDatabase =
             isInDatabasesRoute(navigation.from.route) && !isInDatabasesRoute(navigation.to.route);
 
         if (isEnteringDatabase) {
-            state = $isTabletViewport ? 'closed' : 'icons';
+            state = 'icons';
         } else if (isLeavingDatabase) {
             state = getSidebarState();
             $noWidthTransition = false;
