@@ -35,16 +35,15 @@
 </script>
 
 <script lang="ts">
-    import { InputNumber } from '$lib/elements/forms';
+    import { InputShape } from '$lib/elements/forms';
 
-    export let editing = false;
     export let data: Partial<Models.ColumnPoint> = {
         required: false,
         default: [0, 0]
     };
 
     import { createConservative } from '$lib/helpers/stores';
-    import { Selector, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Selector } from '@appwrite.io/pink-svelte';
 
     let savedDefault = data.default;
     let showDefaultPointDummyData = false;
@@ -55,10 +54,8 @@
         if (hideDefault) {
             savedDefault = data.default ?? [0, 0];
             data.default = null;
-            showDefaultPointDummyData = true;
         } else {
             data.default = savedDefault ?? [0, 0];
-            showDefaultPointDummyData = false;
         }
     }
 
@@ -72,30 +69,14 @@
     $: listen(data);
 
     $: handleDefaultState($required);
+
+    $: showDefaultPointDummyData = $required ? true : false;
 </script>
 
-<Layout.Stack>
-    <Layout.Stack direction="row" alignItems="center" gap="s">
-        <Typography.Text variant="m-600">Default</Typography.Text>
-        <Typography.Caption variant="400">Optional</Typography.Caption>
-    </Layout.Stack>
-    <Layout.Stack direction="row">
-        {#if showDefaultPointDummyData}
-            {#each DEFAULT_STATE_DUMMY_DATA}
-                <InputNumber id="default" placeholder="Enter value" disabled={true} />
-            {/each}
-        {:else}
-            {#each data.default as number[] as _, index}
-                <InputNumber
-                    id="default"
-                    placeholder="Enter value"
-                    bind:value={data.default[index]}
-                    disabled={data.required}
-                    step={0.001} />
-            {/each}
-        {/if}
-    </Layout.Stack>
-</Layout.Stack>
+<InputShape
+    values={data.default as number[]}
+    defaultValues={DEFAULT_STATE_DUMMY_DATA}
+    showDefaults={showDefaultPointDummyData} />
 
 <Selector.Checkbox
     size="s"
