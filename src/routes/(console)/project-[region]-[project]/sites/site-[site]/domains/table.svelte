@@ -99,7 +99,7 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
-                                {#if rule.logs}
+                                {#if rule.logs && rule.status === 'unverified'}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconTerminal}
                                         on:click={(e) => {
@@ -121,7 +121,7 @@
                                         Retry
                                     </ActionMenu.Item.Button>
                                 {/if}
-                                {#if rule.logs || (rule.status !== 'verified' && rule.status !== 'verifying')}
+                                {#if rule.logs && rule.status === 'unverified'}
                                     <div
                                         style:margin-inline="-1rem"
                                         style:padding-block-start="0.25rem"
