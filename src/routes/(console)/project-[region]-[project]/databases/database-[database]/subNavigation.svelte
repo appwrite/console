@@ -163,7 +163,7 @@
                                     <a
                                         {href}
                                         class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8">
-                                        <Icon size="s" icon={action.icon} />
+                                        <Icon size="s" icon={action.icon} color="--fgcolor-neutral-weak" />
                                         <span class="text table-name">{action.title}</span>
                                     </a>
                                 </li>

@@ -2,7 +2,7 @@ import { page } from '$app/stores';
 import type { Column } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
-import { IconCloudUpload, IconCog, IconTable } from '@appwrite.io/pink-icons-svelte';
+import { IconChartBar, IconCloudUpload, IconCog } from '@appwrite.io/pink-icons-svelte';
 
 export const database = derived(page, ($page) => $page.data.database as Models.Database);
 export const showCreate = writable(false);
@@ -33,6 +33,6 @@ export const customRetainingOptions = [
 
 export const databaseSubNavigationItems = [
     { title: 'Backups', href: 'backups', icon: IconCloudUpload },
-    { title: 'Usage', href: 'usage', icon: IconTable },
+    { title: 'Usage', href: 'usage', icon: IconChartBar },
     { title: 'Settings', href: 'settings', icon: IconCog }
 ];
