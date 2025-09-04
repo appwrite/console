@@ -69,5 +69,5 @@
         fromSpreadsheet
         label={undefined}
         bind:formValues={row}
-        on:click={openSideSheet} />
+        on:click={() => openSideSheet?.()} />
 </div>
