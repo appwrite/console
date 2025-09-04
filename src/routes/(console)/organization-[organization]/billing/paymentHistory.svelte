@@ -95,7 +95,7 @@
                     <Table.Header.Cell column="dueDate" {root}>Due date</Table.Header.Cell>
                     <Table.Header.Cell column="status" {root}>Status</Table.Header.Cell>
                     <Table.Header.Cell column="amount" {root}>Amount due</Table.Header.Cell>
-                    <Table.Header.Cell column="action" {root} />
+                    <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
 
                 {#if isLoadingInvoices}
@@ -150,7 +150,7 @@
                             <Table.Cell column="amount" {root}>
                                 {formatCurrency(invoice.grossAmount)}
                             </Table.Cell>
-                            <Table.Cell column="status" {root}>
+                            <Table.Cell column="actions" {root}>
                                 <Popover let:toggle placement="bottom-start" padding="none">
                                     <Button text icon ariaLabel="more options" on:click={toggle}>
                                         <Icon icon={IconDotsHorizontal} size="s" />
