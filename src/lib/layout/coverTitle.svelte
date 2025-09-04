@@ -12,8 +12,7 @@
     direction="row"
     alignItems="center"
     justifyContent="center"
-    {...$$restProps}
->
+    {...$$restProps}>
     {#if href}
         <span style:position="relative">
             <Button.Anchor size="s" icon variant="text" {href} aria-label="page back">
