@@ -15,7 +15,7 @@
         label = undefined;
     }
 
-    $: if (limited) {
+    $: {
         column.min = isWithinSafeRange(column.min) ? column.min : Number.MIN_SAFE_INTEGER;
         column.max = isWithinSafeRange(column.max) ? column.max : Number.MAX_SAFE_INTEGER;
     }

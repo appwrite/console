@@ -459,6 +459,12 @@
         }
     }
 
+    function openSideSheetForRelationsToMany(tableId: string, rows: string | Models.Row[]) {
+        $databaseRelatedRowSheetOptions.tableId = tableId;
+        $databaseRelatedRowSheetOptions.rows = rows;
+        $databaseRelatedRowSheetOptions.show = true;
+    }
+
     async function onSelectSheetOption(
         action: HeaderCellAction | RowCellAction,
         columnId: string,
@@ -885,18 +891,10 @@
                                         {/if}
                                     {:else}
                                         {@const itemsNum = row[columnId]?.length}
-                                        <Button.Button
-                                            variant="extra-compact"
-                                            disabled={!itemsNum}
-                                            badge={itemsNum ?? 0}
-                                            on:click={() => {
-                                                $databaseRelatedRowSheetOptions.show = true;
-                                                $databaseRelatedRowSheetOptions.rows =
-                                                    row[columnId];
-                                                $databaseRelatedRowSheetOptions.tableId = columnId;
-                                            }}>
-                                            Items
-                                        </Button.Button>
+                                        Items <Badge
+                                            content={itemsNum}
+                                            variant="secondary"
+                                            size="s" />
                                     {/if}
                                 {:else}
                                     {@const value = row[columnId]}
@@ -946,11 +944,20 @@
                                         {row}
                                         column={rowColumn}
                                         onRowStructureUpdate={updateRowContents}
+                                        noInlineEdit={isRelationshipToMany(rowColumn)}
                                         onChange={(row) => paginatedRows.update(index, row)}
                                         onRevert={(row) => paginatedRows.update(index, row)}
                                         openSideSheet={() => {
                                             close(); /* closes the editor */
-                                            onSelectSheetOption('update', null, 'row', row);
+
+                                            if (isRelationshipToMany(rowColumn)) {
+                                                openSideSheetForRelationsToMany(
+                                                    columnId,
+                                                    row[columnId]
+                                                );
+                                            } else {
+                                                onSelectSheetOption('update', null, 'row', row);
+                                            }
                                         }} />
                                 </svelte:fragment>
                             </Spreadsheet.Cell>
