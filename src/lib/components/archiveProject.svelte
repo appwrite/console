@@ -58,13 +58,13 @@
     let projectToUnarchive = $state<Models.Project | null>(null);
     let showDeleteModal = $state(false);
     let projectToDelete = $state<Models.Project | null>(null);
-    let deleteProjectName = $state('');
+    let deleteProjectName = $state<string | null>(null);
     let deleteError = $state<string | null>(null);
 
     function resetDeleteState() {
         showDeleteModal = false;
         projectToDelete = null;
-        deleteProjectName = '';
+        deleteProjectName = null;
         deleteError = null;
     }
 
@@ -119,7 +119,7 @@
 
     function handleDeleteProject(project: Models.Project) {
         projectToDelete = project;
-        deleteProjectName = '';
+        deleteProjectName = null;
         showDeleteModal = true;
     }
 
@@ -353,7 +353,10 @@
             on:click={() => {
                 resetDeleteState();
             }}>Cancel</Button>
-        <Button submissionLoader submit disabled={deleteProjectName !== projectToDelete?.name}>
+        <Button
+            submissionLoader
+            submit
+            disabled={(deleteProjectName ?? '') !== projectToDelete?.name}>
             Delete
         </Button>
     </svelte:fragment>
