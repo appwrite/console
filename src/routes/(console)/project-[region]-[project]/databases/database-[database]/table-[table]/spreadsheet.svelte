@@ -87,6 +87,7 @@
     import { hash } from '$lib/helpers/string';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { chunks } from '$lib/helpers/array';
+    import { mapToQueryParams } from '$lib/components/filters/store';
 
     export let data: PageData;
     export let showRowCreateSheet: {
@@ -308,26 +309,31 @@
 
     async function sort(query: string | null) {
         $spreadsheetLoading = true;
-
         const url = new URL(page.url);
+        const parsedQueries = data.parsedQueries;
 
-        if (query === null) {
+        if (parsedQueries.size > 0) {
+            for (const [tagValue, queryString] of parsedQueries.entries()) {
+                if (queryString.includes('orderAsc') || queryString.includes('orderDesc')) {
+                    parsedQueries.delete(tagValue);
+                }
+            }
+        }
+
+        if (query !== null) {
+            const { attribute, method } = JSON.parse(query);
+            const tagValue = {
+                tag: `${attribute} ${method}`,
+                value: attribute
+            };
+
+            parsedQueries.set(tagValue, query);
+        }
+
+        if (parsedQueries.size === 0) {
             url.searchParams.delete('query');
         } else {
-            // compatible with `load` func!
-            const { attribute, method } = JSON.parse(query);
-            url.searchParams.set(
-                'query',
-                JSON.stringify([
-                    [
-                        {
-                            tag: `${attribute} ${method}`,
-                            value: attribute
-                        },
-                        query
-                    ]
-                ])
-            );
+            url.searchParams.set('query', mapToQueryParams(parsedQueries));
         }
 
         // save > navigate > restore!
@@ -611,6 +617,9 @@
             return false;
         }
 
+        const parsedQueries = data.parsedQueries;
+        const filterQueries = parsedQueries.size ? data.parsedQueries.values() : [];
+
         $paginatedRowsLoading = true;
         const loadedRows = await sdk
             .forProject(page.params.region, page.params.project)
@@ -621,6 +630,7 @@
                     getCorrectOrderQuery(),
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
                     Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
+                    ...filterQueries /* filter queries */,
                     ...buildWildcardColumnsQuery($table)
                 ]
             });
