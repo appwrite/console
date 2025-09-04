@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
+    import { onMount } from 'svelte';
     import { CardGrid, PaginationInline } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -27,7 +28,6 @@
         IconExternalLink,
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
-    import { onMount } from 'svelte';
 
     let limit = $state(5);
     let offset = $state(0);
