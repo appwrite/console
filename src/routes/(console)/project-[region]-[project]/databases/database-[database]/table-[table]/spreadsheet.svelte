@@ -87,7 +87,6 @@
     import { hash } from '$lib/helpers/string';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { chunks } from '$lib/helpers/array';
-    import { queryParamToMap } from '$lib/components/filters';
     import { mapToQueryParams } from '$lib/components/filters/store';
 
     export let data: PageData;
@@ -310,11 +309,8 @@
 
     async function sort(query: string | null) {
         $spreadsheetLoading = true;
-
         const url = new URL(page.url);
-
-        const existingQueryParam = url.searchParams.get('query');
-        const parsedQueries = queryParamToMap(existingQueryParam || '[]');
+        const parsedQueries = data.parsedQueries;
 
         if (parsedQueries.size > 0) {
             for (const [tagValue, queryString] of parsedQueries.entries()) {
@@ -334,7 +330,11 @@
             parsedQueries.set(tagValue, query);
         }
 
-        url.searchParams.set('query', mapToQueryParams(parsedQueries));
+        if (parsedQueries.size === 0) {
+            url.searchParams.delete('query');
+        } else {
+            url.searchParams.set('query', mapToQueryParams(parsedQueries));
+        }
 
         spreadsheetContainer.saveGridSheetScroll();
         await goto(`${url.pathname}${url.search}`);
