@@ -7,6 +7,8 @@
     import Relationship from './types/relationship.svelte';
     import String from './types/string.svelte';
     import Url from './types/url.svelte';
+    import Point from './types/point.svelte';
+    import Line from './types/line.svelte';
 
     export let id: string;
     export let label: string;
@@ -24,7 +26,10 @@
         | Models.ColumnIp
         | Models.ColumnString
         | Models.ColumnDatetime
-        | Models.ColumnUrl;
+        | Models.ColumnUrl
+        | Models.ColumnPoint
+        | Models.ColumnLine
+        | Models.ColumnPolygon;
 
     const columnsTypeMap = {
         string: String,
@@ -32,7 +37,9 @@
         double: Integer,
         boolean: Boolean,
         datetime: Datetime,
-        relationship: Relationship
+        relationship: Relationship,
+        point: Point,
+        linestring: Line
     };
 
     const columnsFormatMap = {

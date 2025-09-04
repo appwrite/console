@@ -45,7 +45,7 @@
 
     import { createConservative } from '$lib/helpers/stores';
     import { Selector, Layout, Typography } from '@appwrite.io/pink-svelte';
-    import InputLine from '$lib/elements/forms/inputLine.svelte';
+    import { InputLine } from '$lib/elements/forms';
 
     let savedDefault = data.default;
     let showDefaultPointDummyData = false;
