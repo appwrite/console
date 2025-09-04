@@ -41,7 +41,7 @@ export type Option = {
         | 'Enum'
         | 'Relationship'
         | 'Point'
-        | 'Linestring'
+        | 'Line'
         | 'Polygon';
     sentenceName: string;
     component: Component;
@@ -127,7 +127,7 @@ export const columnOptions: Option[] = [
         icon: IconGlobe
     },
     {
-        name: 'Linestring',
+        name: 'Line',
         sentenceName: 'linestring',
         component: Line,
         type: 'linestring',

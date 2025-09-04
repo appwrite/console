@@ -12,8 +12,12 @@
         [0, 0],
         [0, 0]
     ];
-    function addCoordinate() {
+    function onAddPoint() {
         value = [...(value || defaultShape), [0, 0]];
+    }
+
+    function onDeletePoint() {
+        if (value && value?.length > 2) value = value.slice(0, value.length - 1);
     }
 
     $: nullable = !limited ? !column.required : false;
@@ -27,5 +31,5 @@
         {/if}
     </Layout.Stack>
 
-    <InputLine values={value} showDefaults={false} {addCoordinate} />
+    <InputLine values={value} showDefaults={false} {onAddPoint} {onDeletePoint} />
 </Layout.Stack>

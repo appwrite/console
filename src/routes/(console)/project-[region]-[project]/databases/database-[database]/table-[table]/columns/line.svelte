@@ -69,6 +69,10 @@
         (data.default as number[][]).push([0, 0]);
     }
 
+    function deleteCoordinate() {
+        if ((data.default as number[][]).length > 2) (data.default as number[][]).pop();
+    }
+
     const {
         stores: { required },
         listen
@@ -98,6 +102,7 @@
     </Layout.Stack>
     <InputLine
         values={data.default as number[][]}
-        addCoordinate={pushCoordinate}
-        showDefaults={showDefaultPointDummyData} />
+        onAddPoint={pushCoordinate}
+        showDefaults={showDefaultPointDummyData}
+        onDeletePoint={deleteCoordinate} />
 </Layout.Stack>

@@ -10,21 +10,29 @@
     ];
     export let values: number[][];
     export let showDefaults;
-    export let addCoordinate: () => void;
+    export let onAddPoint: () => void;
+    export let onDeletePoint: () => void = undefined;
 
     let required = true;
 
     $: required = showDefaults;
+
+    $: disableDeletePoints = !values || values.length <= 2;
 </script>
 
 <Layout.Stack>
     <Layout.Stack>
         {#each values || defaultValues as value, index}
-            <InputPoint showDefaults={required} values={value} />
+            <InputPoint
+                showDefaults={required}
+                values={value}
+                deletePoints={true}
+                disableDelete={disableDeletePoints}
+                {onDeletePoint} />
         {/each}
     </Layout.Stack>
     <Layout.Stack direction="row" gap="s" style="margin-top: 8px;">
-        <Button compact on:click={addCoordinate}>
+        <Button compact on:click={onAddPoint}>
             <Icon icon={IconPlus} size="s" /> Add coordinate
         </Button>
     </Layout.Stack>
