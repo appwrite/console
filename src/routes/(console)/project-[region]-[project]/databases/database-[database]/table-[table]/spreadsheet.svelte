@@ -87,6 +87,8 @@
     import { hash } from '$lib/helpers/string';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { chunks } from '$lib/helpers/array';
+    import { queryParamToMap } from '$lib/components/filters';
+    import { mapToQueryParams } from '$lib/components/filters/store';
 
     export let data: PageData;
     export let showRowCreateSheet: {
@@ -311,26 +313,29 @@
 
         const url = new URL(page.url);
 
-        if (query === null) {
-            url.searchParams.delete('query');
-        } else {
-            // compatible with `load` func!
-            const { attribute, method } = JSON.parse(query);
-            url.searchParams.set(
-                'query',
-                JSON.stringify([
-                    [
-                        {
-                            tag: `${attribute} ${method}`,
-                            value: attribute
-                        },
-                        query
-                    ]
-                ])
-            );
+        const existingQueryParam = url.searchParams.get('query');
+        const parsedQueries = queryParamToMap(existingQueryParam || '[]');
+
+        if (parsedQueries.size > 0) {
+            for (const [tagValue, queryString] of parsedQueries.entries()) {
+                if (queryString.includes('orderAsc') || queryString.includes('orderDesc')) {
+                    parsedQueries.delete(tagValue);
+                }
+            }
         }
 
-        // save > navigate > restore!
+        if (query !== null) {
+            const { attribute, method } = JSON.parse(query);
+            const tagValue = {
+                tag: `${attribute} ${method}`,
+                value: attribute
+            };
+
+            parsedQueries.set(tagValue, query);
+        }
+
+        url.searchParams.set('query', mapToQueryParams(parsedQueries));
+
         spreadsheetContainer.saveGridSheetScroll();
         await goto(`${url.pathname}${url.search}`);
         spreadsheetContainer.restoreGridSheetScroll();
@@ -624,7 +629,7 @@
                     getCorrectOrderQuery(),
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
                     Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
-                    ...filterQueries, /* filter queries */
+                    ...filterQueries /* filter queries */,
                     ...buildWildcardColumnsQuery($table)
                 ]
             });
