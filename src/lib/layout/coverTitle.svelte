@@ -6,7 +6,7 @@
     export let href: string = null;
 </script>
 
-<Layout.Stack justifyContent="center" alignItems="center" direction="row" gap="xs" inline>
+<Layout.Stack justifyContent="center" alignItems="center" direction="row" gap="xs" inline {...$$restProps}>
     {#if href}
         <span style:position="relative">
             <Button.Anchor size="s" icon variant="text" {href} aria-label="page back">
@@ -14,6 +14,7 @@
             </Button.Anchor>
         </span>
     {/if}
+
     <Typography.Title
         truncate
         color="--fgcolor-neutral-primary"
