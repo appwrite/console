@@ -27,7 +27,9 @@
         IconExternalLink,
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
+    import { onMount } from 'svelte';
 
+    let limit = $state(5);
     let offset = $state(0);
     let isLoadingInvoices = $state(false);
     let invoiceList: InvoiceList = $state({
@@ -35,16 +37,29 @@
         total: 0
     });
 
-    const limit = 5;
     const endpoint = getApiEndpoint();
     const hasPaymentError = $derived(invoiceList?.invoices.some((invoice) => invoice?.lastError));
 
-    async function request() {
+    /**
+     * Special case handling for the first page!
+     *
+     * As per Damodar - `there is some logic to **hide current cycle invoice** in the endpoint`.
+     *
+     * Due to this, the first page always loads `limit - 1` invoices which is inconsistent!
+     * Therefore, we load `limit + 1` to counter that so the returned invoices are consistent.
+     */
+    onMount(() => request(true));
+
+    async function request(patchQuery: boolean = false) {
         isLoadingInvoices = true;
         invoiceList = await sdk.forConsole.billing.listInvoices(page.params.organization, [
-            Query.limit(limit),
-            Query.offset(offset),
-            Query.orderDesc('$createdAt')
+            Query.orderDesc('$createdAt'),
+
+            // first page extra must have an extra limit!
+            Query.limit(patchQuery ? limit + 1 : limit),
+
+            // so an invoice isn't repeated on 2nd page!
+            Query.offset(patchQuery ? offset : offset + 1)
         ]);
 
         isLoadingInvoices = false;
@@ -58,12 +73,6 @@
     $effect(() => {
         if (page.url.searchParams.get('type') === 'validate-invoice') {
             window.history.replaceState({}, '', page.url.pathname);
-            request();
-        }
-    });
-
-    $effect(() => {
-        if (offset !== null) {
             request();
         }
     });
@@ -90,7 +99,7 @@
                 </svelte:fragment>
 
                 {#if isLoadingInvoices}
-                    {#each Array.from({ length: 2 }).keys() as index (index)}
+                    {#each Array.from({ length: 5 }).keys() as index (index)}
                         <Table.Row.Base {root}>
                             {#each columns as column}
                                 <Table.Cell column={column.id} {root}>
@@ -99,91 +108,95 @@
                             {/each}
                         </Table.Row.Base>
                     {/each}
-                {/if}
-
-                {#each invoiceList?.invoices as invoice}
-                    {@const status = invoice.status}
-                    <Table.Row.Base {root}>
-                        <Table.Cell column="dueDate" {root}>
-                            {toLocaleDate(invoice.dueAt)}
-                        </Table.Cell>
-                        <Table.Cell column="status" {root}>
-                            {@const isDanger =
-                                status === 'overdue' ||
-                                status === 'failed' ||
-                                status === 'requires_authentication'}
-                            {@const isSuccess = status === 'paid' || status === 'succeeded'}
-                            {@const isWarning = status === 'pending'}
-                            <Layout.Stack direction="row" gap="s">
-                                <Badge
-                                    variant="secondary"
-                                    content={status === 'requires_authentication'
-                                        ? 'failed'
-                                        : status}
-                                    type={isDanger
-                                        ? 'error'
-                                        : isWarning
-                                          ? 'warning'
-                                          : isSuccess
-                                            ? 'success'
-                                            : undefined} />
-                                {#if invoice?.lastError}
-                                    <Popover let:toggle>
-                                        <Link.Button on:click={toggle}>Details</Link.Button>
-                                        <svelte:fragment slot="tooltip">
-                                            The scheduled payment has failed.
-                                            <Link.Button on:click={() => retryPayment(invoice)}
-                                                >Try again
-                                            </Link.Button>
-                                        </svelte:fragment>
-                                    </Popover>
-                                {/if}
-                            </Layout.Stack>
-                        </Table.Cell>
-                        <Table.Cell column="amount" {root}>
-                            {formatCurrency(invoice.grossAmount)}
-                        </Table.Cell>
-                        <Table.Cell column="status" {root}>
-                            <Popover let:toggle placement="bottom-start" padding="none">
-                                <Button text icon ariaLabel="more options" on:click={toggle}>
-                                    <Icon icon={IconDotsHorizontal} size="s" />
-                                </Button>
-                                <ActionMenu.Root slot="tooltip">
-                                    <!-- todo: add missing event -->
-                                    <ActionMenu.Item.Anchor
-                                        leadingIcon={IconExternalLink}
-                                        external
-                                        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
-                                        View invoice
-                                    </ActionMenu.Item.Anchor>
-                                    <ActionMenu.Item.Anchor
-                                        leadingIcon={IconDownload}
-                                        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
-                                        Download PDF
-                                    </ActionMenu.Item.Anchor>
-                                    {#if status === 'overdue' || status === 'failed' || status === 'abandoned'}
-                                        <ActionMenu.Item.Button
-                                            leadingIcon={IconRefresh}
-                                            on:click={() => {
-                                                retryPayment(invoice);
-                                                trackEvent(`click_retry_payment`, {
-                                                    from: 'button',
-                                                    source: 'billing_invoice_menu'
-                                                });
-                                            }}>
-                                            Retry payment
-                                        </ActionMenu.Item.Button>
+                {:else}
+                    {#each invoiceList?.invoices as invoice (invoice.$id)}
+                        {@const status = invoice.status}
+                        <Table.Row.Base {root}>
+                            <Table.Cell column="dueDate" {root}
+                                >{toLocaleDate(invoice.dueAt)}</Table.Cell>
+                            <Table.Cell column="status" {root}>
+                                {@const isDanger =
+                                    status === 'overdue' ||
+                                    status === 'failed' ||
+                                    status === 'requires_authentication'}
+                                {@const isSuccess = status === 'paid' || status === 'succeeded'}
+                                {@const isWarning = status === 'pending'}
+                                <Layout.Stack direction="row" gap="s">
+                                    <Badge
+                                        variant="secondary"
+                                        content={status === 'requires_authentication'
+                                            ? 'failed'
+                                            : status}
+                                        type={isDanger
+                                            ? 'error'
+                                            : isWarning
+                                              ? 'warning'
+                                              : isSuccess
+                                                ? 'success'
+                                                : undefined} />
+                                    {#if invoice?.lastError}
+                                        <Popover let:toggle>
+                                            <Link.Button on:click={toggle}>Details</Link.Button>
+                                            <svelte:fragment slot="tooltip">
+                                                The scheduled payment has failed.
+                                                <Link.Button on:click={() => retryPayment(invoice)}
+                                                    >Try again
+                                                </Link.Button>
+                                            </svelte:fragment>
+                                        </Popover>
                                     {/if}
-                                </ActionMenu.Root>
-                            </Popover>
-                        </Table.Cell>
-                    </Table.Row.Base>
-                {/each}
+                                </Layout.Stack>
+                            </Table.Cell>
+                            <Table.Cell column="amount" {root}>
+                                {formatCurrency(invoice.grossAmount)}
+                            </Table.Cell>
+                            <Table.Cell column="status" {root}>
+                                <Popover let:toggle placement="bottom-start" padding="none">
+                                    <Button text icon ariaLabel="more options" on:click={toggle}>
+                                        <Icon icon={IconDotsHorizontal} size="s" />
+                                    </Button>
+                                    <ActionMenu.Root slot="tooltip">
+                                        <!-- todo: add missing event -->
+                                        <ActionMenu.Item.Anchor
+                                            leadingIcon={IconExternalLink}
+                                            external
+                                            href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
+                                            View invoice
+                                        </ActionMenu.Item.Anchor>
+                                        <ActionMenu.Item.Anchor
+                                            leadingIcon={IconDownload}
+                                            href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
+                                            Download PDF
+                                        </ActionMenu.Item.Anchor>
+                                        {#if status === 'overdue' || status === 'failed' || status === 'abandoned'}
+                                            <ActionMenu.Item.Button
+                                                leadingIcon={IconRefresh}
+                                                on:click={() => {
+                                                    retryPayment(invoice);
+                                                    trackEvent(`click_retry_payment`, {
+                                                        from: 'button',
+                                                        source: 'billing_invoice_menu'
+                                                    });
+                                                }}>
+                                                Retry payment
+                                            </ActionMenu.Item.Button>
+                                        {/if}
+                                    </ActionMenu.Root>
+                                </Popover>
+                            </Table.Cell>
+                        </Table.Row.Base>
+                    {/each}
+                {/if}
             </Table.Root>
-            {#if invoiceList.total > limit}
+            {#if invoiceList.total >= limit}
                 <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                     <p class="text">Total results: {invoiceList.total}</p>
-                    <PaginationInline {limit} bind:offset total={invoiceList.total} hidePages />
+                    <PaginationInline
+                        {limit}
+                        hidePages
+                        bind:offset
+                        total={invoiceList.total}
+                        on:change={() => request()} />
                 </Layout.Stack>
             {/if}
         {:else}
