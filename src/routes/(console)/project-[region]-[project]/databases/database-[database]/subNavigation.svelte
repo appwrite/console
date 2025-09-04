@@ -1,10 +1,18 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { showCreate } from './store';
+    import { showCreate, databaseSubNavigationItems } from './store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
-    import { Icon, Sidebar, Navbar, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Icon,
+        Sidebar,
+        Navbar,
+        Layout,
+        Link,
+        Typography,
+        Divider
+    } from '@appwrite.io/pink-svelte';
     import {
         IconChevronDown,
         IconDatabase,
@@ -41,7 +49,9 @@
         sortedTables?.find((table: Models.Table) => table.$id === tableId)
     );
 
-    const isMainDatabaseScreen = $derived(page.route.id.endsWith('database-[database]'))
+    const isTablesScreen = $derived(page.route.id.endsWith('table-[table]'));
+
+    const isMainDatabaseScreen = $derived(page.route.id.endsWith('database-[database]'));
 
     async function loadTables() {
         tables = await sdk.forProject(region, project).tablesDB.listTables({
@@ -73,7 +83,7 @@
                 <Icon icon={IconDatabase} size="s" color="--fgcolor-neutral-weak" />
                 {data.database?.name}
             </a>
-            <div class="collection-content">
+            <div class="table-content">
                 {#if tables?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
                         {#each sortedTables as table, index}
@@ -96,7 +106,7 @@
                                             color={isSelected
                                                 ? '--fgcolor-neutral-tertiary'
                                                 : '--fgcolor-neutral-weak'} />
-                                        <span class="text collection-name" data-private
+                                        <span class="text table-name" data-private
                                             >{table.name}</span>
                                     </a>
                                 </li>
@@ -134,6 +144,34 @@
                     </Button>
                 </Layout.Stack>
             </div>
+
+            {#if isTablesScreen}
+                <Layout.Stack direction="column" gap="xxs" style="bottom: 1rem; position: sticky;">
+                    <div class="action-menu-divider">
+                        <Divider />
+                    </div>
+
+                    <ul
+                        style="margin-inline-start: -1.25rem"
+                        class="drop-list bottom-nav u-margin-block-start-4">
+                        {#each databaseSubNavigationItems as action}
+                            {@const isSelected = page.url.pathname.endsWith(action.href)}
+                            {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/${action.href}`}
+
+                            <Layout.Stack gap="s" direction="row" alignItems="center">
+                                <li class:is-selected={isSelected}>
+                                    <a
+                                        {href}
+                                        class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8">
+                                        <Icon size="s" icon={action.icon} />
+                                        <span class="text table-name">{action.title}</span>
+                                    </a>
+                                </li>
+                            </Layout.Stack>
+                        {/each}
+                    </ul>
+                </Layout.Stack>
+            {/if}
         </section>
     </Sidebar.Base>
 {:else if data?.database?.name && !isMainDatabaseScreen}
@@ -201,7 +239,7 @@
         color: var(--fgcolor-neutral-secondary);
     }
 
-    .collection-content {
+    .table-content {
         flex: 1;
         overflow-y: auto;
         overflow-x: hidden;
@@ -240,7 +278,7 @@
         font-size: var(--font-size-sm);
         color: var(--fgcolor-neutral-secondary);
 
-        &::before {
+        &:not(.bottom-nav)::before {
             content: '';
             right: 99%;
             top: 0.2rem;
@@ -250,37 +288,37 @@
         }
 
         // first item
-        &:has(li.is-first)::before {
+        &:not(.bottom-nav):has(li.is-first)::before {
             top: 0.8rem;
         }
 
         // last item
-        &:has(li.is-last)::before {
+        &:not(.bottom-nav):has(li.is-last)::before {
             bottom: 0.85rem;
         }
 
         // the only item
-        &:has(li.is-first.is-last)::before {
+        &:not(.bottom-nav):has(li.is-first.is-last)::before {
             top: 0.6rem;
             bottom: 0.6rem;
         }
 
         li {
+            width: 100%;
             overflow: hidden;
             position: relative;
             padding-inline-end: 0.5rem;
             margin-inline-start: 0.5rem;
         }
 
-        .is-selected,
-        li:hover {
-            width: 100%;
+        li:hover,
+        .is-selected {
             color: var(--fgcolor-neutral-primary);
             border-radius: var(--border-radius-xs, 4px);
             background: var(--bgcolor-neutral-secondary);
         }
 
-        .collection-name {
+        .table-name {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -311,5 +349,10 @@
         font-style: normal;
         font-weight: 400;
         line-height: 150%; /* 21px */
+    }
+
+    .action-menu-divider {
+        margin-inline: -1.2rem;
+        padding-block-end: 0.25rem;
     }
 </style>

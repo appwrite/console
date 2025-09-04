@@ -6,7 +6,14 @@
     export let href: string = null;
 </script>
 
-<Layout.Stack justifyContent="center" alignItems="center" direction="row" gap="xs" inline {...$$restProps}>
+<Layout.Stack
+    inline
+    gap="xs"
+    direction="row"
+    alignItems="center"
+    justifyContent="center"
+    {...$$restProps}
+>
     {#if href}
         <span style:position="relative">
             <Button.Anchor size="s" icon variant="text" {href} aria-label="page back">
