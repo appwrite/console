@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
-    import { DropList, GridItem1, CardContainer } from '$lib/components';
+    import { Button, InputText } from '$lib/elements/forms';
+    import { DropList, GridItem1, CardContainer, Modal } from '$lib/components';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import {
         Badge,
         Icon,
@@ -9,7 +10,8 @@
         Accordion,
         ActionMenu,
         Popover,
-        Layout
+        Layout,
+        Divider
     } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
@@ -21,7 +23,8 @@
         IconInfo,
         IconDotsHorizontal,
         IconInboxIn,
-        IconSwitchHorizontal
+        IconSwitchHorizontal,
+        IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import { Status, type Models } from '@appwrite.io/console';
@@ -33,7 +36,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { Modal } from '$lib/components';
+
     import { isSmallViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system';
     import { regions as regionsStore } from '$lib/stores/organization';
@@ -53,6 +56,17 @@
     let readOnlyInfoOpen = $state<Record<string, boolean>>({});
     let showUnarchiveModal = $state(false);
     let projectToUnarchive = $state<Models.Project | null>(null);
+    let showDeleteModal = $state(false);
+    let projectToDelete = $state<Models.Project | null>(null);
+    let deleteProjectName = $state<string | null>(null);
+    let deleteError = $state<string | null>(null);
+
+    function resetDeleteState() {
+        showDeleteModal = false;
+        projectToDelete = null;
+        deleteProjectName = null;
+        deleteError = null;
+    }
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -103,6 +117,12 @@
         showUnarchiveModal = true;
     }
 
+    function handleDeleteProject(project: Models.Project) {
+        projectToDelete = project;
+        deleteProjectName = null;
+        showDeleteModal = true;
+    }
+
     // Confirm unarchive action
     async function confirmUnarchive() {
         if (!projectToUnarchive) return;
@@ -139,6 +159,29 @@
     function cancelUnarchive() {
         showUnarchiveModal = false;
         projectToUnarchive = null;
+    }
+
+    async function confirmDelete() {
+        if (!projectToDelete) return;
+
+        try {
+            await sdk.forConsoleIn(projectToDelete.region).projects.delete({
+                projectId: projectToDelete.$id
+            });
+
+            await invalidate(Dependencies.ORGANIZATION);
+
+            trackEvent(Submit.ProjectDelete);
+            addNotification({
+                type: 'success',
+                message: `${projectToDelete.name} has been deleted`
+            });
+
+            resetDeleteState();
+        } catch (error) {
+            deleteError = error.message;
+            trackError(error, Submit.ProjectDelete);
+        }
     }
 
     function findRegion(project: Models.Project) {
@@ -226,6 +269,14 @@
                                                 leadingIcon={IconSwitchHorizontal}
                                                 on:click={() => handleMigrateProject(project)}
                                                 >Migrate project</ActionMenu.Item.Button>
+                                            <div class="action-menu-divider">
+                                                <Divider />
+                                            </div>
+                                            <ActionMenu.Item.Button
+                                                status="danger"
+                                                leadingIcon={IconTrash}
+                                                on:click={() => handleDeleteProject(project)}
+                                                >Delete project</ActionMenu.Item.Button>
                                         </ActionMenu.Root>
                                     </Popover>
                                 </div>
@@ -275,9 +326,50 @@
     </svelte:fragment>
 </Modal>
 
+<!-- Delete Confirmation Modal -->
+<Modal
+    size="s"
+    bind:show={showDeleteModal}
+    title="Delete project"
+    onSubmit={confirmDelete}
+    bind:error={deleteError}>
+    <svelte:fragment slot="description">
+        The archived project <strong>{projectToDelete?.name}</strong> will be deleted along with all
+        of its metadata, stats, and other resources.
+        <b>This action is irreversible.</b>
+    </svelte:fragment>
+
+    <InputText
+        label={`Enter "${projectToDelete?.name}" to continue`}
+        placeholder="Enter name"
+        id="delete-project-name"
+        autofocus
+        required
+        bind:value={deleteProjectName} />
+
+    <svelte:fragment slot="footer">
+        <Button
+            text
+            on:click={() => {
+                resetDeleteState();
+            }}>Cancel</Button>
+        <Button
+            submissionLoader
+            submit
+            disabled={(deleteProjectName ?? '') !== projectToDelete?.name}>
+            Delete
+        </Button>
+    </svelte:fragment>
+</Modal>
+
 <style>
     .archive-projects-margin-top {
         margin-top: 36px;
+    }
+    .action-menu-divider {
+        margin-inline: -1rem;
+        padding-block-start: 0.25rem;
+        padding-block-end: 0.25rem;
     }
 
     .archive-projects-margin {
