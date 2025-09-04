@@ -41,7 +41,7 @@ export type Option = {
         | 'Enum'
         | 'Relationship'
         | 'Point'
-        | 'Line'
+        | 'Linestring'
         | 'Polygon';
     sentenceName: string;
     component: Component;
@@ -53,7 +53,7 @@ export type Option = {
         | 'datetime'
         | 'relationship'
         | 'point'
-        | 'line'
+        | 'linestring'
         | 'polygon';
     create: (
         databaseId: string,
@@ -127,10 +127,10 @@ export const columnOptions: Option[] = [
         icon: IconGlobe
     },
     {
-        name: 'Line',
-        sentenceName: 'line',
+        name: 'Linestring',
+        sentenceName: 'linestring',
         component: Line,
-        type: 'line',
+        type: 'linestring',
         create: submitLine,
         update: updateLine,
         icon: IconGlobe

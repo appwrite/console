@@ -21,6 +21,16 @@ export function isString(column: Columns): column is Models.ColumnString {
     return column?.type === 'string';
 }
 
+export function isSpatialType(
+    column: Columns
+): column is Models.ColumnPoint | Models.ColumnLine | Models.ColumnPolygon {
+    if (!column) return false;
+
+    const spatialTypes = ['point', 'linestring', 'polygon'];
+
+    return spatialTypes.includes(column.type.toLowerCase());
+}
+
 /**
  * Returns select queries for all main and related fields in a table.
  */

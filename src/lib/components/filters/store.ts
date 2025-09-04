@@ -124,7 +124,19 @@ export enum ValidOperators {
     NotEqual = 'not equal',
     IsNotNull = 'is not null',
     IsNull = 'is null',
-    Contains = 'contains'
+    Contains = 'contains',
+    Crosses = 'crosses',
+    NotCrosses = 'not crosses',
+    DistanceEqual = 'distance equal',
+    DistanceNotEqual = 'distance not equal',
+    DistanceGreaterThan = 'distance greater than',
+    DistanceLessThan = 'distance less than',
+    Intersects = 'intersects',
+    NotIntersects = 'not intersects',
+    Overlaps = 'overlaps',
+    NotOverlaps = 'not overlaps',
+    Touches = 'touches',
+    NotTouches = 'not touches'
 }
 
 export enum ValidTypes {
@@ -134,7 +146,10 @@ export enum ValidTypes {
     Boolean = 'boolean',
     Datetime = 'datetime',
     Relationship = 'relationship',
-    Enum = 'enum'
+    Enum = 'enum',
+    Point = 'point',
+    Line = 'linestring',
+    Polygon = 'polygon'
 }
 
 const operatorsDefault = new Map<
@@ -184,7 +199,10 @@ const operatorsDefault = new Map<
                 ValidTypes.Integer,
                 ValidTypes.Double,
                 ValidTypes.Boolean,
-                ValidTypes.Enum
+                ValidTypes.Enum,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
             ]
         }
     ],
@@ -192,7 +210,15 @@ const operatorsDefault = new Map<
         ValidOperators.NotEqual,
         {
             query: Query.notEqual,
-            types: [ValidTypes.String, ValidTypes.Integer, ValidTypes.Double, ValidTypes.Boolean]
+            types: [
+                ValidTypes.String,
+                ValidTypes.Integer,
+                ValidTypes.Double,
+                ValidTypes.Boolean,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
+            ]
         }
     ],
     [
@@ -205,7 +231,10 @@ const operatorsDefault = new Map<
                 ValidTypes.Double,
                 ValidTypes.Boolean,
                 ValidTypes.Datetime,
-                ValidTypes.Relationship
+                ValidTypes.Relationship,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
             ],
             hideInput: true
         }
@@ -220,7 +249,10 @@ const operatorsDefault = new Map<
                 ValidTypes.Double,
                 ValidTypes.Boolean,
                 ValidTypes.Datetime,
-                ValidTypes.Relationship
+                ValidTypes.Relationship,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
             ],
             hideInput: true
         }
@@ -235,8 +267,107 @@ const operatorsDefault = new Map<
                 ValidTypes.Double,
                 ValidTypes.Boolean,
                 ValidTypes.Datetime,
-                ValidTypes.Enum
+                ValidTypes.Enum,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
             ]
+        }
+    ],
+    [
+        ValidOperators.Crosses,
+        {
+            query: (col: string, input: string | number | string[]) =>
+                `crosses(${col}, ${JSON.stringify(input)})`,
+            types: [ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.NotCrosses,
+        {
+            query: (col: string, input: string | number | string[]) =>
+                `notCrosses(${col}, ${JSON.stringify(input)})`,
+            types: [ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.DistanceEqual,
+        {
+            query: (col: string, input: string | number | string[]) =>
+                `distanceEqual(${col}, ${JSON.stringify(input)})`,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.DistanceNotEqual,
+        {
+            query: (col: string, input: string | number | string[]) =>
+                `distanceNotEqual(${col}, ${JSON.stringify(input)})`,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.DistanceGreaterThan,
+        {
+            query: (col: string, input: string | number | string[]) =>
+                `distanceGreaterThan(${col}, ${JSON.stringify(input)})`,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.DistanceLessThan,
+        {
+            query: (col: string, input: string | number | string[]) =>
+                `distanceLessThan(${col}, ${JSON.stringify(input)})`,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.Intersects,
+        {
+            query: (col: string, input: string | number | string[]) =>
+                `intersects(${col}, ${JSON.stringify(input)})`,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.NotIntersects,
+        {
+            query: (col: string, input: string | number | string[]) =>
+                `notIntersects(${col}, ${JSON.stringify(input)})`,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.Overlaps,
+        {
+            query: (col: string, input: string | number | string[]) =>
+                `overlaps(${col}, ${JSON.stringify(input)})`,
+            types: [ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.NotOverlaps,
+        {
+            query: (col: string, input: string | number | string[]) =>
+                `notOverlaps(${col}, ${JSON.stringify(input)})`,
+            types: [ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.Touches,
+        {
+            query: (col: string, input: string | number | string[]) =>
+                `touches(${col}, ${JSON.stringify(input)})`,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.NotTouches,
+        {
+            query: (col: string, input: string | number | string[]) =>
+                `notTouches(${col}, ${JSON.stringify(input)})`,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ]
 ]);

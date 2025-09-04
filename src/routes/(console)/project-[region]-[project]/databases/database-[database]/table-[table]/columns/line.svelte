@@ -7,82 +7,82 @@
         databaseId: string,
         tableId: string,
         key: string,
-        data: Partial<Models.ColumnBoolean>
+        data: Partial<Models.ColumnLine>
     ) {
-        await sdk.forProject(page.params.region, page.params.project).tablesDB.createBooleanColumn({
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.createLineColumn({
             databaseId,
             tableId,
             key,
             required: data.required,
-            xdefault: data.default,
-            array: data.array
+            xdefault: JSON.stringify(data?.default)
         });
     }
     export async function updateLine(
         databaseId: string,
         tableId: string,
-        data: Partial<Models.ColumnBoolean>,
+        data: Partial<Models.ColumnLine>,
         originalKey?: string
     ) {
-        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateBooleanColumn({
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateLineColumn({
             databaseId,
             tableId,
             key: originalKey,
             required: data.required,
-            xdefault: data.default,
+            xdefault: JSON.stringify(data?.default),
             newKey: data.key !== originalKey ? data.key : undefined
         });
     }
 </script>
 
 <script lang="ts">
-    import { InputSelect } from '$lib/elements/forms';
-
-    export let editing = false;
-    export let data: Partial<Models.ColumnBoolean> = {
+    export let data: Partial<Models.ColumnLine> = {
         required: false,
-        array: false,
-        default: null
+        default: [
+            [0, 0],
+            [0, 0]
+        ]
     };
 
     import { createConservative } from '$lib/helpers/stores';
-    import { Selector } from '@appwrite.io/pink-svelte';
+    import { Selector, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import InputLine from '$lib/elements/forms/inputLine.svelte';
 
     let savedDefault = data.default;
+    let showDefaultPointDummyData = false;
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
-            savedDefault = data.default;
+            savedDefault = data.default ?? [
+                [0, 0],
+                [0, 0]
+            ];
             data.default = null;
         } else {
-            data.default = savedDefault;
+            data.default = savedDefault ?? [
+                [0, 0],
+                [0, 0]
+            ];
         }
     }
 
+    function pushCoordinate() {
+        (data.default as number[][]).push([0, 0]);
+    }
+
     const {
-        stores: { required, array },
+        stores: { required },
         listen
-    } = createConservative<Partial<Models.ColumnBoolean>>({
+    } = createConservative<Partial<Models.ColumnLine>>({
         required: false,
-        array: false,
         ...data
     });
     $: listen(data);
 
-    $: handleDefaultState($required || $array);
+    $: handleDefaultState($required);
+
+    $: showDefaultPointDummyData = $required ? true : false;
 </script>
 
-<InputSelect
-    id="default"
-    label="Default value"
-    placeholder="Select a value"
-    disabled={data.required || data.array}
-    options={[
-        { label: 'NULL', value: null },
-        { label: 'True', value: true },
-        { label: 'False', value: false }
-    ]}
-    bind:value={data.default} />
 <Selector.Checkbox
     size="s"
     id="required"
@@ -90,10 +90,14 @@
     bind:checked={data.required}
     disabled={data.array}
     description="Indicate whether this column is required" />
-<Selector.Checkbox
-    size="s"
-    id="array"
-    label="Array"
-    bind:checked={data.array}
-    disabled={data.required || editing}
-    description="Indicate whether this column is an array. Defaults to an empty array." />
+
+<Layout.Stack>
+    <Layout.Stack direction="row" alignItems="center" gap="s">
+        <Typography.Text variant="m-600">Default</Typography.Text>
+        <Typography.Caption variant="400">Optional</Typography.Caption>
+    </Layout.Stack>
+    <InputLine
+        values={data.default as number[][]}
+        addCoordinate={pushCoordinate}
+        showDefaults={showDefaultPointDummyData} />
+</Layout.Stack>

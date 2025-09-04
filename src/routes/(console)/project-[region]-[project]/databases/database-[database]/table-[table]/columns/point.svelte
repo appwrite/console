@@ -35,7 +35,7 @@
 </script>
 
 <script lang="ts">
-    import { InputShape } from '$lib/elements/forms';
+    import { InputPoint } from '$lib/elements/forms';
 
     export let data: Partial<Models.ColumnPoint> = {
         required: false,
@@ -43,12 +43,10 @@
     };
 
     import { createConservative } from '$lib/helpers/stores';
-    import { Selector } from '@appwrite.io/pink-svelte';
+    import { Selector, Typography, Layout } from '@appwrite.io/pink-svelte';
 
     let savedDefault = data.default;
     let showDefaultPointDummyData = false;
-
-    const DEFAULT_STATE_DUMMY_DATA = [0, 0];
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
@@ -73,11 +71,6 @@
     $: showDefaultPointDummyData = $required ? true : false;
 </script>
 
-<InputShape
-    values={data.default as number[]}
-    defaultValues={DEFAULT_STATE_DUMMY_DATA}
-    showDefaults={showDefaultPointDummyData} />
-
 <Selector.Checkbox
     size="s"
     id="required"
@@ -85,3 +78,11 @@
     bind:checked={data.required}
     disabled={data.array}
     description="Indicate whether this column is required" />
+
+<Layout.Stack>
+    <Layout.Stack direction="row" alignItems="center" gap="s">
+        <Typography.Text variant="m-600">Default</Typography.Text>
+        <Typography.Caption variant="400">Optional</Typography.Caption>
+    </Layout.Stack>
+    <InputPoint values={data.default as number[]} showDefaults={showDefaultPointDummyData} />
+</Layout.Stack>
