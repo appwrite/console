@@ -5,7 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { EmailTemplateLocale, EmailTemplateType } from '@appwrite.io/console';
     import { project } from '../../store';
-    import { loadEmailTemplate } from './+page.svelte';
+    import { loadEmailTemplate } from './view.svelte';
     import { baseEmailTemplate, emailTemplate } from './store';
     import { Dialog, Layout, Alert } from '@appwrite.io/pink-svelte';
 

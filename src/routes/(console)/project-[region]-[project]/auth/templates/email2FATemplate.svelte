@@ -1,7 +1,7 @@
 <script lang="ts">
     import EmailTemplate from './emailTemplate.svelte';
     import LocaleOptions from './localeOptions.svelte';
-    import { loadEmailTemplate } from './+page.svelte';
+    import { loadEmailTemplate } from './view.svelte';
     import { page } from '$app/state';
     import { baseEmailTemplate, emailTemplate } from './store';
     import { addNotification } from '$lib/stores/notifications';

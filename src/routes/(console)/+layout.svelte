@@ -58,7 +58,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
 
-    export let data: LayoutData;
+    export let data: LayoutData & { currentOrgId?: string; allProjectsCount?: number };
     let emailBannerClosed = false;
 
     function kebabToSentenceCase(str: string) {

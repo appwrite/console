@@ -13,6 +13,12 @@
     </head>
     <body data-sveltekit-preload-data="hover" data-loading="true">
         <script>
+            // Check if this is an embedded route
+            if (window.location.pathname.includes('/embed/')) {
+                document.body.setAttribute('data-embed', 'true');
+                document.documentElement.setAttribute('data-embed', 'true');
+            }
+
             let themeInUse = 'auto';
             const appwrite = localStorage.getItem('appwrite');
 

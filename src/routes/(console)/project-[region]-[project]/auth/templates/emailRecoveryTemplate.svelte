@@ -2,7 +2,7 @@
     import EmailTemplate from './emailTemplate.svelte';
     import LocaleOptions from './localeOptions.svelte';
     import { baseEmailTemplate, emailTemplate } from './store';
-    import { loadEmailTemplate } from './+page.svelte';
+    import { loadEmailTemplate } from './view.svelte';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { Id } from '$lib/components';
