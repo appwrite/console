@@ -51,7 +51,7 @@ if (isCloud) {
         },
         show: true
     };
-        
+
     const timeHelperQueriesPromo: BottomModalAlertItem = {
         id: 'modal:time_helper_queries_announcement',
         src: {
@@ -71,7 +71,7 @@ if (isCloud) {
         },
         show: true
     };
-    listOfPromotions.push(inversionQueriesPromo,timeHelperQueriesPromo , tablesApiPromo);
+    listOfPromotions.push(inversionQueriesPromo, timeHelperQueriesPromo, tablesApiPromo);
 }
 
 export function addBottomModalAlerts() {
