@@ -122,10 +122,7 @@
                                     </ActionMenu.Item.Button>
                                 {/if}
                                 {#if rule.logs && rule.status === 'unverified'}
-                                    <div
-                                        style:margin-inline="-1rem"
-                                        style:padding-block-start="0.25rem"
-                                        style:padding-block-end="0.25rem">
+                                    <div class="action-menu-divider">
                                         <Divider />
                                     </div>
                                 {/if}
@@ -162,3 +159,11 @@
 {#if showLogs}
     <ViewLogsModal bind:show={showLogs} {selectedProxyRule} />
 {/if}
+
+<style>
+    .action-menu-divider {
+        margin-inline: -1rem;
+        padding-block-start: 0.25rem;
+        padding-block-end: 0.25rem;
+    }
+</style>
