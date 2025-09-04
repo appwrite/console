@@ -611,6 +611,9 @@
             return false;
         }
 
+        const parsedQueries = data.parsedQueries;
+        const filterQueries = parsedQueries.size ? data.parsedQueries.values() : [];
+
         $paginatedRowsLoading = true;
         const loadedRows = await sdk
             .forProject(page.params.region, page.params.project)
@@ -621,6 +624,7 @@
                     getCorrectOrderQuery(),
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
                     Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
+                    ...filterQueries, /* filter queries */
                     ...buildWildcardColumnsQuery($table)
                 ]
             });
