@@ -7,82 +7,90 @@
         databaseId: string,
         tableId: string,
         key: string,
-        data: Partial<Models.ColumnBoolean>
+        data: Partial<Models.ColumnPoint>
     ) {
-        await sdk.forProject(page.params.region, page.params.project).tablesDB.createBooleanColumn({
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.createPointColumn({
             databaseId,
             tableId,
             key,
             required: data.required,
-            xdefault: data.default,
-            array: data.array
+            xdefault: JSON.stringify(data?.default)
         });
     }
     export async function updatePoint(
         databaseId: string,
         tableId: string,
-        data: Partial<Models.ColumnBoolean>,
+        data: Partial<Models.ColumnPoint>,
         originalKey?: string
     ) {
-        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateBooleanColumn({
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.updatePointColumn({
             databaseId,
             tableId,
             key: originalKey,
             required: data.required,
-            xdefault: data.default,
+            xdefault: JSON.stringify(data?.default),
             newKey: data.key !== originalKey ? data.key : undefined
         });
     }
 </script>
 
 <script lang="ts">
-    import { InputSelect } from '$lib/elements/forms';
+    import { InputNumber } from '$lib/elements/forms';
 
     export let editing = false;
-    export let data: Partial<Models.ColumnBoolean> = {
+    export let data: Partial<Models.ColumnPoint> = {
         required: false,
-        array: false,
-        default: null
+        default: [0, 0]
     };
 
     import { createConservative } from '$lib/helpers/stores';
-    import { Selector } from '@appwrite.io/pink-svelte';
+    import { Selector, Layout } from '@appwrite.io/pink-svelte';
 
     let savedDefault = data.default;
+    let showDefaultPointDummyData = false;
+
+    const DEFAULT_STATE_DUMMY_DATA = [0, 0];
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
-            savedDefault = data.default;
+            savedDefault = data.default ?? [0, 0];
             data.default = null;
+            showDefaultPointDummyData = true;
         } else {
-            data.default = savedDefault;
+            data.default = savedDefault ?? [0, 0];
+            showDefaultPointDummyData = false;
         }
     }
 
     const {
-        stores: { required, array },
+        stores: { required },
         listen
-    } = createConservative<Partial<Models.ColumnBoolean>>({
+    } = createConservative<Partial<Models.ColumnPoint>>({
         required: false,
-        array: false,
         ...data
     });
     $: listen(data);
 
-    $: handleDefaultState($required || $array);
+    $: handleDefaultState($required);
 </script>
 
-<InputSelect
-    id="default"
-    label="Default value"
-    placeholder="Select a value"
-    disabled={data.required || data.array}
-    options={[
-        { label: 'NULL', value: null },
-        { label: 'True', value: true },
-        { label: 'False', value: false }
-    ]}
-    bind:value={data.default} />
+<Layout.Stack direction="row">
+    {#if showDefaultPointDummyData}
+        {#each DEFAULT_STATE_DUMMY_DATA}
+            <InputNumber id="default" placeholder="Enter value" disabled={true} />
+        {/each}
+    {:else}
+        {#each data.default as number[] as _, index}
+            <InputNumber
+                id="default"
+                placeholder="Enter value"
+                bind:value={data.default[index]}
+                disabled={data.required}
+                step={0.001} />
+        {/each}
+    {/if}
+</Layout.Stack>
+
 <Selector.Checkbox
     size="s"
     id="required"
@@ -90,10 +98,3 @@
     bind:checked={data.required}
     disabled={data.array}
     description="Indicate whether this column is required" />
-<Selector.Checkbox
-    size="s"
-    id="array"
-    label="Array"
-    bind:checked={data.array}
-    disabled={data.required || editing}
-    description="Indicate whether this column is an array. Defaults to an empty array." />

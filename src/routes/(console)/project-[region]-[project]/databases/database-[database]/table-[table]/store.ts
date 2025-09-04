@@ -15,6 +15,9 @@ export type Columns =
     | Models.ColumnIp
     | Models.ColumnString
     | Models.ColumnUrl
+    | Models.ColumnPoint
+    | Models.ColumnLine
+    | Models.ColumnPolygon
     | (Models.ColumnRelationship & { default?: never });
 
 type Table = Omit<Models.Table, 'columns'> & {

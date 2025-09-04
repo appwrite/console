@@ -45,7 +45,16 @@ export type Option = {
         | 'Polygon';
     sentenceName: string;
     component: Component;
-    type: 'string' | 'integer' | 'double' | 'boolean' | 'datetime' | 'relationship' | 'point' | 'line' | 'polygon';
+    type:
+        | 'string'
+        | 'integer'
+        | 'double'
+        | 'boolean'
+        | 'datetime'
+        | 'relationship'
+        | 'point'
+        | 'line'
+        | 'polygon';
     create: (
         databaseId: string,
         tableId: string,
