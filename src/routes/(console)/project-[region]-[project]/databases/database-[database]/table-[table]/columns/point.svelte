@@ -44,7 +44,7 @@
     };
 
     import { createConservative } from '$lib/helpers/stores';
-    import { Selector, Layout } from '@appwrite.io/pink-svelte';
+    import { Selector, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     let savedDefault = data.default;
     let showDefaultPointDummyData = false;
@@ -74,21 +74,27 @@
     $: handleDefaultState($required);
 </script>
 
-<Layout.Stack direction="row">
-    {#if showDefaultPointDummyData}
-        {#each DEFAULT_STATE_DUMMY_DATA}
-            <InputNumber id="default" placeholder="Enter value" disabled={true} />
-        {/each}
-    {:else}
-        {#each data.default as number[] as _, index}
-            <InputNumber
-                id="default"
-                placeholder="Enter value"
-                bind:value={data.default[index]}
-                disabled={data.required}
-                step={0.001} />
-        {/each}
-    {/if}
+<Layout.Stack>
+    <Layout.Stack direction="row" alignItems="center" gap="s">
+        <Typography.Text variant="m-600">Default</Typography.Text>
+        <Typography.Caption variant="400">Optional</Typography.Caption>
+    </Layout.Stack>
+    <Layout.Stack direction="row">
+        {#if showDefaultPointDummyData}
+            {#each DEFAULT_STATE_DUMMY_DATA}
+                <InputNumber id="default" placeholder="Enter value" disabled={true} />
+            {/each}
+        {:else}
+            {#each data.default as number[] as _, index}
+                <InputNumber
+                    id="default"
+                    placeholder="Enter value"
+                    bind:value={data.default[index]}
+                    disabled={data.required}
+                    step={0.001} />
+            {/each}
+        {/if}
+    </Layout.Stack>
 </Layout.Stack>
 
 <Selector.Checkbox
