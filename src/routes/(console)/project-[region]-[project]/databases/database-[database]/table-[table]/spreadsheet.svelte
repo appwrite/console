@@ -336,6 +336,7 @@
             url.searchParams.set('query', mapToQueryParams(parsedQueries));
         }
 
+        // save > navigate > restore!
         spreadsheetContainer.saveGridSheetScroll();
         await goto(`${url.pathname}${url.search}`);
         spreadsheetContainer.restoreGridSheetScroll();
