@@ -18,6 +18,7 @@
     import { page } from '$app/stores';
     import type { Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     export let showHeader = true;
     export let showFooter = true;
@@ -107,7 +108,7 @@
             isInDatabasesRoute(navigation.from.route) && !isInDatabasesRoute(navigation.to.route);
 
         if (isEnteringDatabase) {
-            state = 'icons';
+            state = $isTabletViewport ? 'closed' : 'icons';
         } else if (isLeavingDatabase) {
             state = getSidebarState();
             $noWidthTransition = false;
