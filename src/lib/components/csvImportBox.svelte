@@ -53,7 +53,6 @@
         addNotification({
             type,
             message,
-            isHtml: true,
             buttons:
                 isSuccess && table !== page.params.table
                     ? [{ name: 'View rows', method: () => goto(url) }]

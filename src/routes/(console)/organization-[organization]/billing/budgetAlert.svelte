@@ -57,8 +57,7 @@
 
             addNotification({
                 type: 'success',
-                isHtml: true,
-                message: `<span> ${alerts.length === 0 ? 'Budget alerts removed from' : alerts.length > 1 ? `Budget alerts added to` : 'A budget alert has been added to'} <b>${organization.name}</b> </span>`
+                message: `${alerts.length === 0 ? 'Budget alerts removed from' : alerts.length > 1 ? `Budget alerts added to` : 'A budget alert has been added to'} ${organization.name}`
             });
             trackEvent(Submit.BudgetAlertsUpdate, {
                 alerts
