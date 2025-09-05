@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isTabletViewport } from '$lib/stores/viewport';
     import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
     import { Button, Icon, Layout } from '@appwrite.io/pink-svelte';
     import type { Snippet } from 'svelte';
@@ -17,8 +17,6 @@
     } & HTMLAttributes<HTMLDivElement> = $props();
 
     const buttonSize = $derived(collapsed ? 'xs' : 's');
-    const currentLineHeight = $derived(collapsed ? '130%' : '140%');
-    const currentLetterSpacing = $derived(collapsed ? '0' : '-0.144px');
     const currentFontSize = $derived(collapsed ? 'var(--font-size-l)' : 'var(--font-size-xxl)');
 </script>
 
@@ -29,18 +27,22 @@
     alignItems="center"
     justifyContent="center"
     {...restProps}>
-    {#if href && !$isSmallViewport}
+    {#if href}
         <span style:position="relative">
-            <Button.Anchor size={buttonSize} icon variant="text" {href} aria-label="page back">
+            <Button.Anchor
+                {href}
+                icon
+                variant="text"
+                size={buttonSize}
+                aria-label="page back"
+                disabled={$isTabletViewport}
+                style={$isTabletViewport ? 'visibility: hidden' : ''}
+            >
                 <Icon icon={IconChevronLeft} />
             </Button.Anchor>
         </span>
     {/if}
-    <h1
-        class="animated-title"
-        style:font-size={currentFontSize}
-        style:line-height={currentLineHeight}
-        style:letter-spacing={currentLetterSpacing}>
+    <h1 class="animated-title" style:font-size={currentFontSize}>
         {@render children?.()}
     </h1>
 </Layout.Stack>

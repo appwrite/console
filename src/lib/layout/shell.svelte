@@ -305,11 +305,10 @@
             }
         }
 
-        @media (max-width: 768px) {
-            .main-content:not(:has(.wide-screen-wrapper)) {
-                width: 100%;
-                position: fixed;
-            }
+        @media (min-width: 1024px) {
+          :global(.console-container) {
+            padding-left: 45px; /* 255px - 210px */
+          }
         }
     }
 

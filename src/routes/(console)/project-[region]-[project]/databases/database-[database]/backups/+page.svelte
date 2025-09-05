@@ -177,7 +177,7 @@
     });
 </script>
 
-<Container size="xxl" databasesMainScreen>
+<Container size="xxl">
     <div class="u-flex u-gap-32 u-flex-vertical-mobile">
         {#if !isDisabled}
             <div class="u-flex-vertical u-gap-16 policies-holder-card">

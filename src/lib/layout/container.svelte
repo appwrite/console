@@ -5,12 +5,8 @@
 
     let {
         expanded = false,
-        slotSpacing = false,
         overlapCover = false,
-        paddingInlineEnd = true,
-        paddingInlineEndDouble = false,
         insideSideSheet = false,
-        databasesScreen = false,
         databasesMainScreen = false,
         expandHeightButton = false,
         size = null,
@@ -18,12 +14,8 @@
         ...restProps
     }: {
         expanded?: boolean;
-        slotSpacing?: boolean;
         overlapCover?: boolean;
-        paddingInlineEnd?: boolean;
-        paddingInlineEndDouble?: boolean;
         insideSideSheet?: boolean;
-        databasesScreen?: boolean;
         databasesMainScreen?: boolean;
         expandHeightButton?: boolean;
         children?: Snippet;
@@ -41,14 +33,11 @@
     <div
         {style}
         class:expanded
-        class:slotSpacing
         class:insideSideSheet
-        class:databasesScreen
         class:expandHeightButton
         class:databasesMainScreen
         class="console-container"
-        class:paddingInlineEndDouble
-        class:paddingInlineEnd={!paddingInlineEnd}>
+    >
         <Layout.Stack gap="l">
             {@render children?.()}
         </Layout.Stack>
@@ -100,39 +89,29 @@
                     }
                 }
             }
-
-            &.slotSpacing {
-                padding-block-start: var(--base-32) !important;
-            }
-        }
-
-        &.paddingInlineEnd {
-            @media (min-width: 1024px) {
-                padding-inline-end: 2.75rem !important;
-            }
-        }
-
-        &.paddingInlineEndDouble {
-            @media (min-width: 1024px) {
-                padding-inline-end: calc(2 * 2.75rem) !important;
-            }
-        }
-
-        &.databasesScreen {
-            @media (min-width: 1440px) {
-                min-width: 1070px;
-                /*max-width: 1144px;*/
-            }
-
-            @media (min-width: 1728px) {
-                min-width: 1070px;
-                padding-inline: 196px !important;
-            }
         }
 
         &.databasesMainScreen {
+            @media (min-width: 360px) {
+                margin-inline: 1rem;
+            }
+
+            @media (min-width: 1024px) {
+                margin-inline: auto;
+                max-width: 1000px;
+            }
+
+            @media (min-width: 1280px) {
+                margin-inline: auto;
+                max-width: 1144px;
+            }
+
             @media (min-width: 1440px) {
                 max-width: 1200px;
+            }
+
+            @media (min-width: 1728px) {
+                max-width: 1245px;
             }
         }
 
