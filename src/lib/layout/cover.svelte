@@ -8,6 +8,7 @@
     export let animate: boolean = false;
     export let collapsed: boolean = false;
     export let databasesMainScreen: boolean = false;
+    export let adjustForSpreadsheet: boolean = false;
 
     let isAnimating = false;
     let animationTimeout: ReturnType<typeof setTimeout>;
@@ -34,6 +35,7 @@
 <div
     class:animate
     class:expanded
+    class:adjustForSpreadsheet
     class:collapsed={animate && collapsed}
     class="top-cover-console"
     style:margin-top={marginTop}
@@ -45,6 +47,7 @@
         {style}
         class:expanded
         class:databasesMainScreen
+        class:adjustForSpreadsheet
         class:collapsed={animate && collapsed}
         class:animating={isAnimating}>
         <Layout.Stack direction="row" alignItems="baseline">
@@ -79,6 +82,10 @@
 
         &.collapsed {
             border-bottom-color: var(--border-neutral, #2d2d31);
+        }
+
+        &.adjustForSpreadsheet {
+            padding-left: calc(190px + 3rem);
         }
     }
 
@@ -126,6 +133,10 @@
             @media (min-width: 1440px) {
                 max-width: 1200px;
             }
+        }
+
+        &.adjustForSpreadsheet {
+            padding-left: 2.5px;
         }
     }
 

@@ -49,7 +49,7 @@
         sortedTables?.find((table: Models.Table) => table.$id === tableId)
     );
 
-    const isTablesScreen = $derived(page.route.id.endsWith('table-[table]'));
+    const isTablesScreen = $derived(page.route.id.includes('table-[table]'));
 
     const isMainDatabaseScreen = $derived(page.route.id.endsWith('database-[database]'));
 

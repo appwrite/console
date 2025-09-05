@@ -13,7 +13,7 @@
     }: {
         href?: string | null;
         collapsed?: boolean;
-        children: Snippet;
+        children?: Snippet;
     } & HTMLAttributes<HTMLDivElement> = $props();
 
     const buttonSize = $derived(collapsed ? 'xs' : 's');
@@ -41,7 +41,7 @@
         style:font-size={currentFontSize}
         style:line-height={currentLineHeight}
         style:letter-spacing={currentLetterSpacing}>
-        {@render children()}
+        {@render children?.()}
     </h1>
 </Layout.Stack>
 
@@ -62,5 +62,6 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         max-width: 100%;
+        line-height: 130%;
     }
 </style>
