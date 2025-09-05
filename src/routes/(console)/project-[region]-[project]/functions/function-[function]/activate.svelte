@@ -17,10 +17,10 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.updateFunctionDeployment(
-                    selectedDeployment.resourceId,
-                    selectedDeployment.$id
-                );
+                .functions.updateFunctionDeployment({
+                    functionId: selectedDeployment.resourceId,
+                    deploymentId: selectedDeployment.$id
+                });
 
             showActivate = false;
             addNotification({

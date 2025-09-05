@@ -36,7 +36,7 @@
 
             const response = await sdk
                 .forProject(page.params.region, page.params.project)
-                .messaging.createSms(
+                .messaging.createSMS({
                     messageId,
                     content,
                     topics,
@@ -44,7 +44,7 @@
                     targets,
                     draft,
                     scheduledAt
-                );
+                });
             let message = '';
             switch (response.status) {
                 case 'draft':

@@ -29,9 +29,10 @@
         showBatchDeletion = false;
 
         const promises = selectedRows.map((logId) =>
-            sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.deleteLog(page.params.site, logId)
+            sdk.forProject(page.params.region, page.params.project).sites.deleteLog({
+                siteId: page.params.site,
+                logId
+            })
         );
         try {
             await Promise.all(promises);
@@ -74,6 +75,8 @@
                         {#key column.id}
                             <Id value={log.$id}>{log.$id}</Id>
                         {/key}
+                    {:else if column.id === 'deploymentId'}
+                        <Id value={log.deploymentId}>{log.deploymentId}</Id>
                     {:else if column.id === 'requestMethod'}
                         <Typography.Code size="m">
                             {log.requestMethod}

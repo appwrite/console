@@ -43,7 +43,12 @@
         try {
             const content = await sdk
                 .forProject(page.params.region, page.params.project)
-                .vcs.getRepositoryContents($installation.$id, $repository.id, currentPath, branch);
+                .vcs.getRepositoryContents({
+                    installationId: $installation.$id,
+                    providerRepositoryId: $repository.id,
+                    providerRootDirectory: currentPath,
+                    providerReference: branch
+                });
             directories[0].fileCount = content.contents?.length ?? 0;
             directories[0].children = content.contents
                 .filter((e) => e.isDirectory)
@@ -83,7 +88,12 @@
             try {
                 const content = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .vcs.getRepositoryContents($installation.$id, $repository.id, path, branch);
+                    .vcs.getRepositoryContents({
+                        installationId: $installation.$id,
+                        providerRepositoryId: $repository.id,
+                        providerRootDirectory: path,
+                        providerReference: branch
+                    });
 
                 const fileCount = content.contents?.length ?? 0;
                 const contentDirectories = content.contents.filter((e) => e.isDirectory);
@@ -101,12 +111,15 @@
                 }));
                 const runtime = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .vcs.createRepositoryDetection(
-                        $installation.$id,
-                        $repository.id,
-                        product === 'sites' ? VCSDetectionType.Framework : VCSDetectionType.Runtime,
-                        path
-                    );
+                    .vcs.createRepositoryDetection({
+                        installationId: $installation.$id,
+                        providerRepositoryId: $repository.id,
+                        type:
+                            product === 'sites'
+                                ? VCSDetectionType.Framework
+                                : VCSDetectionType.Runtime,
+                        providerRootDirectory: path
+                    });
                 if (product === 'sites') {
                     currentDir.children.forEach((dir) => {
                         dir.thumbnailUrl = $iconPath(runtime.framework, 'color');

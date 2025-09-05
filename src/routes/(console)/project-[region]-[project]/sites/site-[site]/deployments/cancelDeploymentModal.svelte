@@ -17,10 +17,10 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .sites.updateDeploymentStatus(
-                    selectedDeployment.resourceId,
-                    selectedDeployment.$id
-                );
+                .sites.updateDeploymentStatus({
+                    siteId: selectedDeployment.resourceId,
+                    deploymentId: selectedDeployment.$id
+                });
             await invalidate(Dependencies.SITE);
             showCancel = false;
             addNotification({

@@ -1,0 +1,23 @@
+<script lang="ts">
+    import { Container } from '$lib/layout';
+    import { table } from '../store';
+    import DangerZone from './dangerZone.svelte';
+    import DisplayName from './displayName.svelte';
+    import UpdateName from './updateName.svelte';
+    import UpdatePermissions from './updatePermissions.svelte';
+    import UpdateSecurity from './updateSecurity.svelte';
+    import UpdateStatus from './updateStatus.svelte';
+</script>
+
+<div class="wide-screen-wrapper databases-spreadsheet">
+    <Container expanded slotSpacing databasesScreen>
+        {#if $table}
+            <UpdateStatus />
+            <UpdateName />
+            <DisplayName />
+            <UpdatePermissions />
+            <UpdateSecurity />
+            <DangerZone />
+        {/if}
+    </Container>
+</div>

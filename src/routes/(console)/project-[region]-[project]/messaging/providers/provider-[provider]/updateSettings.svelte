@@ -78,140 +78,122 @@
                 promises.push(promise);
             }
             await Promise.all(promises);
+
             let response: Models.Provider;
+
             switch (provider) {
                 case Providers.Twilio:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateTwilioProvider(
+                        .messaging.updateTwilioProvider({
                             providerId,
-                            undefined,
-                            undefined,
-                            formValues['accountSid'],
-                            formValues['authToken'],
-                            formValues['from']
-                        );
+                            accountSid: formValues['accountSid'],
+                            authToken: formValues['authToken'],
+                            from: formValues['from']
+                        });
                     break;
                 case Providers.Msg91:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateMsg91Provider(
+                        .messaging.updateMsg91Provider({
                             providerId,
-                            undefined,
-                            undefined,
-                            formValues['templateId'],
-                            formValues['senderId'],
-                            formValues['authKey']
-                        );
+                            templateId: formValues['templateId'],
+                            senderId: formValues['senderId'],
+                            authKey: formValues['authKey']
+                        });
                     break;
                 case Providers.Telesign:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateTelesignProvider(
+                        .messaging.updateTelesignProvider({
                             providerId,
-                            undefined,
-                            undefined,
-                            formValues['customerId'],
-                            formValues['apiKey'],
-                            formValues['from']
-                        );
+                            customerId: formValues['customerId'],
+                            apiKey: formValues['apiKey'],
+                            from: formValues['from']
+                        });
                     break;
                 case Providers.Textmagic:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateTextmagicProvider(
+                        .messaging.updateTextmagicProvider({
                             providerId,
-                            undefined,
-                            undefined,
-                            formValues['username'],
-                            formValues['apiKey'],
-                            formValues['from']
-                        );
+                            username: formValues['username'],
+                            apiKey: formValues['apiKey'],
+                            from: formValues['from']
+                        });
                     break;
                 case Providers.Vonage:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateVonageProvider(
+                        .messaging.updateVonageProvider({
                             providerId,
-                            undefined,
-                            undefined,
-                            formValues['apiKey'],
-                            formValues['apiSecret'],
-                            formValues['from']
-                        );
+                            apiKey: formValues['apiKey'],
+                            apiSecret: formValues['apiSecret'],
+                            from: formValues['from']
+                        });
                     break;
                 case Providers.Mailgun:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateMailgunProvider(
+                        .messaging.updateMailgunProvider({
                             providerId,
-                            undefined,
-                            formValues['apiKey'],
-                            formValues['domain'],
-                            formValues['isEuRegion'],
-                            undefined,
-                            formValues['fromName'] || undefined,
-                            formValues['fromEmail'],
-                            formValues['replyToName'] || undefined,
-                            formValues['replyToEmail'] || undefined
-                        );
+                            apiKey: formValues['apiKey'],
+                            domain: formValues['domain'],
+                            isEuRegion: formValues['isEuRegion'],
+                            fromName: formValues['fromName'] || undefined,
+                            fromEmail: formValues['fromEmail'],
+                            replyToName: formValues['replyToName'] || undefined,
+                            replyToEmail: formValues['replyToEmail'] || undefined
+                        });
                     break;
                 case Providers.Sendgrid:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateSendgridProvider(
+                        .messaging.updateSendgridProvider({
                             providerId,
-                            undefined,
-                            undefined,
-                            formValues['apiKey'],
-                            formValues['fromName'] || undefined,
-                            formValues['fromEmail'],
-                            formValues['replyToName'] || undefined,
-                            formValues['replyToEmail'] || undefined
-                        );
+                            apiKey: formValues['apiKey'],
+                            fromName: formValues['fromName'] || undefined,
+                            fromEmail: formValues['fromEmail'],
+                            replyToName: formValues['replyToName'] || undefined,
+                            replyToEmail: formValues['replyToEmail'] || undefined
+                        });
                     break;
                 case Providers.SMTP:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateSmtpProvider(
+                        .messaging.updateSMTPProvider({
                             providerId,
-                            undefined,
-                            formValues['host'],
-                            formValues['port'] || undefined,
-                            formValues['username'] || undefined,
-                            formValues['password'] || undefined,
-                            formValues['encryption'],
-                            formValues['autoTLS'],
-                            undefined,
-                            formValues['fromName'] || undefined,
-                            formValues['fromEmail'],
-                            formValues['replyToName'] || undefined,
-                            formValues['replyToEmail'] || undefined
-                        );
+                            host: formValues['host'],
+                            port: formValues['port'] || undefined,
+                            username: formValues['username'] || undefined,
+                            password: formValues['password'] || undefined,
+                            encryption: formValues['encryption'],
+                            autoTLS: formValues['autoTLS'],
+                            fromName: formValues['fromName'] || undefined,
+                            fromEmail: formValues['fromEmail'],
+                            replyToName: formValues['replyToName'] || undefined,
+                            replyToEmail: formValues['replyToEmail'] || undefined
+                        });
                     break;
                 case Providers.FCM:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateFcmProvider(
+                        .messaging.updateFCMProvider({
                             providerId,
-                            undefined,
-                            undefined,
-                            JSON.parse(formValues['serviceAccountJSON'])
-                        );
+                            serviceAccountJSON: JSON.parse(formValues['serviceAccountJSON'])
+                        });
                     break;
                 case Providers.APNS:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateApnsProvider(
+                        .messaging.updateAPNSProvider({
                             providerId,
-                            undefined,
-                            undefined,
-                            formValues['authKey'],
-                            formValues['authKeyId'],
-                            formValues['teamId'],
-                            formValues['bundleId'],
-                            formValues['sandbox']
-                        );
+                            authKey: formValues['authKey'],
+                            authKeyId: formValues['authKeyId'],
+                            teamId: formValues['teamId'],
+                            bundleId: formValues['bundleId'],
+                            sandbox: formValues['sandbox']
+                        });
                     break;
             }
             originalfiles = files;

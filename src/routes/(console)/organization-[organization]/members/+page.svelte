@@ -47,21 +47,18 @@
     // Calculate if button should be disabled and tooltip should show
     $: memberCount = data.organizationMembers?.total ?? 0;
     $: isFreeWithMembers = $organization?.billingPlan === BillingPlan.FREE && memberCount >= 1;
-    $: isButtonDisabled = isCloud
-        ? isFreeWithMembers || !$currentPlan?.addons?.seats?.supported
-        : false;
+    $: isButtonDisabled = isCloud ? isFreeWithMembers : false;
 
     const resend = async (member: Models.Membership) => {
         try {
-            await sdk.forConsole.teams.createMembership(
-                $organization.$id,
-                member.roles,
-                member.userEmail,
-                undefined,
-                undefined,
-                `${page.url.origin}${base}/invite`,
-                member.userName || undefined
-            );
+            await sdk.forConsole.teams.createMembership({
+                teamId: $organization.$id,
+                roles: member.roles,
+                email: member.userEmail,
+                url: `${page.url.origin}${base}/invite`,
+                name: member.userName || undefined
+            });
+
             addNotification({
                 type: 'success',
                 message: `Invite has been sent to ${member.userEmail}`

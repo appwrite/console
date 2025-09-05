@@ -17,9 +17,9 @@
 
     const handleSubmit = async () => {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .functions.delete(projectFunction.$id);
+            await sdk.forProject(page.params.region, page.params.project).functions.delete({
+                functionId: projectFunction.$id
+            });
             showDelete = false;
             addNotification({
                 type: 'success',

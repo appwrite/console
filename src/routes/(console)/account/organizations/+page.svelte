@@ -27,14 +27,14 @@
     let addOrganization = false;
 
     const getMemberships = async (teamId: string) => {
-        const memberships = await sdk.forConsole.teams.listMemberships(teamId);
+        const memberships = await sdk.forConsole.teams.listMemberships({ teamId });
         return memberships.memberships.map((team) => team.userName || team.userEmail);
     };
 
     function isCloudOrg(
         data: Partial<Models.TeamList<Models.Preferences>> | Organization
     ): data is Organization {
-        return isCloud && 'billingPlan' in data ? true : false;
+        return isCloud && 'billingPlan' in data;
     }
 
     function createOrg() {

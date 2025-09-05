@@ -20,9 +20,12 @@
     import { isCloud } from '$lib/system';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { currentPlan, newOrgModal } from '$lib/stores/organization';
+    import { currentPlan, newOrgModal, organization } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import type { Models } from '@appwrite.io/console';
+    import { type Models, Query } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
+    import { page } from '$app/state';
+    import { BillingPlan } from '$lib/constants';
 
     type Organization = {
         name: string;
@@ -63,15 +66,15 @@
         }
     } = createMenu();
 
-    let isLoadingProjects = true;
+    let isLoadingProjects = false;
     let loadedProjects: Models.ProjectList = { total: 0, projects: [] };
 
     export let organizations: Organization[] = [];
     export let currentProject: Models.Project | null = null;
-    export let projects: Promise<Models.ProjectList> = Promise.resolve(loadedProjects);
 
     let projectsBottomSheetOpen = false;
     let organisationBottomSheetOpen = false;
+    let projectsBottomSheet: Promise<SheetMenu | null> = null;
 
     function createOrg() {
         trackEvent(Click.OrganizationClickCreate, { source: 'breadcrumbs' });
@@ -99,13 +102,27 @@
         }
     };
 
-    async function createProjectsBottomSheet(organization: Organization): Promise<SheetMenu> {
+    async function createProjectsBottomSheet(
+        organization: Organization
+    ): Promise<SheetMenu | null> {
+        if (!isOnProjects) return null;
+
         isLoadingProjects = true;
+
         // null on non-org/project path like `onboarding`.
-        loadedProjects = (await projects) ?? loadedProjects;
+        loadedProjects =
+            (await sdk.forConsole.projects.list({
+                queries: [
+                    Query.equal('teamId', organizationId ?? page.data.currentOrgId),
+                    Query.limit(5),
+                    Query.orderDesc('$updatedAt')
+                ]
+            })) ?? loadedProjects;
+
         for (const project of loadedProjects.projects) {
             project.region ??= 'default';
         }
+
         isLoadingProjects = false;
 
         const createProjectItem = {
@@ -185,8 +202,6 @@
 
     $: selectedOrg = organizations.find((org) => org.isSelected);
 
-    $: projectsBottomSheet = createProjectsBottomSheet(selectedOrg);
-
     $: organizationsBottomSheet = createOrganizationBottomSheet(selectedOrg);
 
     $: correctPlanName =
@@ -198,6 +213,24 @@
             : selectedOrg?.tierName; // fallback
 
     $: derivedKey = `${selectedOrg?.$id}-${currentProject?.$id}`;
+
+    $: organizationId = currentProject?.teamId;
+
+    $: isOnProjects = page.route.id.includes('project-[region]-[project]');
+
+    $: shouldReloadProjects = isLoadingProjects
+        ? false
+        : currentProject && loadedProjects.projects.length
+          ? loadedProjects.projects[0].teamId != currentProject.teamId
+          : !loadedProjects.projects.length;
+
+    $: if (shouldReloadProjects) {
+        projectsBottomSheet = createProjectsBottomSheet(selectedOrg);
+    }
+
+    let badgeType: 'success' | undefined;
+    $: badgeType =
+        $organization && $organization.billingPlan !== BillingPlan.FREE ? 'success' : undefined;
 </script>
 
 <svelte:window on:resize={onResize} />
@@ -212,10 +245,13 @@
                 use:melt={$triggerOrganizations}
                 aria-label="Open organizations tab">
                 <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
-                <span class="not-mobile"
+                <span class="not-mobile" style="padding-inline-start: 2px"
                     >{#if correctPlanName}<Badge
+                            size="xs"
                             variant="secondary"
-                            content={correctPlanName} />{/if}</span>
+                            type={badgeType}
+                            content={correctPlanName} />
+                    {/if}</span>
                 <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
             </button>
         {:else}
@@ -229,7 +265,11 @@
                 <span class="orgName" class:noProjects={!currentProject}
                     >{selectedOrg?.name ?? 'Organization'}</span>
                 <span class="not-mobile"
-                    ><Badge variant="secondary" content={correctPlanName ?? ''} /></span>
+                    ><Badge
+                        size="xs"
+                        variant="secondary"
+                        type={badgeType}
+                        content={correctPlanName ?? ''} /></span>
                 <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
             </button>
         {/if}
@@ -380,7 +420,9 @@
     <BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet} />
 
     {#await projectsBottomSheet then menu}
-        <BottomSheet.Menu bind:isOpen={projectsBottomSheetOpen} {menu} />
+        {#if menu}
+            <BottomSheet.Menu bind:isOpen={projectsBottomSheetOpen} {menu} />
+        {/if}
     {/await}
 {/key}
 
@@ -446,6 +488,7 @@
         border-radius: var(--border-radius-S, 8px);
         background: var(--overlay-neutral-hover, rgba(25, 25, 28, 0.03));
     }
+
     .trigger {
         display: inline-flex;
         align-items: center;

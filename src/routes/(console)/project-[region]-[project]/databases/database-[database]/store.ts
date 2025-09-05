@@ -2,12 +2,13 @@ import { page } from '$app/stores';
 import type { Column } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
+import { IconChartBar, IconCloudUpload, IconCog } from '@appwrite.io/pink-icons-svelte';
 
 export const database = derived(page, ($page) => $page.data.database as Models.Database);
 export const showCreate = writable(false);
 
-export const columns = writable<Column[]>([
-    { id: '$id', title: 'Collection ID', type: 'string', width: 200 },
+export const tableViewColumns = writable<Column[]>([
+    { id: '$id', title: 'Table ID', type: 'string', width: 200 },
     { id: 'name', title: 'Name', type: 'string', width: { min: 120 } },
     { id: '$createdAt', title: 'Created', type: 'datetime', width: { min: 120 } },
     { id: '$updatedAt', title: 'Updated', type: 'datetime', width: { min: 120 } }
@@ -28,4 +29,10 @@ export const customRetainingOptions = [
     { label: 'Days', value: 1, max: 30 },
     { label: 'Weeks', value: 7, max: 4 },
     { label: 'Months', value: 30, max: 12 }
+];
+
+export const databaseSubNavigationItems = [
+    { title: 'Backups', href: 'backups', icon: IconCloudUpload },
+    { title: 'Usage', href: 'usage', icon: IconChartBar },
+    { title: 'Settings', href: 'settings', icon: IconCog }
 ];

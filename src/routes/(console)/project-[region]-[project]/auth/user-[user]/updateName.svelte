@@ -17,9 +17,10 @@
 
     async function updateName() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .users.updateName($user.$id, userName);
+            await sdk.forProject(page.params.region, page.params.project).users.updateName({
+                userId: $user.$id,
+                name: userName
+            });
             await invalidate(Dependencies.USER);
             addNotification({
                 message: 'Name has been updated',

@@ -16,6 +16,7 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import Scopes from '../api-keys/scopes.svelte';
     import { InteractiveText, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { getEffectiveScopes } from '../api-keys/scopes.svelte';
 
     export let key: Models.DevKey | Models.Key;
     export let keyType: 'api' | 'dev' = 'api';
@@ -42,20 +43,23 @@
 
     async function updateName() {
         try {
-            isApiKey
-                ? await sdk.forConsole.projects.updateKey(
-                      $project.$id,
-                      key.$id,
-                      name,
-                      scopes,
-                      key.expire
-                  )
-                : await sdk.forConsole.projects.updateDevKey(
-                      $project.$id,
-                      key.$id,
-                      name,
-                      key.expire
-                  );
+            if (isApiKey) {
+                await sdk.forConsole.projects.updateKey({
+                    projectId: $project.$id,
+                    keyId: key.$id,
+                    name,
+                    scopes,
+                    expire: key.expire
+                });
+            } else {
+                await sdk.forConsole.projects.updateDevKey({
+                    projectId: $project.$id,
+                    keyId: key.$id,
+                    name,
+                    expire: key.expire
+                });
+            }
+
             await invalidate(dependency);
             trackEvent(event);
             addNotification({
@@ -73,13 +77,13 @@
 
     async function updateScopes() {
         try {
-            await sdk.forConsole.projects.updateKey(
-                $project.$id,
-                key.$id,
-                key.name,
+            await sdk.forConsole.projects.updateKey({
+                projectId: $project.$id,
+                keyId: key.$id,
+                name: key.name,
                 scopes,
-                key.expire
-            );
+                expire: key.expire
+            });
             await invalidate(Dependencies.KEY);
             trackEvent(Submit.KeyUpdateScopes, {
                 scopes
@@ -159,6 +163,8 @@
     {#if isApiKey}
         <Form onSubmit={updateScopes}>
             {@const apiKey = asApiKey(key)}
+            {@const apiKeyCorrectScopes = getEffectiveScopes(apiKey.scopes)}
+            {@const currentEffective = scopes ? getEffectiveScopes(scopes) : null}
             <CardGrid>
                 <svelte:fragment slot="title">Scopes</svelte:fragment>
                 You can choose which permission scope to grant your application. It is a best practice
@@ -173,8 +179,8 @@
                     <Button
                         submit
                         disabled={scopes &&
-                            apiKey?.scopes &&
-                            !symmetricDifference(scopes, apiKey.scopes).length}>Update</Button>
+                            !symmetricDifference(currentEffective, apiKeyCorrectScopes).length}
+                        >Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>

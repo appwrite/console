@@ -78,7 +78,7 @@
         </Layout.Stack>
     {:else}
         <Card.Base variant="secondary" radius="s" padding="xs">
-            <Layout.Stack direction="row">
+            <Layout.Stack direction="row" id="no-payments-card-stack">
                 <Layout.Stack direction="row" gap="xxs" alignItems="center">
                     <Icon
                         icon={IconExclamationCircle}

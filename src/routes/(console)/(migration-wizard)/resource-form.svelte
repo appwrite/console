@@ -48,40 +48,41 @@
         try {
             switch ($provider.provider) {
                 case 'appwrite':
-                    report = await projectSdk.migrations.getAppwriteReport(
-                        providerResources.appwrite,
-                        $provider.endpoint,
-                        $provider.projectID,
-                        $provider.apiKey
-                    );
+                    report = await projectSdk.migrations.getAppwriteReport({
+                        resources: providerResources.appwrite,
+                        endpoint: $provider.endpoint,
+                        projectID: $provider.projectID,
+                        key: $provider.apiKey
+                    });
                     break;
                 case 'supabase':
-                    report = await projectSdk.migrations.getSupabaseReport(
-                        providerResources.supabase,
-                        $provider.endpoint,
-                        $provider.apiKey,
-                        $provider.host,
-                        $provider.username,
-                        $provider.password,
-                        $provider.port
-                    );
+                    report = await projectSdk.migrations.getSupabaseReport({
+                        resources: providerResources.supabase,
+                        endpoint: $provider.endpoint,
+                        apiKey: $provider.apiKey,
+                        databaseHost: $provider.host,
+                        username: $provider.username,
+                        password: $provider.password,
+                        port: $provider.port
+                    });
                     break;
                 case 'firebase':
-                    report = await projectSdk.migrations.getFirebaseReport(
-                        providerResources.firebase,
-                        $provider.serviceAccount
-                    );
+                    report = await projectSdk.migrations.getFirebaseReport({
+                        resources: providerResources.firebase,
+                        serviceAccount: $provider.serviceAccount
+                    });
                     break;
                 case 'nhost':
-                    report = await projectSdk.migrations.getNHostReport(
-                        providerResources.nhost,
-                        $provider.subdomain,
-                        $provider.region,
-                        $provider.adminSecret,
-                        $provider.database || $provider.subdomain,
-                        $provider.username || 'postgres',
-                        $provider.password
-                    );
+                    report = await projectSdk.migrations.getNHostReport({
+                        resources: providerResources.nhost,
+                        subdomain: $provider.subdomain,
+                        region: $provider.region,
+                        adminSecret: $provider.adminSecret,
+                        database: $provider.database || $provider.subdomain,
+                        username: $provider.username || 'postgres',
+                        password: $provider.password
+                    });
+                    break;
             }
         } catch (e) {
             if (!isOpen) return;

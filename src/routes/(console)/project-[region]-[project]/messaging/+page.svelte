@@ -61,7 +61,9 @@
     async function handleDelete() {
         showDelete = false;
 
-        const promises = selected.map((id) => sdk.forProject(region, project).messaging.delete(id));
+        const promises = selected.map((id) =>
+            sdk.forProject(region, project).messaging.delete({ messageId: id })
+        );
 
         try {
             await Promise.all(promises);

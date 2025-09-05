@@ -7,25 +7,22 @@
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { page } from '$app/state';
     import { registerCommands } from '$lib/commandCenter';
+    import { formatName as formatNameHelper } from '$lib/helpers/string';
     import {
         CardContainer,
-        DropList,
-        DropListItem,
         Empty,
+        EmptySearch,
         GridItem1,
-        PaginationWithLimit
+        PaginationWithLimit,
+        SearchQuery
     } from '$lib/components';
-    import { goto } from '$app/navigation';
-    import { Submit, trackError, trackEvent, Click } from '$lib/actions/analytics';
-    import { sdk } from '$lib/stores/sdk';
-    import { loading } from '$routes/store';
-    import { ID, Region, type Models } from '@appwrite.io/console';
-    import { openImportWizard } from '../project-[region]-[project]/settings/migrations/(import)';
-    import { billingProjectsLimitDate, readOnly, upgradeURL } from '$lib/stores/billing';
+    import { trackEvent, Click } from '$lib/actions/analytics';
+    import { type Models } from '@appwrite.io/console';
+    import { getServiceLimit, readOnly, upgradeURL } from '$lib/stores/billing';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Badge, Icon, Typography, Alert, Tag, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Alert, Badge, Icon, Layout, Tag, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAndroid,
@@ -40,14 +37,16 @@
     import CreateProjectCloud from './createProjectCloud.svelte';
     import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import ArchiveProject from '$lib/components/archiveProject.svelte';
 
     export let data;
 
     let showCreate = false;
-    let showCreateProjectCloud = false;
     let addOrganization = false;
     let showSelectProject = false;
+    let showCreateProjectCloud = false;
+
+    let searchQuery: SearchQuery;
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -80,6 +79,11 @@
         }
     }
 
+    $: projectCreationDisabled =
+        (isCloud && getServiceLimit('projects') <= data.allProjectsCount) ||
+        (isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE) ||
+        !$canWriteProjects;
+
     $: $registerCommands([
         {
             label: 'Create project',
@@ -87,36 +91,13 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteProjects,
+            disabled: projectCreationDisabled,
             group: 'projects',
             icon: IconPlus
         }
     ]);
 
-    let showDropdown = false;
-
-    const importProject = async () => {
-        try {
-            loading.set(true);
-            const project = await sdk.forConsole.projects.create(
-                ID.unique(),
-                `Imported project ${new Date().toISOString()}`,
-                page.params.organization,
-                Region.Fra // default
-            );
-            trackEvent(Submit.ProjectCreate, {
-                teamId: page.params.organization
-            });
-            await goto(`${base}/project-${project.region}-${project.$id}/settings/migrations`);
-            openImportWizard();
-            loading.set(false);
-        } catch (e) {
-            trackError(e, Submit.ProjectCreate);
-        }
-    };
-    onMount(async () => {
-        checkPricingRefAndRedirect(page.url.searchParams);
-    });
+    onMount(async () => checkPricingRefAndRedirect(page.url.searchParams));
 
     function findRegion(project: Models.Project) {
         return $regionsStore.regions.find((region) => region.$id === project.region);
@@ -124,67 +105,49 @@
 
     function isSetToArchive(project: Models.Project): boolean {
         if (!isCloud) return false;
-        if (data.organization.projects?.length === 0) return false;
         if (!project || !project.$id) return false;
-        return !data.organization.projects?.includes(project.$id);
+        return project.status === 'archived';
     }
 
-    function formatName(name: string, limit: number = 19) {
-        const mobileLimit = 16;
-        const actualLimit = $isSmallViewport ? mobileLimit : limit;
-        return name ? (name.length > actualLimit ? `${name.slice(0, actualLimit)}...` : name) : '-';
-    }
+    $: projectsToArchive = isCloud
+        ? data.projects.projects.filter((project) => project.status === 'archived')
+        : [];
 
-    $: projectsToArchive = data.projects.projects.filter(
-        (project) => !data.organization.projects?.includes(project.$id)
-    );
+    $: activeProjects = data.projects.projects.filter((project) => project.status !== 'archived');
+    function clearSearch() {
+        searchQuery?.clearInput();
+    }
 </script>
 
-<SelectProjectCloud selectedProjects={data.organization.projects || []} bind:showSelectProject />
+<SelectProjectCloud
+    bind:showSelectProject
+    organizationId={page.params.organization}
+    selectedProjects={data.organization.projects || []} />
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Typography.Title>Projects</Typography.Title>
+    <Layout.Stack direction="row" justifyContent="space-between" class="common-section">
+        <SearchQuery bind:this={searchQuery} placeholder="Search by name or ID" />
 
-        <DropList bind:show={showDropdown} placement="bottom-end">
-            {#if $canWriteProjects}
-                <Button
-                    on:click={handleCreateProject}
-                    event="create_project"
-                    disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create project
-                </Button>
-            {/if}
-            <svelte:fragment slot="list">
-                <DropListItem on:click={() => (showCreate = true)}>Empty project</DropListItem>
-                <DropListItem on:click={importProject}>
-                    <div class="u-flex u-gap-8 u-cross-center">
-                        Import project <span class="tag eyebrow-heading-3">Experimental</span>
-                    </div>
-                </DropListItem>
-            </svelte:fragment>
-        </DropList>
-    </div>
+        {#if $canWriteProjects}
+            <Button
+                on:click={handleCreateProject}
+                event="create_project"
+                disabled={projectCreationDisabled}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create project
+            </Button>
+        {/if}
+    </Layout.Stack>
 
-    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && data.projects.total > $currentPlan.projects && $canWriteProjects}
-        <Alert.Inline
-            title={`${data.projects.total - data.organization.projects.length} projects will be archived on ${toLocaleDate(billingProjectsLimitDate)}`}>
-            <Typography.Text>
-                {#each projectsToArchive as project, index}{@const text = `<b>${project.name}</b>`}
-                    {@html text}{index == projectsToArchive.length - 2
-                        ? ', and '
-                        : index < projectsToArchive.length - 1
-                          ? ', '
-                          : ''}
-                {/each}
-                will be archived
-            </Typography.Text>
+    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects && (projectsToArchive.length > 0 || data.projects.total > $currentPlan.projects)}
+        {@const difference = projectsToArchive.length}
+        {@const messagePrefix =
+            difference !== 1 ? `${difference} projects are` : `${difference} project is`}
+        <Alert.Inline title={`${messagePrefix} archived`}>
+            <Typography.Text>Upgrade your plan to restore archived projects</Typography.Text>
             <svelte:fragment slot="actions">
-                <Button secondary size="s" on:click={() => (showSelectProject = true)}>
-                    Manage projects
-                </Button>
                 <Button
+                    compact
                     size="s"
                     href={$upgradeURL}
                     on:click={() => {
@@ -199,18 +162,18 @@
         </Alert.Inline>
     {/if}
 
-    {#if data.projects.total}
+    {#if activeProjects.length > 0}
         <CardContainer
             disableEmpty={!$canWriteProjects}
             total={data.projects.total}
             offset={data.offset}
             on:click={handleCreateProject}>
-            {#each data.projects.projects as project}
+            {#each activeProjects as project}
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
                 {@const formatted = isSetToArchive(project)
-                    ? formatName(project.name)
+                    ? formatNameHelper(project.name, isSmallViewport ? 19 : 25)
                     : project.name}
                 <GridItem1
                     href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
@@ -270,6 +233,10 @@
                 <p>Create a new project</p>
             </svelte:fragment>
         </CardContainer>
+    {:else if data.search}
+        <EmptySearch target="projects" hidePagination>
+            <Button size="s" secondary on:click={clearSearch}>Clear search</Button>
+        </EmptySearch>
     {:else}
         <Empty
             single
@@ -284,8 +251,13 @@
         limit={data.limit}
         offset={data.offset}
         total={data.projects.total} />
-</Container>
 
+    <!-- Archived Projects Section -->
+    <ArchiveProject
+        {projectsToArchive}
+        organization={data.organization}
+        currentPlan={$currentPlan} />
+</Container>
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />
 <CreateProjectCloud

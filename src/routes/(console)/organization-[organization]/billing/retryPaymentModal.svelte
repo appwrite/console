@@ -66,7 +66,7 @@
                     } else {
                         const card = await submitStripeCard(name, $organization.$id);
                         if (card && Object.hasOwn(card, 'id')) {
-                            if ((card as PaymentMethod).card.country === 'US') {
+                            if ((card as PaymentMethod).card?.country === 'US') {
                                 paymentMethod = card as PaymentMethod;
                                 showState = true;
                                 return;

@@ -29,15 +29,13 @@
 
     async function create() {
         try {
-            const team = await sdk.forConsole.teams.createMembership(
-                $organization.$id,
-                [role],
+            const team = await sdk.forConsole.teams.createMembership({
+                teamId: $organization.$id,
+                roles: [role],
                 email,
-                undefined,
-                undefined,
-                `${page.url.origin}${base}/invite`,
-                name || undefined
-            );
+                url: `${page.url.origin}${base}/invite`,
+                name: name || undefined
+            });
             await Promise.all([
                 invalidate(Dependencies.ACCOUNT),
                 invalidate(Dependencies.ORGANIZATION),

@@ -24,52 +24,73 @@
                 case Providers.Twilio:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateTwilioProvider(providerId, providerName);
+                        .messaging.updateTwilioProvider({
+                            providerId,
+                            name: providerName
+                        });
                     break;
                 case Providers.Msg91:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateMsg91Provider(providerId, providerName);
+                        .messaging.updateMsg91Provider({
+                            providerId,
+                            name: providerName
+                        });
                     break;
                 case Providers.Telesign:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateTelesignProvider(providerId, providerName);
+                        .messaging.updateTelesignProvider({
+                            providerId,
+                            name: providerName
+                        });
                     break;
                 case Providers.Textmagic:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateTextmagicProvider(providerId, providerName);
+                        .messaging.updateTextmagicProvider({
+                            providerId,
+                            name: providerName
+                        });
                     break;
                 case Providers.Vonage:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateVonageProvider(providerId, providerName);
+                        .messaging.updateVonageProvider({
+                            providerId,
+                            name: providerName
+                        });
                     break;
                 case Providers.Mailgun:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateMailgunProvider(providerId, providerName);
+                        .messaging.updateMailgunProvider({
+                            providerId,
+                            name: providerName
+                        });
                     break;
                 case Providers.Sendgrid:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateSendgridProvider(providerId, providerName);
+                        .messaging.updateSendgridProvider({
+                            providerId,
+                            name: providerName
+                        });
                     break;
                 case Providers.SMTP:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateSmtpProvider(providerId, providerName);
+                        .messaging.updateSMTPProvider({ providerId, name: providerName });
                     break;
                 case Providers.FCM:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateFcmProvider(providerId, providerName);
+                        .messaging.updateFCMProvider({ providerId, name: providerName });
                     break;
                 case Providers.APNS:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)
-                        .messaging.updateApnsProvider(providerId, providerName);
+                        .messaging.updateAPNSProvider({ providerId, name: providerName });
                     break;
             }
             await invalidate(Dependencies.MESSAGING_PROVIDER);

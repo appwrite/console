@@ -1,6 +1,6 @@
 import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
-import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
+import { getLimit, getPage, getSearch, pageToOffset } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
@@ -16,13 +16,17 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const page = getPage(url);
     const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
+    const search = getSearch(url);
 
-    const projects = await sdk.forConsole.projects.list([
-        Query.offset(offset),
-        Query.equal('teamId', params.organization),
-        Query.limit(limit),
-        Query.orderDesc('')
-    ]);
+    const projects = await sdk.forConsole.projects.list({
+        queries: [
+            Query.offset(offset),
+            Query.equal('teamId', params.organization),
+            Query.limit(limit),
+            Query.orderDesc('')
+        ],
+        search: search || undefined
+    });
 
     // set `default` if no region!
     for (const project of projects.projects) {
@@ -32,6 +36,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     return {
         offset,
         limit,
-        projects
+        projects,
+        search
     };
 };

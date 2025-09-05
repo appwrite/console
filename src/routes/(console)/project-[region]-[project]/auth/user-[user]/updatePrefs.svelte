@@ -36,7 +36,7 @@
 
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .users.updatePrefs($user.$id, updatedPrefs);
+                .users.updatePrefs({ userId: $user.$id, prefs: updatedPrefs });
             await invalidate(Dependencies.USER);
             arePrefsDisabled = true;
 

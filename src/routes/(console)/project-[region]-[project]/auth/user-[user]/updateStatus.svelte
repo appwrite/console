@@ -20,7 +20,10 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .users.updateEmailVerification($user.$id, !$user.emailVerification);
+                .users.updateEmailVerification({
+                    userId: $user.$id,
+                    emailVerification: !$user.emailVerification
+                });
             await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
@@ -42,7 +45,10 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .users.updatePhoneVerification($user.$id, !$user.phoneVerification);
+                .users.updatePhoneVerification({
+                    userId: $user.$id,
+                    phoneVerification: !$user.phoneVerification
+                });
             await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
@@ -63,7 +69,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .users.updateStatus($user.$id, !$user.status);
+                .users.updateStatus({ userId: $user.$id, status: !$user.status });
             await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${

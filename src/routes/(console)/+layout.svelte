@@ -3,6 +3,7 @@
     import { BillingPlan, INTERVAL } from '$lib/constants';
     import Footer from '$lib/layout/footer.svelte';
     import Shell from '$lib/layout/shell.svelte';
+
     import { app } from '$lib/stores/app';
     import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
     import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
@@ -39,11 +40,12 @@
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
     import { activeHeaderAlert, consoleVariables } from './store';
+
+    import { base } from '$app/paths';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
-    import { base } from '$app/paths';
     import { canSeeProjects } from '$lib/stores/roles';
-    import { BottomModalAlert } from '$lib/components';
+    import { BottomModalAlert, EmailVerificationBanner } from '$lib/components';
     import {
         IconAnnotation,
         IconBookOpen,
@@ -55,10 +57,9 @@
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
-    import { sdk } from '$lib/stores/sdk';
-    import { Query } from '@appwrite.io/console';
 
     export let data: LayoutData;
+    let emailBannerClosed = false;
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -298,10 +299,8 @@
         if (isCloud) {
             currentOrganizationId = org.$id;
             const orgProjectCount =
-                data.allProjects && data.currentOrgId === org.$id
-                    ? data.allProjects.projects.length
-                    : undefined;
-            checkForProjectsLimit(org, orgProjectCount);
+                data.currentOrgId === org.$id ? data.allProjectsCount : undefined;
+            await checkForProjectsLimit(org, orgProjectCount);
             checkForEnterpriseTrial(org);
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
@@ -322,20 +321,6 @@
 
     $: checkForUsageLimits($organization);
 
-    $: isOnOnboarding = page.route?.id?.includes('/(console)/onboarding');
-
-    $: projects = isOnOnboarding
-        ? null
-        : sdk.forConsole.projects.list([
-              Query.equal(
-                  'teamId',
-                  // id from page params ?? id from store ?? id from preferences
-                  page.params.organization ?? currentOrganizationId ?? data.currentOrgId
-              ),
-              Query.limit(5),
-              Query.orderDesc('$updatedAt')
-          ]);
-
     $: if ($requestedMigration) {
         openMigrationWizard();
     }
@@ -349,19 +334,22 @@
 
 <CommandCenter />
 <Shell
-    showSideNavigation={page.url.pathname !== '/console' &&
+    showSideNavigation={page.url.pathname !== '/' &&
         !page?.params.organization &&
         !page.url.pathname.includes('/console/account') &&
         !page.url.pathname.includes('/console/card') &&
         !page.url.pathname.includes('/console/onboarding')}
     showHeader={!page.url.pathname.includes('/console/onboarding/create-project')}
     showFooter={!page.url.pathname.includes('/console/onboarding/create-project')}
-    {projects}
     selectedProject={page.data?.project}>
     <!--    <Header slot="header" />-->
     <slot />
     <Footer slot="footer" />
 </Shell>
+
+<EmailVerificationBanner
+    {emailBannerClosed}
+    onEmailBannerClose={(closed) => (emailBannerClosed = closed)} />
 
 {#if $wizard.show && $wizard.component}
     <svelte:component this={$wizard.component} {...$wizard.props} />
