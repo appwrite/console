@@ -11,21 +11,68 @@
     import CreateMember from '../createMembership.svelte';
     import DeleteMembership from '../deleteMembership.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Click, trackEvent } from '$lib/actions/analytics';
-    import { Table, Layout, Icon } from '@appwrite.io/pink-svelte';
+    import { Click, trackEvent, Submit, trackError } from '$lib/actions/analytics';
+    import {
+        Table,
+        Layout,
+        Icon,
+        FloatingActionBar,
+        Badge,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let data: PageData;
 
     let showCreate = false;
     let showDelete = false;
     let selectedMembership: Models.Membership;
+    let selectedMemberships: string[] = [];
+    let showBulkDelete = false;
+    let deleting = false;
 
     const region = page.params.region;
     const project = page.params.project;
 
     async function memberCreated() {
         invalidate(Dependencies.MEMBERSHIPS);
+    }
+
+    async function handleBulkDelete() {
+        showBulkDelete = false;
+        deleting = true;
+
+        const promises = selectedMemberships.map((membershipId) =>
+            sdk.forProject(page.params.region, page.params.project).teams.deleteMembership({
+                teamId: page.params.team,
+                membershipId
+            })
+        );
+
+        try {
+            await Promise.all(promises);
+            trackEvent(Submit.MembershipUpdate, {
+                total: selectedMemberships.length
+            });
+            addNotification({
+                type: 'success',
+                message: `${selectedMemberships.length} membership${selectedMemberships.length > 1 ? 's' : ''} deleted`
+            });
+            invalidate(Dependencies.MEMBERSHIPS);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.MembershipUpdate);
+        } finally {
+            selectedMemberships = [];
+            showBulkDelete = false;
+            deleting = false;
+        }
     }
 </script>
 
@@ -40,6 +87,8 @@
     {#if data.memberships.total}
         <Table.Root
             let:root
+            allowSelection
+            bind:selectedRows={selectedMemberships}
             columns={[
                 { id: 'name' },
                 { id: 'roles' },
@@ -52,11 +101,12 @@
                 <Table.Header.Cell column="joined" {root}>Joined</Table.Header.Cell>
                 <Table.Header.Cell column="actions" {root} />
             </svelte:fragment>
-            {#each data.memberships.memberships as membership}
+            {#each data.memberships.memberships as membership (membership.$id)}
                 {@const username = membership.userName ? membership.userName : '-'}
                 <Table.Row.Link
                     {root}
-                    href={`${base}/project-${region}-${project}/auth/user-${membership.userId}`}>
+                    href={`${base}/project-${region}-${project}/auth/user-${membership.userId}`}
+                    id={membership.$id}>
                     <Table.Cell column="name" {root}>
                         <Layout.Stack direction="row" alignItems="center">
                             <AvatarInitials size="xs" name={username} />
@@ -85,6 +135,22 @@
             {/each}
         </Table.Root>
 
+        {#if selectedMemberships.length > 0}
+            <FloatingActionBar>
+                <svelte:fragment slot="start">
+                    <Badge content={selectedMemberships.length.toString()} />
+                    <span>
+                        {selectedMemberships.length > 1 ? 'memberships' : 'membership'}
+                        selected
+                    </span>
+                </svelte:fragment>
+                <svelte:fragment slot="end">
+                    <Button text on:click={() => (selectedMemberships = [])}>Cancel</Button>
+                    <Button secondary on:click={() => (showBulkDelete = true)}>Delete</Button>
+                </svelte:fragment>
+            </FloatingActionBar>
+        {/if}
+
         <PaginationWithLimit
             name="Memberships"
             limit={data.limit}
@@ -93,7 +159,7 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn't find ‘{data.search}'</b>
+                <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no members that match your search.</p>
             </div>
             <Button
@@ -118,3 +184,17 @@
     {selectedMembership}
     bind:showDelete
     on:deleted={() => invalidate(Dependencies.MEMBERSHIPS)} />
+
+<Confirm
+    title="Delete memberships"
+    bind:open={showBulkDelete}
+    onSubmit={handleBulkDelete}
+    disabled={deleting}>
+    <Typography.Text>
+        Are you sure you want to delete <b>{selectedMemberships.length}</b>
+        {selectedMemberships.length > 1 ? 'memberships' : 'membership'}?
+    </Typography.Text>
+    <Typography.Text>
+        This action is irreversible and will remove the selected members from this team.
+    </Typography.Text>
+</Confirm>
