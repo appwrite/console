@@ -38,7 +38,7 @@
     let id = '';
     let runtime: Runtime;
     let entrypoint = '';
-    let buildCommand = ''; // This is the install command in the UI
+    let installCommand = '';
     let rootDir = './';
     let variables: Array<{ key: string; value: string; secret: boolean }> = [];
     let specification = '';
@@ -68,7 +68,7 @@
 
         // Build configuration - use from URL params or defaults
         entrypoint = page.url.searchParams.get('entrypoint') || '';
-        buildCommand = page.url.searchParams.get('install') || ''; // Using 'install' param for consistency with sites
+        installCommand = page.url.searchParams.get('install') || ''; // Using 'install' param for consistency with sites
         rootDir = page.url.searchParams.get('rootDir') || './';
 
         // Set default specification
@@ -134,7 +134,7 @@
                     undefined, // enabled
                     undefined, // logging
                     entrypoint || undefined,
-                    buildCommand || undefined, // This is the commands parameter
+                    installCommand || undefined, // This is the commands parameter
                     selectedScopes?.length ? selectedScopes : undefined,
                     undefined, // installationId - will be null for repo deployments without VCS
                     undefined, // repositoryId
@@ -286,9 +286,9 @@
                         placeholder="e.g., index.js, main.py" />
                     <Input.Text
                         label="Install command"
-                        id="buildCommand"
-                        name="buildCommand"
-                        bind:value={buildCommand}
+                        id="installCommand"
+                        name="installCommand"
+                        bind:value={installCommand}
                         placeholder="e.g., npm install" />
                 </Layout.Stack>
             </Fieldset>
