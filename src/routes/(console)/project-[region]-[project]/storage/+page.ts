@@ -1,12 +1,10 @@
 import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
-import { CARD_LIMIT, Dependencies } from '$lib/constants';
+import { CARD_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, route, params, depends }) => {
-    depends(Dependencies.BUCKET);
-
+export const load: PageLoad = async ({ url, route, params }) => {
     const page = getPage(url);
     const search = getSearch(url);
     const view = getView(url, route, View.Grid);
