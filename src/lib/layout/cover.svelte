@@ -8,6 +8,7 @@
     export let animate: boolean = false;
     export let collapsed: boolean = false;
     export let adjustForSpreadsheet: boolean = false;
+    export let databasesMainScreen: boolean = false;
 
     let isAnimating = false;
     let animationTimeout: ReturnType<typeof setTimeout>;
@@ -43,6 +44,7 @@
     <div
         class="cover-container"
         {style}
+        class:databasesMainScreen
         class:adjustForSpreadsheet
         class:collapsed={animate && collapsed}
         class:animating={isAnimating}>
@@ -123,6 +125,12 @@
 
         &.adjustForSpreadsheet {
             padding-left: 2.5px;
+        }
+
+        &.databasesMainScreen {
+            @media (min-width: 1024px) {
+                margin: unset;
+            }
         }
     }
 </style>

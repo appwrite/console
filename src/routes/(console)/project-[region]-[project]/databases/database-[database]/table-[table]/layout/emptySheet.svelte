@@ -377,17 +377,27 @@
         bottom: 35%;
         position: fixed;
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1023px) {
             left: unset;
-            bottom: 30%;
+        }
+
+        @media (min-width: 1024px) {
+            left: 47.5%;
         }
 
         @media (min-width: 1280px) {
+            left: 50%;
             bottom: 37.5%;
         }
 
         @media (min-width: 1440px) {
+            left: 47.5%;
             bottom: 40%;
+        }
+
+        @media (min-width: 1728px) {
+            left: 45%;
+            bottom: 50%;
         }
     }
 </style>
