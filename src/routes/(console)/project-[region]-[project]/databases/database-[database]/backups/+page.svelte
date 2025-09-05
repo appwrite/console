@@ -178,7 +178,7 @@
 </script>
 
 <Container size="xxl">
-    <div class="u-flex u-gap-32 u-flex-vertical-mobile">
+    <div class="backups-page u-flex u-gap-32 u-flex-vertical-mobile">
         {#if !isDisabled}
             <div class="u-flex-vertical u-gap-16 policies-holder-card">
                 <ContainerHeader
@@ -284,5 +284,9 @@
         .policies-holder-card {
             min-width: 330px;
         }
+    }
+
+    :global(.backups-page .common-section) {
+        margin-block-start: 0 !important;
     }
 </style>
