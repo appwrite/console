@@ -3,7 +3,7 @@
     import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
     import { Typography, Button, Icon, Layout } from '@appwrite.io/pink-svelte';
 
-    export let href: string = null;
+    export let href: string | null = null;
 </script>
 
 <Layout.Stack
