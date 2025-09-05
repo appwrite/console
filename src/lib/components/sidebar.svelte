@@ -378,6 +378,14 @@
         &.no-transitions :global(nav) {
             transition: none !important;
         }
+
+        & :global(nav) {
+            @media (max-width: 1023px) {
+                top: var(--banner-spacing, 0px);
+                margin-top: var(--banner-spacing, 0px);
+                height: calc(100vh - var(--banner-spacing, 0px)) !important;
+            }
+        }
     }
 
     .middle-container {
