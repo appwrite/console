@@ -100,17 +100,8 @@
                 max-width: 1000px;
             }
 
-            @media (min-width: 1280px) {
-                margin-inline: auto;
-                max-width: 1144px;
-            }
-
             @media (min-width: 1440px) {
                 max-width: 1200px;
-            }
-
-            @media (min-width: 1728px) {
-                max-width: 1245px;
             }
         }
 
