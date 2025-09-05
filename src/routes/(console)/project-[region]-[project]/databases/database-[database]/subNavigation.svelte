@@ -78,9 +78,11 @@
     <Sidebar.Base state="open" resizable={false}>
         <section class="list-container" slot="top" style:width="100%">
             <a
+                class:is-selected={!isTablesScreen}
                 href={`${base}/project-${region}-${project}/databases/database-${databaseId}`}
-                class="database-name u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile is-selected">
+                class="database-name u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile u-padding-block-8 u-padding-inline-start-4">
                 <Icon icon={IconDatabase} size="s" color="--fgcolor-neutral-weak" />
+
                 {data.database?.name}
             </a>
             <div class="table-content">
@@ -145,33 +147,33 @@
                 </Layout.Stack>
             </div>
 
-            {#if isTablesScreen}
-                <Layout.Stack direction="column" gap="xxs" style="bottom: 1rem; position: sticky;">
-                    <div class="action-menu-divider">
-                        <Divider />
-                    </div>
+            <Layout.Stack direction="column" gap="xxs" style="bottom: 1rem; position: sticky;">
+                <div class="action-menu-divider">
+                    <Divider />
+                </div>
 
-                    <ul
-                        style="margin-inline-start: -1.25rem"
-                        class="drop-list bottom-nav u-margin-block-start-4">
-                        {#each databaseSubNavigationItems as action}
-                            {@const isSelected = page.url.pathname.endsWith(action.href)}
-                            {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/${action.href}`}
+                <ul
+                    style="margin-inline-start: -1.25rem"
+                    class="drop-list bottom-nav u-margin-block-start-4">
+                    {#each databaseSubNavigationItems as action}
+                        {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/${action.href}`}
 
-                            <Layout.Stack gap="s" direction="row" alignItems="center">
-                                <li class:is-selected={isSelected}>
-                                    <a
-                                        {href}
-                                        class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8">
-                                        <Icon size="s" icon={action.icon} color="--fgcolor-neutral-weak" />
-                                        <span class="text table-name">{action.title}</span>
-                                    </a>
-                                </li>
-                            </Layout.Stack>
-                        {/each}
-                    </ul>
-                </Layout.Stack>
-            {/if}
+                        <Layout.Stack gap="s" direction="row" alignItems="center">
+                            <li>
+                                <a
+                                    {href}
+                                    class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8">
+                                    <Icon
+                                        size="s"
+                                        icon={action.icon}
+                                        color="--fgcolor-neutral-weak" />
+                                    <span class="text table-name">{action.title}</span>
+                                </a>
+                            </li>
+                        </Layout.Stack>
+                    {/each}
+                </ul>
+            </Layout.Stack>
         </section>
     </Sidebar.Base>
 {:else if data?.database?.name && !isMainDatabaseScreen}
@@ -234,9 +236,15 @@
     }
 
     .database-name {
-        margin-block-end: 8px;
+        margin-block-end: 4px;
         font-size: var(--font-size-sm);
         color: var(--fgcolor-neutral-secondary);
+
+        &:hover {
+            color: var(--fgcolor-neutral-primary);
+            border-radius: var(--border-radius-s, 6px);
+            background: var(--bgcolor-neutral-secondary);
+        }
     }
 
     .table-content {
@@ -272,7 +280,7 @@
 
     .drop-list {
         flex: 1;
-        gap: 8px;
+        gap: 4px;
         padding-left: 4px;
         position: relative;
         font-size: var(--font-size-sm);
@@ -311,10 +319,9 @@
             margin-inline-start: 0.5rem;
         }
 
-        li:hover,
-        .is-selected {
+        li:hover {
             color: var(--fgcolor-neutral-primary);
-            border-radius: var(--border-radius-xs, 4px);
+            border-radius: var(--border-radius-s, 6px);
             background: var(--bgcolor-neutral-secondary);
         }
 
@@ -325,6 +332,12 @@
             line-clamp: 1;
             color: var(--fgcolor-neutral-secondary, #56565c);
         }
+    }
+
+    .is-selected {
+        color: var(--fgcolor-neutral-primary);
+        border-radius: var(--border-radius-s, 6px);
+        background: var(--bgcolor-neutral-secondary);
     }
 
     :global(.sub-navigation header) {
