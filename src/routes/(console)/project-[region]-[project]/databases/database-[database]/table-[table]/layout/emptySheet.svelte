@@ -53,6 +53,8 @@
     let resizeObserver: ResizeObserver;
     let dynamicOverlayHeight = $state('60.5vh');
 
+    let ready = $state(false);
+
     const baseColProps = { draggable: false, resizable: false };
 
     const updateOverlayHeight = () => {
@@ -77,17 +79,26 @@
     // the first render is in a pretty quick succession, delay helps!
     const debouncedUpdateOverlayHeight = debounce(() => updateOverlayHeight(), 250);
 
-    onMount(async () => {
+    onMount(() => {
+        updateOverlayHeight();
+
         if (spreadsheetContainer) {
             resizeObserver = new ResizeObserver(debouncedUpdateOverlayHeight);
             resizeObserver.observe(spreadsheetContainer);
         }
+
+        requestAnimationFrame(() => ready = true);
     });
 
     onDestroy(() => {
         if (resizeObserver) {
             resizeObserver.disconnect();
         }
+    });
+
+    $effect(() => {
+        $expandTabs; /* trigger*/
+        debouncedUpdateOverlayHeight();
     });
 
     const getCustomColumns = (): Column[] =>
@@ -158,6 +169,8 @@
 
     const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
 </script>
+
+<svelte:window on:resize={updateOverlayHeight} />
 
 <div
     class="databases-spreadsheet spreadsheet-container-outer"
@@ -230,9 +243,9 @@
     </SpreadsheetContainer>
 
     {#if !$spreadsheetLoading}
-        <!-- Claude: Can this be truly centered without hacky left: xyz values? -->
         <div
             class="spreadsheet-fade-bottom"
+            data-ready={ready}
             data-collapsed-tabs={!$expandTabs}
             style:--dynamic-overlay-height={dynamicOverlayHeight}>
             <div class="empty-actions">
@@ -328,7 +341,7 @@
         z-index: 20;
         display: flex;
         justify-content: center;
-        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        transition: none !important;
 
         height: var(--dynamic-overlay-height, 70.5vh);
 
@@ -342,6 +355,10 @@
 
         @media (min-width: 1024px) {
             height: var(--dynamic-overlay-height, 70.35vh);
+        }
+
+        &[data-ready='true'] {
+          transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
         }
     }
 
