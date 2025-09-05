@@ -28,6 +28,7 @@
     const checkDomain = debounce(async (value: string) => {
         if (!value) {
             domainStatus = 'failed';
+            domainIsValid = false;
             return;
         }
         try {
@@ -66,6 +67,8 @@
                 disabled={originalDomain === newDomain}
                 on:click={() => (newDomain = originalDomain)}>Reset</Button>
         </Layout.Stack>
-        <Status status={domainStatus} label={setDomainLabel(domainStatus)}></Status>
+        {#if newDomain}
+            <Status status={domainStatus} label={setDomainLabel(domainStatus)}></Status>
+        {/if}
     </Layout.Stack>
 </Fieldset>

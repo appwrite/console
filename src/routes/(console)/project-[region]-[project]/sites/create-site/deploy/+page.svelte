@@ -38,7 +38,7 @@
     // State variables
     let name = data.repository?.name || '';
     let id = ID.unique();
-    let domain = data.repository?.name?.toLowerCase().replace(/[^a-z0-9]/g, '-') || '';
+    let domain = '';
     let domainIsValid = false;
     let framework: Framework = Framework.Nextjs;
     let rootDir = '';
@@ -169,7 +169,7 @@
                 undefined, // providerRepositoryId
                 undefined, // branch
                 false, // silentMode
-                rootDir || undefined
+                undefined // rootDir
             );
 
             // Add domain

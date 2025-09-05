@@ -140,7 +140,7 @@
                     undefined, // repositoryId
                     undefined, // branch
                     false, // silentMode
-                    rootDir || undefined,
+                    undefined, // rootDir
                     specification || undefined
                 );
 
