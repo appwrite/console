@@ -6,5 +6,5 @@
 </script>
 
 <div class="databases-spreadsheet">
-    <Activity {...data} databasesMainScreen/>
+    <Activity {...data} databasesMainScreen />
 </div>

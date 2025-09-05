@@ -79,9 +79,9 @@
         }
 
         &.adjustForSpreadsheet {
-          @media (min-width: 1024px) {
-            padding-left: calc(190px + 3rem);
-          }
+            @media (min-width: 1024px) {
+                padding-left: calc(190px + 3rem);
+            }
         }
     }
 

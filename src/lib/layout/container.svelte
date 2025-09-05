@@ -36,8 +36,7 @@
         class:insideSideSheet
         class:expandHeightButton
         class:databasesMainScreen
-        class="console-container"
-    >
+        class="console-container">
         <Layout.Stack gap="l">
             {@render children?.()}
         </Layout.Stack>

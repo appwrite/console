@@ -36,8 +36,7 @@
                 size={buttonSize}
                 aria-label="page back"
                 disabled={$isTabletViewport}
-                style={$isTabletViewport ? 'visibility: hidden' : ''}
-            >
+                style={$isTabletViewport ? 'visibility: hidden' : ''}>
                 <Icon icon={IconChevronLeft} />
             </Button.Anchor>
         </span>

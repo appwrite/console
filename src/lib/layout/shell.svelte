@@ -306,9 +306,9 @@
         }
 
         @media (min-width: 1024px) {
-          :global(.console-container) {
-            padding-left: 45px; /* 255px - 210px */
-          }
+            :global(.console-container) {
+                padding-left: 45px; /* 255px - 210px */
+            }
         }
     }
 

@@ -74,7 +74,12 @@
     });
 </script>
 
-<Cover adjustForSpreadsheet expanded animate collapsed={!$expandTabs} blocksize={$expandTabs ? '152px' : '90px'}>
+<Cover
+    adjustForSpreadsheet
+    expanded
+    animate
+    collapsed={!$expandTabs}
+    blocksize={$expandTabs ? '152px' : '90px'}>
     <svelte:fragment slot="header">
         <AnimatedTitle href={link} collapsed={!$expandTabs} style="margin-inline-start: -2.5rem;">
             {$table?.name}

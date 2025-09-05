@@ -24,11 +24,7 @@
     ];
 </script>
 
-<Container
-    {insideSideSheet}
-    {databasesMainScreen}
-    expanded={expanded && !insideSideSheet}
->
+<Container {insideSideSheet} {databasesMainScreen} expanded={expanded && !insideSideSheet}>
     {#if logs.total}
         <div>
             <Table.Root {columns} let:root>
