@@ -16,6 +16,7 @@
         buildWildcardColumnsQuery,
         isRelationship,
         isRelationshipToMany,
+        isSpatialType,
         isString
     } from './rows/store';
     import {
@@ -906,6 +907,10 @@
                                             variant="secondary"
                                             size="s" />
                                     {/if}
+                                {:else if isSpatialType(rowColumn)}
+                                    <Typography.Text truncate>
+                                        {JSON.stringify(row[columnId])}
+                                    </Typography.Text>
                                 {:else}
                                     {@const value = row[columnId]}
                                     {@const formatted = formatColumn(row[columnId])}
@@ -954,7 +959,7 @@
                                         {row}
                                         column={rowColumn}
                                         onRowStructureUpdate={updateRowContents}
-                                        noInlineEdit={isRelationshipToMany(rowColumn)}
+                                        noInlineEdit={isRelationshipToMany(rowColumn) || isSpatialType(rowColumn)}
                                         onChange={(row) => paginatedRows.update(index, row)}
                                         onRevert={(row) => paginatedRows.update(index, row)}
                                         openSideSheet={() => {
