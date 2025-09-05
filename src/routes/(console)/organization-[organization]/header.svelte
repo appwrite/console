@@ -66,7 +66,11 @@
                 event: 'usage',
                 title: 'Usage',
                 hasChildren: true,
-                disabled: !(isCloud && ($isOwner || $isBilling))
+                disabled: !(
+                    isCloud &&
+                    ($isOwner || $isBilling) &&
+                    !page.data.currentPlan?.usagePerProject
+                )
             },
             {
                 href: `${path}/billing`,

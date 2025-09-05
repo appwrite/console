@@ -60,7 +60,7 @@
     import CreateIndex from './indexes/createIndex.svelte';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
-    import { isRelationship } from './rows/store';
+    import { buildRowUrl, isRelationship } from './rows/store';
     import { chunks } from '$lib/helpers/array';
 
     let editRow: EditRow;
@@ -252,8 +252,9 @@
 
         let columns = $table.columns;
         const hasAnyRelationships = columns.some((column) => isRelationship(column));
+        const filteredColumns = columns.filter((col) => col.type !== 'relationship');
 
-        if (!columns.length) {
+        if (!filteredColumns.length) {
             try {
                 columns = await generateColumns($project, page.params.database, page.params.table);
 
@@ -382,6 +383,12 @@
         text: 'Update',
         disabled: editRow?.isDisabled(),
         onClick: async () => await editRow?.update()
+    }}
+    topAction={{
+        mode: 'copy-tag',
+        text: 'Row URL',
+        show: !!($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id),
+        value: buildRowUrl($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id)
     }}>
     <EditRow
         bind:this={editRow}

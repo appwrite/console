@@ -3,10 +3,10 @@ import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
 import TablesApiLight from '$lib/images/promos/tables-api-light.png';
 import TablesApiDark from '$lib/images/promos/tables-api-dark.png';
-import TimestampOverridesDark from '$lib/images/promos/timestamp-overrides-dark.png';
-import TimestampOverridesLight from '$lib/images/promos/timestamp-overrides-light.png';
-import AppwriteGeneralAvailabiltyLight from '$lib/images/promos/appwrite-general-availability-light.png';
-import AppwriteGeneralAvailabiltyDark from '$lib/images/promos/appwrite-general-availability-dark.png';
+import InversionQueriesDark from '$lib/images/promos/inversion-queries-dark.png';
+import InversionQueriesLight from '$lib/images/promos/inversion-queries-light.png';
+import TimeHelperQueriesDark from '$lib/images/promos/time-helper-queries-dark.png';
+import TimeHelperQueriesLight from '$lib/images/promos/time-helper-queries-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -32,48 +32,46 @@ if (isCloud) {
         show: true
     };
 
-    const timestampOverridesPromo: BottomModalAlertItem = {
-        id: 'modal:timestamp_overrides_announcement',
+    const inversionQueriesPromo: BottomModalAlertItem = {
+        id: 'modal:inversion_queries_announcement',
         src: {
-            dark: TimestampOverridesDark,
-            light: TimestampOverridesLight
+            dark: InversionQueriesDark,
+            light: InversionQueriesLight
         },
-        title: 'Announcing Timestamp Overrides',
-        message:
-            'Move historical data into Appwrite without losing context or disrupting chronological accuracy.',
+        title: 'Announcing inversion queries',
+        message: 'New NOT operators to exclude data directly in queries.',
         plan: 'free',
         importance: 8,
         scope: 'project',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-timestamp-overrides',
+            link: () => 'https://appwrite.io/blog/post/announcing-inversion-queries',
             external: true,
             hideOnClick: true
         },
         show: true
     };
 
-    const appwriteGeneralAvailabiltyPromo: BottomModalAlertItem = {
-        id: 'modal:appwrite_general_availability_announcement',
+    const timeHelperQueriesPromo: BottomModalAlertItem = {
+        id: 'modal:time_helper_queries_announcement',
         src: {
-            dark: AppwriteGeneralAvailabiltyDark,
-            light: AppwriteGeneralAvailabiltyLight
+            dark: TimeHelperQueriesDark,
+            light: TimeHelperQueriesLight
         },
-        title: 'Now Generally Available',
-        message: 'After 26 months of Appwrite Cloud, we are ready to remove the beta tag.',
+        title: 'Announcing Time helper queries',
+        message: 'New before/after filters for simpler time-based queries.',
         plan: 'free',
         importance: 8,
-        scope: 'everywhere',
+        scope: 'project',
         cta: {
-            text: 'Learn more',
-            link: () => 'https://apwr.dev/ygTXfxA',
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-time-helper-queries',
             external: true,
             hideOnClick: true
         },
         show: true
     };
-
-    listOfPromotions.push(tablesApiPromo, timestampOverridesPromo, appwriteGeneralAvailabiltyPromo);
+    listOfPromotions.push(inversionQueriesPromo, timeHelperQueriesPromo, tablesApiPromo);
 }
 
 export function addBottomModalAlerts() {

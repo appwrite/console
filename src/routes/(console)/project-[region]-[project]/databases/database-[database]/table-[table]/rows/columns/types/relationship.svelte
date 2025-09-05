@@ -122,8 +122,7 @@
     function generateOptions(
         loading: boolean,
         rows: Models.Row[] | undefined,
-        column: Models.ColumnRelationship,
-        editing: boolean
+        column: Models.ColumnRelationship
     ): SelectOption[] {
         if (loading) {
             return [{ label: 'Loading...', value: null, disabled: true }];
@@ -139,15 +138,11 @@
                     .map((name) => row?.[name])
                     .filter((value) => value != null && typeof value === 'string' && value !== '');
 
-                const displayValues = !editing
-                    ? values
-                    : values.map((value) => (value.length > 5 ? value.slice(0, 5) + '...' : value));
-
                 let label: string;
                 if (!values.length) {
                     label = row.$id;
                 } else {
-                    label = `${row.$id} (${displayValues.join(' | ')})`;
+                    label = `${values.join(' | ')} (...${row.$id.slice(-5)})`;
                 }
 
                 return {
@@ -183,7 +178,7 @@
 
     $: totalCount = relatedList?.length ?? 0;
 
-    $: options = generateOptions(loadingRelationships, rowList?.rows, column, editing);
+    $: options = generateOptions(loadingRelationships, rowList?.rows, column);
 
     $: hasItems = totalCount > 0;
 

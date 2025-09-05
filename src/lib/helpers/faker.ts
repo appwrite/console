@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { Columns } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/store';
 import { ID, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
+import { isWithinSafeRange } from '$lib/helpers/numbers';
 
 export async function generateColumns(
     project: Models.Project,
@@ -54,7 +55,9 @@ export function generateFakeRecords(
 } {
     if (count <= 0) return { ids: [], rows: [] };
 
-    const filteredColumns = columns.filter((col) => col.type !== 'relationship');
+    const filteredColumns = columns.filter(
+        (col) => col.type !== 'relationship' && col.status === 'available'
+    );
 
     const ids: string[] = [];
     const rows: Models.Row[] = [];
@@ -148,6 +151,14 @@ function generateSingleValue(column: Columns): string | number | boolean | null 
                     case 'url': {
                         return faker.internet.url();
                     }
+
+                    case 'enum': {
+                        const enumAttr = column as Models.ColumnEnum;
+                        if (enumAttr.elements?.length > 0) {
+                            return faker.helpers.arrayElement(enumAttr.elements);
+                        }
+                        return null;
+                    }
                 }
                 return '';
             } else {
@@ -159,19 +170,18 @@ function generateSingleValue(column: Columns): string | number | boolean | null 
 
         case 'integer': {
             const intAttr = column as Models.ColumnInteger;
-            const min = intAttr.min ?? 0;
-            const max = intAttr.max ?? 10000;
+            const min = !isWithinSafeRange(intAttr.min) ? 0 : intAttr.min;
+            const max = !isWithinSafeRange(intAttr.max) ? 100 : intAttr.max;
             return faker.number.int({ min, max });
         }
 
-        case 'float': {
+        case 'double': {
             const floatAttr = column as Models.ColumnFloat;
-            const min = floatAttr.min ?? 0;
-            const max = floatAttr.max ?? 1000000;
-            const precision = 2;
-            return parseFloat(
-                faker.number.float({ min, max, fractionDigits: precision }).toFixed(precision)
-            );
+            const min = !isWithinSafeRange(floatAttr.min) ? 0 : floatAttr.min;
+            const max = !isWithinSafeRange(floatAttr.max) ? 100 : floatAttr.max;
+            const precision = 4;
+
+            return faker.number.float({ min, max, fractionDigits: precision });
         }
 
         case 'boolean': {
@@ -180,14 +190,6 @@ function generateSingleValue(column: Columns): string | number | boolean | null 
 
         case 'datetime': {
             return faker.date.recent({ days: 365 }).toISOString();
-        }
-
-        case 'enum': {
-            const enumAttr = column as Models.ColumnEnum;
-            if (enumAttr.elements && enumAttr.elements.length > 0) {
-                return faker.helpers.arrayElement(enumAttr.elements);
-            }
-            return null;
         }
 
         default: {

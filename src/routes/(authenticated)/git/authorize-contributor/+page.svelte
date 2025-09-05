@@ -1,11 +1,12 @@
 <script lang="ts">
-    import { page } from '$app/state';
     import { app } from '$lib/stores/app';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import { Vcs, Client } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { getApiEndpoint } from '$lib/stores/sdk';
+
+    export let data;
 
     const endpoint = getApiEndpoint();
     const client = new Client();
@@ -15,17 +16,16 @@
     let repositoryId: string;
     let providerPullRequestId: string;
 
-    let loading = false;
     let error = '';
     let success = '';
+    let loading = false;
 
     onMount(async () => {
-        const projectId = page.url.searchParams.get('projectId');
-        client.setEndpoint(endpoint).setProject(projectId).setMode('admin');
+        repositoryId = data.repositoryId;
+        installationId = data.installationId;
+        providerPullRequestId = data.providerPullRequestId;
 
-        installationId = page.url.searchParams.get('installationId');
-        repositoryId = page.url.searchParams.get('repositoryId');
-        providerPullRequestId = page.url.searchParams.get('providerPullRequestId') + '';
+        client.setEndpoint(endpoint).setProject(data.projectId).setMode('admin');
     });
 
     async function approveDeployment() {

@@ -3,24 +3,32 @@
     import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
     import { Button, Icon, Layout } from '@appwrite.io/pink-svelte';
     import type { Snippet } from 'svelte';
+    import type { HTMLAttributes } from 'svelte/elements';
 
     let {
         href = null,
         collapsed = false,
-        children
+        children,
+        ...restProps
     }: {
         href?: string | null;
         collapsed?: boolean;
         children: Snippet;
-    } = $props();
+    } & HTMLAttributes<HTMLDivElement> = $props();
 
     const buttonSize = $derived(collapsed ? 'xs' : 's');
     const currentLineHeight = $derived(collapsed ? '130%' : '140%');
     const currentLetterSpacing = $derived(collapsed ? '0' : '-0.144px');
-    const currentFontSize = $derived(collapsed ? 'var(--font-size-l)' : 'var(--font-size-xxxl)');
+    const currentFontSize = $derived(collapsed ? 'var(--font-size-l)' : 'var(--font-size-xxl)');
 </script>
 
-<Layout.Stack justifyContent="center" alignItems="center" direction="row" gap="xs" inline>
+<Layout.Stack
+    inline
+    gap="xs"
+    direction="row"
+    alignItems="center"
+    justifyContent="center"
+    {...restProps}>
     {#if href && !$isSmallViewport}
         <span style:position="relative">
             <Button.Anchor size={buttonSize} icon variant="text" {href} aria-label="page back">

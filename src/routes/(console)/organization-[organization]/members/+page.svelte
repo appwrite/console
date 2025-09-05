@@ -47,9 +47,7 @@
     // Calculate if button should be disabled and tooltip should show
     $: memberCount = data.organizationMembers?.total ?? 0;
     $: isFreeWithMembers = $organization?.billingPlan === BillingPlan.FREE && memberCount >= 1;
-    $: isButtonDisabled = isCloud
-        ? isFreeWithMembers || !$currentPlan?.addons?.seats?.supported
-        : false;
+    $: isButtonDisabled = isCloud ? isFreeWithMembers : false;
 
     const resend = async (member: Models.Membership) => {
         try {

@@ -4,7 +4,6 @@
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
-    import PlanExcess from '$lib/components/billing/planExcess.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
@@ -33,7 +32,11 @@
     import { onMount } from 'svelte';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
+    import OrganizationUsageLimits from '$lib/components/organizationUsageLimits.svelte';
     import { Query } from '@appwrite.io/console';
+    import type { OrganizationUsage } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
+    import { toLocaleDate } from '$lib/helpers/date';
 
     export let data;
 
@@ -43,6 +46,9 @@
     let previousPage: string = base;
     let showExitModal = false;
     let formComponent: Form;
+    let usageLimitsComponent:
+        | { validateOrAlert: () => boolean; getSelectedProjects: () => string[] }
+        | undefined;
     let isSubmitting = writable(false);
     let collaborators: string[] =
         data?.members?.memberships
@@ -55,6 +61,8 @@
     let showCreditModal = false;
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
+    let orgUsage: OrganizationUsage;
+    let allProjects: { projects: Models.Project[] } | undefined;
 
     $: paymentMethods = null;
 
@@ -91,6 +99,21 @@
 
         selectedPlan =
             $currentPlan?.$id === BillingPlan.SCALE ? BillingPlan.SCALE : BillingPlan.PRO;
+
+        try {
+            orgUsage = await sdk.forConsole.billing.listUsage(data.organization.$id);
+        } catch {
+            orgUsage = undefined;
+        }
+
+        try {
+            allProjects = await sdk.forConsole.projects.list([
+                Query.equal('teamId', data.organization.$id),
+                Query.limit(1000)
+            ]);
+        } catch {
+            allProjects = { projects: [] };
+        }
     });
 
     async function loadPaymentMethods() {
@@ -100,6 +123,16 @@
 
     async function handleSubmit() {
         if (isDowngrade) {
+            // If target plan has a non-zero project limit, ensure selection made
+            const targetProjectsLimit = $plansInfo?.get(selectedPlan)?.projects ?? 0;
+            const shouldShowProjectSelector =
+                targetProjectsLimit > 0 && allProjects.projects.length > targetProjectsLimit;
+
+            if (shouldShowProjectSelector && usageLimitsComponent?.validateOrAlert) {
+                const ok = usageLimitsComponent.validateOrAlert();
+                if (!ok) return;
+            }
+
             await downgrade();
         } else if (isUpgrade) {
             await upgrade();
@@ -136,6 +169,7 @@
 
     async function downgrade() {
         try {
+            // 1) update the plan first
             await sdk.forConsole.billing.updatePlan(
                 data.organization.$id,
                 selectedPlan,
@@ -143,11 +177,26 @@
                 null
             );
 
-            trackDowngradeFeedback();
+            // 2) If the target plan has a project limit, apply selected projects now
+            const targetProjectsLimit = $plansInfo?.get(selectedPlan)?.projects ?? 0;
+            if (targetProjectsLimit > 0 && usageLimitsComponent) {
+                const selected = usageLimitsComponent.getSelectedProjects();
+                if (selected?.length) {
+                    try {
+                        await sdk.forConsole.billing.updateSelectedProjects(
+                            data.organization.$id,
+                            selected
+                        );
+                    } catch (projectError) {
+                        console.warn('Project selection failed after plan update:', projectError);
+                    }
+                }
+            }
 
-            await invalidate(Dependencies.ORGANIZATION);
+            await Promise.all([trackDowngradeFeedback(), invalidate(Dependencies.ORGANIZATION)]);
 
             await goto(previousPage);
+
             addNotification({
                 type: 'success',
                 message: `${$organization.name} plan has been successfully updated.`
@@ -299,24 +348,25 @@
                         <Alert.Inline
                             status="warning"
                             title="You can only have one free organization per account">
-                            To downgrade this organization, first migrate or delete one of your
-                            existing paid organizations.
-                            <Button
-                                compact
-                                href="https://appwrite.io/docs/advanced/migrations/cloud"
-                                >Migration guide</Button>
+                            To downgrade this organization, first migrate or delete your existing
+                            free organization.
+                            <Layout.Stack gap="xs" direction="row" justifyContent="flex-start">
+                                <Button
+                                    compact
+                                    external
+                                    href="https://appwrite.io/docs/advanced/migrations/cloud"
+                                    >Migration guide</Button>
+                            </Layout.Stack>
                         </Alert.Inline>
                     {/if}
 
                     {#if isDowngrade}
-                        {#if selectedPlan === BillingPlan.FREE && !data.hasFreeOrgs}
-                            <PlanExcess tier={BillingPlan.FREE} />
-                        {:else if selectedPlan === BillingPlan.PRO && data.organization.billingPlan === BillingPlan.SCALE && collaborators?.length > 0}
-                            {@const extraMembers = collaborators?.length ?? 0}
-                            {@const price = formatCurrency(
-                                extraMembers *
-                                    ($plansInfo?.get(selectedPlan)?.addons?.seats?.price ?? 0)
-                            )}
+                        {@const extraMembers = collaborators?.length ?? 0}
+                        {@const price = formatCurrency(
+                            extraMembers *
+                                ($plansInfo?.get(selectedPlan)?.addons?.seats?.price ?? 0)
+                        )}
+                        {#if selectedPlan === BillingPlan.PRO}
                             <Alert.Inline status="error">
                                 <svelte:fragment slot="title">
                                     Your monthly payments will be adjusted for the Pro plan
@@ -326,7 +376,26 @@
                                     >you will be charged {price} monthly for {extraMembers} team members.</b>
                                 This will be reflected in your next invoice.
                             </Alert.Inline>
+                        {:else if selectedPlan === BillingPlan.FREE}
+                            <Alert.Inline
+                                status="error"
+                                title={`Your organization will switch to ${tierToPlan(selectedPlan).name} plan on ${toLocaleDate(
+                                    $organization.billingNextInvoiceDate
+                                )}`}>
+                                You will retain access to {tierToPlan($organization.billingPlan)
+                                    .name} plan features until your billing period ends. After that,
+                                <span class="u-bold"
+                                    >all team members except the owner will be removed,</span>
+                                and service disruptions may occur if usage exceeds Free plan limits.
+                            </Alert.Inline>
                         {/if}
+
+                        <OrganizationUsageLimits
+                            bind:this={usageLimitsComponent}
+                            organization={data.organization}
+                            projects={allProjects?.projects || []}
+                            members={data.members?.memberships || []}
+                            storageUsage={orgUsage?.storageTotal ?? 0} />
                     {/if}
                 </Layout.Stack>
             </Fieldset>

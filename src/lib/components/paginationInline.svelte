@@ -66,6 +66,7 @@
 {:else}
     <Layout.Stack direction="row" inline>
         <Button.Button
+            type="button"
             size="s"
             variant="compact"
             on:click={prev}
@@ -75,6 +76,7 @@
         </Button.Button>
 
         <Button.Button
+            type="button"
             size="s"
             variant="compact"
             on:click={next}

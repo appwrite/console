@@ -11,10 +11,17 @@
     import { Button } from '$lib/elements/forms';
     import { Icon } from '@appwrite.io/pink-svelte';
     import { IconX } from '@appwrite.io/pink-icons-svelte';
+    import { afterNavigate } from '$app/navigation';
 
     export let title: string;
     export let type: 'info' | 'success' | 'warning' | 'error' | 'default' = 'info';
     export let dismissible = false;
+
+    /**
+     * This is needed because when the
+     * slot's height gets changed, sometimes the update doesn't come through!
+     */
+    let resizeObserver: ResizeObserver;
 
     let container: HTMLElement | null = null;
     const dispatch = createEventDispatcher();
@@ -25,16 +32,23 @@
         const sidebar: HTMLElement = document.querySelector('main > div > nav');
         const contentSection: HTMLElement = document.querySelector('main > div > section');
 
+        if (alertHeight) {
+            // for sidebar and sub-navigation!
+            bannerSpacing.set(`${alertHeight}px`);
+        } else {
+            bannerSpacing.set(undefined);
+        }
+
         if (header) {
             header.style.top = `${alertHeight}px`;
         }
 
         if (sidebar) {
-            sidebar.style.top = `${alertHeight + ($isTabletViewport ? 0 : header.getBoundingClientRect().height)}px`;
-            sidebar.style.height = `calc(100vh - (${alertHeight + ($isTabletViewport ? 0 : header.getBoundingClientRect().height)}px))`;
+            const headerHeight = header?.getBoundingClientRect().height ?? 0;
+            const topOffset = alertHeight + ($isTabletViewport ? 0 : headerHeight);
 
-            // for sidebar and sub-navigation!
-            bannerSpacing.set(`${alertHeight}px`);
+            sidebar.style.top = `${topOffset}px`;
+            sidebar.style.height = `calc(100vh - ${topOffset}px)`;
         }
 
         if (contentSection) {
@@ -43,16 +57,24 @@
     }
 
     onMount(() => {
-        setNavigationHeight();
+        if (container) {
+            resizeObserver = new ResizeObserver(setNavigationHeight);
+            resizeObserver.observe(container);
+        }
     });
 
     onDestroy(() => {
         container = null;
         setNavigationHeight();
-    });
-</script>
 
-<svelte:window on:resize={setNavigationHeight} />
+        // remove observer!
+        if (resizeObserver) {
+            resizeObserver.disconnect();
+        }
+    });
+
+    afterNavigate(() => setNavigationHeight());
+</script>
 
 <section
     bind:this={container}

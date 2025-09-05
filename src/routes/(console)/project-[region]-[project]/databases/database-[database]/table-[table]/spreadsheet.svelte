@@ -11,7 +11,13 @@
     import { type Models, Query } from '@appwrite.io/console';
     import { type ComponentType, onDestroy, onMount } from 'svelte';
     import type { PageData } from './$types';
-    import { isRelationship, isRelationshipToMany, isString } from './rows/store';
+    import {
+        buildRowUrl,
+        buildWildcardColumnsQuery,
+        isRelationship,
+        isRelationshipToMany,
+        isString
+    } from './rows/store';
     import {
         columns,
         table,
@@ -81,6 +87,7 @@
     import { hash } from '$lib/helpers/string';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { chunks } from '$lib/helpers/array';
+    import { mapToQueryParams } from '$lib/components/filters/store';
 
     export let data: PageData;
     export let showRowCreateSheet: {
@@ -100,15 +107,6 @@
 
     const minimumWidth = 168;
     const emptyCellsLimit = $isSmallViewport ? 12 : 18;
-    const SYSTEM_KEYS = new Set([
-        '$tableId',
-        '$databaseId',
-        '$permissions',
-        '$createdAt',
-        '$updatedAt',
-        '$id',
-        '$sequence'
-    ]); /* TODO: should be fixed at the sdk level! */
 
     let selectedRows = [];
     let spreadsheetContainer: SpreadsheetContainer;
@@ -311,26 +309,31 @@
 
     async function sort(query: string | null) {
         $spreadsheetLoading = true;
-
         const url = new URL(page.url);
+        const parsedQueries = data.parsedQueries;
 
-        if (query === null) {
+        if (parsedQueries.size > 0) {
+            for (const [tagValue, queryString] of parsedQueries.entries()) {
+                if (queryString.includes('orderAsc') || queryString.includes('orderDesc')) {
+                    parsedQueries.delete(tagValue);
+                }
+            }
+        }
+
+        if (query !== null) {
+            const { attribute, method } = JSON.parse(query);
+            const tagValue = {
+                tag: `${attribute} ${method}`,
+                value: attribute
+            };
+
+            parsedQueries.set(tagValue, query);
+        }
+
+        if (parsedQueries.size === 0) {
             url.searchParams.delete('query');
         } else {
-            // compatible with `load` func!
-            const { attribute, method } = JSON.parse(query);
-            url.searchParams.set(
-                'query',
-                JSON.stringify([
-                    [
-                        {
-                            tag: `${attribute} ${method}`,
-                            value: attribute
-                        },
-                        query
-                    ]
-                ])
-            );
+            url.searchParams.set('query', mapToQueryParams(parsedQueries));
         }
 
         // save > navigate > restore!
@@ -462,6 +465,12 @@
         }
     }
 
+    function openSideSheetForRelationsToMany(tableId: string, rows: string | Models.Row[]) {
+        $databaseRelatedRowSheetOptions.tableId = tableId;
+        $databaseRelatedRowSheetOptions.rows = rows;
+        $databaseRelatedRowSheetOptions.show = true;
+    }
+
     async function onSelectSheetOption(
         action: HeaderCellAction | RowCellAction,
         columnId: string,
@@ -525,6 +534,21 @@
                 $rowPermissionSheet.show = true;
             }
 
+            if (action === 'copy-url') {
+                try {
+                    await copy(buildRowUrl(row.$id));
+                    addNotification({
+                        type: 'success',
+                        message: 'Row url copied'
+                    });
+                } catch (e) {
+                    addNotification({
+                        type: 'error',
+                        message: e.message
+                    });
+                }
+            }
+
             if (action === 'copy-json') {
                 const stringified = JSON.stringify(row, null, 2);
                 try {
@@ -555,16 +579,11 @@
 
     async function updateRowContents(row: Models.Row) {
         try {
-            const onlyData = Object.fromEntries(
-                Object.entries(row).filter(([key]) => !SYSTEM_KEYS.has(key))
-            );
-
-            // TODO | BUG: related rows still have `system` columns atm!
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId,
                 tableId: $table.$id,
                 rowId: row.$id,
-                data: onlyData,
+                data: row,
                 permissions: row.$permissions
             });
 
@@ -598,6 +617,9 @@
             return false;
         }
 
+        const parsedQueries = data.parsedQueries;
+        const filterQueries = parsedQueries.size ? data.parsedQueries.values() : [];
+
         $paginatedRowsLoading = true;
         const loadedRows = await sdk
             .forProject(page.params.region, page.params.project)
@@ -607,7 +629,9 @@
                 queries: [
                     getCorrectOrderQuery(),
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
-                    Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT))
+                    Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
+                    ...filterQueries /* filter queries */,
+                    ...buildWildcardColumnsQuery($table)
                 ]
             });
 
@@ -633,7 +657,8 @@
                     queries: [
                         getCorrectOrderQuery(),
                         Query.limit(SPREADSHEET_PAGE_LIMIT),
-                        Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT))
+                        Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
+                        ...buildWildcardColumnsQuery($table)
                     ]
                 });
 
@@ -821,6 +846,7 @@
                                         >{row.$id}</Id>
                                 {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
                                     <DualTimeView
+                                        showDatetime
                                         time={row[columnId]}
                                         canShowPopover={canShowDatetimePopover} />
                                 {:else if columnId === 'actions'}
@@ -875,18 +901,10 @@
                                         {/if}
                                     {:else}
                                         {@const itemsNum = row[columnId]?.length}
-                                        <Button.Button
-                                            variant="extra-compact"
-                                            disabled={!itemsNum}
-                                            badge={itemsNum ?? 0}
-                                            on:click={() => {
-                                                $databaseRelatedRowSheetOptions.show = true;
-                                                $databaseRelatedRowSheetOptions.rows =
-                                                    row[columnId];
-                                                $databaseRelatedRowSheetOptions.tableId = columnId;
-                                            }}>
-                                            Items
-                                        </Button.Button>
+                                        Items <Badge
+                                            content={itemsNum}
+                                            variant="secondary"
+                                            size="s" />
                                     {/if}
                                 {:else}
                                     {@const value = row[columnId]}
@@ -936,11 +954,20 @@
                                         {row}
                                         column={rowColumn}
                                         onRowStructureUpdate={updateRowContents}
+                                        noInlineEdit={isRelationshipToMany(rowColumn)}
                                         onChange={(row) => paginatedRows.update(index, row)}
                                         onRevert={(row) => paginatedRows.update(index, row)}
                                         openSideSheet={() => {
                                             close(); /* closes the editor */
-                                            onSelectSheetOption('update', null, 'row', row);
+
+                                            if (isRelationshipToMany(rowColumn)) {
+                                                openSideSheetForRelationsToMany(
+                                                    columnId,
+                                                    row[columnId]
+                                                );
+                                            } else {
+                                                onSelectSheetOption('update', null, 'row', row);
+                                            }
                                         }} />
                                 </svelte:fragment>
                             </Spreadsheet.Cell>
