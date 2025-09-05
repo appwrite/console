@@ -103,7 +103,7 @@
 <div
     class="sidebar"
     class:only-mobile-tablet={!project}
-    class:no-transitions={$noWidthTransition}
+    class:no-transitions={$noWidthTransition && !$isTabletViewport}
     style:--overlay-on-neutral={$app.themeInUse === 'dark'
         ? 'var(--neutral-750)'
         : 'var(--neutral-100)'}>
@@ -367,7 +367,7 @@
         <div
             class="sub-navigation"
             class:icons={state === 'icons'}
-            class:no-transitions={$noWidthTransition}>
+            class:no-transitions={$noWidthTransition && !$isTabletViewport}>
             <svelte:component this={subNavigation} />
         </div>
     {/if}
