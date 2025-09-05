@@ -20,7 +20,7 @@
     import { isCloud } from '$lib/system';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { currentPlan, newOrgModal } from '$lib/stores/organization';
+    import { currentPlan, newOrgModal, organization } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { type Models, Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
@@ -229,7 +229,8 @@
     }
 
     let badgeType: 'success' | undefined;
-    $: badgeType = $currentPlan && $currentPlan.name !== BillingPlan.FREE ? 'success' : undefined;
+    $: badgeType =
+        $organization && $organization.billingPlan !== BillingPlan.FREE ? 'success' : undefined;
 </script>
 
 <svelte:window on:resize={onResize} />
