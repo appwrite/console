@@ -2,6 +2,7 @@
     import { InputPoint } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { getDefaultSpatialData } from '../../../store';
 
     export let id: string;
     export let label: string;
@@ -10,14 +11,17 @@
     export let column: Models.ColumnInteger;
 
     $: nullable = !limited ? !column.required : false;
+
+    $: value = nullable ? null : (getDefaultSpatialData('point') as number[]);
 </script>
 
 <Layout.Stack>
     <Layout.Stack direction="row" alignItems="center" gap="s">
-        <Typography.Text variant="m-600">{label}</Typography.Text>
+        <Typography.Text variant="m-500">{label}</Typography.Text>
         {#if nullable}
-            <Typography.Caption variant="400">optional</Typography.Caption>
+            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary"
+                >optional</Typography.Text>
         {/if}
     </Layout.Stack>
-    <InputPoint values={value || [0, 0]} showDefaults={false} />
+    <InputPoint values={value} {nullable} />
 </Layout.Stack>

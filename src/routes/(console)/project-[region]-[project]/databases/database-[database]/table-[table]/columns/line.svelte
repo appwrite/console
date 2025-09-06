@@ -35,33 +35,26 @@
 </script>
 
 <script lang="ts">
+    const defaultData = getDefaultSpatialData('linestring') as number[][];
     export let data: Partial<Models.ColumnLine> = {
         required: false,
-        default: [
-            [0, 0],
-            [0, 0]
-        ]
+        default: defaultData
     };
 
     import { createConservative } from '$lib/helpers/stores';
     import { Selector, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { InputLine } from '$lib/elements/forms';
+    import { getDefaultSpatialData } from '../store';
 
     let savedDefault = data.default;
-    let showDefaultPointDummyData = false;
+    // let showDefaultPointDummyData = false;
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
-            savedDefault = data.default ?? [
-                [0, 0],
-                [0, 0]
-            ];
+            savedDefault = data.default;
             data.default = null;
         } else {
-            data.default = savedDefault ?? [
-                [0, 0],
-                [0, 0]
-            ];
+            data.default = savedDefault ?? defaultData;
         }
     }
 
@@ -101,8 +94,8 @@
         <Typography.Caption variant="400">Optional</Typography.Caption>
     </Layout.Stack>
     <InputLine
-        values={data.default as number[][]}
+        values={data.default || defaultData}
         onAddPoint={pushCoordinate}
-        showDefaults={showDefaultPointDummyData}
+        nullable={showDefaultPointDummyData}
         onDeletePoint={deleteCoordinate} />
 </Layout.Stack>

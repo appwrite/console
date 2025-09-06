@@ -7,82 +7,71 @@
         databaseId: string,
         tableId: string,
         key: string,
-        data: Partial<Models.ColumnBoolean>
+        data: Partial<Models.ColumnPoint>
     ) {
-        await sdk.forProject(page.params.region, page.params.project).tablesDB.createBooleanColumn({
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.createPolygonColumn({
             databaseId,
             tableId,
             key,
             required: data.required,
-            xdefault: data.default,
-            array: data.array
+            xdefault: data?.default
         });
     }
     export async function updatePolygon(
         databaseId: string,
         tableId: string,
-        data: Partial<Models.ColumnBoolean>,
+        data: Partial<Models.ColumnPoint>,
         originalKey?: string
     ) {
-        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateBooleanColumn({
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.updatePolygonColumn({
             databaseId,
             tableId,
             key: originalKey,
             required: data.required,
-            xdefault: data.default,
+            xdefault: data?.default,
             newKey: data.key !== originalKey ? data.key : undefined
         });
     }
 </script>
 
 <script lang="ts">
-    import { InputSelect } from '$lib/elements/forms';
+    import { createConservative } from '$lib/helpers/stores';
+    import { Selector, Typography, Layout } from '@appwrite.io/pink-svelte';
+    import InputPolygon from '$lib/elements/forms/inputPolygon.svelte';
+    import { getDefaultSpatialData } from '../store';
 
-    export let editing = false;
-    export let data: Partial<Models.ColumnBoolean> = {
+    const defaultData = getDefaultSpatialData('polygon');
+    export let data: Partial<Models.ColumnPoint> = {
         required: false,
-        array: false,
-        default: null
+        default: defaultData
     };
 
-    import { createConservative } from '$lib/helpers/stores';
-    import { Selector } from '@appwrite.io/pink-svelte';
-
     let savedDefault = data.default;
+    let showDefaultPointDummyData = false;
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
             savedDefault = data.default;
             data.default = null;
         } else {
-            data.default = savedDefault;
+            data.default = savedDefault ?? defaultData;
         }
     }
 
     const {
-        stores: { required, array },
+        stores: { required },
         listen
-    } = createConservative<Partial<Models.ColumnBoolean>>({
+    } = createConservative<Partial<Models.ColumnPoint>>({
         required: false,
-        array: false,
         ...data
     });
     $: listen(data);
 
-    $: handleDefaultState($required || $array);
+    $: handleDefaultState($required);
+
+    $: showDefaultPointDummyData = $required ? true : false;
 </script>
 
-<InputSelect
-    id="default"
-    label="Default value"
-    placeholder="Select a value"
-    disabled={data.required || data.array}
-    options={[
-        { label: 'NULL', value: null },
-        { label: 'True', value: true },
-        { label: 'False', value: false }
-    ]}
-    bind:value={data.default} />
 <Selector.Checkbox
     size="s"
     id="required"
@@ -90,10 +79,15 @@
     bind:checked={data.required}
     disabled={data.array}
     description="Indicate whether this column is required" />
-<Selector.Checkbox
-    size="s"
-    id="array"
-    label="Array"
-    bind:checked={data.array}
-    disabled={data.required || editing}
-    description="Indicate whether this column is an array. Defaults to an empty array." />
+
+<Layout.Stack>
+    <Layout.Stack direction="row" alignItems="center" gap="s">
+        <Typography.Text variant="m-600">Default</Typography.Text>
+        <Typography.Caption variant="400">Optional</Typography.Caption>
+    </Layout.Stack>
+    <InputPolygon
+        values={data.default || defaultData}
+        nullable={showDefaultPointDummyData}
+        onAddLine={() => {}}
+        onAddPoint={() => {}} />
+</Layout.Stack>

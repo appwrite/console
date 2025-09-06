@@ -36,24 +36,26 @@
 
 <script lang="ts">
     import { InputPoint } from '$lib/elements/forms';
+    import { getDefaultSpatialData } from '../store';
+    import { createConservative } from '$lib/helpers/stores';
+    import { Selector, Typography, Layout } from '@appwrite.io/pink-svelte';
+
+    const defaultData = getDefaultSpatialData('point') as number[];
 
     export let data: Partial<Models.ColumnPoint> = {
         required: false,
-        default: [0, 0]
+        default: defaultData
     };
-
-    import { createConservative } from '$lib/helpers/stores';
-    import { Selector, Typography, Layout } from '@appwrite.io/pink-svelte';
 
     let savedDefault = data.default;
     let showDefaultPointDummyData = false;
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
-            savedDefault = data.default ?? [0, 0];
+            savedDefault = data.default ?? defaultData;
             data.default = null;
         } else {
-            data.default = savedDefault ?? [0, 0];
+            data.default = savedDefault ?? defaultData;
         }
     }
 
@@ -84,5 +86,5 @@
         <Typography.Text variant="m-600">Default</Typography.Text>
         <Typography.Caption variant="400">Optional</Typography.Caption>
     </Layout.Stack>
-    <InputPoint values={data.default as number[]} showDefaults={showDefaultPointDummyData} />
+    <InputPoint values={data.default} nullable={showDefaultPointDummyData} />
 </Layout.Stack>

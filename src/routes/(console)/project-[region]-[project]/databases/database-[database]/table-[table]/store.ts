@@ -1,5 +1,5 @@
 import { page } from '$app/stores';
-import type { Column } from '$lib/helpers/types';
+import type { Column, ColumnType } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 import type { SortDirection } from '$lib/components';
@@ -191,3 +191,29 @@ export const PROHIBITED_ROW_KEYS = [
 ];
 
 export const sheetHeightStore = writable('74.5vh');
+
+export const getDefaultSpatialData = (
+    type: Extract<ColumnType, 'point' | 'linestring' | 'polygon'>
+) => {
+    if (type === 'point') return [0, 0];
+    else if (type === 'linestring')
+        return [
+            [0, 0],
+            [0, 0]
+        ];
+    else if (type === 'polygon')
+        return [
+            [
+                [0, 0],
+                [0, 0],
+                [0, 0],
+                [0, 0]
+            ],
+            [
+                [0, 0],
+                [0, 0],
+                [0, 0],
+                [0, 0]
+            ]
+        ];
+};
