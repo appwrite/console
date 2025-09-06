@@ -305,9 +305,17 @@
             }
         }
 
-        @media (min-width: 1024px) {
-            :global(.console-container) {
-                padding-left: 45px; /* 255px - 210px */
+        :global(.console-container) {
+            @media (min-width: 1024px) {
+                padding-inline-start: var(--base-32, 32px);
+            }
+
+            @media (min-width: 1085px) {
+                padding-inline-start: calc(var(--base-32, 32px) - 0.5rem);
+            }
+
+            @media (min-width: 1280px) {
+                padding-inline-start: calc(var(--base-32, 32px) - 0.75rem);
             }
         }
     }

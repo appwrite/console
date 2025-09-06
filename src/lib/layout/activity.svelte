@@ -11,7 +11,6 @@
     export let offset = 0;
     export let logs: Models.LogList;
     export let insideSideSheet = false;
-    export let databasesMainScreen = false;
     export let expanded = false;
     export let useCreateLinkForPagination = true;
 
@@ -24,7 +23,7 @@
     ];
 </script>
 
-<Container {insideSideSheet} {databasesMainScreen} expanded={expanded && !insideSideSheet}>
+<Container {insideSideSheet} expanded={expanded && !insideSideSheet}>
     {#if logs.total}
         <div>
             <Table.Root {columns} let:root>

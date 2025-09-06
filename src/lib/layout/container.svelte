@@ -7,7 +7,6 @@
         expanded = false,
         overlapCover = false,
         insideSideSheet = false,
-        databasesMainScreen = false,
         expandHeightButton = false,
         size = null,
         children,
@@ -16,7 +15,6 @@
         expanded?: boolean;
         overlapCover?: boolean;
         insideSideSheet?: boolean;
-        databasesMainScreen?: boolean;
         expandHeightButton?: boolean;
         children?: Snippet;
         size?: 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl' | null;
@@ -35,7 +33,6 @@
         class:expanded
         class:insideSideSheet
         class:expandHeightButton
-        class:databasesMainScreen
         class="console-container">
         <Layout.Stack gap="l">
             {@render children?.()}
@@ -48,7 +45,8 @@
         z-index: 1;
         margin-block-start: -3.5rem;
     }
-    :global(.console-container) {
+
+    .console-container {
         margin-block: var(--base-32);
 
         &.insideSideSheet {
@@ -87,21 +85,6 @@
                         margin-inline-start: 1rem;
                     }
                 }
-            }
-        }
-
-        &.databasesMainScreen {
-            @media (min-width: 360px) {
-                margin-inline: 1rem;
-            }
-
-            @media (min-width: 1024px) {
-                margin-inline: auto;
-                max-width: 1000px;
-            }
-
-            @media (min-width: 1440px) {
-                max-width: 1200px;
             }
         }
 

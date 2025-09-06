@@ -10,7 +10,7 @@
 </script>
 
 <div class="databases-spreadsheet">
-    <Container databasesMainScreen>
+    <Container>
         {#if $table}
             <UpdateStatus />
             <UpdateName />

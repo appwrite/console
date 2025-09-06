@@ -11,7 +11,7 @@
 </script>
 
 <div class="databases-spreadsheet">
-    <Container databasesMainScreen>
+    <Container>
         <Usage
             path={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/usage`}
             {total}

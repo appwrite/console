@@ -124,7 +124,7 @@
         }
 
         &.adjustForSpreadsheet {
-            padding-left: 2.5px;
+            padding-left: 2px;
         }
 
         &.databasesMainScreen {
