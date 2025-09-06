@@ -9,12 +9,20 @@
     export let disableDeletePointsCountPerLine: number = 2;
     export let onAddPoint: (index: number) => void;
     export let onDeletePoint: (index: number) => void = undefined;
+    export let onChangePoint: (pointIndex: number, coordIndex: number, newValue: number) => void =
+        undefined;
 
     let required = true;
 
     $: required = nullable;
     let disableDeletePoints = false;
     $: disableDeletePoints = !values || values.length <= disableDeletePointsCountPerLine;
+
+    function handlePointChange(pointIndex: number, coordIndex: number, newValue: number) {
+        if (onChangePoint) {
+            onChangePoint(pointIndex, coordIndex, newValue);
+        }
+    }
 </script>
 
 <Layout.Stack alignItems="flex-start">
@@ -25,7 +33,9 @@
                 values={value}
                 deletePoints={true}
                 disableDelete={disableDeletePoints}
-                onDeletePoint={() => onDeletePoint(index)} />
+                onDeletePoint={() => onDeletePoint(index)}
+                onChangePoint={(coordIndex, newValue) =>
+                    handlePointChange(index, coordIndex, newValue)} />
         {/each}
     </Layout.Stack>
     <Button compact on:click={() => onAddPoint(-1)} disabled={nullable}>

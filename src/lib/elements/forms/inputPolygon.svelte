@@ -10,11 +10,28 @@
     export let onAddPoint: (index: number) => void;
     export let onAddLine: (index: number) => void;
     export let onDeletePoint: (index: number) => void = undefined;
+    export let onChangePoint: (
+        lineIndex: number,
+        pointIndex: number,
+        coordIndex: number,
+        newValue: number
+    ) => void = undefined;
     export let disableDeletePointsCountPerLine: number = 4;
 
     let required = true;
 
     $: required = nullable;
+
+    function handlePointChange(
+        lineIndex: number,
+        pointIndex: number,
+        coordIndex: number,
+        newValue: number
+    ) {
+        if (onChangePoint) {
+            onChangePoint(lineIndex, pointIndex, coordIndex, newValue);
+        }
+    }
 </script>
 
 <Layout.Stack>
@@ -24,6 +41,8 @@
             onAddPoint={() => onAddPoint(index)}
             nullable={required}
             onDeletePoint={() => onDeletePoint(index)}
+            onChangePoint={(pointIndex, coordIndex, newValue) =>
+                handlePointChange(index, pointIndex, coordIndex, newValue)}
             {disableDeletePointsCountPerLine} />
     {/each}
 

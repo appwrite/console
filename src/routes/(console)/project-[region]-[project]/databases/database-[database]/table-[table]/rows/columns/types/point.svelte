@@ -12,7 +12,13 @@
 
     $: nullable = !limited ? !column.required : false;
 
-    $: value = nullable ? null : (getDefaultSpatialData('point') as number[]);
+    $: value = value && !nullable ? value : (getDefaultSpatialData('point') as number[]);
+
+    function handlePointChange(index: number, newValue: number) {
+        if (value) {
+            value[index] = newValue;
+        }
+    }
 </script>
 
 <Layout.Stack>
@@ -23,5 +29,5 @@
                 >optional</Typography.Text>
         {/if}
     </Layout.Stack>
-    <InputPoint values={value} {nullable} />
+    <InputPoint values={value} {nullable} onChangePoint={handlePointChange} />
 </Layout.Stack>

@@ -21,9 +21,13 @@
         if (value && value?.length > 2) value = value.slice(0, value.length - 1);
     }
 
-    $: nullable = !limited ? !column.required : false;
+    function handlePointChange(pointIndex: number, coordIndex: number, newValue: number) {
+        if (value && value[pointIndex]) {
+            value[pointIndex][coordIndex] = newValue;
+        }
+    }
 
-    $: value = nullable ? null : defaultData;
+    $: nullable = !limited ? !column.required : false;
 
     $: disableDeletePoints = !value || value.length <= 2;
 </script>
@@ -41,5 +45,5 @@
         {nullable}
         {onAddPoint}
         {onDeletePoint}
-        {disableDeletePoints} />
+        onChangePoint={handlePointChange} />
 </Layout.Stack>

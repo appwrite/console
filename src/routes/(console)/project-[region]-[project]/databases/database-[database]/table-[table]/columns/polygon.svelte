@@ -120,5 +120,10 @@
         nullable={showDefaultPointDummyData}
         onAddLine={pushLine}
         onAddPoint={pushCoordinate}
-        onDeletePoint={deleteCoordinate} />
+        onDeletePoint={deleteCoordinate}
+        onChangePoint={(lineIndex, pointIndex, coordIndex, newValue) => {
+            if (data.default && data.default[lineIndex] && data.default[lineIndex][pointIndex]) {
+                data.default[lineIndex][pointIndex][coordIndex] = newValue;
+            }
+        }} />
 </Layout.Stack>

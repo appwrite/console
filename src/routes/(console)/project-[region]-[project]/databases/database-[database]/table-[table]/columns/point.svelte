@@ -91,5 +91,12 @@
         <Typography.Text variant="m-600">Default</Typography.Text>
         <Typography.Caption variant="400">Optional</Typography.Caption>
     </Layout.Stack>
-    <InputPoint values={data.default || defaultData} nullable={showDefaultPointDummyData} />
+    <InputPoint
+        values={data.default || defaultData}
+        nullable={showDefaultPointDummyData}
+        onChangePoint={(index, newValue) => {
+            if (data.default) {
+                data.default[index] = newValue;
+            }
+        }} />
 </Layout.Stack>

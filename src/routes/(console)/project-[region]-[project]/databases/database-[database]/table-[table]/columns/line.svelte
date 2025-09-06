@@ -48,7 +48,6 @@
 
     let savedDefault = data.default;
     let showDefaultPointDummyData = false;
-    let disableDeletePoints = false;
     onMount(() => {
         data.default = data.required ? null : defaultData;
     });
@@ -82,8 +81,6 @@
     $: handleDefaultState($required);
 
     $: showDefaultPointDummyData = $required ? true : false;
-
-    $: disableDeletePoints = !data.default || data.default.length <= 2;
 </script>
 
 <Selector.Checkbox
@@ -104,5 +101,9 @@
         onAddPoint={pushCoordinate}
         nullable={showDefaultPointDummyData}
         onDeletePoint={deleteCoordinate}
-        {disableDeletePoints} />
+        onChangePoint={(pointIndex, coordIndex, newValue) => {
+            if (data.default && data.default[pointIndex]) {
+                data.default[pointIndex][coordIndex] = newValue;
+            }
+        }} />
 </Layout.Stack>
