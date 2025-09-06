@@ -7,9 +7,10 @@
 
     export let values: NestedNumberArray;
     export let nullable;
-    export let onAddPoint: () => void;
-    export let onAddLine: () => void;
-    export let onDeletePoint: () => void = undefined;
+    export let onAddPoint: (index: number) => void;
+    export let onAddLine: (index: number) => void;
+    export let onDeletePoint: (index: number) => void = undefined;
+    export let disableDeletePointsCountPerLine: number = 4;
 
     let required = true;
 
@@ -17,12 +18,17 @@
 </script>
 
 <Layout.Stack>
-    {#each values as value}
-        <InputLine values={value as number[][]} {onAddPoint} nullable={required} {onDeletePoint} />
+    {#each values as value, index}
+        <InputLine
+            values={value as number[][]}
+            onAddPoint={() => onAddPoint(index)}
+            nullable={required}
+            onDeletePoint={() => onDeletePoint(index)}
+            {disableDeletePointsCountPerLine} />
     {/each}
 
     <Layout.Stack direction="row" gap="s" style="margin-top: 8px;">
-        <Button compact on:click={onAddLine}>
+        <Button compact on:click={() => onAddLine(-1)}>
             <Icon icon={IconPlus} size="s" /> Add line
         </Button>
     </Layout.Stack>

@@ -10,6 +10,8 @@
     export let limited: boolean = false;
     export let column: Models.ColumnLine;
 
+    let disableDeletePoints = false;
+
     const defaultData = getDefaultSpatialData('linestring') as number[][];
     function onAddPoint() {
         value = [...(value || defaultData), getDefaultSpatialData('point') as number[]];
@@ -23,7 +25,7 @@
 
     $: value = nullable ? null : defaultData;
 
-    $: console.log({ name: column.key, column, nullable });
+    $: disableDeletePoints = !value || value.length <= 2;
 </script>
 
 <Layout.Stack>
@@ -34,5 +36,10 @@
                 >optional</Typography.Text>
         {/if}
     </Layout.Stack>
-    <InputLine values={value || defaultData} {nullable} {onAddPoint} {onDeletePoint} />
+    <InputLine
+        values={value || defaultData}
+        {nullable}
+        {onAddPoint}
+        {onDeletePoint}
+        {disableDeletePoints} />
 </Layout.Stack>

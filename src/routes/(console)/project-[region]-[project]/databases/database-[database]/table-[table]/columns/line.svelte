@@ -35,19 +35,23 @@
 </script>
 
 <script lang="ts">
-    const defaultData = getDefaultSpatialData('linestring') as number[][];
-    export let data: Partial<Models.ColumnLine> = {
-        required: false,
-        default: defaultData
-    };
-
     import { createConservative } from '$lib/helpers/stores';
     import { Selector, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { InputLine } from '$lib/elements/forms';
     import { getDefaultSpatialData } from '../store';
+    import { onMount } from 'svelte';
+    const defaultData = getDefaultSpatialData('linestring') as number[][];
+    export let data: Partial<Models.ColumnLine> = {
+        required: false,
+        default: null
+    };
 
     let savedDefault = data.default;
-    // let showDefaultPointDummyData = false;
+    let showDefaultPointDummyData = false;
+    let disableDeletePoints = false;
+    onMount(() => {
+        data.default = data.required ? null : defaultData;
+    });
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
@@ -58,12 +62,12 @@
         }
     }
 
-    function pushCoordinate() {
-        (data.default as number[][]).push([0, 0]);
+    function pushCoordinate(_: number) {
+        data.default.push(getDefaultSpatialData('point') as number[]);
     }
 
-    function deleteCoordinate() {
-        if ((data.default as number[][]).length > 2) (data.default as number[][]).pop();
+    function deleteCoordinate(_: number) {
+        if (data.default.length > 2) data.default.pop();
     }
 
     const {
@@ -78,6 +82,8 @@
     $: handleDefaultState($required);
 
     $: showDefaultPointDummyData = $required ? true : false;
+
+    $: disableDeletePoints = !data.default || data.default.length <= 2;
 </script>
 
 <Selector.Checkbox
@@ -97,5 +103,6 @@
         values={data.default || defaultData}
         onAddPoint={pushCoordinate}
         nullable={showDefaultPointDummyData}
-        onDeletePoint={deleteCoordinate} />
+        onDeletePoint={deleteCoordinate}
+        {disableDeletePoints} />
 </Layout.Stack>

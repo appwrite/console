@@ -6,28 +6,29 @@
 
     export let values: number[][];
     export let nullable: boolean;
-    export let onAddPoint: () => void;
-    export let onDeletePoint: () => void = undefined;
+    export let disableDeletePointsCountPerLine: number = 2;
+    export let onAddPoint: (index: number) => void;
+    export let onDeletePoint: (index: number) => void = undefined;
 
     let required = true;
 
     $: required = nullable;
-
-    $: disableDeletePoints = !values || values.length <= 2;
+    let disableDeletePoints = false;
+    $: disableDeletePoints = !values || values.length <= disableDeletePointsCountPerLine;
 </script>
 
 <Layout.Stack alignItems="flex-start">
     <Layout.Stack>
-        {#each values as value}
+        {#each values as value, index}
             <InputPoint
                 nullable={required}
                 values={value}
                 deletePoints={true}
                 disableDelete={disableDeletePoints}
-                {onDeletePoint} />
+                onDeletePoint={() => onDeletePoint(index)} />
         {/each}
     </Layout.Stack>
-    <Button compact on:click={onAddPoint} disabled={nullable}>
+    <Button compact on:click={() => onAddPoint(-1)} disabled={nullable}>
         <Icon icon={IconPlus} size="s" /> Add coordinate
     </Button>
 </Layout.Stack>

@@ -39,12 +39,13 @@
     import { getDefaultSpatialData } from '../store';
     import { createConservative } from '$lib/helpers/stores';
     import { Selector, Typography, Layout } from '@appwrite.io/pink-svelte';
+    import { onMount } from 'svelte';
 
     const defaultData = getDefaultSpatialData('point') as number[];
 
     export let data: Partial<Models.ColumnPoint> = {
         required: false,
-        default: defaultData
+        default: null
     };
 
     let savedDefault = data.default;
@@ -68,6 +69,10 @@
     });
     $: listen(data);
 
+    onMount(() => {
+        data.default = data.required ? null : defaultData;
+    });
+
     $: handleDefaultState($required);
 
     $: showDefaultPointDummyData = $required ? true : false;
@@ -86,5 +91,5 @@
         <Typography.Text variant="m-600">Default</Typography.Text>
         <Typography.Caption variant="400">Optional</Typography.Caption>
     </Layout.Stack>
-    <InputPoint values={data.default} nullable={showDefaultPointDummyData} />
+    <InputPoint values={data.default || defaultData} nullable={showDefaultPointDummyData} />
 </Layout.Stack>

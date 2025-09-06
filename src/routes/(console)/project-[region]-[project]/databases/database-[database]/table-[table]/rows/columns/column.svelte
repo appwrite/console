@@ -9,6 +9,7 @@
     import Url from './types/url.svelte';
     import Point from './types/point.svelte';
     import Line from './types/line.svelte';
+    import Polygon from './types/polygon.svelte';
 
     export let id: string;
     export let label: string;
@@ -39,7 +40,8 @@
         datetime: Datetime,
         relationship: Relationship,
         point: Point,
-        linestring: Line
+        linestring: Line,
+        polygon: Polygon
     };
 
     const columnsFormatMap = {

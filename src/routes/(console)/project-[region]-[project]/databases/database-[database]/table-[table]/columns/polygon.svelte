@@ -37,13 +37,14 @@
 <script lang="ts">
     import { createConservative } from '$lib/helpers/stores';
     import { Selector, Typography, Layout } from '@appwrite.io/pink-svelte';
-    import InputPolygon from '$lib/elements/forms/inputPolygon.svelte';
+    import { InputPolygon } from '$lib/elements/forms';
     import { getDefaultSpatialData } from '../store';
+    import { onMount } from 'svelte';
 
     const defaultData = getDefaultSpatialData('polygon');
     export let data: Partial<Models.ColumnPoint> = {
         required: false,
-        default: defaultData
+        default: null
     };
 
     let savedDefault = data.default;
@@ -58,6 +59,31 @@
         }
     }
 
+    function pushCoordinate(ringIndex: number) {
+        const ring = data.default?.at(ringIndex);
+        if (!ring) return;
+
+        const newPoint = getDefaultSpatialData('point') as number[];
+        ring.splice(ring.length - 1, 0, newPoint);
+        ring[ring.length - 1] = [...ring[0]];
+    }
+
+    function pushLine() {
+        const p1 = getDefaultSpatialData('point') as number[];
+        const p2 = getDefaultSpatialData('point') as number[];
+        const p3 = getDefaultSpatialData('point') as number[];
+        const ring = [p1, p2, p3, [...p1]];
+        data.default?.push(ring);
+    }
+
+    function deleteCoordinate(ringIndex: number) {
+        const ring = data.default?.at(ringIndex);
+        if (!ring || ring.length <= 4) return;
+
+        ring.splice(ring.length - 2, 1);
+        ring[ring.length - 1] = [...ring[0]];
+    }
+
     const {
         stores: { required },
         listen
@@ -66,6 +92,10 @@
         ...data
     });
     $: listen(data);
+
+    onMount(() => {
+        data.default = data.required ? null : defaultData;
+    });
 
     $: handleDefaultState($required);
 
@@ -88,6 +118,7 @@
     <InputPolygon
         values={data.default || defaultData}
         nullable={showDefaultPointDummyData}
-        onAddLine={() => {}}
-        onAddPoint={() => {}} />
+        onAddLine={pushLine}
+        onAddPoint={pushCoordinate}
+        onDeletePoint={deleteCoordinate} />
 </Layout.Stack>
