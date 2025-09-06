@@ -38,10 +38,10 @@
     ].filter((tab) => !tab.disabled);
 </script>
 
-<Cover databasesMainScreen>
+<Cover>
     <svelte:fragment slot="header">
         <CoverTitle
-            style="margin-inline-start: -2.5rem;"
+            backOnlyDesktop
             href={`${base}/project-${page.params.region}-${projectId}/databases`}>
             {$database.name}
         </CoverTitle>

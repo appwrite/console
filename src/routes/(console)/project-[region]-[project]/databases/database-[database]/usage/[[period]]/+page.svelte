@@ -10,7 +10,7 @@
     $: writesTotal = data.databaseWritesTotal;
 </script>
 
-<Container databasesMainScreen>
+<Container>
     <UsageMultiple
         title="Reads and writes"
         showHeader={false}

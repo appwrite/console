@@ -7,6 +7,7 @@
     export let expanded: boolean = false;
     export let animate: boolean = false;
     export let collapsed: boolean = false;
+    export let adjustForSpreadsheet: boolean = false;
     export let databasesMainScreen: boolean = false;
 
     let isAnimating = false;
@@ -33,7 +34,7 @@
 
 <div
     class:animate
-    class:expanded
+    class:adjustForSpreadsheet
     class:collapsed={animate && collapsed}
     class="top-cover-console"
     style:margin-top={marginTop}
@@ -43,8 +44,8 @@
     <div
         class="cover-container"
         {style}
-        class:expanded
         class:databasesMainScreen
+        class:adjustForSpreadsheet
         class:collapsed={animate && collapsed}
         class:animating={isAnimating}>
         <Layout.Stack direction="row" alignItems="baseline">
@@ -52,9 +53,7 @@
         </Layout.Stack>
 
         {#if $$slots.default}
-            <div class:expanded-slot={expanded}>
-                <slot />
-            </div>
+            <slot />
         {/if}
     </div>
 </div>
@@ -79,6 +78,12 @@
 
         &.collapsed {
             border-bottom-color: var(--border-neutral, #2d2d31);
+        }
+
+        &.adjustForSpreadsheet {
+            @media (min-width: 1024px) {
+                padding-left: calc(190px + 3rem);
+            }
         }
     }
 
@@ -114,25 +119,18 @@
             max-width: 1200px;
         }
 
-        &.expanded {
-            margin-inline: 1rem !important;
-        }
-
         &.animating {
             transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        &.databasesMainScreen {
-            @media (min-width: 1440px) {
-                max-width: 1200px;
-            }
+        &.adjustForSpreadsheet {
+            padding-left: 2px;
         }
-    }
 
-    .expanded-slot {
-        margin-inline: 3rem !important;
-        @media (max-width: 768px) {
-            margin-inline: 0 !important;
+        &.databasesMainScreen {
+            @media (min-width: 1024px) {
+                margin: unset;
+            }
         }
     }
 </style>

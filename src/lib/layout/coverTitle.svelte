@@ -1,9 +1,20 @@
 <script lang="ts">
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import type { Snippet } from 'svelte';
+    import type { HTMLAttributes } from 'svelte/elements';
     import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { Typography, Button, Icon, Layout } from '@appwrite.io/pink-svelte';
 
-    export let href: string | null = null;
+    let {
+        href = null,
+        children = null,
+        backOnlyDesktop = false,
+        ...restProps
+    }: {
+        href?: string | null;
+        children?: Snippet;
+        backOnlyDesktop?: boolean;
+    } & HTMLAttributes<HTMLDivElement> = $props();
 </script>
 
 <Layout.Stack
@@ -12,10 +23,18 @@
     direction="row"
     alignItems="center"
     justifyContent="center"
-    {...$$restProps}>
+    style={backOnlyDesktop && $isTabletViewport ? 'margin-inline-start: -2.5rem;' : ''}
+    {...restProps}>
     {#if href}
         <span style:position="relative">
-            <Button.Anchor size="s" icon variant="text" {href} aria-label="page back">
+            <Button.Anchor
+                {href}
+                icon
+                size="s"
+                variant="text"
+                aria-label="page back"
+                disabled={backOnlyDesktop && $isTabletViewport}
+                style={backOnlyDesktop && $isTabletViewport ? 'visibility: hidden' : ''}>
                 <Icon icon={IconChevronLeft} />
             </Button.Anchor>
         </span>
@@ -25,6 +44,6 @@
         truncate
         color="--fgcolor-neutral-primary"
         size={$isSmallViewport ? 'm' : 'l'}>
-        <slot />
+        {@render children?.()}
     </Typography.Title>
 </Layout.Stack>

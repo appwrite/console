@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
     import { Button, Icon, Layout } from '@appwrite.io/pink-svelte';
     import type { Snippet } from 'svelte';
@@ -7,19 +7,25 @@
 
     let {
         href = null,
+        children = null,
         collapsed = false,
-        children,
+        backOnlyDesktop = false,
         ...restProps
     }: {
         href?: string | null;
         collapsed?: boolean;
-        children: Snippet;
+        children?: Snippet;
+        backOnlyDesktop?: boolean;
     } & HTMLAttributes<HTMLDivElement> = $props();
 
     const buttonSize = $derived(collapsed ? 'xs' : 's');
-    const currentLineHeight = $derived(collapsed ? '130%' : '140%');
-    const currentLetterSpacing = $derived(collapsed ? '0' : '-0.144px');
-    const currentFontSize = $derived(collapsed ? 'var(--font-size-l)' : 'var(--font-size-xxl)');
+    const currentFontSize = $derived(
+        collapsed
+            ? 'var(--font-size-l)'
+            : $isSmallViewport
+              ? 'var(--font-size-xl)'
+              : 'var(--font-size-xxl)'
+    );
 </script>
 
 <Layout.Stack
@@ -28,20 +34,24 @@
     direction="row"
     alignItems="center"
     justifyContent="center"
+    style={backOnlyDesktop && $isTabletViewport ? 'margin-inline-start: -2.5rem;' : ''}
     {...restProps}>
-    {#if href && !$isSmallViewport}
+    {#if href}
         <span style:position="relative">
-            <Button.Anchor size={buttonSize} icon variant="text" {href} aria-label="page back">
+            <Button.Anchor
+                {href}
+                icon
+                variant="text"
+                size={buttonSize}
+                aria-label="page back"
+                disabled={$isTabletViewport}
+                style={$isTabletViewport ? 'visibility: hidden' : ''}>
                 <Icon icon={IconChevronLeft} />
             </Button.Anchor>
         </span>
     {/if}
-    <h1
-        class="animated-title"
-        style:font-size={currentFontSize}
-        style:line-height={currentLineHeight}
-        style:letter-spacing={currentLetterSpacing}>
-        {@render children()}
+    <h1 class="animated-title" style:font-size={currentFontSize}>
+        {@render children?.()}
     </h1>
 </Layout.Stack>
 
@@ -62,5 +72,6 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         max-width: 100%;
+        line-height: 130%;
     }
 </style>

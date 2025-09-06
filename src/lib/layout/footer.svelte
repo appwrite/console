@@ -190,7 +190,7 @@
         }
     }
 
-    :global(main:has(.wide-screen-wrapper)) footer {
+    :global(main:has(.databases-spreadsheet)) footer {
         margin-inline-start: 2rem !important;
     }
 </style>

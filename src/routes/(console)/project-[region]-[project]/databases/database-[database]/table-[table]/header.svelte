@@ -7,7 +7,6 @@
     import AnimatedTitle from '$lib/layout/animatedTitle.svelte';
     import { canWriteTables } from '$lib/stores/roles';
     import { expandTabs, table } from './store';
-    import { Layout } from '@appwrite.io/pink-svelte';
     import { preferences } from '$lib/stores/preferences';
 
     const databaseId = $derived(page.params.database);
@@ -75,47 +74,38 @@
     });
 </script>
 
-<div class:nonSheetPages>
-    <Cover animate expanded collapsed={!$expandTabs} blocksize={$expandTabs ? '152px' : '90px'}>
-        <svelte:fragment slot="header">
-            <Layout.Stack direction="row" alignContent="center" alignItems="center" inline>
-                <AnimatedTitle href={link} collapsed={!$expandTabs}>
-                    {$table?.name}
-                </AnimatedTitle>
+<Cover
+    adjustForSpreadsheet
+    expanded
+    animate
+    collapsed={!$expandTabs}
+    blocksize={$expandTabs ? '152px' : '90px'}>
+    <svelte:fragment slot="header">
+        <AnimatedTitle href={link} backOnlyDesktop collapsed={!$expandTabs}>
+            {$table?.name}
+        </AnimatedTitle>
 
-                {#key $table?.$id}
-                    <Id value={$table?.$id} tooltipPlacement={$expandTabs ? undefined : 'right'}
-                        >{$table?.$id}</Id>
-                {/key}
-            </Layout.Stack>
-        </svelte:fragment>
+        {#key $table?.$id}
+            <Id value={$table?.$id} tooltipPlacement={$expandTabs ? undefined : 'right'}
+                >{$table?.$id}</Id>
+        {/key}
+    </svelte:fragment>
 
-        <div class="tabs-container" class:collapsed={!$expandTabs}>
-            <Tabs>
-                {#each tabs as tab}
-                    <Tab
-                        href={tab.href}
-                        selected={isTabSelected(tab, page.url.pathname, path, tabs)}
-                        event={tab.event}>
-                        {tab.title}
-                    </Tab>
-                {/each}
-            </Tabs>
-        </div>
-    </Cover>
-</div>
+    <div class="tabs-container" class:collapsed={!$expandTabs}>
+        <Tabs>
+            {#each tabs as tab}
+                <Tab
+                    href={tab.href}
+                    selected={isTabSelected(tab, page.url.pathname, path, tabs)}
+                    event={tab.event}>
+                    {tab.title}
+                </Tab>
+            {/each}
+        </Tabs>
+    </div>
+</Cover>
 
 <style lang="scss">
-    .nonSheetPages :global(.cover-container) {
-        @media (min-width: 1440px) {
-            padding-inline: 7px !important;
-        }
-
-        @media (min-width: 1728px) {
-            padding-inline: 10.25rem !important;
-        }
-    }
-
     .tabs-container {
         opacity: 1;
         transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
