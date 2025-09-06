@@ -81,7 +81,7 @@
     collapsed={!$expandTabs}
     blocksize={$expandTabs ? '152px' : '90px'}>
     <svelte:fragment slot="header">
-        <AnimatedTitle href={link} collapsed={!$expandTabs} style="margin-inline-start: -2.5rem;">
+        <AnimatedTitle href={link} backOnlyDesktop collapsed={!$expandTabs}>
             {$table?.name}
         </AnimatedTitle>
 

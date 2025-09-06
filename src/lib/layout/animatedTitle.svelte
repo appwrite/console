@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { isTabletViewport } from '$lib/stores/viewport';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
     import { Button, Icon, Layout } from '@appwrite.io/pink-svelte';
     import type { Snippet } from 'svelte';
@@ -7,17 +7,25 @@
 
     let {
         href = null,
+        children = null,
         collapsed = false,
-        children,
+        backOnlyDesktop = false,
         ...restProps
     }: {
         href?: string | null;
         collapsed?: boolean;
         children?: Snippet;
+        backOnlyDesktop?: boolean;
     } & HTMLAttributes<HTMLDivElement> = $props();
 
     const buttonSize = $derived(collapsed ? 'xs' : 's');
-    const currentFontSize = $derived(collapsed ? 'var(--font-size-l)' : 'var(--font-size-xxl)');
+    const currentFontSize = $derived(
+        collapsed
+            ? 'var(--font-size-l)'
+            : $isSmallViewport
+              ? 'var(--font-size-xl)'
+              : 'var(--font-size-xxl)'
+    );
 </script>
 
 <Layout.Stack
@@ -26,6 +34,7 @@
     direction="row"
     alignItems="center"
     justifyContent="center"
+    style={backOnlyDesktop && $isTabletViewport ? 'margin-inline-start: -2.5rem;' : ''}
     {...restProps}>
     {#if href}
         <span style:position="relative">

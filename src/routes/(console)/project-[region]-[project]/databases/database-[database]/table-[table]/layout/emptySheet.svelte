@@ -53,8 +53,6 @@
     let resizeObserver: ResizeObserver;
     let dynamicOverlayHeight = $state('60.5vh');
 
-    let ready = $state(false);
-
     const baseColProps = { draggable: false, resizable: false };
 
     const updateOverlayHeight = () => {
@@ -86,8 +84,6 @@
             resizeObserver = new ResizeObserver(debouncedUpdateOverlayHeight);
             resizeObserver.observe(spreadsheetContainer);
         }
-
-        requestAnimationFrame(() => (ready = true));
     });
 
     onDestroy(() => {
@@ -245,7 +241,6 @@
     {#if !$spreadsheetLoading}
         <div
             class="spreadsheet-fade-bottom"
-            data-ready={ready}
             data-collapsed-tabs={!$expandTabs}
             style:--dynamic-overlay-height={dynamicOverlayHeight}>
             <div class="empty-actions">
@@ -345,10 +340,6 @@
 
         height: var(--dynamic-overlay-height, 70.5vh);
 
-        &[data-collapsed-tabs='true'] {
-            height: calc(var(--dynamic-overlay-height, 79.1vh) + 8.6vh);
-        }
-
         @media (max-width: 1024px) {
             height: var(--dynamic-overlay-height, 63.35vh);
         }
@@ -376,6 +367,10 @@
         left: 50%;
         bottom: 35%;
         position: fixed;
+
+        @media (max-width: 768px) {
+            bottom: 35%;
+        }
 
         @media (max-width: 1023px) {
             left: unset;
