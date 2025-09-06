@@ -14,7 +14,7 @@
             tableId,
             key,
             required: data.required,
-            xdefault: JSON.stringify(data?.default)
+            xdefault: data?.default
         });
     }
     export async function updateLine(
@@ -28,7 +28,7 @@
             tableId,
             key: originalKey,
             required: data.required,
-            xdefault: JSON.stringify(data?.default),
+            xdefault: data?.default,
             newKey: data.key !== originalKey ? data.key : undefined
         });
     }

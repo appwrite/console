@@ -22,7 +22,7 @@
 
 <Layout.Stack>
     <Layout.Stack>
-        {#each values || defaultValues as value, index}
+        {#each values || defaultValues as value}
             <InputPoint
                 showDefaults={required}
                 values={value}

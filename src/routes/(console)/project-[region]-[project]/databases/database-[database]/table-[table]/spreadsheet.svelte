@@ -959,7 +959,8 @@
                                         {row}
                                         column={rowColumn}
                                         onRowStructureUpdate={updateRowContents}
-                                        noInlineEdit={isRelationshipToMany(rowColumn) || isSpatialType(rowColumn)}
+                                        noInlineEdit={isRelationshipToMany(rowColumn) ||
+                                            isSpatialType(rowColumn)}
                                         onChange={(row) => paginatedRows.update(index, row)}
                                         onRevert={(row) => paginatedRows.update(index, row)}
                                         openSideSheet={() => {
