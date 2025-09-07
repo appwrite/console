@@ -52,7 +52,7 @@
     import EditColumn from './columns/edit.svelte';
     import RowActivity from './rows/activity.svelte';
     import EditRowPermissions from './rows/editPermissions.svelte';
-    import { Dialog, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Dialog, Layout, Typography, Selector } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
@@ -70,6 +70,7 @@
     let createIndex: CreateIndex;
     let createColumn: CreateColumn;
     let selectedOption: Option['name'] = 'String';
+    let createMoreColumns = false;
 
     /**
      * adding a lot of fake data will trigger the realtime below
@@ -342,14 +343,21 @@
     bind:show={$showCreateColumnSheet.show}
     submit={{
         text: 'Create',
-        onClick: async () => {
-            await createColumn?.submit();
-        },
+        onClick: async () => await createColumn?.submit(),
         disabled: !selectedOption
     }}>
+    {#snippet footer()}
+        <Layout.Stack inline direction="row" alignItems="center">
+            <Selector.Switch
+                id="create-more-columns"
+                bind:checked={createMoreColumns}
+                label="Create more" />
+        </Layout.Stack>
+    {/snippet}
     <CreateColumn
         bind:selectedOption
         bind:this={createColumn}
+        bind:createMore={createMoreColumns}
         column={$showCreateColumnSheet.column}
         columns={$showCreateColumnSheet.columns}
         direction={$showCreateColumnSheet.direction}
