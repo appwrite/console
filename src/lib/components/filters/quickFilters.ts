@@ -47,7 +47,13 @@ export function addFilterAndApply(
             addSizeFilter(value, colId, columns);
         } else if (colId === 'statusCode') {
             addStatusCodeFilter(value, colId, columns);
-        } else if (colId === '$createdAt' || colId === '$updatedAt' || colId === 'buildDuration') {
+        } else if (
+            colId === '$createdAt' ||
+            colId === '$updatedAt' ||
+            colId === 'buildDuration' ||
+            colId === 'scheduledAt' ||
+            colId === 'deliveredAt'
+        ) {
             addDateFilter(value, colId, columns);
         } else {
             addFilter(columns, colId, operator, value, arrayValues);
