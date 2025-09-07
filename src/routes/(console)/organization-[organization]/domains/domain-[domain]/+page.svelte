@@ -84,7 +84,7 @@
                         </Tooltip>
                     </Layout.Stack>
                     <Layout.Stack direction="row" gap="s" inline>
-                        <ViewSelector view={View.Table} {columns} hideView />
+                        <ViewSelector ui="new" view={View.Table} {columns} hideView />
                         <Popover let:toggle padding="none">
                             <Button secondary on:click={toggle}>Add preset</Button>
                             <svelte:fragment slot="tooltip" let:toggle>

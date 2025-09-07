@@ -27,7 +27,7 @@
 
 <Container>
     <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-        <ViewSelector {columns} view={View.Table} hideView />
+        <ViewSelector ui="new" {columns} view={View.Table} hideView />
         {#if $canWriteWebhooks}
             <Button
                 href={`${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/create`}
