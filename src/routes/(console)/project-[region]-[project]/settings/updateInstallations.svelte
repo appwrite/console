@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
     import { Avatar, CardGrid, PaginationInline } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { Button as FormButton } from '$lib/elements/forms';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import GitDisconnectModal from './GitDisconnectModal.svelte';
@@ -15,8 +15,10 @@
         Icon,
         Layout,
         Popover,
-        Table
+        Table,
+        Button
     } from '@appwrite.io/pink-svelte';
+    import { Link as PinkLink } from '@appwrite.io/pink-svelte';
     import {
         IconExternalLink,
         IconGithub,
@@ -28,6 +30,10 @@
     import type { ComponentType } from 'svelte';
     import { Link } from '$lib/elements';
     import { regionalConsoleVariables } from '../store';
+    import CursorIcon from '../overview/components/CursorIcon.svelte';
+    import ClaudeIcon from '../overview/components/ClaudeIcon.svelte';
+    import VSCodeIcon from '../overview/components/VSCodeIcon.svelte';
+    import WindsurfIcon from '../overview/components/WindsurfIcon.svelte';
 
     export let total: number;
     export let limit: number;
@@ -83,7 +89,7 @@
         {#if total > 0}
             <Layout.Stack gap="l">
                 <Layout.Stack direction="row" justifyContent="flex-end">
-                    <Button
+                    <FormButton
                         secondary
                         href={configureGitHub()}
                         on:click={() => {
@@ -91,7 +97,7 @@
                         }}>
                         <Icon icon={IconPlus} slot="start" size="s" />
                         Add installation
-                    </Button>
+                    </FormButton>
                 </Layout.Stack>
 
                 <Table.Root
@@ -171,7 +177,7 @@
                 Before installing Git in a locally hosted Appwrite project, ensure your environment
                 variables are configured.
                 <svelte:fragment slot="actions">
-                    <Button compact href="#" external>Learn more</Button>
+                    <FormButton compact href="#" external>Learn more</FormButton>
                 </svelte:fragment>
             </Alert.Inline>
         {:else}
@@ -181,10 +187,10 @@
                     title="No installation was added to the project yet"
                     description="Add an installation to connect repositories">
                     <svelte:fragment slot="actions">
-                        <Button secondary href={configureGitHub()} external>
+                        <FormButton secondary href={configureGitHub()} external>
                             <Icon icon={IconGithub} size="s" slot="start" />
                             Connect to GitHub
-                        </Button>
+                        </FormButton>
                     </svelte:fragment>
                 </Empty>
             </Card.Base>
@@ -195,3 +201,61 @@
 {#if showGitDisconnect}
     <GitDisconnectModal bind:showGitDisconnect {selectedInstallation} />
 {/if}
+
+<CardGrid>
+    <svelte:fragment slot="title">MCP server</svelte:fragment>
+    Spin up an MCP server to stream rich project context to AI tooling, unlocking deeper code understanding
+    and better completions.
+    <svelte:fragment slot="aside">
+        <Card.Base padding="none" border="dashed">
+            <Empty type="secondary" title="MCP installation">
+                <svelte:fragment slot="description">
+                    Deploy the Appwrite MCP server with a single click, or view the <PinkLink.Anchor
+                        href="https://appwrite.io/docs"
+                        target="_blank"
+                        rel="noreferrer">docs</PinkLink.Anchor> for instructions.
+                </svelte:fragment>
+                <svelte:fragment slot="actions">
+                    <Layout.Stack direction="row" gap="s" wrap="wrap" justifyContent="center">
+                        <Button.Anchor
+                            href="https://apwr.dev/docs-mcp-cursor?ref=docs"
+                            target="_blank"
+                            rel="noreferrer"
+                            size="s"
+                            variant="secondary">
+                            <Icon slot="start" icon={CursorIcon} size="xs" />
+                            Cursor
+                        </Button.Anchor>
+                        <Button.Anchor
+                            href="https://appwrite.io/docs/tooling/mcp/claude"
+                            target="_blank"
+                            rel="noreferrer"
+                            size="s"
+                            variant="secondary">
+                            <Icon slot="start" icon={ClaudeIcon} size="xs" />
+                            Claude Desktop
+                        </Button.Anchor>
+                        <Button.Anchor
+                            href="https://apwr.dev/docs-mcp-vscode?ref=docs"
+                            target="_blank"
+                            rel="noreferrer"
+                            size="s"
+                            variant="secondary">
+                            <Icon slot="start" icon={VSCodeIcon} size="xs" />
+                            VS code
+                        </Button.Anchor>
+                        <Button.Anchor
+                            href="https://appwrite.io/docs/tooling/mcp/windsurf"
+                            target="_blank"
+                            rel="noreferrer"
+                            size="s"
+                            variant="secondary">
+                            <Icon slot="start" icon={WindsurfIcon} size="xs" />
+                            Windsurf editor
+                        </Button.Anchor>
+                    </Layout.Stack>
+                </svelte:fragment>
+            </Empty>
+        </Card.Base>
+    </svelte:fragment>
+</CardGrid>
