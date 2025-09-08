@@ -28,7 +28,7 @@
     }
 </script>
 
-<Layout.Stack alignItems="flex-start">
+<Layout.Stack alignItems="flex-start" gap="xs">
     <Layout.Stack>
         {#each values as value, index}
             <InputPoint
@@ -42,9 +42,11 @@
         {/each}
     </Layout.Stack>
     {#if values}
-        <Button compact on:click={() => onAddPoint(-1)} disabled={nullable}>
-            <Icon icon={IconPlus} size="s" /> Add coordinate
-        </Button>
-        
+        <Layout.Stack direction="row" gap="s" alignItems="center">
+            <Button size="xs" compact on:click={() => onAddPoint(-1)} disabled={nullable}>
+                <Icon icon={IconPlus} size="s" /> Add coordinate
+            </Button>
+            <slot name="line-button" />
+        </Layout.Stack>
     {/if}
 </Layout.Stack>

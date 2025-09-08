@@ -36,9 +36,9 @@
     }
 </script>
 
-<Layout.Stack>
+<Layout.Stack gap="s">
     {#each values as value, index}
-        <Layout.Stack>
+        <Layout.Stack gap="xs">
             <InputLine
                 values={value as number[][]}
                 onAddPoint={() => onAddPoint(index)}
@@ -46,16 +46,16 @@
                 onDeletePoint={() => onDeletePoint(index)}
                 onChangePoint={(pointIndex, coordIndex, newValue) =>
                     handlePointChange(index, pointIndex, coordIndex, newValue)}
-                disableDeleteLine = {index < 2} 
-                disableDeletePointsIndex = {4}/>
+                disableDeleteLine={index < 2} 
+                disableDeletePointsIndex={4}>
+                    <svelte:fragment slot="line-button">
+                        {#if index === values.length-1}
+                            <Button size="xs" compact on:click={handleAddLineInternal}>
+                                <Icon icon={IconPlus} size="s" /> Add line
+                            </Button>
+                        {/if}
+                    </svelte:fragment>
+                </InputLine>
         </Layout.Stack>
     {/each}
-    
-    {#if values}
-        <Layout.Stack direction="row" gap="s" style="margin-top: 8px;">
-            <Button size="s" compact on:click={handleAddLineInternal}>
-                <Icon icon={IconPlus} size="s" /> Add line
-            </Button>
-        </Layout.Stack>
-    {/if}
 </Layout.Stack>
