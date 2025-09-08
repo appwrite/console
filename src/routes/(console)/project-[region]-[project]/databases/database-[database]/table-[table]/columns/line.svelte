@@ -36,11 +36,12 @@
 
 <script lang="ts">
     import { createConservative } from '$lib/helpers/stores';
-    import { Selector, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Selector, Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
     import { InputLine } from '$lib/elements/forms';
     import { getDefaultSpatialData } from '../store';
-    import { onMount } from 'svelte';
-    const defaultData = getDefaultSpatialData('linestring') as number[][];
+    import {Button} from '$lib/elements/forms';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+
     export let data: Partial<Models.ColumnLine> = {
         required: false,
         default: null
@@ -48,16 +49,13 @@
 
     let savedDefault = data.default;
     let showDefaultPointDummyData = false;
-    onMount(() => {
-        data.default = data.required ? null : defaultData;
-    });
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
             savedDefault = data.default;
             data.default = null;
         } else {
-            data.default = savedDefault ?? defaultData;
+            data.default = savedDefault;
         }
     }
 
@@ -76,6 +74,12 @@
         required: false,
         ...data
     });
+    
+    function handleAddDefault() {
+        data.default = getDefaultSpatialData('linestring') as number[][];
+    }
+
+
     $: listen(data);
 
     $: handleDefaultState($required);
@@ -92,12 +96,20 @@
     description="Indicate whether this column is required" />
 
 <Layout.Stack>
-    <Layout.Stack direction="row" alignItems="center" gap="s">
-        <Typography.Text variant="m-600">Default</Typography.Text>
-        <Typography.Caption variant="400">Optional</Typography.Caption>
+    <Layout.Stack direction="row"  gap="s" alignItems="center" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <Typography.Text variant="m-600">Default</Typography.Text>
+            <Typography.Caption variant="400">Optional</Typography.Caption>
+        </Layout.Stack>
+        {#if !data.default}
+            <Button secondary on:click={handleAddDefault}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add Line
+            </Button>
+        {/if}
     </Layout.Stack>
     <InputLine
-        values={data.default || defaultData}
+        values={data.default}
         onAddPoint={pushCoordinate}
         nullable={showDefaultPointDummyData}
         onDeletePoint={deleteCoordinate}

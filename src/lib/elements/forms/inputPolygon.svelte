@@ -18,10 +18,6 @@
     ) => void = undefined;
     export let disableDeletePointsCountPerLine: number = 4;
 
-    let required = true;
-
-    $: required = nullable;
-
     function handlePointChange(
         lineIndex: number,
         pointIndex: number,
@@ -32,23 +28,33 @@
             onChangePoint(lineIndex, pointIndex, coordIndex, newValue);
         }
     }
+
+    function handleAddLineInternal() {
+        if (onAddLine) {
+            onAddLine(-1);
+        }
+    }
 </script>
 
 <Layout.Stack>
     {#each values as value, index}
-        <InputLine
-            values={value as number[][]}
-            onAddPoint={() => onAddPoint(index)}
-            nullable={required}
-            onDeletePoint={() => onDeletePoint(index)}
-            onChangePoint={(pointIndex, coordIndex, newValue) =>
-                handlePointChange(index, pointIndex, coordIndex, newValue)}
-            {disableDeletePointsCountPerLine} />
+        <Layout.Stack>
+            <InputLine
+                values={value as number[][]}
+                onAddPoint={() => onAddPoint(index)}
+                nullable={nullable}
+                onDeletePoint={() => onDeletePoint(index)}
+                onChangePoint={(pointIndex, coordIndex, newValue) =>
+                    handlePointChange(index, pointIndex, coordIndex, newValue)}
+                {disableDeletePointsCountPerLine} />
+        </Layout.Stack>
     {/each}
-
-    <Layout.Stack direction="row" gap="s" style="margin-top: 8px;">
-        <Button compact on:click={() => onAddLine(-1)}>
-            <Icon icon={IconPlus} size="s" /> Add line
-        </Button>
-    </Layout.Stack>
+    
+    {#if values}
+        <Layout.Stack direction="row" gap="s" style="margin-top: 8px;">
+            <Button size="s" compact on:click={handleAddLineInternal}>
+                <Icon icon={IconPlus} size="s" /> Add line
+            </Button>
+        </Layout.Stack>
+    {/if}
 </Layout.Stack>

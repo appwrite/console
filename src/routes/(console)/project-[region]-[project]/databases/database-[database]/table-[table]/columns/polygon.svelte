@@ -36,12 +36,12 @@
 
 <script lang="ts">
     import { createConservative } from '$lib/helpers/stores';
-    import { Selector, Typography, Layout } from '@appwrite.io/pink-svelte';
+    import { Selector, Typography, Layout, Icon } from '@appwrite.io/pink-svelte';
     import { InputPolygon } from '$lib/elements/forms';
     import { getDefaultSpatialData } from '../store';
-    import { onMount } from 'svelte';
+    import {Button} from '$lib/elements/forms';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
-    const defaultData = getDefaultSpatialData('polygon');
     export let data: Partial<Models.ColumnPoint> = {
         required: false,
         default: null
@@ -55,7 +55,7 @@
             savedDefault = data.default;
             data.default = null;
         } else {
-            data.default = savedDefault ?? defaultData;
+            data.default = savedDefault;
         }
     }
 
@@ -66,6 +66,7 @@
         const newPoint = getDefaultSpatialData('point') as number[];
         ring.splice(ring.length - 1, 0, newPoint);
         ring[ring.length - 1] = [...ring[0]];
+        data.default = [...(data.default || [])];
     }
 
     function pushLine() {
@@ -73,7 +74,7 @@
         const p2 = getDefaultSpatialData('point') as number[];
         const p3 = getDefaultSpatialData('point') as number[];
         const ring = [p1, p2, p3, [...p1]];
-        data.default?.push(ring);
+        data.default = [...(data.default || []), ring];
     }
 
     function deleteCoordinate(ringIndex: number) {
@@ -82,6 +83,7 @@
 
         ring.splice(ring.length - 2, 1);
         ring[ring.length - 1] = [...ring[0]];
+        data.default = [...(data.default || [])];
     }
 
     const {
@@ -91,11 +93,12 @@
         required: false,
         ...data
     });
-    $: listen(data);
 
-    onMount(() => {
-        data.default = data.required ? null : defaultData;
-    });
+    function handleAddDefault(){
+        data.default = getDefaultSpatialData("polygon") as number[][][];
+    }
+
+    $: listen(data);
 
     $: handleDefaultState($required);
 
@@ -110,13 +113,21 @@
     disabled={data.array}
     description="Indicate whether this column is required" />
 
-<Layout.Stack>
-    <Layout.Stack direction="row" alignItems="center" gap="s">
-        <Typography.Text variant="m-600">Default</Typography.Text>
-        <Typography.Caption variant="400">Optional</Typography.Caption>
+<Layout.Stack gap="xl">
+    <Layout.Stack direction="row"  gap="s" alignItems="center" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <Typography.Text variant="m-600">Default</Typography.Text>
+            <Typography.Caption variant="400">Optional</Typography.Caption>
+        </Layout.Stack>
+        {#if !data.default}
+            <Button secondary on:click={handleAddDefault}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add Polygon
+            </Button>
+        {/if}
     </Layout.Stack>
     <InputPolygon
-        values={data.default || defaultData}
+        values={data.default}
         nullable={showDefaultPointDummyData}
         onAddLine={pushLine}
         onAddPoint={pushCoordinate}
@@ -124,6 +135,8 @@
         onChangePoint={(lineIndex, pointIndex, coordIndex, newValue) => {
             if (data.default && data.default[lineIndex] && data.default[lineIndex][pointIndex]) {
                 data.default[lineIndex][pointIndex][coordIndex] = newValue;
+                // Trigger reactivity by reassigning
+                data.default = [...data.default];
             }
         }} />
 </Layout.Stack>

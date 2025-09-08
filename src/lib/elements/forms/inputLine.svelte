@@ -12,9 +12,6 @@
     export let onChangePoint: (pointIndex: number, coordIndex: number, newValue: number) => void =
         undefined;
 
-    let required = true;
-
-    $: required = nullable;
     let disableDeletePoints = false;
     $: disableDeletePoints = !values || values.length <= disableDeletePointsCountPerLine;
 
@@ -29,7 +26,7 @@
     <Layout.Stack>
         {#each values as value, index}
             <InputPoint
-                nullable={required}
+                nullable={nullable}
                 values={value}
                 deletePoints={true}
                 disableDelete={disableDeletePoints}
@@ -38,7 +35,10 @@
                     handlePointChange(index, coordIndex, newValue)} />
         {/each}
     </Layout.Stack>
-    <Button compact on:click={() => onAddPoint(-1)} disabled={nullable}>
-        <Icon icon={IconPlus} size="s" /> Add coordinate
-    </Button>
+    {#if values}
+        <Button compact on:click={() => onAddPoint(-1)} disabled={nullable}>
+            <Icon icon={IconPlus} size="s" /> Add coordinate
+        </Button>
+        
+    {/if}
 </Layout.Stack>

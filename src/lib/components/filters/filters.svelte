@@ -36,6 +36,7 @@
 
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
     let value: any = null;
+    let distanceValue: number = null;
     let selectedColumn: string | null = null;
     let operatorKey: string | null = null;
     let arrayValues: string[] = [];
@@ -46,6 +47,14 @@
 
     $: filtersAppliedCount = $tags.length;
 
+    // Check if the current operator is a distance-based operator
+    $: isDistanceOperator = operatorKey && [
+        ValidOperators.DistanceEqual,
+        ValidOperators.DistanceNotEqual,
+        ValidOperators.DistanceGreaterThan,
+        ValidOperators.DistanceLessThan
+    ].includes(operatorKey as ValidOperators);
+
     beforeNavigate(() => {
         showFiltersDesktop = false;
         showFiltersMobile = false;
@@ -54,6 +63,8 @@
 
     function clearAll() {
         selectedColumn = null;
+        value = null;
+        distanceValue = null;
         queries.clearAll();
         if (clearOnClick) {
             trackEvent(Submit.FilterClear, { source: analyticsSource });
@@ -73,9 +84,15 @@
                 value ||
                 arrayValues.length)
         ) {
-            addFilter($columns, selectedColumn, operatorKey, value, arrayValues);
+            // For distance operators, pass the distance as a separate parameter
+            if (isDistanceOperator && distanceValue !== null && value !== null) {
+                addFilter($columns, selectedColumn, operatorKey, value, arrayValues, distanceValue);
+            } else {
+                addFilter($columns, selectedColumn, operatorKey, value, arrayValues);
+            }
             selectedColumn = null;
             value = null;
+            distanceValue = null;
             operatorKey = null;
             arrayValues = [];
         }
@@ -97,6 +114,7 @@
     $: if (!showFiltersDesktop && !showFiltersMobile) {
         selectedColumn = null;
         value = null;
+        distanceValue = null;
         operatorKey = null;
         arrayValues = [];
     }
@@ -163,6 +181,7 @@
                                 bind:columnId={selectedColumn}
                                 bind:operatorKey
                                 bind:value
+                                bind:distanceValue
                                 bind:arrayValues
                                 {columns}
                                 {singleCondition}
@@ -225,6 +244,7 @@
                 bind:columnId={selectedColumn}
                 bind:operatorKey
                 bind:value
+                bind:distanceValue
                 bind:arrayValues
                 {singleCondition}
                 on:apply={afterApply}

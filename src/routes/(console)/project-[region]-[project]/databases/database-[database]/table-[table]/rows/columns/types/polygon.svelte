@@ -1,6 +1,8 @@
 <script lang="ts">
     import type { Models } from '@appwrite.io/console';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Button } from '$lib/elements/forms';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
     import { getDefaultSpatialData } from '../../../store';
     import InputPolygon from '$lib/elements/forms/inputPolygon.svelte';
 
@@ -9,8 +11,6 @@
     export let value: number[][][];
     export let limited: boolean = false;
     export let column: Models.ColumnPolygon;
-
-    const defaultData = getDefaultSpatialData('polygon');
 
     function pushCoordinate(ringIndex: number) {
         if (!value) return;
@@ -21,6 +21,9 @@
         const newPoint = getDefaultSpatialData('point') as number[];
         ring.splice(ring.length - 1, 0, newPoint);
         ring[ring.length - 1] = [...ring[0]];
+        
+        // Trigger reactivity by reassigning
+        value = [...value];
     }
 
     function pushLine() {
@@ -30,7 +33,9 @@
         const p2 = getDefaultSpatialData('point') as number[];
         const p3 = getDefaultSpatialData('point') as number[];
         const ring = [p1, p2, p3, [...p1]];
-        value.push(ring);
+        
+        // Trigger reactivity by reassigning
+        value = [...value, ring];
     }
 
     function deleteCoordinate(ringIndex: number) {
@@ -41,6 +46,7 @@
 
         ring.splice(ring.length - 2, 1);
         ring[ring.length - 1] = [...ring[0]];
+        value = [...value];
     }
 
     function handlePointChange(
@@ -51,25 +57,39 @@
     ) {
         if (value && value[lineIndex] && value[lineIndex][pointIndex]) {
             value[lineIndex][pointIndex][coordIndex] = newValue;
+            value = [...value];
         }
     }
 
-    $: nullable = !limited ? !column.required : false;
+    function handleAddDefault(){
+        value = getDefaultSpatialData("polygon") as number[][][];
+    }
 
-    $: displayValue = value || defaultData;
+    $: nullable = !limited ? !column.required : false;
 </script>
 
 <Layout.Stack>
-    <Layout.Stack direction="row" alignItems="center" gap="s">
-        <Typography.Text variant="m-500">{label}</Typography.Text>
-        {#if nullable}
-            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary"
-                >optional</Typography.Text>
+    <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Layout.Stack direction="row" alignItems="center" gap="s">
+            <Typography.Text variant="m-500">{label}</Typography.Text>
+            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                {#if nullable}
+                    optional
+                {:else}
+                    Polygon
+                {/if}
+            </Typography.Text>
+        </Layout.Stack>
+        {#if !value}
+            <Button secondary on:click={handleAddDefault}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add Polygon
+            </Button>
         {/if}
     </Layout.Stack>
     <InputPolygon
-        values={displayValue}
-        {nullable}
+        values={value}
+        nullable={false}
         onAddLine={pushLine}
         onAddPoint={pushCoordinate}
         onDeletePoint={deleteCoordinate}

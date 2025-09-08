@@ -38,10 +38,9 @@
     import { InputPoint } from '$lib/elements/forms';
     import { getDefaultSpatialData } from '../store';
     import { createConservative } from '$lib/helpers/stores';
-    import { Selector, Typography, Layout } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
-
-    const defaultData = getDefaultSpatialData('point') as number[];
+    import { Selector, Typography, Layout, Icon } from '@appwrite.io/pink-svelte';
+    import {Button} from '$lib/elements/forms';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: Partial<Models.ColumnPoint> = {
         required: false,
@@ -53,10 +52,10 @@
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
-            savedDefault = data.default ?? defaultData;
+            savedDefault = data.default;
             data.default = null;
         } else {
-            data.default = savedDefault ?? defaultData;
+            data.default = savedDefault;
         }
     }
 
@@ -67,11 +66,12 @@
         required: false,
         ...data
     });
-    $: listen(data);
 
-    onMount(() => {
-        data.default = data.required ? null : defaultData;
-    });
+    function handleAddDefault() {
+        data.default = getDefaultSpatialData('point') as number[];
+    }
+
+    $: listen(data);
 
     $: handleDefaultState($required);
 
@@ -86,13 +86,21 @@
     disabled={data.array}
     description="Indicate whether this column is required" />
 
-<Layout.Stack>
-    <Layout.Stack direction="row" alignItems="center" gap="s">
-        <Typography.Text variant="m-600">Default</Typography.Text>
-        <Typography.Caption variant="400">Optional</Typography.Caption>
+<Layout.Stack gap="xl">
+    <Layout.Stack direction="row"  gap="s" alignItems="center" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <Typography.Text variant="m-600">Default</Typography.Text>
+            <Typography.Caption variant="400">Optional</Typography.Caption>
+        </Layout.Stack>
+        {#if !data.default}
+            <Button secondary on:click={handleAddDefault}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add Point
+            </Button>
+        {/if}
     </Layout.Stack>
     <InputPoint
-        values={data.default || defaultData}
+        values={data.default}
         nullable={showDefaultPointDummyData}
         onChangePoint={(index, newValue) => {
             if (data.default) {

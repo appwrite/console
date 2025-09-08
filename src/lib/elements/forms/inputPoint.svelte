@@ -14,10 +14,10 @@
 </script>
 
 <Layout.Stack>
-    <Layout.Stack direction="row" gap="s">
+    <Layout.Stack direction="row" gap="xl">
         {#if nullable}
             {#each nullableSkeletonShape as _, index}
-                <Input.Number id={`default-${index}`} placeholder="Enter value" disabled={true} />
+                <Input.Number id={`default-${index}`} placeholder={"0"} disabled={true} />
             {/each}
         {:else}
             {#each values as _, index}

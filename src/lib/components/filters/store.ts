@@ -13,7 +13,7 @@ export type TagValue = {
 
 export type Operator = {
     toTag: (column: string, input?: string | number | string[], type?: string) => TagValue;
-    toQuery: (column: string, input?: string | number | string[]) => string;
+    toQuery: (column: string, input?: string | number | string[], distance?: number) => string;
     types: ColumnType[];
     hideInput?: boolean;
 };
@@ -35,13 +35,14 @@ function initQueries(initialValue = new Map<TagValue, string>()) {
         operator: Operator;
         column: Column;
         value: string | number | string[];
+        distance?: number;
     };
 
-    function addFilter({ column, operator, value }: AddFilterArgs) {
+    function addFilter({ column, operator, value, distance }: AddFilterArgs) {
         queries.update((map) => {
             map.set(
                 operator.toTag(column.title, value, column?.type),
-                operator.toQuery(column.id, value)
+                operator.toQuery(column.id, value, distance)
             );
             return map;
         });
@@ -101,15 +102,16 @@ export function addFilter(
     columnId: string,
     operatorKey: string,
     value: any, // We cast to any to not cause type errors in the input components
-    arrayValues: string[] = []
+    arrayValues: string[] = [],
+    distance?: number
 ) {
     const operator = operatorKey ? operators[operatorKey] : null;
     const column = columns.find((c) => c.id === columnId) as Column;
     if (!column || !operator) return;
     if (column.array) {
-        queries.addFilter({ column, operator, value: arrayValues });
+        queries.addFilter({ column, operator, value: arrayValues, distance });
     } else {
-        queries.addFilter({ column, operator, value: value ?? '' });
+        queries.addFilter({ column, operator, value: value ?? '', distance });
     }
 }
 
@@ -155,7 +157,7 @@ export enum ValidTypes {
 const operatorsDefault = new Map<
     ValidOperators,
     {
-        query: (col: string, input: string | number | string[]) => string;
+        query: (col: string, input: string | number | string[], distance?: number) => string;
         types: ColumnType[];
         hideInput?: boolean;
     }
@@ -277,8 +279,7 @@ const operatorsDefault = new Map<
     [
         ValidOperators.Crosses,
         {
-            query: (col: string, input: string | number | string[]) =>
-                `crosses(${col}, ${JSON.stringify(input)})`,
+            query: (col: string, input: string | number | string[]) => Query.crosses(col,[input]),
             types: [ValidTypes.Line, ValidTypes.Polygon]
         }
     ],
@@ -293,32 +294,32 @@ const operatorsDefault = new Map<
     [
         ValidOperators.DistanceEqual,
         {
-            query: (col: string, input: string | number | string[]) =>
-                `distanceEqual(${col}, ${JSON.stringify(input)})`,
+            query: (col: string, input: string | number | string[], distance?: number) =>
+                `distanceEqual(${col}, ${JSON.stringify(input)}, ${distance})`,
             types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ],
     [
         ValidOperators.DistanceNotEqual,
         {
-            query: (col: string, input: string | number | string[]) =>
-                `distanceNotEqual(${col}, ${JSON.stringify(input)})`,
+            query: (col: string, input: string | number | string[], distance?: number) =>
+                `distanceNotEqual(${col}, ${JSON.stringify(input)}, ${distance})`,
             types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ],
     [
         ValidOperators.DistanceGreaterThan,
         {
-            query: (col: string, input: string | number | string[]) =>
-                `distanceGreaterThan(${col}, ${JSON.stringify(input)})`,
+            query: (col: string, input: string | number | string[], distance?: number) =>
+                `distanceGreaterThan(${col}, ${JSON.stringify(input)}, ${distance})`,
             types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ],
     [
         ValidOperators.DistanceLessThan,
         {
-            query: (col: string, input: string | number | string[]) =>
-                `distanceLessThan(${col}, ${JSON.stringify(input)})`,
+            query: (col: string, input: string | number | string[], distance?: number) =>
+                `distanceLessThan(${col}, ${JSON.stringify(input)}, ${distance})`,
             types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ],
