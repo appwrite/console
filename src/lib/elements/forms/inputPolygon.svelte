@@ -47,10 +47,10 @@
                 onChangePoint={(pointIndex, coordIndex, newValue) =>
                     handlePointChange(index, pointIndex, coordIndex, newValue)}
                 disableDeleteLine={index < 2} 
-                disableDeletePointsIndex={4}>
+                disableDeletePointsIndex={disableDeletePointsIndex}>
                     <svelte:fragment slot="line-button">
                         {#if index === values.length-1}
-                            <Button size="xs" compact on:click={handleAddLineInternal}>
+                            <Button disabled={nullable} size="xs" compact on:click={handleAddLineInternal}>
                                 <Icon icon={IconPlus} size="s" /> Add line
                             </Button>
                         {/if}

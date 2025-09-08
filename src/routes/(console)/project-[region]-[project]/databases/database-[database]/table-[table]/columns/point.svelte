@@ -46,9 +46,11 @@
         required: false,
         default: null
     };
+    export let editing = false;
 
     let savedDefault = data.default;
     let showDefaultPointDummyData = false;
+    let defaultPointAdded = false;
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
@@ -68,6 +70,7 @@
     });
 
     function handleAddDefault() {
+        defaultPointAdded = true;
         data.default = getDefaultSpatialData('point') as number[];
     }
 
@@ -76,6 +79,8 @@
     $: handleDefaultState($required);
 
     $: showDefaultPointDummyData = $required ? true : false;
+
+    $:console.log(editing)
 </script>
 
 <Selector.Checkbox
@@ -92,7 +97,7 @@
             <Typography.Text variant="m-600">Default</Typography.Text>
             <Typography.Caption variant="400">Optional</Typography.Caption>
         </Layout.Stack>
-        {#if !data.default}
+        {#if !data.default && ((!editing && !defaultPointAdded) || (editing && !showDefaultPointDummyData))}
             <Button secondary on:click={handleAddDefault}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Add Point
@@ -100,8 +105,8 @@
         {/if}
     </Layout.Stack>
     <InputPoint
-        values={data.default}
-        nullable={showDefaultPointDummyData}
+        values={(showDefaultPointDummyData && ((!editing && defaultPointAdded) || (editing && !data.default))) ? getDefaultSpatialData("point") : data.default}
+        nullable={showDefaultPointDummyData && ((!editing && defaultPointAdded) || (editing && !data.default))}
         onChangePoint={(index, newValue) => {
             if (data.default) {
                 data.default[index] = newValue;

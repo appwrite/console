@@ -183,13 +183,16 @@
             {/if}
             
             {#if isDistanceOperator}
+            <div style="margin-top: 8px;">
                 <InputNumber
                     id="distance"
                     bind:value={distanceValue}
                     placeholder="Enter distance"
                     step={0.001}
                     min={0}
-                    required={true} />
+                    required
+                />
+            </div>
             {/if}
         {/if}
         {#if !singleCondition}

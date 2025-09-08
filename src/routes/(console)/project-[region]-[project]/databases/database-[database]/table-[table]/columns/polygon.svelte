@@ -46,9 +46,11 @@
         required: false,
         default: null
     };
+    export let editing = false;
 
     let savedDefault = data.default;
     let showDefaultPointDummyData = false;
+    let defaultPolygonAdded = false;
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
@@ -97,6 +99,7 @@
     });
 
     function handleAddDefault(){
+        defaultPolygonAdded = true;
         data.default = getDefaultSpatialData("polygon") as number[][][];
     }
 
@@ -121,7 +124,7 @@
             <Typography.Text variant="m-600">Default</Typography.Text>
             <Typography.Caption variant="400">Optional</Typography.Caption>
         </Layout.Stack>
-        {#if !data.default}
+        {#if !data.default && ((!editing && !defaultPolygonAdded) || (editing && !showDefaultPointDummyData))}
             <Button secondary on:click={handleAddDefault}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Add Polygon
@@ -129,8 +132,8 @@
         {/if}
     </Layout.Stack>
     <InputPolygon
-        values={data.default}
-        nullable={showDefaultPointDummyData}
+        values={(defaultPolygonAdded && showDefaultPointDummyData) ? getDefaultSpatialData("polygon") : data.default}
+        nullable={defaultPolygonAdded && showDefaultPointDummyData}
         onAddLine={pushLine}
         onAddPoint={pushCoordinate}
         onDeletePoint={deleteCoordinate}

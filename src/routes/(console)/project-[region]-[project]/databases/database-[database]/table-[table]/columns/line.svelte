@@ -46,9 +46,11 @@
         required: false,
         default: null
     };
+    export let editing = false;
 
     let savedDefault = data.default;
     let showDefaultPointDummyData = false;
+    let defaultLineAdded = false;
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
@@ -76,6 +78,7 @@
     });
     
     function handleAddDefault() {
+        defaultLineAdded = true;
         data.default = getDefaultSpatialData('linestring') as number[][];
     }
 
@@ -101,7 +104,7 @@
             <Typography.Text variant="m-600">Default</Typography.Text>
             <Typography.Caption variant="400">Optional</Typography.Caption>
         </Layout.Stack>
-        {#if !data.default}
+        {#if !data.default && ((!editing && !defaultLineAdded) || (editing && !showDefaultPointDummyData))}
             <Button secondary on:click={handleAddDefault}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Add Line
@@ -109,9 +112,9 @@
         {/if}
     </Layout.Stack>
     <InputLine
-        values={data.default}
+        values={(defaultLineAdded && showDefaultPointDummyData) ? getDefaultSpatialData("point") : data.default}
         onAddPoint={pushCoordinate}
-        nullable={showDefaultPointDummyData}
+        nullable={defaultLineAdded && showDefaultPointDummyData}
         onDeletePoint={deleteCoordinate}
         onChangePoint={(pointIndex, coordIndex, newValue) => {
             if (data.default && data.default[pointIndex]) {
