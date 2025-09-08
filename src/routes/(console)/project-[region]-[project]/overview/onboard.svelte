@@ -24,6 +24,10 @@
     import DatabaseImgSourceDark from './assets/database-dark.png';
     import DiscordImgSource from './assets/discord.png';
     import DiscordImgSourceDark from './assets/discord-dark.png';
+    import CursorIcon from './components/CursorIcon.svelte';
+    import ClaudeIcon from './components/ClaudeIcon.svelte';
+    import VSCodeIcon from './components/VSCodeIcon.svelte';
+    import WindsurfIcon from './components/WindsurfIcon.svelte';
     import PlatformIosImgSource from './assets/platform-ios.svg';
     import PlatformIosImgSourceDark from './assets/platform-ios-dark.svg';
     import PlatformAndroidImgSource from './assets/platform-android.svg';
@@ -102,9 +106,7 @@
                                 </Layout.Stack>
                             </div>
                             <Layout.Stack gap="l">
-                                <Layout.Stack
-                                    gap="l"
-                                    direction={$isSmallViewport ? 'column' : 'row'}>
+                                <Layout.Stack gap="l" direction="row">
                                     <Card.Button
                                         on:click={() => {
                                             openPlatformWizard(0, platformMap.get('Web'));
@@ -560,18 +562,54 @@
                                                         direction="row"
                                                         gap="s"
                                                         wrap="wrap">
-                                                        <Button.Button size="s" variant="secondary">
+                                                        <Button.Anchor
+                                                            href="https://apwr.dev/docs-mcp-cursor?ref=docs"
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            size="s"
+                                                            variant="secondary">
+                                                            <Icon
+                                                                slot="start"
+                                                                icon={CursorIcon}
+                                                                size="xs" />
                                                             Cursor
-                                                        </Button.Button>
-                                                        <Button.Button size="s" variant="secondary">
+                                                        </Button.Anchor>
+                                                        <Button.Anchor
+                                                            href="https://appwrite.io/docs/tooling/mcp/claude"
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            size="s"
+                                                            variant="secondary">
+                                                            <Icon
+                                                                slot="start"
+                                                                icon={ClaudeIcon}
+                                                                size="xs" />
                                                             Claude Desktop
-                                                        </Button.Button>
-                                                        <Button.Button size="s" variant="secondary">
+                                                        </Button.Anchor>
+                                                        <Button.Anchor
+                                                            href="https://apwr.dev/docs-mcp-vscode?ref=docs"
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            size="s"
+                                                            variant="secondary">
+                                                            <Icon
+                                                                slot="start"
+                                                                icon={VSCodeIcon}
+                                                                size="xs" />
                                                             VS code
-                                                        </Button.Button>
-                                                        <Button.Button size="s" variant="secondary">
+                                                        </Button.Anchor>
+                                                        <Button.Anchor
+                                                            href="https://appwrite.io/docs/tooling/mcp/windsurf"
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            size="s"
+                                                            variant="secondary">
+                                                            <Icon
+                                                                slot="start"
+                                                                icon={WindsurfIcon}
+                                                                size="xs" />
                                                             Windsurf editor
-                                                        </Button.Button>
+                                                        </Button.Anchor>
                                                     </Layout.Stack>
                                                 </Layout.Stack>
                                             </Layout.Stack>
@@ -584,22 +622,30 @@
                                         on:click={() => {
                                             trackEvent(Click.OnboardingDiscordClick);
                                         }}
-                                        style={`flex: ${$isSmallViewport ? '1 1 auto' : '1 1 30%'};`}>
+                                        style={`flex: ${$isSmallViewport ? '1 1 auto' : '1 1 28%'};`}>
                                         <div class="full-height-card">
                                             <Layout.Stack gap="xs" justifyContent="space-between">
                                                 <Layout.Stack
                                                     direction="row"
-                                                    alignItems="flex-start"
-                                                    gap="xs"
+                                                    alignItems="center"
+                                                    justifyContent="space-between"
                                                     class="discord-header">
-                                                    <img
-                                                        src={$app.themeInUse === 'dark'
-                                                            ? DiscordImgSourceDark
-                                                            : DiscordImgSource}
-                                                        class="discord"
-                                                        alt="" />
-                                                    <Typography.Title size="s"
-                                                        >Discord</Typography.Title>
+                                                    <Layout.Stack
+                                                        direction="row"
+                                                        alignItems="flex-start"
+                                                        gap="xs">
+                                                        <img
+                                                            src={$app.themeInUse === 'dark'
+                                                                ? DiscordImgSourceDark
+                                                                : DiscordImgSource}
+                                                            class="discord"
+                                                            alt="" />
+                                                        <Typography.Title size="s"
+                                                            >Discord</Typography.Title>
+                                                    </Layout.Stack>
+                                                    <div class="arrow-icon arrow-icon-discord">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
                                                 </Layout.Stack>
                                                 <Layout.Stack
                                                     direction="row"
@@ -610,9 +656,6 @@
                                                         color="--fgcolor-neutral-secondary">
                                                         Join our Discord for support, tips and
                                                         product updates</Typography.Text>
-                                                    <div class="arrow-icon arrow-icon-discord">
-                                                        <Icon icon={IconArrowRight} size="s" />
-                                                    </div>
                                                 </Layout.Stack>
                                             </Layout.Stack>
                                         </div>
@@ -734,7 +777,7 @@
             }
         }
         .arrow-icon-discord {
-            align-items: flex-end;
+            align-items: flex-start;
         }
 
         .platform-image {
