@@ -28,7 +28,8 @@ export const load = async ({ params, depends, url, route, parent }) => {
                     'totalSize',
                     'buildDuration',
                     'status',
-                    'type'
+                    'type',
+                    'resourceId'
                 ]),
                 ...parsedQueries.values()
             ]
