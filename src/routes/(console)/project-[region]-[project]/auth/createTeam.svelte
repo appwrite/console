@@ -47,6 +47,7 @@
     $effect(() => {
         if (!showCreate) {
             showCustomId = false;
+            id = null;
             error = null;
         }
     });
