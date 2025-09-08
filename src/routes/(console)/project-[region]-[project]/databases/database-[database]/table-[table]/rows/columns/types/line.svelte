@@ -58,5 +58,6 @@
         nullable={false}
         {onAddPoint}
         {onDeletePoint}
-        onChangePoint={handlePointChange} />
+        onChangePoint={handlePointChange}
+        disableDeletePointsIndex={2}/>
 </Layout.Stack>

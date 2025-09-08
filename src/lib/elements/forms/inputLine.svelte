@@ -6,19 +6,25 @@
 
     export let values: number[][];
     export let nullable: boolean;
-    export let disableDeletePointsCountPerLine: number = 2;
+    export let disableDeletePointsIndex: number = 2;
+    export let disableDeleteLine: boolean|undefined = undefined;
     export let onAddPoint: (index: number) => void;
     export let onDeletePoint: (index: number) => void = undefined;
     export let onChangePoint: (pointIndex: number, coordIndex: number, newValue: number) => void =
         undefined;
 
-    let disableDeletePoints = false;
-    $: disableDeletePoints = !values || values.length <= disableDeletePointsCountPerLine;
-
     function handlePointChange(pointIndex: number, coordIndex: number, newValue: number) {
         if (onChangePoint) {
             onChangePoint(pointIndex, coordIndex, newValue);
         }
+    }
+
+    function isDeleteDisabled(index: number) {
+        let disable = index < disableDeletePointsIndex;
+        if (disableDeleteLine !== undefined) {
+            disable = disable && disableDeleteLine;
+        }
+        return disable;
     }
 </script>
 
@@ -29,7 +35,7 @@
                 nullable={nullable}
                 values={value}
                 deletePoints={true}
-                disableDelete={disableDeletePoints}
+                disableDelete={isDeleteDisabled(index)}
                 onDeletePoint={() => onDeletePoint(index)}
                 onChangePoint={(coordIndex, newValue) =>
                     handlePointChange(index, coordIndex, newValue)} />

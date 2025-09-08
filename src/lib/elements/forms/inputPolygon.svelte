@@ -16,7 +16,7 @@
         coordIndex: number,
         newValue: number
     ) => void = undefined;
-    export let disableDeletePointsCountPerLine: number = 4;
+    export let disableDeletePointsIndex: number = 4;
 
     function handlePointChange(
         lineIndex: number,
@@ -46,7 +46,8 @@
                 onDeletePoint={() => onDeletePoint(index)}
                 onChangePoint={(pointIndex, coordIndex, newValue) =>
                     handlePointChange(index, pointIndex, coordIndex, newValue)}
-                {disableDeletePointsCountPerLine} />
+                disableDeleteLine = {index < 2} 
+                disableDeletePointsIndex = {4}/>
         </Layout.Stack>
     {/each}
     

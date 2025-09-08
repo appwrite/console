@@ -21,8 +21,6 @@
         const newPoint = getDefaultSpatialData('point') as number[];
         ring.splice(ring.length - 1, 0, newPoint);
         ring[ring.length - 1] = [...ring[0]];
-        
-        // Trigger reactivity by reassigning
         value = [...value];
     }
 
@@ -33,8 +31,6 @@
         const p2 = getDefaultSpatialData('point') as number[];
         const p3 = getDefaultSpatialData('point') as number[];
         const ring = [p1, p2, p3, [...p1]];
-        
-        // Trigger reactivity by reassigning
         value = [...value, ring];
     }
 
@@ -42,10 +38,11 @@
         if (!value) return;
 
         const ring = value.at(ringIndex);
-        if (!ring || ring.length <= 4) return;
 
-        ring.splice(ring.length - 2, 1);
-        ring[ring.length - 1] = [...ring[0]];
+        ring.splice(ring.length - 1, 1);
+        if (ring.length === 0) {
+            value.splice(ringIndex, 1);
+        }
         value = [...value];
     }
 

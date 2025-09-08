@@ -79,10 +79,12 @@
 
     function deleteCoordinate(ringIndex: number) {
         const ring = data.default?.at(ringIndex);
-        if (!ring || ring.length <= 4) return;
 
-        ring.splice(ring.length - 2, 1);
-        ring[ring.length - 1] = [...ring[0]];
+        ring.splice(ring.length - 1, 1);
+        if (ring.length === 0) {
+            data.default.splice(ringIndex, 1);
+        }
+
         data.default = [...(data.default || [])];
     }
 
@@ -135,7 +137,6 @@
         onChangePoint={(lineIndex, pointIndex, coordIndex, newValue) => {
             if (data.default && data.default[lineIndex] && data.default[lineIndex][pointIndex]) {
                 data.default[lineIndex][pointIndex][coordIndex] = newValue;
-                // Trigger reactivity by reassigning
                 data.default = [...data.default];
             }
         }} />
