@@ -271,21 +271,27 @@
                                     required
                                     bind:value={variable.value}
                                     style="flex: 2" />
-                                <div
-                                    style="display: flex; flex-direction: column; gap: 0.25rem; min-width: 80px; align-items: center;">
+                                <Layout.Stack
+                                    direction="column"
+                                    gap="s"
+                                    alignItems="center"
+                                    style="max-width: 60px;">
                                     {#if i === 0}
-                                        <span
-                                            style="font-size: 0.875rem; color: var(--color-neutral-70);"
-                                            >Secret</span>
+                                        <Typography.Text variant="m-500">Secret</Typography.Text>
                                     {/if}
-                                    <div
-                                        style="height: 2.5rem; display: flex; align-items: center; justify-content: center;">
+
+                                    <Layout.Stack
+                                        direction="row"
+                                        gap="s"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        height="2.5rem">
                                         <Selector.Checkbox
                                             size="s"
                                             id="secret-{i}"
                                             bind:checked={variable.secret} />
-                                    </div>
-                                </div>
+                                    </Layout.Stack>
+                                </Layout.Stack>
                             </Layout.Stack>
                         {/each}
                     </Layout.Stack>
