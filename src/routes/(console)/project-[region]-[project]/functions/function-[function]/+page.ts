@@ -40,7 +40,8 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
                         'totalSize',
                         'buildDuration',
                         'status',
-                        'type'
+                        'type',
+                        'functionId'
                     ]),
                     ...parsedQueries.values()
                 ]
