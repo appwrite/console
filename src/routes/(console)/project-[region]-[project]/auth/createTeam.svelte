@@ -10,14 +10,14 @@
     import { Icon, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
 
-    export let showCreate = false;
+    let { showCreate = $bindable(false) }: { showCreate: boolean } = $props();
 
     const dispatch = createEventDispatcher();
 
-    let name: string;
-    let id: string | null = null;
-    let error: string;
-    let showCustomId = false;
+    let name = $state<string>('');
+    let id = $state<string | null>(null);
+    let error = $state<string | null>(null);
+    let showCustomId = $state(false);
 
     const create = async () => {
         try {
@@ -44,10 +44,12 @@
         }
     };
 
-    $: if (!showCreate) {
-        showCustomId = false;
-        error = null;
-    }
+    $effect(() => {
+        if (!showCreate) {
+            showCustomId = false;
+            error = null;
+        }
+    });
 </script>
 
 <Modal title="Create team" {error} size="m" bind:show={showCreate} onSubmit={create}>
