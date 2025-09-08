@@ -7,12 +7,18 @@
     import { Fieldset, Layout, Status, Typography } from '@appwrite.io/pink-svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
-    export let domain: string;
-    export let domainIsValid = true;
-    const originalDomain = domain;
-    let newDomain = domain;
+    let {
+        domain,
+        domainIsValid = $bindable(true)
+    }: {
+        domain: string;
+        domainIsValid?: boolean;
+    } = $props();
 
-    let domainStatus: 'complete' | 'failed' | 'pending' = 'complete';
+    const originalDomain = domain;
+
+    let newDomain = $state(domain);
+    let domainStatus: 'complete' | 'failed' | 'pending' = $state('complete');
 
     function setDomainLabel(status: typeof domainStatus) {
         switch (status) {
@@ -46,10 +52,12 @@
         }
     }, 500);
 
-    $: if (domain !== newDomain) {
-        domainStatus = 'pending';
-        checkDomain(newDomain);
-    }
+    $effect(() => {
+        if (domain !== newDomain) {
+            domainStatus = 'pending';
+            checkDomain(newDomain);
+        }
+    });
 </script>
 
 <Fieldset legend="Domains">
