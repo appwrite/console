@@ -14,7 +14,9 @@
 
     const dispatch = createEventDispatcher();
 
-    let name: string, id: string, error: string;
+    let name: string;
+    let id: string | null = null;
+    let error: string;
     let showCustomId = false;
 
     const create = async () => {
