@@ -18,7 +18,6 @@
         Selector
     } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconExternalLink, IconPencil } from '@appwrite.io/pink-icons-svelte';
-    import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { ID, Runtime } from '@appwrite.io/console';
     import { CustomId } from '$lib/components';
@@ -26,49 +25,61 @@
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { iconPath } from '$lib/stores/app';
     import type { PageData } from './$types';
+    import { getLatestTag } from '$lib/helpers/github';
+    import { writable } from 'svelte/store';
 
-    export let data: PageData;
+    let {
+        data
+    }: {
+        data: PageData;
+    } = $props();
 
-    let showExitModal = false;
-    let showCustomId = false;
-    let isSubmitting = writable(false);
+    let showExitModal = $state(false);
+    let showCustomId = $state(false);
+    let isSubmitting = $state(writable(false));
 
-    // State variables
-    let name = '';
-    let id = '';
-    let runtime: Runtime;
-    let entrypoint = '';
-    let installCommand = '';
-    let rootDir = './';
-    let variables: Array<{ key: string; value: string; secret: boolean }> = [];
-    let specification = '';
-    let execute = true;
-    let selectedScopes: string[] = [];
+    let id = $state(ID.unique());
+    let name = $state(data.repository.name);
 
-    // Track the latest tag (needed for deployment, but not shown in UI)
-    let latestTag = '';
+    let rootDir = $state('./');
+    let execute = $state(true);
+    let entrypoint = $state('');
+    let specification = $state('');
+    let runtime = $state<Runtime>();
+    let installCommand = $state('');
+    let selectedScopes = $state<string[]>([]);
+    let variables = $state<Array<{ key: string; value: string; secret: boolean }>>([]);
 
-    const specificationOptions =
+    let latestTag = $state(null);
+
+    const specificationOptions = $derived(
         data.specificationsList?.specifications?.map((size) => ({
             label:
                 `${size.cpus} CPU, ${size.memory} MB RAM` +
                 (!size.enabled ? ` (Upgrade to use this)` : ''),
             value: size.slug,
             disabled: !size.enabled
-        })) || [];
+        })) || []
+    );
+
+    const runtimeOptions = $derived(
+        data.runtimesList?.runtimes?.map((r) => ({
+            value: r.$id,
+            label: `${r.name} - ${r.version}`,
+            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(r.$id), 'color')}' style='inline-size: var(--icon-size-m)' />`
+        })) || []
+    );
 
     onMount(() => {
-        // Initialize default values
-        name = data.repository.name;
-        id = ID.unique();
-
         // Get URL params
         const runtimeParam = data.runtime || page.url.searchParams.get('runtime') || 'node-18.0';
         runtime = runtimeParam as Runtime;
 
         // Build configuration - use from URL params or defaults
         entrypoint = page.url.searchParams.get('entrypoint') || '';
-        installCommand = page.url.searchParams.get('install') || ''; // Using 'install' param for consistency with sites
+
+        // Using 'install' param for consistency with sites
+        installCommand = page.url.searchParams.get('install') || '';
         rootDir = page.url.searchParams.get('rootDir') || './';
 
         // Set default specification
@@ -81,105 +92,67 @@
             variables = data.envKeys.map((key) => ({ key, value: '', secret: false }));
         }
 
-        // Fetch latest tag in the background (needed for deployment)
-        fetchLatestGitHubTag();
+        getLatestTag(data.repository.owner, data.repository.name).then(
+            (tagName) => (latestTag = tagName)
+        );
     });
 
-    async function fetchLatestGitHubTag(): Promise<void> {
-        try {
-            const tagsResponse = await fetch(
-                `https://api.github.com/repos/${data.repository.owner}/${data.repository.name}/tags`
-            );
-
-            if (!tagsResponse.ok) {
-                console.error('Failed to fetch tags from GitHub');
-                return;
-            }
-
-            const tags = await tagsResponse.json();
-            if (tags.length > 0) {
-                latestTag = tags[0].name;
-            }
-        } catch (error) {
-            console.error('Failed to fetch tags from GitHub:', error);
-        }
-    }
-
     async function create() {
-        // If no tag was fetched, try to get it now
-        if (!latestTag) {
-            await fetchLatestGitHubTag();
-        }
-
-        if (!latestTag) {
-            addNotification({
-                type: 'error',
-                message: 'No tag available for deployment. Please create a tag in your repository.'
-            });
-            return;
-        }
+        $isSubmitting = true;
 
         try {
+            if (!latestTag) {
+                latestTag = await getLatestTag(data.repository.owner, data.repository.name);
+            }
+
             // Create function with configuration
             const func = await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.create(
-                    id || ID.unique(),
+                .functions.create({
+                    functionId: id || ID.unique(),
                     name,
                     runtime,
-                    execute ? ['any'] : undefined, // Default permissions
-                    undefined, // events
-                    undefined, // cron
-                    undefined, // timeout
-                    undefined, // enabled
-                    undefined, // logging
-                    entrypoint || undefined,
-                    installCommand || undefined, // This is the commands parameter
-                    selectedScopes?.length ? selectedScopes : undefined,
-                    undefined, // installationId - will be null for repo deployments without VCS
-                    undefined, // repositoryId
-                    undefined, // branch
-                    false, // silentMode
-                    undefined, // rootDir
-                    specification || undefined
-                );
+                    execute: execute ? ['any'] : undefined,
+                    entrypoint: entrypoint || undefined,
+                    commands: installCommand || undefined,
+                    scopes: selectedScopes?.length ? selectedScopes : undefined,
+                    providerSilentMode: false,
+                    specification: specification || undefined
+                });
 
             // Add domain
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .proxy.createFunctionRule(
-                    `${ID.unique()}.${$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS}`,
-                    func.$id
-                );
+            await sdk.forProject(page.params.region, page.params.project).proxy.createFunctionRule({
+                domain: `${ID.unique()}.${$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS}`,
+                functionId: func.$id
+            });
 
             // Add variables
             const promises = variables.map((variable) =>
-                sdk
-                    .forProject(page.params.region, page.params.project)
-                    .functions.createVariable(
-                        func.$id,
-                        variable.key,
-                        variable.value,
-                        variable.secret
-                    )
+                sdk.forProject(page.params.region, page.params.project).functions.createVariable({
+                    functionId: func.$id,
+                    key: variable.key,
+                    value: variable.value,
+                    secret: variable.secret
+                })
             );
+
             await Promise.all(promises);
 
             // Create deployment from GitHub repository using the latest tag
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.createTemplateDeployment(
-                    func.$id,
-                    data.repository.name,
-                    data.repository.owner,
-                    rootDir || '.',
-                    latestTag,
-                    true
-                );
+                .functions.createTemplateDeployment({
+                    functionId: func.$id,
+                    repository: data.repository.name,
+                    owner: data.repository.owner,
+                    rootDirectory: rootDir || '.',
+                    version: latestTag ?? '1.0.0',
+                    activate: true
+                });
 
             trackEvent(Submit.FunctionCreate, {
                 source: 'deploy-button',
-                runtime: runtime,
+                runtime: runtime!,
                 repository: data.repository.url
             });
 
@@ -192,16 +165,10 @@
                 message: e.message
             });
             trackError(e, Submit.FunctionCreate);
+        } finally {
+            $isSubmitting = false;
         }
     }
-
-    // Runtime options
-    const runtimeOptions =
-        data.runtimesList?.runtimes?.map((r) => ({
-            value: r.$id,
-            label: `${r.name} - ${r.version}`,
-            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(r.$id), 'color')}' style='inline-size: var(--icon-size-m)' />`
-        })) || [];
 </script>
 
 <svelte:head>
@@ -213,7 +180,7 @@
     bind:showExitModal
     href={`${base}/project-${page.params.region}-${page.params.project}/functions/`}
     confirmExit>
-    <Form onSubmit={create} bind:isSubmitting>
+    <Form onSubmit={create} {isSubmitting}>
         <Layout.Stack gap="xl">
             <Card padding="s" radius="s">
                 <Layout.Stack gap="m">
@@ -246,7 +213,7 @@
                             <CustomId bind:id bind:show={showCustomId} name="Function" />
                         {:else}
                             <div>
-                                <Tag size="s" on:click={() => (showCustomId = !showCustomId)}>
+                                <Tag size="s" onclick={() => (showCustomId = !showCustomId)}>
                                     <Icon icon={IconPencil} size="s" />
                                     Function ID
                                 </Tag>
