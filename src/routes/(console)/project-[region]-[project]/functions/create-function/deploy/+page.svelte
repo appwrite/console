@@ -41,13 +41,13 @@
     let id = $state(ID.unique());
     let name = $state(data.repository.name);
 
-    let rootDir = $state('./');
     let execute = $state(true);
     let entrypoint = $state('');
     let specification = $state('');
     let runtime = $state<Runtime>();
     let installCommand = $state('');
     let selectedScopes = $state<string[]>([]);
+    let rootDir = $state(data.repository?.rootDirectory);
     let variables = $state<Array<{ key: string; value: string; secret: boolean }>>([]);
 
     let latestTag = $state(null);
@@ -71,23 +71,18 @@
     );
 
     onMount(() => {
-        // Get URL params
         const runtimeParam = data.runtime || page.url.searchParams.get('runtime') || 'node-18.0';
         runtime = runtimeParam as Runtime;
 
-        // Build configuration - use from URL params or defaults
         entrypoint = page.url.searchParams.get('entrypoint') || '';
 
-        // Using 'install' param for consistency with sites
         installCommand = page.url.searchParams.get('install') || '';
-        rootDir = page.url.searchParams.get('rootDir') || './';
+        rootDir = page.url.searchParams.get('rootDir') || data.repository?.rootDirectory || './';
 
-        // Set default specification
         if (specificationOptions.length > 0) {
             specification = specificationOptions[0].value;
         }
 
-        // Initialize environment variables from query params
         if (data.envKeys.length > 0) {
             variables = data.envKeys.map((key) => ({ key, value: '', secret: false }));
         }

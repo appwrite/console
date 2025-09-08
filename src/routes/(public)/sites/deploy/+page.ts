@@ -7,37 +7,35 @@ import { ID, type Models } from '@appwrite.io/console';
 import type { OrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';
 import type { PageLoad } from './$types';
+import { getRepositoryInfo } from '$lib/helpers/github';
 
 export const load: PageLoad = async ({ parent, url }) => {
     const { account } = await parent();
 
-    // Store the full URL for redirect after auth
     const fullUrl = url.pathname + url.search;
 
-    // Check if user is authenticated
     if (!account) {
         redirectTo.set(fullUrl);
         redirect(302, base + '/login?redirect=' + encodeURIComponent(fullUrl));
     }
 
-    // Check deployment type - either template or repo
     const templateKey = url.searchParams.get('template');
-    const repoUrl = url.searchParams.get('repo');
+    const repository = url.searchParams.get('repo') || url.searchParams.get('repository');
 
-    // Must have either template or repo, but not both
-    if (!templateKey && !repoUrl) {
+    if (!templateKey && !repository) {
         redirect(302, base + '/');
     }
-    if (templateKey && repoUrl) {
+
+    if (templateKey && repository) {
         error(400, 'Cannot specify both template and repo parameters');
     }
 
     // Get common parameters
-    const envParam = url.searchParams.get('env');
-    const envKeys = envParam ? envParam.split(',').map((key: string) => key.trim()) : [];
-    const screenshot = url.searchParams.get('screenshot');
     const name = url.searchParams.get('name');
+    const envParam = url.searchParams.get('env');
     const tagline = url.searchParams.get('tagline');
+    const screenshot = url.searchParams.get('screenshot');
+    const envKeys = envParam ? envParam.split(',').map((key: string) => key.trim()) : [];
 
     let deploymentData: {
         type: 'template' | 'repo';
@@ -49,52 +47,48 @@ export const load: PageLoad = async ({ parent, url }) => {
     };
 
     if (templateKey) {
-        // Template deployment
         try {
-            const template = await sdk.forConsole.sites.getTemplate(templateKey);
+            const template = await sdk.forConsole.sites.getTemplate({ templateId: templateKey });
             deploymentData = {
                 type: 'template',
                 template,
-                screenshot: screenshot || template.screenshotLight,
                 name: name || template.name,
-                tagline: tagline || template.tagline
+                tagline: tagline || template.tagline,
+                // TODO: maybe get the browser's theme
+                //  and select appropriate theme here.
+                screenshot: screenshot || template.screenshotLight
             };
         } catch (e) {
             error(404, `Template "${templateKey}" not found`);
         }
     } else {
-        // Repository deployment
-        const repoMatch = repoUrl!.match(/github\.com[/:]([^/]+)\/([^/?s]+)/);
-        if (!repoMatch) {
+        const info = getRepositoryInfo(repository!);
+        if (!info) {
+            console.log(info);
             redirect(302, base + '/');
         }
-
-        const [, owner, repoName] = repoMatch;
-        // Clean repository name (remove .git extension if present)
-        const cleanRepoName = repoName.replace(/\.git$/, '');
 
         deploymentData = {
             type: 'repo',
             repository: {
-                url: repoUrl!,
-                owner,
-                name: cleanRepoName
+                url: repository,
+                name: info.name,
+                owner: info.owner
             },
             screenshot,
-            name: name || cleanRepoName,
+            name: name || info.name,
             tagline
         };
     }
 
-    // Get organizations
     let organizations: Models.TeamList<Record<string, unknown>> | OrganizationList | undefined;
+
     if (isCloud) {
         organizations = await sdk.forConsole.billing.listOrganization();
     } else {
         organizations = await sdk.forConsole.teams.list();
     }
 
-    // Create default organization if none exists - matches console's onboarding behavior
     if (!organizations?.total) {
         try {
             if (isCloud) {
@@ -102,11 +96,13 @@ export const load: PageLoad = async ({ parent, url }) => {
                     ID.unique(),
                     'Personal Projects',
                     BillingPlan.FREE,
-                    null,
                     null
                 );
             } else {
-                await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
+                await sdk.forConsole.teams.create({
+                    teamId: ID.unique(),
+                    name: 'Personal Projects'
+                });
             }
 
             // Refetch organizations after creation
@@ -116,8 +112,6 @@ export const load: PageLoad = async ({ parent, url }) => {
                 organizations = await sdk.forConsole.teams.list();
             }
         } catch (e) {
-            // If organization creation fails, still redirect to deploy page
-            // The page will handle showing an error
             console.error('Failed to create default organization:', e);
         }
     }

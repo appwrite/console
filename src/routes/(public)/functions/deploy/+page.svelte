@@ -10,7 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
     import { ID, Query, type Models, Region } from '@appwrite.io/console';
-    import { IconGithub, IconPencil, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
+    import { IconGithub, IconPencil, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Card, Divider, Icon, Input, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { filterRegions } from '$lib/helpers/regions';
     import { loadAvailableRegions } from '$routes/(console)/regions';
@@ -27,23 +27,33 @@
     let showCustomId = $state(false);
     let region = $state<AllowedRegions>();
     let id = $state<string>('');
+
+    let loadingProjects = $state(false);
+
     async function fetchProjects() {
-        projects = await sdk.forConsole.projects.list([
-            Query.equal('teamId', selectedOrg),
-            Query.orderDesc('')
-        ]);
-        selectedProject = projects?.total ? projects.projects[0].$id : 'create-new';
+        loadingProjects = true;
+
+        projects = await sdk.forConsole.projects.list({
+            queries: [Query.equal('teamId', selectedOrg), Query.orderDesc('')]
+        });
+
+        selectedProject = projects?.total ? projects.projects[0].$id : null;
+        loadingProjects = false;
     }
 
     async function handleSubmit() {
-        if (selectedProject === 'create-new') {
+        if (selectedProject === null) {
             try {
-                const p = await sdk.forConsole.projects.create(
-                    id ?? ID.unique(),
-                    projectName,
-                    selectedOrg,
-                    isCloud ? (region as Region) : undefined
-                );
+                loadingProjects = true;
+                const project = await sdk.forConsole.projects.create({
+                    projectId: id ?? ID.unique(),
+                    name: projectName,
+                    teamId: selectedOrg,
+                    region: isCloud ? (region as Region) : undefined
+                });
+
+                selectedProject = project.$id;
+
                 trackEvent(Submit.ProjectCreate, {
                     customId: !!id,
                     selectedOrg,
@@ -51,9 +61,7 @@
                     source: 'deploy-button-functions'
                 });
 
-                selectedProject = p.$id;
-
-                const deployUrl = buildDeployUrl(p);
+                const deployUrl = buildDeployUrl(project);
                 await goto(deployUrl);
             } catch (e) {
                 trackError(e, Submit.ProjectCreate);
@@ -61,6 +69,8 @@
                     type: 'error',
                     message: e.message
                 });
+            } finally {
+                loadingProjects = false;
             }
         } else {
             const project = projects.projects.find((p) => p.$id === selectedProject);
@@ -70,15 +80,14 @@
     }
 
     function buildDeployUrl(project: Models.Project) {
-        // Use the selected region or default to 'default' if not available
-        const projectRegion = isCloud ? region : 'default';
         let url: URL;
+        const projectRegion = isCloud ? region : 'default';
 
-        // For repository deployments, navigate to the deploy page
         url = new URL(
             `${base}/project-${projectRegion}-${project.$id}/functions/create-function/deploy`,
             window.location.origin
         );
+
         url.searchParams.set('repo', data.deploymentData.repository.url);
 
         // Pass runtime if specified from original URL
@@ -96,7 +105,11 @@
         if (entrypoint) url.searchParams.set('entrypoint', entrypoint);
         if (install) url.searchParams.set('install', install);
         if (build) url.searchParams.set('build', build);
-        if (rootDir) url.searchParams.set('rootDir', rootDir);
+        if (rootDir)
+            url.searchParams.set(
+                'rootDir',
+                rootDir || data.deploymentData.repository.rootDirectory
+            );
 
         if (data.envKeys.length > 0) {
             url.searchParams.set('env', data.envKeys.join(','));
@@ -111,14 +124,12 @@
         }
     });
 
-    // Load regions when organization is selected
     $effect(() => {
         if (isCloud && selectedOrg) {
             loadAvailableRegions(selectedOrg);
         }
     });
 
-    // Set default region when regions are loaded
     $effect(() => {
         if (isCloud && $regionsStore.regions?.length > 0 && !region) {
             region = $regionsStore.regions.find((r) => r.default)?.$id as AllowedRegions;
@@ -194,25 +205,28 @@
                                     }))}
                                     bind:value={selectedOrg} />
 
-                                {#if projects?.total}
-                                    <InputSelect
-                                        id="project"
-                                        label="Project"
-                                        required
-                                        options={[
-                                            ...projects.projects.map((p) => ({
-                                                label: p.name,
-                                                value: p.$id
-                                            })),
-                                            {
-                                                label: 'Create project',
-                                                leadingIcon: IconPlusSm,
-                                                value: 'create-new'
-                                            }
-                                        ]}
-                                        bind:value={selectedProject} />
-                                {/if}
-                                {#if selectedProject === 'create-new'}
+                                <InputSelect
+                                    id="project"
+                                    label="Project"
+                                    required
+                                    placeholder={loadingProjects
+                                        ? 'Loading projects...'
+                                        : undefined}
+                                    disabled={loadingProjects}
+                                    options={[
+                                        ...(projects?.projects?.map((p) => ({
+                                            label: p.name,
+                                            value: p.$id
+                                        })) ?? []),
+                                        {
+                                            label: 'Create project',
+                                            leadingIcon: IconPlus,
+                                            value: null
+                                        }
+                                    ]}
+                                    bind:value={selectedProject} />
+
+                                {#if selectedProject === null}
                                     <Layout.Stack direction="column" gap="s">
                                         <Input.Text
                                             label="Name"

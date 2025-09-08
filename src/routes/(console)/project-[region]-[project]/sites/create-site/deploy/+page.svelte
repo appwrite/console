@@ -18,7 +18,6 @@
         Selector
     } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconExternalLink, IconPencil } from '@appwrite.io/pink-icons-svelte';
-    import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import Domain from '../domain.svelte';
     import { Adapter, BuildRuntime, Framework, ID } from '@appwrite.io/console';
@@ -27,28 +26,72 @@
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { iconPath } from '$lib/stores/app';
     import type { PageData } from './$types';
+    import { writable } from 'svelte/store';
+    import { getLatestTag } from '$lib/helpers/github';
 
-    export let data: PageData;
+    let {
+        data
+    }: {
+        data: PageData;
+    } = $props();
 
-    let showExitModal = false;
-    let showCustomId = false;
-    let formComponent: Form;
-    let isSubmitting = writable(false);
+    let showCustomId = $state(false);
+    let showExitModal = $state(false);
+    let formComponent = $state<Form>();
+    let isSubmitting = $state(writable(false));
 
-    // State variables
-    let name = data.repository?.name || '';
-    let id = ID.unique();
-    let domain = '';
-    let domainIsValid = false;
-    let framework: Framework = Framework.Nextjs;
-    let rootDir = '';
-    let variables: Array<{ key: string; value: string; secret: boolean }> = [];
-    let installCommand = '';
-    let buildCommand = '';
-    let outputDirectory = '';
+    let id = $state(ID.unique());
+    let name = $state(data.repository?.name || '');
+
+    let domain = $state('');
+    let rootDir = $state(data.repository?.rootDirectory || '');
+    let buildCommand = $state('');
+    let installCommand = $state('');
+    let outputDirectory = $state('');
+    let domainIsValid = $state(false);
+    let framework = $state<Framework>(Framework.Nextjs);
+    let variables = $state<Array<{ key: string; value: string; secret: boolean }>>([]);
 
     // Track if we have custom commands from URL
-    let hasCustomCommands = false;
+    let hasCustomCommands = $state(false);
+
+    // Framework options - dynamically generate from enum
+    const frameworkOptions = $derived(
+        Object.values(Framework).map((fw) => ({
+            key: fw,
+            name:
+                fw === Framework.Nextjs
+                    ? 'Next.js'
+                    : fw === Framework.Sveltekit
+                      ? 'SvelteKit'
+                      : fw.charAt(0).toUpperCase() + fw.slice(1),
+            buildRuntime: fw === Framework.Other ? BuildRuntime.Static1 : BuildRuntime.Node210
+        }))
+    );
+
+    const selectedFramework = $derived(
+        frameworkOptions.find((f) => f.key === framework) || frameworkOptions[0]
+    );
+
+    const frameworkSelectOptions = $derived(
+        frameworkOptions.map((fw) => ({
+            value: fw.key,
+            label: fw.name,
+            leadingHtml: `<img src='${$iconPath(getFrameworkIcon(fw.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+        }))
+    );
+
+    $effect(() => {
+        if (framework && data.frameworks && !hasCustomCommands) {
+            const fw = data.frameworks.frameworks.find((f) => f.key === framework);
+            if (fw && fw.adapters && fw.adapters.length > 0) {
+                const adapter = fw.adapters[0];
+                installCommand = adapter.installCommand || '';
+                buildCommand = adapter.buildCommand || '';
+                outputDirectory = adapter.outputDirectory || '';
+            }
+        }
+    });
 
     onMount(() => {
         const preset = page.url.searchParams.get('preset') || 'nextjs';
@@ -83,64 +126,6 @@
         }
     });
 
-    // Framework options - dynamically generate from enum
-    const frameworkOptions = Object.values(Framework).map((fw) => ({
-        key: fw,
-        name:
-            fw === Framework.Nextjs
-                ? 'Next.js'
-                : fw === Framework.Sveltekit
-                  ? 'SvelteKit'
-                  : fw.charAt(0).toUpperCase() + fw.slice(1),
-        buildRuntime: fw === Framework.Other ? BuildRuntime.Static1 : BuildRuntime.Node210
-    }));
-
-    $: selectedFramework = frameworkOptions.find((f) => f.key === framework) || frameworkOptions[0];
-
-    // Update build commands when framework changes (only if not provided via URL)
-    $: if (framework && data.frameworks && !hasCustomCommands) {
-        const fw = data.frameworks.frameworks.find((f) => f.key === framework);
-        if (fw && fw.adapters && fw.adapters.length > 0) {
-            const adapter = fw.adapters[0];
-            installCommand = adapter.installCommand || '';
-            buildCommand = adapter.buildCommand || '';
-            outputDirectory = adapter.outputDirectory || '';
-        }
-    }
-
-    async function fetchLatestGitHubTag(): Promise<string | null> {
-        try {
-            const tagsResponse = await fetch(
-                `https://api.github.com/repos/${data.repository.owner}/${data.repository.name}/tags`
-            );
-
-            if (!tagsResponse.ok) {
-                addNotification({
-                    type: 'error',
-                    message: 'Failed to fetch tags from GitHub.'
-                });
-                return null;
-            }
-
-            const tags = await tagsResponse.json();
-            if (tags.length === 0) {
-                addNotification({
-                    type: 'error',
-                    message: 'No tags found in repository. Please create a tag before deploying.'
-                });
-                return null;
-            }
-
-            return tags[0].name;
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: 'Failed to fetch tags from GitHub: ' + error.message
-            });
-            return null;
-        }
-    }
-
     async function create() {
         if (!domainIsValid) {
             addNotification({
@@ -150,61 +135,53 @@
             return;
         }
 
+        $isSubmitting = true;
+
         try {
             // Create site with build configuration
-            let site = await sdk.forProject(page.params.region, page.params.project).sites.create(
-                id || ID.unique(),
+            let site = await sdk.forProject(page.params.region, page.params.project).sites.create({
+                siteId: id || ID.unique(),
                 name,
                 framework,
-                selectedFramework.buildRuntime,
-                undefined, // enabled
-                undefined, // logging
-                undefined, // timeout
-                installCommand || undefined,
-                buildCommand || undefined,
-                outputDirectory || undefined,
-                framework === Framework.Other ? Adapter.Static : undefined, // adapter
-                undefined, // installationId
-                undefined, // fallbackFile
-                undefined, // providerRepositoryId
-                undefined, // branch
-                false, // silentMode
-                undefined // rootDir
-            );
+                buildRuntime: selectedFramework.buildRuntime,
+                installCommand: installCommand || undefined,
+                buildCommand: buildCommand || undefined,
+                outputDirectory: outputDirectory || undefined,
+                adapter: framework === Framework.Other ? Adapter.Static : undefined,
+                providerSilentMode: false
+            });
 
             // Add domain
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .proxy.createSiteRule(
-                    `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
-                    site.$id
-                );
+            await sdk.forProject(page.params.region, page.params.project).proxy.createSiteRule({
+                domain: `${domain}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
+                siteId: site.$id
+            });
 
             // Add variables
             const promises = variables.map((variable) =>
-                sdk
-                    .forProject(page.params.region, page.params.project)
-                    .sites.createVariable(site.$id, variable.key, variable.value, variable.secret)
+                sdk.forProject(page.params.region, page.params.project).sites.createVariable({
+                    siteId: site.$id,
+                    key: variable.key,
+                    value: variable.value,
+                    secret: variable.secret
+                })
             );
             await Promise.all(promises);
 
             // Fetch latest tag from GitHub
-            const latestTag = await fetchLatestGitHubTag();
-            if (!latestTag) {
-                return; // Error already handled in helper function
-            }
+            const latestTag = await getLatestTag(data.repository.owner, data.repository.name);
 
             // Create deployment from GitHub repository using the latest tag
             const deployment = await sdk
                 .forProject(page.params.region, page.params.project)
-                .sites.createTemplateDeployment(
-                    site.$id,
-                    data.repository.name,
-                    data.repository.owner,
-                    rootDir || '.',
-                    latestTag,
-                    true
-                );
+                .sites.createTemplateDeployment({
+                    siteId: site.$id,
+                    repository: data.repository.name,
+                    owner: data.repository.owner,
+                    rootDirectory: rootDir || '.',
+                    version: latestTag ?? '1.0.0',
+                    activate: true
+                });
 
             trackEvent(Submit.SiteCreate, {
                 source: 'deploy-button',
@@ -221,6 +198,8 @@
                 message: e.message
             });
             trackError(e, Submit.SiteCreate);
+        } finally {
+            $isSubmitting = false;
         }
     }
 </script>
@@ -234,7 +213,7 @@
     bind:showExitModal
     href={`${base}/project-${page.params.region}-${page.params.project}/sites/`}
     confirmExit>
-    <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
+    <Form bind:this={formComponent} onSubmit={create} {isSubmitting}>
         <Layout.Stack gap="xl">
             <Card padding="s" radius="s">
                 <Layout.Stack gap="m">
@@ -267,7 +246,7 @@
                             <CustomId bind:id bind:show={showCustomId} name="Site" />
                         {:else}
                             <div>
-                                <Tag size="s" on:click={() => (showCustomId = !showCustomId)}>
+                                <Tag size="s" onclick={() => (showCustomId = !showCustomId)}>
                                     <Icon icon={IconPencil} size="s" />
                                     Site ID
                                 </Tag>
@@ -279,11 +258,7 @@
                         label="Framework"
                         placeholder="Select framework"
                         bind:value={framework}
-                        options={frameworkOptions.map((fw) => ({
-                            value: fw.key,
-                            label: fw.name,
-                            leadingHtml: `<img src='${$iconPath(getFrameworkIcon(fw.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
-                        }))} />
+                        options={frameworkSelectOptions} />
                 </Layout.Stack>
             </Fieldset>
 

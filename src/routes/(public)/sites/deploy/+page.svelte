@@ -12,7 +12,7 @@
     import { getFrameworkIcon } from '$lib/stores/sites.js';
     import { isCloud } from '$lib/system';
     import { ID, Query, type Models, Region } from '@appwrite.io/console';
-    import { IconGithub, IconPencil, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
+    import { IconGithub, IconPencil, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import {
         Card,
         Divider,
@@ -41,23 +41,31 @@
     let imageLoaded = $state(false);
     let imageError = $state(false);
 
+    let loadingProjects = $state(false);
+
     async function fetchProjects() {
-        projects = await sdk.forConsole.projects.list([
-            Query.equal('teamId', selectedOrg),
-            Query.orderDesc('')
-        ]);
-        selectedProject = projects?.total ? projects.projects[0].$id : 'create-new';
+        loadingProjects = true;
+        projects = await sdk.forConsole.projects.list({
+            queries: [Query.equal('teamId', selectedOrg), Query.orderDesc('')]
+        });
+
+        selectedProject = projects?.total ? projects.projects[0].$id : null;
+        loadingProjects = false;
     }
 
     async function handleSubmit() {
-        if (selectedProject === 'create-new') {
+        if (selectedProject === null) {
             try {
-                const p = await sdk.forConsole.projects.create(
-                    id ?? ID.unique(),
-                    projectName,
-                    selectedOrg,
-                    isCloud ? (region as Region) : undefined
-                );
+                loadingProjects = true;
+                const project = await sdk.forConsole.projects.create({
+                    projectId: id ?? ID.unique(),
+                    name: projectName,
+                    teamId: selectedOrg,
+                    region: isCloud ? (region as Region) : undefined
+                });
+
+                selectedProject = project.$id;
+
                 trackEvent(Submit.ProjectCreate, {
                     customId: !!id,
                     selectedOrg,
@@ -65,9 +73,7 @@
                     source: 'deploy-button'
                 });
 
-                selectedProject = p.$id;
-
-                const deployUrl = buildDeployUrl(p);
+                const deployUrl = buildDeployUrl(project);
                 await goto(deployUrl);
             } catch (e) {
                 trackError(e, Submit.ProjectCreate);
@@ -75,6 +81,8 @@
                     type: 'error',
                     message: e.message
                 });
+            } finally {
+                loadingProjects = false;
             }
         } else {
             const project = projects.projects.find((p) => p.$id === selectedProject);
@@ -98,7 +106,8 @@
                 `${base}/project-${projectRegion}-${project.$id}/sites/create-site/deploy`,
                 window.location.origin
             );
-            url.searchParams.set('repo', data.deploymentData.repository.url);
+
+            url.searchParams.set('repository', data.deploymentData.repository.url);
 
             // Pass through all the original URL params for repo deployments
             const currentUrl = new URL(window.location.href);
@@ -126,32 +135,32 @@
         }
     });
 
-    // Load regions when organization is selected
     $effect(() => {
         if (isCloud && selectedOrg) {
             loadAvailableRegions(selectedOrg);
         }
     });
 
-    // Set default region when regions are loaded
     $effect(() => {
         if (isCloud && $regionsStore.regions?.length > 0 && !region) {
             region = $regionsStore.regions.find((r) => r.default)?.$id as AllowedRegions;
         }
     });
 
-    // Load screenshot if available for repositories
     $effect(() => {
         if (data.deploymentData.type === 'repo' && data.deploymentData.screenshot) {
             imageLoaded = false;
             imageError = false;
+
             const img = document.createElement('img');
             img.onload = () => {
                 imageLoaded = true;
             };
+
             img.onerror = () => {
                 imageError = true;
             };
+
             img.src = data.deploymentData.screenshot;
         }
     });
@@ -317,25 +326,28 @@
                                     }))}
                                     bind:value={selectedOrg} />
 
-                                {#if projects?.total}
-                                    <InputSelect
-                                        id="project"
-                                        label="Project"
-                                        required
-                                        options={[
-                                            ...projects.projects.map((p) => ({
-                                                label: p.name,
-                                                value: p.$id
-                                            })),
-                                            {
-                                                label: 'Create project',
-                                                leadingIcon: IconPlusSm,
-                                                value: 'create-new'
-                                            }
-                                        ]}
-                                        bind:value={selectedProject} />
-                                {/if}
-                                {#if selectedProject === 'create-new'}
+                                <InputSelect
+                                    id="project"
+                                    label="Project"
+                                    required
+                                    placeholder={loadingProjects
+                                        ? 'Loading projects...'
+                                        : undefined}
+                                    disabled={loadingProjects}
+                                    options={[
+                                        ...(projects?.projects?.map((p) => ({
+                                            label: p.name,
+                                            value: p.$id
+                                        })) ?? []),
+                                        {
+                                            label: 'Create project',
+                                            leadingIcon: IconPlus,
+                                            value: null
+                                        }
+                                    ]}
+                                    bind:value={selectedProject} />
+
+                                {#if selectedProject === null}
                                     <Layout.Stack direction="column" gap="s">
                                         <Input.Text
                                             label="Name"

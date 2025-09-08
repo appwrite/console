@@ -2,6 +2,7 @@ import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import type { PageLoad } from './$types';
+import { getNestedRootDirectory, getRepositoryInfo } from '$lib/helpers/github';
 
 export const load: PageLoad = async ({ url, params, parent }) => {
     const { installations: vcsInstallations, runtimesList, specificationsList } = await parent();
@@ -12,13 +13,10 @@ export const load: PageLoad = async ({ url, params, parent }) => {
         redirect(302, `${base}/project-${params.region}-${params.project}/functions`);
     }
 
-    const repositoryMatch = repository.match(/github\.com[/:]([^/]+)\/([^/?]+)/);
-    if (!repositoryMatch) {
+    const info = getRepositoryInfo(repository!);
+    if (!info) {
         redirect(302, `${base}/project-${params.region}-${params.project}/functions`);
     }
-
-    const [, owner, repoName] = repositoryMatch;
-    const repositoryName = repoName.replace(/\.git$/, '');
 
     const envParam = url.searchParams.get('env');
     const envKeys = envParam ? envParam.split(',').map((key: string) => key.trim()) : [];
@@ -43,9 +41,10 @@ export const load: PageLoad = async ({ url, params, parent }) => {
         installations,
         specificationsList,
         repository: {
-            owner,
             url: repository,
-            name: repositoryName
+            name: info.owner,
+            owner: info.owner,
+            rootDirectory: getNestedRootDirectory(repository)
         }
     };
 };

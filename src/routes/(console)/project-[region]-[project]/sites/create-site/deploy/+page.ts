@@ -2,49 +2,40 @@ import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import type { PageLoad } from './$types';
-import type { Models } from '@appwrite.io/console';
+import { getNestedRootDirectory, getRepositoryInfo } from '$lib/helpers/github';
 
 export const load: PageLoad = async ({ url, params }) => {
-    // Get repository URL from query params
-    const repoUrl = url.searchParams.get('repo');
-    if (!repoUrl) {
+    const repository = url.searchParams.get('repo') || url.searchParams.get('repository');
+
+    if (!repository) {
         redirect(302, `${base}/project-${params.region}-${params.project}/sites`);
     }
 
-    // Parse repository information
-    const repoMatch = repoUrl.match(/github\.com[/:]([^/]+)\/([^/?s]+)/);
-    if (!repoMatch) {
+    const info = getRepositoryInfo(repository!);
+    if (!info) {
         redirect(302, `${base}/project-${params.region}-${params.project}/sites`);
     }
 
-    const [, owner, repoName] = repoMatch;
-    // Clean repository name (remove .git extension if present)
-    const cleanRepoName = repoName.replace(/\.git$/, '');
-
-    // Get environment variables from query params
     const envParam = url.searchParams.get('env');
     const envKeys = envParam ? envParam.split(',').map((key: string) => key.trim()) : [];
 
-    // Try to fetch installations
-    let installations: Models.InstallationList | null = null;
-    try {
-        installations = await sdk.forProject(params.region, params.project).vcs.listInstallations();
-    } catch (error) {
-        // If error, user might not have GitHub connected
-        installations = null;
-    }
-
-    // Fetch frameworks list
-    const frameworks = await sdk.forProject(params.region, params.project).sites.listFrameworks();
+    const [frameworks, installations] = await Promise.all([
+        sdk.forProject(params.region, params.project).sites.listFrameworks(),
+        sdk
+            .forProject(params.region, params.project)
+            .vcs.listInstallations()
+            .catch(() => null)
+    ]);
 
     return {
-        repository: {
-            url: repoUrl,
-            owner,
-            name: cleanRepoName
-        },
         envKeys,
+        frameworks,
         installations,
-        frameworks
+        repository: {
+            url: repository,
+            name: info.name,
+            owner: info.owner,
+            rootDirectory: getNestedRootDirectory(repository!)
+        }
     };
 };
