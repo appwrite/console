@@ -12,6 +12,8 @@
     } from '@appwrite.io/pink-svelte';
     import { addPlatform, continuePlatform } from './platforms/+page.svelte';
     import { app } from '$lib/stores/app';
+    import AuthPreview from './assets/auth-preview.svg';
+    import AuthPreviewDark from './assets/auth-preview-dark.svg';
     import {
         IconArrowRight,
         IconNodeJs,
@@ -20,8 +22,6 @@
     } from '@appwrite.io/pink-icons-svelte';
     import DatabaseImgSource from './assets/database.png';
     import DatabaseImgSourceDark from './assets/database-dark.png';
-    import UsersImgSource from './assets/users.svg';
-    import UsersImgSourceDark from './assets/users-dark.svg';
     import DiscordImgSource from './assets/discord.png';
     import DiscordImgSourceDark from './assets/discord-dark.png';
     import PlatformIosImgSource from './assets/platform-ios.svg';
@@ -479,10 +479,12 @@
                                     <div class="double-width-card">
                                         <Card.Base padding="s"
                                             ><div class="full-height-card">
-                                                <Layout.Stack direction="row">
+                                                <Layout.Stack
+                                                    direction={$isSmallViewport ? 'column' : 'row'}>
                                                     <Layout.Stack
                                                         gap="xl"
-                                                        justifyContent="space-between">
+                                                        justifyContent="space-between"
+                                                        style={`flex: ${$isSmallViewport ? '1 1 auto' : '0 0 30%'}; min-width: ${$isSmallViewport ? 'auto' : '240px'}`}>
                                                         <Typography.Title size="s"
                                                             >Set up Auth</Typography.Title>
                                                         <Layout.Stack
@@ -519,25 +521,77 @@
                                                     </Layout.Stack>
                                                     <div
                                                         class="auth-image"
+                                                        style="flex: 1 1 auto"
                                                         style:background-image={`url('${
                                                             $app.themeInUse === 'dark'
-                                                                ? UsersImgSourceDark
-                                                                : UsersImgSource
+                                                                ? AuthPreviewDark
+                                                                : AuthPreview
                                                         }')`}>
                                                     </div>
                                                 </Layout.Stack>
                                             </div></Card.Base>
                                     </div>
+                                </Layout.Stack>
+                                <Layout.Stack
+                                    gap="l"
+                                    direction={$isSmallViewport ? 'column' : 'row'}>
+                                    <Card.Base
+                                        padding="s"
+                                        style={`flex: ${$isSmallViewport ? '1 1 auto' : '1 1 70%'};`}>
+                                        <div class="full-height-card">
+                                            <Layout.Stack gap="xl" justifyContent="space-between">
+                                                <Layout.Stack gap="s">
+                                                    <Typography.Title
+                                                        color="--fgcolor-neutral-secondary"
+                                                        size="s">MCP server</Typography.Title>
+                                                    <Typography.Text
+                                                        color="--fgcolor-neutral-secondary">
+                                                        Deploy the Appwrite MCP server with a single
+                                                        click, or view the <Link.Anchor
+                                                            href="https://appwrite.io/docs"
+                                                            target="_blank">docs</Link.Anchor> for instructions.
+                                                    </Typography.Text>
+                                                </Layout.Stack>
+                                                <Layout.Stack gap="s">
+                                                    <Typography.Text
+                                                        color="--fgcolor-neutral-tertiary"
+                                                        size="s">One-click install</Typography.Text>
+                                                    <Layout.Stack
+                                                        direction="row"
+                                                        gap="s"
+                                                        wrap="wrap">
+                                                        <Button.Button size="s" variant="secondary">
+                                                            Cursor
+                                                        </Button.Button>
+                                                        <Button.Button size="s" variant="secondary">
+                                                            Claude Desktop
+                                                        </Button.Button>
+                                                        <Button.Button size="s" variant="secondary">
+                                                            VS code
+                                                        </Button.Button>
+                                                        <Button.Button size="s" variant="secondary">
+                                                            Windsurf editor
+                                                        </Button.Button>
+                                                    </Layout.Stack>
+                                                </Layout.Stack>
+                                            </Layout.Stack>
+                                        </div>
+                                    </Card.Base>
 
                                     <Card.Link
                                         href="https://appwrite.io/discord"
                                         padding="s"
                                         on:click={() => {
                                             trackEvent(Click.OnboardingDiscordClick);
-                                        }}>
+                                        }}
+                                        style={`flex: ${$isSmallViewport ? '1 1 auto' : '1 1 30%'};`}>
                                         <div class="full-height-card">
                                             <Layout.Stack gap="xs" justifyContent="space-between">
-                                                <Layout.Stack direction="column" gap="xxxs">
+                                                <Layout.Stack
+                                                    direction="row"
+                                                    alignItems="flex-start"
+                                                    gap="xs"
+                                                    class="discord-header">
                                                     <img
                                                         src={$app.themeInUse === 'dark'
                                                             ? DiscordImgSourceDark
@@ -635,7 +689,7 @@
             margin-bottom: calc(-1 * var(--base-16, 16px));
             align-self: flex-end;
             background-size: cover;
-            background-position: left bottom;
+            background-position: right bottom;
             background-repeat: no-repeat;
         }
         :global(.full-height-card div) {
@@ -645,6 +699,30 @@
         .double-width-card {
             @media (min-width: 768px) {
                 width: 250%;
+            }
+        }
+        .double-width-card .full-height-card {
+            height: 240px;
+            width: 100%;
+        }
+
+        @media (max-width: 1024px) {
+            .double-width-card .full-height-card {
+                height: 220px;
+            }
+            .auth-image {
+                height: 180px;
+                background-position: center bottom;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .double-width-card .full-height-card {
+                height: auto;
+            }
+            .auth-image {
+                height: 160px;
+                margin-right: 0;
             }
         }
 
