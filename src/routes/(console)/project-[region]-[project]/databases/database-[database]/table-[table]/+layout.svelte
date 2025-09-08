@@ -72,10 +72,6 @@
     let selectedOption: Option['name'] = 'String';
     let createMoreColumns = false;
 
-    $: if (!$showCreateColumnSheet.show) {
-        createMoreColumns = false;
-    }
-
     /**
      * adding a lot of fake data will trigger the realtime below
      * and will keep invalidating the `Dependencies.TABLE` making a lot of API noise!
@@ -331,6 +327,10 @@
         isWaterfallFromFaker = false;
 
         spreadsheetRenderKey.set(hash(rowIds));
+    }
+
+    $: if (!$showCreateColumnSheet.show) {
+        createMoreColumns = false;
     }
 </script>
 
