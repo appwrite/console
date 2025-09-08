@@ -26,6 +26,7 @@
 
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <ViewSelector
+                ui="new"
                 view={data.view}
                 columns={tableViewColumns}
                 hideColumns={!data.tables.total}

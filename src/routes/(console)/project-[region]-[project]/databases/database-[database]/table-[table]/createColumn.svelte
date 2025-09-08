@@ -19,6 +19,7 @@
         columnId = $bindable(null),
         columnsOrder = $bindable(null),
         selectedOption = $bindable('String'),
+        createMore = $bindable(false),
         onColumnsReorder = null
     }: {
         column?: Columns;
@@ -27,6 +28,7 @@
         columnsOrder?: string[];
         direction: ColumnDirection;
         selectedOption: Option['name'];
+        createMore?: boolean;
         onColumnsReorder?: (newOrder: string[]) => void;
     } = $props();
 
@@ -148,12 +150,19 @@
                 message: `Column ${key ?? data?.key} has been created`
             });
             trackEvent(Submit.ColumnCreate);
+
+            if (createMore) {
+                init();
+                return true; // keep sheet open
+            }
+            return false; // close sheet
         } catch (e) {
             addNotification({
                 type: 'error',
                 message: e.message
             });
             trackError(e, Submit.ColumnCreate);
+            return true; // keep open on error
         }
     }
 
