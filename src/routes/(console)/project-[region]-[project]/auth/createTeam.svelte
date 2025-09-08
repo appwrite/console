@@ -14,7 +14,7 @@
 
     const dispatch = createEventDispatcher();
 
-    let name = $state<string>('');
+    let name = $state('');
     let id = $state<string | null>(null);
     let error = $state<string | null>(null);
     let showCustomId = $state(false);
