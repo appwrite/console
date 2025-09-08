@@ -8,7 +8,7 @@
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     let {
-        domain,
+        domain = $bindable(),
         domainIsValid = $bindable(true)
     }: {
         domain: string;
@@ -53,6 +53,8 @@
     }, 500);
 
     $effect(() => {
+        domainIsValid; /* silences lint for unused var */
+
         if (domain !== newDomain) {
             domainStatus = 'pending';
             checkDomain(newDomain);
