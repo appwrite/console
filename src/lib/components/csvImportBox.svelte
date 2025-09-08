@@ -9,6 +9,8 @@
     import { writable, type Writable } from 'svelte/store';
     import { addNotification } from '$lib/stores/notifications';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import Modal from '$lib/components/modal.svelte';
+    import Code from '$lib/components/code.svelte';
     import { type Models, type Payload, Query } from '@appwrite.io/console';
 
     // re-render the key for sheet UI.
@@ -18,6 +20,7 @@
     type ImportItem = {
         status: string;
         table?: string;
+        errors?: any[];
     };
 
     type ImportItemsMap = Map<string, ImportItem>;
@@ -103,7 +106,11 @@
             if (shouldSkip) return items;
 
             const next = new Map(items);
-            next.set(importData.$id, { status, table: tableName ?? undefined });
+            next.set(importData.$id, { 
+                status, 
+                table: tableName ?? undefined,
+                errors: importData.errors || []
+            });
             return next;
         });
 
@@ -168,8 +175,24 @@
         });
     });
 
+    let showDetails = false;
+    let selectedErrors: any[] = [];
+
     $: isOpen = true;
     $: showCsvImportBox = $importItems.size > 0;
+
+    $: parsedErrors = (selectedErrors || []).map((e) => {
+        try {
+            return JSON.stringify(JSON.parse(e as unknown as string), null, 2);
+        } catch {
+            return typeof e === 'string' ? (e as string) : JSON.stringify(e, null, 2);
+        }
+    });
+
+    function openDetails(errors: any[]) {
+        selectedErrors = errors;
+        showDetails = true;
+    }
 </script>
 
 {#if showCsvImportBox}
@@ -213,6 +236,20 @@
                                         class:is-danger={value.status === 'failed'}
                                         style="--graph-size:{graphSize(value.status)}%">
                                     </div>
+                                    {#if value.status === 'failed' && value.errors?.length}
+                                        <Layout.Stack direction="row" gap="s" alignItems="center">
+                                            <Typography.Text
+                                                style="color:hsl(var(--color-error-100));">
+                                                There was an import issue.
+                                                <button
+                                                    type="button"
+                                                    class="u-cursor-pointer u-underline"
+                                                    on:click={() => openDetails(value.errors)}>
+                                                    More details
+                                                </button>
+                                            </Typography.Text>
+                                        </Layout.Stack>
+                                    {/if}
                                 </section>
                             </li>
                         </ul>
@@ -220,6 +257,21 @@
                 {/each}
             </div>
         </section>
+        <Modal title="Error details" bind:show={showDetails}>
+            <Layout.Stack gap="l">
+                <div class="wrapped-code-block-for-multi-line">
+                    <Code language="json" code={parsedErrors.join('\n\n')} withCopy allowScroll />
+                </div>
+            </Layout.Stack>
+            <svelte:fragment slot="footer">
+                <button 
+                    type="button" 
+                    class="button is-secondary modal-footer-nowrap"
+                    on:click={() => (showDetails = false)}>
+                    Close
+                </button>
+            </svelte:fragment>
+        </Modal>
     </Layout.Stack>
 {/if}
 
@@ -264,5 +316,17 @@
             height: 4px;
             background-color: var(--bgcolor-error);
         }
+    }
+
+    .wrapped-code-block-for-multi-line {
+        max-inline-size: 800px;
+    }
+
+    .modal-footer-nowrap {
+        white-space: nowrap;
+    }
+
+    .error-message-nowrap {
+        white-space: nowrap;
     }
 </style>
