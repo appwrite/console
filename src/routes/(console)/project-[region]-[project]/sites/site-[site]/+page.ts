@@ -15,7 +15,7 @@ export const load = async ({ params, depends, parent }) => {
             queries: [
                 Query.limit(4),
                 Query.orderDesc(''),
-                Query.select(['status', 'type', 'siteId'])
+                Query.select(['status', 'type', 'resourceId'])
             ]
         }),
         sdk.forProject(params.region, params.project).sites.listDeployments({
@@ -31,7 +31,7 @@ export const load = async ({ params, depends, parent }) => {
                     'sourceSize',
                     'buildSize',
                     'type',
-                    'siteId'
+                    'resourceId'
                 ])
             ]
         }),
