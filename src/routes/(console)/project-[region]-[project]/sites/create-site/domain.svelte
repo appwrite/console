@@ -18,7 +18,7 @@
     const originalDomain = domain;
 
     let newDomain = $state(domain);
-    let domainStatus: 'complete' | 'failed' | 'pending' = $state('complete');
+    let domainStatus: 'complete' | 'failed' | 'pending' = $state(domain ? 'pending' : 'complete');
 
     function setDomainLabel(status: typeof domainStatus) {
         switch (status) {
@@ -35,6 +35,7 @@
         if (!value) {
             domainStatus = 'failed';
             domainIsValid = false;
+            domain = newDomain;
             return;
         }
         try {

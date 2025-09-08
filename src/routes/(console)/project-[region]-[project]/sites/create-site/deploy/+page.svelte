@@ -318,7 +318,7 @@
                                         height="2.5rem">
                                         <Selector.Checkbox
                                             size="s"
-                                            id="secret-{i}"
+                                            id={`secret-${i}`}
                                             bind:checked={variable.secret} />
                                     </Layout.Stack>
                                 </Layout.Stack>
