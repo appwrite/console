@@ -141,7 +141,7 @@
                         </Button>
                     </div>
                     <span slot="tooltip">
-                        You have reached your limit of {projectsLimit} projects. 
+                        You have reached your limit of {projectsLimit} projects.
                     </span>
                 </Tooltip>
             {:else}
