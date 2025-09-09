@@ -6,7 +6,6 @@
     import { getDefaultSpatialData } from '../../../store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
-    export let id: string;
     export let label: string;
     export let value: number[];
     export let limited: boolean = false;

@@ -6,8 +6,8 @@
 
     export let values: number[][];
     export let nullable: boolean;
-    export let disableDeletePointsIndex: number = 2;
-    export let disableDeleteLine: boolean|undefined = undefined;
+    export let minDeletableIndex: number = 2;
+    export let allowLineDelete: boolean | undefined = undefined;
     export let onAddPoint: (index: number) => void;
     export let onDeletePoint: (index: number) => void = undefined;
     export let onChangePoint: (pointIndex: number, coordIndex: number, newValue: number) => void =
@@ -20,9 +20,9 @@
     }
 
     function isDeleteDisabled(index: number) {
-        let disable = index < disableDeletePointsIndex;
-        if (disableDeleteLine !== undefined) {
-            disable = disable && disableDeleteLine;
+        let disable = index < minDeletableIndex;
+        if (allowLineDelete !== undefined) {
+            disable = disable && allowLineDelete;
         }
         return disable;
     }
@@ -32,7 +32,7 @@
     <Layout.Stack>
         {#each values as value, index}
             <InputPoint
-                nullable={nullable}
+                {nullable}
                 values={value}
                 deletePoints={true}
                 disableDelete={isDeleteDisabled(index)}

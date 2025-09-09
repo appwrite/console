@@ -65,12 +65,15 @@
     });
 
     // Check if the current operator is a distance-based operator
-    let isDistanceOperator = $derived(operatorKey && [
-        ValidOperators.DistanceEqual,
-        ValidOperators.DistanceNotEqual,
-        ValidOperators.DistanceGreaterThan,
-        ValidOperators.DistanceLessThan
-    ].includes(operatorKey as ValidOperators));
+    let isDistanceOperator = $derived(
+        operatorKey &&
+            [
+                ValidOperators.DistanceEqual,
+                ValidOperators.DistanceNotEqual,
+                ValidOperators.DistanceGreaterThan,
+                ValidOperators.DistanceLessThan
+            ].includes(operatorKey as ValidOperators)
+    );
 
     onMount(() => {
         value = column?.array ? [] : null;
@@ -82,9 +85,19 @@
         if (column?.type === 'point') {
             value = [0, 0];
         } else if (column?.type === 'linestring') {
-            value = [[0, 0], [1, 1]];
+            value = [
+                [0, 0],
+                [1, 1]
+            ];
         } else if (column?.type === 'polygon') {
-            value = [[[0, 0], [1, 1], [2, 2], [0, 0]]];
+            value = [
+                [
+                    [0, 0],
+                    [1, 1],
+                    [2, 2],
+                    [0, 0]
+                ]
+            ];
         }
     });
 
@@ -181,18 +194,16 @@
                     {/if}
                 </ul>
             {/if}
-            
+
             {#if isDistanceOperator}
-            <div style="margin-top: 8px;">
-                <InputNumber
-                    id="distance"
-                    bind:value={distanceValue}
-                    placeholder="Enter distance"
-                    step={0.001}
-                    min={0}
-                    required
-                />
-            </div>
+                <div style="margin-top: 8px;">
+                    <InputNumber
+                        id="distance"
+                        bind:value={distanceValue}
+                        placeholder="Enter distance"
+                        step={0.001}
+                        required />
+                </div>
             {/if}
         {/if}
         {#if !singleCondition}

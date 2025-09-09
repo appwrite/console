@@ -39,7 +39,7 @@
     import { getDefaultSpatialData } from '../store';
     import { createConservative } from '$lib/helpers/stores';
     import { Selector, Typography, Layout, Icon } from '@appwrite.io/pink-svelte';
-    import {Button} from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: Partial<Models.ColumnPoint> = {
@@ -80,7 +80,7 @@
 
     $: showDefaultPointDummyData = $required ? true : false;
 
-    $:console.log(editing)
+    $: console.log(editing);
 </script>
 
 <Selector.Checkbox
@@ -92,7 +92,7 @@
     description="Indicate whether this column is required" />
 
 <Layout.Stack gap="xl">
-    <Layout.Stack direction="row"  gap="s" alignItems="center" justifyContent="space-between">
+    <Layout.Stack direction="row" gap="s" alignItems="center" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
             <Typography.Text variant="m-600">Default</Typography.Text>
             <Typography.Caption variant="400">Optional</Typography.Caption>
@@ -105,8 +105,12 @@
         {/if}
     </Layout.Stack>
     <InputPoint
-        values={(showDefaultPointDummyData && ((!editing && defaultPointAdded) || (editing && !data.default))) ? getDefaultSpatialData("point") : data.default}
-        nullable={showDefaultPointDummyData && ((!editing && defaultPointAdded) || (editing && !data.default))}
+        values={showDefaultPointDummyData &&
+        ((!editing && defaultPointAdded) || (editing && !data.default))
+            ? getDefaultSpatialData('point')
+            : data.default}
+        nullable={showDefaultPointDummyData &&
+            ((!editing && defaultPointAdded) || (editing && !data.default))}
         onChangePoint={(index, newValue) => {
             if (data.default) {
                 data.default[index] = newValue;

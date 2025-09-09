@@ -48,12 +48,14 @@
     $: filtersAppliedCount = $tags.length;
 
     // Check if the current operator is a distance-based operator
-    $: isDistanceOperator = operatorKey && [
-        ValidOperators.DistanceEqual,
-        ValidOperators.DistanceNotEqual,
-        ValidOperators.DistanceGreaterThan,
-        ValidOperators.DistanceLessThan
-    ].includes(operatorKey as ValidOperators);
+    $: isDistanceOperator =
+        operatorKey &&
+        [
+            ValidOperators.DistanceEqual,
+            ValidOperators.DistanceNotEqual,
+            ValidOperators.DistanceGreaterThan,
+            ValidOperators.DistanceLessThan
+        ].includes(operatorKey as ValidOperators);
 
     beforeNavigate(() => {
         showFiltersDesktop = false;

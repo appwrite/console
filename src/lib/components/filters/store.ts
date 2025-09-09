@@ -279,95 +279,84 @@ const operatorsDefault = new Map<
     [
         ValidOperators.Crosses,
         {
-            query: (col: string, input: string | number | string[]) => Query.crosses(col,[input]),
-            types: [ValidTypes.Line, ValidTypes.Polygon]
+            query: Query.crosses,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ],
     [
         ValidOperators.NotCrosses,
         {
-            query: (col: string, input: string | number | string[]) =>
-                `notCrosses(${col}, ${JSON.stringify(input)})`,
-            types: [ValidTypes.Line, ValidTypes.Polygon]
+            query: Query.notCrosses,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ],
     [
         ValidOperators.DistanceEqual,
         {
-            query: (col: string, input: string | number | string[], distance?: number) =>
-                `distanceEqual(${col}, ${JSON.stringify(input)}, ${distance})`,
-            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+            query: Query.distanceEqual,
+            types: [ValidTypes.Point]
         }
     ],
     [
         ValidOperators.DistanceNotEqual,
         {
-            query: (col: string, input: string | number | string[], distance?: number) =>
-                `distanceNotEqual(${col}, ${JSON.stringify(input)}, ${distance})`,
-            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+            query: Query.distanceNotEqual,
+            types: [ValidTypes.Point]
         }
     ],
     [
         ValidOperators.DistanceGreaterThan,
         {
-            query: (col: string, input: string | number | string[], distance?: number) =>
-                `distanceGreaterThan(${col}, ${JSON.stringify(input)}, ${distance})`,
-            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+            query: Query.distanceGreaterThan,
+            types: [ValidTypes.Point]
         }
     ],
     [
         ValidOperators.DistanceLessThan,
         {
-            query: (col: string, input: string | number | string[], distance?: number) =>
-                `distanceLessThan(${col}, ${JSON.stringify(input)}, ${distance})`,
-            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+            query: Query.distanceLessThan,
+            types: [ValidTypes.Point]
         }
     ],
     [
         ValidOperators.Intersects,
         {
-            query: (col: string, input: string | number | string[]) =>
-                `intersects(${col}, ${JSON.stringify(input)})`,
+            query: Query.intersects,
             types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ],
     [
         ValidOperators.NotIntersects,
         {
-            query: (col: string, input: string | number | string[]) =>
-                `notIntersects(${col}, ${JSON.stringify(input)})`,
+            query: Query.notIntersects,
             types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ],
     [
         ValidOperators.Overlaps,
         {
-            query: (col: string, input: string | number | string[]) =>
-                `overlaps(${col}, ${JSON.stringify(input)})`,
-            types: [ValidTypes.Line, ValidTypes.Polygon]
+            query: Query.overlaps,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ],
     [
         ValidOperators.NotOverlaps,
         {
-            query: (col: string, input: string | number | string[]) =>
-                `notOverlaps(${col}, ${JSON.stringify(input)})`,
-            types: [ValidTypes.Line, ValidTypes.Polygon]
+            query: Query.notOverlaps,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ],
     [
         ValidOperators.Touches,
         {
-            query: (col: string, input: string | number | string[]) =>
-                `touches(${col}, ${JSON.stringify(input)})`,
+            query: Query.touches,
             types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ],
     [
         ValidOperators.NotTouches,
         {
-            query: (col: string, input: string | number | string[]) =>
-                `notTouches(${col}, ${JSON.stringify(input)})`,
+            query: Query.notTouches,
             types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ]

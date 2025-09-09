@@ -39,7 +39,7 @@
     import { Selector, Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
     import { InputLine } from '$lib/elements/forms';
     import { getDefaultSpatialData } from '../store';
-    import {Button} from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: Partial<Models.ColumnLine> = {
@@ -76,12 +76,11 @@
         required: false,
         ...data
     });
-    
+
     function handleAddDefault() {
         defaultLineAdded = true;
         data.default = getDefaultSpatialData('linestring') as number[][];
     }
-
 
     $: listen(data);
 
@@ -99,7 +98,7 @@
     description="Indicate whether this column is required" />
 
 <Layout.Stack>
-    <Layout.Stack direction="row"  gap="s" alignItems="center" justifyContent="space-between">
+    <Layout.Stack direction="row" gap="s" alignItems="center" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
             <Typography.Text variant="m-600">Default</Typography.Text>
             <Typography.Caption variant="400">Optional</Typography.Caption>
@@ -112,7 +111,9 @@
         {/if}
     </Layout.Stack>
     <InputLine
-        values={(defaultLineAdded && showDefaultPointDummyData) ? getDefaultSpatialData("point") : data.default}
+        values={defaultLineAdded && showDefaultPointDummyData
+            ? getDefaultSpatialData('point')
+            : data.default}
         onAddPoint={pushCoordinate}
         nullable={defaultLineAdded && showDefaultPointDummyData}
         onDeletePoint={deleteCoordinate}

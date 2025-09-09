@@ -6,7 +6,6 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { getDefaultSpatialData } from '../../../store';
 
-    export let id: string;
     export let label: string;
     export let value: number[][];
     export let limited: boolean = false;
@@ -59,5 +58,5 @@
         {onAddPoint}
         {onDeletePoint}
         onChangePoint={handlePointChange}
-        disableDeletePointsIndex={2}/>
+        minDeletableIndex={2} />
 </Layout.Stack>

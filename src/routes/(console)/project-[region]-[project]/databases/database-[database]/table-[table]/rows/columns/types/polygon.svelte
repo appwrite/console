@@ -6,7 +6,6 @@
     import { getDefaultSpatialData } from '../../../store';
     import InputPolygon from '$lib/elements/forms/inputPolygon.svelte';
 
-    export let id: string;
     export let label: string;
     export let value: number[][][];
     export let limited: boolean = false;
@@ -58,8 +57,8 @@
         }
     }
 
-    function handleAddDefault(){
-        value = getDefaultSpatialData("polygon") as number[][][];
+    function handleAddDefault() {
+        value = getDefaultSpatialData('polygon') as number[][][];
     }
 
     $: nullable = !limited ? !column.required : false;

@@ -14,10 +14,10 @@
 </script>
 
 <Layout.Stack>
-    <Layout.Stack direction="row" gap="xl">
+    <Layout.Stack direction="row" gap="m">
         {#if nullable}
             {#each nullableSkeletonShape as _, index}
-                <Input.Number id={`default-${index}`} placeholder={"0"} disabled={true} />
+                <Input.Number id={`default-${index}`} placeholder={'0'} disabled={true} />
             {/each}
         {:else}
             {#each values as _, index}
@@ -30,7 +30,7 @@
             {/each}
         {/if}
         {#if deletePoints}
-            <Button secondary disabled={nullable || disableDelete} on:click={onDeletePoint}>
+            <Button size="s" secondary disabled={nullable || disableDelete} on:click={onDeletePoint}>
                 <Icon icon={IconX} size="s" />
             </Button>
         {/if}

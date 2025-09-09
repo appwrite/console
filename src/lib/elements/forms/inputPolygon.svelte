@@ -16,7 +16,7 @@
         coordIndex: number,
         newValue: number
     ) => void = undefined;
-    export let disableDeletePointsIndex: number = 4;
+    export let minDeletableIndex: number = 4;
 
     function handlePointChange(
         lineIndex: number,
@@ -42,20 +42,24 @@
             <InputLine
                 values={value as number[][]}
                 onAddPoint={() => onAddPoint(index)}
-                nullable={nullable}
+                {nullable}
                 onDeletePoint={() => onDeletePoint(index)}
                 onChangePoint={(pointIndex, coordIndex, newValue) =>
                     handlePointChange(index, pointIndex, coordIndex, newValue)}
-                disableDeleteLine={index < 2} 
-                disableDeletePointsIndex={disableDeletePointsIndex}>
-                    <svelte:fragment slot="line-button">
-                        {#if index === values.length-1}
-                            <Button disabled={nullable} size="xs" compact on:click={handleAddLineInternal}>
-                                <Icon icon={IconPlus} size="s" /> Add line
-                            </Button>
-                        {/if}
-                    </svelte:fragment>
-                </InputLine>
+                allowLineDelete={index < 2}
+                {minDeletableIndex}>
+                <svelte:fragment slot="line-button">
+                    {#if index === values.length - 1}
+                        <Button
+                            disabled={nullable}
+                            size="xs"
+                            compact
+                            on:click={handleAddLineInternal}>
+                            <Icon icon={IconPlus} size="s" /> Add line
+                        </Button>
+                    {/if}
+                </svelte:fragment>
+            </InputLine>
         </Layout.Stack>
     {/each}
 </Layout.Stack>
