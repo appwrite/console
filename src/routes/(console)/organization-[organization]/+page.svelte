@@ -80,11 +80,11 @@
     }
 
     $: projectCreationDisabled =
-        (isCloud && getServiceLimit('projects') <= data.allProjectsCount) ||
+        (isCloud && getServiceLimit('projects') <= data.projects.total) ||
         (isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE) ||
         !$canWriteProjects;
 
-    $: reachedProjectLimit = isCloud && getServiceLimit('projects') <= data.allProjectsCount;
+    $: reachedProjectLimit = isCloud && getServiceLimit('projects') <= data.projects.total;
     $: projectsLimit = getServiceLimit('projects');
 
     $: $registerCommands([
