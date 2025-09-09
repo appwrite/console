@@ -20,7 +20,7 @@
         useCreateLink?: boolean;
         pageParam?: string;
         removeOnFirstPage?: boolean;
-        [key: string]: any;
+        [key: string]: unknown;
     } = $props();
 
     const showLimit = $derived(!!useCreateLink);

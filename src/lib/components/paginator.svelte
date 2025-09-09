@@ -27,7 +27,7 @@
             | undefined;
         offset?: number;
         children: Snippet<[T[], number]>;
-        [key: string]: any;
+        [key: string]: unknown;
     } = $props();
 
     let total = $derived(items.length);
