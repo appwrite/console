@@ -109,24 +109,19 @@
         return project.status === 'archived';
     }
 
-$: projectsToArchive =
-    (data.archivedProjectsPage ?? data.projects.projects).filter(
-        (project) =>
-            isCloud
-                ? project.status === 'archived'
-                : project.status !== 'active' // fallback for non-cloud
+    $: projectsToArchive = (data.archivedProjectsPage ?? data.projects.projects).filter(
+        (project) => (isCloud ? project.status === 'archived' : project.status !== 'active') // fallback for non-cloud
     );
 
-$: activeProjects =
-    (data.activeProjectsPage ?? data.projects.projects).filter(
+    $: activeProjects = (data.activeProjectsPage ?? data.projects.projects).filter(
         (project) => project.status === 'active'
     );
 
-$: activeTotalOverall =
-    data?.activeTotalOverall ??
-    data?.organization?.projects?.length ??
-    data?.projects?.total ??
-    0;
+    $: activeTotalOverall =
+        data?.activeTotalOverall ??
+        data?.organization?.projects?.length ??
+        data?.projects?.total ??
+        0;
     function clearSearch() {
         searchQuery?.clearInput();
     }
