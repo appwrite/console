@@ -30,7 +30,11 @@
             {/each}
         {/if}
         {#if deletePoints}
-            <Button size="s" secondary disabled={nullable || disableDelete} on:click={onDeletePoint}>
+            <Button
+                size="s"
+                secondary
+                disabled={nullable || disableDelete}
+                on:click={onDeletePoint}>
                 <Icon icon={IconX} size="s" />
             </Button>
         {/if}
