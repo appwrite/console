@@ -30,6 +30,7 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         view,
         query,
         currentSort,
+        parsedQueries,
         rows: await sdk.forProject(params.region, params.project).tablesDB.listRows({
             databaseId: params.database,
             tableId: params.table,

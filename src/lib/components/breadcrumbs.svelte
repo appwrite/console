@@ -20,11 +20,12 @@
     import { isCloud } from '$lib/system';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { currentPlan, newOrgModal } from '$lib/stores/organization';
+    import { currentPlan, newOrgModal, organization } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { type Models, Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
+    import { BillingPlan } from '$lib/constants';
 
     type Organization = {
         name: string;
@@ -226,6 +227,10 @@
     $: if (shouldReloadProjects) {
         projectsBottomSheet = createProjectsBottomSheet(selectedOrg);
     }
+
+    let badgeType: 'success' | undefined;
+    $: badgeType =
+        $organization && $organization.billingPlan !== BillingPlan.FREE ? 'success' : undefined;
 </script>
 
 <svelte:window on:resize={onResize} />
@@ -240,10 +245,13 @@
                 use:melt={$triggerOrganizations}
                 aria-label="Open organizations tab">
                 <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
-                <span class="not-mobile"
+                <span class="not-mobile" style="padding-inline-start: 2px"
                     >{#if correctPlanName}<Badge
+                            size="xs"
                             variant="secondary"
-                            content={correctPlanName} />{/if}</span>
+                            type={badgeType}
+                            content={correctPlanName} />
+                    {/if}</span>
                 <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
             </button>
         {:else}
@@ -257,7 +265,11 @@
                 <span class="orgName" class:noProjects={!currentProject}
                     >{selectedOrg?.name ?? 'Organization'}</span>
                 <span class="not-mobile"
-                    ><Badge variant="secondary" content={correctPlanName ?? ''} /></span>
+                    ><Badge
+                        size="xs"
+                        variant="secondary"
+                        type={badgeType}
+                        content={correctPlanName ?? ''} /></span>
                 <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
             </button>
         {/if}
@@ -476,6 +488,7 @@
         border-radius: var(--border-radius-S, 8px);
         background: var(--overlay-neutral-hover, rgba(25, 25, 28, 0.03));
     }
+
     .trigger {
         display: inline-flex;
         align-items: center;

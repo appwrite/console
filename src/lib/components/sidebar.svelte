@@ -250,8 +250,6 @@
                         </Tooltip>
                     {/each}
                     {#if project && $isSmallViewport}
-                        <Divider />
-
                         <div class="mobile-tablet-settings">
                             <Tooltip placement="right" disabled={state !== 'icons'}>
                                 <a
@@ -593,6 +591,7 @@
         @media (min-width: 1024px) {
             width: 166px;
         }
+
         .info {
             position: absolute;
             display: flex;

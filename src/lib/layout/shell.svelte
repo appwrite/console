@@ -18,6 +18,7 @@
     import { page } from '$app/stores';
     import type { Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     export let showHeader = true;
     export let showFooter = true;
@@ -100,8 +101,15 @@
      *
      * This needs to be handled like this because
      * the setup around the sidebar is very tightly configured with 2 states sync.
+     *
+     * The sidebar is **always closed** on mobile and tablet devices!
      */
     afterNavigate((navigation) => {
+        if ($isTabletViewport) {
+            state = 'closed';
+            return;
+        }
+
         const isEnteringDatabase = isInDatabasesRoute(navigation.to.route);
         const isLeavingDatabase =
             isInDatabasesRoute(navigation.from.route) && !isInDatabasesRoute(navigation.to.route);

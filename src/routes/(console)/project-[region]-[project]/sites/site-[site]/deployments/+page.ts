@@ -22,6 +22,15 @@ export const load = async ({ params, depends, url, route, parent }) => {
                 Query.limit(limit),
                 Query.offset(offset),
                 Query.orderDesc(''),
+                Query.select([
+                    'buildSize',
+                    'sourceSize',
+                    'totalSize',
+                    'buildDuration',
+                    'status',
+                    'type',
+                    'resourceId'
+                ]),
                 ...parsedQueries.values()
             ]
         }),
