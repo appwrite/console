@@ -257,7 +257,10 @@
     <ArchiveProject
         {projectsToArchive}
         organization={data.organization}
-        currentPlan={$currentPlan} />
+        currentPlan={$currentPlan}
+        archivedTotalOverall={data.archivedTotalOverall}
+        archivedOffset={data.archivedOffset}
+        limit={data.limit} />
 </Container>
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />
