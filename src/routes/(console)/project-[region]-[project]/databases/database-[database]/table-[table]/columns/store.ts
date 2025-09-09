@@ -24,7 +24,9 @@ import {
     IconRelationship,
     IconText,
     IconToggle,
-    IconGlobe
+    IconPinned,
+    IconLine,
+    IconPolygon
 } from '@appwrite.io/pink-icons-svelte';
 import type { ComponentType } from 'svelte';
 
@@ -124,7 +126,7 @@ export const columnOptions: Option[] = [
         type: 'point',
         create: submitPoint,
         update: updatePoint,
-        icon: IconGlobe
+        icon: IconPinned
     },
     {
         name: 'Line',
@@ -133,7 +135,7 @@ export const columnOptions: Option[] = [
         type: 'linestring',
         create: submitLine,
         update: updateLine,
-        icon: IconGlobe
+        icon: IconLine
     },
     {
         name: 'Polygon',
@@ -142,7 +144,7 @@ export const columnOptions: Option[] = [
         type: 'polygon',
         create: submitPolygon,
         update: updatePolygon,
-        icon: IconGlobe
+        icon: IconPolygon
     },
     {
         name: 'Email',
