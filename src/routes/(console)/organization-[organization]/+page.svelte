@@ -84,6 +84,9 @@
         (isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE) ||
         !$canWriteProjects;
 
+    $: reachedProjectLimit = isCloud && getServiceLimit('projects') <= data.allProjectsCount;
+    $: projectsLimit = getServiceLimit('projects');
+
     $: $registerCommands([
         {
             label: 'Create project',
@@ -129,13 +132,27 @@
         <SearchQuery bind:this={searchQuery} placeholder="Search by name or ID" />
 
         {#if $canWriteProjects}
-            <Button
-                on:click={handleCreateProject}
-                event="create_project"
-                disabled={projectCreationDisabled}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create project
-            </Button>
+            {#if projectCreationDisabled && reachedProjectLimit}
+                <Tooltip placement="bottom">
+                    <div>
+                        <Button event="create_project" disabled>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Create project
+                        </Button>
+                    </div>
+                    <span slot="tooltip">
+                        You have reached your limit of {projectsLimit} projects. 
+                    </span>
+                </Tooltip>
+            {:else}
+                <Button
+                    on:click={handleCreateProject}
+                    event="create_project"
+                    disabled={projectCreationDisabled}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create project
+                </Button>
+            {/if}
         {/if}
     </Layout.Stack>
 
