@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
@@ -36,28 +36,25 @@
 
 <script lang="ts">
     import { InputPoint } from '$lib/elements/forms';
-    import { getDefaultSpatialData } from '../store';
     import { createConservative } from '$lib/helpers/stores';
-    import { Selector, Typography, Layout, Icon } from '@appwrite.io/pink-svelte';
-    import { Button } from '$lib/elements/forms';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Selector, Typography, Layout } from '@appwrite.io/pink-svelte';
+    import { getDefaultSpatialData } from '../store';
 
-    export let data: Partial<Models.ColumnPoint> = {
-        required: false,
-        default: null
-    };
-    export let editing = false;
+    interface Props {
+        data?: Partial<Models.ColumnPoint>;
+    }
 
-    let savedDefault = data.default;
-    let showDefaultPointDummyData = false;
-    let defaultPointAdded = false;
+    let { data = { required: false, default: null } }: Props = $props();
+
+    let savedDefault = $state(data.default);
+    let defaultChecked = $state(data.default ? true : false);
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
             savedDefault = data.default;
             data.default = null;
         } else {
-            data.default = savedDefault;
+            data.default = savedDefault ?? getDefaultSpatialData('point');
         }
     }
 
@@ -69,48 +66,48 @@
         ...data
     });
 
-    function handleAddDefault() {
-        defaultPointAdded = true;
-        data.default = getDefaultSpatialData('point') as number[];
-    }
+    $effect(() => {
+        listen(data);
+    });
 
-    $: listen(data);
-
-    $: handleDefaultState($required);
-
-    $: showDefaultPointDummyData = $required ? true : false;
-
-    $: console.log(editing);
+    $effect(() => {
+        data.required = $required;
+        handleDefaultState($required);
+    });
 </script>
 
 <Selector.Checkbox
     size="s"
     id="required"
     label="Required"
-    bind:checked={data.required}
-    disabled={data.array}
+    bind:checked={$required}
+    on:change={(e) => {
+        if (e.detail) defaultChecked = false;
+    }}
     description="Indicate whether this column is required" />
 
+<Selector.Checkbox
+    size="s"
+    id="default"
+    label="Default value"
+    bind:checked={defaultChecked}
+    on:change={(e) => {
+        if (e.detail) {
+            $required = false;
+        }
+    }}
+    description="Enable to set a predefined value for this column" />
+
 <Layout.Stack gap="xl">
-    <Layout.Stack direction="row" gap="s" alignItems="center" justifyContent="space-between">
+    {#if defaultChecked}
         <Layout.Stack direction="row" alignItems="center">
             <Typography.Text variant="m-600">Default</Typography.Text>
             <Typography.Caption variant="400">Optional</Typography.Caption>
         </Layout.Stack>
-        {#if !data.default && ((!editing && !defaultPointAdded) || (editing && !showDefaultPointDummyData))}
-            <Button secondary on:click={handleAddDefault}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Add Point
-            </Button>
-        {/if}
-    </Layout.Stack>
+    {/if}
+
     <InputPoint
-        values={showDefaultPointDummyData &&
-        ((!editing && defaultPointAdded) || (editing && !data.default))
-            ? getDefaultSpatialData('point')
-            : data.default}
-        nullable={showDefaultPointDummyData &&
-            ((!editing && defaultPointAdded) || (editing && !data.default))}
+        values={defaultChecked ? data.default : null}
         onChangePoint={(index, newValue) => {
             if (data.default) {
                 data.default[index] = newValue;

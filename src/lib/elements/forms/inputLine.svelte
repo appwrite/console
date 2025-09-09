@@ -3,20 +3,32 @@
     import InputPoint from './inputPoint.svelte';
     import Button from './button.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import type { Snippet } from 'svelte';
 
-    export let values: number[][];
-    export let nullable: boolean;
-    export let minDeletableIndex: number = 2;
-    export let allowLineDelete: boolean | undefined = undefined;
-    export let onAddPoint: (index: number) => void;
-    export let onDeletePoint: (index: number) => void = undefined;
-    export let onChangePoint: (pointIndex: number, coordIndex: number, newValue: number) => void =
-        undefined;
+    type Props = {
+        values: number[][];
+        nullable?: boolean;
+        minDeletableIndex?: number;
+        allowLineDelete?: boolean;
+        onAddPoint: (index: number) => void;
+        onDeletePoint: (index: number) => void;
+        onChangePoint: (pointIndex: number, coordIndex: number, newValue: number) => void;
+        addLineButton?: Snippet;
+    };
+
+    let {
+        values,
+        nullable = false,
+        minDeletableIndex = 2,
+        allowLineDelete,
+        onAddPoint,
+        onDeletePoint,
+        onChangePoint,
+        addLineButton
+    }: Props = $props();
 
     function handlePointChange(pointIndex: number, coordIndex: number, newValue: number) {
-        if (onChangePoint) {
-            onChangePoint(pointIndex, coordIndex, newValue);
-        }
+        onChangePoint?.(pointIndex, coordIndex, newValue);
     }
 
     function isDeleteDisabled(index: number) {
@@ -41,12 +53,13 @@
                     handlePointChange(index, coordIndex, newValue)} />
         {/each}
     </Layout.Stack>
+
     {#if values}
         <Layout.Stack direction="row" gap="s" alignItems="center">
             <Button size="xs" compact on:click={() => onAddPoint(-1)} disabled={nullable}>
                 <Icon icon={IconPlus} size="s" /> Add coordinate
             </Button>
-            <slot name="line-button" />
+            {@render addLineButton?.()}
         </Layout.Stack>
     {/if}
 </Layout.Stack>

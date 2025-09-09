@@ -6,12 +6,16 @@
     import { getDefaultSpatialData } from '../../../store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
-    export let label: string;
-    export let value: number[];
-    export let limited: boolean = false;
-    export let column: Models.ColumnInteger;
+    interface Props {
+        label: string;
+        value: number[];
+        limited: boolean;
+        column: Models.ColumnPoint;
+    }
 
-    $: nullable = !limited ? !column.required : false;
+    let { label, value, limited = false, column }: Props = $props();
+
+    let nullable = $state(false);
 
     function handlePointChange(index: number, newValue: number) {
         if (value) {
@@ -22,6 +26,10 @@
     function handleAddDefault() {
         value = getDefaultSpatialData('point') as number[];
     }
+
+    $effect(() => {
+        nullable = !limited ? !column.required : false;
+    });
 </script>
 
 <Layout.Stack>

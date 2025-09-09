@@ -4,13 +4,25 @@
     import Button from './button.svelte';
     import { IconX } from '@appwrite.io/pink-icons-svelte';
 
-    let nullableSkeletonShape: number[] = [0, 0];
-    export let values: number[];
-    export let nullable = false;
-    export let deletePoints = false;
-    export let onDeletePoint: () => void = undefined;
-    export let disableDelete = false;
-    export let onChangePoint: (index: number, newValue: number) => void;
+    interface Props {
+        values: number[];
+        nullable?: boolean;
+        deletePoints?: boolean;
+        onDeletePoint?: () => void;
+        disableDelete?: boolean;
+        onChangePoint: (index: number, newValue: number) => void;
+    }
+
+    const nullableSkeletonShape: number[] = [0, 0];
+
+    let {
+        values,
+        nullable = false,
+        deletePoints = false,
+        disableDelete = false,
+        onDeletePoint,
+        onChangePoint
+    }: Props = $props();
 </script>
 
 <Layout.Stack>

@@ -5,18 +5,30 @@
     import type { NestedNumberArray } from '$lib/helpers/types';
     import InputLine from './inputLine.svelte';
 
-    export let values: NestedNumberArray;
-    export let nullable;
-    export let onAddPoint: (index: number) => void;
-    export let onAddLine: (index: number) => void;
-    export let onDeletePoint: (index: number) => void = undefined;
-    export let onChangePoint: (
-        lineIndex: number,
-        pointIndex: number,
-        coordIndex: number,
-        newValue: number
-    ) => void = undefined;
-    export let minDeletableIndex: number = 4;
+    type Props = {
+        values: NestedNumberArray;
+        nullable?: boolean;
+        minDeletableIndex?: number;
+        onAddPoint: (index: number) => void;
+        onAddLine?: (index: number) => void;
+        onDeletePoint: (index: number) => void;
+        onChangePoint: (
+            lineIndex: number,
+            pointIndex: number,
+            coordIndex: number,
+            newValue: number
+        ) => void;
+    };
+
+    let {
+        values,
+        nullable = false,
+        minDeletableIndex = 4,
+        onAddPoint,
+        onAddLine,
+        onDeletePoint,
+        onChangePoint
+    }: Props = $props();
 
     function handlePointChange(
         lineIndex: number,
@@ -24,15 +36,11 @@
         coordIndex: number,
         newValue: number
     ) {
-        if (onChangePoint) {
-            onChangePoint(lineIndex, pointIndex, coordIndex, newValue);
-        }
+        onChangePoint?.(lineIndex, pointIndex, coordIndex, newValue);
     }
 
     function handleAddLineInternal() {
-        if (onAddLine) {
-            onAddLine(-1);
-        }
+        onAddLine?.(-1);
     }
 </script>
 
@@ -48,7 +56,7 @@
                     handlePointChange(index, pointIndex, coordIndex, newValue)}
                 allowLineDelete={index < 2}
                 {minDeletableIndex}>
-                <svelte:fragment slot="line-button">
+                {#snippet addLineButton()}
                     {#if index === values.length - 1}
                         <Button
                             disabled={nullable}
@@ -58,7 +66,7 @@
                             <Icon icon={IconPlus} size="s" /> Add line
                         </Button>
                     {/if}
-                </svelte:fragment>
+                {/snippet}
             </InputLine>
         </Layout.Stack>
     {/each}

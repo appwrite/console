@@ -3,34 +3,36 @@
     import { Button } from '$lib/elements/forms';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
-    import { getDefaultSpatialData } from '../../../store';
+    import { getDefaultSpatialData, getSingleRingPolygon } from '../../../store';
     import InputPolygon from '$lib/elements/forms/inputPolygon.svelte';
 
-    export let label: string;
-    export let value: number[][][];
-    export let limited: boolean = false;
-    export let column: Models.ColumnPolygon;
+    interface Props {
+        label: string;
+        value: number[][][];
+        limited: boolean;
+        column: Models.ColumnPolygon;
+    }
+
+    let { label, value, limited = false, column }: Props = $props();
+
+    let nullable = $state(false);
 
     function pushCoordinate(ringIndex: number) {
-        if (!value) return;
-
-        const ring = value.at(ringIndex);
+        const ring = value[ringIndex];
         if (!ring) return;
 
         const newPoint = getDefaultSpatialData('point') as number[];
-        ring.splice(ring.length - 1, 0, newPoint);
-        ring[ring.length - 1] = [...ring[0]];
-        value = [...value];
+
+        const newRing = [...ring];
+        newRing.splice(newRing.length - 1, 0, newPoint);
+        newRing[newRing.length - 1] = [...newRing[0]];
+
+        value = value.map((r, i) => (i === ringIndex ? newRing : r));
     }
 
     function pushLine() {
         if (!value) return;
-
-        const p1 = getDefaultSpatialData('point') as number[];
-        const p2 = getDefaultSpatialData('point') as number[];
-        const p3 = getDefaultSpatialData('point') as number[];
-        const ring = [p1, p2, p3, [...p1]];
-        value = [...value, ring];
+        value = [...value, getSingleRingPolygon()];
     }
 
     function deleteCoordinate(ringIndex: number) {
@@ -61,7 +63,9 @@
         value = getDefaultSpatialData('polygon') as number[][][];
     }
 
-    $: nullable = !limited ? !column.required : false;
+    $effect(() => {
+        nullable = !limited ? !column.required : false;
+    });
 </script>
 
 <Layout.Stack>

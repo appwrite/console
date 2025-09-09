@@ -6,10 +6,19 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { getDefaultSpatialData } from '../../../store';
 
-    export let label: string;
-    export let value: number[][];
-    export let limited: boolean = false;
-    export let column: Models.ColumnLine;
+    interface Props {
+        label: string;
+        value: number[][];
+        limited: boolean;
+        column: Models.ColumnLine;
+    }
+
+    let { label, value, limited = false, column }: Props = $props();
+
+    let nullable = $state(false);
+    $effect(() => {
+        nullable = !limited ? !column.required : false;
+    });
 
     const defaultData = getDefaultSpatialData('linestring') as number[][];
     function onAddPoint() {
@@ -30,7 +39,9 @@
         value = getDefaultSpatialData('linestring') as number[][];
     }
 
-    $: nullable = !limited ? !column.required : false;
+    $effect(() => {
+        nullable = !limited ? !column.required : false;
+    });
 </script>
 
 <Layout.Stack>

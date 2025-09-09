@@ -217,3 +217,12 @@ export const getDefaultSpatialData = (
             ]
         ];
 };
+
+export const getSingleRingPolygon = () => {
+    return [
+        [0, 0],
+        [0, 0],
+        [0, 0],
+        [0, 0]
+    ];
+};

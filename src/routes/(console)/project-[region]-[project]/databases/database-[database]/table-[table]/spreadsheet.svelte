@@ -66,10 +66,13 @@
         IconDotsHorizontal,
         IconFingerPrint,
         IconHashtag,
+        IconLine,
         IconLink,
         IconLocationMarker,
         IconMail,
+        IconPinned,
         IconPlus,
+        IconPolygon,
         IconRelationship,
         IconSwitchHorizontal,
         IconText,
@@ -305,6 +308,12 @@
                 return IconViewList;
             case 'relationship':
                 return IconRelationship;
+            case 'point':
+                return IconPinned;
+            case 'linestring':
+                return IconLine;
+            case 'polygon':
+                return IconPolygon;
         }
     }
 
