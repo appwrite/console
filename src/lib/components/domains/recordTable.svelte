@@ -9,13 +9,26 @@
         Alert
     } from '@appwrite.io/pink-svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { isASubdomain } from '$lib/helpers/tlds';
 
-    export let domain: string;
-    export let verified = undefined;
-    export let variant: 'cname' | 'a' | 'aaaa';
-    export let service: 'sites' | 'general' = 'general';
+    interface Props {
+        domain: string;
+        verified?: boolean;
+        variant: 'cname' | 'a' | 'aaaa';
+        service?: 'sites' | 'general';
+        onNavigateToNameservers?: () => void;
+    }
+
+    let {
+        domain,
+        verified = undefined,
+        variant,
+        service = 'general',
+        onNavigateToNameservers = undefined
+    }: Props = $props();
 
     let subdomain = domain?.split('.')?.slice(0, -2)?.join('.');
+    const isSubDomain = $derived.by(() => isASubdomain(domain));
 
     function setTarget() {
         switch (variant) {
@@ -44,8 +57,8 @@
             {/if}
         </Layout.Stack>
         <Typography.Text variant="m-400">
-            Add the following record on your DNS provider. Note that DNS changes may take time to
-            propagate fully.
+            Add the following record on your DNS provider. Note that DNS changes may take up to 48
+            hours to propagate fully.
         </Typography.Text>
     </Layout.Stack>
 
@@ -62,16 +75,25 @@
                 <InteractiveText variant="copy" isVisible text={setTarget()} />
             </Table.Cell>
         </Table.Row.Base>
+        <Table.Row.Base {root}>
+            <Table.Cell {root}>
+                <Layout.Stack direction="row" alignItems="center" gap="xs">
+                    CAA
+                    <Badge variant="secondary" size="s" content="Optional" />
+                </Layout.Stack>
+            </Table.Cell>
+            <Table.Cell {root}>@</Table.Cell>
+            <Table.Cell {root}>
+                <InteractiveText variant="copy" isVisible text={`0 issue "certainly.com"`} />
+            </Table.Cell>
+        </Table.Row.Base>
     </Table.Root>
     <Layout.Stack gap="s" direction="row" alignItems="center">
-        {#if variant === 'cname'}
+        {#if variant === 'cname' && !isSubDomain}
             <Alert.Inline>
-                If your domain uses CAA records, ensure certainly.com is authorized — otherwise, SSL
-                setup may fail. A list of all domain providers and their DNS setting is available <Link
-                    variant="muted"
-                    external
-                    href="https://appwrite.io/docs/advanced/platform/custom-domains">here</Link
-                >.
+                Since <Badge variant="secondary" size="s" content={domain} /> is an apex domain, CNAME
+                record is only supported by certain providers. If yours doesn't, please verify using
+                <Link variant="muted" on:click={onNavigateToNameservers}>nameservers</Link> instead.
             </Alert.Inline>
         {:else}
             <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">

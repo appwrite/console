@@ -30,8 +30,8 @@
             {/if}
         </Layout.Stack>
         <Typography.Text variant="m-400">
-            Add the following record on your DNS provider. Note that DNS changes may take time to
-            propagate fully.
+            Add the following record on your DNS provider. Note that DNS changes may take up to 48
+            hours to propagate fully.
         </Typography.Text>
     </Layout.Stack>
 
@@ -49,6 +49,18 @@
                     variant="copy"
                     isVisible
                     text={$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME} />
+            </Table.Cell>
+        </Table.Row.Base>
+        <Table.Row.Base {root}>
+            <Table.Cell {root}>
+                <Layout.Stack direction="row" alignItems="center" gap="xs">
+                    CAA
+                    <Badge variant="secondary" size="s" content="Optional" />
+                </Layout.Stack>
+            </Table.Cell>
+            <Table.Cell {root}>@</Table.Cell>
+            <Table.Cell {root}>
+                <InteractiveText variant="copy" isVisible text={`0 issue "certainly.com"`} />
             </Table.Cell>
         </Table.Row.Base>
     </Table.Root>
