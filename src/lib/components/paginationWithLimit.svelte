@@ -8,13 +8,19 @@
         offset,
         total,
         name,
-        useCreateLink = true
+        useCreateLink = true,
+        pageParam = 'page',
+        removeOnFirstPage = false,
+        ...restProps
     }: {
         limit: number;
         offset: number;
         total: number;
         name: string;
         useCreateLink?: boolean;
+        pageParam?: string;
+        removeOnFirstPage?: boolean;
+        [key: string]: any;
     } = $props();
 
     const showLimit = $derived(!!useCreateLink);
@@ -22,10 +28,17 @@
     const alignItems = $derived(showLimit ? 'center' : 'flex-end');
 </script>
 
-<Layout.Stack wrap="wrap" {direction} {alignItems} justifyContent="space-between">
+<Layout.Stack wrap="wrap" {direction} {alignItems} justifyContent="space-between" {...restProps}>
     {#if showLimit}
-        <Limit {limit} sum={total} {name} />
+        <Limit {limit} sum={total} {name} {pageParam} {removeOnFirstPage} />
     {/if}
 
-    <Pagination on:page {limit} {offset} sum={total} {useCreateLink} />
+    <Pagination
+        on:page
+        {limit}
+        {offset}
+        sum={total}
+        {useCreateLink}
+        {pageParam}
+        {removeOnFirstPage} />
 </Layout.Stack>

@@ -13,7 +13,8 @@
         name = 'items',
         gap = 's',
         offset = $bindable(0),
-        children
+        children,
+        ...restProps
     }: {
         items: T[];
         limit?: number;
@@ -26,6 +27,7 @@
             | undefined;
         offset?: number;
         children: Snippet<[T[], number]>;
+        [key: string]: any;
     } = $props();
 
     let total = $derived(items.length);
@@ -33,7 +35,7 @@
     let paginatedItems = $derived(items.slice(offset, offset + limit));
 </script>
 
-<Layout.Stack {gap}>
+<Layout.Stack {gap} {...restProps}>
     {@render children(paginatedItems, limit)}
 
     {#if !hideFooter}

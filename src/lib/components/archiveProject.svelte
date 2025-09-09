@@ -1,5 +1,5 @@
 <script lang="ts">
-    import ArchivedPaginationWithLimit from './archivedPaginationWithLimit.svelte';
+    import PaginationWithLimit from './paginationWithLimit.svelte';
     import { Button, InputText } from '$lib/elements/forms';
     import { DropList, GridItem1, CardContainer, Modal } from '$lib/components';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -320,13 +320,14 @@
                     {/each}
                 </CardContainer>
 
-                <div class="pagination-container">
-                    <ArchivedPaginationWithLimit
-                        name="Archived Projects"
-                        {limit}
-                        offset={archivedOffset}
-                        total={archivedTotalOverall} />
-                </div>
+                <PaginationWithLimit
+                    name="Archived Projects"
+                    {limit}
+                    offset={archivedOffset}
+                    total={archivedTotalOverall}
+                    pageParam="archivedPage"
+                    removeOnFirstPage
+                    class="pagination-container" />
             </div>
         </Accordion>
     </div>
@@ -400,7 +401,7 @@
         align-items: center;
         gap: 8px;
     }
-    .pagination-container {
+    :global(.pagination-container) {
         margin-top: 16px;
     }
 </style>

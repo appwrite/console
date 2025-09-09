@@ -110,7 +110,7 @@
     }
 
     $: projectsToArchive = (data.archivedProjectsPage ?? data.projects.projects).filter(
-        (project) => (isCloud ? project.status === 'archived' : project.status !== 'active') // fallback for non-cloud
+        (project) => project.status === 'archived'
     );
 
     $: activeProjects = (data.activeProjectsPage ?? data.projects.projects).filter(

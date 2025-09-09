@@ -21,43 +21,42 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const archivedPage = parseInt(url.searchParams.get('archivedPage') || '1');
     const archivedOffset = pageToOffset(archivedPage, limit);
 
-    // fetch active projects with offset set
-    const activeProjects = await sdk.forConsole.projects.list({
-        queries: [
-            Query.offset(offset),
-            Query.equal('teamId', params.organization),
-            Query.or([Query.equal('status', 'active'), Query.isNull('status')]),
-            Query.limit(limit),
-            Query.orderDesc('')
-        ],
-        search: search || undefined
-    });
-
-    // Fetch archived projects with separate pagination
-    const archivedProjects = await sdk.forConsole.projects.list({
-        queries: [
-            Query.offset(archivedOffset),
-            Query.equal('teamId', params.organization),
-            Query.equal('status', 'archived'),
-            Query.limit(limit),
-            Query.orderDesc('')
-        ],
-        search: search || undefined
-    });
-
-    // get total counts
-    const activeTotal = await sdk.forConsole.projects.list({
-        queries: [
-            Query.equal('teamId', params.organization),
-            Query.or([Query.equal('status', 'active'), Query.isNull('status')])
-        ],
-        search: search || undefined
-    });
-
-    const archivedTotal = await sdk.forConsole.projects.list({
-        queries: [Query.equal('teamId', params.organization), Query.equal('status', 'archived')],
-        search: search || undefined
-    });
+    const [activeProjects, archivedProjects, activeTotal, archivedTotal] = await Promise.all([
+        sdk.forConsole.projects.list({
+            queries: [
+                Query.offset(offset),
+                Query.equal('teamId', params.organization),
+                Query.or([Query.equal('status', 'active'), Query.isNull('status')]),
+                Query.limit(limit),
+                Query.orderDesc('')
+            ],
+            search: search || undefined
+        }),
+        sdk.forConsole.projects.list({
+            queries: [
+                Query.offset(archivedOffset),
+                Query.equal('teamId', params.organization),
+                Query.equal('status', 'archived'),
+                Query.limit(limit),
+                Query.orderDesc('')
+            ],
+            search: search || undefined
+        }),
+        sdk.forConsole.projects.list({
+            queries: [
+                Query.equal('teamId', params.organization),
+                Query.or([Query.equal('status', 'active'), Query.isNull('status')])
+            ],
+            search: search || undefined
+        }),
+        sdk.forConsole.projects.list({
+            queries: [
+                Query.equal('teamId', params.organization),
+                Query.equal('status', 'archived')
+            ],
+            search: search || undefined
+        })
+    ]);
 
     // set `default` if no region!
     for (const project of activeProjects.projects) {
