@@ -173,6 +173,10 @@
         <link rel="preload" as="style" type="text/css" href="/console/fonts/cloud.css" />
         <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
     {/if}
+
+    <!-- Google Tag Manager -->
+    <script defer src={`${base}/scripts/gtm.js`}></script>
+    <!-- End Google Tag Manager -->
 </svelte:head>
 
 <Root theme={resolveTheme($app.themeInUse)}>
