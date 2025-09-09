@@ -39,3 +39,12 @@ export function isMultiRegionSupported(url: URL): boolean {
         return false;
     }
 }
+
+// there can be multiple internal cloud instances.
+export function isProductionCloud(url: URL): boolean {
+    try {
+        return url.hostname === 'cloud.appwrite.io';
+    } catch {
+        return false;
+    }
+}
