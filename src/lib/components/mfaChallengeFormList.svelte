@@ -110,8 +110,7 @@
                     <Icon icon={IconMail} slot="start" size="s" />
                     Email verification
                 </Button>
-            {:else if (challengeType === AuthenticationFactor.Recoverycode && !factors.email) ||
-                      challengeType === AuthenticationFactor.Email}
+            {:else if (challengeType === AuthenticationFactor.Recoverycode && !factors.email) || challengeType === AuthenticationFactor.Email}
                 <Button
                     secondary
                     fullWidth
