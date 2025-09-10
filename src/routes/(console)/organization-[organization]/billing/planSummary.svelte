@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { EstimatedCard } from '$lib/components';
+    import { EstimatedCard, Pagination as PaginationComponent } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
@@ -14,7 +14,8 @@
         Expandable as ExpandableTable,
         Icon,
         Layout,
-        Divider
+        Divider,
+        Badge
     } from '@appwrite.io/pink-svelte';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatNum } from '$lib/helpers/string';
@@ -27,6 +28,10 @@
     export let nextPlan: Plan | null = null;
     export let availableCredit: number | undefined = undefined;
     export let currentAggregation: AggregationTeam | undefined = undefined;
+    export let limit: number | undefined = undefined;
+    export let offset: number | undefined = undefined;
+    // key to force refresh on page change
+    export let aggregationKey: string | undefined = undefined;
 
     let showCancel: boolean = false;
 
@@ -144,6 +149,21 @@
         );
     }
 
+    import { page } from '$app/state';
+
+    let projectsLimit: number = 5;
+    let projectsOffset: number = 0;
+    $: projectsLimit = limit ?? (Number(page.url.searchParams.get('limit')) || 5);
+    $: projectsOffset =
+        offset ?? ((Number(page.url.searchParams.get('page')) || 1) - 1) * projectsLimit;
+    $: totalProjects =
+        (currentAggregation && (currentAggregation as any).breakdownTotal) ||
+        (currentAggregation && (currentAggregation as any).projectsTotal) ||
+        (currentAggregation?.resources?.find?.((r) => r.resourceId === 'projects')?.value ??
+            null) ||
+        currentAggregation?.breakdown?.length ||
+        0;
+
     function getBillingData(currentPlan, currentAggregation, isSmallViewport) {
         const projectsList = getProjectsList(currentAggregation);
         const base = {
@@ -172,11 +192,13 @@
                         excess.resourceId === 'seats'
                             ? 'Additional members'
                             : excess.resourceId === 'projects'
-                              ? `Additional Projects (${formatNum(excess.value)})`
+                              ? 'Additional projects'
                               : `${excess.resourceId} overage (${formatNum(excess.value)})`,
                     usage: '',
                     price: formatCurrency(excess.amount)
                 },
+                // provide a badge count for additional projects
+                badge: excess.resourceId === 'projects' ? formatNum(excess.value) : null,
                 children: []
             }));
         const projects = projectsList.map((project) => ({
@@ -325,144 +347,198 @@
 </script>
 
 {#if $organization}
-    <EstimatedCard>
-        <Typography.Title size="s" gap="s">{currentPlan.name} plan</Typography.Title>
+    {#key aggregationKey}
+        <EstimatedCard>
+            <Typography.Title size="s" gap="s">{currentPlan.name} plan</Typography.Title>
 
-        {#if totalAmount > 0}
-            <Typography.Text color="--fgcolor-neutral-secondary">
-                Next payment of <span class="text --fgcolor-neutral-primary u-bold"
-                    >{formatCurrency(totalAmount)}</span>
-                will occur on
-                <span class="text --fgcolor-neutral-primary u-bold"
-                    >{toLocaleDate($organization?.billingNextInvoiceDate)}</span
-                >.
-            </Typography.Text>
-        {/if}
-        <Divider />
-        <div class="billing-cycle-header">
-            <Typography.Text color="--fgcolor-neutral-secondary" variant="m-500">
-                Current billing cycle ({new Date(
-                    $organization?.billingCurrentInvoiceDate
-                ).toLocaleDateString('en', { day: 'numeric', month: 'short' })}-{new Date(
-                    $organization?.billingNextInvoiceDate
-                ).toLocaleDateString('en', { day: 'numeric', month: 'short' })})
-            </Typography.Text>
-            <Typography.Text color="--fgcolor-neutral-tertiary" variant="m-400">
-                Estimate, subject to change based on usage.
-            </Typography.Text>
-        </div>
-        <!-- Billing breakdown table -->
-        <div class="table-wrapper" class:is-mobile={$isSmallViewport}>
-            <ExpandableTable.Root {columns} showHeader={false} let:root>
-                {#each billingData as row}
-                    <ExpandableTable.Row {root} id={row.id} expandable={row.expandable ?? false}>
-                        {#each columns as col}
-                            <ExpandableTable.Cell
-                                {root}
-                                column={col.id}
-                                expandable={row.expandable ?? false}>
-                                {#if col.id === 'item'}
-                                    <div class="cell-item-text">
+            {#if totalAmount > 0}
+                <Typography.Text color="--fgcolor-neutral-secondary">
+                    Next payment of <span class="text --fgcolor-neutral-primary u-bold"
+                        >{formatCurrency(totalAmount)}</span>
+                    will occur on
+                    <span class="text --fgcolor-neutral-primary u-bold"
+                        >{toLocaleDate($organization?.billingNextInvoiceDate)}</span
+                    >.
+                </Typography.Text>
+            {/if}
+            <Divider />
+            <div class="billing-cycle-header">
+                <Typography.Text color="--fgcolor-neutral-secondary" variant="m-500">
+                    Current billing cycle ({new Date(
+                        $organization?.billingCurrentInvoiceDate
+                    ).toLocaleDateString('en', { day: 'numeric', month: 'short' })}-{new Date(
+                        $organization?.billingNextInvoiceDate
+                    ).toLocaleDateString('en', { day: 'numeric', month: 'short' })})
+                </Typography.Text>
+                <Typography.Text color="--fgcolor-neutral-tertiary" variant="m-400">
+                    Estimate, subject to change based on usage.
+                </Typography.Text>
+            </div>
+            <!-- Billing breakdown table -->
+            <div class="table-wrapper" class:is-mobile={$isSmallViewport}>
+                <ExpandableTable.Root {columns} showHeader={false} let:root>
+                    {#each billingData as row}
+                        <ExpandableTable.Row
+                            {root}
+                            id={row.id}
+                            expandable={row.expandable ?? false}>
+                            {#each columns as col}
+                                <ExpandableTable.Cell
+                                    {root}
+                                    column={col.id}
+                                    expandable={row.expandable ?? false}>
+                                    {#if col.id === 'item'}
+                                        <div class="cell-item-text">
+                                            {#if row.badge}
+                                                <Layout.Stack
+                                                    direction="row"
+                                                    alignItems="center"
+                                                    gap="xs">
+                                                    <Typography.Text>
+                                                        {row.cells?.[col.id] ?? ''}
+                                                    </Typography.Text>
+                                                    <Badge
+                                                        variant="secondary"
+                                                        size="xs"
+                                                        content={row.badge} />
+                                                </Layout.Stack>
+                                            {:else}
+                                                <Typography.Text>
+                                                    {row.cells?.[col.id] ?? ''}
+                                                </Typography.Text>
+                                            {/if}
+                                        </div>
+                                    {:else}
                                         <Typography.Text>
                                             {row.cells?.[col.id] ?? ''}
                                         </Typography.Text>
-                                    </div>
-                                {:else}
-                                    <Typography.Text>
-                                        {row.cells?.[col.id] ?? ''}
-                                    </Typography.Text>
-                                {/if}
-                            </ExpandableTable.Cell>
-                        {/each}
+                                    {/if}
+                                </ExpandableTable.Cell>
+                            {/each}
 
-                        <svelte:fragment slot="summary">
-                            {#if row.children}
-                                {#each row.children as child (child.id)}
-                                    <div
-                                        class="child-row"
-                                        class:is-tablet={$isTabletViewport && !$isSmallViewport}
-                                        style="grid-template-columns: {root.childGridTemplate}; --original-grid-template: {root.childGridTemplate};">
-                                        {#each columns as col}
-                                            <div
-                                                class="child-cell"
-                                                class:price={col.id === 'price'}
-                                                class:is-mobile={$isSmallViewport}
-                                                style="justify-content: {root.alignment(
-                                                    col.align
-                                                )};">
-                                                {#if child.cells?.[col.id]?.includes('<a href=')}
-                                                    {@html child.cells?.[col.id] ?? ''}
-                                                {:else if col.id === 'usage'}
-                                                    <div
-                                                        class="usage-cell-content"
-                                                        class:is-mobile={$isSmallViewport}
-                                                        class:is-tablet={$isTabletViewport &&
-                                                            !$isSmallViewport}>
-                                                        <div class="usage-progress-section">
-                                                            {#if child.progressData && child.progressData.length > 0 && child.maxValue}
-                                                                <ProgressBar
-                                                                    maxSize={child.maxValue}
-                                                                    data={child.progressData} />
-                                                            {/if}
+                            <svelte:fragment slot="summary">
+                                {#if row.children}
+                                    {#each row.children as child (child.id)}
+                                        <div
+                                            class="child-row"
+                                            class:is-tablet={$isTabletViewport && !$isSmallViewport}
+                                            style="grid-template-columns: {root.childGridTemplate}; --original-grid-template: {root.childGridTemplate};">
+                                            {#each columns as col}
+                                                <div
+                                                    class="child-cell"
+                                                    class:price={col.id === 'price'}
+                                                    class:is-mobile={$isSmallViewport}
+                                                    style="justify-content: {root.alignment(
+                                                        col.align
+                                                    )};">
+                                                    {#if child.cells?.[col.id]?.includes('<a href=')}
+                                                        {@html child.cells?.[col.id] ?? ''}
+                                                    {:else if col.id === 'usage'}
+                                                        <div
+                                                            class="usage-cell-content"
+                                                            class:is-mobile={$isSmallViewport}
+                                                            class:is-tablet={$isTabletViewport &&
+                                                                !$isSmallViewport}>
+                                                            <div class="usage-progress-section">
+                                                                {#if child.progressData && child.progressData.length > 0 && child.maxValue}
+                                                                    <ProgressBar
+                                                                        maxSize={child.maxValue}
+                                                                        data={child.progressData} />
+                                                                {/if}
+                                                            </div>
+                                                            <div class="usage-text-section">
+                                                                {#if child.cells?.[col.id]?.includes(' / ')}
+                                                                    {@const usageParts = (
+                                                                        child.cells?.[col.id] ?? ''
+                                                                    ).split(' / ')}
+                                                                    <Typography.Text
+                                                                        variant="m-400"
+                                                                        color="--fgcolor-neutral-secondary">
+                                                                        {usageParts[0]}
+                                                                    </Typography.Text>
+                                                                    <Typography.Text
+                                                                        variant="m-400"
+                                                                        color="--fgcolor-neutral-tertiary">
+                                                                        {' / '}
+                                                                    </Typography.Text>
+                                                                    <Typography.Text
+                                                                        variant="m-400"
+                                                                        color="--fgcolor-neutral-tertiary">
+                                                                        {usageParts[1]}
+                                                                    </Typography.Text>
+                                                                {:else}
+                                                                    <Typography.Text
+                                                                        variant="m-400"
+                                                                        color="--fgcolor-neutral-secondary">
+                                                                        {child.cells?.[col.id] ??
+                                                                            ''}
+                                                                    </Typography.Text>
+                                                                {/if}
+                                                            </div>
                                                         </div>
-                                                        <div class="usage-text-section">
-                                                            {#if child.cells?.[col.id]?.includes(' / ')}
-                                                                {@const usageParts = (
-                                                                    child.cells?.[col.id] ?? ''
-                                                                ).split(' / ')}
-                                                                <Typography.Text
-                                                                    variant="m-400"
-                                                                    color="--fgcolor-neutral-secondary">
-                                                                    {usageParts[0]}
-                                                                </Typography.Text>
-                                                                <Typography.Text
-                                                                    variant="m-400"
-                                                                    color="--fgcolor-neutral-tertiary">
-                                                                    {' / '}
-                                                                </Typography.Text>
-                                                                <Typography.Text
-                                                                    variant="m-400"
-                                                                    color="--fgcolor-neutral-tertiary">
-                                                                    {usageParts[1]}
-                                                                </Typography.Text>
-                                                            {:else}
-                                                                <Typography.Text
-                                                                    variant="m-400"
-                                                                    color="--fgcolor-neutral-secondary">
-                                                                    {child.cells?.[col.id] ?? ''}
-                                                                </Typography.Text>
-                                                            {/if}
-                                                        </div>
-                                                    </div>
-                                                {:else}
-                                                    <Typography.Text
-                                                        variant="m-400"
-                                                        color="--fgcolor-neutral-secondary">
-                                                        {child.cells?.[col.id] ?? ''}
-                                                    </Typography.Text>
-                                                {/if}
-                                            </div>
-                                        {/each}
-                                    </div>
-                                {/each}
-                            {/if}
-                        </svelte:fragment>
-                    </ExpandableTable.Row>
-                {/each}
-                {#if availableCredit > 0}
+                                                    {:else}
+                                                        <Typography.Text
+                                                            variant="m-400"
+                                                            color="--fgcolor-neutral-secondary">
+                                                            {child.cells?.[col.id] ?? ''}
+                                                        </Typography.Text>
+                                                    {/if}
+                                                </div>
+                                            {/each}
+                                        </div>
+                                    {/each}
+                                {/if}
+                            </svelte:fragment>
+                        </ExpandableTable.Row>
+                    {/each}
+                    {#if totalProjects > projectsLimit}
+                        <ExpandableTable.Row {root} id="pagination-row" expandable={false}>
+                            <ExpandableTable.Cell {root} column="item" expandable={false}>
+                                <div class="pagination-left">
+                                    <PaginationComponent
+                                        limit={projectsLimit}
+                                        offset={projectsOffset}
+                                        sum={totalProjects} />
+                                </div>
+                            </ExpandableTable.Cell>
+                            <ExpandableTable.Cell {root} column="usage" expandable={false}
+                            ></ExpandableTable.Cell>
+                            <ExpandableTable.Cell {root} column="price" expandable={false}
+                            ></ExpandableTable.Cell>
+                        </ExpandableTable.Row>
+                    {/if}
+                    {#if availableCredit > 0}
+                        <ExpandableTable.Row {root} id="total-row" expandable={false}>
+                            <ExpandableTable.Cell {root} column="item" expandable={false}>
+                                <Layout.Stack
+                                    inline
+                                    direction="row"
+                                    gap="xxs"
+                                    alignItems="center"
+                                    alignContent="center">
+                                    <Icon icon={IconTag} color="--fgcolor-success" size="s" />
+
+                                    <Typography.Text color="--fgcolor-neutral-primary"
+                                        >Credits</Typography.Text>
+                                </Layout.Stack>
+                            </ExpandableTable.Cell>
+                            <ExpandableTable.Cell {root} column="usage" expandable={false}>
+                                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                </Typography.Text>
+                            </ExpandableTable.Cell>
+                            <ExpandableTable.Cell {root} column="price" expandable={false}>
+                                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                    -{formatCurrency(creditsApplied)}
+                                </Typography.Text>
+                            </ExpandableTable.Cell>
+                        </ExpandableTable.Row>
+                    {/if}
+
                     <ExpandableTable.Row {root} id="total-row" expandable={false}>
                         <ExpandableTable.Cell {root} column="item" expandable={false}>
-                            <Layout.Stack
-                                inline
-                                direction="row"
-                                gap="xxs"
-                                alignItems="center"
-                                alignContent="center">
-                                <Icon icon={IconTag} color="--fgcolor-success" size="s" />
-
-                                <Typography.Text color="--fgcolor-neutral-primary"
-                                    >Credits</Typography.Text>
-                            </Layout.Stack>
+                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                Total
+                            </Typography.Text>
                         </ExpandableTable.Cell>
                         <ExpandableTable.Cell {root} column="usage" expandable={false}>
                             <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
@@ -470,79 +546,64 @@
                         </ExpandableTable.Cell>
                         <ExpandableTable.Cell {root} column="price" expandable={false}>
                             <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                                -{formatCurrency(creditsApplied)}
+                                {formatCurrency(totalAmount)}
                             </Typography.Text>
                         </ExpandableTable.Cell>
                     </ExpandableTable.Row>
-                {/if}
+                </ExpandableTable.Root>
+            </div>
 
-                <ExpandableTable.Row {root} id="total-row" expandable={false}>
-                    <ExpandableTable.Cell {root} column="item" expandable={false}>
-                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                            Total
-                        </Typography.Text>
-                    </ExpandableTable.Cell>
-                    <ExpandableTable.Cell {root} column="usage" expandable={false}>
-                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                        </Typography.Text>
-                    </ExpandableTable.Cell>
-                    <ExpandableTable.Cell {root} column="price" expandable={false}>
-                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                            {formatCurrency(totalAmount)}
-                        </Typography.Text>
-                    </ExpandableTable.Cell>
-                </ExpandableTable.Row>
-            </ExpandableTable.Root>
-        </div>
-
-        <!-- Actions -->
-        <div class="actions-container">
-            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
-                <div
-                    class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
-                    {#if !currentPlan?.usagePerProject}
-                        <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
-                            View estimated usage
-                        </Button>
-                    {/if}
-                    <Button
-                        disabled={$organization?.markedForDeletion}
-                        href={$upgradeURL}
-                        on:click={() =>
-                            trackEvent(Click.OrganizationClickUpgrade, {
-                                from: 'button',
-                                source: 'billing_tab'
-                            })}>
-                        Upgrade
-                    </Button>
-                </div>
-            {:else}
-                <div
-                    class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
-                    {#if $organization?.billingPlanDowngrade !== null}
-                        <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
-                    {:else}
+            <!-- Actions -->
+            <div class="actions-container">
+                {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                    <div
+                        class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
+                        {#if !currentPlan?.usagePerProject}
+                            <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
+                                View estimated usage
+                            </Button>
+                        {/if}
                         <Button
-                            text
                             disabled={$organization?.markedForDeletion}
                             href={$upgradeURL}
                             on:click={() =>
-                                trackEvent('click_organization_plan_update', {
+                                trackEvent(Click.OrganizationClickUpgrade, {
                                     from: 'button',
                                     source: 'billing_tab'
                                 })}>
-                            Change plan
+                            Upgrade
                         </Button>
-                    {/if}
-                    {#if !currentPlan?.usagePerProject}
-                        <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
-                            View estimated usage
-                        </Button>
-                    {/if}
-                </div>
-            {/if}
-        </div>
-    </EstimatedCard>
+                    </div>
+                {:else}
+                    <div
+                        class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
+                        {#if $organization?.billingPlanDowngrade !== null}
+                            <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
+                        {:else}
+                            <Button
+                                text
+                                disabled={$organization?.markedForDeletion}
+                                href={$upgradeURL}
+                                on:click={() =>
+                                    trackEvent('click_organization_plan_update', {
+                                        from: 'button',
+                                        source: 'billing_tab'
+                                    })}>
+                                Change plan
+                            </Button>
+                        {/if}
+                        {#if !currentPlan?.usagePerProject}
+                            <Button
+                                secondary
+                                href={`${base}/organization-${$organization?.$id}/usage`}>
+                                View estimated usage
+                            </Button>
+                        {/if}
+                    </div>
+                {/if}
+            </div>
+        </EstimatedCard>
+    {/key}
 {/if}
 
 <CancelDowngradeModel bind:showCancel />
@@ -732,5 +793,12 @@
             border: unset !important;
             background: unset !important;
         }
+    }
+
+    /* reducingh size of paginator */
+    .pagination-left {
+        display: inline-block;
+        transform: scale(0.95);
+        transform-origin: left center;
     }
 </style>
