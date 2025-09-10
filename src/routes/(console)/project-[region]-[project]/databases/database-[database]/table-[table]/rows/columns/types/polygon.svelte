@@ -13,7 +13,7 @@
         column: Models.ColumnPolygon;
     }
 
-    let { label, value, limited = false, column }: Props = $props();
+    let { label, value = $bindable(), limited = false, column }: Props = $props();
 
     let nullable = $state(false);
 
@@ -38,13 +38,9 @@
     function deleteCoordinate(ringIndex: number) {
         if (!value) return;
 
-        const ring = value.at(ringIndex);
-
-        ring.splice(ring.length - 1, 1);
-        if (ring.length === 0) {
-            value.splice(ringIndex, 1);
-        }
-        value = [...value];
+        value = value
+            .map((ring, i) => (i === ringIndex ? ring.slice(0, -1) : ring))
+            .filter((ring) => ring.length > 0);
     }
 
     function handlePointChange(

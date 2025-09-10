@@ -13,7 +13,7 @@
         column: Models.ColumnLine;
     }
 
-    let { label, value, limited = false, column }: Props = $props();
+    let { label, value = $bindable(), limited = false, column }: Props = $props();
 
     let nullable = $state(false);
     $effect(() => {
