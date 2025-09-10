@@ -211,23 +211,19 @@
 
 <Wizard
     title="Deploy site"
+    columnSize="s"
     bind:showExitModal
     column={true}
     href={`${base}/project-${page.params.region}-${page.params.project}/sites/`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} {isSubmitting}>
         <Layout.Stack gap="xl">
-            <Card padding="s" radius="s">
-                <Layout.Stack gap="m">
-                    <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                        Repository
-                    </Typography.Text>
-                    <Layout.Stack direction="row" alignItems="center" gap="s">
-                        <Icon icon={IconGithub} size="m" />
-                        <Link variant="quiet" href={data.repository.url} size="m" external icon>
-                            {data.repository.owner}/{data.repository.name}
-                        </Link>
-                    </Layout.Stack>
+            <Card>
+                <Layout.Stack direction="row" alignItems="center" gap="s">
+                    <Icon icon={IconGithub} />
+                    <Link variant="quiet" href={data.repository.url} size="m" external icon>
+                        {data.repository.owner}/{data.repository.name}
+                    </Link>
                 </Layout.Stack>
             </Card>
 
