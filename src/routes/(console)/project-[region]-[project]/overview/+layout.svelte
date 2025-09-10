@@ -20,7 +20,7 @@
     import { onMount, setContext, type Component } from 'svelte';
     import Bandwidth from './bandwidth.svelte';
     import Requests from './requests.svelte';
-    import { usage } from './store';
+    import { loadingProjectUsage, usage } from './store';
     import { formatNum } from '$lib/helpers/string';
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
@@ -28,20 +28,23 @@
     import { writable, type Writable } from 'svelte/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import SimpleValueSkeleton from './(components)/skeletons/simple.svelte';
 
     let period: UsagePeriods = '30d';
-    $: path = `${base}/project-${page.params.region}-${page.params.project}/overview`;
+
+    const action = setContext<Writable<Component>>('overview-action', writable(null));
 
     onMount(handle);
     afterNavigate(handle);
 
-    const action = setContext<Writable<Component>>('overview-action', writable(null));
-
     async function handle() {
+        $loadingProjectUsage = true;
         const promise = changePeriod(period);
 
         if ($usage) {
-            await promise;
+            await promise.finally(() => {
+                $loadingProjectUsage = false;
+            });
         }
     }
 
@@ -88,9 +91,11 @@
         }
     ]);
 
-    $: $updateCommandGroupRanks({
-        integrations: 10
-    });
+    $: $updateCommandGroupRanks({ integrations: 10 });
+
+    $: path = `${base}/project-${page.params.region}-${page.params.project}/overview`;
+
+    $: console.log(`$loadingProjectUsage: ${$loadingProjectUsage}`);
 </script>
 
 <svelte:head>
@@ -99,124 +104,128 @@
 
 <Container overlapCover>
     <Layout.Stack gap="xxl">
-        {#if $usage}
-            {@const storage = humanFileSize($usage.filesStorageTotal ?? 0)}
-            <Layout.Stack gap="xl">
-                <Layout.Stack gap="l" direction={$isSmallViewport ? 'column' : 'row'}>
-                    <Card.Base
-                        class="is-2-columns-medium-screen is-3-columns-large-screen"
-                        padding="s">
-                        <Bandwidth {period} on:change={(e) => changePeriod(e.detail)} />
-                    </Card.Base>
-                    <Card.Base
-                        class="is-2-columns-medium-screen is-3-columns-large-screen"
-                        padding="s">
-                        <Requests {period} on:change={(e) => changePeriod(e.detail)} />
-                    </Card.Base>
-                </Layout.Stack>
-
-                <Layout.Stack gap="xl" direction={$isSmallViewport ? 'column' : 'row'}>
-                    <Card.Link
-                        padding="s"
-                        href={`${base}/project-${page.params.region}-${page.params.project}/databases`}
-                        class="is-2-columns-large-screen">
-                        <div class="grid-item-1">
-                            <div class="grid-item-1-start-start">
-                                <div class="eyebrow-heading-3">
-                                    <span class="icon-database" aria-hidden="true"></span>
-                                    <span class="text">Database</span>
-                                </div>
-                            </div>
-
-                            <div class="grid-item-1-start-end"></div>
-
-                            <div class="grid-item-1-end-start">
-                                <Typography.Title>
-                                    {formatNum($usage.documentsTotal ?? 0)}
-                                </Typography.Title>
-                                <Typography.Text>Rows</Typography.Text>
-                            </div>
-                        </div>
-                    </Card.Link>
-                    <Card.Link
-                        padding="s"
-                        href={`${base}/project-${page.params.region}-${page.params.project}/storage`}
-                        class="is-2-columns-large-screen">
-                        <div class="grid-item-1">
-                            <div class="grid-item-1-start-start">
-                                <div class="eyebrow-heading-3">
-                                    <span class="icon-folder" aria-hidden="true"></span>
-                                    <span class="text">Storage</span>
-                                </div>
-                            </div>
-
-                            <div class="grid-item-1-start-end"></div>
-
-                            <div class="grid-item-1-end-start">
-                                <Typography.Title>
-                                    {storage.value}
-                                    <span class="body-text-2">{storage.unit}</span>
-                                </Typography.Title>
-                                <Typography.Text>Storage</Typography.Text>
-                            </div>
-                        </div>
-                    </Card.Link>
-                    <Card.Link
-                        padding="s"
-                        href={`${base}/project-${page.params.region}-${page.params.project}/auth`}
-                        class="is-2-columns-large-screen">
-                        <div class="grid-item-1">
-                            <div class="grid-item-1-start-start">
-                                <div class="eyebrow-heading-3">
-                                    <span class="icon-user-group" aria-hidden="true"></span>
-                                    <span class="text">Auth</span>
-                                </div>
-                            </div>
-
-                            <div class="grid-item-1-start-end"></div>
-
-                            <div class="grid-item-1-end-start">
-                                <Typography.Title>
-                                    {formatNum($usage.usersTotal ?? 0)}
-                                </Typography.Title>
-                                <Typography.Text>Users</Typography.Text>
-                            </div>
-                        </div>
-                    </Card.Link>
-                    <Card.Link
-                        padding="s"
-                        href={`${base}/project-${page.params.region}-${page.params.project}/functions`}
-                        class="is-2-columns-large-screen">
-                        <div class="grid-item-1">
-                            <div class="grid-item-1-start-start">
-                                <div class="eyebrow-heading-3">
-                                    <span class="icon-lightning-bolt" aria-hidden="true"></span>
-                                    <span class="text">Functions</span>
-                                </div>
-                            </div>
-
-                            <div class="grid-item-1-start-end"></div>
-
-                            <div class="grid-item-1-end-start">
-                                <Typography.Title>
-                                    {formatNum($usage.executionsTotal ?? 0)}
-                                </Typography.Title>
-                                <Typography.Text>Executions</Typography.Text>
-                            </div>
-
-                            <div class="grid-item-1-end-end">
-                                <div class="text"></div>
-                            </div>
-                        </div>
-                    </Card.Link>
-                    <!--                    <Card.Base-->
-                    <!--                        padding="s"-->
-                    <!--                        class="is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">-->
-                    <!--                        <Realtime />-->
-                    <!--                    </Card.Base>-->
-                </Layout.Stack>
+        {@const storage = humanFileSize($usage?.filesStorageTotal ?? 0)}
+        <Layout.Stack gap="xl">
+            <Layout.Stack gap="l" direction={$isSmallViewport ? 'column' : 'row'}>
+                <Card.Base class="is-2-columns-medium-screen is-3-columns-large-screen" padding="s">
+                    <Bandwidth
+                        {period}
+                        on:change={(e) => changePeriod(e.detail)}
+                        loading={$loadingProjectUsage} />
+                </Card.Base>
+                <Card.Base class="is-2-columns-medium-screen is-3-columns-large-screen" padding="s">
+                    <Requests
+                        {period}
+                        on:change={(e) => changePeriod(e.detail)}
+                        loading={$loadingProjectUsage} />
+                </Card.Base>
             </Layout.Stack>
-        {/if}
+
+            <Layout.Stack gap="xl" direction={$isSmallViewport ? 'column' : 'row'}>
+                <Card.Link
+                    padding="s"
+                    href={`${base}/project-${page.params.region}-${page.params.project}/databases`}
+                    class="is-2-columns-large-screen">
+                    <div class="grid-item-1">
+                        <div class="grid-item-1-start-start">
+                            <div class="eyebrow-heading-3">
+                                <span class="icon-database" aria-hidden="true"></span>
+                                <span class="text">Database</span>
+                            </div>
+                        </div>
+
+                        <div class="grid-item-1-start-end"></div>
+
+                        <div class="grid-item-1-end-start">
+                            <SimpleValueSkeleton
+                                resource="Rows"
+                                loading={$loadingProjectUsage}
+                                value={formatNum($usage?.rowsTotal ?? 0)} />
+                        </div>
+                    </div>
+                </Card.Link>
+
+                <Card.Link
+                    padding="s"
+                    href={`${base}/project-${page.params.region}-${page.params.project}/storage`}
+                    class="is-2-columns-large-screen">
+                    <div class="grid-item-1">
+                        <div class="grid-item-1-start-start">
+                            <div class="eyebrow-heading-3">
+                                <span class="icon-folder" aria-hidden="true"></span>
+                                <span class="text">Storage</span>
+                            </div>
+                        </div>
+
+                        <div class="grid-item-1-start-end"></div>
+
+                        <div class="grid-item-1-end-start">
+                            <SimpleValueSkeleton
+                                resource="Storage"
+                                unit={storage.unit}
+                                value={storage.value}
+                                loading={$loadingProjectUsage} />
+                        </div>
+                    </div>
+                </Card.Link>
+
+                <Card.Link
+                    padding="s"
+                    href={`${base}/project-${page.params.region}-${page.params.project}/auth`}
+                    class="is-2-columns-large-screen">
+                    <div class="grid-item-1">
+                        <div class="grid-item-1-start-start">
+                            <div class="eyebrow-heading-3">
+                                <span class="icon-user-group" aria-hidden="true"></span>
+                                <span class="text">Auth</span>
+                            </div>
+                        </div>
+
+                        <div class="grid-item-1-start-end"></div>
+
+                        <div class="grid-item-1-end-start">
+                            <SimpleValueSkeleton
+                                resource="Users"
+                                loading={$loadingProjectUsage}
+                                value={formatNum($usage?.usersTotal ?? 0)} />
+                        </div>
+                    </div>
+                </Card.Link>
+
+                <Card.Link
+                    padding="s"
+                    href={`${base}/project-${page.params.region}-${page.params.project}/functions`}
+                    class="is-2-columns-large-screen">
+                    <div class="grid-item-1">
+                        <div class="grid-item-1-start-start">
+                            <div class="eyebrow-heading-3">
+                                <span class="icon-lightning-bolt" aria-hidden="true"></span>
+                                <span class="text">Functions</span>
+                            </div>
+                        </div>
+
+                        <div class="grid-item-1-start-end"></div>
+
+                        <div class="grid-item-1-end-start">
+                            <SimpleValueSkeleton
+                                resource="Executions"
+                                loading={$loadingProjectUsage}
+                                value={formatNum($usage?.executionsTotal ?? 0)} />
+                        </div>
+
+                        <div class="grid-item-1-end-end">
+                            <div class="text"></div>
+                        </div>
+                    </div>
+                </Card.Link>
+
+                <!--<Card.Base-->
+                <!--padding="s"-->
+                <!--class="is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">-->
+                <!--<Realtime />-->
+                <!--</Card.Base>-->
+            </Layout.Stack>
+        </Layout.Stack>
 
         <Layout.Stack gap="xl">
             <Typography.Title>Integrations</Typography.Title>

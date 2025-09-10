@@ -17,6 +17,7 @@
         danger?: boolean;
         style?: string;
         class?: string;
+        fullHeightChild?: boolean;
     };
 
     type ButtonProps = {
@@ -40,19 +41,20 @@
     export let padding: $$Props['padding'] = 'm';
     export let radius: $$Props['radius'] = 'm';
     export let variant: $$Props['variant'] = 'primary';
+    export let fullHeightChild: $$Props['fullHeightChild'] = false;
 
     $: resolvedClasses = [classes].filter(Boolean).join(' ');
 </script>
 
 {#if href}
     <Card.Link class={resolvedClasses} {href} {style} {padding} {radius} {variant} on:click>
-        <Layout.Stack gap="xl">
+        <Layout.Stack gap="xl" height={fullHeightChild ? '100%' : undefined}>
             <slot />
         </Layout.Stack>
     </Card.Link>
 {:else if isButton}
     <Card.Button class={resolvedClasses} {style} {padding} {radius} {variant} on:click>
-        <Layout.Stack gap="xl">
+        <Layout.Stack gap="xl" height={fullHeightChild ? '100%' : undefined}>
             <slot />
         </Layout.Stack>
     </Card.Button>
@@ -64,7 +66,7 @@
         {padding}
         {radius}
         {variant}>
-        <Layout.Stack gap="xl">
+        <Layout.Stack gap="xl" height={fullHeightChild ? '100%' : undefined}>
             <slot />
         </Layout.Stack>
     </Card.Base>
