@@ -9,7 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { IndexType } from '@appwrite.io/console';
-    import { isRelationship } from '../rows/store';
+    import { isRelationship, isSpatialType } from '../rows/store';
     import { table, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
@@ -56,14 +56,20 @@
     }
 
     function initialize() {
+        const column = $table.columns.filter((column) => externalColumnKey === column.key);
+        const isSpatial = column.length && isSpatialType(column[0]);
+        const order = isSpatial ? null : 'ASC';
         columnList = externalColumnKey
-            ? [{ value: externalColumnKey, order: 'ASC', length: null }]
-            : [{ value: '', order: 'ASC', length: null }];
+            ? [{ value: externalColumnKey, order, length: null }]
+            : [{ value: '', order, length: null }];
         selectedType = IndexType.Key;
         key = `index_${$indexes.length + 1}`;
     }
 
-    const addColumnDisabled = $derived(!columnList.at(-1)?.value || !columnList.at(-1)?.order);
+    const addColumnDisabled = $derived(
+        !columnList.at(-1)?.value ||
+            (!columnList.at(-1)?.order && columnList.at(-1)?.order !== null)
+    );
 
     const isOnIndexesPage = $derived(page.route.id?.endsWith('/indexes'));
     const navigatorPathToIndexes = $derived(
@@ -87,14 +93,15 @@
         }
 
         try {
+            const orders = columnList.map((a) => a.order).filter((order) => order !== null);
             await sdk.forProject(page.params.region, page.params.project).tablesDB.createIndex({
                 databaseId,
                 tableId: $table.$id,
                 key,
                 type: selectedType,
                 columns: columnList.map((a) => a.value),
-                orders: columnList.map((a) => a.order),
-                lengths: columnList.map((a) => (a.length ? Number(a.length) : null))
+                lengths: columnList.map((a) => (a.length ? Number(a.length) : null)),
+                ...(orders.length ? { orders } : {})
             });
 
             await Promise.allSettled([
@@ -165,7 +172,8 @@
             <InputSelect
                 options={[
                     { value: 'ASC', label: 'ASC' },
-                    { value: 'DESC', label: 'DESC' }
+                    { value: 'DESC', label: 'DESC' },
+                    { value: null, label: 'NONE' }
                 ]}
                 required
                 id={`order-${index}`}
