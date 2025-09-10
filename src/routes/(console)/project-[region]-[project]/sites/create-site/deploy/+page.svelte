@@ -218,7 +218,7 @@
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} {isSubmitting}>
         <Layout.Stack gap="xl">
-            <Card>
+            <Card padding="s" radius="s">
                 <Layout.Stack direction="row" alignItems="center" gap="s">
                     <Icon icon={IconGithub} />
                     <Link variant="quiet" href={data.repository.url} size="m" external icon>
