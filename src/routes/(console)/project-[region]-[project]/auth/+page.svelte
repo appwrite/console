@@ -64,7 +64,6 @@
     let deleting = false;
 
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
-        showCreateUser.set(false);
         await goto(
             `${base}/project-${page.params.region}-${page.params.project}/auth/user-${event.detail.$id}`
         );
