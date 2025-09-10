@@ -110,16 +110,8 @@
                     <Icon icon={IconMail} slot="start" size="s" />
                     Email verification
                 </Button>
-            {:else if challengeType === AuthenticationFactor.Recoverycode && !factors.email}
-                <Button
-                    secondary
-                    fullWidth
-                    {disabled}
-                    on:click={() => createChallenge(AuthenticationFactor.Totp)}>
-                    <Icon icon={IconDeviceMobile} slot="start" size="s" />
-                    Authenticator app
-                </Button>
-            {:else if challengeType === AuthenticationFactor.Email}
+            {:else if (challengeType === AuthenticationFactor.Recoverycode && !factors.email) ||
+                      challengeType === AuthenticationFactor.Email}
                 <Button
                     secondary
                     fullWidth
