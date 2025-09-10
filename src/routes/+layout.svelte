@@ -26,7 +26,7 @@
     import { feedback } from '$lib/stores/feedback';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
-        const isEmbedded = page.route.id.includes('/(embeddings)/');
+        const isEmbedded = page.route?.id?.includes('/(embeddings)/') ?? false;
         switch (theme) {
             case 'dark':
                 return isEmbedded ? ThemeDarkStudio : isCloud ? ThemeDarkCloud : ThemeDark;
