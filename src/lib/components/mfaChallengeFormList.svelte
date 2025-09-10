@@ -69,6 +69,8 @@
                 await createChallenge(AuthenticationFactor.Phone);
             } else if (factors.email) {
                 await createChallenge(AuthenticationFactor.Email);
+            } else if (factors.totp) {
+                challengeType = AuthenticationFactor.Totp;
             }
         }
     });
@@ -99,7 +101,7 @@
     <span class="with-separators eyebrow-heading-3">or</span>
     <div class="u-flex-vertical u-gap-8">
         {#if factors.totp}
-            {#if (challengeType === null || challengeType === AuthenticationFactor.Totp) && factors.email}
+            {#if (challengeType === null || challengeType === AuthenticationFactor.Totp || challengeType === AuthenticationFactor.Recoverycode) && factors.email}
                 <Button
                     secondary
                     fullWidth
@@ -107,6 +109,15 @@
                     on:click={() => createChallenge(AuthenticationFactor.Email)}>
                     <Icon icon={IconMail} slot="start" size="s" />
                     Email verification
+                </Button>
+            {:else if challengeType === AuthenticationFactor.Recoverycode && !factors.email}
+                <Button
+                    secondary
+                    fullWidth
+                    {disabled}
+                    on:click={() => createChallenge(AuthenticationFactor.Totp)}>
+                    <Icon icon={IconDeviceMobile} slot="start" size="s" />
+                    Authenticator app
                 </Button>
             {:else if challengeType === AuthenticationFactor.Email}
                 <Button
