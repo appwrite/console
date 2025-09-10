@@ -98,35 +98,47 @@
 {#if enabledFactors.length > 1}
     <span class="with-separators eyebrow-heading-3">or</span>
     <div class="u-flex-vertical u-gap-8">
-        {#if factors.totp && challengeType !== null && challengeType !== AuthenticationFactor.Totp}
-            <Button
-                secondary
-                fullWidth
-                {disabled}
-                on:click={() => createChallenge(AuthenticationFactor.Totp)}>
-                <Icon icon={IconDeviceMobile} slot="start" size="s" />
-                Authenticator app
-            </Button>
-        {/if}
-        {#if factors.email && challengeType !== AuthenticationFactor.Email}
-            <Button
-                secondary
-                fullWidth
-                {disabled}
-                on:click={() => createChallenge(AuthenticationFactor.Email)}>
-                <Icon icon={IconMail} slot="start" size="s" />
-                Email verification
-            </Button>
-        {/if}
-        {#if factors.phone && challengeType !== AuthenticationFactor.Phone}
-            <Button
-                secondary
-                fullWidth
-                {disabled}
-                on:click={() => createChallenge(AuthenticationFactor.Phone)}>
-                <Icon icon={IconChatAlt} slot="start" size="s" />
-                Phone verification
-            </Button>
+        {#if factors.totp}
+            {#if (challengeType === null || challengeType === AuthenticationFactor.Totp) && factors.email}
+                <Button
+                    secondary
+                    fullWidth
+                    {disabled}
+                    on:click={() => createChallenge(AuthenticationFactor.Email)}>
+                    <Icon icon={IconMail} slot="start" size="s" />
+                    Email verification
+                </Button>
+            {:else if challengeType === AuthenticationFactor.Email}
+                <Button
+                    secondary
+                    fullWidth
+                    {disabled}
+                    on:click={() => createChallenge(AuthenticationFactor.Totp)}>
+                    <Icon icon={IconDeviceMobile} slot="start" size="s" />
+                    Authenticator app
+                </Button>
+            {/if}
+        {:else}
+            {#if factors.email && challengeType !== AuthenticationFactor.Email}
+                <Button
+                    secondary
+                    fullWidth
+                    {disabled}
+                    on:click={() => createChallenge(AuthenticationFactor.Email)}>
+                    <Icon icon={IconMail} slot="start" size="s" />
+                    Email verification
+                </Button>
+            {/if}
+            {#if factors.phone && challengeType !== AuthenticationFactor.Phone}
+                <Button
+                    secondary
+                    fullWidth
+                    {disabled}
+                    on:click={() => createChallenge(AuthenticationFactor.Phone)}>
+                    <Icon icon={IconChatAlt} slot="start" size="s" />
+                    Phone verification
+                </Button>
+            {/if}
         {/if}
         {#if factors.recoveryCode && challengeType !== AuthenticationFactor.Recoverycode}
             <Button
