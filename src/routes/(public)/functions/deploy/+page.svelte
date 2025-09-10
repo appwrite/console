@@ -11,7 +11,16 @@
     import { isCloud } from '$lib/system';
     import { ID, Query, type Models, Region } from '@appwrite.io/console';
     import { IconGithub, IconPencil, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Card, Divider, Icon, Input, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Card,
+        Divider,
+        Icon,
+        Input,
+        Layout,
+        Tag,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { filterRegions } from '$lib/helpers/regions';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
@@ -141,23 +150,9 @@
     <title>Deploy {data.deploymentData.name} - Appwrite</title>
 </svelte:head>
 
-<div
-    style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem;">
-    <div style:max-width="592px" style:width="100%">
-        <Layout.Stack gap="xl" alignItems="center">
-            {#if $app.themeInUse === 'dark'}
-                <img
-                    src="{base}/images/appwrite-logo-dark.svg"
-                    width="150"
-                    height="28"
-                    alt="Appwrite Logo" />
-            {:else}
-                <img
-                    src="{base}/images/appwrite-logo-light.svg"
-                    width="150"
-                    height="28"
-                    alt="Appwrite Logo" />
-            {/if}
+<div class="auth-bg">
+    <section class="console-container">
+        <div style:max-width="592px" style:width="100%">
             <Card.Base padding="s" radius="l" style="width: 100%;">
                 <Layout.Stack gap="xl">
                     <Layout.Stack gap="l">
@@ -184,7 +179,10 @@
                                         </Typography.Text>
                                         <Layout.Stack direction="row" gap="xs" wrap="wrap">
                                             {#each data.envKeys as envKey}
-                                                <Tag size="s">{envKey}</Tag>
+                                                <Badge
+                                                    content={envKey}
+                                                    size="s"
+                                                    variant="secondary" />
                                             {/each}
                                         </Layout.Stack>
                                     </Layout.Stack>
@@ -284,6 +282,52 @@
                     </Layout.Stack>
                 </Layout.Stack>
             </Card.Base>
-        </Layout.Stack>
-    </div>
+        </div>
+    </section>
+    <footer>
+        {#if $app.themeInUse === 'dark'}
+            <img
+                src="{base}/images/appwrite-logo-dark.svg"
+                width="120"
+                height="22"
+                alt="Appwrite Logo" />
+        {:else}
+            <img
+                src="{base}/images/appwrite-logo-light.svg"
+                width="120"
+                height="22"
+                alt="Appwrite Logo" />
+        {/if}
+    </footer>
 </div>
+
+<style lang="scss">
+    .auth-bg {
+        position: fixed;
+        background: var(--bgcolor-neutral-default, #fff);
+        background-size: cover;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        footer {
+            padding: 2rem 1rem;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+    }
+</style>

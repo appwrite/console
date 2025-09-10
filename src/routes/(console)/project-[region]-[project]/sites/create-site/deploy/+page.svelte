@@ -8,15 +8,7 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import {
-        Fieldset,
-        Layout,
-        Icon,
-        Typography,
-        Input,
-        Tag,
-        Selector
-    } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Layout, Icon, Typography, Input, Tag } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import Domain from '../domain.svelte';
@@ -296,27 +288,6 @@
                                     required
                                     bind:value={variable.value}
                                     style="flex: 2" />
-                                <Layout.Stack
-                                    direction="column"
-                                    gap="s"
-                                    alignItems="center"
-                                    style="max-width: 60px;">
-                                    {#if i === 0}
-                                        <Typography.Text variant="m-500">Secret</Typography.Text>
-                                    {/if}
-
-                                    <Layout.Stack
-                                        direction="row"
-                                        gap="s"
-                                        alignItems="center"
-                                        justifyContent="center"
-                                        height="2.5rem">
-                                        <Selector.Checkbox
-                                            size="s"
-                                            id={`secret-${i}`}
-                                            bind:checked={variable.secret} />
-                                    </Layout.Stack>
-                                </Layout.Stack>
                             </Layout.Stack>
                         {/each}
                     </Layout.Stack>

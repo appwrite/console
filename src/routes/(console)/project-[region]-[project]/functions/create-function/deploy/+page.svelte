@@ -8,16 +8,8 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import {
-        Fieldset,
-        Layout,
-        Icon,
-        Typography,
-        Input,
-        Tag,
-        Selector
-    } from '@appwrite.io/pink-svelte';
-    import { IconGithub, IconExternalLink, IconPencil } from '@appwrite.io/pink-icons-svelte';
+    import { Fieldset, Layout, Icon, Input, Tag } from '@appwrite.io/pink-svelte';
+    import { IconGithub, IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { ID, Runtime } from '@appwrite.io/console';
     import { CustomId } from '$lib/components';
@@ -27,6 +19,7 @@
     import type { PageData } from './$types';
     import { getLatestTag } from '$lib/helpers/github';
     import { writable } from 'svelte/store';
+    import Link from '$lib/elements/link.svelte';
 
     let {
         data
@@ -172,25 +165,19 @@
 
 <Wizard
     title="Deploy function"
+    columnSize="s"
+    column={true}
     bind:showExitModal
     href={`${base}/project-${page.params.region}-${page.params.project}/functions/`}
     confirmExit>
     <Form onSubmit={create} {isSubmitting}>
         <Layout.Stack gap="xl">
             <Card padding="s" radius="s">
-                <Layout.Stack gap="m">
-                    <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                        Repository
-                    </Typography.Text>
-                    <Layout.Stack direction="row" alignItems="center" gap="s">
-                        <Icon icon={IconGithub} size="m" />
-                        <Typography.Text variant="m-400">
-                            {data.repository.owner}/{data.repository.name}
-                        </Typography.Text>
-                        <Button secondary size="s" external href={data.repository.url}>
-                            <Icon icon={IconExternalLink} slot="end" size="s" />
-                        </Button>
-                    </Layout.Stack>
+                <Layout.Stack direction="row" alignItems="center" gap="s">
+                    <Icon icon={IconGithub} />
+                    <Link variant="quiet" href={data.repository.url} size="m" external icon>
+                        {data.repository.owner}/{data.repository.name}
+                    </Link>
                 </Layout.Stack>
             </Card>
 
@@ -271,27 +258,6 @@
                                     required
                                     bind:value={variable.value}
                                     style="flex: 2" />
-                                <Layout.Stack
-                                    direction="column"
-                                    gap="s"
-                                    alignItems="center"
-                                    style="max-width: 60px;">
-                                    {#if i === 0}
-                                        <Typography.Text variant="m-500">Secret</Typography.Text>
-                                    {/if}
-
-                                    <Layout.Stack
-                                        direction="row"
-                                        gap="s"
-                                        alignItems="center"
-                                        justifyContent="center"
-                                        height="2.5rem">
-                                        <Selector.Checkbox
-                                            size="s"
-                                            id={`secret-${i}`}
-                                            bind:checked={variable.secret} />
-                                    </Layout.Stack>
-                                </Layout.Stack>
                             </Layout.Stack>
                         {/each}
                     </Layout.Stack>
