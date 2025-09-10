@@ -192,6 +192,7 @@
                 const relatedIds = currentColumn.map((doc: string | Record<string, unknown>) =>
                     typeof doc === 'string' ? doc : doc.$id
                 );
+
                 return !symmetricDifference(workIds, relatedIds).length;
             } else {
                 const workId = typeof workColumn === 'string' ? workColumn : workColumn?.$id;
@@ -326,12 +327,17 @@
         <Skeleton variant="line" height={40} width="auto" />
     </div>
 {:else if relatedTable?.columns?.length && fetchedRows.length}
+    {@const twoWayColumnKey = relatedTable.columns.find(
+        (col: Models.ColumnRelationship) => col.twoWay
+    )?.key}
+    {@const columnsToRender = relatedTable.columns.filter((col) => col.key !== twoWayColumnKey)}
+
     <div bind:this={columnFormWrapper}>
         {#if fetchedRows.length === 1}
             {@const workStore = getStore(fetchedRows[0].$id)}
             {#if workStore}
                 <Layout.Stack direction="column" gap="l">
-                    {#each relatedTable.columns as column}
+                    {#each columnsToRender as column}
                         {@const label = column.key}
                         <ColumnItem
                             {column}
@@ -349,7 +355,7 @@
                     {#each fetchedRows as row, index (row.$id)}
                         {@const workStore = getStore(row.$id)}
                         {#if workStore}
-                            {#each relatedTable.columns as column}
+                            {#each columnsToRender as column}
                                 {@const label = column.key}
                                 <ColumnItem
                                     {column}
