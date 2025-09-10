@@ -17,7 +17,7 @@
         Tag,
         Selector
     } from '@appwrite.io/pink-svelte';
-    import { IconGithub, IconExternalLink, IconPencil } from '@appwrite.io/pink-icons-svelte';
+    import { IconGithub, IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import Domain from '../domain.svelte';
     import { Adapter, BuildRuntime, Framework, ID } from '@appwrite.io/console';
@@ -28,6 +28,7 @@
     import type { PageData } from './$types';
     import { writable } from 'svelte/store';
     import { getLatestTag } from '$lib/helpers/github';
+    import Link from '$lib/elements/link.svelte';
 
     let {
         data
@@ -211,6 +212,7 @@
 <Wizard
     title="Deploy site"
     bind:showExitModal
+    column={true}
     href={`${base}/project-${page.params.region}-${page.params.project}/sites/`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} {isSubmitting}>
@@ -222,12 +224,9 @@
                     </Typography.Text>
                     <Layout.Stack direction="row" alignItems="center" gap="s">
                         <Icon icon={IconGithub} size="m" />
-                        <Typography.Text variant="m-400">
+                        <Link variant="quiet" href={data.repository.url} size="m" external icon>
                             {data.repository.owner}/{data.repository.name}
-                        </Typography.Text>
-                        <Button secondary size="s" external href={data.repository.url}>
-                            <Icon icon={IconExternalLink} slot="end" size="s" />
-                        </Button>
+                        </Link>
                     </Layout.Stack>
                 </Layout.Stack>
             </Card>
