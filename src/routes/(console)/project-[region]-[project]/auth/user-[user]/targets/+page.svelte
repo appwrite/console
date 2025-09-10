@@ -33,7 +33,7 @@
 
             <div class="u-flex u-main-end u-gap-16 is-not-mobile">
                 <Filters query={data.query} {columns} />
-                <ViewSelector view={View.Table} {columns} hideView />
+                <ViewSelector ui="new" view={View.Table} {columns} hideView />
             </div>
         </div>
     </div>
