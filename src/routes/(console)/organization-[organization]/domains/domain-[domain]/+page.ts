@@ -29,6 +29,6 @@ export const load = async ({ parent, depends, url, route }) => {
         limit,
         offset,
         domain,
-        recordList: records,
+        recordList: records
     };
 };
