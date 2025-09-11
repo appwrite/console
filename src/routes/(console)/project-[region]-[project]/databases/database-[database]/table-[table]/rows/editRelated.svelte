@@ -342,10 +342,16 @@
         <Skeleton variant="line" height={40} width="auto" />
     </div>
 {:else if relatedTable?.columns?.length && fetchedRows.length}
-    {@const twoWayColumnKey = relatedTable.columns.find(
-        (col: Models.ColumnRelationship) => col.twoWay
-    )?.key}
-    {@const columnsToRender = relatedTable.columns.filter((col) => col.key !== twoWayColumnKey)}
+    <!-- we should not show current table column items in this view -->
+    {@const twoWayKeys = new Set(
+        relatedTable
+            .columns
+            .filter((column: Models.ColumnRelationship) => column.twoWay)
+            .map((c) => c.key)
+    )}
+
+    <!-- render the filtered ones -->
+    {@const columnsToRender = relatedTable.columns.filter((c) => !twoWayKeys.has(c.key))}
 
     <div bind:this={columnFormWrapper}>
         {#if fetchedRows.length === 1}
