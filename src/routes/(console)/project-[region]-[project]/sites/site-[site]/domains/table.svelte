@@ -102,7 +102,7 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
-                                {#if rule.logs && rule.status === 'unverified'}
+                                {#if rule.logs && (rule.status === 'unverified' || rule.status === 'verifying')}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconTerminal}
                                         on:click={(e) => {
@@ -125,7 +125,7 @@
                                     </ActionMenu.Item.Button>
                                 {/if}
                                 <DnsRecordsAction {rule} {organizationDomains} />
-                                {#if rule.logs && rule.status === 'unverified'}
+                                {#if rule.logs && (rule.status === 'unverified' || rule.status === 'verifying')}
                                     <div class="action-menu-divider">
                                         <Divider />
                                     </div>
