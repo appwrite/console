@@ -87,8 +87,11 @@
             }
         } else {
             const project = projects.projects.find((p) => p.$id === selectedProject);
-            const deployUrl = buildDeployUrl(project);
-            await goto(deployUrl);
+            if (!project) {
+                addNotification({ type: 'error', message: 'Selected project not found' });
+                return;
+            }
+            await goto(buildDeployUrl(project));
         }
     }
 
