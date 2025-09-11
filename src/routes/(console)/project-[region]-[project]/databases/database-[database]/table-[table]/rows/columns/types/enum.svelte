@@ -1,6 +1,7 @@
 <script lang="ts">
     import { InputSelect } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
+    import { IconList } from '@appwrite.io/pink-icons-svelte';
 
     export let id: string;
     export let label: string;
@@ -50,5 +51,6 @@
         {optionalText}
         autofocus={limited}
         required={column.required}
-        placeholder="Select a value" />
+        placeholder="Select a value"
+        leadingIcon={!limited ? IconList : undefined} />
 {/if}

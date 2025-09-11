@@ -41,9 +41,7 @@
         tables: []
     });
 
-    const sortedTables = $derived.by(() =>
-        tables?.tables?.slice().sort((a, b) => a.name.localeCompare(b.name))
-    );
+    const sortedTables = $derived.by(() => tables?.tables);
 
     const selectedTable = $derived.by(() =>
         sortedTables?.find((table: Models.Table) => table.$id === tableId)
