@@ -155,7 +155,6 @@ export enum Click {
     DatabaseImportCsv = 'click_database_import_csv',
     DomainCreateClick = 'click_domain_create',
     DomainDeleteClick = 'click_domain_delete',
-    DomainDnsRecordsClick = 'click_domain_dns_records',
     DomainRetryDomainVerificationClick = 'click_domain_retry_domain_verification',
     FeedbackSubmitClick = 'click_leave_feedback',
     FilterApplyClick = 'click_apply_filter',

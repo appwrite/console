@@ -13,7 +13,7 @@
 
     let { rule, organizationDomains }: Props = $props();
 
-    const dnsData = $derived(() => {
+    const dnsData = $derived.by(() => {
         if (!isCloud || !organizationDomains) {
             return null;
         }
@@ -30,8 +30,8 @@
     });
 </script>
 
-{#if dnsData()}
-    <ActionMenu.Item.Anchor leadingIcon={IconDocumentText} href={dnsData()}>
+{#if dnsData}
+    <ActionMenu.Item.Anchor leadingIcon={IconDocumentText} href={dnsData}>
         DNS Records
     </ActionMenu.Item.Anchor>
 {/if}
