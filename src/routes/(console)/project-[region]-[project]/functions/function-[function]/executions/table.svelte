@@ -96,11 +96,13 @@
                     {:else if column.id === 'responseStatusCode'}
                         <Badge
                             variant="secondary"
-                            type={log.responseStatusCode >= 400
+                            type={log.responseStatusCode >= 500
                                 ? 'error'
-                                : log.responseStatusCode === 0
-                                  ? undefined
-                                  : 'success'}
+                                : log.responseStatusCode >= 400
+                                  ? 'warning'
+                                  : log.responseStatusCode === 0
+                                    ? undefined
+                                    : 'success'}
                             content={log.responseStatusCode.toString()} />
                     {:else if column.id === 'requestMethod'}
                         <Typography.Code size="m">

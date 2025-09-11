@@ -98,11 +98,13 @@
                                     <Badge
                                         content={selectedLog.responseStatusCode.toString()}
                                         variant="secondary"
-                                        type={selectedLog?.responseStatusCode >= 400
+                                        type={selectedLog?.responseStatusCode >= 500
                                             ? 'error'
-                                            : selectedLog.responseStatusCode === 0
-                                              ? undefined
-                                              : 'success'} />
+                                            : selectedLog.responseStatusCode >= 400
+                                              ? 'warning'
+                                              : selectedLog.responseStatusCode === 0
+                                                ? undefined
+                                                : 'success'} />
                                 </span>
                             </Layout.Stack>
                             <Layout.Stack gap="xs" inline>
