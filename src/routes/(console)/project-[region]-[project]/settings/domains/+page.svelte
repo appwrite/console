@@ -32,7 +32,7 @@
         </Button>
     </ResponsiveContainerHeader>
     {#if data.rules.total}
-        <Table domains={data.rules} />
+        <Table domains={data.rules} organizationDomains={data.organizationDomains} />
 
         <PaginationWithLimit
             name="Domains"
