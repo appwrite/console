@@ -49,7 +49,7 @@
             body: JSON.stringify({
                 email: $user.email,
                 subject: $supportData.subject,
-                firstName: $user?.name || 'Unknown',
+                firstName: ($user?.name || 'Unknown').slice(0, 40),
                 message: $supportData.message,
                 tags: ['cloud'],
                 customFields: [
