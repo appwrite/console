@@ -41,8 +41,8 @@
         tables: []
     });
 
-    const sortedTables = $derived.by(
-        () => tables?.tables?.slice().sort((a, b) => a.name.localeCompare(b.name))
+    const sortedTables = $derived.by(() =>
+        tables?.tables?.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
 
     const selectedTable = $derived.by(() =>
