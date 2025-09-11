@@ -79,7 +79,7 @@
             <Table.Cell {root}>
                 <Layout.Stack direction="row" alignItems="center" gap="xs">
                     CAA
-                    <Badge variant="secondary" size="s" content="Optional" />
+                    <Badge variant="secondary" size="s" content="Recommended" />
                 </Layout.Stack>
             </Table.Cell>
             <Table.Cell {root}>@</Table.Cell>
