@@ -14,9 +14,5 @@
 </script>
 
 <Modal title="Certificate logs" bind:show size="m" hideFooter>
-    <Logs
-        logs={selectedProxyRule.logs}
-        bind:theme={$app.themeInUse}
-        showScrollButton
-        height="250px" />
+    <Logs logs={selectedProxyRule.logs} theme={$app.themeInUse} showScrollButton height="250px" />
 </Modal>
