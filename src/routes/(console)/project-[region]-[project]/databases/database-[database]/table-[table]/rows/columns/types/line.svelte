@@ -15,11 +15,6 @@
 
     let { label, value = $bindable(), limited = false, column }: Props = $props();
 
-    let nullable = $state(false);
-    $effect(() => {
-        nullable = !limited ? !column.required : false;
-    });
-
     const defaultData = getDefaultSpatialData('linestring') as number[][];
     function onAddPoint() {
         value = [...(value || defaultData), getDefaultSpatialData('point') as number[]];
@@ -39,9 +34,7 @@
         value = getDefaultSpatialData('linestring') as number[][];
     }
 
-    $effect(() => {
-        nullable = !limited ? !column.required : false;
-    });
+    const nullable = $derived(!limited ? !column.required : false);
 </script>
 
 <Layout.Stack>

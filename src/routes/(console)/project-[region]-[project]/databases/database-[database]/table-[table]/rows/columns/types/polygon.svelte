@@ -15,8 +15,6 @@
 
     let { label, value = $bindable(), limited = false, column }: Props = $props();
 
-    let nullable = $state(false);
-
     function pushCoordinate(ringIndex: number) {
         const ring = value[ringIndex];
         if (!ring) return;
@@ -59,9 +57,7 @@
         value = getDefaultSpatialData('polygon') as number[][][];
     }
 
-    $effect(() => {
-        nullable = !limited ? !column.required : false;
-    });
+    const nullable = $derived(!limited ? !column.required : false);
 </script>
 
 <Layout.Stack>

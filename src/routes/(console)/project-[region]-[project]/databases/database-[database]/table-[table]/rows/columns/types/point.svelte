@@ -15,8 +15,6 @@
 
     let { label, value = $bindable(), limited = false, column }: Props = $props();
 
-    let nullable = $state(false);
-
     function handlePointChange(index: number, newValue: number) {
         if (value) {
             value[index] = newValue;
@@ -27,9 +25,7 @@
         value = getDefaultSpatialData('point') as number[];
     }
 
-    $effect(() => {
-        nullable = !limited ? !column.required : false;
-    });
+    const nullable = $derived(!limited ? !column.required : false);
 </script>
 
 <Layout.Stack>
