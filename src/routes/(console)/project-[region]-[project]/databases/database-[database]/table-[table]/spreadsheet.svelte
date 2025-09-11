@@ -70,7 +70,7 @@
         IconLink,
         IconLocationMarker,
         IconMail,
-        IconPinned,
+        IconPoint,
         IconPlus,
         IconPolygon,
         IconRelationship,
@@ -309,7 +309,7 @@
             case 'relationship':
                 return IconRelationship;
             case 'point':
-                return IconPinned;
+                return IconPoint;
             case 'linestring':
                 return IconLine;
             case 'polygon':

@@ -27,6 +27,7 @@
     function handlePointChange(pointIndex: number, coordIndex: number, newValue: number) {
         if (value && value[pointIndex]) {
             value[pointIndex][coordIndex] = newValue;
+            value = [...value];
         }
     }
 

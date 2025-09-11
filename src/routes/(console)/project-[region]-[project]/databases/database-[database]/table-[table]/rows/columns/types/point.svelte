@@ -18,6 +18,7 @@
     function handlePointChange(index: number, newValue: number) {
         if (value) {
             value[index] = newValue;
+            value = [...value];
         }
     }
 

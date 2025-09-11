@@ -24,7 +24,7 @@ import {
     IconRelationship,
     IconText,
     IconToggle,
-    IconPinned,
+    IconPoint,
     IconLine,
     IconPolygon
 } from '@appwrite.io/pink-icons-svelte';
@@ -126,7 +126,7 @@ export const columnOptions: Option[] = [
         type: 'point',
         create: submitPoint,
         update: updatePoint,
-        icon: IconPinned
+        icon: IconPoint
     },
     {
         name: 'Line',

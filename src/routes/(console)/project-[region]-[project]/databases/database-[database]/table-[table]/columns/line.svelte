@@ -41,13 +41,13 @@
     import { getDefaultSpatialData } from '../store';
 
     interface Props {
-        data?: Partial<Models.ColumnPoint>;
+        data?: Partial<Models.ColumnLine>;
     }
 
     let { data = { required: false, default: null } }: Props = $props();
 
     let savedDefault = $state(data.default);
-    let defaultChecked = $state(data.default ? true : false);
+    let defaultChecked = $state(!!data.default);
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
@@ -58,7 +58,7 @@
         }
     }
 
-    function pushCoordinate(_: number) {
+    function pushCoordinate() {
         data.default.push(getDefaultSpatialData('point') as number[]);
     }
 
@@ -115,11 +115,12 @@
     {/if}
     <InputLine
         values={defaultChecked ? data.default : null}
-        onAddPoint={pushCoordinate}
+        onAddPoint={() => pushCoordinate()}
         onDeletePoint={deleteCoordinate}
-        onChangePoint={(pointIndex, coordIndex, newValue) => {
-            if (data.default && data.default[pointIndex]) {
-                data.default[pointIndex][coordIndex] = newValue;
+        onChangePoint={(index, newValue) => {
+            if (data.default) {
+                data.default[index] = newValue;
+                data.default = [...data.default];
             }
         }} />
 </Layout.Stack>

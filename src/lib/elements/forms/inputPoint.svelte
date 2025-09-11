@@ -29,7 +29,7 @@
     <Layout.Stack direction="row" gap="m">
         {#if nullable}
             {#each nullableSkeletonShape as _, index}
-                <Input.Number id={`default-${index}`} placeholder={'0'} disabled={true} />
+                <Input.Number id={`default-${index}`} placeholder="0" disabled />
             {/each}
         {:else}
             {#each values as _, index}
@@ -46,7 +46,7 @@
                 size="s"
                 secondary
                 disabled={nullable || disableDelete}
-                on:click={onDeletePoint}>
+                on:click={() => onDeletePoint?.()}>
                 <Icon icon={IconX} size="s" />
             </Button>
         {/if}

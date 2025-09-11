@@ -7,7 +7,7 @@
         databaseId: string,
         tableId: string,
         key: string,
-        data: Partial<Models.ColumnPoint>
+        data: Partial<Models.ColumnPolygon>
     ) {
         await sdk.forProject(page.params.region, page.params.project).tablesDB.createPolygonColumn({
             databaseId,
@@ -20,7 +20,7 @@
     export async function updatePolygon(
         databaseId: string,
         tableId: string,
-        data: Partial<Models.ColumnPoint>,
+        data: Partial<Models.ColumnPolygon>,
         originalKey?: string
     ) {
         await sdk.forProject(page.params.region, page.params.project).tablesDB.updatePolygonColumn({
@@ -41,13 +41,13 @@
     import { getDefaultSpatialData, getSingleRingPolygon } from '../store';
 
     interface Props {
-        data?: Partial<Models.ColumnPoint>;
+        data?: Partial<Models.ColumnPolygon>;
     }
 
     let { data = { required: false, default: null } }: Props = $props();
 
     let savedDefault = $state(data.default);
-    let defaultChecked = $state(data.default ? true : false);
+    let defaultChecked = $state(!!data.default);
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {
@@ -61,7 +61,7 @@
     const {
         stores: { required },
         listen
-    } = createConservative<Partial<Models.ColumnPoint>>({
+    } = createConservative<Partial<Models.ColumnPolygon>>({
         required: false,
         ...data
     });

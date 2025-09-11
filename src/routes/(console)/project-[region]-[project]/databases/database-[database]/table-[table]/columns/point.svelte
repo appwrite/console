@@ -47,7 +47,7 @@
     let { data = { required: false, default: null } }: Props = $props();
 
     let savedDefault = $state(data.default);
-    let defaultChecked = $state(data.default ? true : false);
+    let defaultChecked = $state(!!data.default);
 
     function handleDefaultState(hideDefault: boolean) {
         if (hideDefault) {

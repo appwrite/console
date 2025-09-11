@@ -27,10 +27,6 @@
         addLineButton
     }: Props = $props();
 
-    function handlePointChange(pointIndex: number, coordIndex: number, newValue: number) {
-        onChangePoint?.(pointIndex, coordIndex, newValue);
-    }
-
     function isDeleteDisabled(index: number) {
         let disable = index < minDeletableIndex;
         if (allowLineDelete !== undefined) {
@@ -46,11 +42,11 @@
             <InputPoint
                 {nullable}
                 values={value}
-                deletePoints={true}
+                deletePoints
                 disableDelete={isDeleteDisabled(index)}
                 onDeletePoint={() => onDeletePoint(index)}
                 onChangePoint={(coordIndex, newValue) =>
-                    handlePointChange(index, coordIndex, newValue)} />
+                    onChangePoint?.(index, coordIndex, newValue)} />
         {/each}
     </Layout.Stack>
 

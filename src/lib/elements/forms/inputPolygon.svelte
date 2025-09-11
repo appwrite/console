@@ -2,11 +2,10 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import Button from './button.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import type { NestedNumberArray } from '$lib/helpers/types';
     import InputLine from './inputLine.svelte';
 
     type Props = {
-        values: NestedNumberArray;
+        values: number[][][];
         nullable?: boolean;
         minDeletableIndex?: number;
         onAddPoint: (index: number) => void;
@@ -29,31 +28,18 @@
         onDeletePoint,
         onChangePoint
     }: Props = $props();
-
-    function handlePointChange(
-        lineIndex: number,
-        pointIndex: number,
-        coordIndex: number,
-        newValue: number
-    ) {
-        onChangePoint?.(lineIndex, pointIndex, coordIndex, newValue);
-    }
-
-    function handleAddLineInternal() {
-        onAddLine?.(-1);
-    }
 </script>
 
 <Layout.Stack gap="s">
     {#each values as value, index}
         <Layout.Stack gap="xs">
             <InputLine
-                values={value as number[][]}
+                values={value}
                 onAddPoint={() => onAddPoint(index)}
                 {nullable}
                 onDeletePoint={() => onDeletePoint(index)}
                 onChangePoint={(pointIndex, coordIndex, newValue) =>
-                    handlePointChange(index, pointIndex, coordIndex, newValue)}
+                    onChangePoint(index, pointIndex, coordIndex, newValue)}
                 allowLineDelete={index < 2}
                 {minDeletableIndex}>
                 {#snippet addLineButton()}
@@ -62,7 +48,7 @@
                             disabled={nullable}
                             size="xs"
                             compact
-                            on:click={handleAddLineInternal}>
+                            on:click={() => onAddLine?.(-1)}>
                             <Icon icon={IconPlus} size="s" /> Add line
                         </Button>
                     {/if}
