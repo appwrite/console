@@ -19,6 +19,6 @@
     bind:value
     {nullable}
     {autofocus}
-    placeholder="Enter URL"
+    placeholder="name@example.com"
     required={column.required}
     leadingIcon={!limited ? IconMail : undefined} />
