@@ -18,7 +18,7 @@
     } from '$lib/components';
     import { trackEvent, Click } from '$lib/actions/analytics';
     import { type Models } from '@appwrite.io/console';
-    import { readOnly, upgradeURL } from '$lib/stores/billing';
+    import { getServiceLimit, readOnly, upgradeURL } from '$lib/stores/billing';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
@@ -79,6 +79,11 @@
         }
     }
 
+    $: projectCreationDisabled =
+        (isCloud && getServiceLimit('projects') <= data.allProjectsCount) ||
+        (isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE) ||
+        !$canWriteProjects;
+
     $: $registerCommands([
         {
             label: 'Create project',
@@ -86,7 +91,7 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteProjects,
+            disabled: projectCreationDisabled,
             group: 'projects',
             icon: IconPlus
         }
@@ -101,12 +106,14 @@
     function isSetToArchive(project: Models.Project): boolean {
         if (!isCloud) return false;
         if (!project || !project.$id) return false;
-        return project.status !== 'active';
+        return project.status === 'archived';
     }
 
-    $: projectsToArchive = data.projects.projects.filter((project) => project.status !== 'active');
+    $: projectsToArchive = isCloud
+        ? data.projects.projects.filter((project) => project.status === 'archived')
+        : [];
 
-    $: activeProjects = data.projects.projects.filter((project) => project.status === 'active');
+    $: activeProjects = data.projects.projects.filter((project) => project.status !== 'archived');
     function clearSearch() {
         searchQuery?.clearInput();
     }
@@ -125,7 +132,7 @@
             <Button
                 on:click={handleCreateProject}
                 event="create_project"
-                disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
+                disabled={projectCreationDisabled}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create project
             </Button>
@@ -134,8 +141,9 @@
 
     {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects && (projectsToArchive.length > 0 || data.projects.total > $currentPlan.projects)}
         {@const difference = projectsToArchive.length}
-        {@const messagePrefix = difference > 1 ? `${difference} projects` : `${difference} project`}
-        <Alert.Inline title={`${messagePrefix} are archived`}>
+        {@const messagePrefix =
+            difference !== 1 ? `${difference} projects are` : `${difference} project is`}
+        <Alert.Inline title={`${messagePrefix} archived`}>
             <Typography.Text>Upgrade your plan to restore archived projects</Typography.Text>
             <svelte:fragment slot="actions">
                 <Button

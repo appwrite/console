@@ -49,7 +49,7 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery placeholder="Search domains" />
         <Layout.Stack direction="row" gap="m" inline>
-            <ViewSelector view={View.Table} {columns} hideView />
+            <ViewSelector ui="new" view={View.Table} {columns} hideView />
             <Button
                 on:click={() => {
                     trackEvent(Click.DomainCreateClick, {

@@ -6,7 +6,7 @@
     import { trackPageView } from '$lib/actions/analytics';
     import { Notifications, Progress } from '$lib/layout';
     import { app, type AppStore } from '$lib/stores/app';
-    import { isCloud } from '$lib/system';
+    import { isCloud, isProductionCloud } from '$lib/system';
     import { onMount } from 'svelte';
     import { requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
@@ -172,6 +172,11 @@
         {/each}
         <link rel="preload" as="style" type="text/css" href="/console/fonts/cloud.css" />
         <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
+    {/if}
+
+    <!-- add GTM only on main instance -->
+    {#if isCloud && isProductionCloud(page.url)}
+        <script defer src={`${base}/scripts/gtm.js`}></script>
     {/if}
 </svelte:head>
 

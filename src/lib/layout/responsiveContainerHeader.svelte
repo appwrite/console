@@ -112,7 +112,7 @@
                 </Layout.Stack>
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     {#if hasDisplaySettings}
-                        <ViewSelector {view} {columns} {hideView} {hideColumns} />
+                        <ViewSelector ui="new" {view} {columns} {hideView} {hideColumns} />
                     {/if}
                     {#if children}
                         {@render children()}

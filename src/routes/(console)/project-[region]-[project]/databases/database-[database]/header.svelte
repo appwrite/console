@@ -38,11 +38,14 @@
     ].filter((tab) => !tab.disabled);
 </script>
 
-<Cover expanded>
+<Cover databasesMainScreen>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/databases`}>
+        <CoverTitle
+            style="margin-inline-start: -2.5rem;"
+            href={`${base}/project-${page.params.region}-${projectId}/databases`}>
             {$database.name}
         </CoverTitle>
+
         <Id value={$database.$id}>{$database.$id}</Id>
     </svelte:fragment>
 

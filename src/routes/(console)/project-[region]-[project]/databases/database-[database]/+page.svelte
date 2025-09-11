@@ -18,7 +18,7 @@
     const databaseId = page.params.database;
 </script>
 
-<Container paddingInlineEnd={false}>
+<Container databasesMainScreen>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
             <SearchQuery placeholder="Search by name or ID" />
@@ -26,6 +26,7 @@
 
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <ViewSelector
+                ui="new"
                 view={data.view}
                 columns={tableViewColumns}
                 hideColumns={!data.tables.total}
