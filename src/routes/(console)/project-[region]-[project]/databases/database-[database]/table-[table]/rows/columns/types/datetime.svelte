@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { InputDateTime } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
+    import { InputDateTime } from '$lib/elements/forms';
+    import { IconCalendar } from '@appwrite.io/pink-icons-svelte';
 
     export let id: string;
     export let label: string;
@@ -16,4 +17,12 @@
     }
 </script>
 
-<InputDateTime {id} {label} {type} bind:value {nullable} {autofocus} required={column.required} />
+<InputDateTime
+    {id}
+    {label}
+    {type}
+    bind:value
+    {nullable}
+    {autofocus}
+    required={column.required}
+    leadingIcon={!limited ? IconCalendar : undefined} />
