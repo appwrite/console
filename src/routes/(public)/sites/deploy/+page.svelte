@@ -19,10 +19,10 @@
         Divider,
         Icon,
         Image,
+        Tag,
         Input,
         Layout,
         Spinner,
-        Tag,
         Typography
     } from '@appwrite.io/pink-svelte';
     import { filterRegions } from '$lib/helpers/regions';
@@ -305,7 +305,10 @@
                                         </Typography.Text>
                                         <Layout.Stack direction="row" gap="xs" wrap="wrap">
                                             {#each data.envKeys as envKey}
-                                                <Tag size="s">{envKey}</Tag>
+                                                <Badge
+                                                    variant="secondary"
+                                                    content={envKey}
+                                                    size="s" />
                                             {/each}
                                         </Layout.Stack>
                                     </Layout.Stack>
