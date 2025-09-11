@@ -1,5 +1,8 @@
 import { sdk } from '$lib/stores/sdk';
 import type { Models } from '@appwrite.io/console';
+import { Query } from '@appwrite.io/console';
+import { getApexDomain } from './tlds';
+import { isCloud } from '$lib/system';
 
 export async function createRecord(record: Partial<Models.DnsRecord>, domainId: string) {
     switch (record.type) {
@@ -203,3 +206,28 @@ export type ParsedRecords = {
     ALIAS: Partial<Models.DnsRecord>[];
     [key: string]: Partial<Models.DnsRecord>[];
 };
+
+export async function fetchOrganizationDomainsForRules(
+    proxyRules: Models.ProxyRuleList,
+    organizationId: string
+): Promise<Models.DomainsList | null> {
+    if (!isCloud || proxyRules.total === 0) {
+        return null;
+    }
+
+    const uniqueApexDomains = [
+        ...new Set(
+            proxyRules.rules
+                .map((rule) => getApexDomain(rule.domain))
+                .filter((apexDomain) => apexDomain !== null)
+        )
+    ];
+
+    if (uniqueApexDomains.length === 0) {
+        return null;
+    }
+
+    return await sdk.forConsole.domains.list({
+        queries: [Query.equal('teamId', organizationId), Query.equal('domain', uniqueApexDomains)]
+    });
+}

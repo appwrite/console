@@ -41,7 +41,8 @@
         spreadsheetRenderKey,
         expandTabs,
         databaseRelatedRowSheetOptions,
-        rowPermissionSheet
+        rowPermissionSheet,
+        type Columns
     } from './store';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import {
@@ -475,9 +476,11 @@
         }
     }
 
-    function openSideSheetForRelationsToMany(tableId: string, rows: string | Models.Row[]) {
-        $databaseRelatedRowSheetOptions.tableId = tableId;
+    function openSideSheetForRelationsToMany(rows: string | Models.Row[], column?: Columns) {
+        const relatedCol = column as Models.ColumnRelationship;
         $databaseRelatedRowSheetOptions.rows = rows;
+        $databaseRelatedRowSheetOptions.tableId = relatedCol.relatedTable;
+
         $databaseRelatedRowSheetOptions.show = true;
     }
 
@@ -964,11 +967,16 @@
                                 {/if}
 
                                 <svelte:fragment slot="cell-editor" let:close>
+                                    {@const isRelatedToMany = isRelationshipToMany(rowColumn)}
+                                    {@const hasItems = isRelatedToMany
+                                        ? row[columnId]?.length
+                                        : false}
+
                                     <EditRowCell
                                         {row}
                                         column={rowColumn}
                                         onRowStructureUpdate={updateRowContents}
-                                        noInlineEdit={isRelationshipToMany(rowColumn)}
+                                        noInlineEdit={isRelatedToMany && hasItems}
                                         onChange={(row) => paginatedRows.update(index, row)}
                                         onRevert={(row) => paginatedRows.update(index, row)}
                                         openSideSheet={() => {
@@ -976,8 +984,8 @@
 
                                             if (isRelationshipToMany(rowColumn)) {
                                                 openSideSheetForRelationsToMany(
-                                                    columnId,
-                                                    row[columnId]
+                                                    row[columnId],
+                                                    rowColumn
                                                 );
                                             } else {
                                                 onSelectSheetOption('update', null, 'row', row);
