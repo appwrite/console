@@ -7,7 +7,8 @@
     import { type ComponentType, onMount } from 'svelte';
     import { isRelationshipToMany } from '../../store';
     import { IconPlus, IconRelationship, IconX } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Input, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { debounce } from '$lib/helpers/debounce';
 
     type SelectOption = {
         label: string;
@@ -41,6 +42,8 @@
 
     let limit = 10;
     let offset = 0;
+
+    let searchNoResultsOption = undefined;
 
     onMount(async () => {
         if (isRelationshipToMany(column)) {
@@ -80,7 +83,22 @@
         return rows;
     }
 
-    function getAvailableOptions(excludeIndex?: number) {
+    async function searchRows(search: string = null) {
+        if (!search) return;
+
+        const displayNames = preferences.getDisplayNames(column.relatedTable);
+
+        const queries = [];
+        displayNames.forEach((name) => queries.push(Query.contains(name, search)));
+
+        return await sdk.forProject(page.params.region, page.params.project).tablesDB.listRows({
+            databaseId,
+            tableId: column.relatedTable,
+            queries
+        });
+    }
+
+    function getAvailableOptions(excludeIndex?: number): SelectOption[] {
         return options?.filter((option) => {
             const otherItems =
                 excludeIndex !== undefined
@@ -166,6 +184,44 @@
         return baseOptions;
     }
 
+    // original list
+    let originalListPreSearch: Models.RowList<Models.Row>;
+
+    const debouncedSearch = debounce(async () => {
+        const availableOptions = getAvailableOptions();
+        const includesItem = availableOptions
+            .filter((opt) => {
+                const label = String(opt.label ?? '').toLowerCase();
+                const value = String(opt.value ?? '').toLowerCase();
+                return (
+                    label.includes(newItemValue.toLowerCase()) ||
+                    value.includes(newItemValue.toLowerCase())
+                );
+            })
+            .filter(Boolean);
+
+        if (!includesItem.length) {
+            originalListPreSearch = rowList;
+
+            try {
+                searchNoResultsOption = {
+                    disabled: true,
+                    message: 'Searching...'
+                };
+
+                const searchResults = await searchRows(newItemValue);
+                if (searchResults) {
+                    rowList = searchResults;
+                }
+            } finally {
+                searchNoResultsOption = undefined;
+            }
+        } else {
+            // reset
+            rowList = originalListPreSearch;
+        }
+    }, 500);
+
     // Reactive statements
     $: getRows(search).then((res) => (rowList = res));
 
@@ -192,6 +248,10 @@
 
     $: if (limit && !isRelationshipToMany(column) && limited) {
         label = undefined;
+    }
+
+    $: if (newItemValue && newItemValue !== '') {
+        debouncedSearch();
     }
 </script>
 
@@ -298,13 +358,14 @@
                 <!-- Input for adding new items -->
                 {#if showInput}
                     <Layout.Stack direction="row">
-                        <InputSelect
+                        <Input.ComboBox
                             {id}
                             required
                             placeholder={`Select ${column.key}`}
                             bind:value={newItemValue}
                             options={getAvailableOptions()}
                             on:change={addNewItem}
+                            noResultsOption={searchNoResultsOption}
                             leadingIcon={!limited ? IconRelationship : undefined} />
 
                         <div style:padding-block-start="0.5rem">
