@@ -256,25 +256,6 @@
                                                     style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                                     {data.deploymentData.tagline}
                                                 </Typography.Text>
-                                                {#if data.envKeys.length > 0}
-                                                    <Layout.Stack
-                                                        gap="xs"
-                                                        style="margin-top: 0.5rem;">
-                                                        <Typography.Text
-                                                            variant="m-500"
-                                                            color="--fgcolor-neutral-primary">
-                                                            Environment variables required
-                                                        </Typography.Text>
-                                                        <Layout.Stack
-                                                            direction="row"
-                                                            gap="xs"
-                                                            wrap="wrap">
-                                                            {#each data.envKeys as envKey}
-                                                                <Tag size="s">{envKey}</Tag>
-                                                            {/each}
-                                                        </Layout.Stack>
-                                                    </Layout.Stack>
-                                                {/if}
                                             </Layout.Stack>
                                             <Layout.Stack
                                                 gap="xxs"
@@ -309,26 +290,26 @@
                                                         .deploymentData.repository.name}
                                                 </Typography.Text>
                                             </Layout.Stack>
-                                            {#if data.envKeys.length > 0}
-                                                <Layout.Stack gap="xs">
-                                                    <Typography.Text
-                                                        variant="m-500"
-                                                        color="--fgcolor-neutral-primary">
-                                                        Environment variables required
-                                                    </Typography.Text>
-                                                    <Layout.Stack
-                                                        direction="row"
-                                                        gap="xs"
-                                                        wrap="wrap">
-                                                        {#each data.envKeys as envKey}
-                                                            <Tag size="s">{envKey}</Tag>
-                                                        {/each}
-                                                    </Layout.Stack>
-                                                </Layout.Stack>
-                                            {/if}
                                         {/if}
                                     </Layout.Stack>
                                 </Layout.GridFraction>
+                                {#if data.envKeys.length > 0}
+                                    <div style="margin: 1rem 0;">
+                                        <Divider />
+                                    </div>
+                                    <Layout.Stack gap="xs">
+                                        <Typography.Text
+                                            variant="m-500"
+                                            color="--fgcolor-neutral-primary">
+                                            Environment variables required
+                                        </Typography.Text>
+                                        <Layout.Stack direction="row" gap="xs" wrap="wrap">
+                                            {#each data.envKeys as envKey}
+                                                <Tag size="s">{envKey}</Tag>
+                                            {/each}
+                                        </Layout.Stack>
+                                    </Layout.Stack>
+                                {/if}
                             {:else}
                                 <Layout.Stack gap="m">
                                     <Typography.Text
