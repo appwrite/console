@@ -6,11 +6,7 @@
     import { Query, type Models } from '@appwrite.io/console';
     import { type ComponentType, onMount } from 'svelte';
     import { isRelationshipToMany } from '../../store';
-    import {
-        IconPlus,
-        IconRelationship,
-        IconX
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconPlus, IconRelationship, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     type SelectOption = {
