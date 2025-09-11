@@ -1,7 +1,7 @@
 <script lang="ts">
     import { IconX, IconSearch } from '@appwrite.io/pink-icons-svelte';
     import { Input, Icon } from '@appwrite.io/pink-svelte';
-    import { createEventDispatcher } from 'svelte';
+    import { type ComponentType, createEventDispatcher } from 'svelte';
     import { onDestroy } from 'svelte';
 
     export let value = '';
@@ -11,6 +11,7 @@
     export let disabled = false;
     export let autofocus = false;
     export let label: string = '';
+    export let leadingIcon: ComponentType | undefined = undefined;
 
     const dispatch = createEventDispatcher();
     let element: HTMLInputElement;
@@ -48,6 +49,7 @@
     {required}
     {autofocus}
     {label}
+    {leadingIcon}
     bind:value
     on:input={valueChange}>
     <svelte:fragment slot="start">

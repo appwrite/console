@@ -11,8 +11,9 @@
     import { type Columns, PROHIBITED_ROW_KEYS } from '../store';
     import ColumnItem from './columns/columnItem.svelte';
     import { buildWildcardColumnsQuery, isRelationship, isRelationshipToMany } from './store';
-    import { Divider, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
+    import { Accordion, Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
+    import { preferences } from '$lib/stores/preferences';
 
     const databaseId = page.params.database;
 
@@ -192,6 +193,7 @@
                 const relatedIds = currentColumn.map((doc: string | Record<string, unknown>) =>
                     typeof doc === 'string' ? doc : doc.$id
                 );
+
                 return !symmetricDifference(workIds, relatedIds).length;
             } else {
                 const workId = typeof workColumn === 'string' ? workColumn : workColumn?.$id;
@@ -312,6 +314,20 @@
         };
     }
 
+    function getAccordionTitle(row: Models.Row): string {
+        const names = preferences.getDisplayNames(row.$tableId).filter((name) => name !== '$id');
+
+        const values = names
+            .map((name) => row?.[name])
+            .filter((value) => value != null && typeof value === 'string' && value !== '');
+
+        if (!values.length) {
+            return row.$id;
+        }
+
+        return `${values.join(' | ')} (...${row.$id.slice(-5)})`;
+    }
+
     $effect(() => {
         if (rows && tableId) {
             loadRelatedRow().then(() => {
@@ -322,16 +338,26 @@
 </script>
 
 {#if loading}
-    <div style:margin-block="" style:margin-inline-end="2.25rem">
+    <div style:margin-inline-end="2.25rem">
         <Skeleton variant="line" height={40} width="auto" />
     </div>
 {:else if relatedTable?.columns?.length && fetchedRows.length}
+    <!-- we should not show current table column items in this view -->
+    {@const twoWayKeys = new Set(
+        relatedTable.columns
+            .filter((column: Models.ColumnRelationship) => column.twoWay)
+            .map((c) => c.key)
+    )}
+
+    <!-- render the filtered ones -->
+    {@const columnsToRender = relatedTable.columns.filter((c) => !twoWayKeys.has(c.key))}
+
     <div bind:this={columnFormWrapper}>
         {#if fetchedRows.length === 1}
             {@const workStore = getStore(fetchedRows[0].$id)}
             {#if workStore}
                 <Layout.Stack direction="column" gap="l">
-                    {#each relatedTable.columns as column}
+                    {#each columnsToRender as column}
                         {@const label = column.key}
                         <ColumnItem
                             {column}
@@ -344,28 +370,35 @@
             {/if}
         {:else}
             <Layout.Stack direction="column" gap="m" class="column-item-stack">
-                <Typography.Text variant="l-400">{relatedTable.name}</Typography.Text>
-                <Layout.Stack direction="column" gap="l" class="column-item-stack">
+                <Layout.Stack direction="column" gap="xs" class="column-item-stack">
                     {#each fetchedRows as row, index (row.$id)}
                         {@const workStore = getStore(row.$id)}
-                        {#if workStore}
-                            {#each relatedTable.columns as column}
-                                {@const label = column.key}
-                                <ColumnItem
-                                    {column}
-                                    {label}
-                                    editing
-                                    formValues={workStore}
-                                    onUpdateFormValues={handleFormUpdate(row.$id)} />
-                            {/each}
-                        {/if}
-
-                        {#if index < fetchedRows.length - 1}
-                            <Divider />
-                        {/if}
+                        <Accordion
+                            title={getAccordionTitle(row)}
+                            hideDivider={index >= fetchedRows.length - 1}>
+                            {#if workStore}
+                                <Layout.Stack direction="column" gap="m">
+                                    {#each columnsToRender as column}
+                                        {@const label = column.key}
+                                        <ColumnItem
+                                            {column}
+                                            {label}
+                                            editing
+                                            formValues={workStore}
+                                            onUpdateFormValues={handleFormUpdate(row.$id)} />
+                                    {/each}
+                                </Layout.Stack>
+                            {/if}
+                        </Accordion>
                     {/each}
                 </Layout.Stack>
             </Layout.Stack>
         {/if}
     </div>
 {/if}
+
+<style lang="scss">
+    :global(.column-item-stack .divider) {
+        margin-inline-start: 4px;
+    }
+</style>

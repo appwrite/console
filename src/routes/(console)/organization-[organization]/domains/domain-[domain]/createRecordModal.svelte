@@ -98,7 +98,7 @@
             </Input.Helper>
         </Layout.Stack>
 
-        <InputText id="value" label="Value" {placeholder} bind:value>
+        <InputText id="value" label="Value" {placeholder} bind:value required>
             <Tooltip slot="info">
                 <Icon icon={IconInfo} size="s" />
                 <span slot="tooltip">

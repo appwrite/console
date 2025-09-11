@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { type ComponentType, onMount } from 'svelte';
     import { Input, Layout, Selector } from '@appwrite.io/pink-svelte';
 
     export let id: string;
@@ -13,6 +13,7 @@
     export let autocomplete = false;
     export let step: number | 'any' = 0.001;
     export let type: 'date' | 'time' | 'datetime-local' = 'date';
+    export let leadingIcon: ComponentType | undefined = undefined;
 
     let error: string;
     let element: HTMLInputElement;
@@ -54,6 +55,7 @@
         {step}
         {type}
         helper={error}
+        {leadingIcon}
         on:change={onChange}
         autocomplete={autocomplete ? 'on' : 'off'}>
         {#if nullable}

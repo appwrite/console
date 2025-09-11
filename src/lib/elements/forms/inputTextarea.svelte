@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
+    import type { ComponentType } from 'svelte';
 
     export let label = '';
     export let id: string;
@@ -15,6 +16,7 @@
     export let maxlength: number = null;
     export let rows = 3;
     export let helper: string = '';
+    export let leadingIcon: ComponentType | undefined = undefined;
 
     let error: string;
 
@@ -43,6 +45,7 @@
     {label}
     {nullable}
     {rows}
+    {leadingIcon}
     autofocus={autofocus || undefined}
     helper={error || helper}
     state={error ? 'error' : 'default'}
