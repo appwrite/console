@@ -12,6 +12,8 @@
     } from '@appwrite.io/pink-svelte';
     import { addPlatform, continuePlatform } from './platforms/+page.svelte';
     import { app } from '$lib/stores/app';
+    import AuthPreview from './assets/auth-preview.svg';
+    import AuthPreviewDark from './assets/auth-preview-dark.svg';
     import {
         IconArrowRight,
         IconNodeJs,
@@ -20,10 +22,12 @@
     } from '@appwrite.io/pink-icons-svelte';
     import DatabaseImgSource from './assets/database.png';
     import DatabaseImgSourceDark from './assets/database-dark.png';
-    import UsersImgSource from './assets/users.svg';
-    import UsersImgSourceDark from './assets/users-dark.svg';
     import DiscordImgSource from './assets/discord.png';
     import DiscordImgSourceDark from './assets/discord-dark.png';
+    import CursorIcon from './components/CursorIcon.svelte';
+    import ClaudeIcon from './components/ClaudeIcon.svelte';
+    import VSCodeIcon from './components/VSCodeIcon.svelte';
+    import WindsurfIcon from './components/WindsurfIcon.svelte';
     import PlatformIosImgSource from './assets/platform-ios.svg';
     import PlatformIosImgSourceDark from './assets/platform-ios-dark.svg';
     import PlatformAndroidImgSource from './assets/platform-android.svg';
@@ -102,9 +106,7 @@
                                 </Layout.Stack>
                             </div>
                             <Layout.Stack gap="l">
-                                <Layout.Stack
-                                    gap="l"
-                                    direction={$isSmallViewport ? 'column' : 'row'}>
+                                <Layout.Stack gap="l" direction="row">
                                     <Card.Button
                                         on:click={() => {
                                             openPlatformWizard(0, platformMap.get('Web'));
@@ -479,10 +481,12 @@
                                     <div class="double-width-card">
                                         <Card.Base padding="s"
                                             ><div class="full-height-card">
-                                                <Layout.Stack direction="row">
+                                                <Layout.Stack
+                                                    direction={$isSmallViewport ? 'column' : 'row'}>
                                                     <Layout.Stack
                                                         gap="xl"
-                                                        justifyContent="space-between">
+                                                        justifyContent="space-between"
+                                                        style={`flex: ${$isSmallViewport ? '1 1 auto' : '0 0 30%'}; min-width: ${$isSmallViewport ? 'auto' : '240px'}`}>
                                                         <Typography.Title size="s"
                                                             >Set up Auth</Typography.Title>
                                                         <Layout.Stack
@@ -519,33 +523,129 @@
                                                     </Layout.Stack>
                                                     <div
                                                         class="auth-image"
+                                                        style="flex: 1 1 auto"
                                                         style:background-image={`url('${
                                                             $app.themeInUse === 'dark'
-                                                                ? UsersImgSourceDark
-                                                                : UsersImgSource
+                                                                ? AuthPreviewDark
+                                                                : AuthPreview
                                                         }')`}>
                                                     </div>
                                                 </Layout.Stack>
                                             </div></Card.Base>
                                     </div>
+                                </Layout.Stack>
+                                <Layout.Stack
+                                    gap="l"
+                                    direction={$isSmallViewport ? 'column' : 'row'}>
+                                    <Card.Base
+                                        padding="s"
+                                        style={`flex: ${$isSmallViewport ? '1 1 auto' : '1 1 70%'};`}>
+                                        <div class="full-height-card">
+                                            <Layout.Stack gap="xl" justifyContent="space-between">
+                                                <Layout.Stack gap="s">
+                                                    <Typography.Title
+                                                        color="--fgcolor-neutral-secondary"
+                                                        size="s">MCP server</Typography.Title>
+                                                    <Typography.Text
+                                                        color="--fgcolor-neutral-secondary">
+                                                        Deploy the Appwrite MCP server with a single
+                                                        click, or view the <Link.Anchor
+                                                            href="https://appwrite.io/docs"
+                                                            target="_blank">docs</Link.Anchor> for instructions.
+                                                    </Typography.Text>
+                                                </Layout.Stack>
+                                                <Layout.Stack gap="s">
+                                                    <Typography.Text
+                                                        color="--fgcolor-neutral-tertiary"
+                                                        size="s">One-click install</Typography.Text>
+                                                    <Layout.Stack
+                                                        direction="row"
+                                                        gap="s"
+                                                        wrap="wrap">
+                                                        <Button.Anchor
+                                                            href="https://apwr.dev/docs-mcp-cursor?ref=docs"
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            size="s"
+                                                            variant="secondary">
+                                                            <Icon
+                                                                slot="start"
+                                                                icon={CursorIcon}
+                                                                size="xs" />
+                                                            Cursor
+                                                        </Button.Anchor>
+                                                        <Button.Anchor
+                                                            href="https://appwrite.io/docs/tooling/mcp/claude"
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            size="s"
+                                                            variant="secondary">
+                                                            <Icon
+                                                                slot="start"
+                                                                icon={ClaudeIcon}
+                                                                size="xs" />
+                                                            Claude Desktop
+                                                        </Button.Anchor>
+                                                        <Button.Anchor
+                                                            href="https://apwr.dev/docs-mcp-vscode?ref=docs"
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            size="s"
+                                                            variant="secondary">
+                                                            <Icon
+                                                                slot="start"
+                                                                icon={VSCodeIcon}
+                                                                size="xs" />
+                                                            VS code
+                                                        </Button.Anchor>
+                                                        <Button.Anchor
+                                                            href="https://appwrite.io/docs/tooling/mcp/windsurf"
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            size="s"
+                                                            variant="secondary">
+                                                            <Icon
+                                                                slot="start"
+                                                                icon={WindsurfIcon}
+                                                                size="xs" />
+                                                            Windsurf editor
+                                                        </Button.Anchor>
+                                                    </Layout.Stack>
+                                                </Layout.Stack>
+                                            </Layout.Stack>
+                                        </div>
+                                    </Card.Base>
 
                                     <Card.Link
                                         href="https://appwrite.io/discord"
                                         padding="s"
                                         on:click={() => {
                                             trackEvent(Click.OnboardingDiscordClick);
-                                        }}>
+                                        }}
+                                        style={`flex: ${$isSmallViewport ? '1 1 auto' : '1 1 28%'};`}>
                                         <div class="full-height-card">
                                             <Layout.Stack gap="xs" justifyContent="space-between">
-                                                <Layout.Stack direction="column" gap="xxxs">
-                                                    <img
-                                                        src={$app.themeInUse === 'dark'
-                                                            ? DiscordImgSourceDark
-                                                            : DiscordImgSource}
-                                                        class="discord"
-                                                        alt="" />
-                                                    <Typography.Title size="s"
-                                                        >Discord</Typography.Title>
+                                                <Layout.Stack
+                                                    direction="row"
+                                                    alignItems="center"
+                                                    justifyContent="space-between"
+                                                    class="discord-header">
+                                                    <Layout.Stack
+                                                        direction="row"
+                                                        alignItems="flex-start"
+                                                        gap="xs">
+                                                        <img
+                                                            src={$app.themeInUse === 'dark'
+                                                                ? DiscordImgSourceDark
+                                                                : DiscordImgSource}
+                                                            class="discord"
+                                                            alt="" />
+                                                        <Typography.Title size="s"
+                                                            >Discord</Typography.Title>
+                                                    </Layout.Stack>
+                                                    <div class="arrow-icon arrow-icon-discord">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
                                                 </Layout.Stack>
                                                 <Layout.Stack
                                                     direction="row"
@@ -556,9 +656,6 @@
                                                         color="--fgcolor-neutral-secondary">
                                                         Join our Discord for support, tips and
                                                         product updates</Typography.Text>
-                                                    <div class="arrow-icon arrow-icon-discord">
-                                                        <Icon icon={IconArrowRight} size="s" />
-                                                    </div>
                                                 </Layout.Stack>
                                             </Layout.Stack>
                                         </div>
@@ -635,7 +732,7 @@
             margin-bottom: calc(-1 * var(--base-16, 16px));
             align-self: flex-end;
             background-size: cover;
-            background-position: left bottom;
+            background-position: right bottom;
             background-repeat: no-repeat;
         }
         :global(.full-height-card div) {
@@ -647,6 +744,30 @@
                 width: 250%;
             }
         }
+        .double-width-card .full-height-card {
+            height: 240px;
+            width: 100%;
+        }
+
+        @media (max-width: 1024px) {
+            .double-width-card .full-height-card {
+                height: 220px;
+            }
+            .auth-image {
+                height: 180px;
+                background-position: center bottom;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .double-width-card .full-height-card {
+                height: auto;
+            }
+            .auth-image {
+                height: 160px;
+                margin-right: 0;
+            }
+        }
 
         .arrow-icon {
             color: var(--border-neutral-strong);
@@ -656,7 +777,7 @@
             }
         }
         .arrow-icon-discord {
-            align-items: flex-end;
+            align-items: flex-start;
         }
 
         .platform-image {
