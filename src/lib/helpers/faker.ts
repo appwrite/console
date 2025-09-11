@@ -55,7 +55,9 @@ export function generateFakeRecords(
 } {
     if (count <= 0) return { ids: [], rows: [] };
 
-    const filteredColumns = columns.filter((col) => col.type !== 'relationship');
+    const filteredColumns = columns.filter(
+        (col) => col.type !== 'relationship' && col.status === 'available'
+    );
 
     const ids: string[] = [];
     const rows: Models.Row[] = [];

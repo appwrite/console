@@ -591,6 +591,7 @@
         @media (min-width: 1024px) {
             width: 166px;
         }
+
         .info {
             position: absolute;
             display: flex;

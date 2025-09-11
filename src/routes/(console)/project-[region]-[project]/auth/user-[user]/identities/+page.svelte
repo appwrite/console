@@ -52,13 +52,13 @@
             <div class="u-flex u-main-end u-gap-16 is-not-mobile">
                 <Filters query={data.query} {columns} />
                 <div>
-                    <ViewSelector view={View.Table} {columns} hideView />
+                    <ViewSelector ui="new" view={View.Table} {columns} hideView />
                 </div>
             </div>
         </div>
         <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
             <div class="u-flex-basis-50-percent">
-                <ViewSelector view={View.Table} {columns} hideView />
+                <ViewSelector ui="new" view={View.Table} {columns} hideView />
             </div>
             <div class="u-flex-basis-50-percent">
                 <Filters query={data.query} {columns} fullWidthMobile />

@@ -52,6 +52,7 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <ViewSelector
+                ui="new"
                 {columns}
                 view={data.view}
                 hideColumns={!data.databases.total}

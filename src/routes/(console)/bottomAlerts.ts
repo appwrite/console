@@ -3,10 +3,10 @@ import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
 import TablesApiLight from '$lib/images/promos/tables-api-light.png';
 import TablesApiDark from '$lib/images/promos/tables-api-dark.png';
+import InversionQueriesDark from '$lib/images/promos/inversion-queries-dark.png';
+import InversionQueriesLight from '$lib/images/promos/inversion-queries-light.png';
 import TimeHelperQueriesDark from '$lib/images/promos/time-helper-queries-dark.png';
 import TimeHelperQueriesLight from '$lib/images/promos/time-helper-queries-light.png';
-import OptInRelationDark from '$lib/images/promos/opt-relation-dark.png';
-import OptInRelationLight from '$lib/images/promos/opt-relation-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -32,6 +32,26 @@ if (isCloud) {
         show: true
     };
 
+    const inversionQueriesPromo: BottomModalAlertItem = {
+        id: 'modal:inversion_queries_announcement',
+        src: {
+            dark: InversionQueriesDark,
+            light: InversionQueriesLight
+        },
+        title: 'Announcing inversion queries',
+        message: 'New NOT operators to exclude data directly in queries.',
+        plan: 'free',
+        importance: 8,
+        scope: 'project',
+        cta: {
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/announcing-inversion-queries',
+            external: true,
+            hideOnClick: true
+        },
+        show: true
+    };
+
     const timeHelperQueriesPromo: BottomModalAlertItem = {
         id: 'modal:time_helper_queries_announcement',
         src: {
@@ -51,28 +71,7 @@ if (isCloud) {
         },
         show: true
     };
-
-    const optInRelationPromo: BottomModalAlertItem = {
-        id: 'modal:opt_in_relation_announcement',
-        src: {
-            dark: OptInRelationDark,
-            light: OptInRelationLight
-        },
-        title: 'Introducing Opt-in relationship loading',
-        message:
-            'Gain full control over which related rows to fetch and drastically reduce payload sizes.',
-        plan: 'free',
-        importance: 8,
-        scope: 'project',
-        cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-opt-in-relationship-loading',
-            external: true,
-            hideOnClick: true
-        },
-        show: true
-    };
-    listOfPromotions.push(timeHelperQueriesPromo, optInRelationPromo, tablesApiPromo);
+    listOfPromotions.push(inversionQueriesPromo, timeHelperQueriesPromo, tablesApiPromo);
 }
 
 export function addBottomModalAlerts() {
