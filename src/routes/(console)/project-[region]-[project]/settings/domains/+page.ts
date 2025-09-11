@@ -1,16 +1,11 @@
-import { Dependencies, PAGE_LIMIT } from '$lib/constants';
-import { RuleTrigger, sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
+import { sdk } from '$lib/stores/sdk';
+import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
+import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+import { queries, queryParamToMap } from '$lib/components/filters';
+import { fetchOrganizationDomainsForRules } from '$lib/helpers/domains';
+import { RuleType, RuleTrigger } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
-import { getSearch } from '$lib/helpers/load';
-import { RuleType } from '$lib/stores/sdk';
-import { queries } from '$lib/components/filters';
-import { queryParamToMap } from '$lib/components/filters';
-import { getQuery } from '$lib/helpers/load';
-import { pageToOffset } from '$lib/helpers/load';
-import { getLimit } from '$lib/helpers/load';
-import { getPage } from '$lib/helpers/load';
-import { isCloud } from '$lib/system';
 
 export const load: PageLoad = async ({ depends, url, route, params, parent }) => {
     depends(Dependencies.DOMAINS);
@@ -30,13 +25,7 @@ export const load: PageLoad = async ({ depends, url, route, params, parent }) =>
         search: search || undefined
     });
 
-    // Only load organization domains if we have rules and are on Cloud
-    const organizationDomains =
-        isCloud && rules.total > 0
-            ? await sdk.forConsole.domains.list({
-                  queries: [Query.equal('teamId', organization.$id)]
-              })
-            : null;
+    const organizationDomains = await fetchOrganizationDomainsForRules(rules, organization.$id);
 
     return {
         rules,

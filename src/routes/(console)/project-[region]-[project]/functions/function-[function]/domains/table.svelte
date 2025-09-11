@@ -3,12 +3,7 @@
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import {
-        IconDotsHorizontal,
-        IconRefresh,
-        IconTrash,
-        IconDocumentText
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconDotsHorizontal, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
         Badge,
@@ -22,10 +17,7 @@
     import RetryDomainModal from './retryDomainModal.svelte';
     import { columns } from './store';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { getApexDomain } from '$lib/helpers/tlds';
-    import { isCloud } from '$lib/system';
+    import DnsRecordsAction from '$lib/components/domains/dnsRecordsAction.svelte';
 
     let {
         proxyRules,
@@ -46,33 +38,6 @@
               ? 'Deployed from ' + proxy.deploymentVcsProviderBranch
               : 'Active deployment';
     };
-
-    function getDomainIdForRule(rule: Models.ProxyRule): string | null {
-        if (!isCloud || !organizationDomains) return null;
-
-        const apexDomain = getApexDomain(rule.domain);
-        if (!apexDomain) return null;
-
-        const domain = organizationDomains.domains.find(
-            (d: Models.Domain) => d.domain === apexDomain
-        );
-        return domain?.$id || null;
-    }
-
-    function navigateToDnsRecords(rule: Models.ProxyRule) {
-        const apexDomain = getApexDomain(rule.domain);
-        const domain = organizationDomains.domains.find(
-            (d: Models.Domain) => d.domain === apexDomain
-        );
-
-        trackEvent(Click.DomainDnsRecordsClick, {
-            source: 'functions_domain_overview',
-            domain: rule.domain,
-            apexDomain
-        });
-
-        goto(`${base}/organization-${domain.teamId}/domains/domain-${domain.$id}`);
-    }
 </script>
 
 <Table.Root columns={[...$columns, { id: 'actions', width: 40 }]} let:root>
@@ -139,16 +104,7 @@
                                         Retry
                                     </ActionMenu.Item.Button>
                                 {/if}
-                                {#if getDomainIdForRule(proxyRule)}
-                                    <ActionMenu.Item.Button
-                                        leadingIcon={IconDocumentText}
-                                        on:click={(e) => {
-                                            navigateToDnsRecords(proxyRule);
-                                            toggle(e);
-                                        }}>
-                                        DNS Records
-                                    </ActionMenu.Item.Button>
-                                {/if}
+                                <DnsRecordsAction rule={proxyRule} {organizationDomains} />
                                 <ActionMenu.Item.Button
                                     status="danger"
                                     leadingIcon={IconTrash}

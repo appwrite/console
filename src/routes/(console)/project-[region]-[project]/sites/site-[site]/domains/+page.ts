@@ -1,11 +1,10 @@
 import { Query } from '@appwrite.io/console';
-import { RuleTrigger, sdk } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { queries, queryParamToMap } from '$lib/components/filters';
-import { RuleType } from '$lib/stores/sdk';
-import { DeploymentResourceType } from '$lib/stores/sdk';
-import { isCloud } from '$lib/system';
+import { fetchOrganizationDomainsForRules } from '$lib/helpers/domains';
+import { RuleType, DeploymentResourceType, RuleTrigger } from '$lib/stores/sdk';
 
 export const load = async ({ params, depends, url, route, parent }) => {
     depends(Dependencies.SITES_DOMAINS);
@@ -34,13 +33,10 @@ export const load = async ({ params, depends, url, route, parent }) => {
         search: search || undefined
     });
 
-    // Only load organization domains if we have rules and are on Cloud
-    const organizationDomains =
-        isCloud && proxyRules.total > 0
-            ? await sdk.forConsole.domains.list({
-                  queries: [Query.equal('teamId', organization.$id)]
-              })
-            : null;
+    const organizationDomains = await fetchOrganizationDomainsForRules(
+        proxyRules,
+        organization.$id
+    );
 
     return {
         offset,

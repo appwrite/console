@@ -1,15 +1,11 @@
-import { Dependencies } from '$lib/constants';
-import { RuleType, DeploymentResourceType, RuleTrigger, sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
-import type { PageLoad } from './$types';
-import { getPage } from '$lib/helpers/load';
-import { getLimit } from '$lib/helpers/load';
-import { pageToOffset } from '$lib/helpers/load';
-import { getQuery } from '$lib/helpers/load';
-import { getSearch } from '$lib/helpers/load';
+import { sdk } from '$lib/stores/sdk';
+import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
+import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { queries, queryParamToMap } from '$lib/components/filters';
-import { PAGE_LIMIT } from '$lib/constants';
-import { isCloud } from '$lib/system';
+import { fetchOrganizationDomainsForRules } from '$lib/helpers/domains';
+import { RuleType, DeploymentResourceType, RuleTrigger } from '$lib/stores/sdk';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ depends, params, url, route, parent }) => {
     depends(Dependencies.FUNCTION_DOMAINS);
@@ -38,12 +34,10 @@ export const load: PageLoad = async ({ depends, params, url, route, parent }) =>
         search: search || undefined
     });
 
-    const organizationDomains =
-        isCloud && proxyRules.total > 0
-            ? await sdk.forConsole.domains.list({
-                  queries: [Query.equal('teamId', organization.$id)]
-              })
-            : null;
+    const organizationDomains = await fetchOrganizationDomainsForRules(
+        proxyRules,
+        organization.$id
+    );
 
     return {
         offset,
