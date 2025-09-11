@@ -21,6 +21,7 @@
         Image,
         Input,
         Layout,
+        Spinner,
         Tag,
         Typography
     } from '@appwrite.io/pink-svelte';
@@ -39,8 +40,8 @@
     let showCustomId = $state(false);
     let region = $state<AllowedRegions>();
     let id = $state<string>('');
-    let imageLoaded = $state(false);
-    let imageError = $state(false);
+    let screenshotOk = $state(true);
+    let imageLoading = $state(true);
 
     let loadingProjects = $state(false);
 
@@ -150,24 +151,6 @@
             region = $regionsStore.regions.find((r) => r.default)?.$id as AllowedRegions;
         }
     });
-
-    $effect(() => {
-        if (data.deploymentData.type === 'repo' && data.deploymentData.screenshot) {
-            imageLoaded = false;
-            imageError = false;
-
-            const img = document.createElement('img');
-            img.onload = () => {
-                imageLoaded = true;
-            };
-
-            img.onerror = () => {
-                imageError = true;
-            };
-
-            img.src = data.deploymentData.screenshot;
-        }
-    });
 </script>
 
 <svelte:head>
@@ -223,24 +206,49 @@
                                         </Layout.Stack>
                                     </Layout.Stack>
                                 </Layout.GridFraction>
-                            {:else if data.deploymentData.type === 'repo' && data.deploymentData.screenshot && imageLoaded && !imageError}
+                            {:else if data.deploymentData.type === 'repo' && data.deploymentData.screenshot}
                                 <Layout.GridFraction start={5} end={6}>
-                                    <Image
-                                        border
-                                        radius="xs"
-                                        ratio="16/9"
-                                        style=" align-self: start"
-                                        src={data.deploymentData.screenshot}
-                                        alt="Screenshot" />
-                                    <Layout.Stack gap="xxl" justifyContent="center">
+                                    <div style="position: relative; aspect-ratio: 16/9;">
+                                        {#if imageLoading}
+                                            <Card.Base
+                                                padding="none"
+                                                radius="s"
+                                                style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">
+                                                <Spinner size="m" type="neutral" />
+                                            </Card.Base>
+                                        {/if}
+                                        <Image
+                                            border
+                                            radius="xs"
+                                            ratio="16/9"
+                                            style="align-self: start; {imageLoading
+                                                ? 'opacity: 0;'
+                                                : ''}"
+                                            src={screenshotOk
+                                                ? data.deploymentData.screenshot
+                                                : $app.themeInUse === 'dark'
+                                                  ? `${base}/images/sites/screenshot-placeholder-dark.svg`
+                                                  : `${base}/images/sites/screenshot-placeholder-light.svg`}
+                                            alt="Screenshot"
+                                            onload={() => {
+                                                imageLoading = false;
+                                            }}
+                                            onerror={() => {
+                                                screenshotOk = false;
+                                                imageLoading = false;
+                                            }} />
+                                    </div>
+                                    <Layout.Stack gap="s" style="margin: 0.8rem 0;">
                                         <Layout.Stack gap="xxs">
                                             <Typography.Text
                                                 variant="m-500"
                                                 color="--fgcolor-neutral-primary">
-                                                {data.deploymentData.name}
+                                                Repository
                                             </Typography.Text>
                                             {#if data.deploymentData.tagline}
-                                                <Typography.Text variant="m-500">
+                                                <Typography.Text
+                                                    variant="m-500"
+                                                    style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
                                                     {data.deploymentData.tagline}
                                                 </Typography.Text>
                                             {/if}
