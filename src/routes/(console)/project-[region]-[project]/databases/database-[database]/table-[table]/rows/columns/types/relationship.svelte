@@ -6,7 +6,11 @@
     import { Query, type Models } from '@appwrite.io/console';
     import { type ComponentType, onMount } from 'svelte';
     import { isRelationshipToMany } from '../../store';
-    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconPlus,
+        IconRelationship,
+        IconX
+    } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     type SelectOption = {
@@ -201,6 +205,8 @@
             {#if !limited}
                 <Layout.Stack direction="row" alignContent="space-between">
                     <Layout.Stack gap="xxs" direction="row" alignItems="center">
+                        <Icon icon={IconRelationship} size="s" color="--fgcolor-neutral-weak" />
+
                         <Typography.Text variant="m-500">{label}</Typography.Text>
                         <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                             {optionalText}
@@ -229,7 +235,8 @@
                             on:change={() => {
                                 if (!relatedList[0]) relatedList = [''];
                                 updateRelatedList();
-                            }} />
+                            }}
+                            leadingIcon={!limited ? IconRelationship : undefined} />
                     </Layout.Stack>
                 {/if}
 
@@ -245,7 +252,9 @@
                                 options={getAvailableOptions(actualIndex)}
                                 bind:value={relatedList[actualIndex]}
                                 placeholder={`Select ${column.key}`}
-                                on:change={updateRelatedList} />
+                                on:change={updateRelatedList}
+                                leadingIcon={!limited ? IconRelationship : undefined} />
+
                             {#if !limited}
                                 {#if relatedList[actualIndex]}
                                     <div style:padding-block-start="0.5rem">
@@ -271,7 +280,9 @@
                                 required
                                 options={getAvailableOptions(i)}
                                 bind:value={item}
-                                on:change={updateRelatedList} />
+                                on:change={updateRelatedList}
+                                leadingIcon={!limited ? IconRelationship : undefined} />
+
                             <div style:padding-block-start="0.5rem">
                                 <Button
                                     icon
@@ -297,7 +308,9 @@
                             placeholder={`Select ${column.key}`}
                             bind:value={newItemValue}
                             options={getAvailableOptions()}
-                            on:change={addNewItem} />
+                            on:change={addNewItem}
+                            leadingIcon={!limited ? IconRelationship : undefined} />
+
                         <div style:padding-block-start="0.5rem">
                             <Button icon extraCompact on:click={cancelAddItem}>
                                 <Icon icon={IconX} size="s" />
@@ -333,7 +346,8 @@
                 } else {
                     value = rowList.rows.find((row) => row.$id === singleRel);
                 }
-            }} />
+            }}
+            leadingIcon={!limited ? IconRelationship : undefined} />
 
         {#if !limited && singleRel}
             <div style:padding-block-start="2.25rem">

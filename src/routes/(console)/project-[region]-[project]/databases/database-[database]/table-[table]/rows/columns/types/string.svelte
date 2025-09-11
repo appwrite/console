@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Models } from '@appwrite.io/console';
     import { Layout, Link } from '@appwrite.io/pink-svelte';
+    import { IconText } from '@appwrite.io/pink-icons-svelte';
     import { InputText, InputTextarea } from '$lib/elements/forms';
 
     let {
@@ -132,7 +133,8 @@
         {autofocus}
         bind:value={stringValue}
         required={column.required}
-        placeholder={getPlaceholder()}>
+        placeholder={getPlaceholder()}
+        leadingIcon={!limited ? IconText : undefined}>
         <Layout.Stack direction="column" alignItems="flex-start" slot="end">
             {#if array}
                 <Link.Button on:click size="s" variant="quiet">Advanced edit</Link.Button>
@@ -148,5 +150,6 @@
         {maxlength}
         bind:value={stringValue}
         placeholder="Enter string"
-        required={column.required} />
+        required={column.required}
+        leadingIcon={!limited ? IconText : undefined} />
 {/if}

@@ -11,7 +11,7 @@
     import { type Columns, PROHIBITED_ROW_KEYS } from '../store';
     import ColumnItem from './columns/columnItem.svelte';
     import { buildWildcardColumnsQuery, isRelationship, isRelationshipToMany } from './store';
-    import { Accordion, Divider, Layout, Skeleton } from '@appwrite.io/pink-svelte';
+    import { Accordion, Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import { preferences } from '$lib/stores/preferences';
 
@@ -368,7 +368,9 @@
                 <Layout.Stack direction="column" gap="xs" class="column-item-stack">
                     {#each fetchedRows as row, index (row.$id)}
                         {@const workStore = getStore(row.$id)}
-                        <Accordion title={getAccordionTitle(row)} hideDivider>
+                        <Accordion
+                            title={getAccordionTitle(row)}
+                            hideDivider={index >= fetchedRows.length - 1}>
                             {#if workStore}
                                 <Layout.Stack direction="column" gap="m">
                                     {#each columnsToRender as column}
@@ -383,10 +385,6 @@
                                 </Layout.Stack>
                             {/if}
                         </Accordion>
-
-                        {#if index < fetchedRows.length - 1}
-                            <Divider />
-                        {/if}
                     {/each}
                 </Layout.Stack>
             </Layout.Stack>
