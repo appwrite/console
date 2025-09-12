@@ -86,7 +86,7 @@
                 databaseId,
                 tableId: column.relatedTable,
                 // limit `5` as `25` would look too much on sheet!
-                queries: [Query.select(displayNames), Query.limit(5)]
+                queries: [Query.select(displayNames), Query.limit(2)]
             });
 
         cachedRowsCopyList = rows;
@@ -376,7 +376,6 @@
                             bind:value={newItemValue}
                             options={getAvailableOptions()}
                             on:change={addNewItem}
-                            on:select={(item) => console.log(item)}
                             noResultsOption={searchNoResultsOption}
                             leadingIcon={!limited ? IconRelationship : undefined} />
 
