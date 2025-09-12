@@ -26,14 +26,14 @@
     let formStore = writable(formValues);
 
     function removeArrayItem(key: string, index: number) {
-        const filteredArray = $formStore[key].filter((_: object, i: number) => i !== index);
+        const currentArray = Array.isArray($formStore[key]) ? $formStore[key] : [];
+        const filteredArray = currentArray.filter((_: object, i: number) => i !== index);
         const next = {
             ...formValues,
             [key]: filteredArray.length === 0 ? [] : filteredArray
         };
 
         formStore.set(next);
-        onUpdateFormValues?.(next);
     }
 
     function addArrayItem(key: string) {
@@ -45,7 +45,6 @@
         };
 
         formStore.set(next);
-        onUpdateFormValues?.(next);
     }
 
     function getColumnType(column: Columns) {
