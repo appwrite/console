@@ -25,6 +25,7 @@
     import { columns } from './store';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
     import DnsRecordsAction from '$lib/components/domains/dnsRecordsAction.svelte';
+    import { timeFromNowShort } from '$lib/helpers/date';
 
     let {
         proxyRules,
@@ -72,18 +73,75 @@
                                 </Typography.Text>
                             </Link>
 
-                            {#if rule.status === 'verifying'}
-                                <Badge variant="secondary" content="Verifying" size="s" />
-                            {:else if rule.status !== 'verified'}
-                                <Badge
-                                    variant="secondary"
-                                    type="warning"
-                                    content="Verification failed"
-                                    size="s" />
+                            {#if rule.status === 'created'}
+                                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                                    <Badge
+                                        variant="secondary"
+                                        type="error"
+                                        content="Verification failed"
+                                        size="xs" />
+                                    <Link
+                                        size="s"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedProxyRule = rule;
+                                            showRetry = true;
+                                        }}>
+                                        Retry
+                                    </Link>
+                                </Layout.Stack>
+                            {:else if rule.status === 'verifying'}
+                                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                                    <Badge
+                                        variant="secondary"
+                                        content="Generating certificate"
+                                        size="xs" />
+                                    <Link
+                                        size="s"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedProxyRule = rule;
+                                            showLogs = true;
+                                        }}>
+                                        View logs
+                                    </Link>
+                                </Layout.Stack>
+                            {:else if rule.status === 'unverified'}
+                                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                                    <Badge
+                                        variant="secondary"
+                                        type="error"
+                                        content="Certificate generation failed"
+                                        size="xs" />
+                                    <Link
+                                        size="s"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedProxyRule = rule;
+                                            showLogs = true;
+                                        }}>
+                                        View logs
+                                    </Link>
+                                </Layout.Stack>
                             {/if}
                         </Layout.Stack>
                     {:else if column.id === 'target'}
                         {proxyTarget(rule)}
+                    {:else if column.id === 'updated'}
+                        {#if rule.status !== 'verified'}
+                            <Typography.Text
+                                variant="m-400"
+                                color="--fgcolor-neutral-tertiary"
+                                style="font-size: 0.875rem;">
+                                {#if rule.status === 'created'}
+                                    Checked {timeFromNowShort(rule.$updatedAt)}
+                                {:else if rule.status === 'verifying'}
+                                    Updated {timeFromNowShort(rule.$updatedAt)}
+                                {:else if rule.status === 'unverified'}
+                                    Failed {timeFromNowShort(rule.$updatedAt)}
+                                {/if}
+                            </Typography.Text>
+                        {/if}
                     {/if}
                 </Table.Cell>
             {/each}

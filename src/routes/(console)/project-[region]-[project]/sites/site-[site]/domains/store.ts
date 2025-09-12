@@ -15,5 +15,12 @@ export const columns = writable<Column[]>([
         title: 'Target',
         type: 'string',
         width: { min: 120, max: 400 }
+    },
+
+    {
+        id: 'updated',
+        title: '',
+        type: 'string',
+        width: { min: 100, max: 140 }
     }
 ]);
