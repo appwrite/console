@@ -77,7 +77,7 @@
             </Layout.Stack>
         </div>
 
-        <Layout.Stack direction="column" justifyContent="space-evenly" gap="xxxl">
+        <Layout.Stack direction="column" justifyContent="space-evenly">
             <Form
                 bind:this={form}
                 bind:isSubmitting={submitting}
