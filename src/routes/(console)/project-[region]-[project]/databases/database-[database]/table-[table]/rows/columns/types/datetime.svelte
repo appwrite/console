@@ -1,6 +1,8 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import type { Models } from '@appwrite.io/console';
     import { InputDateTime } from '$lib/elements/forms';
+    import { toLocalDateTimeISO } from '$lib/helpers/date';
     import { IconCalendar } from '@appwrite.io/pink-icons-svelte';
 
     export let id: string;
@@ -15,6 +17,12 @@
     $: if (limited) {
         label = undefined;
     }
+
+    /**
+     * the value from backend will include timezone info,
+     * and that's not compatible with the component showing empty.
+     */
+    onMount(() => (value = value ? toLocalDateTimeISO(value) : value));
 </script>
 
 <InputDateTime

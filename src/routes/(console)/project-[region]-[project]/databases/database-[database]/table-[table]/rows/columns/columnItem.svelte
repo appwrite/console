@@ -26,9 +26,10 @@
     let formStore = writable(formValues);
 
     function removeArrayItem(key: string, index: number) {
+        const filteredArray = $formStore[key].filter((_: object, i: number) => i !== index);
         const next = {
-            ...$formStore,
-            [key]: $formStore[key].filter((_, i) => i !== index)
+            ...formValues,
+            [key]: filteredArray.length === 0 ? [] : filteredArray
         };
 
         formStore.set(next);
@@ -36,9 +37,11 @@
     }
 
     function addArrayItem(key: string) {
+        const currentArray = $formStore[key];
         const next = {
-            ...$formStore,
-            [key]: [...($formStore[key] ?? []), null]
+            ...formValues,
+            [key]:
+                currentArray === null || currentArray === undefined ? [] : [...currentArray, null]
         };
 
         formStore.set(next);
@@ -107,7 +110,7 @@
             on:click />
     {:else}
         <Layout.Stack>
-            {#each [...($formStore[column.key]?.keys() ?? [])] as index}
+            {#each [...($formStore[column.key]?.keys() ?? [])] as index (index)}
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                     <Column
                         {column}
