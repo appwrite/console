@@ -37,11 +37,10 @@
     }
 
     function addArrayItem(key: string) {
-        const currentArray = $formStore[key];
+        const currentArray = Array.isArray($formStore[key]) ? $formStore[key] : null;
         const next = {
             ...formValues,
-            [key]:
-                currentArray === null || currentArray === undefined ? [] : [...currentArray, null]
+            [key]: currentArray ? [...currentArray, null] : [null]
         };
 
         formStore.set(next);
