@@ -14,7 +14,17 @@
     import { uploader } from '$lib/stores/uploader';
     import { sdk } from '$lib/stores/sdk.js';
     import DeleteFile from './deleteFile.svelte';
-    import { Layout, Table, Icon, Popover, ActionMenu } from '@appwrite.io/pink-svelte';
+    import { bucket } from './store';
+    import Confirm from '$lib/components/confirm.svelte';
+    import {
+        Layout,
+        Table,
+        Icon,
+        Popover,
+        ActionMenu,
+        FloatingActionBar,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import {
@@ -28,6 +38,9 @@
 
     let showDelete = false;
     let selectedFile: Models.File = null;
+    let selectedFiles: string[] = [];
+    let showBulkDelete = false;
+    let deleting = false;
 
     const bucketId = page.params.bucket;
 
@@ -52,19 +65,41 @@
     }
 
     async function deleteFile(file: Models.File) {
+        selectedFile = file;
+        showDelete = true;
+    }
+
+    async function handleBulkDelete() {
+        showBulkDelete = false;
+        deleting = true;
+
+        const promises = selectedFiles.map((fileId) =>
+            sdk.forProject(page.params.region, page.params.project).storage.deleteFile({
+                bucketId,
+                fileId
+            })
+        );
+
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .storage.deleteFile({ bucketId: file.bucketId, fileId: file.$id });
-            await invalidate(Dependencies.FILES);
-            await uploader.removeFile(file);
-            trackEvent(Submit.FileDelete);
+            await Promise.all(promises);
+            trackEvent(Submit.FileDelete, {
+                total: selectedFiles.length
+            });
+            addNotification({
+                type: 'success',
+                message: `${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''} deleted`
+            });
+            invalidate(Dependencies.FILES);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
             trackError(error, Submit.FileDelete);
+        } finally {
+            selectedFiles = [];
+            showBulkDelete = false;
+            deleting = false;
         }
     }
 
@@ -112,6 +147,8 @@
     {#if data.files.total}
         <Table.Root
             let:root
+            allowSelection
+            bind:selectedRows={selectedFiles}
             columns={[
                 { id: 'filename' },
                 { id: 'type', width: { min: 140 } },
@@ -128,7 +165,7 @@
             </svelte:fragment>
             {#each data.files.files as file}
                 {#if file.chunksTotal / file.chunksUploaded !== 1}
-                    <Table.Row.Base {root}>
+                    <Table.Row.Base {root} id={file.$id}>
                         <Table.Cell column="filename" {root}>
                             <Layout.Stack direction="row" alignItems="center">
                                 <span class="avatar is-size-small is-color-empty"></span>
@@ -158,7 +195,7 @@
                     </Table.Row.Base>
                 {:else}
                     {@const href = `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${bucketId}/file-${file.$id}`}
-                    <Table.Row.Link {href} {root}>
+                    <Table.Row.Link {href} {root} id={file.$id}>
                         <Table.Cell column="filename" {root}>
                             <div class="u-flex u-gap-12 u-cross-center">
                                 <Avatar size="xs" src={getPreview(file.$id)} alt={file.name} />
@@ -213,37 +250,55 @@
             offset={data.offset}
             total={data.files.total} />
     {:else if data.search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no files that match your search.</p>
-            </div>
-            <div class="u-flex u-gap-16">
-                <Button
-                    external
-                    href="https://appwrite.io/docs/products/storage/upload-download"
-                    text>
-                    Documentation
-                </Button>
-                <Button
-                    secondary
-                    href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}`}>
-                    Clear Search
-                </Button>
-            </div>
+        <EmptySearch target="files" search={data.search} hidePagination={data.files.total === 0}>
+            <Button
+                secondary
+                size="s"
+                href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${bucketId}`}>
+                Clear Search
+            </Button>
         </EmptySearch>
     {:else}
         <Empty
             single
+            href="https://appwrite.io/docs/products/storage"
             target="file"
-            href="https://appwrite.io/docs/products/storage/upload-download"
+            allowCreate
             on:click={() =>
                 goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`
+                    `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${bucketId}/create`
                 )} />
+    {/if}
+
+    {#if selectedFiles.length > 0}
+        <FloatingActionBar>
+            <svelte:fragment slot="start">
+                <Badge content={selectedFiles.length.toString()} />
+                <span>
+                    {selectedFiles.length > 1 ? 'files' : 'file'}
+                    selected
+                </span>
+            </svelte:fragment>
+            <svelte:fragment slot="end">
+                <Button text on:click={() => (selectedFiles = [])}>Cancel</Button>
+                <Button secondary on:click={() => (showBulkDelete = true)}>Delete</Button>
+            </svelte:fragment>
+        </FloatingActionBar>
     {/if}
 </Container>
 
-{#if selectedFile}
-    <DeleteFile file={selectedFile} bind:showDelete on:deleted={fileDeleted} />
-{/if}
+<DeleteFile bind:showDelete file={selectedFile} on:deleted={fileDeleted} />
+
+<Confirm
+    title="Delete files"
+    bind:open={showBulkDelete}
+    onSubmit={handleBulkDelete}
+    disabled={deleting}>
+    <Typography.Text>
+        Are you sure you want to delete <b>{selectedFiles.length}</b>
+        {selectedFiles.length > 1 ? 'files' : 'file'} from <b>{$bucket?.name}</b>?
+    </Typography.Text>
+    <Typography.Text>
+        This action is irreversible and will permanently remove the selected files.
+    </Typography.Text>
+</Confirm>
