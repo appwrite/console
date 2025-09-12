@@ -34,7 +34,6 @@
 
     let showInput = false;
     let singleRel: string;
-    let search: string = null;
     let loadingRelationships = false;
 
     let newItemValue: string = '';
@@ -44,6 +43,21 @@
     let offset = 0;
 
     let searchNoResultsOption = undefined;
+
+    /**
+     * list of loaded rows to tune with searching!
+     *
+     * this is used when the view is not searching anything,
+     * therefore we don't have to make an API call again!
+     *
+     * Example:
+     * 1. initial rows are loaded -> cache the rows
+     * 2. user makes a search -> api call -> not results found
+     * 3. user clears the search -> this variable sets the rowsList back!
+     *
+     * `#3` allows us to not make a call to getRows again, saves time and bandwidth!
+     */
+    let cachedRowsCopyList: Models.RowList<Models.Row>;
 
     onMount(async () => {
         if (isRelationshipToMany(column)) {
@@ -60,24 +74,22 @@
         }
     });
 
-    async function getRows(search: string = null) {
+    async function getRows() {
         loadingRelationships = true;
 
         // already includes the `$id`, dw!
         const displayNames = preferences.getDisplayNames(column.relatedTable);
-
-        const queries = search
-            ? [Query.select(displayNames), Query.startsWith('$id', search), Query.orderDesc('')]
-            : [Query.select(displayNames)];
 
         const rows = await sdk
             .forProject(page.params.region, page.params.project)
             .tablesDB.listRows({
                 databaseId,
                 tableId: column.relatedTable,
-                queries
+                // limit `5` as `25` would look too much on sheet!
+                queries: [Query.select(displayNames), Query.limit(5)]
             });
 
+        cachedRowsCopyList = rows;
         loadingRelationships = false;
 
         return rows;
@@ -89,7 +101,7 @@
         const displayNames = preferences.getDisplayNames(column.relatedTable);
 
         const queries = [];
-        displayNames.forEach((name) => queries.push(Query.contains(name, search)));
+        displayNames.forEach((name) => queries.push(Query.contains(name, [search])));
 
         return await sdk.forProject(page.params.region, page.params.project).tablesDB.listRows({
             databaseId,
@@ -127,13 +139,13 @@
         if (newItemValue) {
             relatedList = [...relatedList, newItemValue];
             value = relatedList;
-            newItemValue = '';
+            newItemValue = null;
             showInput = false;
         }
     }
 
     function cancelAddItem() {
-        newItemValue = '';
+        newItemValue = null;
         showInput = false;
     }
 
@@ -184,46 +196,42 @@
         return baseOptions;
     }
 
-    // original list
-    let originalListPreSearch: Models.RowList<Models.Row>;
-
-    const debouncedSearch = debounce(async () => {
+    const debouncedSearch = debounce(async (searchTerm: string) => {
         const availableOptions = getAvailableOptions();
         const includesItem = availableOptions
             .filter((opt) => {
                 const label = String(opt.label ?? '').toLowerCase();
                 const value = String(opt.value ?? '').toLowerCase();
                 return (
-                    label.includes(newItemValue.toLowerCase()) ||
-                    value.includes(newItemValue.toLowerCase())
+                    label.includes(searchTerm.toLowerCase()) ||
+                    value.includes(searchTerm.toLowerCase())
                 );
             })
             .filter(Boolean);
 
         if (!includesItem.length) {
-            originalListPreSearch = rowList;
-
             try {
                 searchNoResultsOption = {
                     disabled: true,
                     message: 'Searching...'
                 };
 
-                const searchResults = await searchRows(newItemValue);
+                const searchResults = await searchRows(searchTerm);
                 if (searchResults) {
                     rowList = searchResults;
                 }
             } finally {
                 searchNoResultsOption = undefined;
             }
-        } else {
-            // reset
-            rowList = originalListPreSearch;
+        } else if (cachedRowsCopyList) {
+            rowList = cachedRowsCopyList;
         }
     }, 500);
 
     // Reactive statements
-    $: getRows(search).then((res) => (rowList = res));
+    $: if (!newItemValue && !cachedRowsCopyList) {
+        getRows().then((response) => (rowList = response));
+    }
 
     $: paginatedItems = editing
         ? relatedList
@@ -250,8 +258,11 @@
         label = undefined;
     }
 
-    $: if (newItemValue && newItemValue !== '') {
-        debouncedSearch();
+    $: if (newItemValue) {
+        debouncedSearch(newItemValue);
+    } else if (!newItemValue && cachedRowsCopyList) {
+        rowList = cachedRowsCopyList;
+        searchNoResultsOption = undefined;
     }
 </script>
 
@@ -365,6 +376,7 @@
                             bind:value={newItemValue}
                             options={getAvailableOptions()}
                             on:change={addNewItem}
+                            on:select={(item) => console.log(item)}
                             noResultsOption={searchNoResultsOption}
                             leadingIcon={!limited ? IconRelationship : undefined} />
 
@@ -389,20 +401,29 @@
     </Layout.Stack>
 {:else}
     <Layout.Stack direction="row" alignItems="center" gap="s">
-        <InputSelect
+        <Input.ComboBox
             {id}
             {options}
             autofocus={limited}
-            bind:value={singleRel}
+            bind:value={newItemValue}
             required={column.required}
             label={limited ? undefined : label}
             placeholder={`Select ${column.key}`}
+            noResultsOption={searchNoResultsOption}
             on:change={() => {
-                if (singleRel === null) {
+                if (newItemValue === null) {
                     value = null;
+                    singleRel = null;
                 } else {
-                    value = rowList.rows.find((row) => row.$id === singleRel);
+                    const selectedRow = rowList.rows.find((row) => row.$id === newItemValue);
+
+                    if (selectedRow) {
+                        value = selectedRow;
+                        singleRel = newItemValue;
+                    }
                 }
+
+                newItemValue = null;
             }}
             leadingIcon={!limited ? IconRelationship : undefined} />
 
