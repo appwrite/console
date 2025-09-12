@@ -27,17 +27,6 @@
 
     let key = $state('');
 
-    const nonSpatialIndexTypes = [
-        { value: IndexType.Key, label: 'Key' },
-        { value: IndexType.Unique, label: 'Unique' },
-        { value: IndexType.Fulltext, label: 'Fulltext' }
-    ];
-    const spatialIndexType = [{ value: IndexType.Spatial, label: 'Spatial' }];
-
-    const spatialColumnKeys = $derived(
-        $table.columns.filter((column) => isSpatialType(column)).map((column) => column.key)
-    );
-
     let selectedType = $state<IndexType>(IndexType.Key);
 
     let columnOptions = $derived(
@@ -53,15 +42,12 @@
 
     let columnList = $state([{ value: '', order: '', length: null }]);
 
-    // any col is present and that is spatial col
-    const anySpatialSelected = $derived(
-        columnList.at(1)?.value !== '' &&
-            columnList.some((c) => spatialColumnKeys.includes(c.value))
-    );
-
-    const types = $derived(
-        anySpatialSelected ? spatialIndexType : [...nonSpatialIndexTypes, ...spatialIndexType]
-    );
+    const types = [
+        { value: IndexType.Key, label: 'Key' },
+        { value: IndexType.Unique, label: 'Unique' },
+        { value: IndexType.Fulltext, label: 'Fulltext' },
+        { value: IndexType.Spatial, label: 'Spatial' }
+    ];
 
     // order options derived from selected type
     let orderOptions = $derived.by(() =>
@@ -77,25 +63,11 @@
               ]
     );
 
-    // spatial type selected -> clear non-spatial selections
+    // spatial type selected -> reset column list to single empty column
     $effect(() => {
         if (selectedType === IndexType.Spatial) {
-            const next = columnList.map((c) => ({
-                value: spatialColumnKeys.includes(c.value) ? c.value : '',
-                order: null,
-                length: c.length
-            }));
-            const changed =
-                next.length !== columnList.length ||
-                next.some(
-                    (n, i) =>
-                        n.value !== columnList[i].value ||
-                        n.order !== columnList[i].order ||
-                        n.length !== columnList[i].length
-                );
-            if (changed) {
-                columnList = next;
-            }
+            // Reset to single column with spatial-appropriate defaults
+            columnList = [{ value: '', order: null, length: null }];
         }
     });
 
@@ -145,7 +117,7 @@
     });
 
     export async function create() {
-        if (!(key && selectedType && !addColumnDisabled)) {
+        if (!key || !selectedType || (selectedType !== IndexType.Spatial && addColumnDisabled)) {
             addNotification({
                 type: 'error',
                 message: 'Selected column key or type invalid'
