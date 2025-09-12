@@ -94,7 +94,7 @@
     on:change={(e) => {
         if (e.detail) {
             $required = false;
-        }
+        } else data.default = null;
     }}
     description="Enable to set a predefined value for this column" />
 
@@ -111,6 +111,7 @@
         onChangePoint={(index, newValue) => {
             if (data.default) {
                 data.default[index] = newValue;
+                data.default = [...data.default];
             }
         }} />
 </Layout.Stack>

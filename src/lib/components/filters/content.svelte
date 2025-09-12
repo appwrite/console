@@ -196,7 +196,7 @@
             {/if}
 
             {#if isDistanceOperator}
-                <div style="margin-top: 8px;">
+                <div class="u-margin-block-start-8">
                     <InputNumber
                         id="distance"
                         bind:value={distanceValue}

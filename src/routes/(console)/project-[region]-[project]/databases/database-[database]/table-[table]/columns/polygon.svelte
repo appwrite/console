@@ -108,6 +108,7 @@
     bind:checked={$required}
     on:change={(e) => {
         if (e.detail) defaultChecked = false;
+        else data.default = null;
     }}
     description="Indicate whether this column is required" />
 
