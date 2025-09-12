@@ -50,9 +50,10 @@
     const isSubmitting = writable(false);
 
     async function verify() {
-        const isNewDomain =
-            data.domainsList.domains.find((rule) => rule.domain === page.params.domain) ===
-            undefined;
+        const isNewDomain = isCloud
+            ? data.domainsList.domains.find((rule) => rule.domain === page.params.domain) ===
+              undefined
+            : true;
         try {
             if (selectedTab !== 'nameserver') {
                 const ruleData = await sdk
