@@ -144,7 +144,7 @@ function createFeedbackStore() {
                     message,
                     email,
                     customFields,
-                    firstname: name || 'Unknown',
+                    firstname: (name || 'Unknown').slice(0, 40),
                     metaFields: {
                         source: get(feedback).source,
                         orgId,

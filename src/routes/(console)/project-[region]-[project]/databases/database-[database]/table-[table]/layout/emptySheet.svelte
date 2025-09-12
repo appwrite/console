@@ -230,7 +230,6 @@
     </SpreadsheetContainer>
 
     {#if !$spreadsheetLoading}
-        <!-- Claude: Can this be truly centered without hacky left: xyz values? -->
         <div
             class="spreadsheet-fade-bottom"
             data-collapsed-tabs={!$expandTabs}

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { showCreate, databaseSubNavigationItems } from './store';
+    import { showCreateTable, databaseSubNavigationItems } from './store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
     import {
@@ -137,7 +137,7 @@
                     <Button
                         compact
                         on:click={() => {
-                            $showCreate = true;
+                            $showCreateTable = true;
                             $showSubNavigation = false;
                         }}>
                         Create table
