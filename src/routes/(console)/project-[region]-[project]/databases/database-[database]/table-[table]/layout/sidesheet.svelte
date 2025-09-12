@@ -3,6 +3,8 @@
     import { Button, Form } from '$lib/elements/forms';
     import { Badge, Divider, Layout, Sheet, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { Copy } from '$lib/components';
+    import { writable } from 'svelte/store';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     let {
         show = $bindable(false),
@@ -38,6 +40,9 @@
         footer?: Snippet | null;
     } = $props();
 
+    let form: Form;
+    let submitting = writable(false);
+
     let copyText = $state(undefined);
 </script>
 
@@ -72,8 +77,10 @@
             </Layout.Stack>
         </div>
 
-        <Layout.Stack direction="column" justifyContent="space-evenly">
+        <Layout.Stack direction="column" justifyContent="space-evenly" gap="xxxl">
             <Form
+                bind:this={form}
+                bind:isSubmitting={submitting}
                 onSubmit={async () => {
                     try {
                         const keepOpen = await submit?.onClick?.();
@@ -87,32 +94,38 @@
                 <Layout.Stack gap="xl" class="sheet-content">
                     {@render children?.()}
                 </Layout.Stack>
-
-                {#if submit}
-                    <div class="sheet-footer">
-                        <Layout.Stack gap="l">
-                            <Divider />
-
-                            <div class="sheet-footer-actions">
-                                <Layout.Stack
-                                    gap="m"
-                                    direction="row"
-                                    justifyContent="flex-end"
-                                    alignItems="center">
-                                    {#if footer}
-                                        {@render footer?.()}
-                                    {/if}
-                                    <Button size="s" secondary on:click={() => (show = false)}
-                                        >Cancel</Button>
-                                    <Button size="s" submit disabled={submit.disabled}>
-                                        {submit.text}
-                                    </Button>
-                                </Layout.Stack>
-                            </div>
-                        </Layout.Stack>
-                    </div>
-                {/if}
             </Form>
+
+            {#if submit}
+                <div class="sheet-footer">
+                    <Layout.Stack gap="l">
+                        <Divider />
+
+                        <div class="sheet-footer-actions">
+                            <Layout.Stack
+                                gap="m"
+                                direction="row"
+                                justifyContent="flex-end"
+                                alignItems="center">
+                                {#if footer}
+                                    {@render footer?.()}
+                                {/if}
+                                <Button size="s" secondary on:click={() => (show = false)}
+                                    >Cancel</Button>
+                                <Button
+                                    size="s"
+                                    submit
+                                    disabled={submit.disabled || $submitting}
+                                    forceShowLoader={$submitting && $isTabletViewport}
+                                    submissionLoader={$submitting && $isTabletViewport}
+                                    on:click={() => (form?.triggerSubmit())}>
+                                    {submit.text}
+                                </Button>
+                            </Layout.Stack>
+                        </div>
+                    </Layout.Stack>
+                </div>
+            {/if}
         </Layout.Stack>
     </Sheet>
 </div>
@@ -131,6 +144,14 @@
         & :global(.sheet-content) {
             // overflow-y: auto;
             padding-bottom: 5rem;
+
+            @media (max-width: 768px) {
+                /*
+                 * different mobile browsers handle bottom spaces differently,
+                 * therefore, having extra bottom space doesn't hurt anyone imo!
+                 */
+                padding-bottom: 15rem;
+            }
         }
     }
 
@@ -140,6 +161,10 @@
         bottom: 0;
         position: absolute;
         background: var(--bgcolor-neutral-primary);
+
+        @media (max-width: 768px) {
+            position: fixed;
+        }
 
         & .sheet-footer-actions {
             padding-inline: var(--space-8);
