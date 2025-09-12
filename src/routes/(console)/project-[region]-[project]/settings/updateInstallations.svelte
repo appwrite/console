@@ -171,7 +171,10 @@
                 Before installing Git in a locally hosted Appwrite project, ensure your environment
                 variables are configured.
                 <svelte:fragment slot="actions">
-                    <Button compact href="#" external>Learn more</Button>
+                    <Button
+                        compact
+                        href="https://appwrite.io/docs/advanced/self-hosting/configuration/version-control"
+                        external>Learn more</Button>
                 </svelte:fragment>
             </Alert.Inline>
         {:else}
