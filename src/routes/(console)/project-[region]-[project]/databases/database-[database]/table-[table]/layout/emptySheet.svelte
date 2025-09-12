@@ -359,6 +359,21 @@
         bottom: 35%;
         position: fixed;
 
+        @media (max-width: 768px) and (max-height: 768px) {
+            left: unset;
+            bottom: 12.5% !important;
+        }
+
+        @media (max-width: 768px) and (max-height: 1024px) {
+            left: unset;
+            bottom: 15% !important;
+        }
+
+        @media (max-width: 1024px) and (max-height: 1024px) {
+            left: unset;
+            bottom: 15%;
+        }
+
         @media (max-width: 1024px) {
             left: unset;
             bottom: 30%;
