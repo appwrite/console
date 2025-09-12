@@ -136,12 +136,14 @@
                 label="Subject"
                 bind:value={$supportData.subject}
                 placeholder="What do you need help with?"
+                maxlength={128}
                 required />
             <InputTextarea
                 id="message"
                 bind:value={$supportData.message}
                 placeholder="Type here..."
-                label="Tell us a bit more" />
+                label="Tell us a bit more"
+                maxlength={4096} />
             <Layout.Stack direction="row" justifyContent="flex-end" gap="s">
                 <Button.Button
                     size="s"
