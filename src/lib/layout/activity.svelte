@@ -11,7 +11,7 @@
     export let offset = 0;
     export let logs: Models.LogList;
     export let insideSideSheet = false;
-    export let databasesScreen = false;
+    export let expanded = false;
     export let useCreateLinkForPagination = true;
 
     const columns: PinkColumn[] = [
@@ -23,11 +23,7 @@
     ];
 </script>
 
-<Container
-    {databasesScreen}
-    {insideSideSheet}
-    expanded={databasesScreen && !insideSideSheet}
-    slotSpacing={databasesScreen && !insideSideSheet}>
+<Container {insideSideSheet} expanded={expanded && !insideSideSheet}>
     {#if logs.total}
         <div>
             <Table.Root {columns} let:root>

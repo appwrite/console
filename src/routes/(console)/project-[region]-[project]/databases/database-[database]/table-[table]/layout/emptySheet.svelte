@@ -77,7 +77,9 @@
     // the first render is in a pretty quick succession, delay helps!
     const debouncedUpdateOverlayHeight = debounce(() => updateOverlayHeight(), 250);
 
-    onMount(async () => {
+    onMount(() => {
+        updateOverlayHeight();
+
         if (spreadsheetContainer) {
             resizeObserver = new ResizeObserver(debouncedUpdateOverlayHeight);
             resizeObserver.observe(spreadsheetContainer);
@@ -88,6 +90,11 @@
         if (resizeObserver) {
             resizeObserver.disconnect();
         }
+    });
+
+    $effect(() => {
+        $expandTabs; /* trigger*/
+        debouncedUpdateOverlayHeight();
     });
 
     const getCustomColumns = (): Column[] =>
@@ -158,6 +165,8 @@
 
     const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
 </script>
+
+<svelte:window on:resize={updateOverlayHeight} />
 
 <div
     class="databases-spreadsheet spreadsheet-container-outer"
@@ -230,7 +239,6 @@
     </SpreadsheetContainer>
 
     {#if !$spreadsheetLoading}
-        <!-- Claude: Can this be truly centered without hacky left: xyz values? -->
         <div
             class="spreadsheet-fade-bottom"
             data-collapsed-tabs={!$expandTabs}
@@ -328,13 +336,9 @@
         z-index: 20;
         display: flex;
         justify-content: center;
-        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        transition: none !important;
 
         height: var(--dynamic-overlay-height, 70.5vh);
-
-        &[data-collapsed-tabs='true'] {
-            height: calc(var(--dynamic-overlay-height, 79.1vh) + 8.6vh);
-        }
 
         @media (max-width: 1024px) {
             height: var(--dynamic-overlay-height, 63.35vh);
@@ -342,6 +346,10 @@
 
         @media (min-width: 1024px) {
             height: var(--dynamic-overlay-height, 70.35vh);
+        }
+
+        &[data-ready='true'] {
+            transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
         }
     }
 
@@ -360,17 +368,31 @@
         bottom: 35%;
         position: fixed;
 
-        @media (max-width: 1024px) {
+        @media (max-width: 768px) {
+            bottom: 35%;
+        }
+
+        @media (max-width: 1023px) {
             left: unset;
-            bottom: 30%;
+        }
+
+        @media (min-width: 1024px) {
+            left: 47.5%;
         }
 
         @media (min-width: 1280px) {
+            left: 50%;
             bottom: 37.5%;
         }
 
         @media (min-width: 1440px) {
+            left: 47.5%;
             bottom: 40%;
+        }
+
+        @media (min-width: 1728px) {
+            left: 45%;
+            bottom: 50%;
         }
     }
 </style>

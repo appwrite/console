@@ -305,10 +305,17 @@
             }
         }
 
-        @media (max-width: 768px) {
-            .main-content:not(:has(.wide-screen-wrapper)) {
-                width: 100%;
-                position: fixed;
+        :global(.console-container) {
+            @media (min-width: 1024px) {
+                padding-inline-start: var(--base-32, 32px);
+            }
+
+            @media (min-width: 1085px) {
+                padding-inline-start: calc(var(--base-32, 32px) - 0.5rem);
+            }
+
+            @media (min-width: 1280px) {
+                padding-inline-start: calc(var(--base-32, 32px) - 0.75rem);
             }
         }
     }

@@ -47,9 +47,7 @@
         sortedTables?.find((table: Models.Table) => table.$id === tableId)
     );
 
-    const isTablesScreen = $derived(page.route.id.endsWith('table-[table]'));
-
-    const isMainDatabaseScreen = $derived(page.route.id.endsWith('database-[database]'));
+    const isTablesScreen = $derived(page.route.id.includes('table-[table]'));
 
     async function loadTables() {
         tables = await sdk.forProject(region, project).tablesDB.listTables({
@@ -174,7 +172,7 @@
             </Layout.Stack>
         </section>
     </Sidebar.Base>
-{:else if data?.database?.name && !isMainDatabaseScreen}
+{:else if data?.database?.name && isTablesScreen}
     <Navbar.Base>
         <div slot="left">
             <Layout.Stack direction="row" alignItems="center" gap="s">
