@@ -118,7 +118,7 @@
                                     disabled={submit.disabled || $submitting}
                                     forceShowLoader={$submitting && $isTabletViewport}
                                     submissionLoader={$submitting && $isTabletViewport}
-                                    on:click={() => (form?.triggerSubmit())}>
+                                    on:click={() => form?.triggerSubmit()}>
                                     {submit.text}
                                 </Button>
                             </Layout.Stack>
