@@ -5,6 +5,7 @@ import { Query } from '@appwrite.io/console';
 import { toLocaleDateTime } from '$lib/helpers/date';
 import { derived, get, writable } from 'svelte/store';
 import type { Column, ColumnType } from '$lib/helpers/types';
+import { isSpatialType } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/rows/store';
 
 export type TagValue = {
     tag: string;
@@ -108,10 +109,21 @@ export function addFilter(
     const operator = operatorKey ? operators[operatorKey] : null;
     const column = columns.find((c) => c.id === columnId) as Column;
     if (!column || !operator) return;
+
     if (column.array) {
         queries.addFilter({ column, operator, value: arrayValues, distance });
     } else {
-        queries.addFilter({ column, operator, value: value ?? '', distance });
+        const isSpatialArrayWrappingRequired =
+            isSpatialType(column) &&
+            [
+                ValidOperators.Contains,
+                ValidOperators.Equal,
+                ValidOperators.NotEqual,
+                ValidOperators.NotContains
+            ].includes(operatorKey as ValidOperators);
+        const preparedValue =
+            isSpatialArrayWrappingRequired && value != null ? [value] : (value ?? '');
+        queries.addFilter({ column, operator, value: preparedValue, distance });
     }
 }
 
@@ -127,6 +139,7 @@ export enum ValidOperators {
     IsNotNull = 'is not null',
     IsNull = 'is null',
     Contains = 'contains',
+    NotContains = 'not contains',
     Crosses = 'crosses',
     NotCrosses = 'not crosses',
     DistanceEqual = 'distance equal',
@@ -274,6 +287,13 @@ const operatorsDefault = new Map<
                 ValidTypes.Line,
                 ValidTypes.Polygon
             ]
+        }
+    ],
+    [
+        ValidOperators.NotContains,
+        {
+            query: Query.contains,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ],
     [
