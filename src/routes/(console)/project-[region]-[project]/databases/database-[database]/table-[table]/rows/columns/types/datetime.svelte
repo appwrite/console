@@ -20,7 +20,7 @@
 
     /**
      * the value from backend will include timezone info,
-     * and that's not compatible with the component showing empty.
+     * and that's not compatible with the component as it'll go empty.
      */
     onMount(() => (value = value ? toLocalDateTimeISO(value) : value));
 </script>
