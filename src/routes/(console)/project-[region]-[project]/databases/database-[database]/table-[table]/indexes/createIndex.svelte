@@ -26,23 +26,78 @@
     const databaseId = page.params.database;
 
     let key = $state('');
-    let types = [
+
+    const nonSpatialIndexTypes = [
         { value: IndexType.Key, label: 'Key' },
         { value: IndexType.Unique, label: 'Unique' },
-        { value: IndexType.Fulltext, label: 'Fulltext' },
-        { value: IndexType.Spatial, label: 'Spatial' }
+        { value: IndexType.Fulltext, label: 'Fulltext' }
     ];
+    const spatialIndexType = [{ value: IndexType.Spatial, label: 'Spatial' }];
 
-    let selectedType = $state(IndexType.Key);
+    const spatialColumnKeys = $derived(
+        $table.columns.filter((column) => isSpatialType(column)).map((column) => column.key)
+    );
 
-    let columnOptions = $table.columns
-        .filter((column) => !isRelationship(column))
-        .map((column) => ({
-            value: column.key,
-            label: column.key
-        }));
+    let selectedType = $state<IndexType>(IndexType.Key);
+
+    let columnOptions = $derived(
+        $table.columns
+            .filter((column) => {
+                if (selectedType === IndexType.Spatial) {
+                    return isSpatialType(column); // keep only spatial
+                }
+                return !isRelationship(column) && !isSpatialType(column); // keep non-relationship and non-spatial
+            })
+            .map((column) => ({ value: column.key, label: column.key }))
+    );
 
     let columnList = $state([{ value: '', order: '', length: null }]);
+
+    // any col is present and that is spatial col
+    const anySpatialSelected = $derived(
+        columnList.at(1)?.value !== '' &&
+            columnList.some((c) => spatialColumnKeys.includes(c.value))
+    );
+
+    const types = $derived(
+        anySpatialSelected ? spatialIndexType : [...nonSpatialIndexTypes, ...spatialIndexType]
+    );
+
+    // order options derived from selected type
+    let orderOptions = $derived.by(() =>
+        selectedType === IndexType.Spatial
+            ? [
+                  { value: 'ASC', label: 'ASC' },
+                  { value: 'DESC', label: 'DESC' },
+                  { value: null, label: 'NONE' }
+              ]
+            : [
+                  { value: 'ASC', label: 'ASC' },
+                  { value: 'DESC', label: 'DESC' }
+              ]
+    );
+
+    // spatial type selected -> clear non-spatial selections
+    $effect(() => {
+        if (selectedType === IndexType.Spatial) {
+            const next = columnList.map((c) => ({
+                value: spatialColumnKeys.includes(c.value) ? c.value : '',
+                order: null,
+                length: c.length
+            }));
+            const changed =
+                next.length !== columnList.length ||
+                next.some(
+                    (n, i) =>
+                        n.value !== columnList[i].value ||
+                        n.order !== columnList[i].order ||
+                        n.length !== columnList[i].length
+                );
+            if (changed) {
+                columnList = next;
+            }
+        }
+    });
 
     function generateIndexKey() {
         let indexKeys = $indexes.map((index) => index.key);
@@ -67,7 +122,8 @@
     }
 
     const addColumnDisabled = $derived(
-        !columnList.at(-1)?.value ||
+        selectedType === IndexType.Spatial ||
+            !columnList.at(-1)?.value ||
             (!columnList.at(-1)?.order && columnList.at(-1)?.order !== null)
     );
 
@@ -76,10 +132,15 @@
         `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$table?.$id}/indexes`
     );
 
+    let initializedForOpen = $state(false);
     $effect(() => {
-        if (showCreateIndex) {
+        if (showCreateIndex && !initializedForOpen) {
             initialize();
             key = generateIndexKey();
+            initializedForOpen = true;
+        }
+        if (!showCreateIndex && initializedForOpen) {
+            initializedForOpen = false;
         }
     });
 
@@ -159,9 +220,14 @@
             <InputSelect
                 required
                 options={[
-                    { value: '$id', label: '$id' },
-                    { value: '$createdAt', label: '$createdAt' },
-                    { value: '$updatedAt', label: '$updatedAt' },
+                    // allow system fields only for non-spatial index types
+                    ...(selectedType === IndexType.Spatial
+                        ? []
+                        : [
+                              { value: '$id', label: '$id' },
+                              { value: '$createdAt', label: '$createdAt' },
+                              { value: '$updatedAt', label: '$updatedAt' }
+                          ]),
                     ...columnOptions
                 ]}
                 id={`column-${index}`}
@@ -170,11 +236,7 @@
                 bind:value={column.value} />
 
             <InputSelect
-                options={[
-                    { value: 'ASC', label: 'ASC' },
-                    { value: 'DESC', label: 'DESC' },
-                    { value: null, label: 'NONE' }
-                ]}
+                options={orderOptions}
                 required
                 id={`order-${index}`}
                 label={index === 0 ? 'Order' : undefined}
