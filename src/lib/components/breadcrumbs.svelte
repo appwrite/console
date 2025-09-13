@@ -105,6 +105,8 @@
     async function createProjectsBottomSheet(
         organization: Organization
     ): Promise<SheetMenu | null> {
+        const isOnProjects = page.route.id.includes('project-[region]-[project]');
+
         if (!isOnProjects) return null;
 
         isLoadingProjects = true;
@@ -215,8 +217,6 @@
     $: derivedKey = `${selectedOrg?.$id}-${currentProject?.$id}`;
 
     $: organizationId = currentProject?.teamId;
-
-    $: isOnProjects = page.route.id.includes('project-[region]-[project]');
 
     $: shouldReloadProjects = isLoadingProjects
         ? false
