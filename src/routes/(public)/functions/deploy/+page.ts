@@ -54,7 +54,7 @@ export const load: PageLoad = async ({ parent, url }) => {
     // Get available runtimes
     const runtimesList = await sdk.forConsole.functions.listRuntimes();
 
-    const info = getRepositoryInfo(repository!);
+    const info = getRepositoryInfo(repository);
     if (!info) {
         redirect(302, base + '/');
     }
