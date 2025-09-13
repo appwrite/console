@@ -280,6 +280,7 @@
                                         <Button
                                             secondary
                                             class="recovery-codes-button"
+                                            disabled={enabledMethods.length === 0}
                                             on:click={() => (showRegenerateRecoveryCodes = true)}>
                                             Regenerate
                                         </Button>
@@ -287,6 +288,7 @@
                                         <Button
                                             secondary
                                             class="recovery-codes-button"
+                                            disabled={enabledMethods.length === 0}
                                             on:click={createRecoveryCodes}>View</Button>
                                     {/if}
                                 </Layout.Stack>
