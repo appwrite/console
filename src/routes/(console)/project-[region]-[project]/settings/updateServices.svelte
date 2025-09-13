@@ -12,22 +12,33 @@
     import { Dialog, Divider, Layout, Spinner } from '@appwrite.io/pink-svelte';
     import type { ApiService } from '@appwrite.io/console';
 
-    let isUpdatingStatus = $state(false);
+    import { SvelteSet } from 'svelte/reactivity';
+
+    let isUpdatingAllServices = $state(false);
     let showUpdateServiceDialog = $state(false);
     let updateServicesEnabledMode = $state<boolean | null>(null);
 
-    let singleApiServiceUpdate = $state<ApiService | null>(null);
+    let apiServiceUpdates = new SvelteSet<ApiService>();
 
-    const allServicesEnabled = $derived.by(
-        () => isUpdatingStatus || $services.list.every((service) => service.value)
-    );
-    const allServicesDisabled = $derived.by(
-        () => isUpdatingStatus || $services.list.every((service) => !service.value)
-    );
+    const isAnyServiceUpdating = $derived(apiServiceUpdates.size > 0);
+    const isAnyUpdateInProgress = $derived(isUpdatingAllServices || isAnyServiceUpdating);
+
+    const allServicesEnabled = $derived.by(() => {
+        if (isAnyUpdateInProgress) return false;
+        return $services.list.every((service) => service.value);
+    });
+
+    const allServicesDisabled = $derived.by(() => {
+        if (isAnyUpdateInProgress) return false;
+        return $services.list.every((service) => !service.value);
+    });
+
+    const shouldDisableEnableAllButton = $derived(isAnyUpdateInProgress || allServicesEnabled);
+
+    const shouldDisableDisableAllButton = $derived(isAnyUpdateInProgress || allServicesDisabled);
 
     async function serviceUpdate(service: Service) {
-        isUpdatingStatus = true;
-        singleApiServiceUpdate = service.method;
+        apiServiceUpdates.add(service.method);
 
         try {
             await sdk.forConsole.projects.updateServiceStatus({
@@ -55,13 +66,12 @@
             });
             trackError(error, Submit.ProjectService);
         } finally {
-            isUpdatingStatus = false;
-            singleApiServiceUpdate = null;
+            apiServiceUpdates.delete(service.method);
         }
     }
 
     async function toggleAllServices(status: boolean) {
-        isUpdatingStatus = true;
+        isUpdatingAllServices = true;
 
         try {
             await sdk.forConsole.projects.updateServiceStatusAll({
@@ -87,7 +97,7 @@
             });
             trackError(error, Submit.ProjectService);
         } finally {
-            isUpdatingStatus = false;
+            isUpdatingAllServices = false;
             showUpdateServiceDialog = false;
             updateServicesEnabledMode = null;
         }
@@ -126,7 +136,7 @@
                         showUpdateServiceDialog = true;
                         updateServicesEnabledMode = true;
                     }}
-                    disabled={allServicesEnabled}>Enable all</Button>
+                    disabled={shouldDisableEnableAllButton}>Enable all</Button>
                 <span style:height="20px">
                     <Divider vertical />
                 </span>
@@ -136,7 +146,7 @@
                         showUpdateServiceDialog = true;
                         updateServicesEnabledMode = false;
                     }}
-                    disabled={allServicesDisabled}>Disable all</Button>
+                    disabled={shouldDisableDisableAllButton}>Disable all</Button>
             </Layout.Stack>
             <Layout.Stack gap="l">
                 <Divider />
@@ -149,9 +159,9 @@
                                     label={service.label}
                                     bind:value={service.value}
                                     on:change={() => serviceUpdate(service)}
-                                    disabled={singleApiServiceUpdate === service.method} />
+                                    disabled={apiServiceUpdates.has(service.method)} />
 
-                                {#if singleApiServiceUpdate === service.method}
+                                {#if apiServiceUpdates.has(service.method)}
                                     <span style:opacity="0.75">
                                         <Spinner size="s" />
                                     </span>
@@ -174,8 +184,8 @@
             <Button
                 secondary
                 submissionLoader
-                disabled={isUpdatingStatus}
-                forceShowLoader={isUpdatingStatus}
+                disabled={isUpdatingAllServices}
+                forceShowLoader={isUpdatingAllServices}
                 on:click={() => toggleAllServices(updateServicesEnabledMode)}>
                 {dialogDetails.actionButton}
             </Button>
