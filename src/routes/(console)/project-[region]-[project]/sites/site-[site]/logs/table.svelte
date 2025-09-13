@@ -87,7 +87,11 @@
                         <div>
                             <Badge
                                 variant="secondary"
-                                type={log.responseStatusCode >= 400 ? 'error' : 'success'}
+                                type={log.responseStatusCode >= 500
+                                    ? 'error'
+                                    : log.responseStatusCode >= 400
+                                      ? 'warning'
+                                      : 'success'}
                                 content={log.responseStatusCode.toString()} />
                         </div>
                     {:else if column.id === 'requestPath'}
