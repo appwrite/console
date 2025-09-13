@@ -13,7 +13,7 @@ export const load: PageLoad = async ({ url, params, parent }) => {
         redirect(302, `${base}/project-${params.region}-${params.project}/functions`);
     }
 
-    const info = getRepositoryInfo(repository!);
+    const info = getRepositoryInfo(repository);
     if (!info) {
         redirect(302, `${base}/project-${params.region}-${params.project}/functions`);
     }
@@ -41,8 +41,8 @@ export const load: PageLoad = async ({ url, params, parent }) => {
         installations,
         specificationsList,
         repository: {
-            url: repository,
-            name: info.owner,
+            url: info.url,
+            name: info.name,
             owner: info.owner,
             rootDirectory: getNestedRootDirectory(repository)
         }

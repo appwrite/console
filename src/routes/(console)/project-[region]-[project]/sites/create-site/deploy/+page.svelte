@@ -315,8 +315,10 @@
             Cancel
         </Button>
         <Button
-            fullWidthMobile
             size="s"
+            fullWidthMobile
+            submissionLoader
+            forceShowLoader={$isSubmitting}
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting || !domainIsValid || !domain}>
             Deploy
