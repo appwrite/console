@@ -1,4 +1,5 @@
 import { page } from '$app/state';
+import type { Column } from '$lib/helpers/types';
 import type { Columns } from '../store';
 import { type Models, Query } from '@appwrite.io/console';
 
@@ -24,6 +25,16 @@ export function isRelationship(column: Columns): column is Models.ColumnRelation
 export function isString(column: Columns): column is Models.ColumnString {
     if (!column) return false;
     return column?.type === 'string';
+}
+
+export function isSpatialType(
+    column: Columns | Column
+): column is Models.ColumnPoint | Models.ColumnLine | Models.ColumnPolygon {
+    if (!column) return false;
+
+    const spatialTypes = ['point', 'linestring', 'polygon'];
+
+    return spatialTypes.includes(column.type.toLowerCase());
 }
 
 /**

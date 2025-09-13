@@ -35,7 +35,10 @@ const columnTypes = [
     'boolean',
     'datetime',
     'relationship',
-    'enum'
+    'enum',
+    'point',
+    'linestring',
+    'polygon'
 ] as const;
 export type ColumnType = (typeof columnTypes)[number];
 export type Column = PinkColumn & {
