@@ -15,12 +15,12 @@
                         [AuthenticationFactor.Phone]: factors.phone,
                         [AuthenticationFactor.Recoverycode]: factors.recoveryCode
                     };
-                    
+
                     if (!factorMap[challengeType]) {
                         throw new Error(`Authentication factor ${challengeType} is not enabled`);
                     }
                 }
-                
+
                 challenge = await sdk.forConsole.account.createMFAChallenge({
                     factor: challengeType
                 });
@@ -87,7 +87,6 @@
             disabled = false;
         }
     }
-
 
     export async function verifyCurrent() {
         try {
