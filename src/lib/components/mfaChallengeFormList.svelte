@@ -1,18 +1,26 @@
 <script context="module" lang="ts">
-    import { sdk } from '$lib/stores/sdk';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { AuthenticationFactor, type Models } from '@appwrite.io/console';
-    import { InputDigits } from '$lib/elements/forms';
-
     export async function verify(
         challenge: Models.MfaChallenge,
         code: string,
-        challengeType: AuthenticationFactor = AuthenticationFactor.Totp
+        challengeType: AuthenticationFactor = AuthenticationFactor.Totp,
+        factors?: Models.MfaFactors & { recoveryCode: boolean }
     ) {
         try {
             if (!challenge) {
+                // Validate that the challengeType is actually enabled
+                if (factors) {
+                    const factorMap = {
+                        [AuthenticationFactor.Totp]: factors.totp,
+                        [AuthenticationFactor.Email]: factors.email,
+                        [AuthenticationFactor.Phone]: factors.phone,
+                        [AuthenticationFactor.Recoverycode]: factors.recoveryCode
+                    };
+                    
+                    if (!factorMap[challengeType]) {
+                        throw new Error(`Authentication factor ${challengeType} is not enabled`);
+                    }
+                }
+                
                 challenge = await sdk.forConsole.account.createMFAChallenge({
                     factor: challengeType
                 });
@@ -34,7 +42,12 @@
 
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { Button, InputText } from '$lib/elements/forms';
+    import { sdk } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { AuthenticationFactor, type Models } from '@appwrite.io/console';
+    import { Button, InputText, InputDigits } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { Icon, Typography } from '@appwrite.io/pink-svelte';
     import { IconChatAlt, IconDeviceMobile, IconMail } from '@appwrite.io/pink-icons-svelte';
@@ -75,12 +88,15 @@
         }
     }
 
-    function switchToFactor(factor: AuthenticationFactor) {
-        createChallenge(factor);
-    }
 
     export async function verifyCurrent() {
-        return verify(challenge, code, challengeType);
+        try {
+            return await verify(challenge, code, challengeType, factors);
+        } catch (error) {
+            // Clear input fields on verification failure
+            code = '';
+            throw error;
+        }
     }
 
     onMount(async () => {
@@ -141,7 +157,7 @@
                     secondary
                     fullWidth
                     {disabled}
-                    on:click={() => switchToFactor(AuthenticationFactor.Totp)}>
+                    on:click={() => createChallenge(AuthenticationFactor.Totp)}>
                     <Icon icon={IconDeviceMobile} slot="start" size="s" />
                     Authenticator app
                 </Button>
@@ -152,7 +168,7 @@
                     secondary
                     fullWidth
                     {disabled}
-                    on:click={() => switchToFactor(AuthenticationFactor.Email)}>
+                    on:click={() => createChallenge(AuthenticationFactor.Email)}>
                     <Icon icon={IconMail} slot="start" size="s" />
                     Email verification
                 </Button>
@@ -163,7 +179,7 @@
                     secondary
                     fullWidth
                     {disabled}
-                    on:click={() => switchToFactor(AuthenticationFactor.Phone)}>
+                    on:click={() => createChallenge(AuthenticationFactor.Phone)}>
                     <Icon icon={IconChatAlt} slot="start" size="s" />
                     Phone verification
                 </Button>
@@ -174,7 +190,7 @@
                     text
                     fullWidth
                     {disabled}
-                    on:click={() => switchToFactor(AuthenticationFactor.Recoverycode)}>
+                    on:click={() => createChallenge(AuthenticationFactor.Recoverycode)}>
                     <span class="text">Use recovery code</span>
                 </Button>
             {/if}
