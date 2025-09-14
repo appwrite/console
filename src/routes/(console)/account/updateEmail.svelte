@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { onMount } from 'svelte';
+    import { Badge } from '@appwrite.io/pink-svelte';
 
     let email: string = null;
     let emailPassword: string = null;
@@ -40,7 +41,14 @@
 
 <Form onSubmit={updateEmail}>
     <CardGrid>
-        <svelte:fragment slot="title">Email</svelte:fragment>
+        <svelte:fragment slot="title">
+            <div class="email-badge">
+                Email
+                {#if $user.emailVerification}
+                    <Badge variant="secondary" type="success" size="s" content="verified" />
+                {/if}
+            </div>
+        </svelte:fragment>
         <svelte:fragment slot="aside">
             <InputText
                 id="email"
@@ -65,3 +73,11 @@
         </svelte:fragment>
     </CardGrid>
 </Form>
+
+<style>
+    .email-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+</style>

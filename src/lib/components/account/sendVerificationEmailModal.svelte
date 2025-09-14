@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -6,9 +7,12 @@
     import { user } from '$lib/stores/user';
     import { page } from '$app/state';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Dependencies } from '$lib/constants';
+    import { onMount } from 'svelte';
 
     export let show = false;
     let creating = false;
+    let emailSent = false;
 
     $: cleanUrl = page.url.origin + page.url.pathname;
 
@@ -18,6 +22,7 @@
         try {
             await sdk.forConsole.account.createVerification({ url: cleanUrl });
             addNotification({ message: 'Verification email has been sent', type: 'success' });
+            emailSent = true;
             show = false;
         } catch (error) {
             addNotification({ message: error.message, type: 'error' });
@@ -25,6 +30,35 @@
             creating = false;
         }
     }
+
+    async function updateEmailVerification() {
+        const searchParams = page.url.searchParams;
+        const userId = searchParams.get('userId');
+        const secret = searchParams.get('secret');
+
+        if (userId && secret) {
+            try {
+                await sdk.forConsole.account.updateVerification({ userId, secret });
+                addNotification({
+                    message: 'Email verified successfully',
+                    type: 'success'
+                });
+                await Promise.all([
+                    invalidate(Dependencies.ACCOUNT),
+                    invalidate(Dependencies.FACTORS)
+                ]);
+            } catch (error) {
+                addNotification({
+                    message: error.message,
+                    type: 'error'
+                });
+            }
+        }
+    }
+
+    onMount(() => {
+        updateEmailVerification();
+    });
 </script>
 
 <Modal bind:show title="Send verification email" {onSubmit}>
@@ -39,6 +73,6 @@
     </Card.Base>
 
     <svelte:fragment slot="footer">
-        <Button submit disabled={creating}>Send email</Button>
+        <Button submit disabled={creating}>{emailSent ? 'Resend email' : 'Send email'}</Button>
     </svelte:fragment>
 </Modal>
