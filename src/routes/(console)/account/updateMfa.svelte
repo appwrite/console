@@ -80,11 +80,15 @@
             await sdk.forConsole.account.updateMFA({ mfa: !$user.mfa });
 
             if (!$user.mfa && $user.emailVerification && !$factors.email) {
+                // Automatically set up email MFA when enabling MFA if the user has a verified email
+                // This provides a fallback authentication method without requiring user interaction
                 try {
                     await sdk.forConsole.account.createMFAChallenge({
                         factor: AuthenticationFactor.Email
                     });
-                } catch (emailError) {}
+                } catch (emailError) {
+                    // Silently ignore - email MFA is optional and shouldn't block MFA enablement
+                }
             }
 
             await Promise.all([invalidate(Dependencies.ACCOUNT), invalidate(Dependencies.FACTORS)]);
