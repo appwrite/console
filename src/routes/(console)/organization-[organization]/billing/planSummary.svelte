@@ -375,7 +375,7 @@
                 </Typography.Text>
             </div>
             <!-- Billing breakdown table -->
-            <div class="table-wrapper" class:is-mobile={$isSmallViewport}>
+            <div class:is-mobile={$isSmallViewport}>
                 <AccordionTable.Root {columns} let:root>
                     {#each billingData as row}
                         <AccordionTable.Row {root} id={row.id} expandable={row.expandable ?? false}>
