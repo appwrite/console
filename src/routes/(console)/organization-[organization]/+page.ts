@@ -18,9 +18,9 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const offset = pageToOffset(page, limit);
     const search = getSearch(url);
 
-    const archivedPage = parseInt(url.searchParams.get('archivedPage') || '1');
+    const archivedPageRaw = parseInt(url.searchParams.get('archivedPage') || '1', 10);
+    const archivedPage = Number.isFinite(archivedPageRaw) && archivedPageRaw > 0 ? archivedPageRaw : 1;
     const archivedOffset = pageToOffset(archivedPage, limit);
-
     const [activeProjects, archivedProjects, activeTotal, archivedTotal] = await Promise.all([
         sdk.forConsole.projects.list({
             queries: [
