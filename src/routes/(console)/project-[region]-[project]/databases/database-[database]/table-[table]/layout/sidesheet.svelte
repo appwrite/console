@@ -1,10 +1,10 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
-    import { Button, Form } from '$lib/elements/forms';
-    import { Badge, Divider, Layout, Sheet, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { Copy } from '$lib/components';
     import { writable } from 'svelte/store';
+    import { Button, Form } from '$lib/elements/forms';
     import { isTabletViewport } from '$lib/stores/viewport';
+    import { Badge, Divider, Layout, Sheet, Tag, Typography } from '@appwrite.io/pink-svelte';
 
     let {
         show = $bindable(false),
@@ -41,7 +41,7 @@
     } = $props();
 
     let form: Form;
-    let submitting = writable(false);
+    let submitting = $state(writable(false));
 
     let copyText = $state(undefined);
 </script>
