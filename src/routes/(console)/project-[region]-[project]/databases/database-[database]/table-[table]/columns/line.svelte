@@ -117,9 +117,9 @@
         values={defaultChecked ? data.default : null}
         onAddPoint={() => pushCoordinate()}
         onDeletePoint={deleteCoordinate}
-        onChangePoint={(index, newValue) => {
+        onChangePoint={(index, newValue: number, coordIndex: number) => {
             if (data.default) {
-                data.default[index] = newValue;
+                data.default[index][coordIndex] = newValue;
                 data.default = [...data.default];
             }
         }} />
