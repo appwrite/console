@@ -12,6 +12,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { calculateTime } from '$lib/helpers/timeConversion';
+    import { getBadgeTypeFromStatusCode } from '$lib/helpers/httpStatus';
     import { Button } from '$lib/elements/forms';
 
     export let columns: Column[];
@@ -87,11 +88,7 @@
                         <div>
                             <Badge
                                 variant="secondary"
-                                type={log.responseStatusCode >= 500
-                                    ? 'error'
-                                    : log.responseStatusCode >= 400
-                                      ? 'warning'
-                                      : 'success'}
+                                type={getBadgeTypeFromStatusCode(log.responseStatusCode)}
                                 content={log.responseStatusCode.toString()} />
                         </div>
                     {:else if column.id === 'requestPath'}
