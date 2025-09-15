@@ -4,4 +4,3 @@
 </script>
 
 <DomainsPage {data} />
-

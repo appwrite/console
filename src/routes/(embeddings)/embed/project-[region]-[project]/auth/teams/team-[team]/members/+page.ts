@@ -34,4 +34,3 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
         memberships
     };
 };
-

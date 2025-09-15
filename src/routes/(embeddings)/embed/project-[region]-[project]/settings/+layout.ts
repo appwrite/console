@@ -8,4 +8,3 @@ export const load: LayoutLoad = async ({ params }) => {
         path: `${base}/embed/project-${params.region}-${params.project}/settings`
     };
 };
-

@@ -20,4 +20,3 @@ export const load: PageLoad = async ({ params, depends }) => {
         sessions
     };
 };
-

@@ -4,4 +4,3 @@
 </script>
 
 <BucketSettingsPage data={data as any} />
-
