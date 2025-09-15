@@ -5,11 +5,13 @@
     import { user } from '$lib/stores/user';
     import SendVerificationEmailModal from '../account/sendVerificationEmailModal.svelte';
     import { page } from '$app/stores';
+    import { wizard, isNewWizardStatusOpen } from '$lib/stores/wizard';
 
     const hasUser = $derived(!!$user);
     const needsEmailVerification = $derived(hasUser && !$user.emailVerification);
     const notOnOnboarding = $derived(!$page.route.id.includes('/onboarding'));
-    const shouldShowEmailBanner = $derived(hasUser && needsEmailVerification && notOnOnboarding);
+    const notOnWizard = $derived(!$wizard.show && !$isNewWizardStatusOpen);
+    const shouldShowEmailBanner = $derived(hasUser && needsEmailVerification && notOnOnboarding && notOnWizard);
 
     let showSendVerification = $state(false);
 </script>
