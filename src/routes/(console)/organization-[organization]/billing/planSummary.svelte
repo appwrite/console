@@ -11,7 +11,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
         Typography,
-        Expandable as ExpandableTable,
+        AccordionTable,
         Icon,
         Layout,
         Divider,
@@ -35,11 +35,11 @@
 
     let showCancel: boolean = false;
 
-    // define columns for the expandable table
+    // define columns for the accordion table
     const columns = [
-        { id: 'item', align: 'left' as const, width: '10fr' },
-        { id: 'usage', align: 'left' as const, width: '20fr' },
-        { id: 'price', align: 'right' as const, width: '0fr' }
+        { id: 'item', align: 'left' as const, width: { min: 200 } },
+        { id: 'usage', align: 'left' as const, width: { min: 500 } },
+        { id: 'price', align: 'right' as const, width: { min: 100 } }
     ];
 
     function formatHumanSize(bytes: number): string {
@@ -376,17 +376,11 @@
             </div>
             <!-- Billing breakdown table -->
             <div class="table-wrapper" class:is-mobile={$isSmallViewport}>
-                <ExpandableTable.Root {columns} showHeader={false} let:root>
+                <AccordionTable.Root {columns} let:root>
                     {#each billingData as row}
-                        <ExpandableTable.Row
-                            {root}
-                            id={row.id}
-                            expandable={row.expandable ?? false}>
+                        <AccordionTable.Row {root} id={row.id} expandable={row.expandable ?? false}>
                             {#each columns as col}
-                                <ExpandableTable.Cell
-                                    {root}
-                                    column={col.id}
-                                    expandable={row.expandable ?? false}>
+                                <AccordionTable.Cell {root} column={col.id}>
                                     {#if col.id === 'item'}
                                         <div class="cell-item-text">
                                             {#if row.badge}
@@ -413,103 +407,106 @@
                                             {row.cells?.[col.id] ?? ''}
                                         </Typography.Text>
                                     {/if}
-                                </ExpandableTable.Cell>
+                                </AccordionTable.Cell>
                             {/each}
 
-                            <svelte:fragment slot="summary">
+                            <svelte:fragment slot="summary" let:root>
                                 {#if row.children}
                                     {#each row.children as child (child.id)}
-                                        <div
-                                            class="child-row"
-                                            class:is-tablet={$isTabletViewport && !$isSmallViewport}
-                                            style="grid-template-columns: {root.childGridTemplate}; --original-grid-template: {root.childGridTemplate};">
-                                            {#each columns as col}
+                                        <AccordionTable.Summary.Row {root}>
+                                            <AccordionTable.Summary.Cell
+                                                {root}
+                                                column="item"
+                                                alignment="middle-start">
+                                                {#if child.cells?.item?.includes('<a href=')}
+                                                    {@html child.cells?.item ?? ''}
+                                                {:else}
+                                                    <Typography.Text
+                                                        variant="m-400"
+                                                        color="--fgcolor-neutral-secondary">
+                                                        {child.cells?.item ?? ''}
+                                                    </Typography.Text>
+                                                {/if}
+                                            </AccordionTable.Summary.Cell>
+                                            <AccordionTable.Summary.Cell
+                                                {root}
+                                                column="usage"
+                                                alignment="middle-start">
                                                 <div
-                                                    class="child-cell"
-                                                    class:price={col.id === 'price'}
+                                                    class="usage-cell-content"
                                                     class:is-mobile={$isSmallViewport}
-                                                    style="justify-content: {root.alignment(
-                                                        col.align
-                                                    )};">
-                                                    {#if child.cells?.[col.id]?.includes('<a href=')}
-                                                        {@html child.cells?.[col.id] ?? ''}
-                                                    {:else if col.id === 'usage'}
-                                                        <div
-                                                            class="usage-cell-content"
-                                                            class:is-mobile={$isSmallViewport}
-                                                            class:is-tablet={$isTabletViewport &&
-                                                                !$isSmallViewport}>
-                                                            <div class="usage-progress-section">
-                                                                {#if child.progressData && child.progressData.length > 0 && child.maxValue}
-                                                                    <ProgressBar
-                                                                        maxSize={child.maxValue}
-                                                                        data={child.progressData} />
-                                                                {/if}
-                                                            </div>
-                                                            <div class="usage-text-section">
-                                                                {#if child.cells?.[col.id]?.includes(' / ')}
-                                                                    {@const usageParts = (
-                                                                        child.cells?.[col.id] ?? ''
-                                                                    ).split(' / ')}
-                                                                    <Typography.Text
-                                                                        variant="m-400"
-                                                                        color="--fgcolor-neutral-secondary">
-                                                                        {usageParts[0]}
-                                                                    </Typography.Text>
-                                                                    <Typography.Text
-                                                                        variant="m-400"
-                                                                        color="--fgcolor-neutral-tertiary">
-                                                                        {' / '}
-                                                                    </Typography.Text>
-                                                                    <Typography.Text
-                                                                        variant="m-400"
-                                                                        color="--fgcolor-neutral-tertiary">
-                                                                        {usageParts[1]}
-                                                                    </Typography.Text>
-                                                                {:else}
-                                                                    <Typography.Text
-                                                                        variant="m-400"
-                                                                        color="--fgcolor-neutral-secondary">
-                                                                        {child.cells?.[col.id] ??
-                                                                            ''}
-                                                                    </Typography.Text>
-                                                                {/if}
-                                                            </div>
-                                                        </div>
-                                                    {:else}
-                                                        <Typography.Text
-                                                            variant="m-400"
-                                                            color="--fgcolor-neutral-secondary">
-                                                            {child.cells?.[col.id] ?? ''}
-                                                        </Typography.Text>
-                                                    {/if}
+                                                    class:is-tablet={$isTabletViewport &&
+                                                        !$isSmallViewport}>
+                                                    <div class="usage-progress-section">
+                                                        {#if child.progressData && child.progressData.length > 0 && child.maxValue}
+                                                            <ProgressBar
+                                                                maxSize={child.maxValue}
+                                                                data={child.progressData} />
+                                                        {/if}
+                                                    </div>
+                                                    <div class="usage-text-section">
+                                                        {#if child.cells?.usage?.includes(' / ')}
+                                                            {@const usageParts = (
+                                                                child.cells?.usage ?? ''
+                                                            ).split(' / ')}
+                                                            <Typography.Text
+                                                                variant="m-400"
+                                                                color="--fgcolor-neutral-secondary">
+                                                                {usageParts[0]}
+                                                            </Typography.Text>
+                                                            <Typography.Text
+                                                                variant="m-400"
+                                                                color="--fgcolor-neutral-tertiary">
+                                                                {' / '}
+                                                            </Typography.Text>
+                                                            <Typography.Text
+                                                                variant="m-400"
+                                                                color="--fgcolor-neutral-tertiary">
+                                                                {usageParts[1]}
+                                                            </Typography.Text>
+                                                        {:else}
+                                                            <Typography.Text
+                                                                variant="m-400"
+                                                                color="--fgcolor-neutral-secondary">
+                                                                {child.cells?.usage ?? ''}
+                                                            </Typography.Text>
+                                                        {/if}
+                                                    </div>
                                                 </div>
-                                            {/each}
-                                        </div>
+                                            </AccordionTable.Summary.Cell>
+                                            <AccordionTable.Summary.Cell
+                                                {root}
+                                                column="price"
+                                                alignment="middle-end">
+                                                <Typography.Text
+                                                    variant="m-400"
+                                                    color="--fgcolor-neutral-secondary">
+                                                    {child.cells?.price ?? ''}
+                                                </Typography.Text>
+                                            </AccordionTable.Summary.Cell>
+                                        </AccordionTable.Summary.Row>
                                     {/each}
                                 {/if}
                             </svelte:fragment>
-                        </ExpandableTable.Row>
+                        </AccordionTable.Row>
                     {/each}
                     {#if totalProjects > projectsLimit}
-                        <ExpandableTable.Row {root} id="pagination-row" expandable={false}>
-                            <ExpandableTable.Cell {root} column="item" expandable={false}>
+                        <AccordionTable.Row {root} id="pagination-row" expandable={false}>
+                            <AccordionTable.Cell {root} column="item">
                                 <div class="pagination-left">
                                     <PaginationComponent
                                         limit={projectsLimit}
                                         offset={projectsOffset}
                                         sum={totalProjects} />
                                 </div>
-                            </ExpandableTable.Cell>
-                            <ExpandableTable.Cell {root} column="usage" expandable={false}
-                            ></ExpandableTable.Cell>
-                            <ExpandableTable.Cell {root} column="price" expandable={false}
-                            ></ExpandableTable.Cell>
-                        </ExpandableTable.Row>
+                            </AccordionTable.Cell>
+                            <AccordionTable.Cell {root} column="usage"></AccordionTable.Cell>
+                            <AccordionTable.Cell {root} column="price"></AccordionTable.Cell>
+                        </AccordionTable.Row>
                     {/if}
                     {#if availableCredit > 0}
-                        <ExpandableTable.Row {root} id="total-row" expandable={false}>
-                            <ExpandableTable.Cell {root} column="item" expandable={false}>
+                        <AccordionTable.Row {root} id="total-row" expandable={false}>
+                            <AccordionTable.Cell {root} column="item">
                                 <Layout.Stack
                                     inline
                                     direction="row"
@@ -521,36 +518,36 @@
                                     <Typography.Text color="--fgcolor-neutral-primary"
                                         >Credits</Typography.Text>
                                 </Layout.Stack>
-                            </ExpandableTable.Cell>
-                            <ExpandableTable.Cell {root} column="usage" expandable={false}>
+                            </AccordionTable.Cell>
+                            <AccordionTable.Cell {root} column="usage">
                                 <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                                 </Typography.Text>
-                            </ExpandableTable.Cell>
-                            <ExpandableTable.Cell {root} column="price" expandable={false}>
+                            </AccordionTable.Cell>
+                            <AccordionTable.Cell {root} column="price">
                                 <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                                     -{formatCurrency(creditsApplied)}
                                 </Typography.Text>
-                            </ExpandableTable.Cell>
-                        </ExpandableTable.Row>
+                            </AccordionTable.Cell>
+                        </AccordionTable.Row>
                     {/if}
 
-                    <ExpandableTable.Row {root} id="total-row" expandable={false}>
-                        <ExpandableTable.Cell {root} column="item" expandable={false}>
+                    <AccordionTable.Row {root} id="total-row" expandable={false}>
+                        <AccordionTable.Cell {root} column="item">
                             <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                                 Total
                             </Typography.Text>
-                        </ExpandableTable.Cell>
-                        <ExpandableTable.Cell {root} column="usage" expandable={false}>
+                        </AccordionTable.Cell>
+                        <AccordionTable.Cell {root} column="usage">
                             <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                             </Typography.Text>
-                        </ExpandableTable.Cell>
-                        <ExpandableTable.Cell {root} column="price" expandable={false}>
+                        </AccordionTable.Cell>
+                        <AccordionTable.Cell {root} column="price">
                             <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                                 {formatCurrency(totalAmount)}
                             </Typography.Text>
-                        </ExpandableTable.Cell>
-                    </ExpandableTable.Row>
-                </ExpandableTable.Root>
+                        </AccordionTable.Cell>
+                    </AccordionTable.Row>
+                </AccordionTable.Root>
             </div>
 
             <!-- Actions -->
@@ -727,38 +724,6 @@
     :global(.usage-cell-content.is-mobile .usage-progress-section) {
         width: 120px;
         flex-shrink: 0;
-    }
-
-    /* mobile table wrapper for horizontal scroll */
-    .table-wrapper.is-mobile {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        margin: 0 -1rem;
-        padding: 0 1rem;
-    }
-
-    /* reset mobile overrides - use desktop layout in scrollable container */
-    .table-wrapper.is-mobile :global(.child-row) {
-        grid-template-columns: var(--original-grid-template) !important;
-        min-width: 600px; /* ensure minimum width for proper layout */
-    }
-
-    .table-wrapper.is-mobile :global(.usage-cell-content) {
-        flex-direction: row !important;
-        align-items: center !important;
-        gap: 0.75rem !important;
-        padding-left: 1rem !important;
-        min-height: 2rem !important;
-    }
-
-    .table-wrapper.is-mobile :global(.usage-progress-section) {
-        width: 200px !important;
-        flex-shrink: 0 !important;
-    }
-
-    .table-wrapper.is-mobile :global(.usage-progress-section .progressbar__container) {
-        width: 200px !important;
-        max-width: 200px !important;
     }
 
     @media (max-width: 768px) {
