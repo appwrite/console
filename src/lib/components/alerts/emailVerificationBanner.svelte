@@ -12,7 +12,9 @@
     const needsEmailVerification = $derived(hasUser && !$user.emailVerification);
     const notOnOnboarding = $derived(!$page.route.id.includes('/onboarding'));
     const notOnWizard = $derived(!$wizard.show && !$isNewWizardStatusOpen);
-    const shouldShowEmailBanner = $derived(isCloud && hasUser && needsEmailVerification && notOnOnboarding && notOnWizard);
+    const shouldShowEmailBanner = $derived(
+        isCloud && hasUser && needsEmailVerification && notOnOnboarding && notOnWizard
+    );
 
     let showSendVerification = $state(false);
 </script>
