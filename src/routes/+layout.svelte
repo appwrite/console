@@ -173,11 +173,6 @@
         <link rel="preload" as="style" type="text/css" href="/console/fonts/cloud.css" />
         <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
     {/if}
-
-    <!-- add GTM only on main instance -->
-    {#if isCloud && isProductionCloud(page.url)}
-        <script defer src={`${base}/scripts/gtm.js`}></script>
-    {/if}
 </svelte:head>
 
 <Root theme={resolveTheme($app.themeInUse)}>
