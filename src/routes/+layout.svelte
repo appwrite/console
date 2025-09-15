@@ -6,7 +6,7 @@
     import { trackPageView } from '$lib/actions/analytics';
     import { Notifications, Progress } from '$lib/layout';
     import { app, type AppStore } from '$lib/stores/app';
-    import { isCloud, isProductionCloud } from '$lib/system';
+    import { isCloud } from '$lib/system';
     import { onMount } from 'svelte';
     import { requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
