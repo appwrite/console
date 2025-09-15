@@ -9,6 +9,8 @@
     import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { subNavigation } from '$lib/stores/database';
+    import Suggestions from './suggestions.svelte';
+    import type { TableColumnSuggestions } from './suggestions.svelte';
 
     let {
         showCreate = $bindable(false)
@@ -23,6 +25,11 @@
     let id: string = $state(null);
     let touchedId = $state(false);
     let error: string = $state(null);
+
+    let suggestions: TableColumnSuggestions = $state({
+        enabled: false,
+        context: null
+    })
 
     const create = async () => {
         error = null;
@@ -103,6 +110,8 @@
                 touchedId = true;
             }
         }} />
+
+    <Suggestions bind:suggestions />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
