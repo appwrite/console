@@ -4,6 +4,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Container } from '$lib/layout';
     import View from './view.svelte';
+    import { canWriteTables } from '$lib/stores/roles';
     export let data;
 
     const createTableUrl = (table: Models.Table) => {
@@ -13,6 +14,7 @@
 
 <Container>
     <View
+        canWriteTables={$canWriteTables}
         tables={data.tables}
         limit={data.limit}
         offset={data.offset}

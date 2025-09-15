@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import Container from '$lib/layout/container.svelte';
     import View from '$routes/(console)/project-[region]-[project]/databases/view.svelte';
     let { data } = $props();
 
@@ -12,15 +12,16 @@
     };
 </script>
 
-<Layout.Stack>
+<Container>
     <View
-        databases={data?.databases || { total: 0, databases: [] }}
-        tables={data?.tables || {}}
-        policies={data?.policies || {}}
-        lastBackups={data?.lastBackups || {}}
-        limit={data?.limit || 25}
-        offset={data?.offset || 0}
-        view={data?.view || 'grid'}
-        search={data?.search || null}
+        databases={data.databases}
+        tables={data.tables}
+        policies={data.policies}
+        lastBackups={data.lastBackups}
+        limit={data.limit}
+        offset={data.offset}
+        view={data.view}
+        search={data.search}
+        canWriteDatabases={true}
         {getDatabaseUrl} />
-</Layout.Stack>
+</Container>

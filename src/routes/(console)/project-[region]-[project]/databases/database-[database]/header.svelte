@@ -9,7 +9,8 @@
 
     const projectId = page.params.project;
     const databaseId = page.params.database;
-    const path = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`;
+    export let path = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`;
+    export let back = `${base}/project-${page.params.region}-${projectId}/databases`;
     const tabs = [
         {
             href: path,
@@ -40,7 +41,7 @@
 
 <Cover expanded>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/databases`}>
+        <CoverTitle href={back}>
             {$database.name}
         </CoverTitle>
         <Id value={$database.$id}>{$database.$id}</Id>

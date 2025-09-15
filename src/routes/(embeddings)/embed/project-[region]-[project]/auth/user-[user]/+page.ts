@@ -1,5 +1,7 @@
 import type { PageLoad } from './$types';
 import { sdk } from '$lib/stores/sdk';
+import Header from '$routes/(console)/project-[region]-[project]/auth/user-[user]/header.svelte';
+import { base } from '$app/paths';
 
 export const load: PageLoad = async ({ params }) => {
     const [user, userFactors] = await Promise.all([
@@ -7,5 +9,11 @@ export const load: PageLoad = async ({ params }) => {
         sdk.forProject(params.region, params.project).users.listMfaFactors(params.user)
     ]);
 
-    return { user, userFactors };
+    return {
+        header: Header,
+        back: `${base}/embed/project-${params.region}-${params.project}/auth`,
+        path: `${base}/embed/project-${params.region}-${params.project}/auth/user-${params.user}`,
+        user,
+        userFactors
+    };
 };

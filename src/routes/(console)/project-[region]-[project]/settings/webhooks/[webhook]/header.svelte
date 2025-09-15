@@ -6,11 +6,12 @@
     import { webhook } from './store';
 
     const projectId = page.params.project;
+    export let back = `${base}/project-${page.params.region}-${projectId}/settings/webhooks`;
 </script>
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/settings/webhooks`}>
+        <CoverTitle href={back}>
             {$webhook?.name}
         </CoverTitle>
         <Id value={$webhook?.$id} event="webhook">{$webhook?.$id}</Id>

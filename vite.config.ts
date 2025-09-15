@@ -34,9 +34,6 @@ export default defineConfig({
             'zrender'
         ]
     },
-    server: {
-        port: 3000
-    },
     test: {
         projects: [
             {

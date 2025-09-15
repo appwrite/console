@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import Container from '$lib/layout/container.svelte';
     import View from '$routes/(console)/project-[region]-[project]/storage/view.svelte';
 
     let { data } = $props();
@@ -12,7 +12,7 @@
     };
 </script>
 
-<Layout.Stack>
+<Container>
     <View
         buckets={data?.buckets || { total: 0, buckets: [] }}
         limit={data?.limit || 25}
@@ -20,4 +20,4 @@
         view={data?.view || 'grid'}
         search={data?.search || null}
         {createBucketUrl} />
-</Layout.Stack>
+</Container>

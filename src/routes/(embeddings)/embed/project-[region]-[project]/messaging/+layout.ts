@@ -1,0 +1,10 @@
+import type { LayoutLoad } from './$types';
+import Header from '$routes/(console)/project-[region]-[project]/messaging/header.svelte';
+import { base } from '$app/paths';
+
+export const load: LayoutLoad = async ({ params }) => {
+    return {
+        header: Header,
+        path: `${base}/embed/project-${params.region}-${params.project}/messaging`
+    };
+};

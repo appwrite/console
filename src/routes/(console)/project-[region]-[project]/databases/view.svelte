@@ -9,7 +9,6 @@
         CardContainer,
         GridItem1
     } from '$lib/components';
-    import { canWriteDatabases } from '$lib/stores/roles';
     import { columns } from './store';
     import { Icon, Layout, Table as PinkTable, Tooltip } from '@appwrite.io/pink-svelte';
     import Create from './create.svelte';
@@ -31,6 +30,7 @@
         offset,
         view,
         search,
+        canWriteDatabases,
         getDatabaseUrl
     }: {
         databases: { total: number; databases: Models.Database[] };
@@ -41,6 +41,7 @@
         offset: number;
         view: View;
         search: string | null;
+        canWriteDatabases: boolean;
         getDatabaseUrl: (database: Models.Database, firstTableId?: string | null) => string | null;
     } = $props();
 
@@ -69,8 +70,8 @@
     </Layout.Stack>
     <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
         <ViewSelector {columns} {view} hideColumns={!databases.total} hideView={!databases.total} />
-        {#if $canWriteDatabases}
-            <Button event="create_database">
+        {#if canWriteDatabases}
+            <Button event="create_database" on:click={() => (showCreate = true)}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create database
             </Button>
@@ -81,7 +82,7 @@
 {#if databases.total}
     {#if view === 'grid'}
         <CardContainer
-            disableEmpty={!$canWriteDatabases}
+            disableEmpty={!canWriteDatabases}
             total={databases.total}
             {offset}
             event="database"
@@ -176,7 +177,7 @@
         single
         href="https://appwrite.io/docs/products/databases/databases"
         target="database"
-        allowCreate={$canWriteDatabases} />
+        allowCreate={canWriteDatabases} />
 {/if}
 
 <Create bind:showCreate on:created={onCreated} />

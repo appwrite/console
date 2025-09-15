@@ -4,6 +4,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Container } from '$lib/layout';
     import View from './view.svelte';
+    import { canWriteDatabases } from '$lib/stores/roles';
     export let data;
 
     const getDatabaseUrl = (database: Models.Database, firstTableId?: string | null) => {
@@ -14,6 +15,7 @@
 
 <Container>
     <View
+        canWriteDatabases={$canWriteDatabases}
         databases={data.databases}
         tables={data.tables}
         policies={data.policies}

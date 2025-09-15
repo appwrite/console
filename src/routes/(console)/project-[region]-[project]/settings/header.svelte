@@ -9,7 +9,7 @@
     import { isCloud } from '$lib/system';
     import { Typography } from '@appwrite.io/pink-svelte';
 
-    const path = `${base}/project-${page.params.region}-${page.params.project}/settings`;
+    export let path = `${base}/project-${page.params.region}-${page.params.project}/settings`;
     const tabs: TabElement[] = [
         {
             href: path,

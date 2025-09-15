@@ -1,8 +1,10 @@
 import type { LayoutLoad } from './$types';
-import { sdk } from '$lib/stores/sdk';
+import { base } from '$app/paths';
+import Header from '$routes/(console)/project-[region]-[project]/auth/header.svelte';
 
 export const load: LayoutLoad = async ({ params }) => {
-    // Minimal layout data for embeds; no UI wrapping.
-    const project = await sdk.forConsole.projects.get(params.project);
-    return { project } as const;
+    return {
+        header: Header,
+        path: `${base}/embed/project-${params.region}-${params.project}/auth`
+    };
 };

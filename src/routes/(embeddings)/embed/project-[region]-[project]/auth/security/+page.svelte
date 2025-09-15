@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import Container from '$lib/layout/container.svelte';
     import UpdatePasswordDictionary from '$routes/(console)/project-[region]-[project]/auth/security/updatePasswordDictionary.svelte';
     import UpdatePasswordHistory from '$routes/(console)/project-[region]-[project]/auth/security/updatePasswordHistory.svelte';
     import UpdatePersonalDataCheck from '$routes/(console)/project-[region]-[project]/auth/security/updatePersonalDataCheck.svelte';
@@ -11,7 +11,7 @@
     import UpdateSessionInvalidation from '$routes/(console)/project-[region]-[project]/auth/security/updateSessionInvalidation.svelte';
 </script>
 
-<Layout.Stack>
+<Container>
     <UpdateUsersLimit />
     <UpdateSessionLength />
     <UpdateSessionsLimit />
@@ -21,4 +21,4 @@
     <UpdateSessionAlerts />
     <UpdateSessionInvalidation />
     <UpdateMembershipPrivacy />
-</Layout.Stack>
+</Container>

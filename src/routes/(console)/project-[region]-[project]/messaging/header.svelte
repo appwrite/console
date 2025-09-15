@@ -6,7 +6,7 @@
     import { Cover } from '$lib/layout';
     import { Typography } from '@appwrite.io/pink-svelte';
 
-    const path = `${base}/project-${page.params.region}-${page.params.project}/messaging`;
+    export let path = `${base}/project-${page.params.region}-${page.params.project}/messaging`;
     const tabs = [
         {
             href: path,

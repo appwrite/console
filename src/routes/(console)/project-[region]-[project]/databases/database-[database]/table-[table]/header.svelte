@@ -14,9 +14,11 @@
 
     const tableId = $derived(page.params.table);
 
-    const path = $derived(
+    const computedPath = $derived(
         `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${tableId}`
     );
+    let { path: _path, back: _back } = $props();
+    const path = $derived(_path ?? computedPath);
 
     const tabs = $derived(
         [
@@ -57,9 +59,10 @@
         ].filter((tab) => !tab.disabled)
     );
 
-    const link = $derived(
+    const computedBack = $derived(
         `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`
     );
+    const back = $derived(_back ?? computedBack);
 
     const nonSheetPages = $derived.by(() => {
         const endings = ['table-[table]', 'table-[table]/columns', 'table-[table]/indexes'];
@@ -79,7 +82,7 @@
     <Cover animate expanded collapsed={!$expandTabs} blocksize={$expandTabs ? '152px' : '90px'}>
         <svelte:fragment slot="header">
             <Layout.Stack direction="row" alignContent="center" alignItems="center" inline>
-                <AnimatedTitle href={link} collapsed={!$expandTabs}>
+                <AnimatedTitle href={back} collapsed={!$expandTabs}>
                     {$table?.name}
                 </AnimatedTitle>
 

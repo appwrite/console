@@ -12,7 +12,6 @@
     import { Button } from '$lib/elements/forms';
     import { showCreate, tableViewColumns } from './store';
     import { Card, Empty, Icon, Layout, Table as PinkTable } from '@appwrite.io/pink-svelte';
-    import { canWriteTables } from '$lib/stores/roles';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import { app } from '$lib/stores/app';
@@ -25,6 +24,7 @@
         offset,
         view,
         search,
+        canWriteTables,
         createTableUrl
     }: {
         tables: { total: number; tables: Models.Table[] };
@@ -32,11 +32,13 @@
         offset: number;
         view: View;
         search: string | null;
+        canWriteTables: boolean;
         createTableUrl: (table: Models.Table) => string;
     } = $props();
 
     const clearSearchHref = page.url.pathname;
-    const databaseId = page.params.database;
+
+    $inspect($showCreate);
 </script>
 
 <Layout.Stack direction="row" justifyContent="space-between">
@@ -51,7 +53,7 @@
             hideColumns={!tables.total}
             hideView={!tables.total} />
 
-        {#if $canWriteTables}
+        {#if canWriteTables}
             <Button event="create_table" on:click={() => ($showCreate = true)}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create table
@@ -63,7 +65,7 @@
 {#if tables.total}
     {#if view === 'grid'}
         <CardContainer
-            disableEmpty={!$canWriteTables}
+            disableEmpty={!canWriteTables}
             total={tables.total}
             {offset}
             event="table"
@@ -123,7 +125,7 @@
                     text
                     event="empty_documentation"
                     ariaLabel={`create table`}>Documentation</Button>
-                {#if $canWriteTables}
+                {#if canWriteTables}
                     <Button
                         secondary
                         on:click={() => {

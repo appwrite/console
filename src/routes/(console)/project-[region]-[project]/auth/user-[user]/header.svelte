@@ -6,7 +6,8 @@
     import { Cover, CoverTitle } from '$lib/layout';
     import { user } from './store';
 
-    const path = `${base}/project-${page.params.region}-${page.params.project}/auth/user-${page.params.user}`;
+    export let back = `${base}/project-${page.params.region}-${page.params.project}/auth`;
+    export let path = `${base}/project-${page.params.region}-${page.params.project}/auth/user-${page.params.user}`;
     const tabs = [
         {
             href: path,
@@ -44,7 +45,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${page.params.region}-${page.params.project}/auth`}>
+        <CoverTitle href={back}>
             {$user.name ? $user.name : '-'}
         </CoverTitle>
         <Id value={$user.$id} event="user">{$user.$id}</Id>
