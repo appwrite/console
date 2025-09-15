@@ -19,6 +19,7 @@
         leadingHtml?: string;
         badge?: string;
     }[];
+    export let leadingIcon: ComponentType | undefined = undefined;
 
     let element: HTMLSelectElement;
     let error: string;
@@ -56,6 +57,7 @@
     {placeholder}
     {disabled}
     {autofocus}
+    {leadingIcon}
     helper={error ?? helper}
     {required}
     state={error ? 'error' : 'default'}

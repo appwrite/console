@@ -12,7 +12,11 @@ export const load = async ({ params, depends, parent }) => {
     const [deploymentList, prodReadyDeployments, proxyRuleList] = await Promise.all([
         sdk.forProject(params.region, params.project).sites.listDeployments({
             siteId: params.site,
-            queries: [Query.limit(4), Query.orderDesc(''), Query.select(['status', 'type'])]
+            queries: [
+                Query.limit(4),
+                Query.orderDesc(''),
+                Query.select(['status', 'type', 'resourceId'])
+            ]
         }),
         sdk.forProject(params.region, params.project).sites.listDeployments({
             siteId: params.site,
@@ -21,7 +25,14 @@ export const load = async ({ params, depends, parent }) => {
                 Query.equal('activate', true),
                 Query.limit(1),
                 Query.orderDesc(''),
-                Query.select(['buildDuration', 'totalSize', 'sourceSize', 'buildSize', 'type'])
+                Query.select([
+                    'buildDuration',
+                    'totalSize',
+                    'sourceSize',
+                    'buildSize',
+                    'type',
+                    'resourceId'
+                ])
             ]
         }),
         sdk.forProject(params.region, params.project).proxy.listRules({
