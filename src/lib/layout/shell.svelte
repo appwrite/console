@@ -123,9 +123,8 @@
     });
 
     // subscriptions
-    let initialShowHeader = showHeader;
     isNewWizardStatusOpen.subscribe((value) => {
-        if (initialShowHeader) {
+        if (showHeader) {
             showHeader = !value;
         }
     });
