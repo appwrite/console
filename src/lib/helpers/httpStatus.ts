@@ -2,7 +2,7 @@
  * determines the badge color based on HTTP status code
  *
  * @param statusCode
- * @returns badge coklor
+ * @returns badge color
  */
 export function getBadgeTypeFromStatusCode(
     statusCode: number
