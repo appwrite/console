@@ -29,11 +29,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { ComponentType } from 'svelte';
     import { Link } from '$lib/elements';
-    import { regionalConsoleVariables } from '../store';
-    import CursorIcon from '../overview/components/CursorIcon.svelte';
-    import ClaudeIcon from '../overview/components/ClaudeIcon.svelte';
-    import VSCodeIcon from '../overview/components/VSCodeIcon.svelte';
-    import WindsurfIcon from '../overview/components/WindsurfIcon.svelte';
+    import { regionalConsoleVariables, mcpTools } from '../store';
 
     export let total: number;
     export let limit: number;
@@ -217,42 +213,17 @@
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
                     <Layout.Stack direction="row" gap="s" wrap="wrap" justifyContent="center">
-                        <Button.Anchor
-                            href="https://apwr.dev/docs-mcp-cursor?ref=docs"
-                            target="_blank"
-                            rel="noreferrer"
-                            size="s"
-                            variant="secondary">
-                            <Icon slot="start" icon={CursorIcon} size="xs" />
-                            Cursor
-                        </Button.Anchor>
-                        <Button.Anchor
-                            href="https://appwrite.io/docs/tooling/mcp/claude"
-                            target="_blank"
-                            rel="noreferrer"
-                            size="s"
-                            variant="secondary">
-                            <Icon slot="start" icon={ClaudeIcon} size="xs" />
-                            Claude Desktop
-                        </Button.Anchor>
-                        <Button.Anchor
-                            href="https://apwr.dev/docs-mcp-vscode?ref=docs"
-                            target="_blank"
-                            rel="noreferrer"
-                            size="s"
-                            variant="secondary">
-                            <Icon slot="start" icon={VSCodeIcon} size="xs" />
-                            VS code
-                        </Button.Anchor>
-                        <Button.Anchor
-                            href="https://appwrite.io/docs/tooling/mcp/windsurf"
-                            target="_blank"
-                            rel="noreferrer"
-                            size="s"
-                            variant="secondary">
-                            <Icon slot="start" icon={WindsurfIcon} size="xs" />
-                            Windsurf editor
-                        </Button.Anchor>
+                        {#each mcpTools as tool}
+                            <Button.Anchor
+                                href={tool.href}
+                                target="_blank"
+                                rel="noreferrer"
+                                size="s"
+                                variant="secondary">
+                                <Icon slot="start" icon={tool.icon} size="xs" />
+                                {tool.label}
+                            </Button.Anchor>
+                        {/each}
                     </Layout.Stack>
                 </svelte:fragment>
             </Empty>

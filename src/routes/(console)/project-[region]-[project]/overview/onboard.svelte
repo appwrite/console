@@ -24,10 +24,7 @@
     import DatabaseImgSourceDark from './assets/database-dark.png';
     import DiscordImgSource from './assets/discord.png';
     import DiscordImgSourceDark from './assets/discord-dark.png';
-    import CursorIcon from './components/CursorIcon.svelte';
-    import ClaudeIcon from './components/ClaudeIcon.svelte';
-    import VSCodeIcon from './components/VSCodeIcon.svelte';
-    import WindsurfIcon from './components/WindsurfIcon.svelte';
+    import { mcpTools } from '../store';
     import PlatformIosImgSource from './assets/platform-ios.svg';
     import PlatformIosImgSourceDark from './assets/platform-ios-dark.svg';
     import PlatformAndroidImgSource from './assets/platform-android.svg';
@@ -562,54 +559,20 @@
                                                         direction="row"
                                                         gap="s"
                                                         wrap="wrap">
-                                                        <Button.Anchor
-                                                            href="https://apwr.dev/docs-mcp-cursor?ref=docs"
-                                                            target="_blank"
-                                                            rel="noreferrer"
-                                                            size="s"
-                                                            variant="secondary">
-                                                            <Icon
-                                                                slot="start"
-                                                                icon={CursorIcon}
-                                                                size="xs" />
-                                                            Cursor
-                                                        </Button.Anchor>
-                                                        <Button.Anchor
-                                                            href="https://appwrite.io/docs/tooling/mcp/claude"
-                                                            target="_blank"
-                                                            rel="noreferrer"
-                                                            size="s"
-                                                            variant="secondary">
-                                                            <Icon
-                                                                slot="start"
-                                                                icon={ClaudeIcon}
-                                                                size="xs" />
-                                                            Claude Desktop
-                                                        </Button.Anchor>
-                                                        <Button.Anchor
-                                                            href="https://apwr.dev/docs-mcp-vscode?ref=docs"
-                                                            target="_blank"
-                                                            rel="noreferrer"
-                                                            size="s"
-                                                            variant="secondary">
-                                                            <Icon
-                                                                slot="start"
-                                                                icon={VSCodeIcon}
-                                                                size="xs" />
-                                                            VS code
-                                                        </Button.Anchor>
-                                                        <Button.Anchor
-                                                            href="https://appwrite.io/docs/tooling/mcp/windsurf"
-                                                            target="_blank"
-                                                            rel="noreferrer"
-                                                            size="s"
-                                                            variant="secondary">
-                                                            <Icon
-                                                                slot="start"
-                                                                icon={WindsurfIcon}
-                                                                size="xs" />
-                                                            Windsurf editor
-                                                        </Button.Anchor>
+                                                        {#each mcpTools as tool}
+                                                            <Button.Anchor
+                                                                href={tool.href}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                size="s"
+                                                                variant="secondary">
+                                                                <Icon
+                                                                    slot="start"
+                                                                    icon={tool.icon}
+                                                                    size="xs" />
+                                                                {tool.label}
+                                                            </Button.Anchor>
+                                                        {/each}
                                                     </Layout.Stack>
                                                 </Layout.Stack>
                                             </Layout.Stack>
