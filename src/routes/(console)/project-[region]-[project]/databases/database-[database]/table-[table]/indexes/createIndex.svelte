@@ -64,9 +64,9 @@
     );
 
     // spatial type selected -> reset column list to single empty column
+    // and the column already is not spatial type
     $effect(() => {
-        if (selectedType === IndexType.Spatial) {
-            // Reset to single column with spatial-appropriate defaults
+        if (selectedType === IndexType.Spatial && !columnList.at(0).value) {
             columnList = [{ value: '', order: null, length: null }];
         }
     });
@@ -86,10 +86,10 @@
         const column = $table.columns.filter((column) => externalColumnKey === column.key);
         const isSpatial = column.length && isSpatialType(column[0]);
         const order = isSpatial ? null : 'ASC';
+        selectedType = isSpatial ? IndexType.Spatial : IndexType.Key;
         columnList = externalColumnKey
             ? [{ value: externalColumnKey, order, length: null }]
             : [{ value: '', order, length: null }];
-        selectedType = IndexType.Key;
         key = `index_${$indexes.length + 1}`;
     }
 
