@@ -1,55 +1,21 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
     import { Typography } from '@appwrite.io/pink-svelte';
-    import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import { user } from '$lib/stores/user';
-    import { wizard } from '$lib/stores/wizard';
-    import { page } from '$app/state';
-
-    const { emailBannerClosed, onEmailBannerClose } = $props<{
-        emailBannerClosed: boolean;
-        onEmailBannerClose: (closed: boolean) => void;
-    }>();
-
-    const isOnOnboarding = $derived(page.url?.pathname?.includes('/console/onboarding'));
+    import SendVerificationEmailModal from '../account/sendVerificationEmailModal.svelte';
+    import { page } from '$app/stores';
 
     const hasUser = $derived(!!$user);
     const needsEmailVerification = $derived(hasUser && !$user.emailVerification);
-    const shouldShowNotificationBanner = $derived.by(() =>
-        shouldShowNotification('email-verification-banner')
-    );
-    const wizardNotActive = $derived(!$wizard.show && !$wizard.cover);
-    const bannerNotClosed = $derived(!emailBannerClosed);
-    const notOnOnboarding = $derived(!isOnOnboarding);
+    const notOnOnboarding = $derived(!$page.route.id.includes('/onboarding'));
+    const shouldShowEmailBanner = $derived(hasUser && needsEmailVerification && notOnOnboarding);
 
-    const shouldShowEmailBanner = $derived(
-        hasUser &&
-            needsEmailVerification &&
-            shouldShowNotificationBanner &&
-            wizardNotActive &&
-            bannerNotClosed &&
-            notOnOnboarding
-    );
-
-    function navigateToAccount() {
-        goto(`${base}/account`);
-    }
-
-    function handleDismiss() {
-        onEmailBannerClose(true);
-        hideNotification('email-verification-banner', { coolOffPeriod: 24 * 365 * 100 });
-    }
+    let showSendVerification = $state(false);
 </script>
 
 {#if shouldShowEmailBanner}
-    <HeaderAlert
-        type="warning"
-        title="Your email address needs to be verified"
-        dismissible
-        on:dismiss={handleDismiss}>
+    <HeaderAlert type="warning" title="Your email address needs to be verified">
         <svelte:fragment>
             To avoid losing access to your projects, make sure <Typography.Text
                 variant="m-500"
@@ -57,7 +23,9 @@
             verification will be required soon.
         </svelte:fragment>
         <svelte:fragment slot="buttons">
-            <Button secondary size="s" on:click={navigateToAccount}>Update email address</Button>
+            <Button secondary size="s" on:click={() => (showSendVerification = true)}
+                >Verify email</Button>
         </svelte:fragment>
     </HeaderAlert>
+    <SendVerificationEmailModal bind:show={showSendVerification} />
 {/if}
