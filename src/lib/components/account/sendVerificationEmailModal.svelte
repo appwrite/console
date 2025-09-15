@@ -5,16 +5,17 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
+    import { get } from 'svelte/store';
     import { page } from '$app/state';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
 
-    export let show = false;
-    let creating = false;
-    let emailSent = false;
+    let { show = $bindable(false) } = $props();
+    let creating = $state(false);
+    let emailSent = $state(false);
 
-    $: cleanUrl = page.url.origin + page.url.pathname;
+    let cleanUrl = $derived(page.url.origin + page.url.pathname);
 
     async function onSubmit() {
         if (creating) return;
@@ -64,10 +65,10 @@
 <Modal bind:show title="Send verification email" {onSubmit}>
     <Card.Base variant="secondary" padding="s">
         <Layout.Stack gap="m">
-            <Typography.Text variant="m-400" gap="m">
+            <Typography.Text gap="m">
                 To continue using Appwrite Cloud, please verify your email address. An email will be
-                sent to <Typography.Text variant="m-600" style="display:inline"
-                    >{$user?.email}</Typography.Text>
+                sent to <Typography.Text variant="m-600" style="display: inline;"
+                    >{get(user)?.email}</Typography.Text>
             </Typography.Text>
         </Layout.Stack>
     </Card.Base>

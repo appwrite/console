@@ -3,12 +3,12 @@
     import { HeaderAlert } from '$lib/layout';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { user } from '$lib/stores/user';
-    import SendVerificationEmailModal from '$lib/components/account/sendVerificationEmailModal.svelte';
-    import { page } from '$app/state';
+    import SendVerificationEmailModal from '../account/sendVerificationEmailModal.svelte';
+    import { page } from '$app/stores';
 
     const hasUser = $derived(!!$user);
     const needsEmailVerification = $derived(hasUser && !$user.emailVerification);
-    const notOnOnboarding = $derived(!page.url?.pathname?.includes('/console/onboarding'));
+    const notOnOnboarding = $derived(!$page.route.id.includes('/onboarding'));
     const shouldShowEmailBanner = $derived(hasUser && needsEmailVerification && notOnOnboarding);
 
     let showSendVerification = $state(false);
