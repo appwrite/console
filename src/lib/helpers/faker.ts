@@ -3,6 +3,7 @@ import type { Columns } from '$routes/(console)/project-[region]-[project]/datab
 import { ID, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { isWithinSafeRange } from '$lib/helpers/numbers';
+import type { NestedNumberArray } from './types';
 
 export async function generateColumns(
     project: Models.Project,
@@ -66,7 +67,10 @@ export function generateFakeRecords(
         const id = ID.unique();
         ids.push(id);
 
-        let row: Record<string, string | number | boolean | Array<string | number | boolean>> = {
+        let row: Record<
+            string,
+            string | number | boolean | Array<string | number | boolean | NestedNumberArray>
+        > = {
             $id: id
         };
 
@@ -116,10 +120,10 @@ function generateStringValue(key: string, maxLength: number): string {
 
 function generateValueForColumn(
     column: Columns
-): string | number | boolean | null | Array<string | number | boolean> {
+): string | number | boolean | null | Array<string | number | boolean | NestedNumberArray> {
     if (column.array) {
         const arraySize = faker.number.int({ min: 1, max: 5 });
-        const items: Array<string | number | boolean> = [];
+        const items: Array<string | number | NestedNumberArray | boolean> = [];
 
         for (let i = 0; i < arraySize; i++) {
             const itemAttribute = { ...column, array: false };
@@ -135,7 +139,9 @@ function generateValueForColumn(
     return generateSingleValue(column);
 }
 
-function generateSingleValue(column: Columns): string | number | boolean | null {
+function generateSingleValue(
+    column: Columns
+): string | number | boolean | NestedNumberArray | null {
     switch (column.type) {
         case 'string': {
             if ('format' in column && column.format) {
@@ -192,6 +198,25 @@ function generateSingleValue(column: Columns): string | number | boolean | null 
             return faker.date.recent({ days: 365 }).toISOString();
         }
 
+        case 'point': {
+            return [faker.location.longitude(), faker.location.latitude()];
+        }
+
+        case 'linestring': {
+            return Array.from({ length: 5 }, () => [
+                faker.location.longitude(),
+                faker.location.latitude()
+            ]);
+        }
+
+        case 'polygon': {
+            let points = Array.from({ length: 5 }, () => [
+                faker.location.longitude(),
+                faker.location.latitude()
+            ]);
+            points.push(points[0]); // close polygon
+            return [points];
+        }
         default: {
             return faker.lorem.word();
         }

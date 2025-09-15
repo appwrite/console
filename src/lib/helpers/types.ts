@@ -80,3 +80,5 @@ export type TableRootProp = {
     addAvailableId: (id: string) => void;
     removeAvailableId: (id: string) => void;
 };
+
+export type NestedNumberArray = Array<number | NestedNumberArray>;
