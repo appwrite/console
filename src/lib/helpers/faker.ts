@@ -43,7 +43,24 @@ export async function generateColumns(
             size: 1000,
             required: false
         }),
-        client.tablesDB.createBooleanColumn({ databaseId, tableId, key: 'active', required: false })
+        client.tablesDB.createBooleanColumn({
+            databaseId,
+            tableId,
+            key: 'active',
+            required: false
+        }),
+        client.tablesDB.createPointColumn({
+            databaseId,
+            tableId,
+            key: 'location',
+            required: false
+        }),
+        client.tablesDB.createLineColumn({
+            databaseId,
+            tableId,
+            key: 'route',
+            required: false
+        })
     ]);
 }
 
@@ -82,7 +99,12 @@ export function generateFakeRecords(
                 age: faker.number.int({ min: 18, max: 80 }),
                 city: faker.location.city(),
                 description: faker.lorem.sentence(),
-                active: faker.datatype.boolean()
+                active: faker.datatype.boolean(),
+                location: [faker.location.longitude(), faker.location.latitude()],
+                route: Array.from({ length: 5 }, () => [
+                    faker.location.longitude(),
+                    faker.location.latitude()
+                ])
             };
         } else {
             for (const column of filteredColumns) {

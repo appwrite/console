@@ -59,11 +59,17 @@
     }
 
     function pushCoordinate() {
-        data.default.push(getDefaultSpatialData('point') as number[]);
+        if (data.default) {
+            data.default.push(getDefaultSpatialData('point') as number[]);
+            data.default = [...data.default];
+        }
     }
 
     function deleteCoordinate(_: number) {
-        if (data.default.length > 2) data.default.pop();
+        if (data.default && data.default.length > 2) {
+            data.default.pop();
+            data.default = [...data.default];
+        }
     }
 
     const {
@@ -102,7 +108,10 @@
     on:change={(e) => {
         if (e.detail) {
             $required = false;
-        } else data.default = null;
+            handleDefaultState(false);
+        } else {
+            data.default = null;
+        }
     }}
     description="Enable to set a predefined value for this column" />
 
@@ -117,9 +126,9 @@
         values={defaultChecked ? data.default : null}
         onAddPoint={() => pushCoordinate()}
         onDeletePoint={deleteCoordinate}
-        onChangePoint={(index, newValue: number, coordIndex: number) => {
+        onChangePoint={(pointIndex: number, coordIndex: number, newValue: number) => {
             if (data.default) {
-                data.default[index][coordIndex] = newValue;
+                data.default[pointIndex][coordIndex] = newValue;
                 data.default = [...data.default];
             }
         }} />
