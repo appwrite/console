@@ -145,7 +145,10 @@
                 </Layout.Stack>
             </div>
 
-            <Layout.Stack direction="column" gap="xxs" style="bottom: 1rem; position: sticky;">
+            <Layout.Stack
+                gap="xxs"
+                direction="column"
+                style="bottom: 1rem; position: relative; height: calc(20% - 1rem)">
                 <div class="action-menu-divider">
                     <Divider />
                 </div>

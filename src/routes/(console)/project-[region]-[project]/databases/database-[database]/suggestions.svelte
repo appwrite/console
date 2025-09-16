@@ -1,19 +1,14 @@
 <script lang="ts">
     import IconAI from './icon/ai.svelte';
     import { slide } from 'svelte/transition';
+    import { tableColumnSuggestions } from './store';
     import { InputTextarea } from '$lib/elements/forms';
     import { Card, Layout, Selector, Typography } from '@appwrite.io/pink-svelte';
 
-    export type TableColumnSuggestions = {
-        enabled: boolean;
-        context?: string | null;
-    }
-
-    let {
-        suggestions = $bindable()
-    }: {
-        suggestions: TableColumnSuggestions
-    } = $props();
+    $effect(() => {
+        // TODO: update later, this is for mock only atm!
+        $tableColumnSuggestions.thinking = $tableColumnSuggestions.enabled;
+    });
 </script>
 
 <Card.Base variant="secondary" radius="s" padding="xs">
@@ -26,11 +21,12 @@
                     <Typography.Text variant="m-500" color="--fgcolor-neutral-primary"
                         >Smart column suggestions</Typography.Text>
 
-                    <Selector.Switch
-                        id="suggestions"
-                        label={undefined}
-                        bind:checked={suggestions.enabled}
-                    />
+                    <div class="suggestions-switch">
+                        <Selector.Switch
+                            id="suggestions"
+                            label={undefined}
+                            bind:checked={$tableColumnSuggestions.enabled} />
+                    </div>
                 </Layout.Stack>
 
                 <Typography.Text color="--fgcolor-neutral-secondary">
@@ -39,17 +35,22 @@
             </Layout.Stack>
         </Layout.Stack>
 
-        {#if suggestions.enabled}
+        {#if $tableColumnSuggestions.enabled}
             <div transition:slide={{ duration: 200 }}>
                 <InputTextarea
                     id="context"
                     rows={3}
                     maxlength={255}
                     autofocus
-                    bind:value={suggestions.context}
-                    placeholder="Optional: Add context to improve suggestions"
-                />
+                    bind:value={$tableColumnSuggestions.context}
+                    placeholder="Optional: Add context to improve suggestions" />
             </div>
         {/if}
     </Layout.Stack>
 </Card.Base>
+
+<style lang="scss">
+    .suggestions-switch :global(button) {
+        cursor: pointer;
+    }
+</style>

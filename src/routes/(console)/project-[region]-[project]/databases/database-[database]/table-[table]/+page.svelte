@@ -29,8 +29,10 @@
     import { IconChevronDown, IconChevronUp, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import EmptySheet from './layout/emptySheet.svelte';
+    import SuggestionsEmptySheet from './layout/suggestionsEmptySheet.svelte';
     import CreateRow from './rows/create.svelte';
     import { onDestroy } from 'svelte';
+    import { tableColumnSuggestions } from '../store';
 
     export let data: PageData;
 
@@ -215,6 +217,8 @@
                         }
                     }} />
             {/if}
+        {:else if $tableColumnSuggestions.thinking}
+            <SuggestionsEmptySheet customColumns={$tableColumns} />
         {:else}
             <EmptySheet
                 mode="rows"
