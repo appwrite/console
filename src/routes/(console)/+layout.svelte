@@ -59,7 +59,6 @@
     import type { LayoutData } from './$types';
 
     export let data: LayoutData;
-    let emailBannerClosed = false;
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -347,9 +346,7 @@
     <Footer slot="footer" />
 </Shell>
 
-<EmailVerificationBanner
-    {emailBannerClosed}
-    onEmailBannerClose={(closed) => (emailBannerClosed = closed)} />
+<EmailVerificationBanner />
 
 {#if $wizard.show && $wizard.component}
     <svelte:component this={$wizard.component} {...$wizard.props} />
