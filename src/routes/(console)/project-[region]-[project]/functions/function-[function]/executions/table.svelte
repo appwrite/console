@@ -14,6 +14,7 @@
     import Sheet from './sheet.svelte';
     import { capitalize } from '$lib/helpers/string';
     import { calculateTime } from '$lib/helpers/timeConversion';
+    import { getBadgeTypeFromStatusCode } from '$lib/helpers/httpStatus';
     import { logStatusConverter } from './store';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { func } from '../store';
@@ -96,11 +97,7 @@
                     {:else if column.id === 'responseStatusCode'}
                         <Badge
                             variant="secondary"
-                            type={log.responseStatusCode >= 400
-                                ? 'error'
-                                : log.responseStatusCode === 0
-                                  ? undefined
-                                  : 'success'}
+                            type={getBadgeTypeFromStatusCode(log.responseStatusCode)}
                             content={log.responseStatusCode.toString()} />
                     {:else if column.id === 'requestMethod'}
                         <Typography.Code size="m">
