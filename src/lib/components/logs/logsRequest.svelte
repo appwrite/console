@@ -11,7 +11,6 @@
         Tabs,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
 
     let {
         selectedLog,
@@ -23,29 +22,30 @@
 
     let requestTab: 'parameters' | 'headers' = $state('parameters');
 
-    let parameters = $state([]);
-
     const href =
         product === 'site'
             ? 'https://appwrite.io/docs/products/sites/logs#log-details'
             : 'https://appwrite.io/docs/products/functions/develop#logging';
 
-    onMount(() => {
+    // Make parameters reactive to selectedLog changes
+    let parameters = $derived.by(() => {
         try {
             // Add dummy base URL to parse relative paths
             const url = new URL(selectedLog.requestPath, 'http://dummy.local');
             if (url.search) {
-                parameters = Array.from(url.searchParams.entries()).map(([name, value]) => ({
+                return Array.from(url.searchParams.entries()).map(([name, value]) => ({
                     name,
                     value: decodeURIComponent(value)
                 }));
             }
+            return [];
         } catch (error) {
-            parameters = [];
+            return [];
         }
     });
 
-    onMount(() => {
+    // Update requestTab when parameters or selectedLog changes
+    $effect(() => {
         if (parameters?.length) {
             requestTab = 'parameters';
         } else if (selectedLog.requestHeaders?.length) {
