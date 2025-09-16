@@ -61,7 +61,7 @@
             } else {
                 let redirect = `${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`;
 
-                if (isCloud) {
+                if (isCloud && domain?.$id) {
                     /**
                      * Domains are only on cloud!
                      * Self-hosted instances have rules.

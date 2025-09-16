@@ -7,7 +7,7 @@ export const columns = writable<Column[]>([
         title: 'Domain',
         type: 'string',
         format: 'string',
-        width: { min: 200 }
+        width: { min: 300 }
     },
 
     {
@@ -21,6 +21,6 @@ export const columns = writable<Column[]>([
         id: 'updated',
         title: '',
         type: 'string',
-        width: { min: 100, max: 140 }
+        width: { min: 160, max: 180 }
     }
 ]);

@@ -21,7 +21,7 @@
     } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
-    import ViewLogsModal from './viewLogsModal.svelte';
+    import { ViewLogsModal } from '$lib/components';
     import { columns } from './store';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
     import DnsRecordsAction from '$lib/components/domains/dnsRecordsAction.svelte';
@@ -128,20 +128,22 @@
                     {:else if column.id === 'target'}
                         {proxyTarget(rule)}
                     {:else if column.id === 'updated'}
-                        {#if rule.status !== 'verified'}
-                            <Typography.Text
-                                variant="m-400"
-                                color="--fgcolor-neutral-tertiary"
-                                style="font-size: 0.875rem;">
-                                {#if rule.status === 'created'}
-                                    Checked {timeFromNowShort(rule.$updatedAt)}
-                                {:else if rule.status === 'verifying'}
-                                    Updated {timeFromNowShort(rule.$updatedAt)}
-                                {:else if rule.status === 'unverified'}
-                                    Failed {timeFromNowShort(rule.$updatedAt)}
-                                {/if}
-                            </Typography.Text>
-                        {/if}
+                        <Layout.Stack direction="row" justifyContent="flex-end">
+                            {#if rule.status !== 'verified'}
+                                <Typography.Text
+                                    variant="m-400"
+                                    color="--fgcolor-neutral-tertiary"
+                                    style="font-size: 0.875rem;">
+                                    {#if rule.status === 'created'}
+                                        Checked {timeFromNowShort(rule.$updatedAt)}
+                                    {:else if rule.status === 'verifying'}
+                                        Updated {timeFromNowShort(rule.$updatedAt)}
+                                    {:else if rule.status === 'unverified'}
+                                        Failed {timeFromNowShort(rule.$updatedAt)}
+                                    {/if}
+                                </Typography.Text>
+                            {/if}
+                        </Layout.Stack>
                     {/if}
                 </Table.Cell>
             {/each}
