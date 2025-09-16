@@ -710,23 +710,23 @@
         .double-width-card .full-height-card {
             height: 240px;
             width: 100%;
-        }
 
-        @media (max-width: 1024px) {
-            .double-width-card .full-height-card {
+            @media (max-width: 1024px) {
                 height: 220px;
             }
-            .auth-image {
+
+            @media (max-width: 768px) {
+                height: auto;
+            }
+        }
+
+        .auth-image {
+            @media (max-width: 1024px) {
                 height: 180px;
                 background-position: center bottom;
             }
-        }
 
-        @media (max-width: 768px) {
-            .double-width-card .full-height-card {
-                height: auto;
-            }
-            .auth-image {
+            @media (max-width: 768px) {
                 height: 160px;
                 margin-right: 0;
             }
