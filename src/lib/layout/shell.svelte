@@ -123,7 +123,11 @@
     });
 
     // subscriptions
-    isNewWizardStatusOpen.subscribe((value) => (showHeader = !value));
+    isNewWizardStatusOpen.subscribe((value) => {
+        if (showHeader) {
+            showHeader = !value;
+        }
+    });
 
     page.subscribe(({ url }) => {
         $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
