@@ -4,6 +4,8 @@
     import { showCreateTable, databaseSubNavigationItems } from './store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
+    import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
+
     import {
         Icon,
         Sidebar,
@@ -50,6 +52,11 @@
     const isTablesScreen = $derived(page.route.id.endsWith('table-[table]'));
 
     const isMainDatabaseScreen = $derived(page.route.id.endsWith('database-[database]'));
+
+    // If banner open, `-1rem` to adjust banner size, else `-70.5px`.
+    // 70.5px is the size of the container of the banner holder and not just the banner!
+    // Needed because things vary a bit much on how different browsers treat bottom layouts.
+    const bottomNavHeight = $derived(`calc(20% ${$bannerSpacing ? '- 1rem' : '- 70.5px'})`);
 
     async function loadTables() {
         tables = await sdk.forProject(region, project).tablesDB.listTables({
@@ -149,7 +156,7 @@
             <Layout.Stack
                 gap="xxs"
                 direction="column"
-                style="bottom: 1rem; position: relative; height: calc(20% - 1rem)">
+                style="bottom: 1rem; position: relative; height: {bottomNavHeight}">
                 <div class="action-menu-divider">
                     <Divider />
                 </div>

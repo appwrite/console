@@ -18,10 +18,20 @@
     import { debounce } from '$lib/helpers/debounce';
     import { tableColumnSuggestions } from '../../store';
 
-    const { customColumns = [] }: { customColumns?: Column[] } = $props();
+    const {
+        customColumns = []
+    }: {
+        customColumns?: Column[];
+    } = $props();
+
+    /**
+     * flip this when you want to
+     * exclude or include the `$id` for colored overlay!
+     */
+    const useFirstColumnAsId = false;
 
     // can also be `__select_undefined` if `$id` needs to be covered on overlay!
-    const firstColumn = '$id';
+    const firstColumn = useFirstColumnAsId ? '$id' : '__select_undefined';
 
     let resizeObserver: ResizeObserver;
     let spreadsheetContainer: HTMLElement;
@@ -33,16 +43,17 @@
     const baseColProps = { draggable: false, resizable: false };
 
     const findHorizontalScroller = (root: HTMLElement | null): HTMLElement | null => {
-        let el = root as HTMLElement | null;
-        while (el && el !== document.body) {
-            const st = getComputedStyle(el);
+        let element = root as HTMLElement | null;
+        while (element && element !== document.body) {
+            const computedStyles = getComputedStyle(element);
             if (
-                (st.overflowX === 'auto' || st.overflowX === 'scroll') &&
-                el.scrollWidth > el.clientWidth
+                (computedStyles.overflowX === 'auto' || computedStyles.overflowX === 'scroll') &&
+                element.scrollWidth > element.clientWidth
             ) {
-                return el;
+                return element;
             }
-            el = el.parentElement as HTMLElement | null;
+
+            element = element.parentElement as HTMLElement | null;
         }
         return null;
     };
@@ -52,6 +63,7 @@
         if (!headerElement || !headerElement.isConnected) {
             headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
         }
+
         if (!headerElement) return;
 
         const headerRect = headerElement.getBoundingClientRect();
@@ -89,8 +101,8 @@
             );
 
         const firstColumnCell = getById(firstColumn);
-        const actionsCell = getById('actions');
-        const emptyCell = getById('empty');
+        // const emptyCell = getById('empty');
+        // const actionsCell = getById('actions');
 
         // start = first content cell after `firstColumn`
         // (skip actions/empty if they were there)
@@ -108,49 +120,38 @@
 
         // end = cell right BEFORE actions;
         // else right BEFORE empty; else last content cell
-        const before = (el: HTMLElement | null) => {
-            if (!el) return null;
-            let previous = el.previousElementSibling as HTMLElement | null;
-            while (
-                previous &&
-                (previous.dataset.columnId === firstColumn ||
-                    previous.getAttribute('data-select') === 'true')
-            ) {
-                previous = previous.previousElementSibling as HTMLElement | null;
-            }
-            return previous;
-        };
+        // const before = (element: HTMLElement | null) => {
+        //     if (!element) return null;
+        //     let previous = element.previousElementSibling as HTMLElement | null;
+        //     while (
+        //         previous &&
+        //         (previous.dataset.columnId === firstColumn ||
+        //             previous.getAttribute('data-select') === 'true')
+        //     ) {
+        //         previous = previous.previousElementSibling as HTMLElement | null;
+        //     }
+        //     return previous;
+        // };
 
-        let endCell = before(actionsCell) ?? before(emptyCell);
-        if (!endCell) {
-            const cells = Array.from(
-                headerElement.querySelectorAll<HTMLElement>('[role="cell"][data-header="true"]')
-            );
-            for (let index = cells.length - 1; index >= 0; index--) {
-                const cell = cells[index];
-                const cellId = cell.dataset.columnId;
-                const isSelect = cell.getAttribute('data-select') === 'true';
-                if (!isSelect && cellId !== firstColumn && cellId !== 'actions' && cellId !== 'empty') {
-                    endCell = cell;
-                    break;
-                }
-            }
-        }
+        // let endCell = before(actionsCell) ?? before(emptyCell);
+        // let endCell = before(emptyCell);
 
-        if (!startCell || !endCell) {
+        if (!startCell /* || !endCell*/) {
             if (rangeOverlayEl) rangeOverlayEl.style.display = 'none';
             return;
         }
 
         const start = startCell.getBoundingClientRect();
-        const end = endCell.getBoundingClientRect();
+        // const end = endCell.getBoundingClientRect();
         const left = Math.round(start.left - containerRect.left);
-        const width = Math.max(0, Math.round(end.right - end.left));
+        // const width = Math.max(0, Math.round(end.right - start.right));
 
         spreadsheetContainer.style.setProperty('--group-left', `${left}px`);
-        spreadsheetContainer.style.setProperty('--group-width', `${width}px`);
+        // spreadsheetContainer.style.setProperty('--group-width', `${width}px`);
 
-        if (rangeOverlayEl) rangeOverlayEl.style.display = width > 0 ? 'block' : 'none';
+        // if (rangeOverlayEl) {
+        //     rangeOverlayEl.style.display = width > 0 ? 'block' : 'none';
+        // }
     };
 
     const recalcAll = () => {
@@ -379,7 +380,7 @@
         }
 
         & .floating-action-wrapper :global(:first-child) {
-            left: 55%;
+            left: 45%; /* change this value if the firstColumn is changed for overlay logic.*/
             z-index: 21;
         }
 
