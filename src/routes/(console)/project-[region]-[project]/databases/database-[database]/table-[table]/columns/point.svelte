@@ -72,7 +72,13 @@
 
     $effect(() => {
         data.required = $required;
-        handleDefaultState($required);
+        if ($required) {
+            handleDefaultState(true);
+        }
+    });
+
+    $effect(() => {
+        defaultChecked = data.default !== null;
     });
 </script>
 
