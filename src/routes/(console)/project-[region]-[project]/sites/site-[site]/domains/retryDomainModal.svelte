@@ -111,13 +111,17 @@
         <Divider />
     </div>
     {#if selectedTab === 'nameserver'}
-        <NameserverTable domain={selectedProxyRule.domain} {verified} />
+        <NameserverTable
+            domain={selectedProxyRule.domain}
+            {verified}
+            ruleStatus={selectedProxyRule.status} />
     {:else}
         <RecordTable
             {verified}
             service="sites"
             variant={selectedTab}
-            domain={selectedProxyRule.domain} />
+            domain={selectedProxyRule.domain}
+            ruleStatus={selectedProxyRule.status} />
     {/if}
 
     <svelte:fragment slot="footer">

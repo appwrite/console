@@ -48,25 +48,15 @@
 
     async function addDomain() {
         const apexDomain = getApexDomain(domainName);
-        let domain = data.domains?.domains.find((d: Models.Domain) => d.domain === apexDomain);
+        let domain: Models.Domain;
 
-        if (apexDomain && !domain && isCloud) {
+        if (isCloud && apexDomain) {
             try {
                 domain = await sdk.forConsole.domains.create({
                     teamId: $project.teamId,
                     domain: apexDomain
                 });
-            } catch (error) {
-                // apex might already be added on organization level, skip.
-                const alreadyAdded = error?.type === 'domain_already_exists';
-                if (!alreadyAdded) {
-                    addNotification({
-                        type: 'error',
-                        message: error.message
-                    });
-                    return;
-                }
-            }
+            } catch (error) {}
         }
 
         try {
@@ -100,14 +90,13 @@
             if (rule?.status === 'verified') {
                 await goto(routeBase);
                 await invalidate(Dependencies.FUNCTION_DOMAINS);
-            } else {
-                let redirect = `${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`;
-
-                if (isCloud && domain?.$id) {
-                    redirect += `&domain=${domain.$id}`;
+                if (isCloud) {
+                    try {
+                        await sdk.forConsole.domains.updateNameservers({ domainId: domain.$id });
+                    } catch (error) {}
                 }
-
-                await goto(redirect);
+            } else {
+                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
                 await invalidate(Dependencies.FUNCTION_DOMAINS);
             }
         } catch (error) {

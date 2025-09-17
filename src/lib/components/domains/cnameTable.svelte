@@ -12,7 +12,8 @@
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let domain: string;
-    export let verified = undefined;
+    export let verified: boolean | undefined = undefined;
+    export let ruleStatus: string | undefined = undefined;
 
     let subdomain = domain.split('.').slice(0, -2).join('.');
 </script>
@@ -23,10 +24,18 @@
             <Typography.Text variant="l-500" color="--fgcolor-neutral-primary">
                 {domain}
             </Typography.Text>
-            {#if verified === true}
+            {#if ruleStatus === 'created'}
+                <Badge variant="secondary" type="error" size="xs" content="Verification failed" />
+            {:else if ruleStatus === 'verifying'}
+                <Badge variant="secondary" size="xs" content="Generating certificate" />
+            {:else if ruleStatus === 'unverified'}
+                <Badge
+                    variant="secondary"
+                    type="error"
+                    size="xs"
+                    content="Certificate generation failed" />
+            {:else if verified === true}
                 <Badge variant="secondary" type="success" size="xs" content="Verified" />
-            {:else if verified === false}
-                <Badge variant="secondary" type="warning" size="xs" content="Verification failed" />
             {/if}
         </Layout.Stack>
         <Typography.Text variant="m-400">
