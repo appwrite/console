@@ -232,7 +232,7 @@ function generateSingleValue(
         }
 
         case 'polygon': {
-            let points = Array.from({ length: 5 }, () => [
+            const points = Array.from({ length: 5 }, () => [
                 faker.location.longitude(),
                 faker.location.latitude()
             ]);

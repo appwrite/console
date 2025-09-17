@@ -65,7 +65,7 @@ export async function gzipUpload(files: FileList) {
                     data: f.buffer
                 }))
             );
-            const blob = new Blob([tar as Uint8Array<ArrayBuffer>], { type: 'application/gzip' });
+            const blob = new Blob([tar], { type: 'application/gzip' });
             const file = new File([blob], 'deployment.tar.gz', {
                 type: 'application/gzip'
             });
