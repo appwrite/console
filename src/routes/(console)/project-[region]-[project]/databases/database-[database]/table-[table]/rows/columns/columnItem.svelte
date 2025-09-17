@@ -26,23 +26,24 @@
     let formStore = writable(formValues);
 
     function removeArrayItem(key: string, index: number) {
+        const currentArray = Array.isArray($formStore[key]) ? $formStore[key] : [];
+        const filteredArray = currentArray.filter((_: object, i: number) => i !== index);
         const next = {
-            ...$formStore,
-            [key]: $formStore[key].filter((_, i) => i !== index)
+            ...formValues,
+            [key]: filteredArray.length === 0 ? [] : filteredArray
         };
 
         formStore.set(next);
-        onUpdateFormValues?.(next);
     }
 
     function addArrayItem(key: string) {
+        const currentArray = Array.isArray($formStore[key]) ? $formStore[key] : null;
         const next = {
-            ...$formStore,
-            [key]: [...($formStore[key] ?? []), null]
+            ...formValues,
+            [key]: currentArray ? [...currentArray, null] : [null]
         };
 
         formStore.set(next);
-        onUpdateFormValues?.(next);
     }
 
     function getColumnType(column: Columns) {
@@ -107,7 +108,7 @@
             on:click />
     {:else}
         <Layout.Stack>
-            {#each [...($formStore[column.key]?.keys() ?? [])] as index}
+            {#each [...($formStore[column.key]?.keys() ?? [])] as index (index)}
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                     <Column
                         {column}
