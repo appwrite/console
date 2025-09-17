@@ -16,6 +16,7 @@
         buildWildcardColumnsQuery,
         isRelationship,
         isRelationshipToMany,
+        isSpatialType,
         isString
     } from './rows/store';
     import {
@@ -66,10 +67,13 @@
         IconDotsHorizontal,
         IconFingerPrint,
         IconHashtag,
+        IconLine,
         IconLink,
         IconLocationMarker,
         IconMail,
+        IconPoint,
         IconPlus,
+        IconPolygon,
         IconRelationship,
         IconSwitchHorizontal,
         IconText,
@@ -305,6 +309,12 @@
                 return IconViewList;
             case 'relationship':
                 return IconRelationship;
+            case 'point':
+                return IconPoint;
+            case 'linestring':
+                return IconLine;
+            case 'polygon':
+                return IconPolygon;
         }
     }
 
@@ -909,6 +919,10 @@
                                             variant="secondary"
                                             size="s" />
                                     {/if}
+                                {:else if isSpatialType(rowColumn)}
+                                    <Typography.Text truncate>
+                                        {JSON.stringify(row[columnId])}
+                                    </Typography.Text>
                                 {:else}
                                     {@const value = row[columnId]}
                                     {@const formatted = formatColumn(row[columnId])}
