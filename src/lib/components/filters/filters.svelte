@@ -36,7 +36,7 @@
 
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
     let value: any = null;
-    let distanceValue: number = null;
+    let distanceValue: number | null = null;
     let selectedColumn: string | null = null;
     let operatorKey: string | null = null;
     let arrayValues: string[] = [];
