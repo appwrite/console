@@ -36,7 +36,7 @@
                 <Input.Number
                     id={`point-${index}`}
                     placeholder="Enter value"
-                    step={0.001}
+                    step={0.0001}
                     value={values[index]}
                     on:change={(e) => onChangePoint(index, Number.parseFloat(`${e.detail}`))} />
             {/each}
