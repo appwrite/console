@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
 
     let { children } = $props();

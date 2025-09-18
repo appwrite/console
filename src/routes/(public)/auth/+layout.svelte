@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { loading } from '$routes/store';
     import { Typography } from '@appwrite.io/pink-svelte';
