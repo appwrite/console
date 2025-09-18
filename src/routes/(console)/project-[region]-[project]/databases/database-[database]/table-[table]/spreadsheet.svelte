@@ -919,7 +919,7 @@
                                             variant="secondary"
                                             size="s" />
                                     {/if}
-                                {:else if isSpatialType(rowColumn)}
+                                {:else if isSpatialType(rowColumn) && row[columnId] !== null}
                                     <Typography.Text truncate>
                                         {JSON.stringify(row[columnId])}
                                     </Typography.Text>

@@ -208,12 +208,6 @@ export const getDefaultSpatialData = (
                 [0, 0],
                 [0, 0],
                 [0, 0]
-            ],
-            [
-                [0, 0],
-                [0, 0],
-                [0, 0],
-                [0, 0]
             ]
         ];
 };
