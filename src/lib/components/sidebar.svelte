@@ -138,7 +138,7 @@
                 <Tooltip placement="right" disabled={state !== 'icons'}>
                     <a
                         class="progress-card"
-                        href={`/console/project-${project.region}-${project.$id}/get-started`}
+                        href={`/console/project-${project?.region}-${project?.$id}/get-started`}
                         on:click={() => {
                             trackEvent('click_menu_get_started');
                             sideBarIsOpen = false;

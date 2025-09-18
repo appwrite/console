@@ -205,7 +205,7 @@
         <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
     {/if}
 
-    {#if !$isNewWizardStatusOpen}
+    {#if !$isNewWizardStatusOpen && isProjectPage}
         <Sidebar
             project={selectedProject}
             progressCard={getProgressCard()}
