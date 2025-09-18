@@ -1,3 +1,17 @@
+const LINKEDIN_TRACKING_ID = 'li_fat_id';
+const GOOGLE_TRACKING_ID = 'gclid';
+const TWITTER_TRACKING_ID = 'twclid';
+const REDDIT_TRACKING_ID = 'rdt_cid';
+
+const TRACKED_QUERY_PARAMS = [
+    LINKEDIN_TRACKING_ID,
+    GOOGLE_TRACKING_ID,
+    TWITTER_TRACKING_ID,
+    REDDIT_TRACKING_ID
+] as const;
+
+type TrackedParams = Record<(typeof TRACKED_QUERY_PARAMS)[number], string>;
+
 export function getReferrerAndUtmSource() {
     if (sessionStorage) {
         let values = {};
@@ -16,26 +30,25 @@ export function getReferrerAndUtmSource() {
     return {};
 }
 
-export function getAllQueryParams() {
-    if (typeof window !== 'undefined' && window.location) {
+export function getTrackedQueryParams(): Partial<TrackedParams> {
+    if (typeof window === 'undefined' || !window.location) {
+        return {};
+    }
+
+    try {
         const urlParams = new URLSearchParams(window.location.search);
-        const params = {};
+        const params: Partial<TrackedParams> = {};
 
-        const utmParams = new Set([
-            'utm_source',
-            'utm_medium',
-            'utm_campaign',
-            'utm_term',
-            'utm_content'
-        ]);
-
-        for (const [key, value] of urlParams.entries()) {
-            if (!utmParams.has(key.toLowerCase())) {
-                params[key] = value;
+        for (const paramName of TRACKED_QUERY_PARAMS) {
+            const value = urlParams.get(paramName);
+            if (value) {
+                params[paramName] = value;
             }
         }
 
         return params;
+    } catch (error) {
+        console.warn('Failed to parse URL search parameters:', error);
+        return {};
     }
-    return {};
 }
