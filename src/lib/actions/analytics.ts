@@ -429,5 +429,6 @@ export enum Submit {
     RecordUpdate = 'submit_dns_record_update',
     RecordDelete = 'submit_dns_record_delete',
     SearchClear = 'submit_clear_search',
-    FrameworkDetect = 'submit_framework_detect'
+    FrameworkDetect = 'submit_framework_detect',
+    TestimonialView = 'testimonial_view'
 }
