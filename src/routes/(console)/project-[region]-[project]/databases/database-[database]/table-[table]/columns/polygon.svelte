@@ -97,7 +97,9 @@
 
     $effect(() => {
         data.required = $required;
-        handleDefaultState($required);
+        if ($required) {
+            handleDefaultState(true);
+        }
     });
 </script>
 
