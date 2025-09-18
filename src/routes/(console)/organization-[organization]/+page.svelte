@@ -19,6 +19,7 @@
     import { trackEvent, Click } from '$lib/actions/analytics';
     import { type Models } from '@appwrite.io/console';
     import { getServiceLimit, readOnly, upgradeURL } from '$lib/stores/billing';
+    import { BillingPlan } from '$lib/constants';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
@@ -154,6 +155,28 @@
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
                             source: 'projects_archive_alert'
+                        });
+                    }}>
+                    Upgrade to Pro
+                </Button>
+            </svelte:fragment>
+        </Alert.Inline>
+    {/if}
+
+    {#if isCloud && data.organization.billingPlan === BillingPlan.FREE && projectsToArchive.length === 0}
+        <Alert.Inline>
+            <Typography.Text
+                >Your Free plan includes up to 2 projects and limited resources. Upgrade to unlock
+                more capacity and features.</Typography.Text>
+            <svelte:fragment slot="actions">
+                <Button
+                    compact
+                    size="s"
+                    href={$upgradeURL}
+                    on:click={() => {
+                        trackEvent(Click.OrganizationClickUpgrade, {
+                            from: 'button',
+                            source: 'free_plan_info_alert'
                         });
                     }}>
                     Upgrade to Pro
