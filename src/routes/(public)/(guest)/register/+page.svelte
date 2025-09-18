@@ -42,6 +42,7 @@
             }
         ]
     };
+
     trackEvent(Submit.TestimonialView, {
         testimonial_id: randomTestimonial.id,
         testimonial_name: randomTestimonial.name,
