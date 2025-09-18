@@ -39,12 +39,14 @@
     import { createConservative } from '$lib/helpers/stores';
     import { Selector, Typography, Layout } from '@appwrite.io/pink-svelte';
     import { getDefaultSpatialData } from '../store';
+    import { onMount } from 'svelte';
 
     interface Props {
         data?: Partial<Models.ColumnPoint>;
+        editing?: boolean;
     }
 
-    let { data = { required: false, default: null } }: Props = $props();
+    let { data = { required: false, default: null }, editing }: Props = $props();
 
     let savedDefault = $state(data.default);
     let defaultChecked = $state(!!data.default);
@@ -79,6 +81,14 @@
 
     $effect(() => {
         defaultChecked = data.default !== null;
+    });
+
+    onMount(() => {
+        if (!editing) {
+            savedDefault = getDefaultSpatialData('point');
+            defaultChecked = false;
+            $required = false;
+        }
     });
 </script>
 

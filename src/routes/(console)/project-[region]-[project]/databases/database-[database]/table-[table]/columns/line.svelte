@@ -39,12 +39,14 @@
     import { Selector, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { InputLine } from '$lib/elements/forms';
     import { getDefaultSpatialData } from '../store';
+    import { onMount } from 'svelte';
 
     interface Props {
         data?: Partial<Models.ColumnLine>;
+        editing?: boolean;
     }
 
-    let { data = { required: false, default: null } }: Props = $props();
+    let { data = { required: false, default: null }, editing = false }: Props = $props();
 
     let savedDefault = $state(data.default);
     let defaultChecked = $state(!!data.default);
@@ -88,6 +90,14 @@
         data.required = $required;
         if ($required) {
             handleDefaultState(true);
+        }
+    });
+
+    onMount(() => {
+        if (!editing) {
+            savedDefault = getDefaultSpatialData('linestring');
+            defaultChecked = false;
+            $required = false;
         }
     });
 </script>
