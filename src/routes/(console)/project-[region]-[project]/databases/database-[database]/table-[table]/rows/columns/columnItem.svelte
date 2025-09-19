@@ -28,22 +28,18 @@
     function removeArrayItem(key: string, index: number) {
         const currentArray = Array.isArray($formStore[key]) ? $formStore[key] : [];
         const filteredArray = currentArray.filter((_: object, i: number) => i !== index);
-        const next = {
-            ...formValues,
-            [key]: filteredArray.length === 0 ? [] : filteredArray
-        };
-
-        formStore.set(next);
+        formStore.update((values) => {
+            values[key] = filteredArray.length === 0 ? [] : filteredArray;
+            return values;
+        });
     }
 
     function addArrayItem(key: string) {
         const currentArray = Array.isArray($formStore[key]) ? $formStore[key] : null;
-        const next = {
-            ...formValues,
-            [key]: currentArray ? [...currentArray, null] : [null]
-        };
-
-        formStore.set(next);
+        formStore.update((values) => {
+            values[key] = currentArray ? [...currentArray, null] : [null];
+            return values;
+        });
     }
 
     function getColumnType(column: Columns) {
@@ -58,8 +54,7 @@
                 case 'enum':
                     return 'Enum';
                 default:
-                    'String';
-                    break;
+                    return 'String';
             }
         }
         return `${capitalize(column.type)}${column.array ? '[]' : ''}`;

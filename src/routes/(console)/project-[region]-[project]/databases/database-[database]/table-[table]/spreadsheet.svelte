@@ -4,7 +4,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Confirm, Id, SortButton } from '$lib/components';
     import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
-    import { Button as ConsoleButton, InputChoice, InputSelect } from '$lib/elements/forms';
+    import { Button as ConsoleButton, InputSelect } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
@@ -121,7 +121,6 @@
 
     let showDelete = false;
     let showColumnDelete = false;
-    let deleteConfirmationChecked = false;
     let selectedRowForDelete: Models.Row['$id'] | null = null;
 
     onMount(async () => {
@@ -1087,8 +1086,12 @@
 </SpreadsheetContainer>
 
 <Confirm
+    confirmDeletion
     bind:open={showDelete}
     onSubmit={handleDelete}
+    confirmDeletionLabel={relatedColumns?.length
+        ? `Delete ${selectedRowForDelete !== null ? 'row' : 'rows'} from ${$table.name}`
+        : undefined}
     title={selectedRows.length === 1 ? 'Delete Row' : 'Delete Rows'}>
     {@const isSingle = selectedRowForDelete !== null}
 
@@ -1139,17 +1142,6 @@
 
         <Layout.Stack direction="column" gap="m">
             <Alert.Inline>To change the selection edit the relationship settings.</Alert.Inline>
-
-            <ul>
-                <InputChoice
-                    id="delete"
-                    label="Delete"
-                    showLabel={false}
-                    bind:value={deleteConfirmationChecked}>
-                    Delete {isSingle ? 'row' : 'rows'} from
-                    <span data-private>{$table.name}</span>
-                </InputChoice>
-            </ul>
         </Layout.Stack>
     {:else}
         <p class="u-bold">This action is irreversible.</p>

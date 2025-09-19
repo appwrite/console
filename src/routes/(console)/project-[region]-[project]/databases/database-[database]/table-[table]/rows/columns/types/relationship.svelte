@@ -69,7 +69,8 @@
         } else {
             if (value && typeof value === 'object') {
                 row = value as Models.Row;
-                singleRel = row?.$id;
+                // set for combobox and select.
+                newItemValue = singleRel = row?.$id;
             }
         }
     });
@@ -368,23 +369,26 @@
 
                 <!-- Input for adding new items -->
                 {#if showInput}
-                    <Layout.Stack direction="row">
-                        <Input.ComboBox
-                            {id}
-                            required
-                            placeholder={`Select ${column.key}`}
-                            bind:value={newItemValue}
-                            options={getAvailableOptions()}
-                            on:change={addNewItem}
-                            noResultsOption={searchNoResultsOption}
-                            leadingIcon={!limited ? IconRelationship : undefined} />
+                    {@const availableOptions = getAvailableOptions()}
+                    {#key availableOptions}
+                        <Layout.Stack direction="row">
+                            <Input.ComboBox
+                                {id}
+                                required
+                                on:change={addNewItem}
+                                bind:value={newItemValue}
+                                options={availableOptions}
+                                placeholder={`Select ${column.key}`}
+                                noResultsOption={searchNoResultsOption}
+                                leadingIcon={!limited ? IconRelationship : undefined} />
 
-                        <div style:padding-block-start="0.5rem">
-                            <Button icon extraCompact on:click={cancelAddItem}>
-                                <Icon icon={IconX} size="s" />
-                            </Button>
-                        </div>
-                    </Layout.Stack>
+                            <div style:padding-block-start="0.5rem">
+                                <Button icon extraCompact on:click={cancelAddItem}>
+                                    <Icon icon={IconX} size="s" />
+                                </Button>
+                            </div>
+                        </Layout.Stack>
+                    {/key}
                 {/if}
             </Layout.Stack>
 
@@ -400,44 +404,75 @@
     </Layout.Stack>
 {:else}
     <Layout.Stack direction="row" alignItems="center" gap="s">
-        <Input.ComboBox
-            {id}
-            {options}
-            autofocus={limited}
-            bind:value={newItemValue}
-            required={column.required}
-            label={limited ? undefined : label}
-            placeholder={`Select ${column.key}`}
-            noResultsOption={searchNoResultsOption}
-            on:change={() => {
-                if (newItemValue === null) {
-                    value = null;
-                    singleRel = null;
-                } else {
-                    const selectedRow = rowList.rows.find((row) => row.$id === newItemValue);
+        {#key options}
+            {#if limited}
+                <!-- for unlink badge -->
+                <Input.Select
+                    {id}
+                    {options}
+                    autofocus={limited}
+                    bind:value={newItemValue}
+                    required={column.required}
+                    label={limited ? undefined : label}
+                    placeholder={`Select ${column.key}`}
+                    noResultsOption={searchNoResultsOption}
+                    on:change={() => {
+                        if (newItemValue === null) {
+                            value = null;
+                            singleRel = null;
+                        } else {
+                            const selectedRow = rowList.rows.find(
+                                (row) => row.$id === newItemValue
+                            );
 
-                    if (selectedRow) {
-                        value = selectedRow;
-                        singleRel = newItemValue;
-                    }
-                }
+                            if (selectedRow) {
+                                value = selectedRow;
+                                singleRel = newItemValue;
+                            }
+                        }
+                    }}
+                    leadingIcon={!limited ? IconRelationship : undefined} />
+            {:else}
+                <Input.ComboBox
+                    {id}
+                    {options}
+                    autofocus={limited}
+                    bind:value={newItemValue}
+                    required={column.required}
+                    label={limited ? undefined : label}
+                    placeholder={`Select ${column.key}`}
+                    noResultsOption={searchNoResultsOption}
+                    on:change={() => {
+                        if (newItemValue === null) {
+                            value = null;
+                            singleRel = null;
+                        } else {
+                            const selectedRow = rowList.rows.find(
+                                (row) => row.$id === newItemValue
+                            );
 
-                newItemValue = null;
-            }}
-            leadingIcon={!limited ? IconRelationship : undefined} />
+                            if (selectedRow) {
+                                value = selectedRow;
+                                singleRel = newItemValue;
+                            }
+                        }
+                    }}
+                    leadingIcon={!limited ? IconRelationship : undefined} />
+            {/if}
 
-        {#if !limited && singleRel}
-            <div style:padding-block-start="2.25rem">
-                <Button
-                    icon
-                    extraCompact
-                    on:click={() => {
-                        value = null;
-                        singleRel = null;
-                    }}>
-                    <Icon icon={IconX} size="s" />
-                </Button>
-            </div>
-        {/if}
+            {#if !limited && singleRel}
+                <div style:padding-block-start="2.25rem">
+                    <Button
+                        icon
+                        extraCompact
+                        on:click={() => {
+                            value = null;
+                            newItemValue = singleRel = null;
+                        }}>
+                        <Icon icon={IconX} size="s" />
+                    </Button>
+                </div>
+            {/if}
+        {/key}
     </Layout.Stack>
 {/if}

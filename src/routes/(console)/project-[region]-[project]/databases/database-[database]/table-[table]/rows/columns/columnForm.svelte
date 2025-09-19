@@ -5,11 +5,17 @@
     import ColumnItem from './columnItem.svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
 
-    export let columns: Columns[] = [];
-    export let formValues: object = {};
-    export let customId: string | null | undefined = undefined;
+    let {
+        columns = [],
+        formValues = $bindable({}),
+        customId = $bindable(undefined)
+    }: {
+        columns: Columns[];
+        formValues: object;
+        customId: string | null | undefined;
+    } = $props();
 
-    let showCustomId = false;
+    let showCustomId = $state(false);
 </script>
 
 {#if columns.length}

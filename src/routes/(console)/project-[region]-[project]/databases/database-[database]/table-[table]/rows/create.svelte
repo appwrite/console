@@ -109,7 +109,8 @@
             trackEvent(Submit.RowCreate, {
                 customId: !!$createRow.id
             });
-            await invalidate(Dependencies.ROW);
+
+            await invalidate(Dependencies.ROWS);
 
             if (createMore) {
                 resetCreateRow();
