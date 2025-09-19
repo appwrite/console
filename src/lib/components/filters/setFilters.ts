@@ -20,7 +20,12 @@ export function setFilters(localTags: TagValue[], filterCols: FilterData[], $col
                 setSizeFilter(filter, $columns);
             } else if (id?.includes('statuscode')) {
                 setStatusCodeFilter(filter, $columns);
-            } else if (id === '$createdat' || id === '$updatedat') {
+            } else if (
+                id === '$createdat' ||
+                id === '$updatedat' ||
+                id === 'scheduledat' ||
+                id === 'deliveredat'
+            ) {
                 setDateFilter(filter, $columns);
             } else {
                 setFilterData(filter);
