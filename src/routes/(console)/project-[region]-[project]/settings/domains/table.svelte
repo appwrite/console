@@ -3,10 +3,16 @@
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { IconDotsHorizontal, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDotsHorizontal,
+        IconRefresh,
+        IconTerminal,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
         Badge,
+        Divider,
         Icon,
         Layout,
         Popover,
@@ -15,8 +21,10 @@
     } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
+    import { ViewLogsModal } from '$lib/components';
     import { regionalProtocol } from '../../store';
     import DnsRecordsAction from '$lib/components/domains/dnsRecordsAction.svelte';
+    import { timeFromNowShort } from '$lib/helpers/date';
 
     let {
         domains,
@@ -28,6 +36,7 @@
 
     let showDelete = $state(false);
     let showRetry = $state(false);
+    let showLogs = $state(false);
     let selectedDomain: Models.ProxyRule = $state(null);
 
     const columns = [
@@ -36,7 +45,13 @@
             title: 'Domain',
             type: 'string',
             format: 'string',
-            width: { min: 200, max: 550 }
+            width: { min: 300, max: 550 }
+        },
+        {
+            id: 'updated',
+            title: '',
+            type: 'string',
+            width: { min: 160, max: 180 }
         }
     ];
 </script>
@@ -64,14 +79,73 @@
                                     {domain.domain}
                                 </Typography.Text>
                             </Link>
-                            {#if domain.status === 'verifying'}
-                                <Badge variant="secondary" content="Verifying" size="s" />
-                            {:else if domain.status !== 'verified'}
-                                <Badge
-                                    variant="secondary"
-                                    type="warning"
-                                    content="Verification failed"
-                                    size="s" />
+                            {#if domain.status === 'created'}
+                                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                                    <Badge
+                                        variant="secondary"
+                                        type="error"
+                                        content="Verification failed"
+                                        size="xs" />
+                                    <Link
+                                        size="s"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedDomain = domain;
+                                            showRetry = true;
+                                        }}>
+                                        Retry
+                                    </Link>
+                                </Layout.Stack>
+                            {:else if domain.status === 'verifying'}
+                                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                                    <Badge
+                                        variant="secondary"
+                                        content="Generating certificate"
+                                        size="xs" />
+                                    <Link
+                                        size="s"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedDomain = domain;
+                                            showLogs = true;
+                                        }}>
+                                        View logs
+                                    </Link>
+                                </Layout.Stack>
+                            {:else if domain.status === 'unverified'}
+                                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                                    <Badge
+                                        variant="secondary"
+                                        type="error"
+                                        content="Certificate generation failed"
+                                        size="xs" />
+                                    <Link
+                                        size="s"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedDomain = domain;
+                                            showLogs = true;
+                                        }}>
+                                        View logs
+                                    </Link>
+                                </Layout.Stack>
+                            {/if}
+                        </Layout.Stack>
+                    {:else if column.id === 'updated'}
+                        <Layout.Stack direction="row" justifyContent="flex-end">
+                            {#if domain.status !== 'verified'}
+                                <Typography.Text
+                                    variant="m-400"
+                                    color="--fgcolor-neutral-tertiary"
+                                    style="font-size: 0.875rem;">
+                                    {#if domain.status === 'created'}
+                                        Checked {timeFromNowShort(domain.$updatedAt)}
+                                    {:else if domain.status === 'verifying'}
+                                        Updated {timeFromNowShort(domain.$updatedAt)}
+                                    {:else if domain.status === 'unverified'}
+                                        Failed {timeFromNowShort(domain.$updatedAt)}
+                                    {/if}
+                                </Typography.Text>
                             {/if}
                         </Layout.Stack>
                     {/if}
@@ -92,7 +166,18 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
-                                {#if domain.status !== 'verified' && domain.status !== 'verifiying'}
+                                {#if domain.logs && (domain.status === 'unverified' || domain.status === 'verifying')}
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconTerminal}
+                                        on:click={(e) => {
+                                            selectedDomain = domain;
+                                            showLogs = true;
+                                            toggle(e);
+                                        }}>
+                                        View logs
+                                    </ActionMenu.Item.Button>
+                                {/if}
+                                {#if domain.status !== 'verified' && domain.status !== 'verifying'}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconRefresh}
                                         on:click={(e) => {
@@ -104,6 +189,11 @@
                                     </ActionMenu.Item.Button>
                                 {/if}
                                 <DnsRecordsAction rule={domain} {organizationDomains} />
+                                {#if domain.logs && (domain.status === 'unverified' || domain.status === 'verifying')}
+                                    <div class="action-menu-divider">
+                                        <Divider />
+                                    </div>
+                                {/if}
                                 <ActionMenu.Item.Button
                                     status="danger"
                                     leadingIcon={IconTrash}
@@ -133,3 +223,13 @@
 {#if showRetry}
     <RetryDomainModal bind:show={showRetry} {selectedDomain} />
 {/if}
+
+{#if showLogs}
+    <ViewLogsModal bind:show={showLogs} selectedProxyRule={selectedDomain} />
+{/if}
+
+<style>
+    .action-menu-divider {
+        margin-inline: -1rem;
+    }
+</style>
