@@ -138,7 +138,7 @@
 
     $: search = data.relatedTable || undefined;
 
-    $: if (search) {
+    $: if (search && !editing) {
         const exists = tableList?.tables?.some((c) =>
             c.$id.toLocaleLowerCase().includes(search.toLocaleLowerCase())
         );
@@ -191,6 +191,7 @@
         bind:value={data.key}
         helper="Allowed characters: a-z, A-Z, 0-9, -, ."
         required />
+
     {#if way === 'two'}
         <InputText
             id="keyRelated"
