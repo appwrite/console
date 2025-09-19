@@ -45,7 +45,8 @@
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { canSeeProjects } from '$lib/stores/roles';
-    import { BottomModalAlert, EmailVerificationBanner } from '$lib/components';
+    import { BottomModalAlert } from '$lib/components';
+    import SendVerificationEmailModal from '$lib/components/account/sendVerificationEmailModal.svelte';
     import {
         IconAnnotation,
         IconBookOpen,
@@ -346,8 +347,6 @@
     <Footer slot="footer" />
 </Shell>
 
-<EmailVerificationBanner />
-
 {#if $wizard.show && $wizard.component}
     <svelte:component this={$wizard.component} {...$wizard.props} />
 {:else if $wizard.cover}
@@ -365,3 +364,4 @@
 {/if}
 
 <BottomModalAlert />
+<SendVerificationEmailModal />
