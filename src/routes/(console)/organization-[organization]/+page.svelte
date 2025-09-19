@@ -103,7 +103,7 @@
     function dismissFreePlanAlert() {
         freePlanAlertDismissed = true;
         const notificationId = `freePlanAlert_${data.organization.$id}`;
-        hideNotification(notificationId, { coolOffPeriod: 36 });
+        hideNotification(notificationId, { coolOffPeriod: 24 });
 
         trackEvent(Click.OrganizationClickUpgrade, {
             from: 'button',
