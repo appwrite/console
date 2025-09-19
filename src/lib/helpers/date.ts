@@ -216,14 +216,9 @@ export function timeFromNowShort(datetime: string): string {
 
     const timeStr = dayjs().to(dayjs(datetime));
     return timeStr
-        .replace(' seconds ago', ' secs ago')
-        .replace(' second ago', ' sec ago')
-        .replace(' minutes ago', ' mins ago')
-        .replace(' minute ago', ' min ago')
-        .replace(' hours ago', ' hrs ago')
-        .replace(' hour ago', ' hr ago')
-        .replace(' days ago', ' days ago')
-        .replace(' day ago', ' day ago');
+        .replace('second', 'sec') // seconds > secs
+        .replace('minute', 'min') // minutes > mins
+        .replace('hour', 'hr'); // hours > hrs
 }
 
 export function hoursToDays(hours: number) {
