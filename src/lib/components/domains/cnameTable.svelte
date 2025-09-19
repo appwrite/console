@@ -39,8 +39,8 @@
             {/if}
         </Layout.Stack>
         <Typography.Text variant="m-400">
-            Add the following record on your DNS provider. Note that DNS changes may take time to
-            propagate fully.
+            Add the following record on your DNS provider. Note that DNS changes may take up to 48
+            hours to propagate fully.
         </Typography.Text>
     </Layout.Stack>
 
@@ -60,6 +60,25 @@
                     text={$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME} />
             </Table.Cell>
         </Table.Row.Base>
+        {#if $regionalConsoleVariables._APP_DOMAIN_TARGET_CAA}
+            <Table.Row.Base {root}>
+                <Table.Cell {root}>
+                    <Layout.Stack gap="s" direction="row" alignItems="center">
+                        <span>CAA</span>
+                        <Badge variant="secondary" size="xs" content="Recommended" />
+                    </Layout.Stack>
+                </Table.Cell>
+                <Table.Cell {root}>@</Table.Cell>
+                <Table.Cell {root}>
+                    <InteractiveText
+                        variant="copy"
+                        isVisible
+                        text={$regionalConsoleVariables._APP_DOMAIN_TARGET_CAA.includes(' ')
+                            ? $regionalConsoleVariables._APP_DOMAIN_TARGET_CAA
+                            : `0 issue "${$regionalConsoleVariables._APP_DOMAIN_TARGET_CAA}"`} />
+                </Table.Cell>
+            </Table.Row.Base>
+        {/if}
     </Table.Root>
     <Layout.Stack gap="s" direction="row" alignItems="center">
         <Icon icon={IconInfo} size="s" color="--fgcolor-neutral-secondary" />

@@ -10,7 +10,6 @@
     import { Divider, Tabs } from '@appwrite.io/pink-svelte';
     import { isCloud } from '$lib/system';
     import { page } from '$app/state';
-    import { isASubdomain } from '$lib/helpers/tlds';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
@@ -23,12 +22,10 @@
         selectedProxyRule: Models.ProxyRule;
     } = $props();
 
-    const isSubDomain = $derived.by(() => isASubdomain(selectedProxyRule?.domain));
-
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
 
     $effect(() => {
-        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
+        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME) {
             selectedTab = 'cname';
         } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
             selectedTab = 'a';
@@ -75,7 +72,7 @@
 <Modal title="Retry verification" bind:show onSubmit={retryProxyRule} bind:error>
     <div>
         <Tabs.Root variant="secondary" let:root>
-            {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
+            {#if !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'cname')}
@@ -121,7 +118,10 @@
             service="general"
             variant={selectedTab}
             domain={selectedProxyRule.domain}
-            ruleStatus={selectedProxyRule.status} />
+            ruleStatus={selectedProxyRule.status}
+            onNavigateToNameservers={() => (selectedTab = 'nameserver')}
+            onNavigateToA={() => (selectedTab = 'a')}
+            onNavigateToAAAA={() => (selectedTab = 'aaaa')} />
     {/if}
 
     <svelte:fragment slot="footer">
