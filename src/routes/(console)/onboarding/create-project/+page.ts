@@ -60,6 +60,7 @@ export const load: PageLoad = async ({ parent }) => {
             }
         } catch (e) {
             trackError(e, Submit.OrganizationCreate);
+            redirect(303, `${base}/create-organization`);
         }
     } else if (organizations?.total === 1) {
         const org = organizations.teams[0];

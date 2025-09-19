@@ -1,13 +1,19 @@
 import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
+import { redirect } from '@sveltejs/kit';
+import { base } from '$app/paths';
 import type { LayoutLoad } from './$types';
 import type { Tier } from '$lib/stores/billing';
 import type { Plan, PlanList } from '$lib/sdk/billing';
 import { Query } from '@appwrite.io/console';
 
-export const load: LayoutLoad = async ({ depends, parent }) => {
-    const { organizations } = await parent();
+export const load: LayoutLoad = async ({ depends, parent, url }) => {
+    const { organizations, account } = await parent();
+
+    if (isCloud && !account.emailVerification && !url.pathname.includes('/verify-email')) {
+        redirect(303, `${base}/verify-email${url.search}`);
+    }
 
     depends(Dependencies.RUNTIMES);
     depends(Dependencies.CONSOLE_VARIABLES);

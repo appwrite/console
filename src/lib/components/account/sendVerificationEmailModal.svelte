@@ -98,7 +98,6 @@
         creating = true;
         try {
             await sdk.forConsole.account.createVerification({ url: cleanUrl });
-            addNotification({ message: 'Verification email has been sent', type: 'success' });
             emailSent = true;
             startResendTimer();
             // Don't close modal - user needs to verify email first
@@ -121,10 +120,6 @@
         if (userId && secret) {
             try {
                 await sdk.forConsole.account.updateVerification({ userId, secret });
-                addNotification({
-                    message: 'Email verified successfully',
-                    type: 'success'
-                });
                 await Promise.all([
                     invalidate(Dependencies.ACCOUNT),
                     invalidate(Dependencies.FACTORS)

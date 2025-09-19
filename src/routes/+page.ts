@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import type { PageLoad } from './$types';
 import { sdk } from '$lib/stores/sdk';
-import { VARS } from '$lib/system';
+import { isCloud, VARS } from '$lib/system';
 
 const handleGithubEducationMembership = async (name: string, email: string) => {
     const result = await sdk.forConsole.billing.setMembership('github-student-developer');
@@ -32,6 +32,10 @@ export const load: PageLoad = async ({ parent, url }) => {
     const { organizations, account } = await parent();
 
     const isApplyingCredit = url.pathname.includes('apply-credit');
+
+    if (isCloud && !account.emailVerification && !isApplyingCredit) {
+        redirect(303, `${base}/verify-email${url.search}`);
+    }
 
     if (userVisitedEducationPage()) {
         await handleGithubEducationMembership(account.name, account.email);
