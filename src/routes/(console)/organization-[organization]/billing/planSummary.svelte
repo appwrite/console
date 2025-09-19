@@ -146,7 +146,7 @@
 
     function getBillingData(currentPlan, currentAggregation, isSmallViewport) {
         const projectsList = getProjectsList(currentAggregation);
-        const base = {
+        const basePlan = {
             id: 'base-plan',
             expandable: false,
             cells: {
@@ -303,7 +303,7 @@
                 {
                     id: `usage-details`,
                     cells: {
-                        item: `<a href="/console/project-${String(project.region || 'default')}-${project.projectId}/settings/usage" style="text-decoration: underline; color: var(--fgcolor-accent-neutral);">Usage details</a>`,
+                        item: `<a href="${base}/project-${String(project.region || 'default')}-${project.projectId}/settings/usage" style="text-decoration: underline; color: var(--fgcolor-accent-neutral);">Usage details</a>`,
                         usage: '',
                         price: ''
                     }
@@ -311,7 +311,7 @@
             ]
         }));
         const noProjects = [];
-        return [base, ...addons, ...projects, ...noProjects];
+        return [basePlan, ...addons, ...projects, ...noProjects];
     }
 
     $: billingData = getBillingData(currentPlan, currentAggregation, $isSmallViewport);

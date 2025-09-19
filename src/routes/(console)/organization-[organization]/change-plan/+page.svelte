@@ -277,7 +277,7 @@
                     '',
                     clientSecret,
                     paymentMethodId,
-                    '/console/change-plan?' + params.toString()
+                    base + '/change-plan?' + params.toString()
                 );
                 await validate(org.teamId, collaborators);
             }

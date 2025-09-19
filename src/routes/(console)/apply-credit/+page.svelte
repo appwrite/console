@@ -174,7 +174,7 @@
                     '',
                     clientSecret,
                     paymentMethodId,
-                    `/console/apply-credit?${params}`
+                    `${base}/apply-credit?${params}`
                 );
                 org = await sdk.forConsole.billing.validateOrganization(org.teamId, collaborators);
             }
