@@ -1,41 +1,73 @@
 <script context="module" lang="ts">
+    import { tick } from 'svelte';
+    import { debounce } from '$lib/helpers/debounce';
+
+    const batchQueue = new Set<() => void>();
+    let batchPromise: Promise<void> | null = null;
+
+    async function processBatch() {
+        await tick();
+        batchQueue.forEach((fn) => fn());
+
+        // clear queue!
+        batchQueue.clear();
+        batchPromise = null;
+    }
+
+    function addToBatch(fn: () => void) {
+        batchQueue.add(fn);
+        if (!batchPromise) {
+            batchPromise = processBatch();
+        }
+    }
+
     export function truncateText(node: HTMLElement) {
-        const MAX_TRIES = 100;
         let originalText = node.textContent;
         function checkOverflow() {
             node.textContent = originalText;
 
             if (node.scrollWidth > node.clientWidth) {
-                let truncatedText = originalText;
-                let tries = 0;
-                while (
-                    node.scrollWidth > node.clientWidth &&
-                    truncatedText.length > 0 &&
-                    tries < MAX_TRIES
-                ) {
-                    tries++;
-                    if (truncatedText.includes('…')) {
-                        const [left, right] = truncatedText.split('…');
-                        truncatedText = `${left.slice(0, -1)}…${right.slice(1)}`;
+                let left = 0;
+                let right = originalText.length;
+                let bestFit = originalText;
+
+                while (left <= right) {
+                    const mid = Math.floor((left + right) / 2);
+                    const leftPart = originalText.slice(0, mid);
+                    const rightPart = originalText.slice(
+                        originalText.length - (originalText.length - mid)
+                    );
+                    const truncated =
+                        mid === originalText.length ? originalText : `${leftPart}…${rightPart}`;
+
+                    node.textContent = truncated;
+
+                    if (node.scrollWidth <= node.clientWidth) {
+                        bestFit = truncated;
+                        left = mid + 1;
                     } else {
-                        const left = truncatedText.slice(0, truncatedText.length / 2);
-                        const right = truncatedText.slice(truncatedText.length / 2);
-                        truncatedText = `${left.slice(0, -1)}…${right.slice(1)}`;
+                        right = mid - 1;
                     }
-                    node.textContent = truncatedText;
                 }
+
+                node.textContent = bestFit;
             }
         }
-        requestAnimationFrame(checkOverflow);
-        window.addEventListener('resize', checkOverflow);
+
+        const debouncedCheck = debounce(checkOverflow, 16);
+
+        addToBatch(checkOverflow);
+        window.addEventListener('resize', debouncedCheck);
 
         return {
             update() {
                 originalText = node.textContent;
-                checkOverflow();
+                addToBatch(checkOverflow);
             },
             destroy() {
-                window.removeEventListener('resize', checkOverflow);
+                batchQueue.delete(checkOverflow);
+                window.removeEventListener('resize', debouncedCheck);
+                debouncedCheck.cancel();
             }
         };
     }
