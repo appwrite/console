@@ -6,12 +6,20 @@
     let batchPromise: Promise<void> | null = null;
 
     async function processBatch() {
-        await tick();
-        batchQueue.forEach((fn) => fn());
-
-        // clear queue!
-        batchQueue.clear();
-        batchPromise = null;
+        try {
+            await tick();
+            batchQueue.forEach((fn) => {
+                try {
+                    fn();
+                } catch {
+                    /* empty */
+                }
+            });
+        } finally {
+            // clear queue!
+            batchQueue.clear();
+            batchPromise = null;
+        }
     }
 
     function addToBatch(fn: () => void) {
@@ -23,30 +31,32 @@
 
     export function truncateText(node: HTMLElement) {
         let originalText = node.textContent;
+
         function checkOverflow() {
             node.textContent = originalText;
 
             if (node.scrollWidth > node.clientWidth) {
                 let left = 0;
                 let right = originalText.length;
-                let bestFit = originalText;
+                let bestFit = '…';
 
                 while (left <= right) {
-                    const mid = Math.floor((left + right) / 2);
-                    const leftPart = originalText.slice(0, mid);
-                    const rightPart = originalText.slice(
-                        originalText.length - (originalText.length - mid)
-                    );
+                    // total chars to keep
+                    const keep = (left + right) >> 1;
+                    const head = Math.ceil(keep / 2);
+                    const tail = keep - head;
                     const truncated =
-                        mid === originalText.length ? originalText : `${leftPart}…${rightPart}`;
+                        keep === originalText.length
+                            ? originalText
+                            : `${originalText.slice(0, head)}…${originalText.slice(-tail)}`;
 
                     node.textContent = truncated;
 
                     if (node.scrollWidth <= node.clientWidth) {
                         bestFit = truncated;
-                        left = mid + 1;
+                        left = keep + 1;
                     } else {
-                        right = mid - 1;
+                        right = keep - 1;
                     }
                 }
 
