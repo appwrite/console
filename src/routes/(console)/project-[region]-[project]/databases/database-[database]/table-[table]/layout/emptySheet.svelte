@@ -8,7 +8,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { IconCalendar, IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
     import {
@@ -156,7 +156,9 @@
 
     const spreadsheetColumns = $derived(mode === 'rows' ? getRowColumns() : getIndexesColumns());
 
-    const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
+    const emptyCells = $derived(
+        ($isSmallViewport ? 14 : $isTabletViewport ? 17 : 24) + (!$expandTabs ? 2 : 0)
+    );
 </script>
 
 <div
