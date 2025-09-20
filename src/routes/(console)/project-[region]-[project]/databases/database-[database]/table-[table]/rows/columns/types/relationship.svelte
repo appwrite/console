@@ -87,7 +87,7 @@
                 databaseId,
                 tableId: column.relatedTable,
                 // limit `5` as `25` would look too much on sheet!
-                queries: [Query.select(displayNames), Query.limit(2)]
+                queries: [Query.select(displayNames), Query.limit(5)]
             });
 
         cachedRowsCopyList = rows;
@@ -370,6 +370,7 @@
                 <!-- Input for adding new items -->
                 {#if showInput}
                     {@const availableOptions = getAvailableOptions()}
+                    {@const noAvailableOptions = availableOptions.length <= 0}
                     {#key availableOptions}
                         <Layout.Stack direction="row">
                             <Input.ComboBox
@@ -378,7 +379,10 @@
                                 on:change={addNewItem}
                                 bind:value={newItemValue}
                                 options={availableOptions}
-                                placeholder={`Select ${column.key}`}
+                                disabled={noAvailableOptions}
+                                placeholder={noAvailableOptions
+                                    ? 'No related items available'
+                                    : `Select ${column.key}`}
                                 noResultsOption={searchNoResultsOption}
                                 leadingIcon={!limited ? IconRelationship : undefined} />
 
@@ -433,6 +437,7 @@
                     }}
                     leadingIcon={!limited ? IconRelationship : undefined} />
             {:else}
+                {@const noOptions = options.length <= 0}
                 <Input.ComboBox
                     {id}
                     {options}
@@ -440,7 +445,8 @@
                     bind:value={newItemValue}
                     required={column.required}
                     label={limited ? undefined : label}
-                    placeholder={`Select ${column.key}`}
+                    disabled={noOptions}
+                    placeholder={noOptions ? 'No related items available' : `Select ${column.key}`}
                     noResultsOption={searchNoResultsOption}
                     on:change={() => {
                         if (newItemValue === null) {

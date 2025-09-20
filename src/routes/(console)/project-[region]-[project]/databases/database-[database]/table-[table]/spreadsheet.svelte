@@ -82,7 +82,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
     import SheetOptions from './sheetOptions.svelte';
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import SpreadsheetContainer from './layout/spreadsheet.svelte';
     import EditRowCell from './rows/cell/edit.svelte';
     import { copy } from '$lib/helpers/copy';
@@ -111,7 +111,7 @@
     const organizationId = data.organization.$id ?? data.project.teamId;
 
     const minimumWidth = 168;
-    const emptyCellsLimit = $isSmallViewport ? 12 : 18;
+    const emptyCellsLimit = $spreadsheetLoading ? 30 : $isSmallViewport ? 12 : $isTabletViewport ? 18 : 24;
 
     let selectedRows = [];
     let spreadsheetContainer: SpreadsheetContainer;
