@@ -7,7 +7,7 @@
     import { writable } from 'svelte/store';
     import ColumnForm from './columns/columnForm.svelte';
     import { Permissions } from '$lib/components/permissions';
-    import { type Columns } from '../store';
+    import { type Columns, spreadsheetRenderKey } from '../store';
     import { ID, type Models } from '@appwrite.io/console';
     import { Alert, Layout, Typography, Selector } from '@appwrite.io/pink-svelte';
     import SideSheet from '../layout/sidesheet.svelte';
@@ -15,6 +15,7 @@
     import { Dependencies } from '$lib/constants';
     import { tick } from 'svelte';
     import { isRelationship, isRelationshipToMany } from './store';
+    import { hash } from '$lib/helpers/string';
 
     type CreateRow = {
         id?: string;
@@ -93,7 +94,7 @@
         $createRow.row = prepareRowPayload($createRow);
 
         try {
-            await sdk.forProject(page.params.region, page.params.project).tablesDB.createRow({
+            const row = await sdk.forProject(page.params.region, page.params.project).tablesDB.createRow({
                 databaseId: page.params.database,
                 tableId: page.params.table,
                 rowId: $createRow.id ?? ID.unique(),
@@ -111,6 +112,9 @@
             });
 
             await invalidate(Dependencies.ROWS);
+
+            // re-render spreadsheet on addition!
+            spreadsheetRenderKey.set(hash(row.$id));
 
             if (createMore) {
                 resetCreateRow();
