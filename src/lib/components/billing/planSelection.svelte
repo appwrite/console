@@ -16,7 +16,7 @@
     $: currentPlanInList = plans.some((plan) => plan.$id === $currentPlan?.$id);
 
     // experiment to remove scale plan temporarily
-    $: plansWithoutScale = plans.filter((plan) => plan.$id != BillingPlan.SCALE)
+    $: plansWithoutScale = plans.filter((plan) => plan.$id != BillingPlan.SCALE);
 </script>
 
 <Layout.Stack>
