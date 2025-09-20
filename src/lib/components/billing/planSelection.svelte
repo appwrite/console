@@ -14,10 +14,13 @@
 
     $: plans = Object.values(page.data.plans.plans) as Plan[];
     $: currentPlanInList = plans.some((plan) => plan.$id === $currentPlan?.$id);
+
+    // experiment to remove scale plan temporarily
+    $: plansWithoutScale = plans.filter((plan) => plan.$id != BillingPlan.SCALE)
 </script>
 
 <Layout.Stack>
-    {#each plans as plan}
+    {#each plansWithoutScale as plan}
         <LabelCard
             name="plan"
             bind:group={billingPlan}
