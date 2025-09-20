@@ -112,7 +112,8 @@
     }
 
     function getAvailableOptions(excludeIndex?: number): SelectOption[] {
-        return options?.filter((option) => {
+        const source = options ?? [];
+        return source?.filter((option) => {
             const otherItems =
                 excludeIndex !== undefined
                     ? relatedList.filter((_, idx) => idx !== excludeIndex)

@@ -156,7 +156,9 @@
 
     const spreadsheetColumns = $derived(mode === 'rows' ? getRowColumns() : getIndexesColumns());
 
-    const emptyCells = $derived(($isSmallViewport ? 14 : $isTabletViewport ? 17 : 24) + (!$expandTabs ? 2 : 0));
+    const emptyCells = $derived(
+        ($isSmallViewport ? 14 : $isTabletViewport ? 17 : 24) + (!$expandTabs ? 2 : 0)
+    );
 </script>
 
 <div

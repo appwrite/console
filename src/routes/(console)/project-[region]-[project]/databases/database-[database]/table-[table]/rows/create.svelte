@@ -94,13 +94,15 @@
         $createRow.row = prepareRowPayload($createRow);
 
         try {
-            const row = await sdk.forProject(page.params.region, page.params.project).tablesDB.createRow({
-                databaseId: page.params.database,
-                tableId: page.params.table,
-                rowId: $createRow.id ?? ID.unique(),
-                data: $createRow.row,
-                permissions: $createRow.permissions
-            });
+            const row = await sdk
+                .forProject(page.params.region, page.params.project)
+                .tablesDB.createRow({
+                    databaseId: page.params.database,
+                    tableId: page.params.table,
+                    rowId: $createRow.id ?? ID.unique(),
+                    data: $createRow.row,
+                    permissions: $createRow.permissions
+                });
 
             addNotification({
                 message: 'Row has been created',

@@ -111,7 +111,13 @@
     const organizationId = data.organization.$id ?? data.project.teamId;
 
     const minimumWidth = 168;
-    const emptyCellsLimit = $spreadsheetLoading ? 30 : $isSmallViewport ? 12 : $isTabletViewport ? 18 : 24;
+    const emptyCellsLimit = $spreadsheetLoading
+        ? 30
+        : $isSmallViewport
+          ? 12
+          : $isTabletViewport
+            ? 18
+            : 24;
 
     let selectedRows = [];
     let spreadsheetContainer: SpreadsheetContainer;
