@@ -62,7 +62,7 @@
 
         if (isSuccess) {
             await invalidate(Dependencies.ROWS);
-            $spreadsheetRenderKey = hash(Date.now().toString());
+            spreadsheetRenderKey.set(hash(Date.now().toString()));
         }
     }
 
