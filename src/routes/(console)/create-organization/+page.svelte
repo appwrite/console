@@ -143,7 +143,7 @@
                         '',
                         clientSecret,
                         paymentMethodId,
-                        `/console/create-organization?${params}`
+                        `${base}/create-organization?${params}`
                     );
                     await validate(org.teamId, collaborators);
                 }

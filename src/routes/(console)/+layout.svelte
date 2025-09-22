@@ -83,7 +83,7 @@
             keys: ['g', 'p'],
             group: 'navigation',
             disabled:
-                (page.url.pathname.includes('/console/organization-') &&
+                (page.url.pathname.includes(base + '/organization-') &&
                     !page.url.pathname.endsWith('/members') &&
                     !page.url.pathname.endsWith('/settings')) ||
                 !$canSeeProjects,
@@ -336,14 +336,14 @@
 <Shell
     showSideNavigation={page.url.pathname !== '/' &&
         !page?.params.organization &&
-        !page.url.pathname.includes('/console/account') &&
-        !page.url.pathname.includes('/console/card') &&
-        !page.url.pathname.includes('/console/onboarding') &&
-        !page.url.pathname.includes('/console/verify-email')}
-    showHeader={!page.url.pathname.includes('/console/onboarding/create-project') &&
-        !page.url.pathname.includes('/console/verify-email')}
-    showFooter={!page.url.pathname.includes('/console/onboarding/create-project') &&
-        !page.url.pathname.includes('/console/verify-email')}
+        !page.url.pathname.includes(base + '/account') &&
+        !page.url.pathname.includes(base + '/card') &&
+        !page.url.pathname.includes(base + '/onboarding') &&
+        !page.url.pathname.includes(base + '/verify-email')}
+    showHeader={!page.url.pathname.includes(base + '/onboarding/create-project') &&
+        !page.url.pathname.includes(base + '/verify-email')}
+    showFooter={!page.url.pathname.includes(base + '/onboarding/create-project') &&
+        !page.url.pathname.includes(base + '/verify-email')}
     selectedProject={page.data?.project}>
     <!--    <Header slot="header" />-->
     <slot />

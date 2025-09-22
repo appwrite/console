@@ -53,7 +53,7 @@
     let domain = data.domain;
     let domainIsValid = true;
     let framework = data?.template?.frameworks[0];
-    let branch = 'main';
+    let branch = '';
     let rootDir = './';
     let connectBehaviour: 'now' | 'later' = 'now';
     let repositoryBehaviour: 'new' | 'existing' = 'new';
