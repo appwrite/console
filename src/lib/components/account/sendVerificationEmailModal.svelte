@@ -5,7 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { get } from 'svelte/store';
-    import { page } from '$app/state';
+    import { page } from '$app/stores';
     import Link from '$lib/elements/link.svelte';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';
@@ -31,7 +31,7 @@
         }
     }
 
-    let cleanUrl = $derived(page.url.origin + page.url.pathname);
+    const cleanUrl = $derived($page.url.origin + $page.url.pathname);
 
     // Manage resend timer in localStorage
     const TIMER_END_KEY = 'email_verification_timer_end';
@@ -101,7 +101,7 @@
     }
 
     async function updateEmailVerification() {
-        const searchParams = page.url.searchParams;
+        const searchParams = $page.url.searchParams;
         const userId = searchParams.get('userId');
         const secret = searchParams.get('secret');
 
