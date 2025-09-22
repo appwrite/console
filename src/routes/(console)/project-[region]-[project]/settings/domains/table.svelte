@@ -23,7 +23,7 @@
     import RetryDomainModal from './retryDomainModal.svelte';
     import { ViewLogsModal } from '$lib/components';
     import { regionalProtocol } from '../../store';
-    import DnsRecordsAction from '$lib/components/domains/dnsRecordsAction.svelte';
+    import { DnsRecordsAction } from '$lib/components';
     import { timeFromNowShort } from '$lib/helpers/date';
 
     let {
