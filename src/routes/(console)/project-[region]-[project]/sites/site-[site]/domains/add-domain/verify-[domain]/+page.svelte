@@ -65,7 +65,9 @@
                                 'Domain verification failed. Please check your domain settings or try again later'
                             );
                         }
-                    } catch (error) {}
+                    } catch (error) {
+                        // Empty as domain creation error needs to be silent
+                    }
 
                     try {
                         const domain = data.domainsList.domains.find(
@@ -82,7 +84,9 @@
                                 );
                             }
                         }
-                    } catch (error) {}
+                    } catch (error) {
+                        // Empty as domain update error needs to be silent
+                    }
                 }
             }
 

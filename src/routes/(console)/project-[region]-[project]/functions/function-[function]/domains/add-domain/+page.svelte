@@ -56,7 +56,9 @@
                     teamId: $project.teamId,
                     domain: apexDomain
                 });
-            } catch (error) {}
+            } catch (error) {
+                // Empty as domain creation error needs to be silent
+            }
         }
 
         try {
@@ -93,7 +95,9 @@
                 if (isCloud) {
                     try {
                         await sdk.forConsole.domains.updateNameservers({ domainId: domain.$id });
-                    } catch (error) {}
+                    } catch (error) {
+                        // Empty as domain update error needs to be silent
+                    }
                 }
             } else {
                 await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
