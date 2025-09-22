@@ -75,6 +75,7 @@
 
         const current = $importItems.get(importData.$id);
         let tableName = current?.table ?? null;
+        let resourceMissing = false;
 
         if (!tableName && tableId) {
             try {
@@ -87,7 +88,17 @@
                 tableName = table.name;
             } catch {
                 tableName = null;
+                resourceMissing = true;
             }
+        }
+
+        if (resourceMissing) {
+            importItems.update((items) => {
+                const next = new Map(items);
+                next.delete(importData.$id);
+                return next;
+            });
+            return;
         }
 
         importItems.update((items) => {
