@@ -147,7 +147,7 @@
     </div>
 
     <!-- email verification modal -->
-    <SendVerificationEmailModal bind:show={showVerificationModal} />
+    <SendVerificationEmailModal bind:show={showVerificationModal} email={data.user?.email} />
 </div>
 
 <style lang="scss">

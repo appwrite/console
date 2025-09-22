@@ -16,7 +16,7 @@
     import { logout } from '$lib/helpers/logout';
     import { browser } from '$app/environment';
 
-    let { show = $bindable(false) } = $props();
+    let { show = $bindable(false), email: emailFromParent = null } = $props();
     let creating = $state(false);
     let emailSent = $state(false);
     let resendTimer = $state(0);
@@ -27,6 +27,7 @@
     const EMAIL_SENT_KEY = 'email-verification-sent';
 
     let cleanUrl = $derived(page.url.origin + page.url.pathname);
+    const resolvedEmail = $derived(emailFromParent ?? get(user)?.email);
 
     // Determine if we should show the modal
     const hasUser = $derived(!!$user);
@@ -165,7 +166,7 @@
                         will be sent to <Typography.Text
                             variant="m-600"
                             color="neutral-secondary"
-                            style="display: inline;">{get(user)?.email}</Typography.Text>
+                            style="display: inline;">{resolvedEmail}</Typography.Text>
                     </Typography.Text>
                     <Layout.Stack class="u-margin-block-start-4">
                         <Layout.Stack direction="row">
