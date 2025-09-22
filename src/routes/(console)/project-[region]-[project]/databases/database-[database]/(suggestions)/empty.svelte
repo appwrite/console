@@ -24,7 +24,9 @@
     const {
         onColumnsFinalized = undefined
     }: {
-        onColumnsFinalized?: (columns: Exclude<Columns, Models.ColumnRelationship>[]) => Promise<void>;
+        onColumnsFinalized?: (
+            columns: Exclude<Columns, Models.ColumnRelationship>[]
+        ) => Promise<void>;
     } = $props();
 
     /**
