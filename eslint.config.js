@@ -32,7 +32,9 @@ export default ts.config(
             'svelte/no-at-html-tags': 'off',
             'svelte/no-useless-mustaches': 'off',
             'svelte/no-reactive-reassign': 'off',
-            'svelte/no-reactive-literals': 'off'
+            'svelte/no-reactive-literals': 'off',
+            // TODO: @itznotabug, this requires a big refactor!
+            'svelte/no-navigation-without-resolve': 'off'
         }
     },
     {

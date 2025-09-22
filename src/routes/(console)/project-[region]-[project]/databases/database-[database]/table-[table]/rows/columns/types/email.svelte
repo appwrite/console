@@ -1,6 +1,7 @@
 <script lang="ts">
-    import InputEmail from '$lib/elements/forms/inputEmail.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { IconMail } from '@appwrite.io/pink-icons-svelte';
+    import InputEmail from '$lib/elements/forms/inputEmail.svelte';
 
     export let id: string;
     export let label: string;
@@ -18,5 +19,6 @@
     bind:value
     {nullable}
     {autofocus}
-    placeholder="Enter URL"
-    required={column.required} />
+    placeholder="name@example.com"
+    required={column.required}
+    leadingIcon={!limited ? IconMail : undefined} />

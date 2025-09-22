@@ -6,10 +6,11 @@
         InputText,
         InputTags,
         InputSelectCheckbox,
-        InputDateTime
+        InputDateTime,
+        InputPoint
     } from '$lib/elements/forms';
     import { onMount, createEventDispatcher } from 'svelte';
-    import { operators, addFilter, queries, tags } from './store';
+    import { operators, addFilter, queries, tags, ValidOperators } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { TagList } from '.';
@@ -18,6 +19,7 @@
 
     let {
         value = $bindable(null),
+        distanceValue = $bindable(null),
         columns,
         columnId = $bindable(null),
         arrayValues = $bindable([]),
@@ -27,6 +29,7 @@
         // We cast to any to not cause type errors in the input components
         /* eslint  @typescript-eslint/no-explicit-any: 'off' */
         value?: any;
+        distanceValue?: number | null;
         columns: Writable<Column[]>;
         columnId?: string | null;
         arrayValues?: string[];
@@ -61,21 +64,57 @@
         }));
     });
 
+    // Check if the current operator is a distance-based operator
+    let isDistanceOperator = $derived(
+        operatorKey &&
+            [
+                ValidOperators.DistanceEqual,
+                ValidOperators.DistanceNotEqual,
+                ValidOperators.DistanceGreaterThan,
+                ValidOperators.DistanceLessThan
+            ].includes(operatorKey as ValidOperators)
+    );
+
     onMount(() => {
         value = column?.array ? [] : null;
         if (column?.type === 'datetime') {
             const now = new Date();
             value = now.toISOString().slice(0, 16);
         }
+        // Initialize spatial data with default values
+        if (column?.type === 'point') {
+            value = [0, 0];
+        } else if (column?.type === 'linestring') {
+            value = [
+                [0, 0],
+                [1, 1]
+            ];
+        } else if (column?.type === 'polygon') {
+            value = [
+                [
+                    [0, 0],
+                    [1, 1],
+                    [2, 2],
+                    [0, 0]
+                ]
+            ];
+        }
     });
 
     const dispatch = createEventDispatcher<{ clear: void; apply: { applied: number } }>();
 
     function addFilterAndReset() {
-        addFilter(columnsArray, columnId, operatorKey, value, arrayValues);
+        // For distance operators, pass the distance as a separate parameter
+        if (isDistanceOperator && distanceValue !== null && value !== null) {
+            addFilter(columnsArray, columnId, operatorKey, value, arrayValues, distanceValue);
+        } else {
+            addFilter(columnsArray, columnId, operatorKey, value, arrayValues);
+        }
+
         columnId = null;
         operatorKey = null;
         value = null;
+        distanceValue = null;
         arrayValues = [];
         dispatch('apply', { applied: appliedTags.length });
         if (singleCondition) {
@@ -143,10 +182,28 @@
                         {#key value}
                             <InputDateTime id="value" bind:value step={60} type="datetime-local" />
                         {/key}
+                    {:else if column.type === 'point' || column.type === 'linestring' || column.type === 'polygon'}
+                        <InputPoint
+                            values={value || [0, 0]}
+                            onChangePoint={(index, newValue) => {
+                                if (!value) value = [0, 0];
+                                value[index] = newValue;
+                            }} />
                     {:else}
                         <InputText id="value" bind:value placeholder="Enter value" />
                     {/if}
                 </ul>
+            {/if}
+
+            {#if isDistanceOperator}
+                <div class="u-margin-block-start-8">
+                    <InputNumber
+                        id="distance"
+                        bind:value={distanceValue}
+                        placeholder="Enter distance"
+                        step={0.001}
+                        required />
+                </div>
             {/if}
         {/if}
         {#if !singleCondition}

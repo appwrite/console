@@ -35,7 +35,7 @@
         {#if !hideColumns && $columns?.length}
             <Layout.Stack gap="xs">
                 <Typography.Text>Columns</Typography.Text>
-                <ColumnSelector {columns} {isCustomTable}>
+                <ColumnSelector ui="new" {columns} {isCustomTable}>
                     {#snippet children(toggle, selectedColumnsNumber)}
                         <Button.Button
                             size="s"

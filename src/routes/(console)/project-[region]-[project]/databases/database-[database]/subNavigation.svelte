@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { showCreate, databaseSubNavigationItems } from './store';
+    import { showCreateTable, databaseSubNavigationItems } from './store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
     import {
@@ -41,9 +41,7 @@
         tables: []
     });
 
-    const sortedTables = $derived.by(() =>
-        tables?.tables?.slice().sort((a, b) => a.name.localeCompare(b.name))
-    );
+    const sortedTables = $derived.by(() => tables?.tables);
 
     const selectedTable = $derived.by(() =>
         sortedTables?.find((table: Models.Table) => table.$id === tableId)
@@ -139,7 +137,7 @@
                     <Button
                         compact
                         on:click={() => {
-                            $showCreate = true;
+                            $showCreateTable = true;
                             $showSubNavigation = false;
                         }}>
                         Create table

@@ -63,7 +63,12 @@
             <SearchQuery placeholder="Search by name" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <ViewSelector {columns} view={data.view} hideColumns hideView={!data.siteList.total} />
+            <ViewSelector
+                ui="new"
+                {columns}
+                view={data.view}
+                hideColumns
+                hideView={!data.siteList.total} />
             {#if $canWriteSites}
                 <Button on:mousedown={() => (show = true)} event="create_site" size="s">
                     <Icon icon={IconPlus} slot="start" size="s" />
