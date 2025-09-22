@@ -32,5 +32,5 @@
                 >Verify email</Button>
         </svelte:fragment>
     </HeaderAlert>
-    <SendVerificationEmailModal bind:show={showSendVerification} />
+    <SendVerificationEmailModal bind:show={showSendVerification} email={$user?.email} />
 {/if}

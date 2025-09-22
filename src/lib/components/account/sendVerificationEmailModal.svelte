@@ -23,6 +23,7 @@
         try {
             await sdk.forConsole.account.deleteSession({ sessionId: 'current' });
             if (redirect) {
+                await invalidate(Dependencies.ACCOUNT);
                 goto(`${base}/login`);
             }
         } catch (error) {
@@ -137,7 +138,7 @@
 
 <div class="email-verification-scrim">
     <Modal
-        show={true}
+        bind:show
         title="Verify your email address"
         {onSubmit}
         dismissible={false}
@@ -153,7 +154,7 @@
                 </Typography.Text>
                 <Layout.Stack class="u-margin-block-start-4 u-margin-block-end-24">
                     <Layout.Stack direction="row">
-                        <Link variant="default" on:click={() => logout(false)}>Switch account</Link>
+                        <Link variant="default" on:click={() => logout()}>Switch account</Link>
                     </Layout.Stack>
                 </Layout.Stack>
                 {#if emailSent && resendTimer > 0}
