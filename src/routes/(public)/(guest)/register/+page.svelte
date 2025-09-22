@@ -130,6 +130,7 @@
                     placeholder="Your name"
                     autofocus
                     required
+                    autocomplete
                     bind:value={name} />
                 <InputEmail
                     id="email"
