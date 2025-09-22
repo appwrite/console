@@ -168,7 +168,7 @@
                             color="neutral-secondary"
                             style="display: inline;">{resolvedEmail}</Typography.Text>
                     </Typography.Text>
-                    <Layout.Stack class="u-margin-block-start-4">
+                    <Layout.Stack class="u-margin-block-start-4 u-margin-block-end-24">
                         <Layout.Stack direction="row">
                             <Link variant="default" on:click={() => logout(false)}
                                 >Switch account</Link>
