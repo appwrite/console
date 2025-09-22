@@ -111,7 +111,7 @@
         placeholder="Enter your state"
         autocomplete
         required />
-    <InputText bind:value={zip} id="zip" label="Postal code" placeholder="Enter postal code" />
+    <InputText bind:value={zip} id="zip" label="Postal code" placeholder="Enter postal code" autocomplete />
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
