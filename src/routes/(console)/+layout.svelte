@@ -367,4 +367,6 @@
 {/if}
 
 <BottomModalAlert />
-<SendVerificationEmailModal />
+{#if !page.url.pathname.includes('/console/verify-email')}
+    <SendVerificationEmailModal />
+{/if}

@@ -108,8 +108,8 @@
         }
     }
 
-    function onSubmit() {
-        // This is required by the Modal component but we handle clicks directly
+    async function onSubmit() {
+        await sendVerificationEmail();
     }
 
     async function updateEmailVerification() {
@@ -159,7 +159,7 @@
             dismissible={false}
             autoClose={false}>
             <Card.Base variant="secondary" padding="s">
-                <Layout.Stack gap="s">
+                <Layout.Stack gap="xxs">
                     <Typography.Text gap="m">
                         To continue using Appwrite Cloud, please verify your email address. An email
                         will be sent to <Typography.Text
@@ -167,8 +167,11 @@
                             color="neutral-secondary"
                             style="display: inline;">{get(user)?.email}</Typography.Text>
                     </Typography.Text>
-                    <Layout.Stack direction="row" gap="xxs">
-                        <Link variant="default" on:click={() => logout(false)}>Switch account</Link>
+                    <Layout.Stack class="u-margin-block-start-4 u-margin-block-end-24">
+                        <Layout.Stack direction="row">
+                            <Link variant="default" on:click={() => logout(false)}
+                                >Switch account</Link>
+                        </Layout.Stack>
                     </Layout.Stack>
                     {#if emailSent && resendTimer > 0}
                         <Typography.Text color="neutral-secondary">
@@ -179,7 +182,7 @@
             </Card.Base>
 
             <svelte:fragment slot="footer">
-                <Button on:click={sendVerificationEmail} disabled={creating || resendTimer > 0}>
+                <Button submit disabled={creating || resendTimer > 0}>
                     {emailSent ? 'Resend email' : 'Send email'}
                 </Button>
             </svelte:fragment>

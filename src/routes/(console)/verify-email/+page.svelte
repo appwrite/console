@@ -116,7 +116,7 @@
         }
 
         const interval = setInterval(async () => {
-            await invalidate('user');
+            await invalidate(Dependencies.ACCOUNT);
             checkEmailVerification();
         }, 2000);
 
