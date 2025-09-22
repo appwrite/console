@@ -4,20 +4,8 @@ import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 import { IconChartBar, IconCloudUpload, IconCog } from '@appwrite.io/pink-icons-svelte';
 
-export type TableColumnSuggestions = {
-    enabled: boolean;
-    thinking: boolean;
-    context?: string | null;
-};
-
 export const database = derived(page, ($page) => $page.data.database as Models.Database);
 export const showCreateTable = writable(false);
-
-export const tableColumnSuggestions = writable<TableColumnSuggestions>({
-    enabled: false,
-    context: null,
-    thinking: false
-});
 
 export const tableViewColumns = writable<Column[]>([
     { id: '$id', title: 'Table ID', type: 'string', width: 200 },

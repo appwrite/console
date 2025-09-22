@@ -4,11 +4,6 @@
     import { tableColumnSuggestions } from './store';
     import { InputTextarea } from '$lib/elements/forms';
     import { Card, Layout, Selector, Typography } from '@appwrite.io/pink-svelte';
-
-    $effect(() => {
-        // TODO: update later, this is for mock only atm!
-        $tableColumnSuggestions.thinking = $tableColumnSuggestions.enabled;
-    });
 </script>
 
 <Card.Base variant="secondary" radius="s" padding="xs">

@@ -9,7 +9,7 @@
     import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { subNavigation } from '$lib/stores/database';
-    import Suggestions from './suggestions.svelte';
+    import { Input as SuggestionsInput } from './(suggestions)/index';
 
     let {
         showCreate = $bindable(false)
@@ -105,7 +105,7 @@
             }
         }} />
 
-    <Suggestions />
+    <SuggestionsInput />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

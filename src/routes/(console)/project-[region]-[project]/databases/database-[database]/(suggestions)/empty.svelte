@@ -12,16 +12,19 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
-    import { expandTabs } from '../store';
-    import SpreadsheetContainer from './spreadsheet.svelte';
+    import { type Columns, expandTabs } from '../table-[table]/store';
+    import SpreadsheetContainer from '../table-[table]/layout/spreadsheet.svelte';
     import { onDestroy, onMount } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
-    import { tableColumnSuggestions } from '../../store';
+    import { sdk } from '$lib/stores/sdk';
+    import { page } from '$app/state';
+    import { tableColumnSuggestions } from './store';
+    import type { Models } from '@appwrite.io/console';
 
     const {
-        customColumns = []
+        onColumnsFinalized = undefined
     }: {
-        customColumns?: Column[];
+        onColumnsFinalized?: (columns: Exclude<Columns, Models.ColumnRelationship>[]) => Promise<void>;
     } = $props();
 
     /**
@@ -161,23 +164,6 @@
 
     const debouncedRecalc = debounce(recalcAll, 50);
 
-    onMount(() => {
-        if (spreadsheetContainer) {
-            resizeObserver = new ResizeObserver(debouncedRecalc);
-            resizeObserver.observe(spreadsheetContainer);
-        }
-
-        requestAnimationFrame(recalcAll);
-    });
-
-    onDestroy(() => {
-        resizeObserver?.disconnect();
-        hScroller?.removeEventListener('scroll', debouncedRecalc);
-    });
-
-    const getCustomColumns = (): Column[] =>
-        customColumns.map((col: Column) => ({ ...col, width: 180, hide: false, ...baseColProps }));
-
     const getRowColumns = (): Column[] => [
         {
             id: '$id',
@@ -187,7 +173,6 @@
             icon: IconFingerPrint,
             ...baseColProps
         },
-        ...getCustomColumns(),
         {
             id: '$createdAt',
             title: '$createdAt',
@@ -209,7 +194,7 @@
             title: '',
             type: 'string',
             icon: IconPlus,
-            width: customColumns.length ? 555 : 832,
+            width: 832,
             ...baseColProps
         },
         { id: 'empty', title: '', type: 'string', ...baseColProps }
@@ -217,6 +202,49 @@
 
     const spreadsheetColumns = getRowColumns();
     const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
+
+    onMount(async () => {
+        if (spreadsheetContainer) {
+            resizeObserver = new ResizeObserver(debouncedRecalc);
+            resizeObserver.observe(spreadsheetContainer);
+        }
+
+        requestAnimationFrame(recalcAll);
+        await suggestColumns();
+    });
+
+    async function suggestColumns() {
+        console.log('tableColumnSuggestions', $tableColumnSuggestions.enabled);
+
+        if (!$tableColumnSuggestions.enabled) return;
+
+        $tableColumnSuggestions.thinking = true;
+
+        try {
+            const suggestedColumns = await sdk
+                .forConsoleIn(page.params.repository)
+                .console.suggestColumns({
+                    databaseId: page.params.database,
+                    tableId: page.params.table,
+                    context: $tableColumnSuggestions.context
+                });
+
+            console.log(JSON.stringify(suggestedColumns, null, 2));
+
+            await onColumnsFinalized?.(suggestedColumns.columns);
+        } catch (e) {
+            // `null` means
+            // we couldn't make columns!
+            await onColumnsFinalized?.(null);
+        } finally {
+            $tableColumnSuggestions.thinking = false;
+        }
+    }
+
+    onDestroy(() => {
+        resizeObserver?.disconnect();
+        hScroller?.removeEventListener('scroll', debouncedRecalc);
+    });
 </script>
 
 <svelte:window on:resize={debouncedRecalc} on:scroll={debouncedRecalc} />
@@ -338,28 +366,6 @@
             }
 
             &.thinking {
-                &::before {
-                    content: '';
-                    position: absolute;
-                    top: -2px;
-                    left: -2px;
-                    right: -2px;
-                    bottom: -2px;
-                    border-radius: inherit;
-                    padding: 2px;
-                    background: linear-gradient(
-                        90deg,
-                        rgba(253, 54, 110, 0.02),
-                        rgba(254, 149, 103, 0.05),
-                        rgba(253, 54, 110, 0.02),
-                        rgba(254, 149, 103, 0.05),
-                        rgba(253, 54, 110, 0.02)
-                    );
-                    background-size: 400% 100%;
-                    animation: border-shimmer 4s ease-in-out infinite;
-                    z-index: -1;
-                }
-
                 &::after {
                     content: '';
                     position: absolute;
@@ -373,15 +379,16 @@
                         rgba(255, 255, 255, 0.08),
                         transparent
                     );
-                    animation: inner-shimmer 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
-                    z-index: 1;
+                    animation: inner-shimmer 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
                 }
             }
         }
 
         & .floating-action-wrapper :global(:first-child) {
-            left: 45%; /* change this value if the firstColumn is changed for overlay logic.*/
             z-index: 21;
+            left: calc(
+                50% - 40px
+            ); /* change this value if the firstColumn is changed for overlay logic.*/
         }
 
         & :global(.spreadsheet-container) {
@@ -419,18 +426,6 @@
             rgba(25, 25, 28, 0.95) 38%,
             var(--bgcolor-neutral-default, #19191c) 100%
         );
-    }
-
-    @keyframes border-shimmer {
-        0% {
-            background-position: 400% 0;
-        }
-        50% {
-            background-position: -50% 0;
-        }
-        100% {
-            background-position: -400% 0;
-        }
     }
 
     @keyframes inner-shimmer {
