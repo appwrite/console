@@ -288,13 +288,18 @@
     <Layout.Stack direction="column" gap="l">
         {#each draft as column, index (index)}
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                <InputText required id={'name-' + column.key} bind:value={draft[index].key} />
+                <InputText
+                    required
+                    id={'name-' + column.key}
+                    disabled={creatingColumns}
+                    bind:value={draft[index].key} />
 
                 <InputSelect
                     required
                     id={'type-' + column.key}
                     value={getCurrentValue(draft[index])}
                     options={columnTypeOptions}
+                    disabled={creatingColumns}
                     on:change={(event) => {
                         draft[index] = normalizeColumnType(event.detail, draft[index]);
                         draft = [...draft];
