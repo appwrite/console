@@ -17,7 +17,7 @@
     let creating = $state(false);
     let emailSent = $state(false);
     let resendTimer = $state(0);
-    let timerInterval: NodeJS.Timeout | null = null;
+    let timerInterval: ReturnType<typeof setInterval> | null = null;
 
     async function logout(redirect = true) {
         try {

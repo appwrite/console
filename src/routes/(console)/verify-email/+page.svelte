@@ -14,6 +14,7 @@
 
     let sideBarIsOpen = writable(false);
     let showAccountMenu = writable(false);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let project: any = {
         $id: 'verify-email-project',
         region: 'us-east-1',
