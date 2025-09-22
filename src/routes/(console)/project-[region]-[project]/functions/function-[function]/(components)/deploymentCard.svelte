@@ -78,7 +78,7 @@
 {/snippet}
 
 <Card padding="m" radius="m" {variant}>
-    <Layout.Stack gap="xxl">
+    <Layout.Stack gap="l">
         <Layout.GridFraction start={4} end={6}>
             <Layout.Stack>
                 <Layout.Stack direction="row" alignItems="center" gap="s" wrap="wrap">

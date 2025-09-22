@@ -69,7 +69,8 @@
         } else {
             if (value && typeof value === 'object') {
                 row = value as Models.Row;
-                singleRel = row?.$id;
+                // set for combobox and select.
+                newItemValue = singleRel = row?.$id;
             }
         }
     });
@@ -86,7 +87,7 @@
                 databaseId,
                 tableId: column.relatedTable,
                 // limit `5` as `25` would look too much on sheet!
-                queries: [Query.select(displayNames), Query.limit(2)]
+                queries: [Query.select(displayNames), Query.limit(5)]
             });
 
         cachedRowsCopyList = rows;
@@ -111,7 +112,8 @@
     }
 
     function getAvailableOptions(excludeIndex?: number): SelectOption[] {
-        return options?.filter((option) => {
+        const source = options ?? [];
+        return source?.filter((option) => {
             const otherItems =
                 excludeIndex !== undefined
                     ? relatedList.filter((_, idx) => idx !== excludeIndex)
@@ -368,23 +370,30 @@
 
                 <!-- Input for adding new items -->
                 {#if showInput}
-                    <Layout.Stack direction="row">
-                        <Input.ComboBox
-                            {id}
-                            required
-                            placeholder={`Select ${column.key}`}
-                            bind:value={newItemValue}
-                            options={getAvailableOptions()}
-                            on:change={addNewItem}
-                            noResultsOption={searchNoResultsOption}
-                            leadingIcon={!limited ? IconRelationship : undefined} />
+                    {@const availableOptions = getAvailableOptions()}
+                    {@const noAvailableOptions = availableOptions.length <= 0}
+                    {#key availableOptions}
+                        <Layout.Stack direction="row">
+                            <Input.ComboBox
+                                {id}
+                                required
+                                on:change={addNewItem}
+                                bind:value={newItemValue}
+                                options={availableOptions}
+                                disabled={noAvailableOptions}
+                                placeholder={noAvailableOptions
+                                    ? 'No related items available'
+                                    : `Select ${column.key}`}
+                                noResultsOption={searchNoResultsOption}
+                                leadingIcon={!limited ? IconRelationship : undefined} />
 
-                        <div style:padding-block-start="0.5rem">
-                            <Button icon extraCompact on:click={cancelAddItem}>
-                                <Icon icon={IconX} size="s" />
-                            </Button>
-                        </div>
-                    </Layout.Stack>
+                            <div style:padding-block-start="0.5rem">
+                                <Button icon extraCompact on:click={cancelAddItem}>
+                                    <Icon icon={IconX} size="s" />
+                                </Button>
+                            </div>
+                        </Layout.Stack>
+                    {/key}
                 {/if}
             </Layout.Stack>
 
@@ -400,44 +409,77 @@
     </Layout.Stack>
 {:else}
     <Layout.Stack direction="row" alignItems="center" gap="s">
-        <Input.ComboBox
-            {id}
-            {options}
-            autofocus={limited}
-            bind:value={newItemValue}
-            required={column.required}
-            label={limited ? undefined : label}
-            placeholder={`Select ${column.key}`}
-            noResultsOption={searchNoResultsOption}
-            on:change={() => {
-                if (newItemValue === null) {
-                    value = null;
-                    singleRel = null;
-                } else {
-                    const selectedRow = rowList.rows.find((row) => row.$id === newItemValue);
+        {#key options}
+            {#if limited}
+                <!-- for unlink badge -->
+                <Input.Select
+                    {id}
+                    {options}
+                    autofocus={limited}
+                    bind:value={newItemValue}
+                    required={column.required}
+                    label={limited ? undefined : label}
+                    placeholder={`Select ${column.key}`}
+                    noResultsOption={searchNoResultsOption}
+                    on:change={() => {
+                        if (newItemValue === null) {
+                            value = null;
+                            singleRel = null;
+                        } else {
+                            const selectedRow = rowList.rows.find(
+                                (row) => row.$id === newItemValue
+                            );
 
-                    if (selectedRow) {
-                        value = selectedRow;
-                        singleRel = newItemValue;
-                    }
-                }
+                            if (selectedRow) {
+                                value = selectedRow;
+                                singleRel = newItemValue;
+                            }
+                        }
+                    }}
+                    leadingIcon={!limited ? IconRelationship : undefined} />
+            {:else}
+                {@const noOptions = options.length <= 0}
+                <Input.ComboBox
+                    {id}
+                    {options}
+                    autofocus={limited}
+                    bind:value={newItemValue}
+                    required={column.required}
+                    label={limited ? undefined : label}
+                    disabled={noOptions}
+                    placeholder={noOptions ? 'No related items available' : `Select ${column.key}`}
+                    noResultsOption={searchNoResultsOption}
+                    on:change={() => {
+                        if (newItemValue === null) {
+                            value = null;
+                            singleRel = null;
+                        } else {
+                            const selectedRow = rowList.rows.find(
+                                (row) => row.$id === newItemValue
+                            );
 
-                newItemValue = null;
-            }}
-            leadingIcon={!limited ? IconRelationship : undefined} />
+                            if (selectedRow) {
+                                value = selectedRow;
+                                singleRel = newItemValue;
+                            }
+                        }
+                    }}
+                    leadingIcon={!limited ? IconRelationship : undefined} />
+            {/if}
 
-        {#if !limited && singleRel}
-            <div style:padding-block-start="2.25rem">
-                <Button
-                    icon
-                    extraCompact
-                    on:click={() => {
-                        value = null;
-                        singleRel = null;
-                    }}>
-                    <Icon icon={IconX} size="s" />
-                </Button>
-            </div>
-        {/if}
+            {#if !limited && singleRel}
+                <div style:padding-block-start="2.25rem">
+                    <Button
+                        icon
+                        extraCompact
+                        on:click={() => {
+                            value = null;
+                            newItemValue = singleRel = null;
+                        }}>
+                        <Icon icon={IconX} size="s" />
+                    </Button>
+                </div>
+            {/if}
+        {/key}
     </Layout.Stack>
 {/if}

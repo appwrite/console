@@ -3,6 +3,10 @@ import type { BarSeriesOption } from 'echarts/charts';
 import { derived, get, writable } from 'svelte/store';
 import { regions } from '$lib/stores/organization';
 import { page } from '$app/stores';
+import CursorIcon from './overview/components/CursorIcon.svelte';
+import ClaudeIcon from './overview/components/ClaudeIcon.svelte';
+import VSCodeIcon from './overview/components/VSCodeIcon.svelte';
+import WindsurfIcon from './overview/components/WindsurfIcon.svelte';
 
 export const project = derived(page, ($page) => $page.data.project as Models.Project);
 
@@ -73,3 +77,26 @@ function createStats() {
 }
 
 export const stats = createStats();
+
+export const mcpTools = [
+    {
+        href: 'https://apwr.dev/docs-mcp-cursor?ref=docs',
+        icon: CursorIcon,
+        label: 'Cursor'
+    },
+    {
+        href: 'https://appwrite.io/docs/tooling/mcp/claude',
+        icon: ClaudeIcon,
+        label: 'Claude Desktop'
+    },
+    {
+        href: 'https://apwr.dev/docs-mcp-vscode?ref=docs',
+        icon: VSCodeIcon,
+        label: 'VS code'
+    },
+    {
+        href: 'https://appwrite.io/docs/tooling/mcp/windsurf',
+        icon: WindsurfIcon,
+        label: 'Windsurf editor'
+    }
+];

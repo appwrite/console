@@ -620,7 +620,7 @@ export const billingURL = derived(
     ($page) => `${base}/organization-${$page.data?.organization?.$id}/billing`
 );
 
-export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
+export const hideBillingHeaderRoutes = [base + '/create-organization', base + '/account'];
 
 export function calculateExcess(addon: AggregationTeam, plan: Plan) {
     return {

@@ -17,6 +17,7 @@
     } from '@appwrite.io/pink-svelte';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { capitalize } from '$lib/helpers/string';
+    import { getBadgeTypeFromStatusCode } from '$lib/helpers/httpStatus';
     import { Copy } from '$lib/components';
     import { logStatusConverter } from './store';
     import { LogsRequest, LogsResponse } from '$lib/components/logs';
@@ -98,11 +99,9 @@
                                     <Badge
                                         content={selectedLog.responseStatusCode.toString()}
                                         variant="secondary"
-                                        type={selectedLog?.responseStatusCode >= 400
-                                            ? 'error'
-                                            : selectedLog.responseStatusCode === 0
-                                              ? undefined
-                                              : 'success'} />
+                                        type={getBadgeTypeFromStatusCode(
+                                            selectedLog.responseStatusCode
+                                        )} />
                                 </span>
                             </Layout.Stack>
                             <Layout.Stack gap="xs" inline>
