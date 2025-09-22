@@ -6,26 +6,28 @@
     import { Button, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { ID } from '@appwrite.io/console';
-    import { createEventDispatcher } from 'svelte';
+    import { ID, type Models } from '@appwrite.io/console';
     import { subNavigation } from '$lib/stores/database';
-    import { Input as SuggestionsInput } from './(suggestions)/index';
+    import { Input as SuggestionsInput, tableColumnSuggestions } from './(suggestions)/index';
 
     let {
-        showCreate = $bindable(false)
+        showCreate = $bindable(false),
+        onTableCreated
     }: {
         showCreate: boolean;
+        onTableCreated: (table: Models.Table) => void | Promise<void>;
     } = $props();
 
     const databaseId = page.params.database;
-    const dispatch = createEventDispatcher();
 
     let name = $state('');
     let id: string = $state(null);
     let touchedId = $state(false);
     let error: string = $state(null);
 
-    const create = async () => {
+    let creatingTable = $state(false);
+
+    async function createTable() {
         error = null;
         try {
             const table = await sdk
@@ -36,23 +38,35 @@
                     name
                 });
 
-            showCreate = false;
-            subNavigation.update();
+            $tableColumnSuggestions.table = {
+                id: table.$id,
+                name: table.name
+            };
 
-            dispatch('created', table);
-            addNotification({
-                type: 'success',
-                message: `${name} has been created`
-            });
-            name = id = null;
-            trackEvent(Submit.TableCreate, {
-                customId: !!id
-            });
+            updateAndCleanup();
+
+            await onTableCreated(table);
+
+            showCreate = false;
+            creatingTable = false;
         } catch (e) {
             error = e.message;
             trackError(e, Submit.TableCreate);
         }
-    };
+    }
+
+    function updateAndCleanup() {
+        subNavigation.update();
+
+        addNotification({
+            type: 'success',
+            message: `${name} has been created`
+        });
+
+        trackEvent(Submit.TableCreate, { customId: !!id });
+
+        name = id = null;
+    }
 
     function toIdFormat(str: string): string {
         return str
@@ -79,7 +93,7 @@
     });
 </script>
 
-<Modal title="Create table" size="m" bind:show={showCreate} onSubmit={create} bind:error>
+<Modal title="Create table" size="m" bind:show={showCreate} onSubmit={createTable} bind:error>
     <InputText
         id="name"
         label="Name"
@@ -108,7 +122,9 @@
     <SuggestionsInput />
 
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button secondary disabled={creatingTable} on:click={() => (showCreate = false)}
+            >Cancel</Button>
+        <Button submit disabled={creatingTable} submissionLoader forceShowLoader={creatingTable}
+            >Create</Button>
     </svelte:fragment>
 </Modal>

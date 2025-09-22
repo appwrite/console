@@ -410,7 +410,6 @@
         </Spreadsheet.Root>
     </SpreadsheetContainer>
 
-    <!-- TODO: terminologies -->
     {#if selectedColumns.length > 0}
         <div class="floating-action-bar">
             <FloatingActionBar>

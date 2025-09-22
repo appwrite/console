@@ -12,21 +12,25 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
-    import { type Columns, expandTabs } from '../table-[table]/store';
+    import { expandTabs } from '../table-[table]/store';
     import SpreadsheetContainer from '../table-[table]/layout/spreadsheet.svelte';
     import { onDestroy, onMount } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import { tableColumnSuggestions } from './store';
-    import type { Models } from '@appwrite.io/console';
+    import {
+        type ColumnInput,
+        mapSuggestedColumns,
+        type SuggestedColumnSchema,
+        tableColumnSuggestions
+    } from './store';
+    import { addNotification } from '$lib/stores/notifications';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     const {
         onColumnsFinalized = undefined
     }: {
-        onColumnsFinalized?: (
-            columns: Exclude<Columns, Models.ColumnRelationship>[]
-        ) => Promise<void>;
+        onColumnsFinalized?: (columns: SuggestedColumnSchema[]) => void | Promise<void>;
     } = $props();
 
     /**
@@ -216,29 +220,37 @@
     });
 
     async function suggestColumns() {
-        console.log('tableColumnSuggestions', $tableColumnSuggestions.enabled);
-
-        if (!$tableColumnSuggestions.enabled) return;
-
         $tableColumnSuggestions.thinking = true;
 
         try {
-            const suggestedColumns = await sdk
-                .forConsoleIn(page.params.repository)
+            const suggestedColumns = (await sdk
+                .forProject(page.params.region, page.params.project)
                 .console.suggestColumns({
                     databaseId: page.params.database,
                     tableId: page.params.table,
-                    context: $tableColumnSuggestions.context
-                });
+                    context: $tableColumnSuggestions.context ?? undefined
+                })) as unknown as {
+                total: number;
+                columns: ColumnInput[];
+            };
 
-            console.log(JSON.stringify(suggestedColumns, null, 2));
+            trackEvent(Submit.ColumnSuggestions, {
+                total: suggestedColumns.total,
+                tableName: $tableColumnSuggestions.table?.name ?? undefined
+            });
 
-            await onColumnsFinalized?.(suggestedColumns.columns);
-        } catch (e) {
-            // `null` means
-            // we couldn't make columns!
-            await onColumnsFinalized?.(null);
+            await onColumnsFinalized(mapSuggestedColumns(suggestedColumns.columns));
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+
+            trackError(error, Submit.ColumnSuggestions);
         } finally {
+            $tableColumnSuggestions.table = null;
+            $tableColumnSuggestions.context = null;
+            $tableColumnSuggestions.enabled = false;
             $tableColumnSuggestions.thinking = false;
         }
     }
