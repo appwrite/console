@@ -7,6 +7,10 @@
     import Relationship from './types/relationship.svelte';
     import String from './types/string.svelte';
     import Url from './types/url.svelte';
+    import Point from './types/point.svelte';
+    import Line from './types/line.svelte';
+    import Polygon from './types/polygon.svelte';
+    import { isSpatialType } from '../store';
 
     export let id: string;
     export let label: string;
@@ -24,7 +28,10 @@
         | Models.ColumnIp
         | Models.ColumnString
         | Models.ColumnDatetime
-        | Models.ColumnUrl;
+        | Models.ColumnUrl
+        | Models.ColumnPoint
+        | Models.ColumnLine
+        | Models.ColumnPolygon;
 
     const columnsTypeMap = {
         string: String,
@@ -32,7 +39,10 @@
         double: Integer,
         boolean: Boolean,
         datetime: Datetime,
-        relationship: Relationship
+        relationship: Relationship,
+        point: Point,
+        linestring: Line,
+        polygon: Polygon
     };
 
     const columnsFormatMap = {
@@ -59,7 +69,9 @@
     {:else}
         <!-- the `on:click` is from string > array mode for advanced edit button -->
         <svelte:component
-            this={column.array ? columnsTypeMap['string'] : columnsTypeMap[column.type]}
+            this={column.array || (isSpatialType(column) && limited)
+                ? columnsTypeMap['string']
+                : columnsTypeMap[column.type]}
             {id}
             {editing}
             {limited}

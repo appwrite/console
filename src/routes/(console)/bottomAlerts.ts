@@ -1,8 +1,8 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import TablesApiLight from '$lib/images/promos/tables-api-light.png';
-import TablesApiDark from '$lib/images/promos/tables-api-dark.png';
+import SpatialColumnsLight from '$lib/images/promos/spatial-columns-api-light.png';
+import SpatialColumnsDark from '$lib/images/promos/spatial-columns-api-dark.png';
 import InversionQueriesDark from '$lib/images/promos/inversion-queries-dark.png';
 import InversionQueriesLight from '$lib/images/promos/inversion-queries-light.png';
 import TimeHelperQueriesDark from '$lib/images/promos/time-helper-queries-dark.png';
@@ -11,21 +11,20 @@ import TimeHelperQueriesLight from '$lib/images/promos/time-helper-queries-light
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const tablesApiPromo: BottomModalAlertItem = {
-        id: 'modal:tables_api_announcement',
+    const spatialColumnsPromo: BottomModalAlertItem = {
+        id: 'modal:spatial_columns_announcement',
         src: {
-            dark: TablesApiDark,
-            light: TablesApiLight
+            dark: SpatialColumnsDark,
+            light: SpatialColumnsLight
         },
-        title: 'Announcing the new TablesDB UI and more!',
-        message:
-            'This is Appwrite Databases’ most significant update so far, introducing new terminology, a new UI, and a supporting TablesDB API.',
+        title: 'Announcing API for spatial columns',
+        message: 'Store and query geo data directly in your database.',
         plan: 'free',
         importance: 8,
         scope: 'project',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://apwr.dev/E64A90f',
+            link: () => 'https://appwrite.io/blog/post/announcing-spatial-columns',
             external: true,
             hideOnClick: true
         },
@@ -71,7 +70,7 @@ if (isCloud) {
         },
         show: true
     };
-    listOfPromotions.push(inversionQueriesPromo, timeHelperQueriesPromo, tablesApiPromo);
+    listOfPromotions.push(spatialColumnsPromo, inversionQueriesPromo, timeHelperQueriesPromo);
 }
 
 export function addBottomModalAlerts() {
