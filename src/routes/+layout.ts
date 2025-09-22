@@ -29,6 +29,16 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     }
 
     if (account) {
+        if (isCloud && !account.emailVerification) {
+            const isPublicRoute = route.id?.startsWith('/(public)');
+            const isAuthRoute = route.id?.startsWith('/(authenticated)');
+            const isVerifyEmailPage = url.pathname === `${base}/verify-email`;
+
+            if (!isPublicRoute && !isAuthRoute && !isVerifyEmailPage) {
+                redirect(303, `${base}/verify-email`);
+            }
+        }
+
         return {
             account: account,
             organizations: !isCloud
