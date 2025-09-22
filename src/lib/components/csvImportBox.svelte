@@ -90,7 +90,7 @@
             }
         }
 
-        if (tableId && tableName === null) {
+        if (tableName === null) {
             importItems.update((items) => {
                 const next = new Map(items);
                 next.delete(importData.$id);
