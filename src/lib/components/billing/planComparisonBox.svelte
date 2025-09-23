@@ -1,7 +1,7 @@
 <script lang="ts">
     import { BillingPlan } from '$lib/constants';
     import { formatNum } from '$lib/helpers/string';
-    import { plansInfo, tierFree, tierPro, tierScale, type Tier } from '$lib/stores/billing';
+    import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { Card, Layout, Tabs, Typography } from '@appwrite.io/pink-svelte';
 
     export let downgrade = false;
@@ -12,19 +12,6 @@
 
     const allTiers: Tier[] = [BillingPlan.FREE, BillingPlan.PRO, BillingPlan.SCALE];
     $: visibleTiers = allTiers.filter((tier) => tier !== BillingPlan.SCALE);
-
-    function getTierName(tier: Tier): string {
-        switch (tier) {
-            case BillingPlan.FREE:
-                return tierFree.name;
-            case BillingPlan.PRO:
-                return tierPro.name;
-            case BillingPlan.SCALE:
-                return tierScale.name;
-            default:
-                return '';
-        }
-    }
 </script>
 
 <Card.Base>
@@ -35,7 +22,7 @@
                     {root}
                     active={selectedTab === tier}
                     on:click={() => (selectedTab = tier)}>
-                    {getTierName(tier)}
+                    {tierToPlan(tier).name}
                 </Tabs.Item.Button>
             {/each}
         </Tabs.Root>
