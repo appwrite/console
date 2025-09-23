@@ -62,7 +62,7 @@
 
         if (isSuccess) {
             await invalidate(Dependencies.ROWS);
-            $spreadsheetRenderKey = hash(Date.now().toString());
+            spreadsheetRenderKey.set(hash(Date.now().toString()));
         }
     }
 
@@ -88,6 +88,15 @@
             } catch {
                 tableName = null;
             }
+        }
+
+        if (tableId && tableName === null) {
+            importItems.update((items) => {
+                const next = new Map(items);
+                next.delete(importData.$id);
+                return next;
+            });
+            return;
         }
 
         importItems.update((items) => {

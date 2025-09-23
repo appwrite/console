@@ -25,6 +25,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
+    import { timer } from '$lib/actions/timer';
 
     export let columns: Column[];
     export let executions: Models.ExecutionList;
@@ -121,7 +122,11 @@
                             </span>
                         </Tooltip>
                     {:else if column.id === 'duration'}
-                        {calculateTime(log.duration)}
+                        {#if ['processing', 'waiting'].includes(log.status)}
+                            <span use:timer={{ start: log.$createdAt }}></span>
+                        {:else}
+                            {calculateTime(log.duration)}
+                        {/if}
                     {/if}
                 </Table.Cell>
             {/each}
