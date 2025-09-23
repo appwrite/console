@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { columnOptions } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/columns/store';
 
 export type TableColumnSuggestions = {
     enabled: boolean;
@@ -30,6 +31,73 @@ export const tableColumnSuggestions = writable<TableColumnSuggestions>({
     table: null
 });
 
+// TODO: @itznotabug, remove later, this is MOCK DATA ONLY.
+export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
+    total: 7,
+    columns: [
+        {
+            name: 'title',
+            type: 'string',
+            size: 255,
+            format: null,
+            required: true,
+            formatOptions: null
+        },
+        {
+            name: 'authorName',
+            type: 'string',
+            size: 128,
+            format: null,
+            required: true,
+            formatOptions: null
+        },
+        {
+            name: 'publishedYear',
+            type: 'integer',
+            size: null,
+            format: null,
+            required: true,
+            formatOptions: {
+                min: 1500,
+                max: null
+            }
+        },
+        {
+            name: 'genre',
+            type: 'string',
+            size: 64,
+            format: null,
+            required: false,
+            formatOptions: null,
+            default: null
+        },
+        {
+            name: 'isbn',
+            type: 'string',
+            size: 13,
+            required: false,
+            formatOptions: null,
+            default: null
+        },
+        {
+            name: 'language',
+            type: 'string',
+            size: 32,
+            format: null,
+            required: false,
+            formatOptions: null,
+            default: null
+        },
+        {
+            name: 'pageCount',
+            type: 'integer',
+            required: false,
+            min: 1,
+            max: 10000,
+            default: null
+        }
+    ]
+};
 export type ColumnInput = {
     name: string;
     type: string;
@@ -63,3 +131,5 @@ export function mapSuggestedColumns<T extends ColumnInput>(columns: T[]): Sugges
         format: col.format ?? null
     }));
 }
+
+export const basicColumnOptions = columnOptions.slice(0, -1);

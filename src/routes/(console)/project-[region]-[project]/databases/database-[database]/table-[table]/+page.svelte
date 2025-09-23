@@ -225,11 +225,7 @@
                     }} />
             {/if}
         {:else if $tableColumnSuggestions.enabled && $tableColumnSuggestions.table && $tableColumnSuggestions.table.id === page.params.table}
-            <SuggestionsEmptySheet
-                onColumnsFinalized={(columns) => {
-                    showSuggestionsModal = true;
-                    columnSuggestionsSchema = columns;
-                }} />
+            <SuggestionsEmptySheet />
         {:else}
             <EmptySheet
                 mode="rows"
