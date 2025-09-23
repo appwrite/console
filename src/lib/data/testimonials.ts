@@ -44,7 +44,7 @@ export const testimonials: Testimonial[] = [
     {
         id: 'phil-majikkids',
         logo: Phil,
-        headline: 'Just like a Swiss Army Knife - choose and use the tools you need',
+        headline: 'With Appwrite, Majik Kids built an entire app with one developer.',
         blurb: 'Just like a Swiss Army Knife you can choose and use the tools that you need with Appwrite.',
         name: 'Phil McCluskey',
         title: 'App Manager, Majik Kids',
