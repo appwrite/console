@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Link } from '$lib/elements';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { getSubdomain } from '$lib/helpers/tlds';
     import {
         Badge,
         Layout,
@@ -15,7 +16,7 @@
     export let verified: boolean | undefined = undefined;
     export let ruleStatus: string | undefined = undefined;
 
-    let subdomain = domain.split('.').slice(0, -2).join('.');
+    let subdomain = getSubdomain(domain);
 </script>
 
 <Layout.Stack gap="xl">
@@ -52,7 +53,7 @@
         </svelte:fragment>
         <Table.Row.Base {root}>
             <Table.Cell {root}>CNAME</Table.Cell>
-            <Table.Cell {root}>{subdomain}</Table.Cell>
+            <Table.Cell {root}>{subdomain || '@'}</Table.Cell>
             <Table.Cell {root}>
                 <InteractiveText
                     variant="copy"

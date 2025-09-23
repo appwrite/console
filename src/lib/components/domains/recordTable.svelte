@@ -10,7 +10,7 @@
     } from '@appwrite.io/pink-svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { isCloud } from '$lib/system';
-
+    import { getSubdomain } from '$lib/helpers/tlds';
     export let domain: string;
     export let verified: boolean | undefined = undefined;
     export let variant: 'cname' | 'a' | 'aaaa';
@@ -20,7 +20,7 @@
     export let onNavigateToA: () => void = () => {};
     export let onNavigateToAAAA: () => void = () => {};
 
-    let subdomain = domain?.split('.')?.slice(0, -2)?.join('.');
+    let subdomain = getSubdomain(domain);
 
     const aTabVisible =
         !isCloud &&
