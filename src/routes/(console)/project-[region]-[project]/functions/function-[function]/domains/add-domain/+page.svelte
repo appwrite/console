@@ -51,14 +51,17 @@
         let domain: Models.Domain;
 
         if (isCloud && apexDomain) {
-            try {
-                domain = await sdk.forConsole.domains.create({
+            sdk.forConsole.domains
+                .create({
                     teamId: $project.teamId,
                     domain: apexDomain
+                })
+                .then((createdDomain) => {
+                    domain = createdDomain;
+                })
+                .catch(() => {
+                    // Empty as domain creation error needs to be silent
                 });
-            } catch (error) {
-                // Empty as domain creation error needs to be silent
-            }
         }
 
         try {
@@ -92,12 +95,10 @@
             if (rule?.status === 'verified') {
                 await goto(routeBase);
                 await invalidate(Dependencies.FUNCTION_DOMAINS);
-                if (isCloud) {
-                    try {
-                        await sdk.forConsole.domains.updateNameservers({ domainId: domain.$id });
-                    } catch (error) {
+                if (isCloud && domain) {
+                    sdk.forConsole.domains.updateNameservers({ domainId: domain.$id }).catch(() => {
                         // Empty as domain update error needs to be silent
-                    }
+                    });
                 }
             } else {
                 await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);

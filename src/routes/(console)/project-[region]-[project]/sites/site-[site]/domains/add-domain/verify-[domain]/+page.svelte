@@ -54,38 +54,36 @@
             if (isCloud) {
                 const apexDomain = getApexDomain(data.proxyRule.domain);
                 if (apexDomain) {
-                    try {
-                        const domainData = await sdk.forConsole.domains.create({
+                    sdk.forConsole.domains
+                        .create({
                             teamId: $organization.$id,
                             domain: apexDomain
-                        });
-                        verified = domainData.nameservers.toLowerCase() === 'appwrite';
-                        if (!verified) {
-                            throw new Error(
-                                'Domain verification failed. Please check your domain settings or try again later'
-                            );
-                        }
-                    } catch (error) {
-                        // Empty as domain creation error needs to be silent
-                    }
-
-                    try {
-                        const domain = data.domainsList.domains.find(
-                            (d: Models.Domain) => d.domain === apexDomain
-                        );
-                        if (domain) {
-                            const output = await sdk.forConsole.domains.updateNameservers({
-                                domainId: domain.$id
-                            });
-                            verified = output.nameservers.toLowerCase() === 'appwrite';
-                            if (!verified) {
-                                throw new Error(
-                                    'Domain verification failed. Please check your domain settings or try again later'
-                                );
+                        })
+                        .then((domainData) => {
+                            if (domainData.nameservers.toLowerCase() === 'appwrite') {
+                                verified = true;
                             }
-                        }
-                    } catch (error) {
-                        // Empty as domain update error needs to be silent
+                        })
+                        .catch(() => {
+                            // Empty as domain creation error needs to be silent
+                        });
+
+                    const domain = data.domainsList.domains.find(
+                        (d: Models.Domain) => d.domain === apexDomain
+                    );
+                    if (domain) {
+                        sdk.forConsole.domains
+                            .updateNameservers({
+                                domainId: domain.$id
+                            })
+                            .then((output) => {
+                                if (output.nameservers.toLowerCase() === 'appwrite') {
+                                    verified = true;
+                                }
+                            })
+                            .catch(() => {
+                                // Empty as domain update error needs to be silent
+                            });
                     }
                 }
             }
