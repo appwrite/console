@@ -12,7 +12,6 @@
     } from '@appwrite.io/pink-svelte';
     import { IconCalendar, IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
     import { expandTabs } from '../table-[table]/store';
     import SpreadsheetContainer from '../table-[table]/layout/spreadsheet.svelte';
@@ -38,6 +37,7 @@
     import { columnOptions } from '../table-[table]/columns/store';
     import Options from './options.svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
+    import { Confirm } from '$lib/components';
 
     // No props needed - we handle column creation directly
 
@@ -52,6 +52,8 @@
     let showFloatingBar = $state(true);
     let hasTransitioned = $state(false);
     let scrollAnimationFrame: number | null = null;
+
+    let confirmDismiss = $state(false);
     let creatingColumns = $state(false);
     const baseColProps = { draggable: false, resizable: false };
 
@@ -299,7 +301,7 @@
         $tableColumnSuggestions.thinking = true;
 
         try {
-            await sleep(1250);
+            await sleep(5000);
             const suggestedColumns = isDev
                 ? mockSuggestions
                 : ((await sdk
@@ -334,7 +336,7 @@
         } finally {
             $tableColumnSuggestions.table = null;
             $tableColumnSuggestions.context = null;
-            $tableColumnSuggestions.enabled = false;
+            // $tableColumnSuggestions.enabled = false;
             $tableColumnSuggestions.thinking = false;
         }
     }
@@ -506,8 +508,10 @@
 
 <div
     bind:this={spreadsheetContainer}
+    class:custom-columns={customColumns.length > 0}
     class="databases-spreadsheet spreadsheet-container-outer"
-    class:custom-columns={customColumns.length > 0}>
+    style:--overlay-icon-color="#fd366e99"
+    style:--non-overlay-icon-color="--fgcolor-neutral-weak">
     <div>
         <div
             aria-hidden="true"
@@ -553,20 +557,19 @@
                         <Typography.Text style="white-space: nowrap">
                             {creatingColumns
                                 ? 'Creating columns...'
-                                : 'Review and edit suggested columns before applying'}
+                                : $isSmallViewport
+                                  ? 'Review and edit columns'
+                                  : 'Review and edit suggested columns before applying'}
                         </Typography.Text>
                     </svelte:fragment>
+
                     <svelte:fragment slot="end">
                         {#if !creatingColumns}
-                            <Layout.Stack direction="row" gap="xs" alignItems="center">
+                            <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
                                 <Button.Button
                                     size="xs"
                                     variant="text"
-                                    on:click={() => {
-                                        customColumns = [];
-                                        $tableColumnSuggestions.context = null;
-                                        $tableColumnSuggestions.enabled = false;
-                                    }}
+                                    on:click={() => (confirmDismiss = true)}
                                     >Dismiss
                                 </Button.Button>
                                 <Button.Button size="xs" variant="primary" on:click={createColumns}
@@ -596,71 +599,96 @@
                             </Button.Button>
                         </Spreadsheet.Header.Cell>
                     {:else}
+                        {@const columnObj = getColumn(column.id)}
+                        {@const columnIcon = basicColumnOptions.find(
+                            (col) => col.type === columnObj?.type
+                        )?.icon}
+                        {@const columnIconColor = !columnObj?.type
+                            ? '--non-overlay-icon-color'
+                            : '--overlay-icon-color'}
+
                         <Options onShowStateChanged={onPopoverShowStateChanged}>
                             {#snippet children(toggle)}
                                 <Spreadsheet.Header.Cell
                                     {root}
                                     column={column.id}
-                                    on:contextmenu={toggle}>
+                                    on:contextmenu={toggle}
+                                    openEditOnTap={$isSmallViewport}>
                                     <Layout.Stack
                                         direction="row"
                                         alignItems="center"
                                         alignContent="center"
                                         justifyContent="space-between">
-                                        <Layout.Stack
-                                            gap="xs"
-                                            direction="row"
-                                            alignItems="center"
-                                            alignContent="center">
-                                            {column.title}
+                                        {column.title}
 
-                                            <SortButton disabled column={column.id} />
-                                        </Layout.Stack>
-
-                                        <Popover let:toggle portal>
+                                        <Popover let:toggle portal padding="none">
                                             <Button.Button
                                                 size="xs"
                                                 variant="extra-compact"
                                                 on:click={toggle}>
                                                 <Icon
                                                     size="s"
-                                                    color="--fgcolor-neutral-weak"
+                                                    color={columnIconColor}
                                                     icon={column.icon ?? undefined} />
                                             </Button.Button>
 
                                             <div
                                                 let:toggle
                                                 slot="tooltip"
-                                                class="actions-menu-wrapper"
-                                                style:max-height="184px">
-                                                <ActionMenu.Root maxWidth="232px">
-                                                    {#each basicColumnOptions as option}
-                                                        <ActionMenu.Item.Button
-                                                            on:click={() => {
-                                                                toggle();
-                                                                updateColumn(column.id, {
-                                                                    type: option.type,
-                                                                    format: option.format || null
-                                                                });
-                                                            }}>
-                                                            <Layout.Stack
-                                                                gap="s"
-                                                                direction="row"
-                                                                alignContent="center">
-                                                                <Icon icon={option.icon} />
-                                                                {option.name}
-                                                            </Layout.Stack>
-                                                        </ActionMenu.Item.Button>
-                                                    {/each}
+                                                class="actions-menu-wrapper">
+                                                <ActionMenu.Root width="228px">
+                                                    <Layout.Stack
+                                                        gap="none"
+                                                        direction="column"
+                                                        class="filter-modal-actions-menu variant">
+                                                        {#each basicColumnOptions as option}
+                                                            <ActionMenu.Item.Button
+                                                                on:click={() => {
+                                                                    toggle();
+                                                                    updateColumn(column.id, {
+                                                                        type: option.type,
+                                                                        format:
+                                                                            option.format || null
+                                                                    });
+                                                                }}>
+                                                                <Layout.Stack
+                                                                    gap="s"
+                                                                    direction="row"
+                                                                    alignContent="center">
+                                                                    <Icon icon={option.icon} />
+                                                                    {option.name}
+                                                                </Layout.Stack>
+                                                            </ActionMenu.Item.Button>
+                                                        {/each}
+                                                    </Layout.Stack>
                                                 </ActionMenu.Root>
                                             </div>
                                         </Popover>
                                     </Layout.Stack>
+
+                                    <svelte:fragment slot="cell-editor">
+                                        <div class="cell-editor">
+                                            <InputText
+                                                id="key"
+                                                autofocus
+                                                required
+                                                bind:value={columnObj.key}
+                                                pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$">
+                                                <svelte:fragment slot="end">
+                                                    {#if columnIcon}
+                                                        <Icon
+                                                            size="s"
+                                                            icon={columnIcon}
+                                                            color={columnIconColor} />
+                                                    {/if}
+                                                </svelte:fragment>
+                                            </InputText>
+                                        </div>
+                                    </svelte:fragment>
                                 </Spreadsheet.Header.Cell>
                             {/snippet}
 
                             {#snippet tooltipChildren()}
-                                {@const columnObj = getColumn(column.id)}
                                 {#if columnObj}
                                     {@const selectedOption = getColumnOption(
                                         columnObj.type,
@@ -723,6 +751,19 @@
         style="height: var(--overlay-height);">
     </div>
 </div>
+
+<Confirm
+    confirmDeletion
+    action="Dismiss"
+    title="Dismiss columns"
+    bind:open={confirmDismiss}
+    onSubmit={() => {
+        customColumns = [];
+        $tableColumnSuggestions.context = null;
+        $tableColumnSuggestions.enabled = false;
+    }}>
+    Are you sure you want to dismiss these columns suggested by AI? This action is irreversible.
+</Confirm>
 
 <style lang="scss">
     .spreadsheet-container-outer {
@@ -792,17 +833,24 @@
             }
         }
 
-        & .floating-action-wrapper :global(:first-child) {
-            z-index: 21;
-            left: calc(
-                50% - 40px
-            ); /* change this value if the firstColumn is changed for overlay logic.*/
-        }
+        & .floating-action-wrapper {
+            & :global(:first-child) {
+                z-index: 21;
+                left: calc(50% - 40px);
 
-        & .floating-action-wrapper.expanded :global(:first-child) {
-            z-index: 21;
-            left: calc(50% - 80px);
-            max-width: 500px !important;
+                @media (max-width: 768px) {
+                    left: 0;
+                }
+            }
+
+            &.expanded :global(:first-child) {
+                left: calc(50% - 40px);
+                max-width: 525px !important;
+
+                @media (max-width: 768px) {
+                    left: 0;
+                }
+            }
         }
 
         & :global(.spreadsheet-container) {
@@ -882,5 +930,28 @@
         &::after {
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
         }
+    }
+
+    :global(.cell-editor) {
+        margin-inline-start: -1.5px;
+    }
+
+    :global(.cell-editor .input) {
+        display: inline-flex;
+        align-items: center !important;
+        background: rgba(253, 54, 110, 0.12);
+        border: var(--border-width-L, 2px) solid rgba(253, 54, 110, 0.24) !important;
+
+        & :global(i) {
+            margin-inline-end: 8px !important;
+        }
+
+        & :global(::selection) {
+            background: var(--brand-pink-200, #feafc5) !important;
+        }
+    }
+
+    :global(.filter-modal-actions-menu.variant) {
+        max-height: 184px;
     }
 </style>
