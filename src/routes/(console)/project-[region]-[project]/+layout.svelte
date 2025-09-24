@@ -138,7 +138,7 @@
 
     @media (max-width: 768px) {
         .layout-level-progress-bars {
-            position: relative;
+            width: 100%;
             align-items: center;
         }
     }

@@ -11,7 +11,7 @@
         Popover
     } from '@appwrite.io/pink-svelte';
     import { IconCalendar, IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import type { Column } from '$lib/helpers/types';
     import { expandTabs } from '../table-[table]/store';
     import SpreadsheetContainer from '../table-[table]/layout/spreadsheet.svelte';
@@ -334,7 +334,7 @@
 
             trackError(error, Submit.ColumnSuggestions);
         } finally {
-            $tableColumnSuggestions.table = null;
+            // $tableColumnSuggestions.table = null;
             $tableColumnSuggestions.context = null;
             // $tableColumnSuggestions.enabled = false;
             $tableColumnSuggestions.thinking = false;
@@ -612,8 +612,7 @@
                                 <Spreadsheet.Header.Cell
                                     {root}
                                     column={column.id}
-                                    on:contextmenu={toggle}
-                                    openEditOnTap={$isSmallViewport}>
+                                    on:contextmenu={toggle}>
                                     <Layout.Stack
                                         direction="row"
                                         alignItems="center"
@@ -667,23 +666,25 @@
                                     </Layout.Stack>
 
                                     <svelte:fragment slot="cell-editor">
-                                        <div class="cell-editor">
-                                            <InputText
-                                                id="key"
-                                                autofocus
-                                                required
-                                                bind:value={columnObj.key}
-                                                pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$">
-                                                <svelte:fragment slot="end">
-                                                    {#if columnIcon}
-                                                        <Icon
-                                                            size="s"
-                                                            icon={columnIcon}
-                                                            color={columnIconColor} />
-                                                    {/if}
-                                                </svelte:fragment>
-                                            </InputText>
-                                        </div>
+                                        {#if !$isTabletViewport}
+                                            <div class="cell-editor">
+                                                <InputText
+                                                    id="key"
+                                                    autofocus
+                                                    required
+                                                    bind:value={columnObj.key}
+                                                    pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$">
+                                                    <svelte:fragment slot="end">
+                                                        {#if columnIcon}
+                                                            <Icon
+                                                                size="s"
+                                                                icon={columnIcon}
+                                                                color={columnIconColor} />
+                                                        {/if}
+                                                    </svelte:fragment>
+                                                </InputText>
+                                            </div>
+                                        {/if}
                                     </svelte:fragment>
                                 </Spreadsheet.Header.Cell>
                             {/snippet}
