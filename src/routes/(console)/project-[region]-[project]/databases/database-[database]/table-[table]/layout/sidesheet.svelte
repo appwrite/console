@@ -46,7 +46,7 @@
     let copyText = $state(undefined);
 </script>
 
-<div class="sheet-container">
+<div class="sheet-container" data-side-sheet-visible={show}>
     <Sheet bind:open={show} {closeOnBlur}>
         <div slot="header" style:width="100%">
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">

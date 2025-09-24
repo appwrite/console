@@ -103,7 +103,6 @@
 
         // hook the actual horizontal scroller once
         if (!hScroller || !hScroller.isConnected) {
-            // TODO: @itznotabug, might not need this. check later.
             const previousScrollLeft = hScroller?.scrollLeft || 0;
             hScroller = findHorizontalScroller(headerElement);
             if (hScroller) {
@@ -205,6 +204,32 @@
         spreadsheetContainer.style.setProperty('--group-width', `${width + 2}px`);
     };
 
+    // only for mobile, we can remove if not needed!
+    const scrollToFirstCustomColumn = () => {
+        if (!$isSmallViewport || customColumns.length === 0) return;
+
+        if (!headerElement || !headerElement.isConnected) {
+            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+        }
+
+        if (!headerElement) return;
+
+        const firstCustomColumnCell = headerElement.querySelector<HTMLElement>(
+            `[role="cell"][data-header="true"][data-column-id="${customColumns[0]?.key}"]`
+        );
+
+        if (firstCustomColumnCell && hScroller) {
+            const cellRect = firstCustomColumnCell.getBoundingClientRect();
+            const scrollerRect = hScroller.getBoundingClientRect();
+            const scrollLeft = hScroller.scrollLeft + cellRect.left - scrollerRect.left - 40;
+
+            hScroller.scrollTo({
+                left: Math.max(0, scrollLeft),
+                behavior: 'smooth'
+            });
+        }
+    };
+
     const recalcAll = () => {
         updateOverlayHeight();
         updateOverlayBounds();
@@ -301,7 +326,7 @@
         $tableColumnSuggestions.thinking = true;
 
         try {
-            await sleep(5000);
+            await sleep(1250);
             const suggestedColumns = isDev
                 ? mockSuggestions
                 : ((await sdk
@@ -325,6 +350,8 @@
             // Set hasTransitioned to disable future animations after initial state change
             if (customColumns.length > 0) {
                 setTimeout(() => (hasTransitioned = true), 300); // After transition completes
+
+                setTimeout(() => scrollToFirstCustomColumn(), 100);
             }
         } catch (error) {
             addNotification({
@@ -343,6 +370,10 @@
 
     function onPopoverShowStateChanged(value: boolean) {
         showFloatingBar = !value;
+        if ($isSmallViewport && rangeOverlayEl) {
+            rangeOverlayEl.style.opacity = value ? '0' : '1';
+        }
+
         const currentScrollLeft = hScroller?.scrollLeft || 0;
 
         tick().then(() => {
@@ -502,6 +533,10 @@
             cancelAnimationFrame(scrollAnimationFrame);
         }
     });
+
+    function isCustomColumn(id: string) {
+        return !['$id', '$createdAt', '$updatedAt', 'actions'].includes(id);
+    }
 </script>
 
 <svelte:window on:resize={recalcAll} on:scroll={recalcAll} />
@@ -520,67 +555,6 @@
             class:thinking={$tableColumnSuggestions.thinking}
             class:no-transition={hasTransitioned && customColumns.length > 0}>
         </div>
-
-        {#if $tableColumnSuggestions.thinking}
-            <div class="floating-action-wrapper thinking">
-                <FloatingActionBar>
-                    <svelte:fragment slot="start">
-                        <Layout.Stack direction="row" gap="xxs" alignItems="center">
-                            <Spinner size="s" />
-                            <Typography.Text style="white-space: nowrap">
-                                Thinking of column suggestions
-                            </Typography.Text>
-                        </Layout.Stack>
-                    </svelte:fragment>
-                    <svelte:fragment slot="end">
-                        <Button.Button
-                            size="xs"
-                            variant="secondary"
-                            on:click={() => {
-                                $tableColumnSuggestions.context = null;
-                                $tableColumnSuggestions.enabled = false;
-                                $tableColumnSuggestions.thinking = false;
-                            }}
-                            >Cancel
-                        </Button.Button>
-                    </svelte:fragment>
-                </FloatingActionBar>
-            </div>
-        {:else if customColumns.length > 0 && showFloatingBar}
-            <div class="floating-action-wrapper expanded">
-                <FloatingActionBar>
-                    <svelte:fragment slot="start">
-                        {#if creatingColumns}
-                            <Spinner size="s" />
-                        {/if}
-
-                        <Typography.Text style="white-space: nowrap">
-                            {creatingColumns
-                                ? 'Creating columns...'
-                                : $isSmallViewport
-                                  ? 'Review and edit columns'
-                                  : 'Review and edit suggested columns before applying'}
-                        </Typography.Text>
-                    </svelte:fragment>
-
-                    <svelte:fragment slot="end">
-                        {#if !creatingColumns}
-                            <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
-                                <Button.Button
-                                    size="xs"
-                                    variant="text"
-                                    on:click={() => (confirmDismiss = true)}
-                                    >Dismiss
-                                </Button.Button>
-                                <Button.Button size="xs" variant="primary" on:click={createColumns}
-                                    >Apply
-                                </Button.Button>
-                            </Layout.Stack>
-                        {/if}
-                    </svelte:fragment>
-                </FloatingActionBar>
-            </div>
-        {/if}
     </div>
 
     <SpreadsheetContainer>
@@ -592,6 +566,7 @@
             bottomActionClick={() => {}}>
             <svelte:fragment slot="header" let:root>
                 {#each spreadsheetColumns as column, index (index)}
+                    {@const isColumnInteractable = isCustomColumn(column.id)}
                     {#if column.isAction}
                         <Spreadsheet.Header.Cell column="actions" {root}>
                             <Button.Button icon variant="extra-compact">
@@ -607,12 +582,18 @@
                             ? '--non-overlay-icon-color'
                             : '--overlay-icon-color'}
 
-                        <Options onShowStateChanged={onPopoverShowStateChanged}>
+                        <Options
+                            enabled={isColumnInteractable}
+                            onShowStateChanged={onPopoverShowStateChanged}>
                             {#snippet children(toggle)}
                                 <Spreadsheet.Header.Cell
                                     {root}
                                     column={column.id}
-                                    on:contextmenu={toggle}>
+                                    on:contextmenu={(event) => {
+                                        if (isColumnInteractable) {
+                                            toggle(event);
+                                        }
+                                    }}>
                                     <Layout.Stack
                                         direction="row"
                                         alignItems="center"
@@ -624,7 +605,12 @@
                                             <Button.Button
                                                 size="xs"
                                                 variant="extra-compact"
-                                                on:click={toggle}>
+                                                disabled={!isColumnInteractable}
+                                                on:click={(event) => {
+                                                    if (isColumnInteractable) {
+                                                        toggle(event);
+                                                    }
+                                                }}>
                                                 <Icon
                                                     size="s"
                                                     color={columnIconColor}
@@ -697,42 +683,42 @@
                                     )}
                                     {@const ColumnComponent = selectedOption?.component}
                                     <Layout.Stack gap="xl">
-                                        <Layout.Stack gap="xl">
-                                            <Layout.Stack direction="row">
-                                                <InputText
-                                                    id="key"
-                                                    label="Key"
-                                                    placeholder="Enter key"
-                                                    bind:value={columnObj.key}
-                                                    autofocus
-                                                    required
-                                                    pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$" />
+                                        <Layout.Stack
+                                            direction={$isSmallViewport ? 'column' : 'row'}>
+                                            <InputText
+                                                id="key"
+                                                label="Key"
+                                                placeholder="Enter key"
+                                                bind:value={columnObj.key}
+                                                autofocus
+                                                required
+                                                pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$" />
 
-                                                <InputSelect
-                                                    id="type"
-                                                    required
-                                                    label="Type"
-                                                    value={selectedOption?.name || 'String'}
-                                                    on:change={(e) => {
-                                                        const newOption = columnOptions.find(
-                                                            (opt) => opt.name === e.detail
-                                                        );
-                                                        if (newOption) {
-                                                            updateColumn(column.id, {
-                                                                type: newOption.type,
-                                                                format: newOption.format || null
-                                                            });
-                                                        }
-                                                    }}
-                                                    options={basicColumnOptions.map((col) => {
-                                                        return {
-                                                            label: col.name,
-                                                            value: col.name,
-                                                            leadingIcon: col.icon
-                                                        };
-                                                    })} />
-                                            </Layout.Stack>
+                                            <InputSelect
+                                                id="type"
+                                                required
+                                                label="Type"
+                                                value={selectedOption?.name || 'String'}
+                                                on:change={(e) => {
+                                                    const newOption = columnOptions.find(
+                                                        (opt) => opt.name === e.detail
+                                                    );
+                                                    if (newOption) {
+                                                        updateColumn(column.id, {
+                                                            type: newOption.type,
+                                                            format: newOption.format || null
+                                                        });
+                                                    }
+                                                }}
+                                                options={basicColumnOptions.map((col) => {
+                                                    return {
+                                                        label: col.name,
+                                                        value: col.name,
+                                                        leadingIcon: col.icon
+                                                    };
+                                                })} />
                                         </Layout.Stack>
+
                                         {#if ColumnComponent}
                                             <ColumnComponent data={columnObj} />
                                         {/if}
@@ -749,8 +735,70 @@
     <div
         class="spreadsheet-fade-bottom"
         data-collapsed-tabs={!$expandTabs}
-        style="height: var(--overlay-height);">
+        style="height: var(--overlay-height);"
+        style:opacity={showFloatingBar ? '1' : '0'}>
     </div>
+
+    {#if $tableColumnSuggestions.thinking}
+        <div class="floating-action-wrapper thinking">
+            <FloatingActionBar>
+                <svelte:fragment slot="start">
+                    <Layout.Stack direction="row" gap="xxs" alignItems="center">
+                        <Spinner size="s" />
+                        <Typography.Text style="white-space: nowrap">
+                            Thinking of column suggestions
+                        </Typography.Text>
+                    </Layout.Stack>
+                </svelte:fragment>
+                <svelte:fragment slot="end">
+                    <Button.Button
+                        size="xs"
+                        variant="secondary"
+                        on:click={() => {
+                            $tableColumnSuggestions.context = null;
+                            $tableColumnSuggestions.enabled = false;
+                            $tableColumnSuggestions.thinking = false;
+                        }}
+                        >Cancel
+                    </Button.Button>
+                </svelte:fragment>
+            </FloatingActionBar>
+        </div>
+    {:else if customColumns.length > 0 && showFloatingBar}
+        <div class="floating-action-wrapper expanded">
+            <FloatingActionBar>
+                <svelte:fragment slot="start">
+                    {#if creatingColumns}
+                        <Spinner size="s" />
+                    {/if}
+
+                    <Typography.Text style="white-space: nowrap">
+                        {creatingColumns
+                            ? 'Creating columns...'
+                            : $isSmallViewport
+                              ? 'Review and edit columns'
+                              : 'Review and edit suggested columns before applying'}
+                    </Typography.Text>
+                </svelte:fragment>
+
+                <svelte:fragment slot="end">
+                    {#if !creatingColumns}
+                        <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                            <Button.Button
+                                size="xs"
+                                variant="text"
+                                on:click={() => (confirmDismiss = true)}
+                                >Dismiss
+                            </Button.Button>
+                            <Button.Button size="xs" variant="primary" on:click={createColumns}
+                                >Apply
+                            </Button.Button>
+                        </Layout.Stack>
+                    {/if}
+                </svelte:fragment>
+            </FloatingActionBar>
+        </div>
+    {/if}
 </div>
 
 <Confirm
@@ -837,20 +885,10 @@
         & .floating-action-wrapper {
             & :global(:first-child) {
                 z-index: 21;
-                left: calc(50% - 40px);
-
-                @media (max-width: 768px) {
-                    left: 0;
-                }
             }
 
             &.expanded :global(:first-child) {
-                left: calc(50% - 40px);
                 max-width: 525px !important;
-
-                @media (max-width: 768px) {
-                    left: 0;
-                }
             }
         }
 

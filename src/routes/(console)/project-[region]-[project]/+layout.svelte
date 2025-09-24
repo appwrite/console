@@ -140,6 +140,11 @@
         .layout-level-progress-bars {
             width: 100%;
             align-items: center;
+            box-sizing: border-box;
+        }
+
+        :global(main:has([data-side-sheet-visible='true']) .layout-level-progress-bars) {
+            visibility: hidden;
         }
     }
 </style>
