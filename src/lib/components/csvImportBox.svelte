@@ -16,6 +16,7 @@
     // re-render the key for sheet UI.
     import { hash } from '$lib/helpers/string';
     import { spreadsheetRenderKey } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/store';
+    import Link from '$lib/elements/link.svelte';
 
     type ImportItem = {
         status: string;
@@ -256,10 +257,10 @@
                                                 size="s" />
                                             <Typography.Text color="--fgcolor-error">
                                                 There was an import issue.
-                                                <button
-                                                    class="link-button"
+                                                <Link
+                                                    style="color: inherit"
                                                     on:click={() => openDetails(value.errors)}
-                                                    >View details</button>
+                                                    >View details</Link>
                                             </Typography.Text>
                                         </Layout.Stack>
                                     {/if}
@@ -322,14 +323,5 @@
             height: 4px;
             background-color: var(--bgcolor-error);
         }
-    }
-
-    .link-button {
-        background: none;
-        border: none;
-        padding: 0;
-        color: var(--fgcolor-error);
-        text-decoration: underline;
-        cursor: pointer;
     }
 </style>
