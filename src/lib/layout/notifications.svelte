@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { dismissNotification, notifications } from '../stores/notifications';
     import { flip } from 'svelte/animate';
     import { Layout, Toast } from '@appwrite.io/pink-svelte';
+    import { dismissNotification, notifications } from '../stores/notifications';
 </script>
 
 {#if $notifications}
@@ -28,16 +28,16 @@
 
 <style lang="scss">
     section {
+        right: 3.25px;
+        z-index: 1001;
         position: fixed;
         top: calc(var(--main-header-height) + 12px);
-        right: 12px;
-        z-index: 1001;
     }
 
     @media (min-width: 768px) {
         section {
-            top: calc(var(--main-header-height) + 24px);
             right: 24px;
+            top: calc(var(--main-header-height) + 24px);
         }
     }
 </style>
