@@ -189,19 +189,19 @@
 
     let showDetails = false;
     let selectedErrors: string[] = [];
+    let parsedErrors: string[] = [];
 
     function openDetails(errors: string[] | undefined) {
         selectedErrors = errors ?? [];
+        parsedErrors = selectedErrors.map((err) => {
+            try {
+                return JSON.stringify(JSON.parse(err), null, 2);
+            } catch {
+                return err;
+            }
+        });
         showDetails = true;
     }
-
-    $: parsedErrors = selectedErrors.map((err) => {
-        try {
-            return JSON.stringify(JSON.parse(err), null, 2);
-        } catch {
-            return err;
-        }
-    });
 </script>
 
 {#if showCsvImportBox}
