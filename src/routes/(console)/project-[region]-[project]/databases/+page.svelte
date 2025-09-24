@@ -14,7 +14,7 @@
     import Table from './table.svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import EmptySearch from '$lib/components/emptySearch.svelte';
 

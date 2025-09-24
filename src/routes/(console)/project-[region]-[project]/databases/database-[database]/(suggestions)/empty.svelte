@@ -21,10 +21,10 @@
     import {
         type ColumnInput,
         mapSuggestedColumns,
-        mockSuggestions,
         type SuggestedColumnSchema,
         tableColumnSuggestions,
-        basicColumnOptions
+        basicColumnOptions,
+        mockSuggestions
     } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -32,14 +32,10 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { Columns } from '../table-[table]/store';
-
-    import { isDev } from '$lib/system';
     import { columnOptions } from '../table-[table]/columns/store';
     import Options from './options.svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { Confirm } from '$lib/components';
-
-    // No props needed - we handle column creation directly
 
     let resizeObserver: ResizeObserver;
     let spreadsheetContainer: HTMLElement;
@@ -262,7 +258,8 @@
                 size: col.size,
                 min: col.min,
                 max: col.max,
-                width: 180,
+                // TODO: @itznotabug, we should use a dynamic min width based on column's name.
+                width: { min: 180 },
                 icon: columnOption?.icon,
                 draggable: false,
                 resizable: false
@@ -323,36 +320,62 @@
         await suggestColumns();
     });
 
+    function resetSuggestionsStore(fullReset: boolean = true) {
+        if (fullReset) {
+            // these are referenced in
+            // `table-[table]/+page.svelte`
+            $tableColumnSuggestions.table = null;
+            $tableColumnSuggestions.enabled = false;
+        }
+
+        $tableColumnSuggestions.context = null;
+        $tableColumnSuggestions.thinking = false;
+    }
+
+    /**
+     * Mark this as `true` when developing locally,
+     * make sure not to spend credits unnecessarily!
+     */
+    const useMockSuggestions = false;
     async function suggestColumns() {
         $tableColumnSuggestions.thinking = true;
+        let suggestedColumns: {
+            total: number;
+            columns: ColumnInput[];
+        } = {
+            total: 0,
+            columns: []
+        };
 
         try {
-            await sleep(1250);
-            const suggestedColumns = isDev
-                ? mockSuggestions
-                : ((await sdk
-                      .forProject(page.params.region, page.params.project)
-                      .console.suggestColumns({
-                          databaseId: page.params.database,
-                          tableId: page.params.table,
-                          context: $tableColumnSuggestions.context ?? undefined
-                      })) as unknown as {
-                      total: number;
-                      columns: ColumnInput[];
-                  });
+            if (useMockSuggestions) {
+                /* animation */
+                await sleep(1250);
+                suggestedColumns = mockSuggestions;
+            } else {
+                suggestedColumns = (await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .console.suggestColumns({
+                        databaseId: page.params.database,
+                        tableId: page.params.table,
+                        context: $tableColumnSuggestions.context ?? undefined
+                    })) as unknown as {
+                    total: number;
+                    columns: ColumnInput[];
+                };
+            }
 
+            const tableName = $tableColumnSuggestions.table?.name ?? undefined;
             trackEvent(Submit.ColumnSuggestions, {
-                total: suggestedColumns.total,
-                tableName: $tableColumnSuggestions.table?.name ?? undefined
+                tableName,
+                total: suggestedColumns.total
             });
 
             customColumns = mapSuggestedColumns(suggestedColumns.columns);
 
-            // Set hasTransitioned to disable future animations after initial state change
             if (customColumns.length > 0) {
-                setTimeout(() => (hasTransitioned = true), 300); // After transition completes
-
-                setTimeout(() => scrollToFirstCustomColumn(), 100);
+                setTimeout(scrollToFirstCustomColumn, 100);
+                setTimeout(() => (hasTransitioned = true), 300);
             }
         } catch (error) {
             addNotification({
@@ -362,10 +385,7 @@
 
             trackError(error, Submit.ColumnSuggestions);
         } finally {
-            // $tableColumnSuggestions.table = null;
-            $tableColumnSuggestions.context = null;
-            // $tableColumnSuggestions.enabled = false;
-            $tableColumnSuggestions.thinking = false;
+            resetSuggestionsStore(false);
         }
     }
 
@@ -511,11 +531,6 @@
 
             await invalidate(Dependencies.TABLE);
 
-            // Reset state
-            customColumns = [];
-            $tableColumnSuggestions.context = null;
-            $tableColumnSuggestions.enabled = false;
-
             addNotification({
                 type: 'success',
                 message: 'Columns created successfully'
@@ -528,7 +543,6 @@
                 type: 'error',
                 message: error.message
             });
-        } finally {
             creatingColumns = false;
         }
     }
@@ -539,6 +553,9 @@
         if (scrollAnimationFrame) {
             cancelAnimationFrame(scrollAnimationFrame);
         }
+
+        customColumns = [];
+        resetSuggestionsStore();
     });
 
     function isCustomColumn(id: string) {
@@ -559,8 +576,8 @@
             aria-hidden="true"
             bind:this={rangeOverlayEl}
             class="columns-range-overlay"
-            class:thinking={$tableColumnSuggestions.thinking}
-            class:no-transition={hasTransitioned && customColumns.length > 0}>
+            class:no-transition={hasTransitioned && customColumns.length > 0}
+            class:thinking={$tableColumnSuggestions.thinking || creatingColumns}>
         </div>
     </div>
 
@@ -595,6 +612,7 @@
                             {#snippet children(toggle)}
                                 <Spreadsheet.Header.Cell
                                     {root}
+                                    isEditable
                                     column={column.id}
                                     on:contextmenu={(event) => {
                                         if (isColumnInteractable) {
@@ -760,31 +778,32 @@
                     <Button.Button
                         size="xs"
                         variant="secondary"
-                        on:click={() => {
-                            $tableColumnSuggestions.context = null;
-                            $tableColumnSuggestions.enabled = false;
-                            $tableColumnSuggestions.thinking = false;
-                        }}
+                        on:click={() => resetSuggestionsStore()}
                         >Cancel
                     </Button.Button>
                 </svelte:fragment>
             </FloatingActionBar>
         </div>
     {:else if customColumns.length > 0 && showFloatingBar}
-        <div class="floating-action-wrapper expanded">
+        <div
+            class="floating-action-wrapper"
+            class:expanded={!creatingColumns}
+            class:creating-columns={creatingColumns}>
             <FloatingActionBar>
                 <svelte:fragment slot="start">
-                    {#if creatingColumns}
-                        <Spinner size="s" />
-                    {/if}
+                    <Layout.Stack gap="xl" direction="row" alignItems="center">
+                        {#if creatingColumns}
+                            <Spinner size="s" />
+                        {/if}
 
-                    <Typography.Text style="white-space: nowrap">
-                        {creatingColumns
-                            ? 'Creating columns...'
-                            : $isSmallViewport
-                              ? 'Review and edit columns'
-                              : 'Review and edit suggested columns before applying'}
-                    </Typography.Text>
+                        <Typography.Text style="white-space: nowrap">
+                            {creatingColumns
+                                ? 'Creating columns...'
+                                : $isSmallViewport
+                                  ? 'Review and edit columns'
+                                  : 'Review and edit suggested columns before applying'}
+                        </Typography.Text>
+                    </Layout.Stack>
                 </svelte:fragment>
 
                 <svelte:fragment slot="end">
@@ -814,8 +833,7 @@
     bind:open={confirmDismiss}
     onSubmit={() => {
         customColumns = [];
-        $tableColumnSuggestions.context = null;
-        $tableColumnSuggestions.enabled = false;
+        resetSuggestionsStore();
     }}>
     Are you sure you want to dismiss these columns suggested by AI? This action is irreversible.
 </Confirm>
@@ -899,6 +917,10 @@
                 @media (max-width: 768px) {
                     max-width: 400px !important;
                 }
+            }
+
+            &.creating-columns :global(:first-child) {
+                max-width: 300px !important;
             }
         }
 

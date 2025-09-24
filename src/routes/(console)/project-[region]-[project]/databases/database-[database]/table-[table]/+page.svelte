@@ -31,19 +31,11 @@
     import EmptySheet from './layout/emptySheet.svelte';
     import CreateRow from './rows/create.svelte';
     import { onDestroy } from 'svelte';
-    import {
-        Review as ReviewColumns,
-        Empty as SuggestionsEmptySheet,
-        type SuggestedColumnSchema,
-        tableColumnSuggestions
-    } from '../(suggestions)';
+    import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
 
     export let data: PageData;
 
     let showImportCSV = false;
-
-    let showSuggestionsModal = false;
-    let columnSuggestionsSchema: SuggestedColumnSchema[] = [];
 
     // todo: might need a type fix here.
     const filterColumns = writable<Column[]>([]);
@@ -267,10 +259,6 @@
     table={$table}
     bind:showSheet={$showRowCreateSheet.show}
     bind:existingData={$showRowCreateSheet.row} />
-
-{#if showSuggestionsModal && columnSuggestionsSchema}
-    <ReviewColumns bind:show={showSuggestionsModal} bind:columns={columnSuggestionsSchema} />
-{/if}
 
 <style>
     :global(.small-button-dimensions) {
