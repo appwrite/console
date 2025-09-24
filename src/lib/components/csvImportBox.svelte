@@ -324,7 +324,6 @@
         }
     }
 
-
     .link-button {
         background: none;
         border: none;
