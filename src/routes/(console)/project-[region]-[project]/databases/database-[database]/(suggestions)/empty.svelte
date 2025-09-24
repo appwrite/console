@@ -47,6 +47,7 @@
     let hScroller: HTMLElement | null = null;
     let headerElement: HTMLElement | null = null;
     let rangeOverlayEl: HTMLDivElement | null = null;
+    let fadeBottomOverlayEl: HTMLDivElement | null = null;
 
     let customColumns = $state([]);
     let showFloatingBar = $state(true);
@@ -370,8 +371,14 @@
 
     function onPopoverShowStateChanged(value: boolean) {
         showFloatingBar = !value;
-        if ($isSmallViewport && rangeOverlayEl) {
-            rangeOverlayEl.style.opacity = value ? '0' : '1';
+        if ($isSmallViewport) {
+            setTimeout(() => {
+                [rangeOverlayEl, fadeBottomOverlayEl].forEach((el) => {
+                    if (el) {
+                        el.style.opacity = value ? '0' : '1';
+                    }
+                });
+            }, 0);
         }
 
         const currentScrollLeft = hScroller?.scrollLeft || 0;
@@ -733,14 +740,13 @@
     </SpreadsheetContainer>
 
     <div
+        bind:this={fadeBottomOverlayEl}
         class="spreadsheet-fade-bottom"
-        data-collapsed-tabs={!$expandTabs}
-        style="height: var(--overlay-height);"
-        style:opacity={showFloatingBar ? '1' : '0'}>
+        data-collapsed-tabs={!$expandTabs}>
     </div>
 
     {#if $tableColumnSuggestions.thinking}
-        <div class="floating-action-wrapper thinking">
+        <div class="floating-action-wrapper">
             <FloatingActionBar>
                 <svelte:fragment slot="start">
                     <Layout.Stack direction="row" gap="xxs" alignItems="center">
@@ -841,7 +847,7 @@
             transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
             &.no-transition {
-                transition: none !important;
+                transition: opacity 300ms ease-in-out;
             }
 
             /* pretty gradient wash (with fallback) */
@@ -889,6 +895,10 @@
 
             &.expanded :global(:first-child) {
                 max-width: 525px !important;
+
+                @media (max-width: 768px) {
+                    max-width: 400px !important;
+                }
             }
         }
 
@@ -914,6 +924,7 @@
         bottom: 0;
         width: 100%;
         position: fixed;
+        height: var(--overlay-height);
         background: linear-gradient(
             180deg,
             rgba(255, 255, 255, 0) 0%,
@@ -923,7 +934,10 @@
         z-index: 20; /* under overlay */
         display: flex;
         justify-content: center;
-        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        transition:
+            opacity 300ms ease-in-out,
+            height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
         pointer-events: none;
     }
 
