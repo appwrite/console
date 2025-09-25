@@ -19,6 +19,8 @@
     import { trackEvent, Click } from '$lib/actions/analytics';
     import { type Models } from '@appwrite.io/console';
     import { getServiceLimit, readOnly, upgradeURL } from '$lib/stores/billing';
+    import { BillingPlan } from '$lib/constants';
+    import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
@@ -45,6 +47,7 @@
     let addOrganization = false;
     let showSelectProject = false;
     let showCreateProjectCloud = false;
+    let freePlanAlertDismissed = false;
 
     let searchQuery: SearchQuery;
 
@@ -100,7 +103,23 @@
         }
     ]);
 
-    onMount(async () => checkPricingRefAndRedirect(page.url.searchParams));
+    function dismissFreePlanAlert() {
+        freePlanAlertDismissed = true;
+        const notificationId = `freePlanAlert_${data.organization.$id}`;
+        hideNotification(notificationId, { coolOffPeriod: 24 });
+
+        trackEvent(Click.OrganizationClickUpgrade, {
+            from: 'button',
+            source: 'free_plan_info_alert_dismiss'
+        });
+    }
+
+    onMount(async () => {
+        checkPricingRefAndRedirect(page.url.searchParams);
+        const notificationId = `freePlanAlert_${data.organization.$id}`;
+        const shouldShow = shouldShowNotification(notificationId);
+        freePlanAlertDismissed = !shouldShow;
+    });
 
     function findRegion(project: Models.Project) {
         return $regionsStore.regions.find((region) => region.$id === project.region);
@@ -171,6 +190,28 @@
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
                             source: 'projects_archive_alert'
+                        });
+                    }}>
+                    Upgrade to Pro
+                </Button>
+            </svelte:fragment>
+        </Alert.Inline>
+    {/if}
+
+    {#if isCloud && data.organization.billingPlan === BillingPlan.FREE && projectsToArchive.length === 0 && !freePlanAlertDismissed}
+        <Alert.Inline dismissible on:dismiss={dismissFreePlanAlert}>
+            <Typography.Text
+                >Your Free plan includes up to 2 projects and limited resources. Upgrade to unlock
+                more capacity and features.</Typography.Text>
+            <svelte:fragment slot="actions">
+                <Button
+                    compact
+                    size="s"
+                    href={$upgradeURL}
+                    on:click={() => {
+                        trackEvent(Click.OrganizationClickUpgrade, {
+                            from: 'button',
+                            source: 'free_plan_info_alert'
                         });
                     }}>
                     Upgrade to Pro
