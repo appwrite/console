@@ -3,7 +3,7 @@
     import { onDestroy } from 'svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { ID, type Models, Region as ConsoleRegion, Region } from '@appwrite.io/console';
+    import { ID, type Models, Region } from '@appwrite.io/console';
     import { base } from '$app/paths';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { Modal } from '$lib/components';
