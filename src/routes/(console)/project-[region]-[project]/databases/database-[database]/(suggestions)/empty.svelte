@@ -31,6 +31,7 @@
     import { sleep } from '$lib/helpers/promises';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { isWithinSafeRange } from '$lib/helpers/numbers';
     import type { Columns } from '../table-[table]/store';
     import { columnOptions } from '../table-[table]/columns/store';
     import Options from './options.svelte';
@@ -55,6 +56,8 @@
     const baseColProps = { draggable: false, resizable: false };
 
     const getColumnWidth = (columnKey: string) => Math.max(180, columnKey.length * 8 + 60);
+    const safeNumericValue = (value: number | undefined) =>
+        value && isWithinSafeRange(value) ? value : undefined;
 
     const findHorizontalScroller = (root: HTMLElement | null): HTMLElement | null => {
         let element = root as HTMLElement | null;
@@ -488,8 +491,8 @@
                     case 'integer':
                         columnResult = await client.tablesDB.createIntegerColumn({
                             ...baseParams,
-                            min: column.min,
-                            max: column.max,
+                            min: safeNumericValue(column.min),
+                            max: safeNumericValue(column.max),
                             xdefault: (column.default as number) || null
                         });
                         break;
@@ -497,8 +500,8 @@
                     case 'double':
                         columnResult = await client.tablesDB.createFloatColumn({
                             ...baseParams,
-                            min: column.min,
-                            max: column.max,
+                            min: safeNumericValue(column.min),
+                            max: safeNumericValue(column.max),
                             xdefault: (column.default as number) || null
                         });
                         break;
