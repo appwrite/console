@@ -290,8 +290,7 @@
     }
 
     /* Fix when no vertical scrollbar is present, some environments reserve a gutter by default */
-    html,
-    body {
+    html {
         scrollbar-gutter: auto !important;
     }
 
