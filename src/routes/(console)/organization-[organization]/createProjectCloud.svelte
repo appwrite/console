@@ -21,6 +21,8 @@
     let projectRegion = Region.Fra;
     let projectName = 'New project';
 
+    let projectIdForLog = projectId;
+
     let showSubmissionLoader = false;
 
     async function create() {
@@ -38,9 +40,9 @@
 
             await goto(`${base}/project-${project.region}-${project.$id}`);
             trackEvent(Submit.ProjectCreate, {
-                customId: !!projectId,
                 teamId,
-                region: projectRegion
+                region: projectRegion,
+                customId: projectId !== projectIdForLog,
             });
         } catch (e) {
             error = e.message;
@@ -61,6 +63,8 @@
         projectName = 'New project';
         projectRegion = Region.Fra;
         showCreateProjectCloud = false;
+
+        projectIdForLog = projectId;
     });
 </script>
 

@@ -21,6 +21,8 @@
     let projectRegion = Region.Fra;
     let projectName = 'Appwrite Project';
 
+    const projectIdForLog = projectId;
+
     export let data;
 
     function markOnboardingComplete() {
@@ -49,8 +51,8 @@
             markOnboardingComplete();
 
             trackEvent(Submit.ProjectCreate, {
-                customId: !!projectId,
-                teamId
+                teamId,
+                customId: projectId !== projectIdForLog,
             });
 
             startAnimation = true;
