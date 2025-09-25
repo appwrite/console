@@ -289,6 +289,12 @@
         }
     }
 
+    /* Fix when no vertical scrollbar is present, some environments reserve a gutter by default */
+    html,
+    body {
+        scrollbar-gutter: auto !important;
+    }
+
     /* TODO: remove this block once Pink V2 is incorporated */
     input[type='radio'],
     input[type='checkbox']:not([class='switch']),
