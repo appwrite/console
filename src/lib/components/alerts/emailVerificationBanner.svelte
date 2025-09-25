@@ -12,8 +12,14 @@
     const needsEmailVerification = $derived(hasUser && !$user.emailVerification);
     const notOnOnboarding = $derived(!$page.route.id.includes('/onboarding'));
     const notOnWizard = $derived(!$wizard.show && !$isNewWizardStatusOpen);
+    const isEnabledViaEnvConfig = $derived(process.env.PUBLIC_CONSOLE_EMAIL_VERIFICATION ?? false);
     const shouldShowEmailBanner = $derived(
-        isCloud && hasUser && needsEmailVerification && notOnOnboarding && notOnWizard
+        isEnabledViaEnvConfig &&
+            isCloud &&
+            hasUser &&
+            needsEmailVerification &&
+            notOnOnboarding &&
+            notOnWizard
     );
 
     let showSendVerification = $state(false);
