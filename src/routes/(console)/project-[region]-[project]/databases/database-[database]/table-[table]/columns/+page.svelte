@@ -15,7 +15,7 @@
         Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import { isRelationship, isString } from '../rows/store';
+    import { isRelationship, isSpatialType, isString } from '../rows/store';
     import FailedModal from '../failedModal.svelte';
     import {
         columns,
@@ -353,7 +353,7 @@
                         {#if _default === null}
                             <Badge variant="secondary" content="NULL" size="xs" />
                         {:else}
-                            {_default}
+                            {isSpatialType(column) ? JSON.stringify(_default) : _default}
                         {/if}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="actions" {root} isEditable={false}>

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { loading } from '$routes/store';
     import { Typography } from '@appwrite.io/pink-svelte';
@@ -16,13 +17,13 @@
         <Typography.Eyebrow color="--fgcolor-neutral-secondary">POWERED BY</Typography.Eyebrow>
         {#if $app.themeInUse === 'dark'}
             <img
-                src="/console/images/appwrite-logo-dark.svg"
+                src="{base}/images/appwrite-logo-dark.svg"
                 width="120"
                 height="22"
                 alt="Appwrite Logo" />
         {:else}
             <img
-                src="/console/images/appwrite-logo-light.svg"
+                src="{base}/images/appwrite-logo-light.svg"
                 width="120"
                 height="22"
                 alt="Appwrite Logo" />

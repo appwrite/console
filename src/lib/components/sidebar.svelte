@@ -42,6 +42,7 @@
     import type { HTMLAttributes } from 'svelte/elements';
     import type { Models } from '@appwrite.io/console';
     import { noWidthTransition } from '$lib/stores/sidebar';
+    import { base } from '$app/paths';
 
     type $$Props = HTMLAttributes<HTMLElement> & {
         state?: 'closed' | 'open' | 'icons';
@@ -138,7 +139,7 @@
                 <Tooltip placement="right" disabled={state !== 'icons'}>
                     <a
                         class="progress-card"
-                        href={`/console/project-${project.region}-${project.$id}/get-started`}
+                        href={`${base}/project-${project?.region}-${project?.$id}/get-started`}
                         on:click={() => {
                             trackEvent('click_menu_get_started');
                             sideBarIsOpen = false;
@@ -162,7 +163,7 @@
                 <Layout.Stack direction="column" gap="s">
                     <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.region}-${project.$id}/overview/platforms`}
+                            href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}
                             class="link"
                             class:active={isSelected('overview')}
                             on:click={() => {
@@ -192,7 +193,7 @@
                     {#each buildProjectOptions as projectOption}
                         <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
-                                href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
+                                href={`${base}/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
                                 class:active={isSelected(projectOption.slug)}
                                 on:click={() => {
@@ -223,7 +224,7 @@
                     {#each deployProjectOptions as projectOption}
                         <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
-                                href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
+                                href={`${base}/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
                                 class:active={isSelected(projectOption.slug)}
                                 on:click={() => {
@@ -253,7 +254,7 @@
                         <div class="mobile-tablet-settings">
                             <Tooltip placement="right" disabled={state !== 'icons'}>
                                 <a
-                                    href={`/console/project-${project.region}-${project.$id}/settings`}
+                                    href={`${base}/project-${project.region}-${project.$id}/settings`}
                                     on:click={() => {
                                         trackEvent('click_menu_settings');
                                         sideBarIsOpen = false;
@@ -313,7 +314,7 @@
                 <div class="only-desktop">
                     <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.region}-${project.$id}/settings`}
+                            href={`${base}/project-${project.region}-${project.$id}/settings`}
                             class="link"
                             on:click={() => {
                                 trackEvent('click_menu_settings');

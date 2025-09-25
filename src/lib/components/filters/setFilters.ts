@@ -61,20 +61,12 @@ export function setTimeFilter(filter: FilterData, columns: Column[]) {
     const col = columns.find((c) => c.id === filter.id);
     const timeTag = get(tags).find((tag) => tag.tag.includes(`**${filter.title}**`));
     if (timeTag) {
-        const now = new Date();
-
-        const diff = now.getTime() - new Date(timeTag.value as string).getTime();
         const ranges = col.elements as { value: string; label: string }[];
-        const dateRange = ranges.reduce((prev, curr) => {
-            if (parseInt(curr.value) < diff && curr.value > prev.value) {
-                return curr;
-            }
-            return prev;
-        });
-        if (dateRange) {
+        const timeRange = ranges.find((range) => range.value === timeTag.value);
+        if (timeRange) {
             const newTag = {
-                tag: `**${filter.title}** is **${dateRange.label}**`,
-                value: timeTag.value
+                tag: `**${filter.title}** is **${timeRange.label}**`,
+                value: timeRange.value
             };
 
             cleanOldTags(filter?.title);

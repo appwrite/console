@@ -3,7 +3,9 @@ export function getNestedRootDirectory(repository: string): string | null {
     return match ? match[1] : null;
 }
 
-export function getRepositoryInfo(repository: string): { owner: string; name: string } | null {
+export function getRepositoryInfo(
+    repository: string
+): { owner: string; name: string; url: string } | null {
     const match = repository
         .trim()
         .match(/(?:^|\/\/|@)github\.com[/:]([^/]+)\/([^/]+?)(?:\.git)?(?:$|[/?#])/i);
@@ -13,7 +15,9 @@ export function getRepositoryInfo(repository: string): { owner: string; name: st
     const owner = decodeURIComponent(match[1]);
     const name = decodeURIComponent(match[2].replace(/\.git$/i, ''));
 
-    return { owner, name };
+    const url = `https://github.com/${owner}/${name}`;
+
+    return { owner, name, url };
 }
 
 export async function getLatestTag(owner: string, name: string): Promise<string | null> {

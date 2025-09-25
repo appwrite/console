@@ -18,14 +18,15 @@
     import { BottomSheet } from '$lib/components';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system';
-    import { goto } from '$app/navigation';
+    import { goto, beforeNavigate } from '$app/navigation';
     import { base } from '$app/paths';
     import { currentPlan, newOrgModal, organization } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { type Models, Query } from '@appwrite.io/console';
+    import { ID, type Models, Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
     import { BillingPlan } from '$lib/constants';
+    import { onDestroy } from 'svelte';
 
     type Organization = {
         name: string;
@@ -34,11 +35,13 @@
         isSelected: boolean;
     };
 
+    const menubarBuilder = createMenubar();
     const {
         elements: { menubar },
         builders: { createMenu }
-    } = createMenubar();
+    } = menubarBuilder;
 
+    const orgMenuBuilder = createMenu();
     const {
         elements: {
             trigger: triggerOrganizations,
@@ -46,8 +49,9 @@
             item: itemOrganizations,
             separator: separatorOrganizations
         },
-        builders: { createSubmenu: createSubmenuOrganizations, createMenuRadioGroup }
-    } = createMenu();
+        builders: { createSubmenu: createSubmenuOrganizations, createMenuRadioGroup },
+        states: orgMenuStates
+    } = orgMenuBuilder;
 
     const {
         elements: { radioGroup: radioGroupOrganizations }
@@ -57,14 +61,16 @@
         elements: { subMenu: subMenuOrganizations, subTrigger: subTriggerOrganizations }
     } = createSubmenuOrganizations();
 
+    const projectsMenuBuilder = createMenu();
     const {
         elements: {
             trigger: triggerProjects,
             menu: menuProjects,
             item: itemProjects,
             separator: separatorProjects
-        }
-    } = createMenu();
+        },
+        states: projectsMenuStates
+    } = projectsMenuBuilder;
 
     let isLoadingProjects = false;
     let loadedProjects: Models.ProjectList = { total: 0, projects: [] };
@@ -75,6 +81,23 @@
     let projectsBottomSheetOpen = false;
     let organisationBottomSheetOpen = false;
     let projectsBottomSheet: Promise<SheetMenu | null> = null;
+
+    function closeAllMenus() {
+        if (orgMenuStates?.open) {
+            orgMenuStates.open.set(false);
+        }
+
+        if (projectsMenuStates?.open) {
+            projectsMenuStates.open.set(false);
+        }
+
+        projectsBottomSheetOpen = false;
+        organisationBottomSheetOpen = false;
+    }
+
+    beforeNavigate(closeAllMenus);
+
+    onDestroy(closeAllMenus);
 
     function createOrg() {
         trackEvent(Click.OrganizationClickCreate, { source: 'breadcrumbs' });
@@ -105,6 +128,8 @@
     async function createProjectsBottomSheet(
         organization: Organization
     ): Promise<SheetMenu | null> {
+        const isOnProjects = page.route.id.includes('project-[region]-[project]');
+
         if (!isOnProjects) return null;
 
         isLoadingProjects = true;
@@ -212,11 +237,9 @@
             ? $currentPlan.name
             : selectedOrg?.tierName; // fallback
 
-    $: derivedKey = `${selectedOrg?.$id}-${currentProject?.$id}`;
+    $: derivedKey = `${selectedOrg?.$id}-${currentProject?.$id}-${ID.unique()}`;
 
     $: organizationId = currentProject?.teamId;
-
-    $: isOnProjects = page.route.id.includes('project-[region]-[project]');
 
     $: shouldReloadProjects = isLoadingProjects
         ? false

@@ -40,7 +40,7 @@
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
     import { CreateColumnPanel } from '$lib/commandCenter/panels';
-    import { database } from '../store';
+    import { database, showCreateTable } from '../store';
     import { project } from '../../../store';
     import { page } from '$app/state';
     import { base } from '$app/paths';
@@ -100,11 +100,7 @@
         {
             label: 'Create row',
             keys: page.url.pathname.endsWith($table.$id) ? ['t'] : ['t', 'd'],
-            callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/create`
-                );
-            },
+            callback: () => ($showCreateTable = true),
             icon: IconPlus,
             group: 'rows'
         },

@@ -270,7 +270,12 @@
                     href={`${base}/project-${page.params.region}-${page.params.project}/functions`}>
                     Cancel
                 </Button>
-                <Button submit disabled={!name || !runtime || !specification}>
+                <Button
+                    submit
+                    fullWidthMobile
+                    submissionLoader
+                    forceShowLoader={$isSubmitting}
+                    disabled={!name || !runtime || !specification || $isSubmitting}>
                     Deploy function
                 </Button>
             </Layout.Stack>

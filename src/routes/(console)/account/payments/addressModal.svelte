@@ -89,25 +89,34 @@
         id="address"
         label="Street address"
         placeholder="Enter street address"
+        autocomplete
         required />
     <InputText
         bind:value={address2}
         id="address2"
         label="Address line 2"
+        autocomplete
         placeholder="Unit number, floor, etc." />
     <InputText
         bind:value={city}
         id="city"
         label="City or suburb"
         placeholder="Enter your city"
+        autocomplete
         required />
     <InputText
         bind:value={state}
         id="state"
         label="State"
         placeholder="Enter your state"
+        autocomplete
         required />
-    <InputText bind:value={zip} id="zip" label="Postal code" placeholder="Enter postal code" />
+    <InputText
+        bind:value={zip}
+        id="zip"
+        label="Postal code"
+        placeholder="Enter postal code"
+        autocomplete />
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>

@@ -56,8 +56,10 @@
     $effect(() => {
         domainIsValid; /* silences lint for unused var */
 
-        if (domain !== newDomain) {
-            domainStatus = 'pending';
+        if (newDomain) {
+            if (domain !== newDomain) {
+                domainStatus = 'pending';
+            }
             checkDomain(newDomain);
         }
     });

@@ -7,7 +7,8 @@
     import { type ComponentType, onMount } from 'svelte';
     import { isRelationshipToMany } from '../../store';
     import { IconPlus, IconRelationship, IconX } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Input, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { debounce } from '$lib/helpers/debounce';
 
     type SelectOption = {
         label: string;
@@ -33,7 +34,6 @@
 
     let showInput = false;
     let singleRel: string;
-    let search: string = null;
     let loadingRelationships = false;
 
     let newItemValue: string = '';
@@ -41,6 +41,23 @@
 
     let limit = 10;
     let offset = 0;
+
+    let searchNoResultsOption = undefined;
+
+    /**
+     * list of loaded rows to tune with searching!
+     *
+     * this is used when the view is not searching anything,
+     * therefore we don't have to make an API call again!
+     *
+     * Example:
+     * 1. initial rows are loaded -> cache the rows
+     * 2. user makes a search -> api call -> not results found
+     * 3. user clears the search -> this variable sets the rowsList back!
+     *
+     * `#3` allows us to not make a call to getRows again, saves time and bandwidth!
+     */
+    let cachedRowsCopyList: Models.RowList<Models.Row>;
 
     onMount(async () => {
         if (isRelationshipToMany(column)) {
@@ -52,36 +69,51 @@
         } else {
             if (value && typeof value === 'object') {
                 row = value as Models.Row;
-                singleRel = row?.$id;
+                // set for combobox and select.
+                newItemValue = singleRel = row?.$id;
             }
         }
     });
 
-    async function getRows(search: string = null) {
+    async function getRows() {
         loadingRelationships = true;
 
         // already includes the `$id`, dw!
         const displayNames = preferences.getDisplayNames(column.relatedTable);
-
-        const queries = search
-            ? [Query.select(displayNames), Query.startsWith('$id', search), Query.orderDesc('')]
-            : [Query.select(displayNames)];
 
         const rows = await sdk
             .forProject(page.params.region, page.params.project)
             .tablesDB.listRows({
                 databaseId,
                 tableId: column.relatedTable,
-                queries
+                // limit `5` as `25` would look too much on sheet!
+                queries: [Query.select(displayNames), Query.limit(5)]
             });
 
+        cachedRowsCopyList = rows;
         loadingRelationships = false;
 
         return rows;
     }
 
-    function getAvailableOptions(excludeIndex?: number) {
-        return options?.filter((option) => {
+    async function searchRows(search: string = null) {
+        if (!search) return;
+
+        const displayNames = preferences.getDisplayNames(column.relatedTable);
+
+        const queries = [];
+        displayNames.forEach((name) => queries.push(Query.contains(name, [search])));
+
+        return await sdk.forProject(page.params.region, page.params.project).tablesDB.listRows({
+            databaseId,
+            tableId: column.relatedTable,
+            queries
+        });
+    }
+
+    function getAvailableOptions(excludeIndex?: number): SelectOption[] {
+        const source = options ?? [];
+        return source?.filter((option) => {
             const otherItems =
                 excludeIndex !== undefined
                     ? relatedList.filter((_, idx) => idx !== excludeIndex)
@@ -109,13 +141,13 @@
         if (newItemValue) {
             relatedList = [...relatedList, newItemValue];
             value = relatedList;
-            newItemValue = '';
+            newItemValue = null;
             showInput = false;
         }
     }
 
     function cancelAddItem() {
-        newItemValue = '';
+        newItemValue = null;
         showInput = false;
     }
 
@@ -166,8 +198,42 @@
         return baseOptions;
     }
 
+    const debouncedSearch = debounce(async (searchTerm: string) => {
+        const availableOptions = getAvailableOptions();
+        const includesItem = availableOptions
+            .filter((opt) => {
+                const label = String(opt.label ?? '').toLowerCase();
+                const value = String(opt.value ?? '').toLowerCase();
+                return (
+                    label.includes(searchTerm.toLowerCase()) ||
+                    value.includes(searchTerm.toLowerCase())
+                );
+            })
+            .filter(Boolean);
+
+        if (!includesItem.length) {
+            try {
+                searchNoResultsOption = {
+                    disabled: true,
+                    message: 'Searching...'
+                };
+
+                const searchResults = await searchRows(searchTerm);
+                if (searchResults) {
+                    rowList = searchResults;
+                }
+            } finally {
+                searchNoResultsOption = undefined;
+            }
+        } else if (cachedRowsCopyList) {
+            rowList = cachedRowsCopyList;
+        }
+    }, 500);
+
     // Reactive statements
-    $: getRows(search).then((res) => (rowList = res));
+    $: if (!newItemValue && !cachedRowsCopyList) {
+        getRows().then((response) => (rowList = response));
+    }
 
     $: paginatedItems = editing
         ? relatedList
@@ -192,6 +258,13 @@
 
     $: if (limit && !isRelationshipToMany(column) && limited) {
         label = undefined;
+    }
+
+    $: if (newItemValue) {
+        debouncedSearch(newItemValue);
+    } else if (!newItemValue && cachedRowsCopyList) {
+        rowList = cachedRowsCopyList;
+        searchNoResultsOption = undefined;
     }
 </script>
 
@@ -297,22 +370,30 @@
 
                 <!-- Input for adding new items -->
                 {#if showInput}
-                    <Layout.Stack direction="row">
-                        <InputSelect
-                            {id}
-                            required
-                            placeholder={`Select ${column.key}`}
-                            bind:value={newItemValue}
-                            options={getAvailableOptions()}
-                            on:change={addNewItem}
-                            leadingIcon={!limited ? IconRelationship : undefined} />
+                    {@const availableOptions = getAvailableOptions()}
+                    {@const noAvailableOptions = availableOptions.length <= 0}
+                    {#key availableOptions}
+                        <Layout.Stack direction="row">
+                            <Input.ComboBox
+                                {id}
+                                required
+                                on:change={addNewItem}
+                                bind:value={newItemValue}
+                                options={availableOptions}
+                                disabled={noAvailableOptions}
+                                placeholder={noAvailableOptions
+                                    ? 'No related items available'
+                                    : `Select ${column.key}`}
+                                noResultsOption={searchNoResultsOption}
+                                leadingIcon={!limited ? IconRelationship : undefined} />
 
-                        <div style:padding-block-start="0.5rem">
-                            <Button icon extraCompact on:click={cancelAddItem}>
-                                <Icon icon={IconX} size="s" />
-                            </Button>
-                        </div>
-                    </Layout.Stack>
+                            <div style:padding-block-start="0.5rem">
+                                <Button icon extraCompact on:click={cancelAddItem}>
+                                    <Icon icon={IconX} size="s" />
+                                </Button>
+                            </div>
+                        </Layout.Stack>
+                    {/key}
                 {/if}
             </Layout.Stack>
 
@@ -328,35 +409,77 @@
     </Layout.Stack>
 {:else}
     <Layout.Stack direction="row" alignItems="center" gap="s">
-        <InputSelect
-            {id}
-            {options}
-            autofocus={limited}
-            bind:value={singleRel}
-            required={column.required}
-            label={limited ? undefined : label}
-            placeholder={`Select ${column.key}`}
-            on:change={() => {
-                if (singleRel === null) {
-                    value = null;
-                } else {
-                    value = rowList.rows.find((row) => row.$id === singleRel);
-                }
-            }}
-            leadingIcon={!limited ? IconRelationship : undefined} />
+        {#key options}
+            {#if limited}
+                <!-- for unlink badge -->
+                <Input.Select
+                    {id}
+                    {options}
+                    autofocus={limited}
+                    bind:value={newItemValue}
+                    required={column.required}
+                    label={limited ? undefined : label}
+                    placeholder={`Select ${column.key}`}
+                    noResultsOption={searchNoResultsOption}
+                    on:change={() => {
+                        if (newItemValue === null) {
+                            value = null;
+                            singleRel = null;
+                        } else {
+                            const selectedRow = rowList.rows.find(
+                                (row) => row.$id === newItemValue
+                            );
 
-        {#if !limited && singleRel}
-            <div style:padding-block-start="2.25rem">
-                <Button
-                    icon
-                    extraCompact
-                    on:click={() => {
-                        value = null;
-                        singleRel = null;
-                    }}>
-                    <Icon icon={IconX} size="s" />
-                </Button>
-            </div>
-        {/if}
+                            if (selectedRow) {
+                                value = selectedRow;
+                                singleRel = newItemValue;
+                            }
+                        }
+                    }}
+                    leadingIcon={!limited ? IconRelationship : undefined} />
+            {:else}
+                {@const noOptions = options.length <= 0}
+                <Input.ComboBox
+                    {id}
+                    {options}
+                    autofocus={limited}
+                    bind:value={newItemValue}
+                    required={column.required}
+                    label={limited ? undefined : label}
+                    disabled={noOptions}
+                    placeholder={noOptions ? 'No related items available' : `Select ${column.key}`}
+                    noResultsOption={searchNoResultsOption}
+                    on:change={() => {
+                        if (newItemValue === null) {
+                            value = null;
+                            singleRel = null;
+                        } else {
+                            const selectedRow = rowList.rows.find(
+                                (row) => row.$id === newItemValue
+                            );
+
+                            if (selectedRow) {
+                                value = selectedRow;
+                                singleRel = newItemValue;
+                            }
+                        }
+                    }}
+                    leadingIcon={!limited ? IconRelationship : undefined} />
+            {/if}
+
+            {#if !limited && singleRel}
+                <div style:padding-block-start="2.25rem">
+                    <Button
+                        icon
+                        extraCompact
+                        on:click={() => {
+                            value = null;
+                            newItemValue = singleRel = null;
+                        }}>
+                        <Icon icon={IconX} size="s" />
+                    </Button>
+                </div>
+            {/if}
+        {/key}
     </Layout.Stack>
 {/if}

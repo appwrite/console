@@ -49,6 +49,8 @@ export function addFilterAndApply(
             addStatusCodeFilter(value, colId, columns);
         } else if (colId === '$createdAt' || colId === '$updatedAt' || colId === 'buildDuration') {
             addDateFilter(value, colId, columns);
+        } else if (colId === 'duration') {
+            addDurationFilter(value, colId, columns);
         } else {
             addFilter(columns, colId, operator, value, arrayValues);
         }
@@ -74,4 +76,8 @@ export function addDateFilter(value: string, colId: string, columns: Column[]) {
 
 export function addSizeFilter(value: string, colId: string, columns: Column[]) {
     addFilter(columns, colId, ValidOperators.GreaterThanOrEqual, value);
+}
+
+export function addDurationFilter(value: string, colId: string, columns: Column[]) {
+    addFilter(columns, colId, ValidOperators.GreaterThan, value);
 }

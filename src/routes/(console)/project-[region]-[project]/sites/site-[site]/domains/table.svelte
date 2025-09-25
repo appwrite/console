@@ -3,7 +3,12 @@
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { IconDotsHorizontal, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDotsHorizontal,
+        IconRefresh,
+        IconTrash,
+        IconTerminal
+    } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
         Badge,
@@ -11,10 +16,12 @@
         Layout,
         Popover,
         Table,
-        Typography
+        Typography,
+        Divider
     } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
+    import ViewLogsModal from './viewLogsModal.svelte';
     import { columns } from './store';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
     import DnsRecordsAction from '$lib/components/domains/dnsRecordsAction.svelte';
@@ -29,6 +36,7 @@
 
     let showDelete = $state(false);
     let showRetry = $state(false);
+    let showLogs = $state(false);
     let selectedProxyRule: Models.ProxyRule = $state(null);
 
     const proxyTarget = (proxy: Models.ProxyRule) => {
@@ -94,6 +102,17 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
+                                {#if rule.logs && (rule.status === 'unverified' || rule.status === 'verifying')}
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconTerminal}
+                                        on:click={(e) => {
+                                            selectedProxyRule = rule;
+                                            showLogs = true;
+                                            toggle(e);
+                                        }}>
+                                        View logs
+                                    </ActionMenu.Item.Button>
+                                {/if}
                                 {#if rule.status !== 'verified' && rule.status !== 'verifying'}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconRefresh}
@@ -106,6 +125,11 @@
                                     </ActionMenu.Item.Button>
                                 {/if}
                                 <DnsRecordsAction {rule} {organizationDomains} />
+                                {#if rule.logs && (rule.status === 'unverified' || rule.status === 'verifying')}
+                                    <div class="action-menu-divider">
+                                        <Divider />
+                                    </div>
+                                {/if}
                                 <ActionMenu.Item.Button
                                     status="danger"
                                     leadingIcon={IconTrash}
@@ -135,3 +159,15 @@
 {#if showRetry}
     <RetryDomainModal bind:show={showRetry} {selectedProxyRule} />
 {/if}
+
+{#if showLogs}
+    <ViewLogsModal bind:show={showLogs} {selectedProxyRule} />
+{/if}
+
+<style>
+    .action-menu-divider {
+        margin-inline: -1rem;
+        padding-block-start: 0.25rem;
+        padding-block-end: 0.25rem;
+    }
+</style>

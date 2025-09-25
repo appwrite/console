@@ -32,6 +32,6 @@
 
 {#if dnsData}
     <ActionMenu.Item.Anchor leadingIcon={IconDocumentText} href={dnsData}>
-        DNS Records
+        DNS records
     </ActionMenu.Item.Anchor>
 {/if}

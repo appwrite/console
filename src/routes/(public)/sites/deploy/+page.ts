@@ -62,9 +62,8 @@ export const load: PageLoad = async ({ parent, url }) => {
             error(404, `Template "${templateKey}" not found`);
         }
     } else {
-        const info = getRepositoryInfo(repository!);
+        const info = getRepositoryInfo(repository);
         if (!info) {
-            console.log(info);
             redirect(302, base + '/');
         }
 
