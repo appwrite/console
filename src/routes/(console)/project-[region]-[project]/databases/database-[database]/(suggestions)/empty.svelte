@@ -258,8 +258,7 @@
                 size: col.size,
                 min: col.min,
                 max: col.max,
-                // TODO: @itznotabug, we should use a dynamic min width based on column's name.
-                width: { min: 180 },
+                width: { min: Math.max(180, col.key.length * 8 + 60) },
                 icon: columnOption?.icon,
                 draggable: false,
                 resizable: false
@@ -612,10 +611,13 @@
                             {#snippet children(toggle)}
                                 <Spreadsheet.Header.Cell
                                     {root}
-                                    isEditable
+                                    isEditable={!$isTabletViewport}
+                                    openEditOnTap={!$isTabletViewport}
                                     column={column.id}
                                     on:contextmenu={(event) => {
-                                        if (isColumnInteractable) {
+                                        // tablet viewport check because context-menu
+                                        // can be triggered on long hold clicks as well!
+                                        if (isColumnInteractable && !$isTabletViewport) {
                                             toggle(event);
                                         }
                                     }}>
@@ -865,7 +867,7 @@
             transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
             &.no-transition {
-                transition: opacity 300ms ease-in-out;
+                transition: opacity 500ms ease-in-out;
             }
 
             /* pretty gradient wash (with fallback) */
@@ -909,17 +911,25 @@
         & .floating-action-wrapper {
             & :global(:first-child) {
                 z-index: 21;
+                transition: all 600ms cubic-bezier(0.4, 0, 0.2, 1);
             }
 
             &.expanded :global(:first-child) {
+                left: calc(60% - 525px / 2);
                 max-width: 525px !important;
 
+                @media (max-width: 1024px) {
+                    left: calc(50% - 525px / 2);
+                }
+
                 @media (max-width: 768px) {
+                    left: calc(50% - 400px / 2);
                     max-width: 400px !important;
                 }
             }
 
             &.creating-columns :global(:first-child) {
+                left: calc(50% - 300px / 2);
                 max-width: 300px !important;
             }
         }
@@ -957,7 +967,7 @@
         display: flex;
         justify-content: center;
         transition:
-            opacity 300ms ease-in-out,
+            opacity 500ms ease-in-out,
             height 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
         pointer-events: none;
@@ -1008,6 +1018,7 @@
     }
 
     :global(.cell-editor) {
+        width: 100%;
         margin-inline-start: -1.5px;
     }
 

@@ -7,7 +7,7 @@ export type TableColumnSuggestions = {
     context?: string | undefined;
 
     /* for safety when in tables page */
-    table: {
+    table?: {
         id: string;
         name: string;
     };
