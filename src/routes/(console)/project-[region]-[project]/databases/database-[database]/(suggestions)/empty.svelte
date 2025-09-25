@@ -54,6 +54,8 @@
     let creatingColumns = $state(false);
     const baseColProps = { draggable: false, resizable: false };
 
+    const getColumnWidth = (columnKey: string) => Math.max(180, columnKey.length * 8 + 60);
+
     const findHorizontalScroller = (root: HTMLElement | null): HTMLElement | null => {
         let element = root as HTMLElement | null;
         while (element && element !== document.body) {
@@ -178,7 +180,10 @@
         const left = Math.round(startLeft - containerRect.left);
 
         // maximum possible width of all custom columns
-        const totalFullWidth = customColumns.length * 180;
+        const totalFullWidth = customColumns.reduce(
+            (total, col) => total + getColumnWidth(col.key),
+            0
+        );
 
         // get the actions column and use its left border as the boundary
         const actionsCell = headerElement!.querySelector<HTMLElement>(
@@ -258,7 +263,7 @@
                 size: col.size,
                 min: col.min,
                 max: col.max,
-                width: { min: Math.max(120, col.key.length * 8 + 60) },
+                width: { min: getColumnWidth(col.key) },
                 icon: columnOption?.icon,
                 draggable: false,
                 resizable: false
@@ -801,27 +806,30 @@
                         <Typography.Text style="white-space: nowrap">
                             {creatingColumns
                                 ? 'Creating columns...'
-                                : $isSmallViewport
-                                  ? 'Review and edit columns'
-                                  : 'Review and edit suggested columns before applying'}
+                                : 'Review and edit suggested columns'}
                         </Typography.Text>
                     </Layout.Stack>
                 </svelte:fragment>
 
                 <svelte:fragment slot="end">
-                    {#if !creatingColumns}
-                        <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
-                            <Button.Button
-                                size="xs"
-                                variant="text"
-                                on:click={() => (confirmDismiss = true)}
-                                >Dismiss
-                            </Button.Button>
-                            <Button.Button size="xs" variant="primary" on:click={createColumns}
-                                >Apply
-                            </Button.Button>
-                        </Layout.Stack>
-                    {/if}
+                    <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                        <Button.Button
+                            size="xs"
+                            variant="text"
+                            disabled={creatingColumns}
+                            on:click={() => (confirmDismiss = true)}
+                            style="opacity: {creatingColumns ? '0' : '1'}"
+                            >Dismiss
+                        </Button.Button>
+                        <Button.Button
+                            size="xs"
+                            variant="primary"
+                            disabled={creatingColumns}
+                            on:click={createColumns}
+                            style="opacity: {creatingColumns ? '0' : '1'}"
+                            >Apply
+                        </Button.Button>
+                    </Layout.Stack>
                 </svelte:fragment>
             </FloatingActionBar>
         </div>
