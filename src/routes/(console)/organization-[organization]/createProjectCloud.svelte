@@ -16,10 +16,10 @@
     export let showCreateProjectCloud: boolean;
     export let regions: Array<Models.ConsoleRegion> = [];
 
-    let id: string = null;
     let error: string = null;
-    let name: string = 'New project';
-    let region: ConsoleRegion = Region.Fra;
+    let projectId = ID.unique();
+    let projectRegion = Region.Fra;
+    let projectName = 'New project';
 
     let showSubmissionLoader = false;
 
@@ -30,14 +30,18 @@
 
         try {
             project = await sdk.forConsole.projects.create({
-                projectId: id ?? ID.unique(),
-                name,
+                projectId: projectId ?? ID.unique(),
+                name: projectName,
                 teamId,
-                region
+                region: projectRegion
             });
 
             await goto(`${base}/project-${project.region}-${project.$id}`);
-            trackEvent(Submit.ProjectCreate, { customId: !!id, teamId, region: region });
+            trackEvent(Submit.ProjectCreate, {
+                customId: !!projectId,
+                teamId,
+                region: projectRegion
+            });
         } catch (e) {
             error = e.message;
             trackError(e, Submit.ProjectCreate);
@@ -52,10 +56,10 @@
     }
 
     onDestroy(() => {
-        id = null;
-        name = null;
         error = null;
-        region = Region.Fra;
+        projectId = ID.unique();
+        projectName = 'New project';
+        projectRegion = Region.Fra;
         showCreateProjectCloud = false;
     });
 </script>
@@ -67,12 +71,12 @@
     onSubmit={create}
     bind:error>
     <CreateProject
+        {regions}
         {projects}
         showTitle={false}
-        bind:id
-        bind:projectName={name}
-        bind:region
-        {regions} />
+        bind:projectName
+        bind:id={projectId}
+        bind:region={projectRegion} />
     <svelte:fragment slot="footer">
         <Button
             submit
