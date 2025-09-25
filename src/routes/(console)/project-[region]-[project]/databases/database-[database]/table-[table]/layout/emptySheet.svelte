@@ -333,13 +333,9 @@
         z-index: 20;
         display: flex;
         justify-content: center;
-        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        transition: none !important;
 
         height: var(--dynamic-overlay-height, 70.5vh);
-
-        &[data-collapsed-tabs='true'] {
-            height: calc(var(--dynamic-overlay-height, 79.1vh) + 8.6vh);
-        }
 
         @media (max-width: 1024px) {
             height: var(--dynamic-overlay-height, 63.35vh);

@@ -974,9 +974,7 @@
         z-index: 20; /* under overlay */
         display: flex;
         justify-content: center;
-        transition:
-            opacity 500ms ease-in-out,
-            height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        transition: opacity 500ms ease-in-out;
 
         pointer-events: none;
     }
