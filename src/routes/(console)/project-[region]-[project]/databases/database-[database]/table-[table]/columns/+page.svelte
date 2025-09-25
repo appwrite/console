@@ -222,7 +222,6 @@
                 <Spreadsheet.Header.Cell column="actions" {root} />
             </svelte:fragment>
 
-            <!-- TODO: variable and terminology changes -->
             {#each updatedColumnsForSheet as column, index}
                 {@const option = columnOptions.find((option) => option.type === column.type)}
                 {@const isSelectable =
