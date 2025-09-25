@@ -32,7 +32,8 @@
 
     {#if toggleOnTapClick && $isSmallViewport}
         <button onclick={() => enabled && (showSheet = true)} aria-label="Open column review modal">
-            {@render children(toggle)}
+            <!-- not a `toggle` but more like `hide` -->
+            {@render children(() => (showSheet = false))}
         </button>
     {:else}
         <button style:cursor={enabled ? 'pointer' : undefined}>
