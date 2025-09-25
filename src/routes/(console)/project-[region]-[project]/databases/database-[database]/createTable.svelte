@@ -47,6 +47,7 @@
 
             await onTableCreated(table);
 
+            name = id = null;
             showCreate = false;
             creatingTable = false;
         } catch (e) {
@@ -64,8 +65,6 @@
         });
 
         trackEvent(Submit.TableCreate, { customId: !!id });
-
-        name = id = null;
     }
 
     function toIdFormat(str: string): string {
