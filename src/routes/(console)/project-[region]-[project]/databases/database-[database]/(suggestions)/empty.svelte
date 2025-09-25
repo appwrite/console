@@ -258,7 +258,7 @@
                 size: col.size,
                 min: col.min,
                 max: col.max,
-                width: { min: Math.max(180, col.key.length * 8 + 60) },
+                width: { min: Math.max(120, col.key.length * 8 + 60) },
                 icon: columnOption?.icon,
                 draggable: false,
                 resizable: false
