@@ -152,7 +152,6 @@
                 </Layout.Stack>
             </div>
 
-            <!-- TODO: account for $bannerSpacing -->
             <Layout.Stack
                 gap="xxs"
                 direction="column"
