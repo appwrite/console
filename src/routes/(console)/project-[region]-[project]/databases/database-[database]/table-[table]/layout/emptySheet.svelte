@@ -96,9 +96,7 @@
             ...col,
             width: 180,
             hide: false,
-            icon: columnOptions.find(
-                (col) => col.type === col?.type
-            )?.icon,
+            icon: columnOptions.find((col) => col.type === col?.type)?.icon,
             ...baseColProps
         }));
 

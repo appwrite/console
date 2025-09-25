@@ -38,10 +38,13 @@
                     name
                 });
 
-            $tableColumnSuggestions.table = {
-                id: table.$id,
-                name: table.name
-            };
+            tableColumnSuggestions.update((store) => ({
+                ...store,
+                table: {
+                    id: table.$id,
+                    name: table.name
+                }
+            }));
 
             updateAndCleanup();
 
