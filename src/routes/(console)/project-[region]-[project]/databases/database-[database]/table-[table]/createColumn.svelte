@@ -170,6 +170,8 @@
     onMount(init);
 
     $effect(() => {
+        columnId; /* silences lint check, variable not read */
+
         // correct view
         if (selectedOption) {
             $option = columnOptions.find((option) => option.name === selectedOption);
