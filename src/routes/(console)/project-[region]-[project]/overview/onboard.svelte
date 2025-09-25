@@ -339,7 +339,7 @@
                                 </Layout.Stack>
                                 <span class="with-separators eyebrow-heading-3">or</span>
 
-                                <Card.Button on:click={createKey} padding="s">
+                                <Card.Button on:click={createKey} padding="none">
                                     <Layout.Stack gap="xl">
                                         <div
                                             class="card-top-image api-key-card-image"
@@ -348,21 +348,21 @@
                                                     ? PlatformSdkImgSourceDark
                                                     : PlatformSdkImgSource
                                             }')`}>
-                                        </div>
-                                        <Layout.Stack
-                                            direction="row"
-                                            alignItems="center"
-                                            justifyContent="space-between">
-                                            <Layout.Stack gap="xxs">
-                                                <Typography.Title size="s"
-                                                    >Create API key</Typography.Title>
-                                                <Typography.Text
-                                                    >Connect your server or backend to Appwrite</Typography.Text>
+                                            <Layout.Stack
+                                                direction="row"
+                                                alignItems="center"
+                                                justifyContent="space-between">
+                                                <Layout.Stack gap="xxs">
+                                                    <Typography.Title size="s"
+                                                        >Create API key</Typography.Title>
+                                                    <Typography.Text
+                                                        >Connect your server or backend to Appwrite</Typography.Text>
+                                                </Layout.Stack>
+                                                <div class="arrow-icon">
+                                                    <Icon icon={IconArrowRight} size="s" />
+                                                </div>
                                             </Layout.Stack>
-                                            <div class="arrow-icon">
-                                                <Icon icon={IconArrowRight} size="s" />
-                                            </div>
-                                        </Layout.Stack>
+                                        </div>
                                     </Layout.Stack>
                                 </Card.Button>
                             </Layout.Stack>
@@ -701,6 +701,19 @@
             background-size: cover;
             background-position: right center;
             background-repeat: no-repeat;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 160px;
+            border-radius: var(--border-radius-m);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: var(--base-16, 16px);
+            @media (min-width: 1200px) {
+                min-height: 187px;
+            }
         }
         .full-height-card {
             height: 100%;
