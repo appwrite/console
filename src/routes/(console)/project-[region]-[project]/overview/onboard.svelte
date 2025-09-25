@@ -14,12 +14,7 @@
     import { app } from '$lib/stores/app';
     import AuthPreview from './assets/auth-preview.svg';
     import AuthPreviewDark from './assets/auth-preview-dark.svg';
-    import {
-        IconArrowRight,
-        IconNodeJs,
-        IconPhp,
-        IconPython
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
     import DatabaseImgSource from './assets/database.png';
     import DatabaseImgSourceDark from './assets/database-dark.png';
     import DiscordImgSource from './assets/discord.png';
@@ -31,9 +26,10 @@
     import PlatformAndroidImgSourceDark from './assets/platform-android-dark.svg';
     import PlatformFlutterImgSource from './assets/platform-flutter.svg';
     import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.svg';
+    import PlatformSdkImgSource from './assets/platform-sdk.jpg';
+    import PlatformSdkImgSourceDark from './assets/platform-sdk-dark.png';
     import { base } from '$app/paths';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { AvatarGroup } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -341,17 +337,34 @@
                                         </Layout.Stack>
                                     </Card.Button>
                                 </Layout.Stack>
-                                <Layout.Stack direction="row" gap="xxs" alignItems="center">
-                                    <Typography.Text>Or connect</Typography.Text>
-                                    <Link.Button variant="muted" on:click={createKey}
-                                        >server side</Link.Button>
-                                    <div style:padding-inline-start="8px">
-                                        <AvatarGroup
-                                            icons={[IconPython, IconNodeJs, IconPhp]}
-                                            total={7}
-                                            size="s" />
-                                    </div>
-                                </Layout.Stack>
+                                <span class="with-separators eyebrow-heading-3">or</span>
+
+                                <Card.Button on:click={createKey} padding="s">
+                                    <Layout.Stack gap="xl">
+                                        <div
+                                            class="card-top-image api-key-card-image"
+                                            style:background-image={`url('${
+                                                $app.themeInUse === 'dark'
+                                                    ? PlatformSdkImgSourceDark
+                                                    : PlatformSdkImgSource
+                                            }')`}>
+                                        </div>
+                                        <Layout.Stack
+                                            direction="row"
+                                            alignItems="center"
+                                            justifyContent="space-between">
+                                            <Layout.Stack gap="xxs">
+                                                <Typography.Title size="s"
+                                                    >Create API key</Typography.Title>
+                                                <Typography.Text
+                                                    >Connect your server or backend to Appwrite</Typography.Text>
+                                            </Layout.Stack>
+                                            <div class="arrow-icon">
+                                                <Icon icon={IconArrowRight} size="s" />
+                                            </div>
+                                        </Layout.Stack>
+                                    </Layout.Stack>
+                                </Card.Button>
                             </Layout.Stack>
                         </Layout.Stack></Step.Item>
                     <Step.Item state="next"
@@ -682,6 +695,11 @@
         .database-card-image {
             background-size: cover;
             background-position: bottom;
+            background-repeat: no-repeat;
+        }
+        .api-key-card-image {
+            background-size: cover;
+            background-position: right center;
             background-repeat: no-repeat;
         }
         .full-height-card {
