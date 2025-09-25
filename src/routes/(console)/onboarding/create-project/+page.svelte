@@ -52,7 +52,7 @@
 
             trackEvent(Submit.ProjectCreate, {
                 teamId,
-                customId: projectId !== projectIdForLog,
+                customId: projectId !== projectIdForLog
             });
 
             startAnimation = true;

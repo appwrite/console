@@ -42,7 +42,7 @@
             trackEvent(Submit.ProjectCreate, {
                 teamId,
                 region: projectRegion,
-                customId: projectId !== projectIdForLog,
+                customId: projectId !== projectIdForLog
             });
         } catch (e) {
             error = e.message;
