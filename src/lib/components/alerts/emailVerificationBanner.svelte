@@ -6,13 +6,13 @@
     import SendVerificationEmailModal from '../account/sendVerificationEmailModal.svelte';
     import { page } from '$app/stores';
     import { wizard, isNewWizardStatusOpen } from '$lib/stores/wizard';
-    import { isCloud } from '$lib/system';
+    import { isCloud, VARS } from '$lib/system';
 
     const hasUser = $derived(!!$user);
     const needsEmailVerification = $derived(hasUser && !$user.emailVerification);
     const notOnOnboarding = $derived(!$page.route.id.includes('/onboarding'));
     const notOnWizard = $derived(!$wizard.show && !$isNewWizardStatusOpen);
-    const isEnabledViaEnvConfig = $derived(process.env.PUBLIC_CONSOLE_EMAIL_VERIFICATION ?? false);
+    const isEnabledViaEnvConfig = $derived(VARS.EMAIL_VERIFICATION);
     const shouldShowEmailBanner = $derived(
         isEnabledViaEnvConfig &&
             isCloud &&

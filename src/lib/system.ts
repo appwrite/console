@@ -10,7 +10,8 @@ export const VARS = {
     CONSOLE_MODE: (env.PUBLIC_CONSOLE_MODE as Mode) ?? undefined,
     APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT ?? undefined,
     GROWTH_ENDPOINT: env.PUBLIC_GROWTH_ENDPOINT ?? undefined,
-    PUBLIC_STRIPE_KEY: env.PUBLIC_STRIPE_KEY ?? undefined
+    PUBLIC_STRIPE_KEY: env.PUBLIC_STRIPE_KEY ?? undefined,
+    EMAIL_VERIFICATION: env.PUBLIC_CONSOLE_EMAIL_VERIFICATION === 'true'
 };
 
 export const ENV = {
