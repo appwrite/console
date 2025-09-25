@@ -465,7 +465,7 @@
                                 case 'enum':
                                     columnResult = await client.tablesDB.createEnumColumn({
                                         ...baseParams,
-                                        elements: []
+                                        elements: column.elements ?? []
                                     });
                                     break;
                                 default:

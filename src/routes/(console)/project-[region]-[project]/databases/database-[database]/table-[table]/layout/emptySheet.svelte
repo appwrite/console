@@ -21,6 +21,7 @@
     import SpreadsheetContainer from './spreadsheet.svelte';
     import { onDestroy, onMount } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
+    import { columnOptions } from '../columns/store';
 
     type Mode = 'rows' | 'rows-filtered' | 'indexes';
 
@@ -95,6 +96,9 @@
             ...col,
             width: 180,
             hide: false,
+            icon: columnOptions.find(
+                (col) => col.type === col?.type
+            )?.icon,
             ...baseColProps
         }));
 
