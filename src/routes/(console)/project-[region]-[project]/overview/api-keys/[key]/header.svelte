@@ -17,17 +17,17 @@
         </CoverTitle>
         <Layout.Stack direction="row" inline>
             {#if $key?.secret}
-            <Copy value={$key.secret} copyText="Copy API key">
-                <Tag size="xs" variant="code">
-                    <Icon icon={IconDuplicate} size="s" slot="start" />
-                    <span
-                        style:white-space="nowrap"
-                        style:overflow="hidden"
-                        style:word-break="break-all">
-                        API key
-                    </span>
-                </Tag>
-            </Copy>
+                <Copy value={$key.secret} copyText="Copy API key">
+                    <Tag size="xs" variant="code">
+                        <Icon icon={IconDuplicate} size="s" slot="start" />
+                        <span
+                            style:white-space="nowrap"
+                            style:overflow="hidden"
+                            style:word-break="break-all">
+                            API key
+                        </span>
+                    </Tag>
+                </Copy>
             {/if}
             <ApiEndpoint />
         </Layout.Stack>
