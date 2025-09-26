@@ -669,8 +669,8 @@
                             {#snippet children(toggle)}
                                 <Spreadsheet.Header.Cell
                                     {root}
-                                    isEditable={!$isTabletViewport}
-                                    openEditOnTap={!$isTabletViewport}
+                                    isEditable={isColumnInteractable && !$isTabletViewport}
+                                    openEditOnTap={isColumnInteractable && !$isTabletViewport}
                                     column={column.id}
                                     on:contextmenu={(event) => {
                                         // tablet viewport check because context-menu
