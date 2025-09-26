@@ -856,11 +856,16 @@
                             <Spinner size="s" />
                         {/if}
 
-                        <Typography.Text style="white-space: nowrap">
+                        <Typography.Caption
+                            variant="500"
+                            color="--fgcolor-neutral-secondary"
+                            style="white-space: nowrap">
                             {creatingColumns
-                                ? 'Creating columns...'
-                                : 'Review and edit suggested columns'}
-                        </Typography.Text>
+                                ? 'Creating columns'
+                                : $isSmallViewport
+                                  ? 'Review and edit suggested columns'
+                                  : 'Review and edit suggested columns before applying'}
+                        </Typography.Caption>
                     </Layout.Stack>
                 </svelte:fragment>
 
@@ -1031,8 +1036,17 @@
             }
 
             &.creating-columns :global(:first-child) {
-                left: calc(50% - 300px / 2);
+                left: calc(67.5% - 525px / 2);
                 max-width: 300px !important;
+
+                @media (max-width: 1024px) {
+                    left: calc(60% - 300px / 2);
+                }
+
+                @media (max-width: 768px) {
+                    left: calc(50% - 400px / 2);
+                    max-width: 400px !important;
+                }
             }
         }
 
