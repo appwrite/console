@@ -28,7 +28,7 @@
 
     async function create() {
         try {
-            const { $id } = await sdk.forConsole.projects.createKey({
+            const { $id, secret } = await sdk.forConsole.projects.createKey({
                 projectId,
                 name,
                 scopes,
@@ -45,7 +45,18 @@
             );
             addNotification({
                 message: `API key has been created`,
-                type: 'success'
+                type: 'success',
+                buttons: [
+                    {
+                        name: 'Copy API key',
+                        method: () => navigator.clipboard.writeText(secret)
+                    },
+                    {
+                        name: 'Copy endpoint',
+                        method: () =>
+                            navigator.clipboard.writeText(sdk.forConsole.client.config.endpoint)
+                    }
+                ]
             });
         } catch (error) {
             addNotification({
