@@ -11,25 +11,45 @@
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { isCloud } from '$lib/system';
     import { getSubdomain } from '$lib/helpers/tlds';
-    export let domain: string;
-    export let verified: boolean | undefined = undefined;
-    export let variant: 'cname' | 'a' | 'aaaa';
-    export let service: 'sites' | 'general' = 'general';
-    export let ruleStatus: string | undefined = undefined;
-    export let onNavigateToNameservers: () => void = () => {};
-    export let onNavigateToA: () => void = () => {};
-    export let onNavigateToAAAA: () => void = () => {};
 
-    let subdomain = getSubdomain(domain);
+    let {
+        domain,
+        verified = undefined,
+        variant,
+        service = 'general',
+        ruleStatus = undefined,
+        onNavigateToNameservers = () => {},
+        onNavigateToA = () => {},
+        onNavigateToAAAA = () => {}
+    }: {
+        domain: string;
+        verified?: boolean | undefined;
+        variant: 'cname' | 'a' | 'aaaa';
+        service?: 'sites' | 'general';
+        ruleStatus?: string | undefined;
+        onNavigateToNameservers?: () => void;
+        onNavigateToA?: () => void;
+        onNavigateToAAAA?: () => void;
+    } = $props();
 
-    const aTabVisible =
+    const subdomain = $derived(getSubdomain(domain));
+
+    const aTabVisible = $derived(
         !isCloud &&
-        !!$regionalConsoleVariables._APP_DOMAIN_TARGET_A &&
-        $regionalConsoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1';
-    const aaaaTabVisible =
+            Boolean($regionalConsoleVariables._APP_DOMAIN_TARGET_A) &&
+            $regionalConsoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'
+    );
+    const aaaaTabVisible = $derived(
         !isCloud &&
-        !!$regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA &&
-        $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1';
+            Boolean($regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) &&
+            $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'
+    );
+
+    const caaText = $derived(
+        $regionalConsoleVariables._APP_DOMAIN_TARGET_CAA?.includes(' ')
+            ? $regionalConsoleVariables._APP_DOMAIN_TARGET_CAA
+            : `0 issue "${$regionalConsoleVariables._APP_DOMAIN_TARGET_CAA}"`
+    );
 
     function setTarget() {
         switch (variant) {
@@ -94,12 +114,7 @@
                 </Table.Cell>
                 <Table.Cell {root}>@</Table.Cell>
                 <Table.Cell {root}>
-                    <InteractiveText
-                        variant="copy"
-                        isVisible
-                        text={$regionalConsoleVariables._APP_DOMAIN_TARGET_CAA.includes(' ')
-                            ? $regionalConsoleVariables._APP_DOMAIN_TARGET_CAA
-                            : `0 issue "${$regionalConsoleVariables._APP_DOMAIN_TARGET_CAA}"`} />
+                    <InteractiveText variant="copy" isVisible text={caaText} />
                 </Table.Cell>
             </Table.Row.Base>
         {/if}

@@ -12,11 +12,23 @@
     } from '@appwrite.io/pink-svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
-    export let domain: string;
-    export let verified: boolean | undefined = undefined;
-    export let ruleStatus: string | undefined = undefined;
+    let {
+        domain,
+        verified = undefined,
+        ruleStatus = undefined
+    }: {
+        domain: string;
+        verified?: boolean | undefined;
+        ruleStatus?: string | undefined;
+    } = $props();
 
-    let subdomain = getSubdomain(domain);
+    const subdomain = $derived(getSubdomain(domain));
+
+    const caaText = $derived(
+        $regionalConsoleVariables._APP_DOMAIN_TARGET_CAA?.includes(' ')
+            ? $regionalConsoleVariables._APP_DOMAIN_TARGET_CAA
+            : `0 issue "${$regionalConsoleVariables._APP_DOMAIN_TARGET_CAA}"`
+    );
 </script>
 
 <Layout.Stack gap="xl">
@@ -71,12 +83,7 @@
                 </Table.Cell>
                 <Table.Cell {root}>@</Table.Cell>
                 <Table.Cell {root}>
-                    <InteractiveText
-                        variant="copy"
-                        isVisible
-                        text={$regionalConsoleVariables._APP_DOMAIN_TARGET_CAA.includes(' ')
-                            ? $regionalConsoleVariables._APP_DOMAIN_TARGET_CAA
-                            : `0 issue "${$regionalConsoleVariables._APP_DOMAIN_TARGET_CAA}"`} />
+                    <InteractiveText variant="copy" isVisible text={caaText} />
                 </Table.Cell>
             </Table.Row.Base>
         {/if}

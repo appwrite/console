@@ -3,9 +3,15 @@
 
     import { Badge, Layout, Typography, Table, InteractiveText } from '@appwrite.io/pink-svelte';
 
-    export let domain: string;
-    export let verified: boolean | undefined = undefined;
-    export let ruleStatus: string | undefined = undefined;
+    let {
+        domain,
+        verified = undefined,
+        ruleStatus = undefined
+    }: {
+        domain: string;
+        verified?: boolean | undefined;
+        ruleStatus?: string | undefined;
+    } = $props();
 
     const nameserverList = $regionalConsoleVariables?._APP_DOMAINS_NAMESERVERS
         ? $regionalConsoleVariables?._APP_DOMAINS_NAMESERVERS?.split(',')
