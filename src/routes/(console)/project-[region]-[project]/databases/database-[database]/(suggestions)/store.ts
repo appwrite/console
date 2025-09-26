@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { IndexType } from '@appwrite.io/console';
 import { columnOptions } from '../table-[table]/columns/store';
 
 export type TableColumnSuggestions = {
@@ -24,6 +25,20 @@ export type SuggestedColumnSchema = {
     format?: string | null;
 };
 
+export enum IndexOrder {
+    ASC = 'ASC',
+    DESC = 'DESC',
+    NONE = null
+}
+
+export type SuggestedIndexSchema = {
+    key: string;
+    type: IndexType;
+    orders: IndexOrder;
+    columns: string[];
+    lengths?: number[] | undefined;
+};
+
 export const tableColumnSuggestions = writable<TableColumnSuggestions>({
     enabled: false,
     context: null,
@@ -32,6 +47,8 @@ export const tableColumnSuggestions = writable<TableColumnSuggestions>({
 });
 
 export const createTableRequest = writable<boolean>(false);
+
+export const showIndexesSuggestions = writable<boolean>(false);
 
 export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
     total: 7,

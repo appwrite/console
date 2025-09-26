@@ -154,7 +154,7 @@
                       ]
                     : undefined
             });
-            trackEvent(Submit.IndexCreate);
+            trackEvent(Submit.IndexCreate, { type: 'manual' });
             showCreateIndex = false;
         } catch (err) {
             addNotification({

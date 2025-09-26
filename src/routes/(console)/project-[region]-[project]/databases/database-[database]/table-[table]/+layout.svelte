@@ -64,6 +64,8 @@
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
+    import IndexesSuggestions from '../(suggestions)/indexes.svelte';
+
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
     let editRowPermissions: EditRowPermissions;
@@ -470,3 +472,5 @@
         </Layout.Stack>
     </svelte:fragment>
 </Dialog>
+
+<IndexesSuggestions />

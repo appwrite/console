@@ -25,9 +25,10 @@
         tableColumnSuggestions,
         basicColumnOptions,
         mockSuggestions,
-        createTableRequest
+        createTableRequest,
+        showIndexesSuggestions
     } from './store';
-    import { addNotification } from '$lib/stores/notifications';
+    import { addNotification, dismissNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { sleep } from '$lib/helpers/promises';
     import { invalidate, beforeNavigate, goto } from '$app/navigation';
@@ -42,6 +43,8 @@
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { Confirm } from '$lib/components';
     import { VARS } from '$lib/system';
+
+    import IconAINotification from './icon/aiNotification.svelte';
 
     let resizeObserver: ResizeObserver;
     let spreadsheetContainer: HTMLElement;
@@ -62,6 +65,8 @@
 
     let creatingColumns = $state(false);
     const baseColProps = { draggable: false, resizable: false };
+
+    const NOTIFICATION_AND_MOCK_DELAY = 1250;
 
     const getColumnWidth = (columnKey: string) => Math.max(180, columnKey.length * 8 + 60);
     const safeNumericValue = (value: number | undefined) =>
@@ -402,7 +407,7 @@
         try {
             if (VARS.MOCK_AI_SUGGESTIONS) {
                 /* animation */
-                await sleep(1250);
+                await sleep(NOTIFICATION_AND_MOCK_DELAY);
                 suggestedColumns = mockSuggestions;
             } else {
                 suggestedColumns = (await sdk
@@ -410,7 +415,8 @@
                     .console.suggestColumns({
                         databaseId: page.params.database,
                         tableId: page.params.table,
-                        context: $tableColumnSuggestions.context ?? undefined
+                        context: $tableColumnSuggestions.context ?? undefined,
+                        min: 6 // TODO: to not break the sheet layout's width!
                     })) as unknown as {
                     total: number;
                     columns: ColumnInput[];
@@ -481,6 +487,28 @@
 
     function isCustomColumn(id: string) {
         return !['$id', '$createdAt', '$updatedAt', 'actions'].includes(id);
+    }
+
+    function showIndexSuggestionsNotification() {
+        setTimeout(() => {
+            const notifId = addNotification({
+                isHtml: true,
+                title: '<b>Next step: Add indexes</b>',
+                message: 'See suggested indexes based on your columns',
+                dismissible: true,
+                icon: IconAINotification,
+                timeout: 10000, // ten seconds
+                buttons: [
+                    {
+                        name: 'Create indexes',
+                        method: () => {
+                            dismissNotification(notifId);
+                            showIndexesSuggestions.update(() => true);
+                        }
+                    }
+                ]
+            });
+        }, NOTIFICATION_AND_MOCK_DELAY);
     }
 
     async function createColumns() {
@@ -591,6 +619,9 @@
                 type: 'success',
                 message: 'Columns created successfully'
             });
+
+            // show index notification!
+            showIndexSuggestionsNotification();
 
             trackEvent(Submit.ColumnCreate, { type: 'suggestions' });
         } catch (error) {
