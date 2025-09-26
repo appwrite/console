@@ -16,7 +16,8 @@
             {$key?.name}
         </CoverTitle>
         <Layout.Stack direction="row" inline>
-            <Copy value={$key?.secret} copyText="Copy API key">
+            {#if $key?.secret}
+            <Copy value={$key.secret} copyText="Copy API key">
                 <Tag size="xs" variant="code">
                     <Icon icon={IconDuplicate} size="s" slot="start" />
                     <span
@@ -27,6 +28,7 @@
                     </span>
                 </Tag>
             </Copy>
+            {/if}
             <ApiEndpoint />
         </Layout.Stack>
     </svelte:fragment>
