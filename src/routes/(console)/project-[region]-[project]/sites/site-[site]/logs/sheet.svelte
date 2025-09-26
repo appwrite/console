@@ -19,6 +19,7 @@
     import { Copy } from '$lib/components';
     import { LogsRequest, LogsResponse } from '$lib/components/logs';
     import { site } from '../store';
+    import { timer } from '$lib/actions/timer';
 
     export let open = false;
     export let selectedLogId: string;
@@ -112,7 +113,12 @@
                                         Duration
                                     </Typography.Text>
                                     <Typography.Text variant="m-400">
-                                        {calculateTime(selectedLog.duration)}
+                                        {#if ['processing', 'waiting'].includes(selectedLog.status)}
+                                            <span use:timer={{ start: selectedLog.$createdAt }}
+                                            ></span>
+                                        {:else}
+                                            {calculateTime(selectedLog.duration)}
+                                        {/if}
                                     </Typography.Text>
                                 </Layout.Stack>
                                 <Layout.Stack gap="xs" inline>

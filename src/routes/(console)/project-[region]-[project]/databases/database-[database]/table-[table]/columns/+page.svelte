@@ -164,6 +164,24 @@
         }
     }
 
+    function getRelationshipTypeForColumn(column: Columns): string | null {
+        if (!isRelationship(column)) {
+            return null;
+        }
+
+        const relationshipMap = {
+            oneToOne: 'One to one',
+            oneToMany: 'One to many',
+            manyToOne: 'Many to one',
+            manyToMany: 'Many to many'
+        };
+
+        const relationType = (column as Models.ColumnRelationship).relationType;
+        const formattedType = relationshipMap[relationType] || relationType;
+
+        return `Type: ${formattedType}`;
+    }
+
     onDestroy(() => ($showCreateColumnSheet.show = false));
 
     $effect(() => {
@@ -289,11 +307,18 @@
                                 </Layout.Stack>
                             </Layout.Stack>
                             {@const minMaxSize = getMinMaxSizeForColumn(column)}
+                            {@const relationType = getRelationshipTypeForColumn(column)}
                             {#if minMaxSize}
                                 <Typography.Caption
                                     variant="400"
                                     color="--fgcolor-neutral-tertiary">
                                     {minMaxSize}
+                                </Typography.Caption>
+                            {:else if relationType}
+                                <Typography.Caption
+                                    variant="400"
+                                    color="--fgcolor-neutral-tertiary">
+                                    {relationType}
                                 </Typography.Caption>
                             {/if}
                         </Layout.Stack>
