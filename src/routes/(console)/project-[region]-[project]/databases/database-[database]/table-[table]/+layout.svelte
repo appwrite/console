@@ -62,6 +62,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { buildRowUrl, isRelationship } from './rows/store';
     import { chunks } from '$lib/helpers/array';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -256,6 +257,7 @@
                 columns = await generateColumns($project, page.params.database, page.params.table);
 
                 await invalidate(Dependencies.TABLE);
+                trackEvent(Submit.ColumnCreate, { type: 'faker' });
             } catch (e) {
                 addNotification({
                     type: 'error',

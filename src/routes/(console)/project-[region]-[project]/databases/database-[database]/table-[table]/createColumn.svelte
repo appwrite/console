@@ -149,7 +149,8 @@
                 type: 'success',
                 message: `Column ${key ?? data?.key} has been created`
             });
-            trackEvent(Submit.ColumnCreate);
+
+            trackEvent(Submit.ColumnCreate, { type: 'manual' });
 
             if (createMore) {
                 init();

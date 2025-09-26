@@ -1,9 +1,11 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { showCreateTable, databaseSubNavigationItems } from './store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
+    import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
+    import { showCreateTable, databaseSubNavigationItems } from './store';
+
     import {
         Icon,
         Sidebar,
@@ -26,6 +28,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { subNavigation } from '$lib/stores/database';
+    import { createTableRequest, tableColumnSuggestions } from './(suggestions)/store';
 
     let data = $derived(page.data) as PageData;
 
@@ -52,6 +55,11 @@
     const isTablesScreen = $derived(page.route.id.endsWith('table-[table]'));
 
     const isMainDatabaseScreen = $derived(page.route.id.endsWith('database-[database]'));
+
+    // If banner open, `-1rem` to adjust banner size, else `-70.5px`.
+    // 70.5px is the size of the container of the banner holder and not just the banner!
+    // Needed because things vary a bit much on how different browsers treat bottom layouts.
+    const bottomNavHeight = $derived(`calc(20% ${$bannerSpacing ? '- 1rem' : '- 70.5px'})`);
 
     async function loadTables() {
         tables = await sdk.forProject(region, project).tablesDB.listTables({
@@ -139,15 +147,25 @@
                     <Button
                         compact
                         on:click={() => {
-                            $showCreateTable = true;
-                            $showSubNavigation = false;
+                            if (
+                                $tableColumnSuggestions.enabled &&
+                                $tableColumnSuggestions.table?.id
+                            ) {
+                                $createTableRequest = true;
+                            } else {
+                                $showCreateTable = true;
+                                $showSubNavigation = false;
+                            }
                         }}>
                         Create table
                     </Button>
                 </Layout.Stack>
             </div>
 
-            <Layout.Stack direction="column" gap="xxs" style="bottom: 1rem; position: sticky;">
+            <Layout.Stack
+                gap="xxs"
+                direction="column"
+                style="bottom: 1rem; position: relative; height: {bottomNavHeight}">
                 <div class="action-menu-divider">
                     <Divider />
                 </div>
