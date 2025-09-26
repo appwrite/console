@@ -6,8 +6,7 @@
     import { goto } from '$app/navigation';
     import { Empty, EmptySearch, PaginationWithLimit } from '$lib/components';
     import Create from './create.svelte';
-    import { Container } from '$lib/layout';
-    import ResponsiveContainerHeader from '$lib/layout/responsiveContainerHeader.svelte';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
@@ -49,6 +48,7 @@
             </Button>
         {/if}
     </ResponsiveContainerHeader>
+
     {#if data.buckets.total}
         {#if data.view === 'grid'}
             <Grid {data} bind:showCreate={$showCreateBucket} />

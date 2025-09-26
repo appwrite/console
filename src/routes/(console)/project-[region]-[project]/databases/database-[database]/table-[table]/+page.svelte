@@ -31,6 +31,7 @@
     import EmptySheet from './layout/emptySheet.svelte';
     import CreateRow from './rows/create.svelte';
     import { onDestroy } from 'svelte';
+    import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
 
     export let data: PageData;
 
@@ -215,6 +216,8 @@
                         }
                     }} />
             {/if}
+        {:else if $tableColumnSuggestions.enabled && $tableColumnSuggestions.table && $tableColumnSuggestions.table.id === page.params.table}
+            <SuggestionsEmptySheet />
         {:else}
             <EmptySheet
                 mode="rows"

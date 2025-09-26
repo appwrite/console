@@ -4,8 +4,7 @@
     import { page } from '$app/state';
     import { Empty, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
-    import ResponsiveContainerHeader from '$lib/layout/responsiveContainerHeader.svelte';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
 
     import type { PageData } from './$types';
