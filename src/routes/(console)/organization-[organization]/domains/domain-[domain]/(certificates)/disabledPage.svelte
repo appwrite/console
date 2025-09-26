@@ -141,7 +141,7 @@
             offset={data.offset}
             total={data.certificates.total} />
     {:else if data?.search}
-        <EmptySearch hidePages bind:search={data.search} target="certificates">
+        <EmptySearch hidePages search={data.search} target="certificates">
             <svelte:fragment slot="actions">
                 <Button secondary on:click={clearSearch}>Clear search</Button>
             </svelte:fragment>

@@ -9,14 +9,15 @@
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
     import Table from './table.svelte';
 
     export let data;
 
-    let searchQuery;
+    let searchQuery: { clearInput?: () => void } | undefined;
 
     function clearSearch() {
-        searchQuery?.clearInput();
+        clearSearchInput(searchQuery);
     }
 </script>
 
@@ -44,7 +45,7 @@
             offset={data.offset}
             total={data.proxyRules.total} />
     {:else if data?.search}
-        <EmptySearch hidePages bind:search={data.search} target="domains" hidePagination>
+        <EmptySearch hidePages search={data.search} target="domains" hidePagination>
             <Button secondary on:click={clearSearch}>Clear search</Button>
         </EmptySearch>
     {:else}
