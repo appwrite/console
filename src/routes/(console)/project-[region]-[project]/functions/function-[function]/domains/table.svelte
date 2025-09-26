@@ -66,14 +66,14 @@
                         <Layout.Stack direction="row" gap="xs">
                             <Link
                                 external
-                                variant="quiet"
+                                variant="quiet-muted"
                                 href={`${$regionalProtocol}${proxyRule.domain}`}>
                                 <Typography.Text truncate>
                                     {proxyRule.domain}
                                 </Typography.Text>
                             </Link>
                             {#if proxyRule.status === 'created'}
-                                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                                <Layout.Stack direction="row" gap="s" alignItems="center">
                                     <Badge
                                         variant="secondary"
                                         type="error"
@@ -81,6 +81,7 @@
                                         size="xs" />
                                     <Link
                                         size="s"
+                                        variant="muted"
                                         on:click={(e) => {
                                             e.preventDefault();
                                             selectedProxyRule = proxyRule;
@@ -90,13 +91,14 @@
                                     </Link>
                                 </Layout.Stack>
                             {:else if proxyRule.status === 'verifying'}
-                                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                                <Layout.Stack direction="row" gap="s" alignItems="center">
                                     <Badge
                                         variant="secondary"
                                         content="Generating certificate"
                                         size="xs" />
                                     <Link
                                         size="s"
+                                        variant="muted"
                                         on:click={(e) => {
                                             e.preventDefault();
                                             selectedProxyRule = proxyRule;
@@ -106,7 +108,7 @@
                                     </Link>
                                 </Layout.Stack>
                             {:else if proxyRule.status === 'unverified'}
-                                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                                <Layout.Stack direction="row" gap="s" alignItems="center">
                                     <Badge
                                         variant="secondary"
                                         type="error"
@@ -114,6 +116,7 @@
                                         size="xs" />
                                     <Link
                                         size="s"
+                                        variant="muted"
                                         on:click={(e) => {
                                             e.preventDefault();
                                             selectedProxyRule = proxyRule;
