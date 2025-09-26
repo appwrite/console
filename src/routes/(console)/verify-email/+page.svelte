@@ -101,42 +101,36 @@
         width: 100%;
         margin: 0;
         padding: 0;
-    }
 
-    .main-content {
-        flex: 1;
-        padding: 2rem;
-        margin-left: 190px;
-        min-height: 100vh;
-    }
-    :global(.verify-email-page .sidebar) {
-        position: fixed !important;
-        left: 0 !important;
-        top: 0 !important;
-        height: 100vh !important;
-        z-index: 1000 !important;
-        filter: blur(4px);
-        opacity: 0.6;
-    }
+        :global {
+            .sidebar {
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+                height: 100vh !important;
+                z-index: 1000 !important;
+                filter: blur(4px);
+                opacity: 0.6;
+            }
 
-    /* Blur the navbar */
-    :global(.verify-email-page .navbar),
-    :global(.verify-email-page [data-pink-navbar]),
-    :global(.verify-email-page header) {
-        filter: blur(2px);
-        opacity: 0.4;
-        z-index: 1;
-    }
+            .navbar,
+            [data-pink-navbar],
+            header {
+                filter: blur(2px);
+                opacity: 0.4;
+                z-index: 1;
+            }
 
-    /* ensure modal is above everything and not blurred */
-    :global(.verify-email-page .email-verification-scrim) {
-        z-index: 9999 !important;
-        filter: none !important;
-        opacity: 1 !important;
-    }
+            .email-verification-scrim {
+                z-index: 9999 !important;
+                filter: none !important;
+                opacity: 1 !important;
 
-    :global(.verify-email-page .email-verification-scrim *) {
-        filter: none !important;
-        opacity: 1 !important;
+                * {
+                    filter: none !important;
+                    opacity: 1 !important;
+                }
+            }
+        }
     }
 </style>
