@@ -1,10 +1,10 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { showCreateTable, databaseSubNavigationItems } from './store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
     import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
+    import { showCreateTable, databaseSubNavigationItems } from './store';
 
     import {
         Icon,
@@ -28,6 +28,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { subNavigation } from '$lib/stores/database';
+    import { createTableRequest, tableColumnSuggestions } from './(suggestions)/store';
 
     let data = $derived(page.data) as PageData;
 
@@ -144,8 +145,15 @@
                     <Button
                         compact
                         on:click={() => {
-                            $showCreateTable = true;
-                            $showSubNavigation = false;
+                            if (
+                                $tableColumnSuggestions.enabled &&
+                                $tableColumnSuggestions.table?.id
+                            ) {
+                                $createTableRequest = true;
+                            } else {
+                                $showCreateTable = true;
+                                $showSubNavigation = false;
+                            }
                         }}>
                         Create table
                     </Button>

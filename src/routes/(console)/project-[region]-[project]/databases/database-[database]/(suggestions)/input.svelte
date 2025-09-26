@@ -4,6 +4,12 @@
     import { tableColumnSuggestions } from './store';
     import { InputTextarea } from '$lib/elements/forms';
     import { Card, Layout, Selector, Typography } from '@appwrite.io/pink-svelte';
+    import { onMount } from 'svelte';
+
+    onMount(() => {
+        // enable by default!
+        $tableColumnSuggestions.enabled = true;
+    });
 </script>
 
 <Card.Base variant="secondary" radius="s" padding="xs">
@@ -36,7 +42,6 @@
                     id="context"
                     rows={3}
                     maxlength={255}
-                    autofocus
                     bind:value={$tableColumnSuggestions.context}
                     placeholder="Optional: Add context to improve suggestions" />
             </div>

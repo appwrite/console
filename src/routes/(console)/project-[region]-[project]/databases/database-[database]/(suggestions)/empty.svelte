@@ -24,12 +24,16 @@
         type SuggestedColumnSchema,
         tableColumnSuggestions,
         basicColumnOptions,
-        mockSuggestions
+        mockSuggestions,
+        createTableRequest
     } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { sleep } from '$lib/helpers/promises';
-    import { invalidate } from '$app/navigation';
+    import { invalidate, beforeNavigate, goto } from '$app/navigation';
+    import { showCreateTable } from '../store';
+    import { showSubNavigation } from '$lib/stores/layout';
+    import { navigationCancelled } from '$lib/stores/navigation';
     import { Dependencies } from '$lib/constants';
     import { isWithinSafeRange } from '$lib/helpers/numbers';
     import type { Columns } from '../table-[table]/store';
@@ -52,6 +56,9 @@
     let scrollAnimationFrame: number | null = null;
 
     let confirmDismiss = $state(false);
+    let confirmNavigation = $state(false);
+    let pendingNavigationUrl: string | null = null;
+
     let creatingColumns = $state(false);
     const baseColProps = { draggable: false, resizable: false };
 
@@ -252,6 +259,25 @@
         });
     };
 
+    // Handle create table requests from subNavigation
+    const unsubscribeCreateTable = createTableRequest.subscribe((requested) => {
+        if (requested) {
+            if (customColumns.length > 0 && !creatingColumns) {
+                confirmNavigation = true;
+                pendingNavigationUrl = 'create-table';
+            } else {
+                executeCreateTable();
+            }
+
+            createTableRequest.set(false);
+        }
+    });
+
+    function executeCreateTable() {
+        $showCreateTable = true;
+        $showSubNavigation = false;
+    }
+
     const customSuggestedColumns = $derived.by(() => {
         return customColumns.map((col: SuggestedColumnSchema) => {
             const columnOption = getColumnOption(col.type, col.format);
@@ -314,6 +340,16 @@
         }
     ];
 
+    // Handle browser back/forward navigation
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+        if (customColumns.length > 0 && !creatingColumns) {
+            event.preventDefault();
+            event.returnValue =
+                'You have unsaved column suggestions. Are you sure you want to leave?';
+            return event.returnValue;
+        }
+    };
+
     const spreadsheetColumns = $derived(getRowColumns());
     const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
 
@@ -327,7 +363,20 @@
         await suggestColumns();
     });
 
+    beforeNavigate(({ cancel, to }) => {
+        if (customColumns.length > 0 && !creatingColumns) {
+            cancel();
+            confirmNavigation = true;
+            $navigationCancelled = true;
+            pendingNavigationUrl = to?.url?.pathname || null;
+        }
+    });
+
     function resetSuggestionsStore(fullReset: boolean = true) {
+        if ($tableColumnSuggestions.table?.id !== page.params.table) {
+            return;
+        }
+
         if (fullReset) {
             // these are referenced in
             // `table-[table]/+page.svelte`
@@ -432,6 +481,10 @@
         return columnOptions.find(
             (option) => option.type === type && (format ? option.format === format : !option.format)
         );
+    }
+
+    function isCustomColumn(id: string) {
+        return !['$id', '$createdAt', '$updatedAt', 'actions'].includes(id);
     }
 
     async function createColumns() {
@@ -563,14 +616,11 @@
 
         customColumns = [];
         resetSuggestionsStore();
+        unsubscribeCreateTable();
     });
-
-    function isCustomColumn(id: string) {
-        return !['$id', '$createdAt', '$updatedAt', 'actions'].includes(id);
-    }
 </script>
 
-<svelte:window on:resize={recalcAll} on:scroll={recalcAll} />
+<svelte:window on:resize={recalcAll} on:scroll={recalcAll} on:beforeunload={handleBeforeUnload} />
 
 <div
     bind:this={spreadsheetContainer}
@@ -851,6 +901,30 @@
     Are you sure you want to dismiss these columns suggested by AI? This action is irreversible.
 </Confirm>
 
+<Confirm
+    confirmDeletion
+    action="Leave"
+    title="Leave page"
+    bind:open={confirmNavigation}
+    onSubmit={() => {
+        customColumns = [];
+        resetSuggestionsStore();
+        confirmNavigation = false;
+
+        if (pendingNavigationUrl) {
+            if (pendingNavigationUrl === 'create-table') {
+                executeCreateTable();
+            } else {
+                goto(pendingNavigationUrl);
+            }
+
+            pendingNavigationUrl = null;
+        }
+    }}>
+    You have unsaved column suggestions. If you leave this page, you'll lose these suggestions. Are
+    you sure you want to continue?
+</Confirm>
+
 <style lang="scss">
     .spreadsheet-container-outer {
         width: 100%;
@@ -864,6 +938,23 @@
 
         & :global([role='rowheader'] :nth-last-child(2) [role='presentation']) {
             display: none;
+        }
+
+        &:not(:has(.columns-range-overlay.thinking)) {
+            &
+                :global(
+                    [role='cell']:has(.column-resizer-disabled):not([data-column-id^='$']):not(
+                            [data-column-id='actions']
+                        )
+                ) {
+                box-shadow: 0 -1px 0 0 rgba(253, 54, 110, 0.24) inset !important;
+                transition: box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+
+            & :global(.column-resizer-disabled) {
+                border-left: var(--border-width-s, 1px) solid rgba(253, 54, 110, 0.24) !important;
+                transition: border-color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
         }
 
         .columns-range-overlay {

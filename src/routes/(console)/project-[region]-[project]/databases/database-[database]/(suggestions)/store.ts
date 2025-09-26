@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { columnOptions } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/columns/store';
+import { columnOptions } from '../table-[table]/columns/store';
 
 export type TableColumnSuggestions = {
     enabled: boolean;
@@ -31,7 +31,8 @@ export const tableColumnSuggestions = writable<TableColumnSuggestions>({
     table: null
 });
 
-// TODO: @itznotabug, remove later, this is MOCK DATA ONLY.
+export const createTableRequest = writable<boolean>(false);
+
 export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
     total: 7,
     columns: [
