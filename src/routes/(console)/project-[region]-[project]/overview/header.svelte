@@ -1,8 +1,8 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { Id, RegionEndpoint } from '$lib/components';
+    import { Id, ApiEndpoint } from '$lib/components';
     import { Cover } from '$lib/layout';
-    import { project, projectRegion } from '../store';
+    import { project } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
@@ -28,8 +28,8 @@
                     </span>
                 </Typography.Title>
                 <Layout.Stack direction="row" inline>
-                    <Id value={$project.$id}>{$project.$id}</Id>
-                    <RegionEndpoint region={$projectRegion} />
+                    <Id value={$project.$id} copyText="Copy project ID">{$project.$id}</Id>
+                    <ApiEndpoint />
                 </Layout.Stack>
             </Layout.Stack>
         </svelte:fragment>
