@@ -12,6 +12,7 @@
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
     import Table from './table.svelte';
 
     let { data } = $props();
@@ -19,10 +20,10 @@
     let showDelete = $state(false);
     let showRetry = $state(false);
     let selectedProxyRule: Models.ProxyRule = null;
-    let searchQuery;
+    let searchQuery: { clearInput?: () => void } | undefined;
 
     function clearSearch() {
-        searchQuery?.clearInput();
+        clearSearchInput(searchQuery);
     }
 </script>
 
@@ -49,10 +50,8 @@
             offset={data.offset}
             total={data.proxyRules.total} />
     {:else if data?.search}
-        <EmptySearch hidePages bind:search={data.search} target="domains" hidePagination>
-            <svelte:fragment slot="actions">
-                <Button secondary on:click={clearSearch}>Clear search</Button>
-            </svelte:fragment>
+        <EmptySearch hidePages search={data.search} target="domains" hidePagination>
+            <Button secondary on:click={clearSearch}>Clear search</Button>
         </EmptySearch>
     {:else}
         <Card.Base padding="none">
