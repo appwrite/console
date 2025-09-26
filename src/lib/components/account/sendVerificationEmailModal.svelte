@@ -5,15 +5,16 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { get } from 'svelte/store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import Link from '$lib/elements/link.svelte';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';
     import { onMount, onDestroy } from 'svelte';
     import { base } from '$app/paths';
     import { browser } from '$app/environment';
+    import { addNotification } from '$lib/stores/notifications';
 
-    let { show = $bindable(false), email } = $props();
+    let { show = $bindable(false), email }: { show?: boolean; email?: string } = $props();
     let creating = $state(false);
     let emailSent = $state(false);
     let resendTimer = $state(0);
@@ -27,11 +28,15 @@
                 goto(`${base}/login`);
             }
         } catch (error) {
-            console.error('Logout error:', error);
+            addNotification({
+                type: 'error',
+                title: 'Logout failed',
+                message: 'Unable to log out. Please try again or refresh the page.'
+            });
         }
     }
 
-    const cleanUrl = $derived($page.url.origin + $page.url.pathname);
+    const cleanUrl = $derived(page.url.origin + page.url.pathname);
 
     // Manage resend timer in localStorage
     const TIMER_END_KEY = 'email_verification_timer_end';
@@ -94,6 +99,11 @@
             emailSent = true;
             startResendTimer();
         } catch (error) {
+            addNotification({
+                type: 'error',
+                title: 'Failed to send verification email',
+                message: 'Unable to send verification email. Please try again.'
+            });
             console.error('Failed to send verification email:', error);
         } finally {
             creating = false;
@@ -101,7 +111,7 @@
     }
 
     async function updateEmailVerification() {
-        const searchParams = $page.url.searchParams;
+        const searchParams = page.url.searchParams;
         const userId = searchParams.get('userId');
         const secret = searchParams.get('secret');
 
@@ -115,6 +125,11 @@
 
                 goto(`${base}/`);
             } catch (error) {
+                addNotification({
+                    type: 'error',
+                    title: 'Email verification failed',
+                    message: 'Unable to verify your email. Please try again.'
+                });
                 console.error('Failed to verify email:', error);
             }
         }

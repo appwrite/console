@@ -8,9 +8,7 @@
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
     import { Dependencies } from '$lib/constants';
-    import type { PageData } from './$types';
-
-    let { data }: { data: PageData } = $props();
+    import { page } from '$app/state';
 
     let sideBarIsOpen = writable(false);
     let showAccountMenu = writable(false);
@@ -36,28 +34,28 @@
         currentProject: project
     };
 
-    let showVerificationModal = $state(!data.user?.emailVerification);
+    let showVerificationModal = $state(!page.data.account?.emailVerification);
 
     $effect(() => {
-        if (data.user?.emailVerification) {
+        if (page.data.account?.emailVerification) {
             checkEmailVerification();
         }
     });
 
     async function checkEmailVerification() {
-        if (data.user?.emailVerification) {
+        if (page.data.account?.emailVerification) {
             await goto(`${base}/`);
         }
     }
 
     onMount(() => {
-        if (!data.user) {
+        if (!page.data.account) {
             goto(`${base}/login`);
             return;
         }
 
         // If email is already verified, redirect immediately
-        if (data.user?.emailVerification) {
+        if (page.data.account?.emailVerification) {
             checkEmailVerification();
             return;
         }
@@ -89,12 +87,10 @@
         {progressCard}
         state="open" />
 
-    <div class="main-content">
-        <!-- Main content area -->
-    </div>
-
     <!-- email verification modal -->
-    <SendVerificationEmailModal bind:show={showVerificationModal} email={data.user?.email} />
+    <SendVerificationEmailModal
+        bind:show={showVerificationModal}
+        email={page.data.account?.email} />
 </div>
 
 <style lang="scss">
@@ -130,11 +126,6 @@
         filter: blur(2px);
         opacity: 0.4;
         z-index: 1;
-    }
-
-    .main-content {
-        filter: blur(4px);
-        opacity: 0.6;
     }
 
     /* ensure modal is above everything and not blurred */
