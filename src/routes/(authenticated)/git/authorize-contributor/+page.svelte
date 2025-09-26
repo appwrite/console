@@ -56,6 +56,9 @@
         {#if error}
             <Badge type="error" variant="secondary" content={error} />
         {/if}
+        {#if success}
+            <Badge type="success" variant="secondary" content={success} />
+        {/if}
         <Typography.Title size="l" align="center" variant="m-500">
             The deployment for pull request #{providerPullRequestId} 
             is awaiting approval. When authorized, deployments will be started.
