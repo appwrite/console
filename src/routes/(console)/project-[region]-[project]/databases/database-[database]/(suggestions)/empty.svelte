@@ -65,7 +65,7 @@
 
     const getColumnWidth = (columnKey: string) => Math.max(180, columnKey.length * 8 + 60);
     const safeNumericValue = (value: number | undefined) =>
-        value && isWithinSafeRange(value) ? value : undefined;
+        value !== undefined && isWithinSafeRange(value) ? value : undefined;
 
     const findHorizontalScroller = (root: HTMLElement | null): HTMLElement | null => {
         let element = root as HTMLElement | null;
