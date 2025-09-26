@@ -29,6 +29,7 @@
 
 {#if href}
     <Link.Anchor
+        {...$$restProps}
         on:click
         on:mousedown
         on:click={track}
@@ -42,7 +43,16 @@
         <slot />
     </Link.Anchor>
 {:else}
-    <Link.Button on:click on:mousedown on:click={track} {type} {disabled} {variant} {size} {icon}>
+    <Link.Button
+        {...$$restProps}
+        on:click
+        on:mousedown
+        on:click={track}
+        {type}
+        {disabled}
+        {variant}
+        {size}
+        {icon}>
         <slot />
     </Link.Button>
 {/if}

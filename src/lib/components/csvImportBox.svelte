@@ -8,16 +8,20 @@
     import { getProjectId } from '$lib/helpers/project';
     import { writable, type Writable } from 'svelte/store';
     import { addNotification } from '$lib/stores/notifications';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import { IconExclamationCircle } from '@appwrite.io/pink-icons-svelte';
+    import { Modal, Code } from '$lib/components';
     import { type Models, type Payload, Query } from '@appwrite.io/console';
 
     // re-render the key for sheet UI.
     import { hash } from '$lib/helpers/string';
     import { spreadsheetRenderKey } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/store';
+    import Link from '$lib/elements/link.svelte';
 
     type ImportItem = {
         status: string;
         table?: string;
+        errors?: string[];
     };
 
     type ImportItemsMap = Map<string, ImportItem>;
@@ -112,7 +116,10 @@
             if (shouldSkip) return items;
 
             const next = new Map(items);
-            next.set(importData.$id, { status, table: tableName ?? undefined });
+            const errors = Array.isArray((importData as Payload).errors)
+                ? ((importData as Payload).errors as string[])
+                : undefined;
+            next.set(importData.$id, { status, table: tableName ?? undefined, errors });
             return next;
         });
 
@@ -138,7 +145,7 @@
                 return 60;
             case 'completed':
             case 'failed':
-                return 100;
+                return 60;
             default:
                 return 30;
         }
@@ -149,7 +156,7 @@
         switch (status) {
             case 'completed':
             case 'failed':
-                return `Import to ${name} ${status}`;
+                return `Importing CSV file${name ? ` to ${name}` : ''}`;
             case 'processing':
                 return `Importing CSV file${name ? ` to ${name}` : ''}`;
             default:
@@ -179,6 +186,22 @@
 
     $: isOpen = true;
     $: showCsvImportBox = $importItems.size > 0;
+
+    let showDetails = false;
+    let selectedErrors: string[] = [];
+    let parsedErrors: string[] = [];
+
+    function openDetails(errors: string[] | undefined) {
+        selectedErrors = errors ?? [];
+        parsedErrors = selectedErrors.map((err) => {
+            try {
+                return JSON.stringify(JSON.parse(err), null, 2);
+            } catch {
+                return err;
+            }
+        });
+        showDetails = true;
+    }
 </script>
 
 {#if showCsvImportBox}
@@ -222,6 +245,25 @@
                                         class:is-danger={value.status === 'failed'}
                                         style="--graph-size:{graphSize(value.status)}%">
                                     </div>
+                                    {#if value.status === 'failed'}
+                                        <Layout.Stack
+                                            direction="row"
+                                            gap="xs"
+                                            alignItems="center"
+                                            inline>
+                                            <Icon
+                                                icon={IconExclamationCircle}
+                                                color="--fgcolor-error"
+                                                size="s" />
+                                            <Typography.Text color="--fgcolor-error">
+                                                There was an import issue.
+                                                <Link
+                                                    style="color: inherit"
+                                                    on:click={() => openDetails(value.errors)}
+                                                    >View details</Link>
+                                            </Typography.Text>
+                                        </Layout.Stack>
+                                    {/if}
                                 </section>
                             </li>
                         </ul>
@@ -231,6 +273,14 @@
         </section>
     </Layout.Stack>
 {/if}
+
+<Modal title="Import error" bind:show={showDetails} hideFooter>
+    <Layout.Stack gap="m">
+        <Layout.Stack>
+            <Code language="json" code={parsedErrors.join('\n\n')} withCopy allowScroll />
+        </Layout.Stack>
+    </Layout.Stack>
+</Modal>
 
 <style lang="scss">
     .upload-box {
@@ -252,7 +302,7 @@
     }
 
     .upload-box-content {
-        width: 304px;
+        width: 324px;
     }
 
     .upload-box-button {
