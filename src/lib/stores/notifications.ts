@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import type { ComponentType } from 'svelte';
 
 export type Notification = {
     id: number;
@@ -7,7 +8,7 @@ export type Notification = {
     timeout?: number;
     message: string;
     title?: string;
-    icon?: string;
+    icon?: ComponentType;
     buttons?: Buttons[];
     isHtml?: boolean;
 };
@@ -15,6 +16,7 @@ export type Notification = {
 export type Buttons = {
     method: () => void | Promise<void>;
     name: string;
+    isHtml?: boolean;
 };
 
 let counter = 0;
