@@ -12,6 +12,12 @@
     import { ResponsiveContainerHeader } from '$lib/layout';
 
     let { data } = $props();
+
+    let searchQuery;
+
+    function clearSearch() {
+        searchQuery?.clearInput();
+    }
 </script>
 
 <Container>
@@ -19,7 +25,8 @@
         hasSearch
         hideView
         searchPlaceholder="Search by domain"
-        analyticsSource="settings_domain_overview">
+        analyticsSource="settings_domain_overview"
+        bind:searchQuery>
         <Button
             href={`${base}/project-${page.params.region}-${page.params.project}/settings/domains/add-domain`}
             on:click={() => {
@@ -41,11 +48,7 @@
             total={data.rules.total} />
     {:else if data?.search}
         <EmptySearch hidePages bind:search={data.search} target="domains" hidePagination>
-            <Button
-                secondary
-                on:click={() => {
-                    data.search = '';
-                }}>Clear search</Button>
+            <Button secondary on:click={clearSearch}>Clear search</Button>
         </EmptySearch>
     {:else}
         <Card.Base padding="none">

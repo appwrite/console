@@ -17,11 +17,14 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import EmptySearch from '$lib/components/emptySearch.svelte';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
 
     export let data: PageData;
 
     let showCreate = false;
     const project = page.params.project;
+    let searchQuery;
+    const clearSearch = () => clearSearchInput(searchQuery);
 
     async function handleCreate(event: CustomEvent<Models.Database>) {
         showCreate = false;
@@ -48,7 +51,7 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search by name or ID" />
+            <SearchQuery bind:this={searchQuery} placeholder="Search by name or ID" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <ViewSelector
@@ -80,10 +83,7 @@
             total={data.databases.total} />
     {:else if data.search}
         <EmptySearch target="databases" hidePagination>
-            <Button
-                href={`${base}/project-${page.params.region}-${page.params.project}/databases`}
-                size="s"
-                secondary>Clear Search</Button>
+            <Button on:click={clearSearch} size="s" secondary>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty

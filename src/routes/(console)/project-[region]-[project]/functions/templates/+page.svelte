@@ -28,6 +28,7 @@
     export let data;
 
     let offset = 0;
+    let searchQuery;
 
     function applyFilter(filter: string, value: string, event: CustomEvent) {
         const target = new URL(page.url);
@@ -54,6 +55,7 @@
     }
 
     function clearSearch() {
+        searchQuery?.clearInput();
         const target = new URL(page.url);
         target.search = '';
         goto(target.toString(), {
@@ -89,7 +91,7 @@
 <Container>
     <Layout.GridFraction start={1} end={3} gap="xxl">
         <Layout.Stack gap="xl">
-            <SearchQuery placeholder="Search template" />
+            <SearchQuery bind:this={searchQuery} placeholder="Search template" />
             <Layout.Stack>
                 <Accordion title="Use case">
                     <Layout.Stack>

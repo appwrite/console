@@ -19,11 +19,16 @@
     let showDelete = $state(false);
     let showRetry = $state(false);
     let selectedProxyRule: Models.ProxyRule = null;
+    let searchQuery;
+
+    function clearSearch() {
+        searchQuery?.clearInput();
+    }
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search domain" />
+        <SearchQuery bind:this={searchQuery} placeholder="Search domain" />
         <Button
             href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/domains/add-domain`}
             on:click={() => {
@@ -46,11 +51,7 @@
     {:else if data?.search}
         <EmptySearch hidePages bind:search={data.search} target="domains" hidePagination>
             <svelte:fragment slot="actions">
-                <Button
-                    secondary
-                    on:click={() => {
-                        data.search = '';
-                    }}>Clear search</Button>
+                <Button secondary on:click={clearSearch}>Clear search</Button>
             </svelte:fragment>
         </EmptySearch>
     {:else}

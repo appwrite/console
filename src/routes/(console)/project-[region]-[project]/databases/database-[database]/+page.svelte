@@ -1,5 +1,6 @@
 <script lang="ts">
     import { EmptySearch, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { showCreateTable, tableViewColumns } from './store';
@@ -11,17 +12,17 @@
     import { app } from '$lib/stores/app';
     import { canWriteTables } from '$lib/stores/roles';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { page } from '$app/state';
 
     export let data: PageData;
 
-    const databaseId = page.params.database;
+    let searchQuery;
+    const clearSearch = () => clearSearchInput(searchQuery);
 </script>
 
 <Container databasesMainScreen>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search by name or ID" />
+            <SearchQuery bind:this={searchQuery} placeholder="Search by name or ID" />
         </Layout.Stack>
 
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
@@ -55,11 +56,7 @@
             total={data.tables.total} />
     {:else if data.search}
         <EmptySearch target="tables" hidePagination>
-            <Button
-                size="s"
-                secondary
-                href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`}
-                >Clear Search</Button>
+            <Button size="s" secondary on:click={clearSearch}>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Card.Base padding="none">

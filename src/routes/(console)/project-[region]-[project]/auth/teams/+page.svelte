@@ -12,6 +12,7 @@
         SearchQuery,
         PaginationWithLimit
     } from '$lib/components';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
     import Create from '../createTeam.svelte';
     import { goto } from '$app/navigation';
     import { Container } from '$lib/layout';
@@ -40,6 +41,8 @@
 
     const region = page.params.region;
     const project = page.params.project;
+    let searchQuery;
+    const clearSearch = () => clearSearchInput(searchQuery);
 
     let selectedTeams: string[] = [];
     let showDelete = false;
@@ -90,7 +93,7 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search by name" />
+            <SearchQuery bind:this={searchQuery} placeholder="Search by name" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button on:mousedown={() => ($showCreateTeam = true)} event="create_user" size="s">
@@ -157,9 +160,7 @@
             total={data.teams.total} />
     {:else if data.search}
         <EmptySearch target="teams" search={data.search} hidePagination={data.teams.total === 0}>
-            <Button secondary size="s" href={`${base}/project-${region}-${project}/auth/teams`}>
-                Clear Search
-            </Button>
+            <Button secondary size="s" on:click={clearSearch}>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty

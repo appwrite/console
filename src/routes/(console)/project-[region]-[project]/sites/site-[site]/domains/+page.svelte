@@ -12,11 +12,17 @@
     import Table from './table.svelte';
 
     export let data;
+
+    let searchQuery;
+
+    function clearSearch() {
+        searchQuery?.clearInput();
+    }
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search domain" />
+        <SearchQuery bind:this={searchQuery} placeholder="Search domain" />
         <Button
             href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}
             on:click={() => {
@@ -39,11 +45,7 @@
             total={data.proxyRules.total} />
     {:else if data?.search}
         <EmptySearch hidePages bind:search={data.search} target="domains" hidePagination>
-            <Button
-                secondary
-                on:click={() => {
-                    data.search = '';
-                }}>Clear search</Button>
+            <Button secondary on:click={clearSearch}>Clear search</Button>
         </EmptySearch>
     {:else}
         <Card.Base padding="none">

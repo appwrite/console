@@ -24,7 +24,8 @@
         searchPlaceholder = 'Search by ID',
         hasFilters = false,
         analyticsSource = '',
-        children
+        children,
+        searchQuery = $bindable()
     }: {
         columns?: Writable<Column[]>;
         view?: View;
@@ -35,6 +36,7 @@
         hasFilters?: boolean;
         analyticsSource?: string;
         children?: Snippet;
+        searchQuery?: SearchQuery;
     } = $props();
 
     let hasDisplaySettings = $derived(!hideView || (!hideColumns && $columns?.length));
@@ -97,14 +99,14 @@
                 {/if}
 
                 {#if showSearch && hasSearch}
-                    <SearchQuery placeholder={searchPlaceholder} />
+                    <SearchQuery bind:this={searchQuery} placeholder={searchPlaceholder} />
                 {/if}
             </Layout.Stack>
         {:else}
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Layout.Stack direction="row" alignItems="center">
                     {#if hasSearch}
-                        <SearchQuery placeholder={searchPlaceholder} />
+                        <SearchQuery bind:this={searchQuery} placeholder={searchPlaceholder} />
                     {/if}
                     {#if hasFilters && $columns?.length}
                         <QuickFilters {columns} {analyticsSource} {filterCols} />
