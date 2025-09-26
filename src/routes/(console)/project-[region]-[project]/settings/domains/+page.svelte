@@ -13,7 +13,7 @@
 
     let { data } = $props();
 
-    let searchQuery;
+    let searchQuery = $state<{ clearInput: () => void } | undefined>();
 
     function clearSearch() {
         searchQuery?.clearInput();

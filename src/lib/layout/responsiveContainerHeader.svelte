@@ -39,6 +39,11 @@
         searchQuery?: SearchQuery;
     } = $props();
 
+    // Ensure searchQuery is considered used by TypeScript
+    $effect(() => {
+        searchQuery;
+    });
+
     let hasDisplaySettings = $derived(!hideView || (!hideColumns && $columns?.length));
     let numberOfOptions = $derived(
         [hasSearch, hasFilters && $columns?.length, hasDisplaySettings].filter(Boolean).length
