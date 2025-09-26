@@ -686,13 +686,20 @@
                                         justifyContent="space-between">
                                         {column.title}
 
-                                        <Popover let:toggle portal padding="none">
+                                        <Popover
+                                            let:toggle
+                                            portal
+                                            padding="none"
+                                            placement="bottom-start">
                                             <Button.Button
                                                 size="xs"
                                                 variant="extra-compact"
                                                 disabled={!isColumnInteractable}
                                                 on:click={(event) => {
-                                                    if (isColumnInteractable) {
+                                                    if (
+                                                        isColumnInteractable &&
+                                                        !$isTabletViewport
+                                                    ) {
                                                         toggle(event);
                                                     }
                                                 }}>
