@@ -2,6 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components/index.js';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
     import { Button } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -39,6 +40,8 @@
     let showDelete = false;
     let showRetry = false;
     let selectedDomain: Models.Domain = null;
+    let searchQuery;
+    const clearSearch = () => clearSearchInput(searchQuery);
 
     const isDomainVerified = (domain: Models.Domain) => {
         return domain.nameservers.toLowerCase() === 'appwrite';
@@ -47,7 +50,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search domains" />
+        <SearchQuery bind:this={searchQuery} placeholder="Search domains" />
         <Layout.Stack direction="row" gap="m" inline>
             <ViewSelector ui="new" view={View.Table} {columns} hideView />
             <Button
@@ -183,6 +186,7 @@
                         queries.clearAll();
                         queries.apply();
                     }}>Clear filters</Button>
+                <Button secondary on:click={clearSearch}>Clear search</Button>
             </svelte:fragment>
         </EmptySearch>
     {:else}
