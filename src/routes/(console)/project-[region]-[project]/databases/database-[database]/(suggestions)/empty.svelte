@@ -41,6 +41,7 @@
     import Options from './options.svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { Confirm } from '$lib/components';
+    import { VARS } from '$lib/system';
 
     let resizeObserver: ResizeObserver;
     let spreadsheetContainer: HTMLElement;
@@ -388,11 +389,6 @@
         $tableColumnSuggestions.thinking = false;
     }
 
-    /**
-     * Mark this as `true` when developing locally,
-     * make sure not to spend credits unnecessarily!
-     */
-    const useMockSuggestions = false;
     async function suggestColumns() {
         $tableColumnSuggestions.thinking = true;
         let suggestedColumns: {
@@ -404,7 +400,7 @@
         };
 
         try {
-            if (useMockSuggestions) {
+            if (VARS.MOCK_AI_SUGGESTIONS) {
                 /* animation */
                 await sleep(1250);
                 suggestedColumns = mockSuggestions;
