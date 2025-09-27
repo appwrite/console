@@ -144,7 +144,7 @@
         // prepare lengths array
         let lengths: (number | null)[];
         if (index.type === IndexType.Key) {
-            // Only validate if it's a key index
+            // only validate if it's a key index
             lengths = index.columns.map((columnKey, i) => {
                 const column = columnMap.get(columnKey);
                 if (column?.type === 'string') {
@@ -188,10 +188,10 @@
 
         for (const [_, index] of indexes.entries()) {
             try {
-                // Prepare and validate index data
+                // prepare and validate index data
                 const { orders, lengths } = prepareIndexForCreation(index, columnMap);
 
-                // Generate unique key name for the index
+                // generate unique key name for the index
                 index.key = generateUniqueIndexKey(index, usedKeys);
 
                 await sdkClient.tablesDB.createIndex({
