@@ -194,10 +194,6 @@
 <style lang="scss" global>
     @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
 
-    .accordian-table-row {
-        display: inline !important;
-    }
-
     .no-transition {
         * {
             transition: none !important;
