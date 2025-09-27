@@ -41,7 +41,7 @@
             .map((column) => ({
                 value: column.key,
                 label: column.key,
-                leadingIcon: baseColumnOptions.find((option) => option.type === column.type).icon
+                leadingIcon: baseColumnOptions.find((option) => option.type === column.type)?.icon
             }))
     );
 
