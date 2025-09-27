@@ -23,6 +23,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
+    import IconQuestionMarkCircle from './components/questionIcon.svelte';
 
     let policyCreateError: string;
     let totalPolicies: UserBackupPolicy[] = [];
@@ -40,7 +41,7 @@
         if (parsedCounter === showOnCount || !counter) {
             addNotification({
                 type: 'info',
-                icon: 'question-mark-circle',
+                icon: IconQuestionMarkCircle,
                 message:
                     'How was your experience with our new Backups feature? Give us your feedback and help us improve!',
                 timeout: 15000,

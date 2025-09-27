@@ -5,6 +5,7 @@
     import { InputTextarea } from '$lib/elements/forms';
     import { Card, Layout, Selector, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     onMount(() => {
         // enable by default!
@@ -14,7 +15,10 @@
 
 <Card.Base variant="secondary" radius="s" padding="xs">
     <Layout.Stack gap="m">
-        <Layout.Stack direction="row" gap="s" alignItems="center">
+        <Layout.Stack
+            gap="s"
+            direction="row"
+            alignItems={$isSmallViewport ? 'flex-start' : 'center'}>
             <IconAI />
 
             <Layout.Stack direction="column" gap="none">

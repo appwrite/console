@@ -1,8 +1,18 @@
 <script lang="ts">
     import { Layout } from '@appwrite.io/pink-svelte';
+
+    let {
+        notification = false
+    }: {
+        notification?: boolean;
+    } = $props();
 </script>
 
-<Layout.Stack inline alignItems="center" justifyContent="center" class="ai-icon-holder">
+<Layout.Stack
+    inline
+    alignItems="center"
+    justifyContent="center"
+    class="ai-icon-holder {notification ? 'notification' : ''}">
     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
         <path
             d="M11.0156 6.20801C11.3539 5.29392 12.6461 5.29392 12.9844 6.20801L14.5801 10.5186C14.7776 11.052 15.198 11.4724 15.7314 11.6699L20.042 13.2656C20.9561 13.6039 20.9561 14.8961 20.042 15.2344L15.7314 16.8301C15.198 17.0276 14.7776 17.448 14.5801 17.9814L12.9844 22.292C12.6461 23.2061 11.3539 23.2061 11.0156 22.292L9.41992 17.9814C9.2224 17.448 8.80197 17.0276 8.26855 16.8301L3.95801 15.2344C3.04392 14.8961 3.04392 13.6039 3.95801 13.2656L8.26855 11.6699C8.80196 11.4724 9.2224 11.052 9.41992 10.5186L11.0156 6.20801Z"
@@ -63,5 +73,10 @@
         padding: 5px 0;
         width: 40px !important;
         height: 40px !important;
+    }
+
+    :global(.ai-icon-holder.notification) {
+        width: 36px !important;
+        height: 32px !important;
     }
 </style>

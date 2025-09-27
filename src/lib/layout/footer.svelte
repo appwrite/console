@@ -181,6 +181,11 @@
         &.hide {
             display: none;
         }
+
+        & :global(i) {
+            // because the `IconCloud` shows above floating action bars.
+            position: unset;
+        }
     }
 
     :global(main:has(.sub-navigation)) footer {

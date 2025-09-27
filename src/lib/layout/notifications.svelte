@@ -11,13 +11,16 @@
             {#each $notifications as notification (notification.id)}
                 <span animate:flip={{ duration: 500 }} transition:fly|global={{ x: 50 }}>
                     <Toast
+                        isHtml={notification.isHtml}
                         title={notification.title}
                         status={notification.type}
+                        icon={notification.icon}
                         description={notification.message}
                         actions={notification.buttons?.map((button) => {
                             return {
                                 label: button.name,
-                                onClick: button.method
+                                onClick: button.method,
+                                isHtml: button.isHtml
                             };
                         })}
                         on:dismiss={() => dismissNotification(notification.id)} />
