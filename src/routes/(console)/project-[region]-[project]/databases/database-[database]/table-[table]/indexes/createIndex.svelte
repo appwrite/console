@@ -12,8 +12,9 @@
     import { isRelationship, isSpatialType } from '../rows/store';
     import { table, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
-    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { IconCalendar, IconFingerPrint, IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { columnOptions as baseColumnOptions } from '../columns/store';
 
     let {
         showCreateIndex = $bindable(false),
@@ -37,7 +38,11 @@
                 }
                 return !isRelationship(column) && !isSpatialType(column); // keep non-relationship and non-spatial
             })
-            .map((column) => ({ value: column.key, label: column.key }))
+            .map((column) => ({
+                value: column.key,
+                label: column.key,
+                leadingIcon: baseColumnOptions.find((option) => option.type === column.type).icon
+            }))
     );
 
     let columnList = $state([{ value: '', order: '', length: null }]);
@@ -196,9 +201,17 @@
                     ...(selectedType === IndexType.Spatial
                         ? []
                         : [
-                              { value: '$id', label: '$id' },
-                              { value: '$createdAt', label: '$createdAt' },
-                              { value: '$updatedAt', label: '$updatedAt' }
+                              { value: '$id', label: '$id', leadingIcon: IconFingerPrint },
+                              {
+                                  value: '$createdAt',
+                                  label: '$createdAt',
+                                  leadingIcon: IconCalendar
+                              },
+                              {
+                                  value: '$updatedAt',
+                                  label: '$updatedAt',
+                                  leadingIcon: IconCalendar
+                              }
                           ]),
                     ...columnOptions
                 ]}
