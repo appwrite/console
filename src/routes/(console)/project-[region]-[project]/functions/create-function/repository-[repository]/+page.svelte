@@ -46,7 +46,7 @@
     let isSubmitting = writable(false);
 
     let name = '';
-    let id: string;
+    let id: string | null = null;
     let runtime: Runtime;
     let entrypoint = '';
     let buildCommand = '';
