@@ -1,5 +1,6 @@
 <script lang="ts">
     import { flip } from 'svelte/animate';
+    import { fly } from 'svelte/transition';
     import { Layout, Toast } from '@appwrite.io/pink-svelte';
     import { dismissNotification, notifications } from '../stores/notifications';
 </script>
@@ -8,7 +9,7 @@
     <section>
         <Layout.Stack gap="s">
             {#each $notifications as notification (notification.id)}
-                <span animate:flip={{ duration: 500 }}>
+                <span animate:flip={{ duration: 500 }} transition:fly|global={{ x: 50 }}>
                     <Toast
                         title={notification.title}
                         status={notification.type}
