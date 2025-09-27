@@ -8,7 +8,7 @@
         mockSuggestions,
         type SuggestedIndexSchema
     } from './store';
-    import { Modal } from '$lib/components';
+    import { Modal, Confirm } from '$lib/components';
     import SideSheet from '../table-[table]/layout/sidesheet.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { IndexType, type Models } from '@appwrite.io/console';
@@ -32,6 +32,7 @@
     let creatingIndexes = $state(false);
     let loadingSuggestions = $state(false);
     let indexes = $state<SuggestedIndexSchema[]>([]);
+    let confirmDismiss = $state(false);
     let columnOptions: Array<{
         value: string;
         label: string;
@@ -171,6 +172,12 @@
         }
 
         return { orders, lengths };
+    }
+
+    function dismissIndexes() {
+        indexes = [];
+        confirmDismiss = false;
+        $showIndexesSuggestions = false;
     }
 
     async function closeAndInvalidate() {
@@ -321,7 +328,13 @@
                         text
                         size="s"
                         disabled={loadingSuggestions}
-                        on:click={() => ($showIndexesSuggestions = false)}>Cancel</Button>
+                        on:click={() => {
+                            if (indexes.length > 0 && !creatingIndexes) {
+                                confirmDismiss = true;
+                            } else {
+                                $showIndexesSuggestions = false;
+                            }
+                        }}>Cancel</Button>
 
                     <Button
                         size="s"
@@ -341,13 +354,23 @@
     <SideSheet
         closeOnBlur={false}
         title="Suggested indexes"
+        data-index-edit-form-sheet
         bind:show={$showIndexesSuggestions}
         submit={{
             text: 'Create',
             disabled: indexes.length === 0 || creatingIndexes || loadingSuggestions,
             onClick: async () => await applySuggestedIndexes()
         }}
-        cancel={{ disabled: loadingSuggestions }}>
+        cancel={{
+            disabled: loadingSuggestions,
+            onClick: () => {
+                if (indexes.length > 0 && !creatingIndexes) {
+                    confirmDismiss = true;
+                } else {
+                    $showIndexesSuggestions = false;
+                }
+            }
+        }}>
         {#if modalError}
             <Alert.Inline status="error">
                 {modalError}
@@ -486,3 +509,23 @@
         </Layout.Stack>
     {/if}
 {/snippet}
+
+<Confirm
+    confirmDeletion
+    action="Dismiss"
+    title="Dismiss indexes"
+    bind:open={confirmDismiss}
+    onSubmit={dismissIndexes}>
+    Are you sure you want to dismiss these suggested indexes? This action cannot be undone.
+</Confirm>
+
+<style lang="scss">
+    // Custom logic to hide the Sheet's
+    // `X` close button (not configurable via props)
+    :global([data-index-edit-form-sheet] header) {
+        & :global(.divider),
+        & :global(button) {
+            visibility: hidden !important;
+        }
+    }
+</style>

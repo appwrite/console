@@ -617,7 +617,8 @@
 
             addNotification({
                 type: 'success',
-                message: 'Columns created successfully'
+                message: 'Columns created successfully',
+                timeout: NOTIFICATION_AND_MOCK_DELAY
             });
 
             // show index notification!
