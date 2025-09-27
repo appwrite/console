@@ -21,7 +21,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
     depends(Dependencies.INVOICES);
     depends(Dependencies.ADDRESS);
     //aggregation reloads on page param changes
-    depends('billing:aggregation');
+    depends(Dependencies.BILLING_AGGREGATION);
 
     const billingAddressId = (organization as Organization)?.billingAddressId;
     const billingAddressPromise: Promise<Address> = billingAddressId

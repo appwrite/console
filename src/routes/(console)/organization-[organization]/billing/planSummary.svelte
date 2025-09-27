@@ -23,6 +23,7 @@
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
     import { IconTag } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
     export let currentPlan: Plan;
     export let nextPlan: Plan | null = null;
@@ -149,16 +150,12 @@
         );
     }
 
-    import { page } from '$app/state';
-
     let projectsLimit: number = 5;
     let projectsOffset: number = 0;
     $: projectsLimit = limit ?? (Number(page.url.searchParams.get('limit')) || 5);
     $: projectsOffset =
         offset ?? ((Number(page.url.searchParams.get('page')) || 1) - 1) * projectsLimit;
     $: totalProjects =
-        (currentAggregation && (currentAggregation as any).breakdownTotal) ||
-        (currentAggregation && (currentAggregation as any).projectsTotal) ||
         (currentAggregation?.resources?.find?.((r) => r.resourceId === 'projects')?.value ??
             null) ||
         currentAggregation?.breakdown?.length ||
@@ -505,7 +502,7 @@
                         </AccordionTable.Row>
                     {/if}
                     {#if availableCredit > 0}
-                        <AccordionTable.Row {root} id="total-row" expandable={false}>
+                        <AccordionTable.Row {root} id="credits-row" expandable={false}>
                             <AccordionTable.Cell {root} column="item">
                                 <Layout.Stack
                                     inline
@@ -553,8 +550,12 @@
             <!-- Actions -->
             <div class="actions-container">
                 {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
-                    <div
-                        class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
+                    <Layout.Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        gap="s"
+                        class="u-flex-wrap u-width-full-line actions-mobile">
                         {#if !currentPlan?.usagePerProject}
                             <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
                                 View estimated usage
@@ -570,10 +571,14 @@
                                 })}>
                             Upgrade
                         </Button>
-                    </div>
+                    </Layout.Stack>
                 {:else}
-                    <div
-                        class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
+                    <Layout.Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        gap="s"
+                        class="u-flex-wrap u-width-full-line actions-mobile">
                         {#if $organization?.billingPlanDowngrade !== null}
                             <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
                         {:else}
@@ -596,7 +601,7 @@
                                 View estimated usage
                             </Button>
                         {/if}
-                    </div>
+                    </Layout.Stack>
                 {/if}
             </div>
         </EstimatedCard>

@@ -20,6 +20,7 @@ export enum Dependencies {
     CREDIT = 'dependency:credit',
     INVOICES = 'dependency:invoices',
     ADDRESS = 'dependency:address',
+    BILLING_AGGREGATION = 'dependency:billing_aggregation',
     UPGRADE_PLAN = 'dependency:upgrade_plan',
     ORGANIZATIONS = 'dependency:organizations',
     PAYMENT_METHODS = 'dependency:paymentMethods',
