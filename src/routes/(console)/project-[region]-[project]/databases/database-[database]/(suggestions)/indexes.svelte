@@ -169,6 +169,17 @@
         return { orders, lengths };
     }
 
+    async function closeAndInvalidate() {
+        // close modal/sheet.
+        $showIndexesSuggestions = false;
+
+        /**
+         * Invalidate dependencies after modal/sheet close,
+         * because otherwise the `await` block will re-run in the modal.
+         */
+        await invalidate(Dependencies.TABLE);
+    }
+
     async function applySuggestedIndexes(): Promise<boolean> {
         modalError = null;
         creatingIndexes = true;
@@ -228,8 +239,7 @@
                 type: 'success'
             });
 
-            // invalidate dependencies.
-            await invalidate(Dependencies.TABLE);
+            await closeAndInvalidate();
         } else if (successCount > 0) {
             // some succeeded, some failed
             addNotification({
@@ -237,8 +247,7 @@
                 type: 'warning'
             });
 
-            // invalidate dependencies.
-            await invalidate(Dependencies.TABLE);
+            await closeAndInvalidate();
         } else {
             // all failed
             addNotification({
