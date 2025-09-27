@@ -47,7 +47,7 @@
             columnOptions = mockSuggestions.columns.map((column) => ({
                 value: column.name,
                 label: column.name,
-                leadingIcon: baseColumnOptions.find((option) => option.type === column.type).icon
+                leadingIcon: baseColumnOptions.find((option) => option.type === column.type)?.icon
             }));
         } else {
             columnOptions = $table.columns
@@ -56,7 +56,7 @@
                     value: column.key,
                     label: column.key,
                     leadingIcon: baseColumnOptions.find((option) => option.type === column.type)
-                        .icon
+                        ?.icon
                 }));
         }
     }
@@ -76,22 +76,32 @@
                 lengths: []
             }));
         } else {
-            const suggestions = await sdk
-                .forProject(page.params.region, page.params.project)
-                .console.suggestIndexes({
-                    databaseId,
-                    tableId: $table.$id
+            try {
+                const suggestions = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .console.suggestIndexes({
+                        databaseId,
+                        tableId: $table.$id
+                    });
+
+                indexes = suggestions.indexes.map((index) => {
+                    return {
+                        key: index.columns[0],
+                        type: index.type as IndexType,
+                        orders: (index.orders?.[0] as IndexOrder) || IndexOrder.ASC,
+                        columns: index.columns,
+                        lengths: index.lengths ?? []
+                    };
+                });
+            } catch (error) {
+                addNotification({
+                    type: 'error',
+                    message: error.message
                 });
 
-            indexes = suggestions.indexes.map((index) => {
-                return {
-                    key: index.columns[0],
-                    type: index.type as IndexType,
-                    orders: (index.orders?.[0] as IndexOrder) || IndexOrder.ASC,
-                    columns: index.columns,
-                    lengths: index.lengths ?? []
-                };
-            });
+                await closeAndInvalidate();
+                return []; // formality, UI is closed by now!
+            }
         }
 
         makeColumnOptions();
@@ -115,6 +125,15 @@
 
     function removeIndex(index: number) {
         indexes.splice(index, 1);
+    }
+
+    function syncIndexState(event: CustomEvent, index: SuggestedIndexSchema) {
+        const selected = event.detail;
+        index.key = selected;
+        index.columns = selected ? [selected] : [];
+        if (index.lengths) {
+            index.lengths = index.lengths.slice(0, index.columns.length);
+        }
     }
 
     function getOrderOptions(selectedType: IndexType) {
@@ -196,7 +215,7 @@
         creatingIndexes = true;
 
         for (const [i, index] of indexes.entries()) {
-            if (!index.key || !index.type) {
+            if (!index.key || !index.type || !index.columns || index.columns.length === 0) {
                 modalError = `Index ${i + 1}: Selected column key or type invalid`;
                 creatingIndexes = false;
                 return true; // keep sheet open!
@@ -227,11 +246,11 @@
                 });
 
                 successCount++;
-            } catch (err) {
+            } catch (error) {
                 if (!modalError) {
-                    modalError = err.message;
+                    modalError = error.message;
                 }
-                trackError(err, Submit.IndexCreate);
+                trackError(error, Submit.IndexCreate);
                 creatingIndexes = false;
                 return true; // keep sheet open!
             }
@@ -423,6 +442,7 @@
                 id="key-{count}"
                 label={firstItem ? 'Key' : undefined}
                 bind:value={index.key}
+                on:change={(event) => syncIndexState(event, index)}
                 options={columnOptions}
                 placeholder="Select column"
                 required />
@@ -449,7 +469,8 @@
             <InputSelect
                 id="key-{count}-mobile"
                 label="Key"
-                value={index.key}
+                bind:value={index.key}
+                on:change={(event) => syncIndexState(event, index)}
                 options={columnOptions}
                 placeholder="Select column"
                 required />
