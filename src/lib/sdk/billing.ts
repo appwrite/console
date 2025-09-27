@@ -941,12 +941,17 @@ export class Billing {
         offset?: number
     ): Promise<AggregationTeam> {
         const path = `/organizations/${organizationId}/aggregations/${aggregationId}`;
-        const params: Record<string, unknown> = {
+        const params: {
+            organizationId: string;
+            aggregationId: string;
+            limit?: number;
+            offset?: number;
+        } = {
             organizationId,
             aggregationId
         };
-        if (typeof limit === 'number') params['limit'] = limit;
-        if (typeof offset === 'number') params['offset'] = offset;
+        if (typeof limit === 'number') params.limit = limit;
+        if (typeof offset === 'number') params.offset = offset;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'get',
