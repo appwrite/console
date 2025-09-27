@@ -863,9 +863,12 @@
                 <svelte:fragment slot="start">
                     <Layout.Stack direction="row" gap="xxs" alignItems="center">
                         <Spinner size="s" />
-                        <Typography.Text style="white-space: nowrap">
+                        <Typography.Caption
+                            variant="500"
+                            color="--fgcolor-neutral-secondary"
+                            style="white-space: nowrap">
                             Thinking of column suggestions
-                        </Typography.Text>
+                        </Typography.Caption>
                     </Layout.Stack>
                 </svelte:fragment>
                 <svelte:fragment slot="end">
@@ -990,7 +993,7 @@
                 transition: box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
 
-            & :global(.column-resizer-disabled) {
+            & :global([role='cell']:not([data-column-id='actions']) .column-resizer-disabled) {
                 border-left: var(--border-width-s, 1px) solid rgba(253, 54, 110, 0.24) !important;
                 transition: border-color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
