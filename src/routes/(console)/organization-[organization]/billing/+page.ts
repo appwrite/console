@@ -5,12 +5,13 @@ import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
+import { base } from '$app/paths';
 
 export const load: PageLoad = async ({ parent, depends }) => {
     const { organization, scopes, currentPlan, countryList, locale } = await parent();
 
     if (!scopes.includes('billing.read')) {
-        return redirect(301, `/console/organization-${organization.$id}`);
+        return redirect(301, `${base}/organization-${organization.$id}`);
     }
 
     depends(Dependencies.PAYMENT_METHODS);
@@ -57,12 +58,18 @@ export const load: PageLoad = async ({ parent, depends }) => {
               organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))
         : false;
 
-    const [paymentMethods, addressList, billingAddress, availableCredit] = await Promise.all([
-        sdk.forConsole.billing.listPaymentMethods(),
-        sdk.forConsole.billing.listAddresses(),
-        billingAddressPromise,
-        areCreditsSupported ? sdk.forConsole.billing.getAvailableCredit(organization.$id) : null
-    ]);
+    const [paymentMethods, addressList, billingAddress, availableCredit, billingPlanDowngrade] =
+        await Promise.all([
+            sdk.forConsole.billing.listPaymentMethods(),
+            sdk.forConsole.billing.listAddresses(),
+            billingAddressPromise,
+            areCreditsSupported
+                ? sdk.forConsole.billing.getAvailableCredit(organization.$id)
+                : null,
+            organization.billingPlanDowngrade
+                ? sdk.forConsole.billing.getPlan(organization.billingPlanDowngrade)
+                : null
+        ]);
 
     // make number
     const credits = availableCredit ? availableCredit.available : null;
@@ -76,6 +83,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
         billingInvoice,
         areCreditsSupported,
         countryList,
-        locale
+        locale,
+        nextPlan: billingPlanDowngrade
     };
 };

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -15,12 +16,12 @@
 
     async function moveDomain() {
         try {
-            await sdk.forConsole.domains.updateTeam(domain.$id, selectedOrg);
+            await sdk.forConsole.domains.updateTeam({ domainId: domain.$id, teamId: selectedOrg });
             addNotification({
                 type: 'success',
                 message: 'Domain moved successfully'
             });
-            await goto(`/console/organization-${selectedOrg}/domains/`);
+            await goto(`${base}/organization-${selectedOrg}/domains/`);
             await invalidate(Dependencies.ORGANIZATION);
             await invalidate(Dependencies.DOMAINS);
         } catch (e) {

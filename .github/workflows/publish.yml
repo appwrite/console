@@ -39,8 +39,9 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=cloud"
-                      "PUBLIC_CONSOLE_FEATURE_FLAGS=sites"
+                      "PUBLIC_CONSOLE_FEATURE_FLAGS="
                       "PUBLIC_APPWRITE_MULTI_REGION=true"
+                      "PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS=false"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY }}"
                       "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
@@ -79,8 +80,9 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=cloud"
-                      "PUBLIC_CONSOLE_FEATURE_FLAGS=sites,index-lengths"
+                      "PUBLIC_CONSOLE_FEATURE_FLAGS="
                       "PUBLIC_APPWRITE_MULTI_REGION=true"
+                      "PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS=false"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY_STAGE }}"
     publish-self-hosted:
@@ -118,7 +120,8 @@ jobs:
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=self-hosted"
                       "PUBLIC_APPWRITE_MULTI_REGION=false"
-                      "PUBLIC_CONSOLE_FEATURE_FLAGS=sites,index-lengths"
+                      "PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS=false"
+                      "PUBLIC_CONSOLE_FEATURE_FLAGS="
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
 
     publish-cloud-no-regions:
@@ -156,6 +159,7 @@ jobs:
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=cloud"
                       "PUBLIC_APPWRITE_MULTI_REGION=false"
-                      "PUBLIC_CONSOLE_FEATURE_FLAGS=sites,index-lengths"
+                      "PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS=false"
+                      "PUBLIC_CONSOLE_FEATURE_FLAGS="
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY_STAGE }}"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"

@@ -20,22 +20,55 @@
     import { redirectTo } from '$routes/store';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
     import { Layout, Link, Typography } from '@appwrite.io/pink-svelte';
+    import { getRandomTestimonial } from '$lib/data/testimonials';
 
     export let data;
 
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
 
+    const randomTestimonial = getRandomTestimonial();
+    const testimonialCampaign = {
+        $id: 'testimonial-signup',
+        template: 'review',
+        title: randomTestimonial.headline,
+        description: 'Join thousands of developers building amazing apps with Appwrite',
+        reviews: [
+            {
+                name: randomTestimonial.name,
+                image: randomTestimonial.avatar,
+                description: randomTestimonial.title,
+                review: randomTestimonial.blurb
+            }
+        ]
+    };
+
+    trackEvent(Submit.TestimonialView, {
+        testimonial_id: randomTestimonial.id,
+        testimonial_name: randomTestimonial.name,
+        testimonial_company: randomTestimonial.title
+    });
+
     async function register() {
         try {
             disabled = true;
-            await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
-            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
+            await sdk.forConsole.account.create({
+                userId: ID.unique(),
+                email: mail,
+                password: pass,
+                name: name ?? ''
+            });
+            await sdk.forConsole.account.createEmailPasswordSession({
+                email: mail,
+                password: pass
+            });
 
             trackEvent(Submit.AccountCreate, {
                 campaign_name: data?.couponData?.code,
                 email: mail,
-                name: name
+                name: name,
+                testimonial_id: randomTestimonial.id,
+                testimonial_name: randomTestimonial.name
             });
 
             if (data?.couponData?.code) {
@@ -73,12 +106,12 @@
     }
 
     function onGithubLogin() {
-        sdk.forConsole.account.createOAuth2Session(
-            OAuthProvider.Github,
-            window.location.origin,
-            window.location.origin,
-            ['read:user', 'user:email']
-        );
+        sdk.forConsole.account.createOAuth2Session({
+            provider: OAuthProvider.Github,
+            success: window.location.origin,
+            failure: window.location.origin,
+            scopes: ['read:user', 'user:email']
+        });
     }
 </script>
 
@@ -86,7 +119,7 @@
     <title>Sign up - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated coupon={data?.couponData} campaign={data?.campaign}>
+<Unauthenticated coupon={data?.couponData} campaign={data?.campaign || testimonialCampaign}>
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={register}>
@@ -97,6 +130,7 @@
                     placeholder="Your name"
                     autofocus
                     required
+                    autocomplete
                     bind:value={name} />
                 <InputEmail
                     id="email"

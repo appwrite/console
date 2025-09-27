@@ -161,14 +161,13 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 
         try {
             isCreatingPlatform = true;
-            await sdk.forConsole.projects.createPlatform(
+            await sdk.forConsole.projects.createPlatform({
                 projectId,
-                PlatformType.Web,
-                `${selectedFramework.label} app`,
-                selectedFrameworkKey,
-                undefined,
-                hostname === '' ? undefined : hostname
-            );
+                type: PlatformType.Web,
+                name: `${selectedFramework.label} app`,
+                key: selectedFrameworkKey,
+                hostname: hostname === '' ? undefined : hostname
+            });
 
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {

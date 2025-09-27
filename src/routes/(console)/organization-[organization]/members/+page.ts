@@ -7,6 +7,7 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ url, params, route, depends }) => {
     depends(Dependencies.ORGANIZATION);
     depends(Dependencies.MEMBERS);
+
     const page = getPage(url);
     const search = getSearch(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
@@ -16,10 +17,10 @@ export const load: PageLoad = async ({ url, params, route, depends }) => {
         offset,
         limit,
         search,
-        organizationMembers: await sdk.forConsole.teams.listMemberships(
-            params.organization,
-            [Query.limit(limit), Query.offset(offset)],
+        organizationMembers: await sdk.forConsole.teams.listMemberships({
+            teamId: params.organization,
+            queries: [Query.limit(limit), Query.offset(offset)],
             search
-        )
+        })
     };
 };

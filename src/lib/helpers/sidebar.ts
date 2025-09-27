@@ -4,6 +4,11 @@ import { sdk } from '$lib/stores/sdk';
 
 const userPreferences = () => get(user)?.prefs;
 
+// for spreadsheet, closed with icons
+export const isInDatabasesRoute = (route: { id?: string }) => {
+    return route.id?.includes('databases/database-[database]');
+};
+
 export function updateSidebarState(state: 'closed' | 'open' | 'icons') {
     if (state === 'open' || state === 'icons') {
         const currentPrefs = userPreferences();
@@ -13,7 +18,7 @@ export function updateSidebarState(state: 'closed' | 'open' | 'icons') {
             sidebarState: state
         };
 
-        sdk.forConsole.account.updatePrefs(newPrefs);
+        sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
     }
 }
 

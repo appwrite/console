@@ -74,7 +74,8 @@
         { label: 'PUT', value: ExecutionMethod.PUT },
         { label: 'PATCH', value: ExecutionMethod.PATCH },
         { label: 'DELETE', value: ExecutionMethod.DELETE },
-        { label: 'OPTIONS', value: ExecutionMethod.OPTIONS }
+        { label: 'OPTIONS', value: ExecutionMethod.OPTIONS },
+        { label: 'HEAD', value: ExecutionMethod.HEAD }
     ];
 
     let formComponent: Form;
@@ -97,15 +98,15 @@
 
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.createExecution(
-                    func.$id,
+                .functions.createExecution({
+                    functionId: func.$id,
                     body,
-                    true,
-                    path,
+                    async: true,
+                    xpath: path,
                     method,
-                    headersObject,
-                    isScheduled ? dateTime.toISOString() : undefined
-                );
+                    headers: headersObject,
+                    scheduledAt: isScheduled ? dateTime.toISOString() : undefined
+                });
             await goto(
                 `${base}/project-${page.params.region}-${page.params.project}/functions/function-${func.$id}/executions`
             );

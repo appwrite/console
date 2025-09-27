@@ -37,7 +37,9 @@
 
     async function downloadRecords() {
         try {
-            const zone = await sdk.forConsole.domains.getZone(data.domain.$id);
+            const zone = await sdk.forConsole.domains.getZone({
+                domainId: data.domain.$id
+            });
 
             if ('message' in zone) {
                 const blob = new Blob([zone.message as string], { type: 'text/plain' });
@@ -82,7 +84,7 @@
                         </Tooltip>
                     </Layout.Stack>
                     <Layout.Stack direction="row" gap="s" inline>
-                        <ViewSelector view={View.Table} {columns} hideView />
+                        <ViewSelector ui="new" view={View.Table} {columns} hideView />
                         <Popover let:toggle padding="none">
                             <Button secondary on:click={toggle}>Add preset</Button>
                             <svelte:fragment slot="tooltip" let:toggle>

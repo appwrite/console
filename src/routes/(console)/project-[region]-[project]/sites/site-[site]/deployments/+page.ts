@@ -16,14 +16,24 @@ export const load = async ({ params, depends, url, route, parent }) => {
     queries.set(parsedQueries);
 
     const [deploymentList, installations] = await Promise.all([
-        sdk
-            .forProject(params.region, params.project)
-            .sites.listDeployments(params.site, [
+        sdk.forProject(params.region, params.project).sites.listDeployments({
+            siteId: params.site,
+            queries: [
                 Query.limit(limit),
                 Query.offset(offset),
                 Query.orderDesc(''),
+                Query.select([
+                    'buildSize',
+                    'sourceSize',
+                    'totalSize',
+                    'buildDuration',
+                    'status',
+                    'type',
+                    'resourceId'
+                ]),
                 ...parsedQueries.values()
-            ]),
+            ]
+        }),
         sdk.forProject(params.region, params.project).vcs.listInstallations()
     ]);
 
@@ -36,7 +46,7 @@ export const load = async ({ params, depends, url, route, parent }) => {
             site.deploymentId && deploymentList?.total
                 ? await sdk
                       .forProject(params.region, params.project)
-                      .sites.getDeployment(params.site, site.deploymentId)
+                      .sites.getDeployment({ siteId: params.site, deploymentId: site.deploymentId })
                 : null,
         installations
     };

@@ -15,7 +15,9 @@
 
     async function deleteTeam() {
         try {
-            await sdk.forProject(page.params.region, page.params.project).teams.delete(team.$id);
+            await sdk.forProject(page.params.region, page.params.project).teams.delete({
+                teamId: team.$id
+            });
             showDelete = false;
             trackEvent(Submit.TeamDelete);
             await goto(`${base}/project-${page.params.region}-${page.params.project}/auth/teams`);

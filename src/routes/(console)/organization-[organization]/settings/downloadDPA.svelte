@@ -10,7 +10,7 @@
         const today = new Date().toISOString();
         const prefs = await sdk.forConsole.account.getPrefs();
         const newPrefs = { ...prefs, DPA: today };
-        sdk.forConsole.account.updatePrefs(newPrefs);
+        sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
     }
 </script>
 

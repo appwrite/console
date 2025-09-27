@@ -10,12 +10,12 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
     const message = await sdk
         .forProject(params.region, params.project)
-        .messaging.getMessage(params.message);
+        .messaging.getMessage({ messageId: params.message });
 
     const topicsById: Record<string, Models.Topic> = {};
     const topicsPromise = Promise.allSettled(
         message.topics.map((topicId) =>
-            sdk.forProject(params.region, params.project).messaging.getTopic(topicId)
+            sdk.forProject(params.region, params.project).messaging.getTopic({ topicId })
         )
     ).then((results) => {
         results.forEach((result) => {
@@ -28,7 +28,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     const targetsById: Record<string, Models.Target> = {};
     const targetsPromise = sdk
         .forProject(params.region, params.project)
-        .messaging.listTargets(params.message)
+        .messaging.listTargets({ messageId: params.message })
         .then((response) => {
             response.targets.forEach((target) => {
                 targetsById[target.$id] = target;
@@ -41,7 +41,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     const usersPromise = Object.values(targetsById).map((target) =>
         sdk
             .forProject(params.region, params.project)
-            .users.get(target.userId)
+            .users.get({ userId: target.userId })
             .then((user) => {
                 usersById[user.$id] = user;
             })
@@ -51,7 +51,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     const messageRecipientsPromise = Object.values(message.users).map((userId) =>
         sdk
             .forProject(params.region, params.project)
-            .users.get(userId)
+            .users.get({ userId })
             .then((user) => {
                 messageRecipients[user.$id] = user;
             })

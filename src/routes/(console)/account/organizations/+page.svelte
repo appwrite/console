@@ -23,18 +23,46 @@
     import { Icon, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
-    export let data: PageData;
-    let addOrganization = false;
+    const {
+        data
+    }: {
+        data: PageData;
+    } = $props();
 
-    const getMemberships = async (teamId: string) => {
-        const memberships = await sdk.forConsole.teams.listMemberships(teamId);
+    let addOrganization = $state(false);
+
+    async function getMemberships(teamId: string): Promise<string[]> {
+        const memberships = await sdk.forConsole.teams.listMemberships({ teamId });
         return memberships.memberships.map((team) => team.userName || team.userEmail);
-    };
+    }
+
+    function isOrganizationOnTrial(organization: Organization): boolean {
+        if (!organization?.billingTrialStartDate) return false;
+        if ($daysLeftInTrial <= 0) return false;
+        if (organization.billingPlan === BillingPlan.FREE) return false;
+
+        return !!$plansInfo.get(organization.billingPlan)?.trialDays;
+    }
+
+    function isNonPayingOrganization(organization: Organization): boolean {
+        return (
+            organization?.billingPlan === BillingPlan.FREE ||
+            organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
+        );
+    }
+
+    function isPayingOrganization(team: Models.Preferences | Organization): Organization | null {
+        const isPayingOrganization =
+            isCloudOrg(team) && !isOrganizationOnTrial(team) && !isNonPayingOrganization(team);
+
+        if (isPayingOrganization) return team as Organization;
+        else return null;
+    }
 
     function isCloudOrg(
         data: Partial<Models.TeamList<Models.Preferences>> | Organization
     ): data is Organization {
-        return isCloud && 'billingPlan' in data ? true : false;
+        return isCloud && 'billingPlan' in data;
     }
 
     function createOrg() {
@@ -56,12 +84,15 @@
 
     {#if data.organizations.teams.length}
         <CardContainer
-            total={data.organizations.total}
-            offset={data.offset}
             event="organization"
-            on:click={createOrg}>
+            offset={data.offset}
+            on:click={createOrg}
+            disableEmpty={false}
+            total={data.organizations.total}>
             {#each data.organizations.teams as organization}
                 {@const avatarList = getMemberships(organization.$id)}
+                {@const payingOrg = isPayingOrganization(organization)}
+
                 <GridItem1 href={`${base}/organization-${organization.$id}`}>
                     <svelte:fragment slot="eyebrow">
                         {organization?.total}
@@ -72,19 +103,20 @@
                     </svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
-                            {#if organization?.billingPlan === BillingPlan.FREE || organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                            {#if isNonPayingOrganization(organization)}
                                 <Tooltip>
-                                    <div class="u-flex u-cross-center">
-                                        <Badge
-                                            variant="secondary"
-                                            content={tierToPlan(organization?.billingPlan)?.name}
-                                            class="eyebrow-heading-3" />
-                                    </div>
-                                    <span slot="tooltip"
-                                        >You are limited to 1 free organization per account</span>
+                                    <Badge
+                                        size="xs"
+                                        variant="secondary"
+                                        content={tierToPlan(organization?.billingPlan)?.name} />
+
+                                    <span slot="tooltip">
+                                        You are limited to 1 free organization per account
+                                    </span>
                                 </Tooltip>
                             {/if}
-                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
+
+                            {#if isOrganizationOnTrial(organization)}
                                 <Tooltip>
                                     <div class="u-flex u-cross-center">
                                         <Badge
@@ -97,6 +129,14 @@
                                             organization.billingStartDate
                                         )}. ${$daysLeftInTrial} days remaining.`}</span>
                                 </Tooltip>
+                            {/if}
+
+                            {#if payingOrg}
+                                <Badge
+                                    size="xs"
+                                    type="success"
+                                    variant="secondary"
+                                    content={tierToPlan(payingOrg?.billingPlan)?.name} />
                             {/if}
                         {/if}
                     </svelte:fragment>

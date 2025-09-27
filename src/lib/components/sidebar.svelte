@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { fade } from 'svelte/transition';
-    import { page } from '$app/state';
+    import { page } from '$app/stores';
     import { app } from '$lib/stores/app';
+    import { fade } from 'svelte/transition';
     import {
         Icon,
         Sidebar,
@@ -34,12 +34,15 @@
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
-    import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
+    import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
 
     import type { HTMLAttributes } from 'svelte/elements';
     import type { Models } from '@appwrite.io/console';
+    import { noWidthTransition } from '$lib/stores/sidebar';
+    import { base } from '$app/paths';
 
     type $$Props = HTMLAttributes<HTMLElement> & {
         state?: 'closed' | 'open' | 'icons';
@@ -71,8 +74,6 @@
         }
     }
 
-    $: state = $isTabletViewport ? 'closed' : getSidebarState();
-
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth', category: 'build' },
         { name: 'Databases', icon: IconDatabase, slug: 'databases', category: 'build' },
@@ -89,12 +90,21 @@
     ];
 
     const isSelected = (service: string): boolean => {
-        return page.route.id?.includes(service);
+        return $page.route.id?.includes(service);
     };
+
+    $: state = $isTabletViewport
+        ? 'closed'
+        : // example: manual resize
+          isInDatabasesRoute($page.route)
+          ? 'icons'
+          : getSidebarState();
 </script>
 
 <div
+    class="sidebar"
     class:only-mobile-tablet={!project}
+    class:no-transitions={$noWidthTransition}
     style:--overlay-on-neutral={$app.themeInUse === 'dark'
         ? 'var(--neutral-750)'
         : 'var(--neutral-100)'}>
@@ -129,7 +139,7 @@
                 <Tooltip placement="right" disabled={state !== 'icons'}>
                     <a
                         class="progress-card"
-                        href={`/console/project-${project.region}-${project.$id}/get-started`}
+                        href={`${base}/project-${project?.region}-${project?.$id}/get-started`}
                         on:click={() => {
                             trackEvent('click_menu_get_started');
                             sideBarIsOpen = false;
@@ -153,7 +163,7 @@
                 <Layout.Stack direction="column" gap="s">
                     <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.region}-${project.$id}/overview/platforms`}
+                            href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}
                             class="link"
                             class:active={isSelected('overview')}
                             on:click={() => {
@@ -183,7 +193,7 @@
                     {#each buildProjectOptions as projectOption}
                         <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
-                                href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
+                                href={`${base}/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
                                 class:active={isSelected(projectOption.slug)}
                                 on:click={() => {
@@ -214,7 +224,7 @@
                     {#each deployProjectOptions as projectOption}
                         <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
-                                href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
+                                href={`${base}/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
                                 class:active={isSelected(projectOption.slug)}
                                 on:click={() => {
@@ -240,11 +250,11 @@
                             <span slot="tooltip">{projectOption.name}</span>
                         </Tooltip>
                     {/each}
-                    {#if project}
+                    {#if project && $isSmallViewport}
                         <div class="mobile-tablet-settings">
                             <Tooltip placement="right" disabled={state !== 'icons'}>
                                 <a
-                                    href={`/console/project-${project.region}-${project.$id}/settings`}
+                                    href={`${base}/project-${project.region}-${project.$id}/settings`}
                                     on:click={() => {
                                         trackEvent('click_menu_settings');
                                         sideBarIsOpen = false;
@@ -304,7 +314,7 @@
                 <div class="only-desktop">
                     <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.region}-${project.$id}/settings`}
+                            href={`${base}/project-${project.region}-${project.$id}/settings`}
                             class="link"
                             on:click={() => {
                                 trackEvent('click_menu_settings');
@@ -353,13 +363,24 @@
     </Sidebar.Base>
 </div>
 
-{#if subNavigation}
-    <div class="sub-navigation" class:icons={state === 'icons'}>
-        <svelte:component this={subNavigation} />
-    </div>
-{/if}
+<div style:--banner-spacing={$bannerSpacing ? $bannerSpacing : undefined}>
+    {#if subNavigation}
+        <div
+            class="sub-navigation"
+            class:icons={state === 'icons'}
+            class:no-transitions={$noWidthTransition}>
+            <svelte:component this={subNavigation} />
+        </div>
+    {/if}
+</div>
 
 <style lang="scss">
+    .sidebar {
+        &.no-transitions :global(nav) {
+            transition: none !important;
+        }
+    }
+
     .middle-container {
         flex: 1;
         overflow-y: visible;
@@ -571,6 +592,7 @@
         @media (min-width: 1024px) {
             width: 166px;
         }
+
         .info {
             position: absolute;
             display: flex;
@@ -608,8 +630,9 @@
 
     .sub-navigation {
         margin-top: 48px;
+
         @media (min-width: 1024px) {
-            margin-top: 0;
+            margin-top: var(--banner-spacing, 0px);
             width: 400px;
             height: calc(100vh - 48px);
             display: flex;
@@ -617,12 +640,27 @@
             background-color: var(--bgcolor-neutral-primary, #fff);
             z-index: 14;
             position: fixed;
-            top: 48px;
+            top: var(--banner-spacing, 48px);
             transition: width 0.2s linear;
 
             &.icons {
                 width: 266px;
                 transition: width 0.3s linear;
+
+                &.no-transitions {
+                    transition: none !important;
+                }
+
+                & :global(nav) {
+                    margin-top: var(--banner-spacing);
+                }
+            }
+        }
+
+        /* when in small or tablet viewport and there's a banner */
+        @media (max-width: 1023px) {
+            & :global(header) {
+                margin-top: var(--banner-spacing);
             }
         }
     }

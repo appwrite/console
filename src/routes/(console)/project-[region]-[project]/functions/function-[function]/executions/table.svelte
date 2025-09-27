@@ -14,6 +14,7 @@
     import Sheet from './sheet.svelte';
     import { capitalize } from '$lib/helpers/string';
     import { calculateTime } from '$lib/helpers/timeConversion';
+    import { getBadgeTypeFromStatusCode } from '$lib/helpers/httpStatus';
     import { logStatusConverter } from './store';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { func } from '../store';
@@ -24,6 +25,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
+    import { timer } from '$lib/actions/timer';
 
     export let columns: Column[];
     export let executions: Models.ExecutionList;
@@ -38,9 +40,10 @@
         showBatchDeletion = false;
 
         const promises = selectedRows.map((executionId) =>
-            sdk
-                .forProject(page.params.region, page.params.project)
-                .functions.deleteExecution(page.params.function, executionId)
+            sdk.forProject(page.params.region, page.params.project).functions.deleteExecution({
+                functionId: page.params.function,
+                executionId
+            })
         );
         try {
             await Promise.all(promises);
@@ -84,6 +87,8 @@
                         {#key column.id}
                             <Id value={log.$id}>{log.$id}</Id>
                         {/key}
+                    {:else if column.id === 'deploymentId'}
+                        <Id value={log.deploymentId}>{log.deploymentId}</Id>
                     {:else if column.id === '$createdAt'}
                         <DualTimeView time={log.$createdAt} />
                     {:else if column.id === 'requestPath'}
@@ -93,11 +98,7 @@
                     {:else if column.id === 'responseStatusCode'}
                         <Badge
                             variant="secondary"
-                            type={log.responseStatusCode >= 400
-                                ? 'error'
-                                : log.responseStatusCode === 0
-                                  ? undefined
-                                  : 'success'}
+                            type={getBadgeTypeFromStatusCode(log.responseStatusCode)}
                             content={log.responseStatusCode.toString()} />
                     {:else if column.id === 'requestMethod'}
                         <Typography.Code size="m">
@@ -121,7 +122,11 @@
                             </span>
                         </Tooltip>
                     {:else if column.id === 'duration'}
-                        {calculateTime(log.duration)}
+                        {#if ['processing', 'waiting'].includes(log.status)}
+                            <span use:timer={{ start: log.$createdAt }}></span>
+                        {:else}
+                            {calculateTime(log.duration)}
+                        {/if}
                     {/if}
                 </Table.Cell>
             {/each}

@@ -12,7 +12,9 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { calculateTime } from '$lib/helpers/timeConversion';
+    import { getBadgeTypeFromStatusCode } from '$lib/helpers/httpStatus';
     import { Button } from '$lib/elements/forms';
+    import { timer } from '$lib/actions/timer';
 
     export let columns: Column[];
     export let logs: Models.ExecutionList;
@@ -29,9 +31,10 @@
         showBatchDeletion = false;
 
         const promises = selectedRows.map((logId) =>
-            sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.deleteLog(page.params.site, logId)
+            sdk.forProject(page.params.region, page.params.project).sites.deleteLog({
+                siteId: page.params.site,
+                logId
+            })
         );
         try {
             await Promise.all(promises);
@@ -74,17 +77,23 @@
                         {#key column.id}
                             <Id value={log.$id}>{log.$id}</Id>
                         {/key}
+                    {:else if column.id === 'deploymentId'}
+                        <Id value={log.deploymentId}>{log.deploymentId}</Id>
                     {:else if column.id === 'requestMethod'}
                         <Typography.Code size="m">
                             {log.requestMethod}
                         </Typography.Code>
                     {:else if column.id === 'duration'}
-                        {calculateTime(log.duration)}
+                        {#if ['processing', 'waiting'].includes(log.status)}
+                            <span use:timer={{ start: log.$createdAt }}></span>
+                        {:else}
+                            {calculateTime(log.duration)}
+                        {/if}
                     {:else if column.id === 'responseStatusCode'}
                         <div>
                             <Badge
                                 variant="secondary"
-                                type={log.responseStatusCode >= 400 ? 'error' : 'success'}
+                                type={getBadgeTypeFromStatusCode(log.responseStatusCode)}
                                 content={log.responseStatusCode.toString()} />
                         </div>
                     {:else if column.id === 'requestPath'}

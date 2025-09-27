@@ -17,15 +17,20 @@
     let error = '';
 
     async function addAuthenticator(): Promise<string> {
-        type = await sdk.forConsole.account.createMfaAuthenticator(AuthenticatorType.Totp);
+        type = await sdk.forConsole.account.createMFAAuthenticator({
+            type: AuthenticatorType.Totp
+        });
         trackEvent(Submit.AccountAuthenticatorCreate);
 
-        return sdk.forConsole.avatars.getQR(type.uri, 192 * 2);
+        return sdk.forConsole.avatars.getQR({ text: type.uri, size: 192 * 2 });
     }
 
     async function verifyAuthenticator() {
         try {
-            await sdk.forConsole.account.updateMfaAuthenticator(AuthenticatorType.Totp, code);
+            await sdk.forConsole.account.updateMFAAuthenticator({
+                type: AuthenticatorType.Totp,
+                otp: code
+            });
             await Promise.all([invalidate(Dependencies.ACCOUNT), invalidate(Dependencies.FACTORS)]);
             showSetup = false;
             addNotification({

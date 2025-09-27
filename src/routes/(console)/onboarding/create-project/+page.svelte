@@ -15,10 +15,13 @@
     import { user } from '$lib/stores/user';
 
     let isLoading = false;
-    let id: string = ID.unique();
     let startAnimation = false;
-    let projectName = 'Appwrite project';
-    let region = Region.Fra;
+
+    let projectId = ID.unique();
+    let projectRegion = Region.Fra;
+    let projectName = 'Appwrite Project';
+
+    const projectIdForLog = projectId;
 
     export let data;
 
@@ -30,7 +33,7 @@
             newOnboardingCompleted: true
         };
 
-        sdk.forConsole.account.updatePrefs(newPrefs);
+        sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
     }
 
     async function createProject() {
@@ -38,18 +41,18 @@
 
         try {
             const teamId = data.organization.$id;
-            const project = await sdk.forConsole.projects.create(
-                id ?? ID.unique(),
-                projectName,
+            const project = await sdk.forConsole.projects.create({
+                projectId: projectId ?? ID.unique(),
+                name: projectName,
                 teamId,
-                isCloud ? region : undefined
-            );
+                region: isCloud ? projectRegion : undefined
+            });
 
             markOnboardingComplete();
 
             trackEvent(Submit.ProjectCreate, {
-                customId: !!id,
-                teamId
+                teamId,
+                customId: projectId !== projectIdForLog
             });
 
             startAnimation = true;
@@ -82,24 +85,24 @@
         <Loading {startAnimation} />
     {:else}
         <img
-            src="/console/images/appwrite-logo-light.svg"
+            src="{base}/images/appwrite-logo-light.svg"
             width="120"
             height="22"
             class="u-only-light"
             alt="Appwrite Logo" />
         <img
-            src="/console/images/appwrite-logo-dark.svg"
+            src="{base}/images/appwrite-logo-dark.svg"
             width="120"
             height="22"
             class="u-only-dark"
             alt="Appwrite Logo" />
         <Card.Base variant="primary" padding="l">
             <CreateProject
-                regions={$regionsStore?.regions}
+                showTitle
                 bind:projectName
-                bind:id
-                bind:region
-                showTitle={true}>
+                bind:id={projectId}
+                bind:region={projectRegion}
+                regions={$regionsStore?.regions}>
                 {#snippet submit()}
                     <Layout.Stack direction="row" justifyContent="flex-end">
                         <Button.Button

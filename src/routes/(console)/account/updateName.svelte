@@ -17,7 +17,9 @@
 
     async function updateName() {
         try {
-            await sdk.forConsole.account.updateName(name);
+            await sdk.forConsole.account.updateName({
+                name
+            });
             await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Name has been updated',

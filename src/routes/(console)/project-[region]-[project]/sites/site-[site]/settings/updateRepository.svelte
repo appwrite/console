@@ -51,7 +51,10 @@
             if (site.installationId && site.providerRepositoryId) {
                 repository = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .vcs.getRepository(site.installationId, site.providerRepositoryId);
+                    .vcs.getRepository({
+                        installationId: site.installationId,
+                        providerRepositoryId: site.providerRepositoryId
+                    });
                 repositoryStore.set(repository);
             }
         } catch (err) {
@@ -65,28 +68,26 @@
 
     async function updateConfiguration() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.update(
-                    site.$id,
-                    site.name,
-                    site?.framework as Framework,
-                    site?.enabled || undefined,
-                    site?.logging || undefined,
-                    site?.timeout || undefined,
-                    site?.installCommand || undefined,
-                    site?.buildCommand || undefined,
-                    site?.outputDirectory || undefined,
-                    (site?.buildRuntime as BuildRuntime) || undefined,
-                    site?.adapter as Adapter,
-                    site?.fallbackFile || undefined,
-                    site?.installationId || undefined,
-                    site?.providerRepositoryId || undefined,
-                    selectedBranch || undefined,
-                    silentMode || undefined,
-                    selectedDir || undefined,
-                    site?.specification || undefined
-                );
+            await sdk.forProject(page.params.region, page.params.project).sites.update({
+                siteId: site.$id,
+                name: site.name,
+                framework: site?.framework as Framework,
+                enabled: site?.enabled || undefined,
+                logging: site?.logging || undefined,
+                timeout: site?.timeout || undefined,
+                installCommand: site?.installCommand || undefined,
+                buildCommand: site?.buildCommand || undefined,
+                outputDirectory: site?.outputDirectory || undefined,
+                buildRuntime: (site?.buildRuntime as BuildRuntime) || undefined,
+                adapter: site?.adapter as Adapter,
+                fallbackFile: site?.fallbackFile || undefined,
+                installationId: site?.installationId || undefined,
+                providerRepositoryId: site?.providerRepositoryId || undefined,
+                providerBranch: selectedBranch || undefined,
+                providerSilentMode: silentMode || undefined,
+                providerRootDirectory: selectedDir || undefined,
+                specification: site?.specification || undefined
+            });
             await invalidate(Dependencies.SITE);
             addNotification({
                 type: 'success',
@@ -105,7 +106,10 @@
     async function getBranches(installation: string, repo: string) {
         branchesList = await sdk
             .forProject(page.params.region, page.params.project)
-            .vcs.listRepositoryBranches(installation, repo);
+            .vcs.listRepositoryBranches({
+                installationId: installation,
+                providerRepositoryId: repo
+            });
         branchesList.branches = sortBranches(branchesList.branches);
 
         selectedBranch = site?.providerBranch ?? branchesList.branches[0].name;
@@ -113,28 +117,25 @@
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.update(
-                    site.$id,
-                    site.name,
-                    site.framework as Framework,
-                    site?.enabled,
-                    site?.logging || undefined,
-                    site?.timeout,
-                    site?.installCommand,
-                    site?.buildCommand,
-                    site?.outputDirectory,
-                    site?.buildRuntime as BuildRuntime,
-                    site.adapter as Adapter,
-                    site?.fallbackFile,
-                    selectedInstallationId,
-                    selectedRepository,
-                    'main',
-                    undefined,
-                    undefined,
-                    site?.specification || undefined
-                );
+            await sdk.forProject(page.params.region, page.params.project).sites.update({
+                siteId: site.$id,
+                name: site.name,
+                framework: site.framework as Framework,
+                enabled: site?.enabled,
+                logging: site?.logging || undefined,
+                timeout: site?.timeout,
+                installCommand: site?.installCommand,
+                buildCommand: site?.buildCommand,
+                outputDirectory: site?.outputDirectory,
+                buildRuntime: site?.buildRuntime as BuildRuntime,
+                adapter: site.adapter as Adapter,
+                fallbackFile: site?.fallbackFile,
+                installationId: selectedInstallationId,
+                providerRepositoryId: selectedRepository,
+                providerBranch: 'main',
+                specification: site?.specification || undefined
+            });
+
             invalidate(Dependencies.SITE);
         } catch {
             return;

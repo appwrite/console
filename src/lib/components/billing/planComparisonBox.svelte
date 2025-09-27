@@ -1,7 +1,7 @@
 <script lang="ts">
     import { BillingPlan } from '$lib/constants';
     import { formatNum } from '$lib/helpers/string';
-    import { plansInfo, tierFree, tierPro, tierScale, type Tier } from '$lib/stores/billing';
+    import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { Card, Layout, Tabs, Typography } from '@appwrite.io/pink-svelte';
 
     export let downgrade = false;
@@ -9,29 +9,22 @@
     let selectedTab: Tier = BillingPlan.FREE;
 
     $: plan = $plansInfo.get(selectedTab);
+
+    const allTiers: Tier[] = [BillingPlan.FREE, BillingPlan.PRO, BillingPlan.SCALE];
+    $: visibleTiers = allTiers.filter((tier) => tier !== BillingPlan.SCALE);
 </script>
 
 <Card.Base>
     <Layout.Stack>
         <Tabs.Root stretch let:root>
-            <Tabs.Item.Button
-                {root}
-                active={selectedTab === BillingPlan.FREE}
-                on:click={() => (selectedTab = BillingPlan.FREE)}>
-                {tierFree.name}
-            </Tabs.Item.Button>
-            <Tabs.Item.Button
-                {root}
-                active={selectedTab === BillingPlan.PRO}
-                on:click={() => (selectedTab = BillingPlan.PRO)}>
-                {tierPro.name}
-            </Tabs.Item.Button>
-            <Tabs.Item.Button
-                {root}
-                active={selectedTab === BillingPlan.SCALE}
-                on:click={() => (selectedTab = BillingPlan.SCALE)}>
-                {tierScale.name}
-            </Tabs.Item.Button>
+            {#each visibleTiers as tier}
+                <Tabs.Item.Button
+                    {root}
+                    active={selectedTab === tier}
+                    on:click={() => (selectedTab = tier)}>
+                    {tierToPlan(tier).name}
+                </Tabs.Item.Button>
+            {/each}
         </Tabs.Root>
 
         <Typography.Text variant="m-600">{plan.name} plan</Typography.Text>
@@ -90,6 +83,7 @@
             <Typography.Text>Everything in the Free plan, plus:</Typography.Text>
             <ul class="un-order-list">
                 <li>Unlimited databases, buckets, functions</li>
+                <li>Unlimited seats</li>
                 <li>{plan.bandwidth}GB bandwidth</li>
                 <li>{plan.storage}GB storage</li>
                 <li>{formatNum(plan.executions)} executions</li>

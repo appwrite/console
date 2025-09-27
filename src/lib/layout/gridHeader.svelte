@@ -8,7 +8,7 @@
     export let title: string;
     export let columns: Writable<Column[]>;
     export let view: View;
-    export let isCustomCollection = false;
+    export let isCustomTable = false;
     export let hideView = false;
     export let hideColumns = false;
     export let allowNoColumns = false;
@@ -18,9 +18,10 @@
     <Typography.Title size="m">{title}</Typography.Title>
     <div class="u-flex u-gap-16 u-contents-mobile">
         <ViewSelector
+            ui="new"
             {view}
             {columns}
-            {isCustomCollection}
+            {isCustomTable}
             {hideView}
             {hideColumns}
             {allowNoColumns} />

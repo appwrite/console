@@ -21,15 +21,14 @@
         try {
             const user = await sdk
                 .forProject(page.params.region, page.params.project)
-                .teams.createMembership(
+                .teams.createMembership({
                     teamId,
                     roles,
-                    email || undefined,
-                    undefined,
-                    undefined,
-                    `${page.url.origin}${base}/invite`,
-                    name || undefined
-                );
+                    email: email || undefined,
+                    url: `${page.url.origin}${base}/invite`,
+                    name: name || undefined
+                });
+
             addNotification({
                 type: 'success',
                 message: `${name ? name : email} created successfully`

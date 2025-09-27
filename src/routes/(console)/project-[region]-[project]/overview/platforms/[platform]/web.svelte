@@ -18,14 +18,14 @@
 
     async function updateHostname() {
         try {
-            await sdk.forConsole.projects.updatePlatform(
-                $project.$id,
-                $platform.$id,
-                $platform.name,
-                $platform.key || undefined,
-                $platform.store || undefined,
+            await sdk.forConsole.projects.updatePlatform({
+                projectId: $project.$id,
+                platformId: $platform.$id,
+                name: $platform.name,
+                key: $platform.key || undefined,
+                store: $platform.store || undefined,
                 hostname
-            );
+            });
             await invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',

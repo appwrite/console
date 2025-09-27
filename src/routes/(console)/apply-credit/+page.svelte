@@ -123,7 +123,7 @@
     }
 
     async function handleSubmit() {
-        if (!couponForm.checkValidity()) return;
+        if (couponForm && !couponForm.checkValidity()) return;
         isSubmitting.set(true);
         try {
             let org: Organization | OrganizationError;
@@ -174,7 +174,7 @@
                     '',
                     clientSecret,
                     paymentMethodId,
-                    `/console/apply-credit?${params}`
+                    `${base}/apply-credit?${params}`
                 );
                 org = await sdk.forConsole.billing.validateOrganization(org.teamId, collaborators);
             }
@@ -392,7 +392,7 @@
         <Button
             fullWidthMobile
             on:click={() => {
-                if (formComponent.checkValidity() && couponForm.checkValidity()) {
+                if (formComponent.checkValidity() && (!couponForm || couponForm.checkValidity())) {
                     handleSubmit();
                 }
             }}

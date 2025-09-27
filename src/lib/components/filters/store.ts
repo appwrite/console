@@ -1,10 +1,11 @@
 import { goto } from '$app/navigation';
-import { derived, get, writable } from 'svelte/store';
 import { page } from '$app/stores';
 import deepEqual from 'deep-equal';
-import type { Column, ColumnType } from '$lib/helpers/types';
 import { Query } from '@appwrite.io/console';
 import { toLocaleDateTime } from '$lib/helpers/date';
+import { derived, get, writable } from 'svelte/store';
+import type { Column, ColumnType } from '$lib/helpers/types';
+import { isSpatialType } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/rows/store';
 
 export type TagValue = {
     tag: string;
@@ -12,8 +13,8 @@ export type TagValue = {
 };
 
 export type Operator = {
-    toTag: (attribute: string, input?: string | number | string[], type?: string) => TagValue;
-    toQuery: (attribute: string, input?: string | number | string[]) => string;
+    toTag: (column: string, input?: string | number | string[], type?: string) => TagValue;
+    toQuery: (column: string, input?: string | number | string[], distance?: number) => string;
     types: ColumnType[];
     hideInput?: boolean;
 };
@@ -35,13 +36,14 @@ function initQueries(initialValue = new Map<TagValue, string>()) {
         operator: Operator;
         column: Column;
         value: string | number | string[];
+        distance?: number;
     };
 
-    function addFilter({ column, operator, value }: AddFilterArgs) {
+    function addFilter({ column, operator, value, distance }: AddFilterArgs) {
         queries.update((map) => {
             map.set(
                 operator.toTag(column.title, value, column?.type),
-                operator.toQuery(column.id, value)
+                operator.toQuery(column.id, value, distance)
             );
             return map;
         });
@@ -59,9 +61,15 @@ function initQueries(initialValue = new Map<TagValue, string>()) {
     }
 
     function apply() {
-        const queryParam = mapToQueryParams(get(queries));
+        const usableQueries = get(queries);
         const currentLocation = window.location.pathname;
-        goto(`${currentLocation}?query=${queryParam}`, { noScroll: true });
+
+        if (usableQueries.size) {
+            const queryParam = mapToQueryParams(usableQueries);
+            goto(`${currentLocation}?query=${queryParam}`, { noScroll: true });
+        } else {
+            goto(currentLocation, { noScroll: true });
+        }
     }
 
     return {
@@ -95,15 +103,27 @@ export function addFilter(
     columnId: string,
     operatorKey: string,
     value: any, // We cast to any to not cause type errors in the input components
-    arrayValues: string[] = []
+    arrayValues: string[] = [],
+    distance?: number
 ) {
     const operator = operatorKey ? operators[operatorKey] : null;
     const column = columns.find((c) => c.id === columnId) as Column;
     if (!column || !operator) return;
+
     if (column.array) {
-        queries.addFilter({ column, operator, value: arrayValues });
+        queries.addFilter({ column, operator, value: arrayValues, distance });
     } else {
-        queries.addFilter({ column, operator, value: value ?? '' });
+        const isSpatialArrayWrappingRequired =
+            isSpatialType(column) &&
+            [
+                ValidOperators.Contains,
+                ValidOperators.Equal,
+                ValidOperators.NotEqual,
+                ValidOperators.NotContains
+            ].includes(operatorKey as ValidOperators);
+        const preparedValue =
+            isSpatialArrayWrappingRequired && value != null ? [value] : (value ?? '');
+        queries.addFilter({ column, operator, value: preparedValue, distance });
     }
 }
 
@@ -118,7 +138,20 @@ export enum ValidOperators {
     NotEqual = 'not equal',
     IsNotNull = 'is not null',
     IsNull = 'is null',
-    Contains = 'contains'
+    Contains = 'contains',
+    NotContains = 'not contains',
+    Crosses = 'crosses',
+    NotCrosses = 'not crosses',
+    DistanceEqual = 'distance equal',
+    DistanceNotEqual = 'distance not equal',
+    DistanceGreaterThan = 'distance greater than',
+    DistanceLessThan = 'distance less than',
+    Intersects = 'intersects',
+    NotIntersects = 'not intersects',
+    Overlaps = 'overlaps',
+    NotOverlaps = 'not overlaps',
+    Touches = 'touches',
+    NotTouches = 'not touches'
 }
 
 export enum ValidTypes {
@@ -128,13 +161,16 @@ export enum ValidTypes {
     Boolean = 'boolean',
     Datetime = 'datetime',
     Relationship = 'relationship',
-    Enum = 'enum'
+    Enum = 'enum',
+    Point = 'point',
+    Line = 'linestring',
+    Polygon = 'polygon'
 }
 
 const operatorsDefault = new Map<
     ValidOperators,
     {
-        query: (attr: string, input: string | number | string[]) => string;
+        query: (col: string, input: string | number | string[], distance?: number) => string;
         types: ColumnType[];
         hideInput?: boolean;
     }
@@ -178,7 +214,10 @@ const operatorsDefault = new Map<
                 ValidTypes.Integer,
                 ValidTypes.Double,
                 ValidTypes.Boolean,
-                ValidTypes.Enum
+                ValidTypes.Enum,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
             ]
         }
     ],
@@ -186,7 +225,15 @@ const operatorsDefault = new Map<
         ValidOperators.NotEqual,
         {
             query: Query.notEqual,
-            types: [ValidTypes.String, ValidTypes.Integer, ValidTypes.Double, ValidTypes.Boolean]
+            types: [
+                ValidTypes.String,
+                ValidTypes.Integer,
+                ValidTypes.Double,
+                ValidTypes.Boolean,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
+            ]
         }
     ],
     [
@@ -199,7 +246,10 @@ const operatorsDefault = new Map<
                 ValidTypes.Double,
                 ValidTypes.Boolean,
                 ValidTypes.Datetime,
-                ValidTypes.Relationship
+                ValidTypes.Relationship,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
             ],
             hideInput: true
         }
@@ -214,7 +264,10 @@ const operatorsDefault = new Map<
                 ValidTypes.Double,
                 ValidTypes.Boolean,
                 ValidTypes.Datetime,
-                ValidTypes.Relationship
+                ValidTypes.Relationship,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
             ],
             hideInput: true
         }
@@ -229,8 +282,102 @@ const operatorsDefault = new Map<
                 ValidTypes.Double,
                 ValidTypes.Boolean,
                 ValidTypes.Datetime,
-                ValidTypes.Enum
+                ValidTypes.Enum,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
             ]
+        }
+    ],
+    [
+        ValidOperators.NotContains,
+        {
+            query: Query.contains,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.Crosses,
+        {
+            query: Query.crosses,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.NotCrosses,
+        {
+            query: Query.notCrosses,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.DistanceEqual,
+        {
+            query: Query.distanceEqual,
+            types: [ValidTypes.Point]
+        }
+    ],
+    [
+        ValidOperators.DistanceNotEqual,
+        {
+            query: Query.distanceNotEqual,
+            types: [ValidTypes.Point]
+        }
+    ],
+    [
+        ValidOperators.DistanceGreaterThan,
+        {
+            query: Query.distanceGreaterThan,
+            types: [ValidTypes.Point]
+        }
+    ],
+    [
+        ValidOperators.DistanceLessThan,
+        {
+            query: Query.distanceLessThan,
+            types: [ValidTypes.Point]
+        }
+    ],
+    [
+        ValidOperators.Intersects,
+        {
+            query: Query.intersects,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.NotIntersects,
+        {
+            query: Query.notIntersects,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.Overlaps,
+        {
+            query: Query.overlaps,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.NotOverlaps,
+        {
+            query: Query.notOverlaps,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.Touches,
+        {
+            query: Query.touches,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.NotTouches,
+        {
+            query: Query.notTouches,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ]
 ]);
@@ -249,8 +396,8 @@ export function generateDefaultOperators() {
     operatorsDefault.forEach((operator, operatorName) => {
         operators[operatorName] = {
             toQuery: operator.query,
-            toTag: (attribute, input = null, type = null) => {
-                return generateTag(attribute, operatorName, input, type);
+            toTag: (column, input = null, type = null) => {
+                return generateTag(column, operatorName, input, type);
             },
             types: operator.types,
             hideInput: operator.hideInput
@@ -259,24 +406,24 @@ export function generateDefaultOperators() {
     return operators;
 }
 
-export function generateTag(attribute: string, operatorName: string, input = null, type = null) {
+export function generateTag(column: string, operatorName: string, input = null, type = null) {
     if (input === null) {
         return {
             value: '',
-            tag: `**${attribute}** ${operatorName}`
+            tag: `**${column}** ${operatorName}`
         };
     } else if (Array.isArray(input) && input.length > 2) {
         return {
             value: input,
-            tag: `**${attribute}** ${operatorName} **${formatArray(input)}** `
+            tag: `**${column}** ${operatorName} **${formatArray(input)}** `
         };
     } else if (type === ValidTypes.Datetime) {
         return {
             value: input,
-            tag: `**${attribute}** ${operatorName} **${toLocaleDateTime(input.toString())}**`
+            tag: `**${column}** ${operatorName} **${toLocaleDateTime(input.toString())}**`
         };
     } else {
-        return { value: input, tag: `**${attribute}** ${operatorName} **${input}**` };
+        return { value: input, tag: `**${column}** ${operatorName} **${input}**` };
     }
 }
 

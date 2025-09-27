@@ -1,41 +1,83 @@
 <script context="module" lang="ts">
+    import { tick } from 'svelte';
+    import { debounce } from '$lib/helpers/debounce';
+
+    const batchQueue = new Set<() => void>();
+    let batchPromise: Promise<void> | null = null;
+
+    async function processBatch() {
+        try {
+            await tick();
+            batchQueue.forEach((fn) => {
+                try {
+                    fn();
+                } catch {
+                    /* empty */
+                }
+            });
+        } finally {
+            // clear queue!
+            batchQueue.clear();
+            batchPromise = null;
+        }
+    }
+
+    function addToBatch(fn: () => void) {
+        batchQueue.add(fn);
+        if (!batchPromise) {
+            batchPromise = processBatch();
+        }
+    }
+
     export function truncateText(node: HTMLElement) {
-        const MAX_TRIES = 100;
         let originalText = node.textContent;
+
         function checkOverflow() {
             node.textContent = originalText;
 
             if (node.scrollWidth > node.clientWidth) {
-                let truncatedText = originalText;
-                let tries = 0;
-                while (
-                    node.scrollWidth > node.clientWidth &&
-                    truncatedText.length > 0 &&
-                    tries < MAX_TRIES
-                ) {
-                    tries++;
-                    if (truncatedText.includes('…')) {
-                        const [left, right] = truncatedText.split('…');
-                        truncatedText = `${left.slice(0, -1)}…${right.slice(1)}`;
+                let left = 0;
+                let right = originalText.length;
+                let bestFit = '…';
+
+                while (left <= right) {
+                    // total chars to keep
+                    const keep = (left + right) >> 1;
+                    const head = Math.ceil(keep / 2);
+                    const tail = keep - head;
+                    const truncated =
+                        keep === originalText.length
+                            ? originalText
+                            : `${originalText.slice(0, head)}…${originalText.slice(-tail)}`;
+
+                    node.textContent = truncated;
+
+                    if (node.scrollWidth <= node.clientWidth) {
+                        bestFit = truncated;
+                        left = keep + 1;
                     } else {
-                        const left = truncatedText.slice(0, truncatedText.length / 2);
-                        const right = truncatedText.slice(truncatedText.length / 2);
-                        truncatedText = `${left.slice(0, -1)}…${right.slice(1)}`;
+                        right = keep - 1;
                     }
-                    node.textContent = truncatedText;
                 }
+
+                node.textContent = bestFit;
             }
         }
-        requestAnimationFrame(checkOverflow);
-        window.addEventListener('resize', checkOverflow);
+
+        const debouncedCheck = debounce(checkOverflow, 16);
+
+        addToBatch(checkOverflow);
+        window.addEventListener('resize', debouncedCheck);
 
         return {
             update() {
                 originalText = node.textContent;
-                checkOverflow();
+                addToBatch(checkOverflow);
             },
             destroy() {
-                window.removeEventListener('resize', checkOverflow);
+                batchQueue.delete(checkOverflow);
+                window.removeEventListener('resize', debouncedCheck);
+                debouncedCheck.cancel();
             }
         };
     }
@@ -45,13 +87,18 @@
     import { Icon, Tag } from '@appwrite.io/pink-svelte';
     import { Copy } from '.';
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
+    import type { TooltipPlacement } from '$lib/components/copy.svelte';
 
     export let value: string;
     export let event: string = null;
+
+    export let tooltipPortal = false;
+    export let tooltipDelay: number = 0;
+    export let tooltipPlacement: TooltipPlacement = undefined;
 </script>
 
 {#key value}
-    <Copy {value} {event}>
+    <Copy {value} {event} {tooltipPortal} {tooltipDelay} {tooltipPlacement}>
         <Tag size="xs" variant="code">
             <Icon icon={IconDuplicate} size="s" slot="start" />
             <span

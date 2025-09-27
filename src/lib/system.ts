@@ -10,7 +10,9 @@ export const VARS = {
     CONSOLE_MODE: (env.PUBLIC_CONSOLE_MODE as Mode) ?? undefined,
     APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT ?? undefined,
     GROWTH_ENDPOINT: env.PUBLIC_GROWTH_ENDPOINT ?? undefined,
-    PUBLIC_STRIPE_KEY: env.PUBLIC_STRIPE_KEY ?? undefined
+    PUBLIC_STRIPE_KEY: env.PUBLIC_STRIPE_KEY ?? undefined,
+    EMAIL_VERIFICATION: env.PUBLIC_CONSOLE_EMAIL_VERIFICATION === 'true',
+    MOCK_AI_SUGGESTIONS: (env.PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS ?? 'true') === 'true'
 };
 
 export const ENV = {
@@ -33,6 +35,15 @@ export const APPWRITE_OFFICIALS_ORG = 'appwriteOfficials';
 export function isMultiRegionSupported(url: URL): boolean {
     if (env.PUBLIC_APPWRITE_MULTI_REGION === 'true') return true;
 
+    try {
+        return url.hostname === 'cloud.appwrite.io';
+    } catch {
+        return false;
+    }
+}
+
+// there can be multiple internal cloud instances.
+export function isProductionCloud(url: URL): boolean {
     try {
         return url.hostname === 'cloud.appwrite.io';
     } catch {

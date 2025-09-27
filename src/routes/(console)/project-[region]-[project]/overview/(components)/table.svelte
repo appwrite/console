@@ -11,6 +11,7 @@
     import { Badge, FloatingActionBar, Layout, Table } from '@appwrite.io/pink-svelte';
     import DeleteBatch from './deleteBatch.svelte';
     import { capitalize } from '$lib/helpers/string';
+    import { getEffectiveScopes } from '../api-keys/scopes.svelte';
 
     export let keyType: 'api' | 'dev' = 'api';
     export let keys: Models.KeyList | Models.DevKeyList;
@@ -22,8 +23,9 @@
     const label = isApiKey ? 'API' : 'dev';
     const slug = isApiKey ? 'api-keys' : 'dev-keys';
 
-    function asApiKey(key: Models.Key | Models.DevKey) {
-        return key as Models.Key;
+    function getApiKeyScopeCount(key: Models.Key | Models.DevKey) {
+        const apiKey = key as Models.Key;
+        return getEffectiveScopes(apiKey.scopes).length;
     }
 
     function getExpiryDetails(key: Models.Key | Models.DevKey): {
@@ -85,7 +87,7 @@
                 </Table.Cell>
                 {#if isApiKey}
                     <Table.Cell {root}>
-                        {asApiKey(key).scopes.length} Scopes
+                        {getApiKeyScopeCount(key)} Scopes
                     </Table.Cell>
                 {/if}
             </Table.Row.Link>

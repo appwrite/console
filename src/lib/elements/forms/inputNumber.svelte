@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
+    import type { ComponentType } from 'svelte';
 
     export let label: string = null;
     export let id: string;
@@ -15,21 +16,9 @@
     export let max: number = null;
     export let step: number | 'any' = 1;
     export let helper: string = undefined;
+    export let leadingIcon: ComponentType | undefined = undefined;
 
     let error: string;
-
-    function coerceToNumber(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
-        const raw = event.currentTarget?.value ?? '';
-        if (raw === '') {
-            value = nullable ? null : (undefined as unknown as number);
-            return;
-        }
-
-        const parsed = Number(raw);
-        if (Number.isFinite(parsed)) {
-            value = parsed;
-        }
-    }
 
     const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
         event.preventDefault();
@@ -69,13 +58,12 @@
     {label}
     {step}
     {nullable}
+    {leadingIcon}
     bind:value
     autofocus={autofocus || undefined}
     helper={error || helper}
     state={error ? 'error' : 'default'}
-    on:invalid={handleInvalid}
-    on:input={coerceToNumber}
-    on:change={coerceToNumber}>
+    on:invalid={handleInvalid}>
     <svelte:fragment slot="info">
         <slot name="info" slot="info" />
     </svelte:fragment>

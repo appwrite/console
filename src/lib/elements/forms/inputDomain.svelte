@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
+    import type { ComponentType } from 'svelte';
 
     export let label: string = null;
     export let id: string;
@@ -13,6 +14,7 @@
     export let autofocus = false;
     export let autocomplete = false;
     export let maxlength: number | undefined = undefined;
+    export let leadingIcon: ComponentType | undefined = undefined;
 
     // https://www.geeksforgeeks.org/how-to-validate-a-domain-name-using-regular-expression/
     const pattern = String.raw`(?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}`;
@@ -50,6 +52,7 @@
     {nullable}
     {pattern}
     {maxlength}
+    {leadingIcon}
     on:input
     on:invalid={handleInvalid}
     type="text"

@@ -29,7 +29,9 @@
     async function retryDomain() {
         try {
             error = null;
-            const domain = await sdk.forConsole.domains.updateNameservers(selectedDomain.$id);
+            const domain = await sdk.forConsole.domains.updateNameservers({
+                domainId: selectedDomain.$id
+            });
             if (domain.nameservers.toLowerCase() === 'appwrite') {
                 show = false;
                 addNotification({
@@ -62,8 +64,8 @@
                 >{selectedDomain.domain}</Typography.Text>
         </Layout.Stack>
         <Typography.Text variant="m-400">
-            Add the following nameservers on your DNS provider. Note that DNS changes may take time
-            to propagate fully.
+            Add the following nameservers on your DNS provider. Note that changes may take up to 48
+            hours to propagate fully.
         </Typography.Text>
     </Layout.Stack>
 

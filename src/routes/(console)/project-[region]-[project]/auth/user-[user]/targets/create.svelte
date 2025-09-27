@@ -29,16 +29,14 @@
 
     const create = async () => {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .users.createTarget(
-                    page.params.user,
-                    id ? id : ID.unique(),
-                    providerType,
-                    identifier,
-                    providerId ?? undefined,
-                    name ?? undefined
-                );
+            await sdk.forProject(page.params.region, page.params.project).users.createTarget({
+                userId: page.params.user,
+                targetId: id ? id : ID.unique(),
+                providerType,
+                identifier,
+                providerId: providerId ?? undefined,
+                name: name ?? undefined
+            });
             show = false;
             addNotification({
                 type: 'success',

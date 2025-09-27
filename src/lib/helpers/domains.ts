@@ -1,191 +1,194 @@
 import { sdk } from '$lib/stores/sdk';
 import type { Models } from '@appwrite.io/console';
+import { Query } from '@appwrite.io/console';
+import { getApexDomain } from './tlds';
+import { isCloud } from '$lib/system';
 
 export async function createRecord(record: Partial<Models.DnsRecord>, domainId: string) {
     switch (record.type) {
         case 'A':
-            return await sdk.forConsole.domains.createRecordA(
+            return await sdk.forConsole.domains.createRecordA({
                 domainId,
-                record.name,
-                record.value,
-                record.ttl,
-                record?.comment || undefined
-            );
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record?.comment || undefined
+            });
         case 'AAAA':
-            return await sdk.forConsole.domains.createRecordAAAA(
+            return await sdk.forConsole.domains.createRecordAAAA({
                 domainId,
-                record.name,
-                record.value,
-                record.ttl,
-                record?.comment || undefined
-            );
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record?.comment || undefined
+            });
         case 'CNAME':
-            return await sdk.forConsole.domains.createRecordCNAME(
+            return await sdk.forConsole.domains.createRecordCNAME({
                 domainId,
-                record.name,
-                record.value,
-                record.ttl,
-                record?.comment || undefined
-            );
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record?.comment || undefined
+            });
         case 'MX':
-            return await sdk.forConsole.domains.createRecordMX(
+            return await sdk.forConsole.domains.createRecordMX({
                 domainId,
-                record.name,
-                record.value,
-                record.ttl,
-                record.priority || 10,
-                record?.comment || undefined
-            );
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                priority: record.priority || 10,
+                comment: record?.comment || undefined
+            });
         case 'TXT':
-            return await sdk.forConsole.domains.createRecordTXT(
+            return await sdk.forConsole.domains.createRecordTXT({
                 domainId,
-                record.name,
-                record.ttl,
-                record.value,
-                record?.comment || undefined
-            );
+                name: record.name!,
+                ttl: record.ttl!,
+                value: record.value!,
+                comment: record?.comment || undefined
+            });
         case 'NS':
-            return await sdk.forConsole.domains.createRecordNS(
+            return await sdk.forConsole.domains.createRecordNS({
                 domainId,
-                record.name,
-                record.value,
-                record.ttl,
-                record?.comment || undefined
-            );
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record?.comment || undefined
+            });
         case 'SRV':
-            return await sdk.forConsole.domains.createRecordSRV(
+            return await sdk.forConsole.domains.createRecordSRV({
                 domainId,
-                record.name,
-                record.value,
-                record.ttl,
-                record.priority,
-                record.weight,
-                record.port,
-                record?.comment || undefined
-            );
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                priority: record.priority!,
+                weight: record.weight!,
+                port: record.port!,
+                comment: record?.comment || undefined
+            });
         case 'CAA':
-            return await sdk.forConsole.domains.createRecordCAA(
+            return await sdk.forConsole.domains.createRecordCAA({
                 domainId,
-                record.name,
-                record.value,
-                record.ttl,
-                record?.comment || undefined
-            );
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record?.comment || undefined
+            });
         case 'HTTPS':
-            return await sdk.forConsole.domains.createRecordHTTPS(
+            return await sdk.forConsole.domains.createRecordHTTPS({
                 domainId,
-                record.name,
-                record.value,
-                record.ttl,
-                record?.comment || undefined
-            );
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record?.comment || undefined
+            });
         case 'ALIAS':
-            return await sdk.forConsole.domains.createRecordAlias(
+            return await sdk.forConsole.domains.createRecordAlias({
                 domainId,
-                record.name,
-                record.value,
-                record.ttl,
-                record?.comment || undefined
-            );
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record?.comment || undefined
+            });
     }
 }
 
 export async function updateRecord(record: Partial<Models.DnsRecord>, domainId: string) {
     switch (record.type) {
         case 'A':
-            return await sdk.forConsole.domains.updateRecordA(
+            return await sdk.forConsole.domains.updateRecordA({
                 domainId,
-                record.$id,
-                record.name,
-                record.value,
-                record.ttl,
-                record.comment
-            );
+                recordId: record.$id!,
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record.comment || undefined
+            });
         case 'AAAA':
-            return await sdk.forConsole.domains.updateRecordAAAA(
+            return await sdk.forConsole.domains.updateRecordAAAA({
                 domainId,
-                record.$id,
-                record.name,
-                record.value,
-                record.ttl,
-                record.comment
-            );
+                recordId: record.$id!,
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record.comment || undefined
+            });
         case 'CNAME':
-            return await sdk.forConsole.domains.updateRecordCNAME(
+            return await sdk.forConsole.domains.updateRecordCNAME({
                 domainId,
-                record.$id,
-                record.name,
-                record.value,
-                record.ttl,
-                record.comment
-            );
+                recordId: record.$id!,
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record.comment || undefined
+            });
         case 'MX':
-            return await sdk.forConsole.domains.updateRecordMX(
+            return await sdk.forConsole.domains.updateRecordMX({
                 domainId,
-                record.$id,
-                record.name,
-                record.value,
-                record.ttl,
-                record.priority,
-                record.comment
-            );
+                recordId: record.$id!,
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                priority: record.priority!,
+                comment: record.comment || undefined
+            });
         case 'TXT':
-            return await sdk.forConsole.domains.updateRecordTXT(
+            return await sdk.forConsole.domains.updateRecordTXT({
                 domainId,
-                record.$id,
-                record.name,
-                record.value,
-                record.ttl,
-                record.comment
-            );
+                recordId: record.$id!,
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record.comment || undefined
+            });
         case 'NS':
-            return await sdk.forConsole.domains.updateRecordNS(
+            return await sdk.forConsole.domains.updateRecordNS({
                 domainId,
-                record.$id,
-                record.name,
-                record.value,
-                record.ttl,
-                record.comment
-            );
+                recordId: record.$id!,
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record.comment || undefined
+            });
         case 'SRV':
-            return await sdk.forConsole.domains.updateRecordSRV(
+            return await sdk.forConsole.domains.updateRecordSRV({
                 domainId,
-                record.$id,
-                record.name,
-                record.value,
-                record.ttl,
-                record.priority,
-                record.weight,
-                record.port,
-                record?.comment || undefined
-            );
+                recordId: record.$id!,
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                priority: record.priority!,
+                weight: record.weight!,
+                port: record.port!,
+                comment: record.comment || undefined
+            });
         case 'CAA':
-            return await sdk.forConsole.domains.updateRecordCAA(
+            return await sdk.forConsole.domains.updateRecordCAA({
                 domainId,
-                record.$id,
-                record.name,
-                record.value,
-                record.ttl,
-                record.comment
-            );
+                recordId: record.$id!,
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record.comment || undefined
+            });
         case 'HTTPS':
-            return await sdk.forConsole.domains.updateRecordHTTPS(
+            return await sdk.forConsole.domains.updateRecordHTTPS({
                 domainId,
-                record.$id,
-                record.name,
-                record.value,
-                record.ttl,
-                record.comment
-            );
+                recordId: record.$id!,
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record.comment || undefined
+            });
         case 'ALIAS':
-            return await sdk.forConsole.domains.updateRecordAlias(
+            return await sdk.forConsole.domains.updateRecordAlias({
                 domainId,
-                record.$id,
-                record.name,
-                record.value,
-                record.ttl,
-                record.comment
-            );
+                recordId: record.$id!,
+                name: record.name!,
+                value: record.value!,
+                ttl: record.ttl!,
+                comment: record.comment || undefined
+            });
     }
 }
 
@@ -203,3 +206,28 @@ export type ParsedRecords = {
     ALIAS: Partial<Models.DnsRecord>[];
     [key: string]: Partial<Models.DnsRecord>[];
 };
+
+export async function fetchOrganizationDomainsForRules(
+    proxyRules: Models.ProxyRuleList,
+    organizationId: string
+): Promise<Models.DomainsList | null> {
+    if (!isCloud || proxyRules.total === 0) {
+        return null;
+    }
+
+    const uniqueApexDomains = [
+        ...new Set(
+            proxyRules.rules
+                .map((rule) => getApexDomain(rule.domain))
+                .filter((apexDomain) => apexDomain !== null)
+        )
+    ];
+
+    if (uniqueApexDomains.length === 0) {
+        return null;
+    }
+
+    return await sdk.forConsole.domains.list({
+        queries: [Query.equal('teamId', organizationId), Query.equal('domain', uniqueApexDomains)]
+    });
+}

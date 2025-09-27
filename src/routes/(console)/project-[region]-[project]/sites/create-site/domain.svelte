@@ -7,12 +7,18 @@
     import { Fieldset, Layout, Status, Typography } from '@appwrite.io/pink-svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
-    export let domain: string;
-    export let domainIsValid = true;
-    const originalDomain = domain;
-    let newDomain = domain;
+    let {
+        domain = $bindable(),
+        domainIsValid = $bindable(true)
+    }: {
+        domain: string;
+        domainIsValid?: boolean;
+    } = $props();
 
-    let domainStatus: 'complete' | 'failed' | 'pending' = 'complete';
+    const originalDomain = domain;
+
+    let newDomain = $state(domain);
+    let domainStatus: 'complete' | 'failed' | 'pending' = $state(domain ? 'pending' : 'complete');
 
     function setDomainLabel(status: typeof domainStatus) {
         switch (status) {
@@ -28,13 +34,15 @@
     const checkDomain = debounce(async (value: string) => {
         if (!value) {
             domainStatus = 'failed';
+            domainIsValid = false;
+            domain = newDomain;
             return;
         }
         try {
-            await sdk.forConsole.console.getResource(
-                `${value}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
-                ConsoleResourceType.Rules
-            );
+            await sdk.forConsole.console.getResource({
+                value: `${value}.${$regionalConsoleVariables._APP_DOMAIN_SITES}`,
+                type: ConsoleResourceType.Rules
+            });
             domainStatus = 'complete';
             domainIsValid = true;
         } catch {
@@ -45,10 +53,16 @@
         }
     }, 500);
 
-    $: if (domain !== newDomain) {
-        domainStatus = 'pending';
-        checkDomain(newDomain);
-    }
+    $effect(() => {
+        domainIsValid; /* silences lint for unused var */
+
+        if (newDomain) {
+            if (domain !== newDomain) {
+                domainStatus = 'pending';
+            }
+            checkDomain(newDomain);
+        }
+    });
 </script>
 
 <Fieldset legend="Domains">
@@ -66,6 +80,8 @@
                 disabled={originalDomain === newDomain}
                 on:click={() => (newDomain = originalDomain)}>Reset</Button>
         </Layout.Stack>
-        <Status status={domainStatus} label={setDomainLabel(domainStatus)}></Status>
+        {#if newDomain}
+            <Status status={domainStatus} label={setDomainLabel(domainStatus)}></Status>
+        {/if}
     </Layout.Stack>
 </Fieldset>

@@ -49,10 +49,56 @@
             filter: false,
             width: { min: 140 }
         },
-        { id: 'providerType', title: 'Type', type: 'string', width: { min: 100 } },
-        { id: 'status', title: 'Status', type: 'string', width: { min: 120 } },
-        { id: 'scheduledAt', title: 'Scheduled at', type: 'datetime', width: { min: 120 } },
-        { id: 'deliveredAt', title: 'Delivered at', type: 'datetime', width: { min: 120 } }
+        {
+            id: 'providerType',
+            title: 'Type',
+            type: 'string',
+            width: { min: 100 },
+            array: true,
+            format: 'enum',
+            elements: [
+                { value: 'email', label: 'Email' },
+                { value: 'sms', label: 'SMS' },
+                { value: 'push', label: 'Push' }
+            ]
+        },
+        {
+            id: 'status',
+            title: 'Status',
+            type: 'enum',
+            width: { min: 120 },
+            array: true,
+            format: 'enum',
+            elements: ['draft', 'scheduled', 'processing', 'sent', 'failed']
+        },
+        {
+            id: 'scheduledAt',
+            title: 'Scheduled at',
+            type: 'datetime',
+            width: { min: 120 },
+            format: 'datetime',
+            elements: [
+                { value: 5 * 60 * 1000, label: 'last 5 minutes' },
+                { value: 60 * 60 * 1000, label: 'last 1 hour' },
+                { value: 24 * 60 * 60 * 1000, label: 'last 24 hours' },
+                { value: 7 * 24 * 60 * 60 * 1000, label: 'last 7 days' },
+                { value: 30 * 24 * 60 * 60 * 1000, label: 'last 30 days' }
+            ]
+        },
+        {
+            id: 'deliveredAt',
+            title: 'Delivered at',
+            type: 'datetime',
+            width: { min: 120 },
+            format: 'datetime',
+            elements: [
+                { value: 5 * 60 * 1000, label: 'last 5 minutes' },
+                { value: 60 * 60 * 1000, label: 'last 1 hour' },
+                { value: 24 * 60 * 60 * 1000, label: 'last 24 hours' },
+                { value: 7 * 24 * 60 * 60 * 1000, label: 'last 7 days' },
+                { value: 30 * 24 * 60 * 60 * 1000, label: 'last 30 days' }
+            ]
+        }
     ]);
 
     const region = page.params.region;
@@ -61,7 +107,9 @@
     async function handleDelete() {
         showDelete = false;
 
-        const promises = selected.map((id) => sdk.forProject(region, project).messaging.delete(id));
+        const promises = selected.map((id) =>
+            sdk.forProject(region, project).messaging.delete({ messageId: id })
+        );
 
         try {
             await Promise.all(promises);

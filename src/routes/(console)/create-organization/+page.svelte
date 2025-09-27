@@ -143,7 +143,7 @@
                         '',
                         clientSecret,
                         paymentMethodId,
-                        `/console/create-organization?${params}`
+                        `${base}/create-organization?${params}`
                     );
                     await validate(org.teamId, collaborators);
                 }
@@ -201,10 +201,7 @@
                         >.
                     </Typography.Text>
 
-                    <PlanSelection
-                        bind:billingPlan={selectedPlan}
-                        anyOrgFree={data.hasFreeOrganizations}
-                        isNewOrg />
+                    <PlanSelection bind:billingPlan={selectedPlan} isNewOrg />
                 </Layout.Stack>
             </Fieldset>
             {#if selectedPlan !== BillingPlan.FREE}

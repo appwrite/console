@@ -3,7 +3,7 @@
     import { onDestroy } from 'svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { ID, type Models, Region as ConsoleRegion, Region } from '@appwrite.io/console';
+    import { ID, type Models, Region } from '@appwrite.io/console';
     import { base } from '$app/paths';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { Modal } from '$lib/components';
@@ -12,14 +12,16 @@
     import { Dependencies } from '$lib/constants';
 
     export let teamId: string;
-    export let showCreateProjectCloud: boolean;
     export let projects: number;
+    export let showCreateProjectCloud: boolean;
     export let regions: Array<Models.ConsoleRegion> = [];
 
-    let id: string = null;
     let error: string = null;
-    let name: string = 'New project';
-    let region: ConsoleRegion = Region.Fra;
+    let projectId = ID.unique();
+    let projectRegion = Region.Fra;
+    let projectName = 'New project';
+
+    let projectIdForLog = projectId;
 
     let showSubmissionLoader = false;
 
@@ -29,10 +31,19 @@
         showSubmissionLoader = true;
 
         try {
-            project = await sdk.forConsole.projects.create(id ?? ID.unique(), name, teamId, region);
+            project = await sdk.forConsole.projects.create({
+                projectId: projectId ?? ID.unique(),
+                name: projectName,
+                teamId,
+                region: projectRegion
+            });
 
             await goto(`${base}/project-${project.region}-${project.$id}`);
-            trackEvent(Submit.ProjectCreate, { customId: !!id, teamId, region: region });
+            trackEvent(Submit.ProjectCreate, {
+                teamId,
+                region: projectRegion,
+                customId: projectId !== projectIdForLog
+            });
         } catch (e) {
             error = e.message;
             trackError(e, Submit.ProjectCreate);
@@ -47,11 +58,13 @@
     }
 
     onDestroy(() => {
-        id = null;
-        name = null;
         error = null;
-        region = Region.Fra;
+        projectId = ID.unique();
+        projectName = 'New project';
+        projectRegion = Region.Fra;
         showCreateProjectCloud = false;
+
+        projectIdForLog = projectId;
     });
 </script>
 
@@ -62,12 +75,12 @@
     onSubmit={create}
     bind:error>
     <CreateProject
+        {regions}
         {projects}
         showTitle={false}
-        bind:id
-        bind:projectName={name}
-        bind:region
-        {regions} />
+        bind:projectName
+        bind:id={projectId}
+        bind:region={projectRegion} />
     <svelte:fragment slot="footer">
         <Button
             submit

@@ -21,9 +21,6 @@
     let totalResults = 0;
     let userResultsById: Record<string, Models.User<Record<string, unknown>>> = {}; // use a hash map so we can quickly look up a user by id
     let selected: Record<string, Models.Target> = {};
-    let selectedSize = 0;
-    let selectedUsers = 0;
-    let hasSelection = false;
 
     function reset() {
         offset = 0;
@@ -38,6 +35,7 @@
 
     async function request() {
         if (!show) return;
+
         const queries = [Query.limit(5), Query.offset(offset)];
 
         if (providerType === MessagingProviderType.Email) {
@@ -46,49 +44,49 @@
             queries.push(Query.notEqual('phone', ''));
         }
 
-        const response = await sdk
-            .forProject(page.params.region, page.params.project)
-            .users.list(queries, search || undefined);
+        const response = await sdk.forProject(page.params.region, page.params.project).users.list({
+            queries,
+            search: search || undefined
+        });
 
         totalResults = response.total;
-        userResultsById = {};
-        response.users.forEach((user) => {
-            if (providerType !== null) {
-                user.targets = user.targets.filter(
-                    (target) => target.providerType === providerType
-                );
-            }
-            userResultsById = {
-                ...userResultsById,
-                [user.$id]: user
-            };
-        });
+
+        userResultsById = Object.fromEntries(
+            response.users.map((user) => {
+                const filteredUser =
+                    providerType !== null
+                        ? {
+                              ...user,
+                              targets: user.targets.filter(
+                                  (target) => target.providerType === providerType
+                              )
+                          }
+                        : user;
+                return [user.$id, filteredUser];
+            })
+        );
     }
 
-    function onUserSelection(event: CustomEvent<boolean>, userId: string) {
+    function onUserSelection(event: CustomEvent<boolean | 'indeterminate'>, userId: string) {
         const user = userResultsById[userId];
+        const shouldSelect = event.detail === 'indeterminate' || event.detail === true;
 
-        if (event.detail) {
-            user.targets.forEach((target) => {
-                selected = {
-                    ...selected,
-                    [target.$id]: target
-                };
-            });
-        } else {
-            user.targets.forEach((target) => {
-                const { [target.$id]: _, ...rest } = selected;
-                selected = rest;
-            });
-        }
+        const updatedSelected = { ...selected };
+
+        user.targets.forEach((target) => {
+            if (shouldSelect) {
+                updatedSelected[target.$id] = target;
+            } else {
+                delete updatedSelected[target.$id];
+            }
+        });
+
+        selected = updatedSelected;
     }
 
     function onTargetSelection(event: CustomEvent<boolean>, target: Models.Target) {
         if (event.detail) {
-            selected = {
-                ...selected,
-                [target.$id]: target
-            };
+            selected = { ...selected, [target.$id]: target };
         } else {
             const { [target.$id]: _, ...rest } = selected;
             selected = rest;
@@ -106,18 +104,34 @@
         request();
     }
 
-    $: {
-        selectedSize = 0;
-        const users = new Set();
-        for (const s in selected) {
-            const target = selected[s];
-            users.add(target.userId);
-            selectedSize++;
-        }
-        selectedUsers = users.size;
-    }
-
+    $: selectedTargets = Object.values(selected);
+    $: selectedSize = selectedTargets.length;
+    $: selectedUsers = new Set(selectedTargets.map((target) => target.userId)).size;
     $: hasSelection = selectedSize > 0;
+
+    $: parentStates = Object.fromEntries(
+        Object.entries(userResultsById).map(([userId, user]) => {
+            const selectedCount = user.targets.filter((target) => selected[target.$id]).length;
+            const totalCount = user.targets.length;
+
+            let state: boolean | 'indeterminate';
+            if (selectedCount === 0) {
+                state = false;
+            } else if (selectedCount === totalCount) {
+                state = true;
+            } else {
+                state = 'indeterminate';
+            }
+
+            return [userId, state];
+        })
+    );
+
+    $: targetSelectionStates = Object.fromEntries(
+        Object.values(userResultsById)
+            .flatMap((user) => user.targets)
+            .map((target) => [target.$id, !!selected[target.$id]])
+    );
 
     $: if (show) {
         selected = targetsById;
@@ -139,25 +153,19 @@
                 ).length}
                 <Accordion
                     selectable
-                    title={user.name
-                        ? user.name
-                        : user.email
-                          ? user.email
-                          : user.phone
-                            ? user.phone
-                            : userId}
+                    title={user.name || user.email || user.phone || userId}
                     badge={user.targets.length === 0
                         ? '0 targets'
                         : `${selectedCount}/${user.targets.length} targets`}
                     disabled={!user.targets.length}
-                    checked={selectedCount > 0 && selectedCount === user.targets.length}
+                    checked={parentStates[userId]}
                     on:change={(event) => onUserSelection(event, userId)}>
                     {#each user.targets as target}
                         <Layout.Stack direction="row">
                             <Selector.Checkbox
                                 id={target.$id}
                                 size="s"
-                                checked={!!selected[target.$id]}
+                                checked={targetSelectionStates[target.$id] || false}
                                 on:change={(event) => onTargetSelection(event, target)}>
                             </Selector.Checkbox>
                             <div class="u-inline-flex u-gap-8">

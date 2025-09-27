@@ -11,17 +11,18 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
     const { site } = await parent();
 
     const [deployment, proxyRuleList] = await Promise.all([
-        sdk
-            .forProject(params.region, params.project)
-            .sites.getDeployment(params.site, params.deployment),
-        sdk
-            .forProject(params.region, params.project)
-            .proxy.listRules([
+        sdk.forProject(params.region, params.project).sites.getDeployment({
+            siteId: params.site,
+            deploymentId: params.deployment
+        }),
+        sdk.forProject(params.region, params.project).proxy.listRules({
+            queries: [
                 Query.equal('type', RuleType.DEPLOYMENT),
                 Query.equal('deploymentId', params.deployment),
                 Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
                 Query.equal('deploymentResourceId', params.site)
-            ])
+            ]
+        })
     ]);
 
     return {

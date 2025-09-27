@@ -28,12 +28,12 @@
 
     async function create() {
         try {
-            const { $id } = await sdk.forConsole.projects.createKey(
+            const { $id } = await sdk.forConsole.projects.createKey({
                 projectId,
                 name,
                 scopes,
-                expire || undefined
-            );
+                expire: expire || undefined
+            });
 
             if ($onboarding) {
                 await invalidate(Dependencies.PROJECT);

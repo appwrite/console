@@ -21,17 +21,30 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         query,
         installations: data.installations,
         activeDeployment: data.function.deploymentId
-            ? await sdk
-                  .forProject(params.region, params.project)
-                  .functions.getDeployment(params.function, data.function.deploymentId)
+            ? await sdk.forProject(params.region, params.project).functions.getDeployment({
+                  functionId: params.function,
+                  deploymentId: data.function.deploymentId
+              })
             : null,
         deploymentList: await sdk
             .forProject(params.region, params.project)
-            .functions.listDeployments(params.function, [
-                Query.limit(limit),
-                Query.offset(offset),
-                Query.orderDesc(''),
-                ...parsedQueries.values()
-            ])
+            .functions.listDeployments({
+                functionId: params.function,
+                queries: [
+                    Query.limit(limit),
+                    Query.offset(offset),
+                    Query.orderDesc(''),
+                    Query.select([
+                        'buildSize',
+                        'sourceSize',
+                        'totalSize',
+                        'buildDuration',
+                        'status',
+                        'type',
+                        'resourceId'
+                    ]),
+                    ...parsedQueries.values()
+                ]
+            })
     };
 };

@@ -27,7 +27,10 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .sites.updateSiteDeployment(selectedDeployment.resourceId, selectedDeployment.$id);
+                .sites.updateSiteDeployment({
+                    siteId: selectedDeployment.resourceId,
+                    deploymentId: selectedDeployment.$id
+                });
             await invalidate(Dependencies.SITE);
             show = false;
             addNotification({

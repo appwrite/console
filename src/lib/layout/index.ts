@@ -1,6 +1,7 @@
 export { default as Container } from './container.svelte';
 export { default as Cover } from './cover.svelte';
 export { default as CoverTitle } from './coverTitle.svelte';
+export { default as AnimatedTitle } from './animatedTitle.svelte';
 export { default as Footer } from './footer.svelte';
 export { default as Navigation } from './navigation.svelte';
 export { default as Notifications } from './notifications.svelte';

@@ -59,7 +59,11 @@
         const promises = targetIds.map(async (targetId) => {
             const subscriber = await sdk
                 .forProject(page.params.region, page.params.project)
-                .messaging.createSubscriber(page.params.topic, ID.unique(), targetId);
+                .messaging.createSubscriber({
+                    topicId: page.params.topic,
+                    subscriberId: ID.unique(),
+                    targetId
+                });
             subscribersByTargetId[targetId] = subscriber;
         });
 
@@ -88,7 +92,7 @@
         <SearchQuery placeholder="Search by type or IDs"></SearchQuery>
         <Layout.Stack direction="row" inline>
             <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
-            <ViewSelector view={View.Table} {columns} hideView />
+            <ViewSelector ui="new" view={View.Table} {columns} hideView />
             <Button
                 on:click={() => {
                     showAdd = true;

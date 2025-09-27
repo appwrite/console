@@ -10,13 +10,16 @@
     export let height = 16;
 
     $: ccImage = isValueOfStringEnum(CreditCard, brand)
-        ? sdk.forConsole.avatars.getCreditCard(brand, width, height)
+        ? sdk.forConsole.avatars.getCreditCard({
+              code: brand,
+              width,
+              height
+          })
         : '';
 </script>
 
 {#if ccImage}
     <img alt={brand} src={ccImage} {width} {height} style:border-radius="2.5px" />
 {:else}
-    <!-- fallback: unionpay image not in Avatars API -->
     <Icon icon={IconCreditCard} color="--fgcolor-neutral-tertiary" />
 {/if}
