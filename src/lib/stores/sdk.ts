@@ -99,8 +99,8 @@ const clientProject = new Client();
 const clientRealtime = new Client();
 
 if (!building) {
+    scopedConsoleClient.setProject('console');
     clientConsole.setEndpoint(endpoint).setProject('console');
-    scopedConsoleClient.setMode(endpoint).setProject('console');
 
     clientRealtime.setEndpoint(endpoint).setProject('console');
     clientProject.setEndpoint(endpoint).setMode('admin');
