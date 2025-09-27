@@ -53,11 +53,11 @@
     let showOverview = $state(false);
 
     let columns = $state([
-        { id: 'key' },
-        { id: 'type' },
-        { id: 'columns' },
+        { id: 'key', width: { min: $isSmallViewport ? 250 : 200 }, resizable: false },
+        { id: 'type', width: 120, resizable: false },
+        { id: 'columns', width: { min: 200, resizable: false } },
         // { id: 'orders' }, // design doesn't have orders atm
-        { id: 'lengths' },
+        { id: 'lengths', width: { min: 180, resizable: false } },
         { id: 'actions', width: 40, isAction: true }
     ]);
 
