@@ -25,16 +25,25 @@
     import { IconTag } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
 
-    export let currentPlan: Plan;
-    export let nextPlan: Plan | null = null;
-    export let availableCredit: number | undefined = undefined;
-    export let currentAggregation: AggregationTeam | undefined = undefined;
-    export let limit: number | undefined = undefined;
-    export let offset: number | undefined = undefined;
-    // key to force refresh on page change
-    export let aggregationKey: string | undefined = undefined;
+    let {
+        currentPlan,
+        nextPlan = null,
+        availableCredit = undefined,
+        currentAggregation = undefined,
+        limit = undefined,
+        offset = undefined,
+        aggregationKey = undefined
+    }: {
+        currentPlan: Plan;
+        nextPlan?: Plan | null;
+        availableCredit?: number | undefined;
+        currentAggregation?: AggregationTeam | undefined;
+        limit?: number | undefined;
+        offset?: number | undefined;
+        aggregationKey?: string | undefined;
+    } = $props();
 
-    let showCancel: boolean = false;
+    let showCancel = $state(false);
 
     // define columns for the accordion table
     const columns = [
@@ -150,16 +159,16 @@
         );
     }
 
-    let projectsLimit: number = 5;
-    let projectsOffset: number = 0;
-    $: projectsLimit = limit ?? (Number(page.url.searchParams.get('limit')) || 5);
-    $: projectsOffset =
-        offset ?? ((Number(page.url.searchParams.get('page')) || 1) - 1) * projectsLimit;
-    $: totalProjects =
+    const projectsLimit = $derived(limit ?? (Number(page.url.searchParams.get('limit')) || 5));
+    const projectsOffset = $derived(
+        offset ?? ((Number(page.url.searchParams.get('page')) || 1) - 1) * projectsLimit
+    );
+    const totalProjects = $derived(
         (currentAggregation?.resources?.find?.((r) => r.resourceId === 'projects')?.value ??
             null) ||
-        currentAggregation?.breakdown?.length ||
-        0;
+            currentAggregation?.breakdown?.length ||
+            0
+    );
 
     function getBillingData(currentPlan, currentAggregation, isSmallViewport) {
         const projectsList = getProjectsList(currentAggregation);
@@ -333,14 +342,13 @@
         return [base, ...addons, ...projects, ...noProjects];
     }
 
-    $: billingData = getBillingData(currentPlan, currentAggregation, $isSmallViewport);
+    const billingData = $derived(getBillingData(currentPlan, currentAggregation, $isSmallViewport));
 
-    $: totalAmount = Math.max(currentAggregation?.amount - creditsApplied, 0);
-
-    $: creditsApplied = Math.min(
-        currentAggregation?.amount ?? currentPlan?.price ?? 0,
-        availableCredit
+    const creditsApplied = $derived(
+        Math.min(currentAggregation?.amount ?? currentPlan?.price ?? 0, availableCredit)
     );
+
+    const totalAmount = $derived(Math.max(currentAggregation?.amount - creditsApplied, 0));
 </script>
 
 {#if $organization}
@@ -732,17 +740,6 @@
     }
 
     @media (max-width: 768px) {
-        .actions-mobile {
-            justify-content: flex-start !important;
-            gap: 8px !important;
-        }
-
-        .actions-mobile :global(a),
-        .actions-mobile :global(button) {
-            padding: 6px 12px !important;
-            font-size: 14px !important;
-            border-radius: 8px !important;
-        }
         .billing-cycle-header {
             flex-direction: column;
             gap: 8px;
