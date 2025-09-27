@@ -9,10 +9,7 @@
     <section>
         <Layout.Stack gap="s">
             {#each $notifications as notification (notification.id)}
-                <span
-                    animate:flip={{ duration: 500 }}
-                    transition:fly|global={{ x: 50 }}
-                >
+                <span animate:flip={{ duration: 500 }} transition:fly|global={{ x: 50 }}>
                     <Toast
                         title={notification.title}
                         status={notification.type}
