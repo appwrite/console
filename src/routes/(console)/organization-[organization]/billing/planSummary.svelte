@@ -563,7 +563,8 @@
                         alignItems="center"
                         justifyContent="flex-end"
                         gap="s"
-                        class="u-flex-wrap u-width-full-line actions-mobile">
+                        wrap="wrap"
+                        class="u-width-full-line actions-mobile">
                         {#if !currentPlan?.usagePerProject}
                             <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
                                 View estimated usage
@@ -586,7 +587,8 @@
                         alignItems="center"
                         justifyContent="flex-end"
                         gap="s"
-                        class="u-flex-wrap u-width-full-line actions-mobile">
+                        wrap="wrap"
+                        class="u-width-full-line actions-mobile">
                         {#if $organization?.billingPlanDowngrade !== null}
                             <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
                         {:else}
