@@ -66,6 +66,22 @@ function safePrefsKey(widthPreferences: TeamPreferences['widths'], from: string,
     }
 }
 
+function safePrefsKeyForOrder(order: TeamPreferences['order'], from: string, to: string) {
+    if (order.includes(from)) {
+        const index = order.indexOf(from);
+        if (index !== -1) {
+            order[index] = to;
+        }
+    }
+
+    // move to first since its primary!
+    const toIndex = order.indexOf(to);
+    if (toIndex !== -1 && toIndex !== 0) {
+        order.splice(toIndex, 1);
+        order.unshift(to);
+    }
+}
+
 // rare cases where the value was an array, probably due to PHP backend.
 function ensureObjectProperty<T extends Record<string, unknown>, K extends keyof T>(
     obj: T | null | undefined,
@@ -220,7 +236,8 @@ function createPreferences() {
         loadTeamPrefs: loadTeamPreferences,
 
         getDisplayNames: (tableId: string) => {
-            return teamPreferences?.displayNames?.[tableId] ?? ['$id'];
+            const names = teamPreferences?.displayNames?.[tableId];
+            return Array.isArray(names) && names.length > 0 ? names : ['$id'];
         },
 
         setDisplayNames: async (
@@ -238,13 +255,19 @@ function createPreferences() {
         },
 
         getColumnOrder(tableId: string): TeamPreferences['order'] {
-            return teamPreferences?.columnOrder?.[tableId] ?? [];
+            const columnOrder = teamPreferences?.columnOrder?.[tableId] ?? [];
+            safePrefsKeyForOrder(columnOrder, '$uid', '$id');
+            return columnOrder;
         },
 
         async saveColumnOrder(orgId: string, tableId: string, columnIds: TeamPreferences['order']) {
             teamPreferences = ensureObjectProperty(teamPreferences, 'columnOrder');
 
             teamPreferences.columnOrder[tableId] = columnIds;
+
+            for (const tableOrder of Object.values(teamPreferences.columnOrder)) {
+                safePrefsKeyForOrder(tableOrder, '$id', '$uid');
+            }
 
             await sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,

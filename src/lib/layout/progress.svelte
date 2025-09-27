@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { navigationCancelled } from '$lib/stores/navigation';
     import { afterNavigate, beforeNavigate } from '$app/navigation';
 
     const minimum = 0.08;
@@ -95,6 +96,13 @@
             progressBarStartTimeout = null;
         }
         complete();
+    });
+
+    navigationCancelled.subscribe((cancelled) => {
+        if (cancelled) {
+            complete();
+            navigationCancelled.set(false);
+        }
     });
 
     $: barStyle = (width && width * 100 && `width: ${width * 100}%;`) || '';

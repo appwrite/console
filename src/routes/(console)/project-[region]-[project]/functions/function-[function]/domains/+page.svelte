@@ -36,7 +36,7 @@
         </Button>
     </Layout.Stack>
     {#if data.proxyRules.total}
-        <Table proxyRules={data.proxyRules} />
+        <Table proxyRules={data.proxyRules} organizationDomains={data.organizationDomains} />
 
         <PaginationWithLimit
             name="Domains"

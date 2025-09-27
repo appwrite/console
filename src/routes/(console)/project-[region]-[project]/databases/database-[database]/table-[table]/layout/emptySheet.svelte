@@ -8,7 +8,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { IconCalendar, IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
     import {
@@ -21,6 +21,7 @@
     import SpreadsheetContainer from './spreadsheet.svelte';
     import { onDestroy, onMount } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
+    import { columnOptions } from '../columns/store';
 
     type Mode = 'rows' | 'rows-filtered' | 'indexes';
 
@@ -95,6 +96,7 @@
             ...col,
             width: 180,
             hide: false,
+            icon: columnOptions.find((colOpt) => colOpt.type === col?.type)?.icon,
             ...baseColProps
         }));
 
@@ -156,7 +158,9 @@
 
     const spreadsheetColumns = $derived(mode === 'rows' ? getRowColumns() : getIndexesColumns());
 
-    const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
+    const emptyCells = $derived(
+        ($isSmallViewport ? 14 : $isTabletViewport ? 17 : 24) + (!$expandTabs ? 2 : 0)
+    );
 </script>
 
 <div
@@ -230,7 +234,6 @@
     </SpreadsheetContainer>
 
     {#if !$spreadsheetLoading}
-        <!-- Claude: Can this be truly centered without hacky left: xyz values? -->
         <div
             class="spreadsheet-fade-bottom"
             data-collapsed-tabs={!$expandTabs}
@@ -328,13 +331,9 @@
         z-index: 20;
         display: flex;
         justify-content: center;
-        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        transition: none !important;
 
         height: var(--dynamic-overlay-height, 70.5vh);
-
-        &[data-collapsed-tabs='true'] {
-            height: calc(var(--dynamic-overlay-height, 79.1vh) + 8.6vh);
-        }
 
         @media (max-width: 1024px) {
             height: var(--dynamic-overlay-height, 63.35vh);
@@ -359,6 +358,21 @@
         left: 50%;
         bottom: 35%;
         position: fixed;
+
+        @media (max-width: 768px) and (max-height: 768px) {
+            left: unset;
+            bottom: 12.5% !important;
+        }
+
+        @media (max-width: 768px) and (max-height: 1024px) {
+            left: unset;
+            bottom: 15% !important;
+        }
+
+        @media (max-width: 1024px) and (max-height: 1024px) {
+            left: unset;
+            bottom: 15%;
+        }
 
         @media (max-width: 1024px) {
             left: unset;

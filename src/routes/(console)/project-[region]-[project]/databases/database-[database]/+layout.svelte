@@ -10,9 +10,8 @@
     } from '$lib/commandCenter';
     import { tablesSearcher } from '$lib/commandCenter/searchers';
     import { Dependencies } from '$lib/constants';
-    import type { Models } from '@appwrite.io/console';
     import CreateTable from './createTable.svelte';
-    import { showCreate } from './store';
+    import { showCreateTable } from './store';
     import { TablesPanel } from '$lib/commandCenter/panels';
     import { canWriteTables, canWriteDatabases } from '$lib/stores/roles';
     import { showCreateBackup, showCreatePolicy } from './backups/store';
@@ -24,19 +23,11 @@
     const project = page.params.project;
     const databaseId = page.params.database;
 
-    async function handleCreate(event: CustomEvent<Models.Table>) {
-        $showCreate = false;
-        await invalidate(Dependencies.DATABASE);
-        await goto(
-            `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/table-${event.detail.$id}`
-        );
-    }
-
     $: $registerCommands([
         {
             label: 'Create table',
             callback() {
-                $showCreate = true;
+                $showCreateTable = true;
                 if (!page.url.pathname.endsWith(databaseId)) {
                     goto(
                         `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}`
@@ -152,4 +143,11 @@
 
 <slot />
 
-<CreateTable bind:showCreate={$showCreate} on:created={handleCreate} />
+<CreateTable
+    bind:showCreate={$showCreateTable}
+    onTableCreated={async (table) => {
+        await invalidate(Dependencies.DATABASE);
+        await goto(
+            `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/table-${table.$id}`
+        );
+    }} />

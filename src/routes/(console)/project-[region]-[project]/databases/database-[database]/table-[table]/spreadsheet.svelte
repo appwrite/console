@@ -4,7 +4,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Confirm, Id, SortButton } from '$lib/components';
     import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
-    import { Button as ConsoleButton, InputChoice, InputSelect } from '$lib/elements/forms';
+    import { Button as ConsoleButton, InputSelect } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
@@ -16,6 +16,7 @@
         buildWildcardColumnsQuery,
         isRelationship,
         isRelationshipToMany,
+        isSpatialType,
         isString
     } from './rows/store';
     import {
@@ -40,7 +41,8 @@
         spreadsheetRenderKey,
         expandTabs,
         databaseRelatedRowSheetOptions,
-        rowPermissionSheet
+        rowPermissionSheet,
+        type Columns
     } from './store';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import {
@@ -65,10 +67,13 @@
         IconDotsHorizontal,
         IconFingerPrint,
         IconHashtag,
+        IconLine,
         IconLink,
         IconLocationMarker,
         IconMail,
+        IconPoint,
         IconPlus,
+        IconPolygon,
         IconRelationship,
         IconSwitchHorizontal,
         IconText,
@@ -77,7 +82,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
     import SheetOptions from './sheetOptions.svelte';
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import SpreadsheetContainer from './layout/spreadsheet.svelte';
     import EditRowCell from './rows/cell/edit.svelte';
     import { copy } from '$lib/helpers/copy';
@@ -106,7 +111,13 @@
     const organizationId = data.organization.$id ?? data.project.teamId;
 
     const minimumWidth = 168;
-    const emptyCellsLimit = $isSmallViewport ? 12 : 18;
+    const emptyCellsLimit = $spreadsheetLoading
+        ? 30
+        : $isSmallViewport
+          ? 12
+          : $isTabletViewport
+            ? 18
+            : 24;
 
     let selectedRows = [];
     let spreadsheetContainer: SpreadsheetContainer;
@@ -116,7 +127,6 @@
 
     let showDelete = false;
     let showColumnDelete = false;
-    let deleteConfirmationChecked = false;
     let selectedRowForDelete: Models.Row['$id'] | null = null;
 
     onMount(async () => {
@@ -304,6 +314,12 @@
                 return IconViewList;
             case 'relationship':
                 return IconRelationship;
+            case 'point':
+                return IconPoint;
+            case 'linestring':
+                return IconLine;
+            case 'polygon':
+                return IconPolygon;
         }
     }
 
@@ -465,9 +481,11 @@
         }
     }
 
-    function openSideSheetForRelationsToMany(tableId: string, rows: string | Models.Row[]) {
-        $databaseRelatedRowSheetOptions.tableId = tableId;
+    function openSideSheetForRelationsToMany(rows: string | Models.Row[], column?: Columns) {
+        const relatedCol = column as Models.ColumnRelationship;
         $databaseRelatedRowSheetOptions.rows = rows;
+        $databaseRelatedRowSheetOptions.tableId = relatedCol.relatedTable;
+
         $databaseRelatedRowSheetOptions.show = true;
     }
 
@@ -906,6 +924,10 @@
                                             variant="secondary"
                                             size="s" />
                                     {/if}
+                                {:else if isSpatialType(rowColumn) && row[columnId] !== null}
+                                    <Typography.Text truncate>
+                                        {JSON.stringify(row[columnId])}
+                                    </Typography.Text>
                                 {:else}
                                     {@const value = row[columnId]}
                                     {@const formatted = formatColumn(row[columnId])}
@@ -950,11 +972,16 @@
                                 {/if}
 
                                 <svelte:fragment slot="cell-editor" let:close>
+                                    {@const isRelatedToMany = isRelationshipToMany(rowColumn)}
+                                    {@const hasItems = isRelatedToMany
+                                        ? row[columnId]?.length
+                                        : false}
+
                                     <EditRowCell
                                         {row}
                                         column={rowColumn}
                                         onRowStructureUpdate={updateRowContents}
-                                        noInlineEdit={isRelationshipToMany(rowColumn)}
+                                        noInlineEdit={isRelatedToMany && hasItems}
                                         onChange={(row) => paginatedRows.update(index, row)}
                                         onRevert={(row) => paginatedRows.update(index, row)}
                                         openSideSheet={() => {
@@ -962,8 +989,8 @@
 
                                             if (isRelationshipToMany(rowColumn)) {
                                                 openSideSheetForRelationsToMany(
-                                                    columnId,
-                                                    row[columnId]
+                                                    row[columnId],
+                                                    rowColumn
                                                 );
                                             } else {
                                                 onSelectSheetOption('update', null, 'row', row);
@@ -1065,8 +1092,12 @@
 </SpreadsheetContainer>
 
 <Confirm
+    confirmDeletion
     bind:open={showDelete}
     onSubmit={handleDelete}
+    confirmDeletionLabel={relatedColumns?.length
+        ? `Delete ${selectedRowForDelete !== null ? 'row' : 'rows'} from ${$table.name}`
+        : undefined}
     title={selectedRows.length === 1 ? 'Delete Row' : 'Delete Rows'}>
     {@const isSingle = selectedRowForDelete !== null}
 
@@ -1117,17 +1148,6 @@
 
         <Layout.Stack direction="column" gap="m">
             <Alert.Inline>To change the selection edit the relationship settings.</Alert.Inline>
-
-            <ul>
-                <InputChoice
-                    id="delete"
-                    label="Delete"
-                    showLabel={false}
-                    bind:value={deleteConfirmationChecked}>
-                    Delete {isSingle ? 'row' : 'rows'} from
-                    <span data-private>{$table.name}</span>
-                </InputChoice>
-            </ul>
         </Layout.Stack>
     {:else}
         <p class="u-bold">This action is irreversible.</p>

@@ -5,6 +5,7 @@ import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
+import { base } from '$app/paths';
 
 import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
 
@@ -12,7 +13,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
     const { organization, scopes, currentPlan, countryList, locale } = await parent();
 
     if (!scopes.includes('billing.read')) {
-        return redirect(301, `/console/organization-${organization.$id}`);
+        return redirect(301, `${base}/organization-${organization.$id}`);
     }
 
     depends(Dependencies.PAYMENT_METHODS);

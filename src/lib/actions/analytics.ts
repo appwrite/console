@@ -6,7 +6,7 @@ import { user } from '$lib/stores/user';
 import { ENV, MODE, VARS, isCloud } from '$lib/system';
 import { AppwriteException } from '@appwrite.io/console';
 import { browser } from '$app/environment';
-import { getReferrerAndUtmSource } from '$lib/helpers/utm';
+import { getReferrerAndUtmSource, getTrackedQueryParams } from '$lib/helpers/utm';
 
 function plausible(domain: string): AnalyticsPlugin {
     if (!browser) return { name: 'analytics-plugin-plausible' };
@@ -65,7 +65,7 @@ export function trackEvent(name: string, data: object = null): void {
         };
     }
 
-    data = { ...data, ...getReferrerAndUtmSource() };
+    data = { ...data, ...getReferrerAndUtmSource(), ...getTrackedQueryParams() };
 
     if (ENV.DEV || ENV.PREVIEW) {
         console.debug(`[Analytics] Event ${name} ${path}`, data);
@@ -274,9 +274,12 @@ export enum Submit {
     DatabaseDelete = 'submit_database_delete',
     DatabaseUpdateName = 'submit_database_update_name',
     DatabaseImportCsv = 'submit_database_import_csv',
+
     ColumnCreate = 'submit_column_create',
     ColumnUpdate = 'submit_column_update',
     ColumnDelete = 'submit_column_delete',
+    ColumnSuggestions = 'submit_column_suggestions',
+
     RowCreate = 'submit_row_create',
     RowDelete = 'submit_row_delete',
     RowUpdate = 'submit_row_update',
@@ -429,5 +432,6 @@ export enum Submit {
     RecordUpdate = 'submit_dns_record_update',
     RecordDelete = 'submit_dns_record_delete',
     SearchClear = 'submit_clear_search',
-    FrameworkDetect = 'submit_framework_detect'
+    FrameworkDetect = 'submit_framework_detect',
+    TestimonialView = 'testimonial_view'
 }

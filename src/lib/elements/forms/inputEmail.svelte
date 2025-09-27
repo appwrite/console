@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
+    import type { ComponentType } from 'svelte';
 
     export let label: string = null;
     export let id: string;
@@ -12,6 +13,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
+    export let leadingIcon: ComponentType | undefined = undefined;
 
     let error: string;
 
@@ -42,6 +44,7 @@
     {required}
     {readonly}
     {label}
+    {leadingIcon}
     {nullable}
     on:input
     on:invalid={handleInvalid}

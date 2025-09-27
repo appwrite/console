@@ -17,11 +17,14 @@
     import RetryDomainModal from './retryDomainModal.svelte';
     import { columns } from './store';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
+    import DnsRecordsAction from '$lib/components/domains/dnsRecordsAction.svelte';
 
     let {
-        proxyRules
+        proxyRules,
+        organizationDomains
     }: {
         proxyRules: Models.ProxyRuleList;
+        organizationDomains?: Models.DomainsList;
     } = $props();
 
     let showDelete = $state(false);
@@ -101,6 +104,7 @@
                                         Retry
                                     </ActionMenu.Item.Button>
                                 {/if}
+                                <DnsRecordsAction rule={proxyRule} {organizationDomains} />
                                 <ActionMenu.Item.Button
                                     status="danger"
                                     leadingIcon={IconTrash}
@@ -109,7 +113,7 @@
                                         showDelete = true;
                                         toggle(e);
                                         trackEvent(Click.DomainDeleteClick, {
-                                            source: 'sites_domain_overview'
+                                            source: 'functions_domain_overview'
                                         });
                                     }}>
                                     Delete

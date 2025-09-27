@@ -64,7 +64,7 @@
             body: JSON.stringify({
                 subject: 'BAA Request',
                 email: email,
-                firstName: $user?.name ?? '',
+                firstName: ($user?.name ?? '').slice(0, 40),
                 message: `BAA request for ${$organization?.name ?? ''} (${$organization?.$id ?? ''})`,
                 tags: ['cloud'],
                 customFields: [
