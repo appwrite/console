@@ -30,6 +30,7 @@
 
     let modalError = $state(null);
     let creatingIndexes = $state(false);
+    let loadingSuggestions = $state(false);
     let indexes = $state<SuggestedIndexSchema[]>([]);
     let columnOptions: Array<{
         value: string;
@@ -61,6 +62,7 @@
 
     async function loadIndexSuggestions(): Promise<SuggestedIndexSchema[]> {
         modalError = null;
+        loadingSuggestions = true;
 
         if (VARS.MOCK_AI_SUGGESTIONS) {
             await sleep(1250);
@@ -92,6 +94,8 @@
         }
 
         makeColumnOptions();
+
+        loadingSuggestions = false;
 
         return indexes;
     }
@@ -313,14 +317,17 @@
         <svelte:fragment slot="footer">
             <Layout.Stack direction="row" justifyContent="flex-end" alignItems="center" inline>
                 <Layout.Stack direction="row" gap="m">
-                    <Button text size="s" on:click={() => ($showIndexesSuggestions = false)}
-                        >Cancel</Button>
+                    <Button
+                        text
+                        size="s"
+                        disabled={loadingSuggestions}
+                        on:click={() => ($showIndexesSuggestions = false)}>Cancel</Button>
 
                     <Button
                         size="s"
                         submit
                         submissionLoader
-                        disabled={indexes.length === 0}
+                        disabled={indexes.length === 0 || loadingSuggestions}
                         forceShowLoader={creatingIndexes}>
                         Create
                     </Button>
@@ -337,9 +344,10 @@
         bind:show={$showIndexesSuggestions}
         submit={{
             text: 'Create',
-            disabled: indexes.length === 0 || creatingIndexes,
+            disabled: indexes.length === 0 || creatingIndexes || loadingSuggestions,
             onClick: async () => await applySuggestedIndexes()
-        }}>
+        }}
+        cancel={{ disabled: loadingSuggestions }}>
         {#if modalError}
             <Alert.Inline status="error">
                 {modalError}
@@ -447,7 +455,12 @@
 {#snippet addIndexButton()}
     {#if indexes.length < MAX_INDEXES}
         <Layout.Stack direction="row" justifyContent="flex-start">
-            <Button icon size="s" compact on:click={addIndex}>
+            <Button
+                icon
+                size="s"
+                compact
+                on:click={addIndex}
+                disabled={loadingSuggestions || creatingIndexes}>
                 <Icon icon={IconPlus} size="s" />
                 Add Index
             </Button>

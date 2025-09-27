@@ -11,6 +11,7 @@
         title,
         closeOnBlur = false,
         submit,
+        cancel,
         children = null,
         footer = null,
         titleBadge = null,
@@ -34,6 +35,12 @@
                   text: string;
                   disabled?: boolean;
                   onClick?: () => boolean | void | Promise<boolean | void>;
+              }
+            | undefined;
+        cancel?:
+            | {
+                  text?: string;
+                  disabled?: boolean;
               }
             | undefined;
         children?: Snippet;
@@ -110,8 +117,14 @@
                                 {#if footer}
                                     {@render footer?.()}
                                 {/if}
-                                <Button size="s" secondary on:click={() => (show = false)}
-                                    >Cancel</Button>
+
+                                <Button
+                                    size="s"
+                                    secondary
+                                    disabled={cancel?.disabled}
+                                    on:click={() => (show = false)}
+                                    >{cancel?.text ?? 'Cancel'}</Button>
+
                                 <Button
                                     size="s"
                                     submit
