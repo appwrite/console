@@ -315,7 +315,7 @@
                 {#each Array(3) as _, index}
                     {@const firstItem = index === 0}
                     <Layout.Stack direction="row" justifyContent="space-evenly" alignItems="center">
-                        {@render fieldSkeleton({ label: 'Key', showLabel: firstItem })}
+                        {@render fieldSkeleton({ label: 'Column', showLabel: firstItem })}
                         {@render fieldSkeleton({ label: 'Type', showLabel: firstItem })}
                         {@render fieldSkeleton({ label: 'Order', showLabel: firstItem })}
                         <!--{@render fieldSkeleton({ label: 'Length', showLabel: firstItem })}-->
@@ -440,7 +440,7 @@
         <Layout.Stack direction="row" gap="m" alignItems="center">
             <InputSelect
                 id="key-{count}"
-                label={firstItem ? 'Key' : undefined}
+                label={firstItem ? 'Column' : undefined}
                 bind:value={index.key}
                 on:change={(event) => syncIndexState(event, index)}
                 options={columnOptions}
