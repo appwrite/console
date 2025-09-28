@@ -1,5 +1,12 @@
 <script lang="ts">
-    import { Alert, Accordion, Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Alert,
+        Accordion,
+        Icon,
+        Layout,
+        Skeleton,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Button, InputSelect /*InputNumber*/ } from '$lib/elements/forms';
     import {
@@ -407,9 +414,9 @@
                 {/each}
             </Layout.Stack>
         {:then suggestedIndexes}
-            <Layout.Stack gap="m">
+            <Layout.Stack gap="s">
                 {#each suggestedIndexes as index, count}
-                    <Accordion title="Index {count + 1}: {index.key || 'Untitled'}">
+                    <Accordion title="{index.key}_index">
                         {@render indexEditForm({ index, count, isDesktop: false })}
                     </Accordion>
                 {/each}
@@ -466,26 +473,23 @@
     {:else}
         <!-- Mobile: Vertical layout -->
         <Layout.Stack gap="m">
-            <InputSelect
-                id="key-{count}-mobile"
-                label="Key"
-                bind:value={index.key}
-                on:change={(event) => syncIndexState(event, index)}
-                options={columnOptions}
-                placeholder="Select column"
-                required />
+            <Layout.Stack gap="s">
+                <InputSelect
+                    id="key-{count}-mobile"
+                    bind:value={index.key}
+                    on:change={(event) => syncIndexState(event, index)}
+                    options={columnOptions}
+                    placeholder="Select column"
+                    required />
 
-            <Layout.Stack direction="row" gap="m">
                 <InputSelect
                     id="type-{count}-mobile"
-                    label="Type"
                     bind:value={index.type}
                     options={typeOptions}
                     required />
 
                 <InputSelect
                     id="order-{count}-mobile"
-                    label="Order"
                     bind:value={index.orders}
                     options={getOrderOptions(index.type)}
                     required />
@@ -525,8 +529,8 @@
             </Button>
         </div>
     {:else if indexes.length > 1}
-        <Layout.Stack direction="row" justifyContent="flex-end">
-            <Button text size="s" on:click={() => removeIndex(count)}>Remove index</Button>
+        <Layout.Stack direction="row" justifyContent="flex-start">
+            <Button secondary size="s" on:click={() => removeIndex(count)}>Delete</Button>
         </Layout.Stack>
     {/if}
 {/snippet}
