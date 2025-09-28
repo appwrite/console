@@ -13,6 +13,7 @@
     let email: string;
     let userId: string;
     let secret: string;
+    let userEmail: string;
 
     let password: string;
     let confirmPassword: string;
@@ -20,6 +21,7 @@
     onMount(() => {
         userId = page.url.searchParams.get('userId');
         secret = page.url.searchParams.get('secret');
+        userEmail = page.url.searchParams.get('email') || '';
     });
 
     async function recover() {
@@ -76,18 +78,30 @@
         {#if userId && secret}
             <Form onSubmit={setPassword}>
                 <Layout.Stack>
+                    <!-- hidden email input for password managers -->
+                    <input
+                        type="email"
+                        name="email"
+                        value={userEmail}
+                        style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;"
+                        tabindex="-1"
+                        autocomplete="username"
+                        aria-hidden="true" />
+
                     <InputPassword
                         label="New password"
                         placeholder="Enter password"
                         id="password"
                         autofocus={true}
                         required={true}
+                        autocomplete={true}
                         bind:value={password} />
                     <InputPassword
                         label="Confirm password"
                         placeholder="Confirm password"
                         id="confirm-password"
                         required={true}
+                        autocomplete={true}
                         bind:value={confirmPassword} />
 
                     <Button fullWidth submit>Update</Button>
