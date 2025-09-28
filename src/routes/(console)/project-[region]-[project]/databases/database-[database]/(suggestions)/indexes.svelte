@@ -316,10 +316,7 @@
                     <Layout.Stack gap="m">
                         {#each Array(3) as _, index}
                             {@const firstItem = index === 0}
-                            <Layout.Stack
-                                direction="row"
-                                justifyContent="space-evenly"
-                                alignItems="center">
+                            <Layout.Stack gap="m" direction="row" alignItems="center">
                                 {@render fieldSkeleton({ label: 'Column', showLabel: firstItem })}
                                 {@render fieldSkeleton({ label: 'Type', showLabel: firstItem })}
                                 {@render fieldSkeleton({ label: 'Order', showLabel: firstItem })}
@@ -328,8 +325,8 @@
                                 <div style:margin-top={firstItem ? '27.6px' : '0'}>
                                     <Skeleton
                                         variant="square"
-                                        width={30}
-                                        height={30}
+                                        width="33px"
+                                        height="33px"
                                         style="opacity: 0.25" />
                                 </div>
                             </Layout.Stack>
@@ -338,11 +335,15 @@
                     {@render addIndexButton()}
                 </Layout.Stack>
             {:then suggestedIndexes}
-                {#each suggestedIndexes as index, count}
-                    {@render indexEditForm({ index, count, isDesktop: true })}
-                {/each}
+                <Layout.Stack gap="xs">
+                    <Layout.Stack gap="m">
+                        {#each suggestedIndexes as index, count}
+                            {@render indexEditForm({ index, count, isDesktop: true })}
+                        {/each}
+                    </Layout.Stack>
 
-                {@render addIndexButton()}
+                    {@render addIndexButton()}
+                </Layout.Stack>
             {/await}
         </Layout.Stack>
 
@@ -435,7 +436,7 @@
         <Skeleton
             variant="line"
             width="100%"
-            height={isDesktop ? 33 : 39.398}
+            height={isDesktop ? 33.602 : 39.398}
             style="opacity: 0.25" />
     </Layout.Stack>
 {/snippet}
