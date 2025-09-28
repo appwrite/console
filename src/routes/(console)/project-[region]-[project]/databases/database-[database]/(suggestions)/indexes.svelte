@@ -1,12 +1,5 @@
 <script lang="ts">
-    import {
-        Alert,
-        Accordion,
-        Icon,
-        Layout,
-        Skeleton,
-        Typography
-    } from '@appwrite.io/pink-svelte';
+    import { Alert, Accordion, Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Button, InputSelect /*InputNumber*/ } from '$lib/elements/forms';
     import {
@@ -155,7 +148,7 @@
 
     function generateUniqueIndexKey(index: SuggestedIndexSchema, usedKeys: Set<string>): string {
         const existingKeys = $table.indexes.map((idx) => idx.key);
-        let suggestedKey = `suggested_${index.key || index.columns[0]}_${index.type.toLowerCase()}`;
+        let suggestedKey = `${index.key || index.columns[0]}_${index.type.toLowerCase()}`;
         let uniqueKey = suggestedKey;
         let counter = 1;
 
@@ -240,12 +233,12 @@
                 const { orders, lengths } = prepareIndexForCreation(index, columnMap);
 
                 // generate unique key name for the index
-                index.key = generateUniqueIndexKey(index, usedKeys);
+                const uniqueIndexKey = generateUniqueIndexKey(index, usedKeys);
 
                 await sdkClient.tablesDB.createIndex({
                     databaseId,
                     tableId,
-                    key: index.key,
+                    key: uniqueIndexKey,
                     type: index.type,
                     columns: index.columns,
                     lengths,
@@ -317,27 +310,33 @@
         onSubmit={async () => {
             await applySuggestedIndexes();
         }}>
-        <Layout.Stack gap="l">
+        <Layout.Stack gap="m">
             {#await loadIndexSuggestions()}
-                {#each Array(3) as _, index}
-                    {@const firstItem = index === 0}
-                    <Layout.Stack direction="row" justifyContent="space-evenly" alignItems="center">
-                        {@render fieldSkeleton({ label: 'Column', showLabel: firstItem })}
-                        {@render fieldSkeleton({ label: 'Type', showLabel: firstItem })}
-                        {@render fieldSkeleton({ label: 'Order', showLabel: firstItem })}
-                        <!--{@render fieldSkeleton({ label: 'Length', showLabel: firstItem })}-->
+                <Layout.Stack gap="xs">
+                    <Layout.Stack gap="m">
+                        {#each Array(3) as _, index}
+                            {@const firstItem = index === 0}
+                            <Layout.Stack
+                                direction="row"
+                                justifyContent="space-evenly"
+                                alignItems="center">
+                                {@render fieldSkeleton({ label: 'Column', showLabel: firstItem })}
+                                {@render fieldSkeleton({ label: 'Type', showLabel: firstItem })}
+                                {@render fieldSkeleton({ label: 'Order', showLabel: firstItem })}
+                                <!--{@render fieldSkeleton({ label: 'Length', showLabel: firstItem })}-->
 
-                        <div style:margin-top={firstItem ? '27.6px' : '0'}>
-                            <Skeleton
-                                variant="square"
-                                width={30}
-                                height={30}
-                                style="opacity: 0.25" />
-                        </div>
+                                <div style:margin-top={firstItem ? '27.6px' : '0'}>
+                                    <Skeleton
+                                        variant="square"
+                                        width={30}
+                                        height={30}
+                                        style="opacity: 0.25" />
+                                </div>
+                            </Layout.Stack>
+                        {/each}
                     </Layout.Stack>
-                {/each}
-
-                {@render addIndexButton()}
+                    {@render addIndexButton()}
+                </Layout.Stack>
             {:then suggestedIndexes}
                 {#each suggestedIndexes as index, count}
                     {@render indexEditForm({ index, count, isDesktop: true })}
@@ -452,21 +451,24 @@
                 on:change={(event) => syncIndexState(event, index)}
                 options={columnOptions}
                 placeholder="Select column"
-                required />
+                required
+                disabled={creatingIndexes} />
 
             <InputSelect
                 id="type-{count}"
                 label={firstItem ? 'Type' : ''}
                 bind:value={index.type}
                 options={typeOptions}
-                required />
+                required
+                disabled={creatingIndexes} />
 
             <InputSelect
                 id="order-{count}"
                 label={firstItem ? 'Order' : ''}
                 bind:value={index.orders}
                 options={getOrderOptions(index.type)}
-                required />
+                required
+                disabled={creatingIndexes} />
 
             {@render removeIndexButton({ count, isDesktop: true })}
         </Layout.Stack>
@@ -524,13 +526,17 @@
                 size="xs"
                 secondary
                 on:click={() => removeIndex(count)}
-                disabled={indexes.length <= 1}>
+                disabled={indexes.length <= 1 || creatingIndexes}>
                 <Icon icon={IconX} color="--fgcolor-danger-primary" />
             </Button>
         </div>
     {:else if indexes.length > 1}
         <Layout.Stack direction="row" justifyContent="flex-start">
-            <Button secondary size="s" on:click={() => removeIndex(count)}>Delete</Button>
+            <Button
+                size="s"
+                secondary
+                on:click={() => removeIndex(count)}
+                disabled={indexes.length <= 1 || creatingIndexes}>Delete</Button>
         </Layout.Stack>
     {/if}
 {/snippet}
