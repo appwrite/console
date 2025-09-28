@@ -1,23 +1,60 @@
 <script lang="ts">
-    import { Container } from '$lib/layout';
+    import { page } from '$app/state';
     import { table } from '../store';
-    import DangerZone from './dangerZone.svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { Container } from '$lib/layout';
     import DisplayName from './displayName.svelte';
-    import UpdateName from './updateName.svelte';
-    import UpdatePermissions from './updatePermissions.svelte';
-    import UpdateSecurity from './updateSecurity.svelte';
-    import UpdateStatus from './updateStatus.svelte';
+    import {
+        DangerZone,
+        UpdateName,
+        UpdatePermissions,
+        UpdateSecurity,
+        UpdateStatus
+    } from '$database/(entity)';
+
+    const tablesDB = sdk.forProject(page.params.region, page.params.project).tablesDB;
+    const params = $derived.by(() => {
+        return {
+            name: $table.name,
+            tableId: page.params.table,
+            databaseId: page.params.database
+        };
+    });
+
+    async function deleteTable() {
+        await tablesDB.deleteTable({ ...params });
+    }
+
+    async function updateTable(
+        updates: Partial<{
+            name: string;
+            enabled: boolean;
+            permissions: string[];
+            rowSecurity: boolean;
+        }>
+    ) {
+        await tablesDB.updateTable({ ...params, ...updates });
+    }
 </script>
 
 <div class="wide-screen-wrapper databases-spreadsheet">
     <Container expanded slotSpacing databasesScreen>
         {#if $table}
-            <UpdateStatus />
-            <UpdateName />
+            <UpdateStatus entity={$table} onChangeStatus={(enabled) => updateTable({ enabled })} />
+
+            <UpdateName entity={$table} onChangeName={(name) => updateTable({ name })} />
+
             <DisplayName />
-            <UpdatePermissions />
-            <UpdateSecurity />
-            <DangerZone />
+
+            <UpdatePermissions
+                entity={$table}
+                onChangePermissions={(permissions) => updateTable({ permissions })} />
+
+            <UpdateSecurity
+                entity={$table}
+                onChangeSecurity={(rowSecurity) => updateTable({ rowSecurity })} />
+
+            <DangerZone entity={$table} onDelete={deleteTable} />
         {/if}
     </Container>
 </div>

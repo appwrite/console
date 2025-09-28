@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { goto, invalidate } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Confirm, Id, SortButton } from '$lib/components';
     import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
     import { Button as ConsoleButton, InputSelect } from '$lib/elements/forms';
@@ -419,7 +419,7 @@
             }
 
             await invalidate(Dependencies.ROWS);
-            trackEvent(Submit.RowDelete);
+            trackEvent(Click.DatabaseRowDelete);
 
             if (!hadErrors) {
                 // error is already shown above!

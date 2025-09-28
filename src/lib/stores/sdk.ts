@@ -21,7 +21,8 @@ import {
     Sites,
     Tokens,
     TablesDB,
-    Domains
+    Domains,
+    Databases // DocumentsDB later
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
@@ -131,6 +132,7 @@ const sdkForProject = {
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
     tablesDB: new TablesDB(clientProject),
+    documentsDB: new Databases(clientProject), // documentsDB later
     console: new Console(clientProject) // for suggestions API
 };
 

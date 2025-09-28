@@ -22,13 +22,13 @@
                 type: 'success',
                 message: 'Updated session invalidation check.'
             });
-            trackEvent(Submit.AuthInvalidateSesssion);
+            trackEvent(Submit.AuthInvalidateSession);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.AuthInvalidateSesssion);
+            trackError(error, Submit.AuthInvalidateSession);
         }
     }
 </script>

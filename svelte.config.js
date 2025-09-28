@@ -19,7 +19,9 @@ const config = {
     kit: {
         alias: {
             $routes: './src/routes',
-            $themes: './src/themes'
+            $themes: './src/themes',
+            $database:
+                './src/routes/(console)/project-[region]-[project]/databases/database-[database]'
         },
         adapter: adapter({
             fallback: 'index.html',
