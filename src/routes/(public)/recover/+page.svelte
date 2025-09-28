@@ -94,14 +94,14 @@
                         id="password"
                         autofocus={true}
                         required={true}
-                        autocomplete={true}
+                        autocomplete="new-password"
                         bind:value={password} />
                     <InputPassword
                         label="Confirm password"
                         placeholder="Confirm password"
                         id="confirm-password"
                         required={true}
-                        autocomplete={true}
+                        autocomplete="new-password"
                         bind:value={confirmPassword} />
 
                     <Button fullWidth submit>Update</Button>
