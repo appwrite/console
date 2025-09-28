@@ -444,7 +444,7 @@
 {#snippet indexEditForm({ index, count, isDesktop = true })}
     {@const firstItem = count === 0}
     {#if isDesktop}
-        <Layout.Stack direction="row" gap="m" alignItems="center">
+        <Layout.Stack gap="m" direction="row" alignItems="center" class="desktop-selects-form">
             <InputSelect
                 id="key-{count}"
                 label={firstItem ? 'Column' : undefined}
@@ -559,5 +559,11 @@
         & :global(button) {
             visibility: hidden !important;
         }
+    }
+
+    // stack > div > input-select button!
+    :global(.desktop-selects-form :first-child button:first-of-type) {
+        width: 164px;
+        max-width: 164px;
     }
 </style>
