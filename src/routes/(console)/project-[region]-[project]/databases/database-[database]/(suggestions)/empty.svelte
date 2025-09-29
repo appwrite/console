@@ -10,7 +10,7 @@
         FloatingActionBar,
         Popover
     } from '@appwrite.io/pink-svelte';
-    import { IconCalendar, IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import type { Column } from '$lib/helpers/types';
     import { expandTabs } from '../table-[table]/store';
@@ -54,7 +54,10 @@
     let rangeOverlayEl: HTMLDivElement | null = null;
     let fadeBottomOverlayEl: HTMLDivElement | null = null;
 
-    let customColumns = $state([]);
+    let customColumns = $state<
+        (SuggestedColumnSchema & { elements?: []; isPlaceholder?: boolean })[]
+    >(Array.from({ length: 7 }, (_, index) => createPlaceholderColumn(index)));
+
     let showFloatingBar = $state(true);
     let hasTransitioned = $state(false);
     let scrollAnimationFrame: number | null = null;
@@ -133,18 +136,39 @@
             rangeOverlayEl.style.display = 'block';
         }
 
-        if (customColumns.length === 0) {
-            spreadsheetContainer.style.setProperty('--group-left', '40px');
-            spreadsheetContainer.style.setProperty('--group-width', '100%');
-            return;
-        }
-
         // Custom columns mode: calculate precise overlay bounds
         const containerRect = spreadsheetContainer.getBoundingClientRect();
         const getById = (id: string) =>
             headerElement!.querySelector<HTMLElement>(
                 `[role="cell"][data-header="true"][data-column-id="${id}"]`
             );
+
+        const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
+        if (!hasRealColumns) {
+            // For placeholders or no columns, position overlay to cover custom columns area
+            const idCell = getById('$id');
+            const actionsCell = headerElement!.querySelector<HTMLElement>(
+                '[role="cell"][data-column-id="actions"]'
+            );
+
+            if (idCell && actionsCell) {
+                const idRect = idCell.getBoundingClientRect();
+                const actionsRect = actionsCell.getBoundingClientRect();
+                const left = Math.round(idRect.right - containerRect.left);
+                const actionsLeft = actionsRect.left - containerRect.left;
+                const width = Math.min(
+                    customColumns.length * 180, // estimated minimum placeholder width
+                    actionsLeft - left // don't exceed actions column
+                );
+
+                spreadsheetContainer.style.setProperty('--group-left', `${left - 2}px`);
+                spreadsheetContainer.style.setProperty('--group-width', `${width + 2}px`);
+            } else {
+                spreadsheetContainer.style.setProperty('--group-left', '40px');
+                spreadsheetContainer.style.setProperty('--group-width', 'calc(100% - 80px)');
+            }
+            return;
+        }
 
         // Calculate visible viewport bounds
         const scrollerRect = hScroller ? hScroller.getBoundingClientRect() : containerRect;
@@ -224,7 +248,7 @@
 
     // only for mobile, we can remove if not needed!
     const scrollToFirstCustomColumn = () => {
-        if (!$isSmallViewport || customColumns.length === 0) return;
+        if (!$isSmallViewport) return;
 
         if (!headerElement || !headerElement.isConnected) {
             headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
@@ -236,12 +260,19 @@
             `[role="cell"][data-header="true"][data-column-id="${customColumns[0]?.key}"]`
         );
 
-        if (firstCustomColumnCell && hScroller) {
-            const cellRect = firstCustomColumnCell.getBoundingClientRect();
-            const scrollerRect = hScroller.getBoundingClientRect();
-            const scrollLeft = hScroller.scrollLeft + cellRect.left - scrollerRect.left - 40;
+        const directAccessScroller =
+            hScroller ??
+            findHorizontalScroller(headerElement) ??
+            // internal spreadsheet root main container!
+            spreadsheetContainer.querySelector('.spreadsheet-container');
 
-            hScroller.scrollTo({
+        if (firstCustomColumnCell && directAccessScroller) {
+            const cellRect = firstCustomColumnCell.getBoundingClientRect();
+            const scrollerRect = directAccessScroller.getBoundingClientRect();
+            const scrollLeft =
+                directAccessScroller.scrollLeft + cellRect.left - scrollerRect.left - 40;
+
+            directAccessScroller.scrollTo({
                 left: Math.max(0, scrollLeft),
                 behavior: 'smooth'
             });
@@ -268,7 +299,8 @@
     // Handle create table requests from subNavigation
     const unsubscribeCreateTable = createTableRequest.subscribe((requested) => {
         if (requested) {
-            if (customColumns.length > 0 && !creatingColumns) {
+            const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
+            if (hasRealColumns && !creatingColumns) {
                 confirmNavigation = true;
                 pendingNavigationUrl = 'create-table';
             } else {
@@ -316,26 +348,6 @@
             ...baseColProps
         },
         ...customSuggestedColumns,
-        ...(customColumns.length === 0
-            ? [
-                  {
-                      id: '$createdAt',
-                      title: '$createdAt',
-                      type: 'datetime' as Column['type'],
-                      width: 180,
-                      icon: IconCalendar,
-                      ...baseColProps
-                  },
-                  {
-                      id: '$updatedAt',
-                      title: '$updatedAt',
-                      type: 'datetime' as Column['type'],
-                      width: 180,
-                      icon: IconCalendar,
-                      ...baseColProps
-                  }
-              ]
-            : []),
         {
             id: 'actions',
             title: '',
@@ -348,7 +360,8 @@
 
     // Handle browser back/forward navigation
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-        if (customColumns.length > 0 && !creatingColumns) {
+        const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
+        if (hasRealColumns && !creatingColumns) {
             event.preventDefault();
             event.returnValue =
                 'You have unsaved column suggestions. Are you sure you want to leave?';
@@ -370,7 +383,8 @@
     });
 
     beforeNavigate(({ cancel, to }) => {
-        if (customColumns.length > 0 && !creatingColumns) {
+        const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
+        if (hasRealColumns && !creatingColumns) {
             cancel();
             confirmNavigation = true;
             $navigationCancelled = true;
@@ -396,6 +410,12 @@
 
     async function suggestColumns() {
         $tableColumnSuggestions.thinking = true;
+
+        if ($isSmallViewport) {
+            await tick();
+            scrollToFirstCustomColumn();
+        }
+
         let suggestedColumns: {
             total: number;
             columns: ColumnInput[];
@@ -429,11 +449,31 @@
                 total: suggestedColumns.total
             });
 
-            customColumns = mapSuggestedColumns(suggestedColumns.columns);
+            const mappedColumns = mapSuggestedColumns(suggestedColumns.columns);
 
-            if (customColumns.length > 0) {
-                setTimeout(scrollToFirstCustomColumn, 100);
-                setTimeout(() => (hasTransitioned = true), 300);
+            mappedColumns.forEach((column, index) => {
+                if (index < customColumns.length) {
+                    setTimeout(() => {
+                        customColumns[index] = { ...column, isPlaceholder: false };
+
+                        // recalculate overlay bounds
+                        // after each column is populated!
+                        requestAnimationFrame(() => updateOverlayBounds());
+                    }, index * 150);
+                }
+            });
+
+            if (mappedColumns.length > 0) {
+                setTimeout(() => {
+                        hasTransitioned = true;
+                        // final recal after
+                        // all animations complete
+                        requestAnimationFrame(() => {
+                            recalcAll();
+                        });
+                    },
+                    mappedColumns.length * 150 + 300
+                );
             }
         } catch (error) {
             addNotification({
@@ -635,6 +675,23 @@
         }
     }
 
+    function createPlaceholderColumn(
+        index: number
+    ): SuggestedColumnSchema & { elements?: []; isPlaceholder?: boolean } {
+        return {
+            key: `column${index + 1}`,
+            type: 'string',
+            required: false,
+            default: null,
+            format: null,
+            size: undefined,
+            min: undefined,
+            max: undefined,
+            elements: undefined,
+            isPlaceholder: true
+        };
+    }
+
     onDestroy(() => {
         resizeObserver?.disconnect();
         hScroller?.removeEventListener('scroll', recalcAllThrottled);
@@ -653,6 +710,7 @@
 <div
     bind:this={spreadsheetContainer}
     class:custom-columns={customColumns.length > 0}
+    class:thinking={$tableColumnSuggestions.thinking}
     class="databases-spreadsheet spreadsheet-container-outer"
     style:--overlay-icon-color="#fd366e99"
     style:--non-overlay-icon-color="--fgcolor-neutral-weak">
@@ -712,30 +770,43 @@
                                         alignItems="center"
                                         alignContent="center"
                                         justifyContent="space-between">
-                                        {column.title}
+                                        <!-- Can be Typography.* -->
+                                        <span
+                                            class="column-title"
+                                            class:animate-in={!columnObj?.isPlaceholder}
+                                            style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}>
+                                            {column.title}
+                                        </span>
 
                                         <Popover
                                             let:toggle
                                             portal
                                             padding="none"
                                             placement="bottom-start">
-                                            <Button.Button
-                                                size="xs"
-                                                variant="extra-compact"
-                                                disabled={!isColumnInteractable}
-                                                on:click={(event) => {
-                                                    if (
-                                                        isColumnInteractable &&
-                                                        !$isTabletViewport
-                                                    ) {
-                                                        toggle(event);
-                                                    }
-                                                }}>
-                                                <Icon
-                                                    size="s"
-                                                    color={columnIconColor}
-                                                    icon={column.icon ?? undefined} />
-                                            </Button.Button>
+                                            <div
+                                                class="column-icon-wrapper"
+                                                class:animate-in={!columnObj?.isPlaceholder}
+                                                style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}>
+                                                <Button.Button
+                                                    size="xs"
+                                                    variant="extra-compact"
+                                                    disabled={!isColumnInteractable}
+                                                    on:click={(event) => {
+                                                        if (
+                                                            isColumnInteractable &&
+                                                            !$isTabletViewport
+                                                        ) {
+                                                            toggle(event);
+                                                        }
+                                                    }}>
+                                                    {#if !columnObj?.isPlaceholder}
+                                                        <Icon
+                                                            size="s"
+                                                            color={columnIconColor}
+                                                            icon={column.icon ?? undefined} />
+                                                    {/if}
+                                                </Button.Button>
+                                            </div>
 
                                             <div
                                                 let:toggle
@@ -882,7 +953,7 @@
                 </svelte:fragment>
             </FloatingActionBar>
         </div>
-    {:else if customColumns.length > 0 && showFloatingBar}
+    {:else if customColumns.some((col) => !col.isPlaceholder) && showFloatingBar}
         <div
             class="floating-action-wrapper"
             class:expanded={!creatingColumns}
@@ -1056,7 +1127,17 @@
         & .floating-action-wrapper {
             & :global(:first-child) {
                 z-index: 21;
+                left: calc(65% - 525px / 2);
                 transition: all 600ms cubic-bezier(0.4, 0, 0.2, 1);
+
+                @media (max-width: 1024px) {
+                    left: calc(50% - 525px / 2);
+                }
+
+                @media (max-width: 768px) {
+                    left: calc(50% - 400px / 2);
+                    max-width: 400px !important;
+                }
             }
 
             &.expanded :global(:first-child) {
@@ -1092,6 +1173,12 @@
             overflow-x: hidden;
             overflow-y: hidden;
             scrollbar-width: none;
+        }
+
+        &.thinking {
+            & :global(.spreadsheet-container) {
+                overflow: hidden !important;
+            }
         }
 
         & :global([data-select='true']) {
@@ -1181,7 +1268,8 @@
         border: var(--border-width-L, 2px) solid rgba(253, 54, 110, 0.24) !important;
 
         & :global(i) {
-            margin-inline-end: 8px !important;
+            margin-inline-end: 6px !important;
+            margin-block-start: -4px !important;
         }
 
         & :global(::selection) {
@@ -1191,5 +1279,22 @@
 
     :global(.filter-modal-actions-menu.variant) {
         max-height: 184px;
+    }
+
+    /* Sequential animation for column titles and icons */
+    .column-title,
+    .column-icon-wrapper {
+        opacity: 0;
+        transform: translateY(4px);
+        transition:
+            opacity 0.4s ease-out,
+            transform 0.4s ease-out;
+    }
+
+    .column-title.animate-in,
+    .column-icon-wrapper.animate-in {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: var(--animation-delay, 0ms);
     }
 </style>
