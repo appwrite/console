@@ -15,7 +15,6 @@
         SearchQuery
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDate } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
