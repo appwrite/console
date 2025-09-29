@@ -15,7 +15,8 @@
         SearchQuery
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
@@ -196,9 +197,13 @@
                                     {user.labels.join(', ')}
                                 </Typography.Text>
                             {:else if id === 'joined'}
-                                {toLocaleDateTime(user.registration)}
+                                <DualTimeView time={user.registration} />
                             {:else if id === 'lastActivity'}
-                                {user.accessedAt ? toLocaleDate(user.accessedAt) : 'never'}
+                                {#if user.accessedAt}
+                                    <DualTimeView time={user.accessedAt} />
+                                {:else}
+                                    never
+                                {/if}
                             {:else}
                                 {user[id]}
                             {/if}

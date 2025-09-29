@@ -1,6 +1,7 @@
 <script lang="ts">
     import { type Models, MessagingProviderType } from '@appwrite.io/console';
-    import { CardGrid, Empty, PaginationInline, EmptySearch } from '$lib/components';
+    import { CardGrid, Empty, PaginationInline } from '$lib/components';
+    import { Card, Empty as PinkEmpty } from '@appwrite.io/pink-svelte';
     import TopicsModal from '../topicsModal.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -139,17 +140,21 @@
             {:else if message.status === 'draft'}
                 <Empty on:click={() => (showTopics = true)}>Add a topic</Empty>
             {:else}
-                <EmptySearch hidePagination>
-                    <div class="u-text-center">
-                        No topics have been selected.
-                        <p>
-                            Need a hand? Check out our <Button
-                                href="https://appwrite.io/docs/products/messaging/topics">
-                                documentation</Button
-                            >.
-                        </p>
-                    </div>
-                </EmptySearch>
+                <Card.Base padding="none">
+                    <PinkEmpty
+                        type="secondary"
+                        title="No topics have been selected"
+                        description="Need a hand? Check out our documentation.">
+                        <svelte:fragment slot="actions">
+                            <Button
+                                secondary
+                                href="https://appwrite.io/docs/products/messaging/topics"
+                                external>
+                                Documentation
+                            </Button>
+                        </svelte:fragment>
+                    </PinkEmpty>
+                </Card.Base>
             {/if}
         </svelte:fragment>
         <svelte:fragment slot="actions">
