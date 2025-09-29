@@ -36,7 +36,7 @@
     let columnOptions: Array<{
         value: string;
         label: string;
-        leadingIcon: ComponentType;
+        leadingIcon?: ComponentType;
     }> = $state();
 
     const tableId = page.params.table;
