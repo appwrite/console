@@ -143,8 +143,8 @@
                 <Card.Base padding="none">
                     <PinkEmpty
                         type="secondary"
-                        title="No topics have been selected"
-                        description="Need a hand? Check out our documentation.">
+                        title="No topics were selected"
+                        description="No topics were selected for this message. Need a hand? Check out our documentation.">
                         <svelte:fragment slot="actions">
                             <Button
                                 secondary
