@@ -51,6 +51,7 @@
     import { type Models } from '@appwrite.io/console';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
+    import { formatName } from '$lib/helpers/string';
 
     const updatedColumnsForSheet = $derived.by(() => {
         const baseAttrs = [
@@ -182,6 +183,10 @@
         return `Type: ${formattedType}`;
     }
 
+    function isSystemColumnKey(column: Columns) {
+        return column.key.startsWith('$');
+    }
+
     onDestroy(() => ($showCreateColumnSheet.show = false));
 
     $effect(() => {
@@ -270,10 +275,14 @@
                                         alignItems="center"
                                         gap="xxs">
                                         <Typography.Text truncate>
-                                            {#if column.key === '$id' || column.key === '$sequence' || column.key === '$createdAt' || column.key === '$updatedAt'}
+                                            {#if isSystemColumnKey(column)}
                                                 {column.key}
                                             {:else}
-                                                {column.key} {column.array ? '[]' : undefined}
+                                                {@const key = !column.required
+                                                    ? column.key
+                                                    : formatName(column.key, 6)}
+                                                {key}
+                                                {column.array ? '[]' : undefined}
                                             {/if}
                                         </Typography.Text>
                                         {#if isString(column) && column.encrypt}
