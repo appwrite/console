@@ -25,7 +25,7 @@
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type ComponentProps, onDestroy, type Snippet } from 'svelte';
+    import { type ComponentProps, type Snippet } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { type Entity, EntityContainer } from '$database/(entity)';
@@ -36,18 +36,16 @@
 
     let {
         entity,
-        showCreateColumnSheet = $bindable(),
         onCreateIndex,
         onDeleteIndexes,
         emptyIndexesSheetView,
         emptyColumnsSheetView
     }: {
         entity: Entity;
-        showCreateColumnSheet: boolean;
         onCreateIndex: (index: CreateIndexesCallbackType) => Promise<void>;
         onDeleteIndexes: (indexKeys: string[]) => Promise<void>;
         emptyIndexesSheetView: Snippet<[() => void]>;
-        emptyColumnsSheetView?: Snippet<[() => void]>;
+        emptyColumnsSheetView?: Snippet;
     } = $props();
 
     let showCreateIndex = $state(false);
@@ -82,8 +80,6 @@
                 return undefined;
         }
     }
-
-    onDestroy(() => (showCreateColumnSheet = false));
 
     const emptyCellsLimit = $derived($isSmallViewport ? 14 : 17);
     const emptyCellsCount = $derived(
@@ -237,7 +233,7 @@
                     {@render emptyIndexesSheetView(() => (showCreateIndex = true))}
                 {/if}
             {:else}
-                {@render emptyColumnsSheetView(() => (showCreateColumnSheet = true))}
+                {@render emptyColumnsSheetView()}
             {/if}
 
             {#if selectedIndexes.length > 0}

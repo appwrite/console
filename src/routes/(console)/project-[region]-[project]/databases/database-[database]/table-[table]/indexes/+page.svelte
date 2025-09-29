@@ -5,6 +5,7 @@
     import EmptySheet from '../layout/emptySheet.svelte';
     import { showCreateColumnSheet } from '$database/table-[table]/store';
     import { type CreateIndexesCallbackType, Indexes } from '$database/(entity)';
+    import { onDestroy } from 'svelte';
 
     let { data }: PageProps = $props();
 
@@ -36,13 +37,11 @@
             )
         );
     }
+
+    onDestroy(() => ($showCreateColumnSheet.show = false));
 </script>
 
-<Indexes
-    {onCreateIndex}
-    {onDeleteIndexes}
-    entity={data.table}
-    showCreateColumnSheet={$showCreateColumnSheet.show}>
+<Indexes {onCreateIndex} {onDeleteIndexes} entity={data.table}>
     {#snippet emptyIndexesSheetView(toggle)}
         <EmptySheet
             mode="indexes"
@@ -54,14 +53,14 @@
             }} />
     {/snippet}
 
-    {#snippet emptyColumnsSheetView(toggle)}
+    {#snippet emptyColumnsSheetView()}
         <EmptySheet
             mode="indexes"
             title="You have no columns yet"
             actions={{
                 primary: {
                     text: 'Create columns',
-                    onClick: toggle
+                    onClick: () => ($showCreateColumnSheet.show = true)
                 }
             }} />
     {/snippet}

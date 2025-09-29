@@ -46,7 +46,7 @@
     import { base } from '$app/paths';
     import { canWriteTables } from '$lib/stores/roles';
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
-    import SideSheet from './layout/sidesheet.svelte';
+    import { SideSheet } from '$database/(entity)/views/(layouts)';
     import EditRow from './rows/edit.svelte';
     import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';

@@ -14,7 +14,7 @@
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import type { Column } from '$lib/helpers/types';
     import { expandTabs } from '../table-[table]/store';
-    import SpreadsheetContainer from '../table-[table]/layout/spreadsheet.svelte';
+    import { SpreadsheetContainer } from '$database/(entity)/views/(layouts)';
     import { onDestroy, onMount, tick } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';

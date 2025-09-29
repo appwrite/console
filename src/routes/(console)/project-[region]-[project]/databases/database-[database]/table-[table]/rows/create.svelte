@@ -10,7 +10,7 @@
     import { type Columns, spreadsheetRenderKey } from '../store';
     import { ID, type Models } from '@appwrite.io/console';
     import { Alert, Layout, Typography, Selector } from '@appwrite.io/pink-svelte';
-    import SideSheet from '../layout/sidesheet.svelte';
+    import { SideSheet } from '$database/(entity)/views/(layouts)';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { tick } from 'svelte';

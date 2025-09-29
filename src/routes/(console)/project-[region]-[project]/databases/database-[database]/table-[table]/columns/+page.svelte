@@ -45,8 +45,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import CsvDisabled from '../csvDisabled.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import SideSheet from '../layout/sidesheet.svelte';
-    import SpreadsheetContainer from '../layout/spreadsheet.svelte';
+    import { SideSheet, SpreadsheetContainer } from '$database/(entity)/views/(layouts)';
     import { showCreateColumnSheet } from '../store';
     import { type Models } from '@appwrite.io/console';
     import { preferences } from '$lib/stores/preferences';

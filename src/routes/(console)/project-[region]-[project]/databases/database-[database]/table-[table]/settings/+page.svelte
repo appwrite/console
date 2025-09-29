@@ -21,7 +21,9 @@
     });
 
     async function deleteTable() {
-        await sdk.forProject(page.params.region, page.params.project).tablesDB.deleteTable({ ...params });
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .tablesDB.deleteTable({ ...params });
     }
 
     async function updateTable(
@@ -32,7 +34,9 @@
             rowSecurity: boolean;
         }>
     ) {
-        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateTable({ ...params, ...updates });
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .tablesDB.updateTable({ ...params, ...updates });
     }
 </script>
 

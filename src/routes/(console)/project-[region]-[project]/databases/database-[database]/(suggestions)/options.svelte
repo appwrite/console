@@ -2,7 +2,7 @@
     import type { Snippet } from 'svelte';
     import { Popover } from '@appwrite.io/pink-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import SideSheet from '../table-[table]/layout/sidesheet.svelte';
+    import { SideSheet } from '$database/(entity)/views/(layouts)';
 
     let {
         children,
