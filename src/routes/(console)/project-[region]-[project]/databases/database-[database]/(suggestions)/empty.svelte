@@ -464,7 +464,8 @@
             });
 
             if (mappedColumns.length > 0) {
-                setTimeout(() => {
+                setTimeout(
+                    () => {
                         hasTransitioned = true;
                         // final recal after
                         // all animations complete
@@ -733,7 +734,6 @@
             bottomActionClick={() => {}}>
             <svelte:fragment slot="header" let:root>
                 {#each spreadsheetColumns as column, index (index)}
-                    {@const isColumnInteractable = isCustomColumn(column.id)}
                     {#if column.isAction}
                         <Spreadsheet.Header.Cell column="actions" {root}>
                             <Button.Button icon variant="extra-compact">
@@ -748,6 +748,8 @@
                         {@const columnIconColor = !columnObj?.type
                             ? '--non-overlay-icon-color'
                             : '--overlay-icon-color'}
+                        {@const isColumnInteractable =
+                            isCustomColumn(column.id) && !columnObj.isPlaceholder}
 
                         <Options
                             enabled={isColumnInteractable}
@@ -770,7 +772,6 @@
                                         alignItems="center"
                                         alignContent="center"
                                         justifyContent="space-between">
-                                        <!-- Can be Typography.* -->
                                         <span
                                             class="column-title"
                                             class:animate-in={!columnObj?.isPlaceholder}

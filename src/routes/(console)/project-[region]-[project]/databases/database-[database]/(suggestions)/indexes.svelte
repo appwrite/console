@@ -216,7 +216,7 @@
 
         for (const [i, index] of indexes.entries()) {
             if (!index.key || !index.type || !index.columns || index.columns.length === 0) {
-                modalError = `Index ${i + 1}: Selected column key or type invalid`;
+                modalError = `Index ${i + 1}: Selected column or type invalid`;
                 creatingIndexes = false;
                 return true; // keep sheet open!
             }
