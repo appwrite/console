@@ -199,14 +199,20 @@ function generateSingleValue(
         case 'integer': {
             const intAttr = column as Models.ColumnInteger;
             const min = isWithinSafeRange(intAttr.min) ? intAttr.min : 0;
-            const max = isWithinSafeRange(intAttr.max) ? intAttr.max : Math.max(min + 100, 100);
+            const fallbackMax = Math.max(min + 100, 100);
+            const max = isWithinSafeRange(intAttr.max)
+                ? intAttr.max
+                : Math.min(fallbackMax, Number.MAX_SAFE_INTEGER);
             return faker.number.int({ min, max });
         }
 
         case 'double': {
             const floatAttr = column as Models.ColumnFloat;
             const min = isWithinSafeRange(floatAttr.min) ? floatAttr.min : 0;
-            const max = isWithinSafeRange(floatAttr.max) ? floatAttr.max : Math.max(min + 100, 100);
+            const fallbackMax = Math.max(min + 100, 100);
+            const max = isWithinSafeRange(floatAttr.max)
+                ? floatAttr.max
+                : Math.min(fallbackMax, Number.MAX_SAFE_INTEGER);
             const precision = 4;
 
             return faker.number.float({ min, max, fractionDigits: precision });

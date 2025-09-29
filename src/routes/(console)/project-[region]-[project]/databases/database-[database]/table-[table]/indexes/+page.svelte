@@ -52,7 +52,7 @@
     let showDelete = $state(false);
     let showOverview = $state(false);
 
-    let columns = $state([
+    let columns = $derived([
         { id: 'key', width: { min: $isSmallViewport ? 250 : 200 }, resizable: false },
         { id: 'type', width: 120, resizable: false },
         { id: 'columns', width: { min: 200 }, resizable: false },
