@@ -353,7 +353,7 @@
                     <Button
                         text
                         size="s"
-                        disabled={loadingSuggestions}
+                        disabled={loadingSuggestions || creatingIndexes}
                         on:click={() => {
                             if (indexes.length > 0 && !creatingIndexes) {
                                 confirmDismiss = true;
@@ -388,7 +388,7 @@
             onClick: async () => await applySuggestedIndexes()
         }}
         cancel={{
-            disabled: loadingSuggestions,
+            disabled: loadingSuggestions || creatingIndexes,
             onClick: () => {
                 if (indexes.length > 0 && !creatingIndexes) {
                     confirmDismiss = true;
