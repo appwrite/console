@@ -474,5 +474,5 @@
 </SideSheet>
 
 {#if showFailed}
-    <FailedModal bind:show={showFailed} title="Create attribute" header="Creation failed" {error} />
+    <FailedModal bind:show={showFailed} title="Create column" header="Creation failed" {error} />
 {/if}

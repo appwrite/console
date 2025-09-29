@@ -12,7 +12,6 @@
         UpdateStatus
     } from '$database/(entity)';
 
-    const tablesDB = sdk.forProject(page.params.region, page.params.project).tablesDB;
     const params = $derived.by(() => {
         return {
             name: $table.name,
@@ -22,7 +21,7 @@
     });
 
     async function deleteTable() {
-        await tablesDB.deleteTable({ ...params });
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.deleteTable({ ...params });
     }
 
     async function updateTable(
@@ -33,7 +32,7 @@
             rowSecurity: boolean;
         }>
     ) {
-        await tablesDB.updateTable({ ...params, ...updates });
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateTable({ ...params, ...updates });
     }
 </script>
 

@@ -2,12 +2,17 @@
     import { InputText } from '$lib/elements/forms';
     import { Layout } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
+    import type { TerminologyResult } from '$database/(entity)';
 
     let {
+        terminology,
         selectedIndex = null
     }: {
+        terminology: TerminologyResult;
         selectedIndex: Models.ColumnIndex;
     } = $props();
+
+    const entityType = terminology.entity.title.singular;
 </script>
 
 <InputText
@@ -25,12 +30,13 @@
     value={selectedIndex.type}
     readonly />
 
+<!-- TODO: could be attributes or columns -->
 {#if selectedIndex?.columns?.length}
     {#each selectedIndex.columns as column, i}
         <Layout.Stack direction="row">
             <InputText
                 required
-                label={i === 0 ? 'Column' : ''}
+                label={i === 0 ? entityType : ''}
                 id={`value-${column}`}
                 value={column}
                 readonly />

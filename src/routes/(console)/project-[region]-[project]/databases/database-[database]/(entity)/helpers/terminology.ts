@@ -9,6 +9,7 @@ import type { Term, TerminologyResult, TerminologyShape } from '$database/(entit
 export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectordb';
 export type Entity = Partial<Models.Table>;
 export type Field = Partial<Columns>;
+export type Index = Partial<Models.Index | Models.ColumnIndex>;
 
 export const baseTerminology = {
     tablesdb: {

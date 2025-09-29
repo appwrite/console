@@ -57,12 +57,14 @@
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
     import { sleep } from '$lib/helpers/promises';
-    import CreateIndex from './indexes/createIndex.svelte';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
     import { buildRowUrl, isRelationship } from './rows/store';
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+
+    import { CreateIndex } from '$database/(entity)';
+    import { EntityContainer } from '$database/(entity)/index.js';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -431,10 +433,32 @@
             await createIndex.create();
         }
     }}>
-    <CreateIndex
-        bind:this={createIndex}
-        bind:showCreateIndex={$showCreateIndexSheet.show}
-        externalColumnKey={$showCreateIndexSheet.column} />
+    <EntityContainer>
+        <!-- TODO: @itznotabug, not the best way, see what we can do. -->
+        <!-- Maybe a better setContext logic would suffice! would also avoid using snippets! -->
+        {#snippet children(_, dependencies, terminology)}
+            <CreateIndex
+                entity={$table}
+                bind:this={createIndex}
+                bind:showCreateIndex={$showCreateIndexSheet.show}
+                externalFieldKey={$showCreateIndexSheet.column}
+                {dependencies}
+                {terminology}
+                onCreateIndex={async (index) => {
+                    await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .tablesDB.createIndex({
+                            databaseId: page.params.database,
+                            tableId: page.params.table,
+                            key: index.key,
+                            type: index.type,
+                            columns: index.fields,
+                            lengths: index.lengths,
+                            orders: index.orders
+                        });
+                }} />
+        {/snippet}
+    </EntityContainer>
 </SideSheet>
 
 <SideSheet
