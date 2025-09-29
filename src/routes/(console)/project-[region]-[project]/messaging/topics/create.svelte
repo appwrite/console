@@ -16,7 +16,7 @@
 
     let name: string,
         id: string | null = null,
-        error: string;
+        error: string | null = null;
     let showCustomId = false;
 
     const create = async () => {
