@@ -31,6 +31,7 @@
     import EmptySheet from './layout/emptySheet.svelte';
     import CreateRow from './rows/create.svelte';
     import { onDestroy } from 'svelte';
+    import { isCloud } from '$lib/system';
     import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
 
     export let data: PageData;
@@ -75,6 +76,12 @@
 
     $: hasColumns = !!$table.columns.length;
     $: hasValidColumns = $table?.columns?.some((col) => col.status === 'available');
+    $: canShowSuggestionsSheet =
+        // enabled, has table details
+        // and it matches current table
+        $tableColumnSuggestions.enabled &&
+        $tableColumnSuggestions.table &&
+        $tableColumnSuggestions.table.id === page.params.table;
 
     async function onSelect(file: Models.File, localFile = false) {
         $isCsvImportInProgress = true;
@@ -216,7 +223,7 @@
                         }
                     }} />
             {/if}
-        {:else if $tableColumnSuggestions.enabled && $tableColumnSuggestions.table && $tableColumnSuggestions.table.id === page.params.table}
+        {:else if isCloud && canShowSuggestionsSheet}
             <SuggestionsEmptySheet />
         {:else}
             <EmptySheet

@@ -42,7 +42,7 @@
     import Options from './options.svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { Confirm } from '$lib/components';
-    import { VARS } from '$lib/system';
+    import { isCloud, VARS } from '$lib/system';
 
     import IconAINotification from './icon/aiNotification.svelte';
 
@@ -476,15 +476,15 @@
                     mappedColumns.length * 150 + 300
                 );
             }
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
 
-            trackError(error, Submit.ColumnSuggestions);
-        } finally {
             resetSuggestionsStore(false);
+        } catch (error) {
+            // remove completely!
+            resetSuggestionsStore();
+
+            // track & notify!
+            trackError(error, Submit.ColumnSuggestions);
+            addNotification({ type: 'error', message: error.message });
         }
     }
 
@@ -531,6 +531,9 @@
     }
 
     function showIndexSuggestionsNotification() {
+        // safeguard anyways!
+        if (!isCloud) return;
+
         setTimeout(() => {
             const notifId = addNotification({
                 isHtml: true,
