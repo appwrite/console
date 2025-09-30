@@ -24,7 +24,7 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
     let showCustomId = false;
-    let id: string;
+    let id: string | null = null;
     let file: Models.File;
     let data: Writable<[string, string][]> = writable([['', '']]);
     let title: string;
