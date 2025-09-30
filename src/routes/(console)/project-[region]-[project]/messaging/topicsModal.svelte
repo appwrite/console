@@ -4,7 +4,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { MessagingProviderType, type Models, Query } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
-    import { getTotal } from './wizard/store';
     import {
         Badge,
         Card,
@@ -32,6 +31,19 @@
     let hasSelection = false;
 
     let emptyTopicsExists = false;
+
+    function getTopicTotal(topic: Models.Topic): number {
+        switch (providerType) {
+            case MessagingProviderType.Email:
+                return topic.emailTotal;
+            case MessagingProviderType.Sms:
+                return topic.smsTotal;
+            case MessagingProviderType.Push:
+                return topic.pushTotal;
+            default:
+                return 0;
+        }
+    }
 
     function reset() {
         offset = 0;
@@ -105,6 +117,10 @@
     $: if (show) {
         selected = topicsById;
     }
+
+    $: topicSelectionStates = Object.fromEntries(
+        Object.keys(topicResultsById).map((id) => [id, !!selected[id]])
+    );
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset}>
@@ -128,11 +144,11 @@
                                     id={topicId}
                                     label={topic.name}
                                     disabled={!!topicsById[topicId]}
-                                    checked={!!selected[topicId]}
+                                    checked={topicSelectionStates[topicId] || false}
                                     on:change={(event) => onTopicSelection(event, topic)}>
                                 </Selector.Checkbox>
                                 <span>
-                                    ({getTotal(topic)} targets)
+                                    ({getTopicTotal(topic)} targets)
                                 </span>
                             </Layout.Stack>
                         </Table.Cell>
@@ -174,7 +190,7 @@
                 <Badge variant="secondary" content={selectedSize.toString()} />
                 <span>Topics selected</span>
             </Layout.Stack>
-            <Button submit disabled={!hasSelection}>Add</Button>
+            <Button submit disabled={!hasSelection}>Create</Button>
         </Layout.Stack>
     </svelte:fragment>
 </Modal>
