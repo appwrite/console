@@ -348,7 +348,10 @@
             columnsWithBase.reduce((sum, col) => sum + col.baseWidth, 0);
 
         // distribute excess space equally across custom columns
-        const viewportWidth = spreadsheetContainer?.clientWidth || window.innerWidth;
+        const viewportWidth =
+            spreadsheetContainer?.clientWidth ||
+            (typeof window !== 'undefined' ? window.innerWidth : totalUsed);
+
         const extraPerColumn =
             Math.max(0, viewportWidth - totalUsed) / (columnsWithBase.length || 1);
 
