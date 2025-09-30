@@ -1,11 +1,7 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
-    import {
-        EmptySearch,
-        PaginationWithLimit,
-        EmptyFilter
-    } from '$lib/components';
+    import { EmptySearch, PaginationWithLimit, EmptyFilter } from '$lib/components';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { columns } from './store';
     import { hasPageQueries } from '$lib/components/filters';
