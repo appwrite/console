@@ -6,7 +6,7 @@
     import SendVerificationEmailModal from '../account/sendVerificationEmailModal.svelte';
     import { page } from '$app/state';
     import { wizard, isNewWizardStatusOpen } from '$lib/stores/wizard';
-    import { isCloud, isProductionCloud, VARS } from '$lib/system';
+    import { isCloud, VARS } from '$lib/system';
 
     const hasUser = $derived(!!$user);
     const needsEmailVerification = $derived(hasUser && !$user.emailVerification);
@@ -23,10 +23,9 @@
     );
 
     let showSendVerification = $state(false);
-    let isProduction = $derived(isProductionCloud(page.url));
 </script>
 
-{#if shouldShowEmailBanner && isProduction}
+{#if shouldShowEmailBanner}
     <HeaderAlert type="warning" title="Your email address needs to be verified">
         <svelte:fragment>
             To avoid losing access to your projects, make sure <Typography.Text
