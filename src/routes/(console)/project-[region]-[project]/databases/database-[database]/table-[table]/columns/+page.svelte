@@ -240,7 +240,7 @@
                 <Spreadsheet.Header.Cell column="actions" {root} />
             </svelte:fragment>
 
-            {#each updatedColumnsForSheet as column, index}
+            {#each updatedColumnsForSheet as column, index (column.key)}
                 {@const option = columnOptions.find((option) => option.type === column.type)}
                 {@const isSelectable =
                     column['system'] || column.type === 'relationship' ? 'disabled' : true}
