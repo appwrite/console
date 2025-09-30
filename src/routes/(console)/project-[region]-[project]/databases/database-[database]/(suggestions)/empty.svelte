@@ -451,16 +451,20 @@
 
             const mappedColumns = mapSuggestedColumns(suggestedColumns.columns);
 
-            mappedColumns.forEach((column, index) => {
-                if (index < customColumns.length) {
-                    setTimeout(() => {
-                        customColumns[index] = { ...column, isPlaceholder: false };
+            // replace with actual columns and trim excess
+            if (mappedColumns.length < customColumns.length) {
+                customColumns = customColumns.slice(0, mappedColumns.length);
+            }
 
-                        // recalculate overlay bounds
-                        // after each column is populated!
-                        requestAnimationFrame(() => updateOverlayBounds());
-                    }, index * 150);
-                }
+            // length should match at this point.!
+            mappedColumns.forEach((column, index) => {
+                setTimeout(() => {
+                    customColumns[index] = { ...column, isPlaceholder: false };
+
+                    // recalculate overlay bounds
+                    // after each column is populated!
+                    requestAnimationFrame(() => updateOverlayBounds());
+                }, index * 150);
             });
 
             if (mappedColumns.length > 0) {
@@ -1047,7 +1051,7 @@
     .spreadsheet-container-outer {
         width: 100%;
         position: fixed;
-        overflow: hidden;
+        overflow: visible;
         scrollbar-width: none;
 
         &.custom-columns {
@@ -1174,8 +1178,8 @@
         }
 
         & :global(.spreadsheet-container) {
-            overflow-x: hidden;
-            overflow-y: hidden;
+            overflow-x: auto;
+            overflow-y: auto;
             scrollbar-width: none;
         }
 
