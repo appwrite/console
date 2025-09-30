@@ -21,7 +21,7 @@
     import { providers } from './store';
     import CreateMember from '$routes/(console)/organization-[organization]/createMember.svelte';
 
-    let formRef: any;
+    let formRef: Form;
 
     async function create() {
         try {
