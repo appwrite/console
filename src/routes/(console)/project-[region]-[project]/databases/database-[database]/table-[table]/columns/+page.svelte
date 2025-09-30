@@ -50,6 +50,7 @@
     import { type Models } from '@appwrite.io/console';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
+    import { formatName } from '$lib/helpers/string';
 
     const updatedColumnsForSheet = $derived.by(() => {
         const baseAttrs = [
@@ -181,6 +182,10 @@
         return `Type: ${formattedType}`;
     }
 
+    function isSystemColumnKey(column: Columns) {
+        return column.key.startsWith('$');
+    }
+
     onDestroy(() => ($showCreateColumnSheet.show = false));
 
     $effect(() => {
@@ -225,9 +230,9 @@
             bind:selectedRows={selectedColumns}
             columns={[
                 // more size until we decide if we want a new column!
-                { id: 'key', width: { min: $isSmallViewport ? 250 : 200 } },
-                { id: 'indexed', width: { min: 150 } },
-                { id: 'default', width: { min: 200 } },
+                { id: 'key', width: { min: 300 }, resizable: false },
+                { id: 'indexed', width: { min: 150 }, resizable: false },
+                { id: 'default', width: { min: 200 }, resizable: false },
                 { id: 'actions', width: 40, isAction: true }
             ]}
             bottomActionClick={() => ($showCreateColumnSheet.show = true)}>
@@ -268,13 +273,17 @@
                                         direction="row"
                                         alignItems="center"
                                         gap="xxs">
-                                        <span class="text u-trim-1" data-private>
-                                            {#if column.key === '$id' || column.key === '$sequence' || column.key === '$createdAt' || column.key === '$updatedAt'}
-                                                {column['name']}
+                                        <Typography.Text truncate>
+                                            {#if isSystemColumnKey(column)}
+                                                {column.key}
                                             {:else}
-                                                {column.key} {column.array ? '[]' : undefined}
+                                                {@const key = !column.required
+                                                    ? column.key
+                                                    : formatName(column.key, 6)}
+                                                {key}
+                                                {column.array ? '[]' : undefined}
                                             {/if}
-                                        </span>
+                                        </Typography.Text>
                                         {#if isString(column) && column.encrypt}
                                             <Tooltip>
                                                 <Icon
@@ -475,3 +484,13 @@
 {#if showFailed}
     <FailedModal bind:show={showFailed} title="Create column" header="Creation failed" {error} />
 {/if}
+
+<style lang="scss">
+    .floating-action-bar {
+        left: 50%;
+        width: 100%;
+        z-index: 14;
+        position: absolute;
+        transform: translateX(-50%);
+    }
+</style>

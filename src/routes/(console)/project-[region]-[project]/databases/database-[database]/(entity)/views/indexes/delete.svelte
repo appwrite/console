@@ -22,13 +22,12 @@
     let selectedKeys = $derived(getKeys(selectedIndex));
 
     function getKeys(selected: Models.ColumnIndex | string[]): string[] {
-        console.log(`getKeys`, selected);
         return Array.isArray(selected) ? selected : [selected.key];
     }
 
     async function cleanup() {
         // reset selection!
-        selectedIndex = [];
+        selectedIndex = Array.isArray(selectedIndex) ? [] : null;
 
         showDelete = false; // hide.
 

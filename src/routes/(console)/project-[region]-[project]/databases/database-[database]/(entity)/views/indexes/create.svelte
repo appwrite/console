@@ -18,11 +18,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import { isRelationship, isSpatialType } from '$database/table-[table]/rows/store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
-    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { IconCalendar, IconFingerPrint, IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import type { DependenciesResult, Entity, TerminologyResult } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { IndexType } from '@appwrite.io/console';
+    import { columnOptions as baseColumnOptions } from '$database/table-[table]/columns/store';
 
     let {
         entity,
@@ -55,7 +56,11 @@
                 // keep non-relationship and non-spatial
                 return !isRelationship(field) && !isSpatialType(field);
             })
-            .map((field) => ({ value: field.key, label: field.key }))
+            .map((field) => ({
+                value: field.key,
+                label: field.key,
+                leadingIcon: baseColumnOptions.find((option) => option.type === field.type)?.icon
+            }))
     );
 
     let fieldList = $state([{ value: '', order: '', length: null }]);
@@ -178,7 +183,7 @@
                       ]
                     : undefined
             });
-            trackEvent(Submit.IndexCreate);
+            trackEvent(Submit.IndexCreate, { type: 'manual' });
             showCreateIndex = false;
         } catch (err) {
             addNotification({
@@ -222,9 +227,17 @@
                     ...(selectedType === IndexType.Spatial
                         ? []
                         : [
-                              { value: '$id', label: '$id' },
-                              { value: '$createdAt', label: '$createdAt' },
-                              { value: '$updatedAt', label: '$updatedAt' }
+                              { value: '$id', label: '$id', leadingIcon: IconFingerPrint },
+                              {
+                                  value: '$createdAt',
+                                  label: '$createdAt',
+                                  leadingIcon: IconCalendar
+                              },
+                              {
+                                  value: '$updatedAt',
+                                  label: '$updatedAt',
+                                  leadingIcon: IconCalendar
+                              }
                           ]),
                     ...fieldOptions
                 ]}
