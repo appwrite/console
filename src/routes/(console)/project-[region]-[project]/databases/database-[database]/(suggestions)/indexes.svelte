@@ -9,7 +9,7 @@
         type SuggestedIndexSchema
     } from './store';
     import { Modal, Confirm } from '$lib/components';
-    import SideSheet from '../table-[table]/layout/sidesheet.svelte';
+    import { SideSheet } from '$database/(entity)/views/(layouts)';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { IndexType, type Models } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
