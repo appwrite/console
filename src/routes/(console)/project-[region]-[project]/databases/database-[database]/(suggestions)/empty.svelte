@@ -156,10 +156,8 @@
                 const actionsRect = actionsCell.getBoundingClientRect();
                 const left = Math.round(idRect.right - containerRect.left);
                 const actionsLeft = actionsRect.left - containerRect.left;
-                const width = Math.min(
-                    customColumns.length * 180, // estimated minimum placeholder width
-                    actionsLeft - left // don't exceed actions column
-                );
+
+                const width = actionsLeft - left;
 
                 spreadsheetContainer.style.setProperty('--group-left', `${left - 2}px`);
                 spreadsheetContainer.style.setProperty('--group-width', `${width + 2}px`);
@@ -219,27 +217,22 @@
 
         const left = Math.round(startLeft - containerRect.left);
 
-        // maximum possible width of all custom columns
-        const totalFullWidth = customColumns.reduce(
-            (total, col) => total + getColumnWidth(col.key),
-            0
-        );
-
         // get the actions column and use its left border as the boundary
         const actionsCell = headerElement!.querySelector<HTMLElement>(
             '[role="cell"][data-column-id="actions"]'
         );
-        const rawVisibleWidth = Math.round(visibleRight - idRect.right);
-        let maxAllowedWidth = rawVisibleWidth;
 
-        if (actionsCell) {
-            const actionsRect = actionsCell.getBoundingClientRect();
-            const actionsLeft = actionsRect.left - containerRect.left;
-            maxAllowedWidth = Math.min(rawVisibleWidth, actionsLeft - left);
+        if (!actionsCell) {
+            if (rangeOverlayEl) {
+                rangeOverlayEl.style.display = 'none';
+            }
+            return;
         }
 
-        // Set overlay width to not exceed actions column boundary
-        const width = Math.min(totalFullWidth, maxAllowedWidth);
+        const actionsRect = actionsCell.getBoundingClientRect();
+        const actionsLeft = actionsRect.left - containerRect.left;
+
+        const width = actionsLeft - left;
 
         // Apply overlay positioning
         spreadsheetContainer.style.setProperty('--group-left', `${left - 2}px`);
@@ -338,25 +331,55 @@
         });
     });
 
-    const getRowColumns = (): Column[] => [
-        {
-            id: '$id',
-            title: '$id',
-            type: 'string',
-            width: 180,
-            icon: IconFingerPrint,
-            ...baseColProps
-        },
-        ...customSuggestedColumns,
-        {
-            id: 'actions',
-            title: '',
-            type: 'string' as Column['type'],
-            width: 40,
-            isAction: true,
-            ...baseColProps
-        }
-    ];
+    const getRowColumns = (): Column[] => {
+        const minColumnWidth = 180;
+        const fixedWidths = { id: minColumnWidth, actions: 40, selection: 40 };
+
+        // calculate base widths and total
+        const columnsWithBase = customSuggestedColumns.map((col) => ({
+            ...col,
+            baseWidth: Math.max(minColumnWidth, getColumnWidth(col.id))
+        }));
+
+        const totalUsed =
+            fixedWidths.id +
+            fixedWidths.actions +
+            fixedWidths.selection +
+            columnsWithBase.reduce((sum, col) => sum + col.baseWidth, 0);
+
+        // distribute excess space equally across custom columns
+        const viewportWidth =
+            spreadsheetContainer?.clientWidth ||
+            (typeof window !== 'undefined' ? window.innerWidth : totalUsed);
+
+        const extraPerColumn =
+            Math.max(0, viewportWidth - totalUsed) / (columnsWithBase.length || 1);
+
+        const finalCustomColumns = columnsWithBase.map((col) => ({
+            ...col,
+            width: { min: col.baseWidth + extraPerColumn }
+        }));
+
+        return [
+            {
+                id: '$id',
+                title: '$id',
+                type: 'string',
+                width: fixedWidths.id,
+                icon: IconFingerPrint,
+                ...baseColProps
+            },
+            ...finalCustomColumns,
+            {
+                id: 'actions',
+                title: '',
+                type: 'string' as Column['type'],
+                width: fixedWidths.actions,
+                isAction: true,
+                ...baseColProps
+            }
+        ];
+    };
 
     // Handle browser back/forward navigation
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
