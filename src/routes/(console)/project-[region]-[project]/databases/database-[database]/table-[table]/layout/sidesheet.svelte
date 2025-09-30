@@ -5,16 +5,19 @@
     import { Button, Form } from '$lib/elements/forms';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { Badge, Divider, Layout, Sheet, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import type { HTMLAttributes } from 'svelte/elements';
 
     let {
         show = $bindable(false),
         title,
         closeOnBlur = false,
         submit,
+        cancel,
         children = null,
         footer = null,
         titleBadge = null,
-        topAction = null
+        topAction = null,
+        ...restProps
     }: {
         show: boolean;
         title: string;
@@ -36,9 +39,16 @@
                   onClick?: () => boolean | void | Promise<boolean | void>;
               }
             | undefined;
+        cancel?:
+            | {
+                  text?: string;
+                  disabled?: boolean;
+                  onClick?: () => void;
+              }
+            | undefined;
         children?: Snippet;
         footer?: Snippet | null;
-    } = $props();
+    } & HTMLAttributes<HTMLDivElement> = $props();
 
     let form: Form;
     let submitting = $state(writable(false));
@@ -46,7 +56,7 @@
     let copyText = $state(undefined);
 </script>
 
-<div class="sheet-container" data-side-sheet-visible={show}>
+<div class="sheet-container" data-side-sheet-visible={show} {...restProps}>
     <Sheet bind:open={show} {closeOnBlur}>
         <div slot="header" style:width="100%">
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -110,8 +120,19 @@
                                 {#if footer}
                                     {@render footer?.()}
                                 {/if}
-                                <Button size="s" secondary on:click={() => (show = false)}
-                                    >Cancel</Button>
+
+                                <Button
+                                    size="s"
+                                    secondary
+                                    disabled={cancel?.disabled}
+                                    on:click={() => {
+                                        if (cancel?.onClick) {
+                                            cancel.onClick();
+                                        } else {
+                                            show = false;
+                                        }
+                                    }}>{cancel?.text ?? 'Cancel'}</Button>
+
                                 <Button
                                     size="s"
                                     submit
