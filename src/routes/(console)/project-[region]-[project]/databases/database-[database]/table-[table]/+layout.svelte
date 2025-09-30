@@ -94,8 +94,8 @@
                 ) {
                     // don't invalidate when -
                     // 1. from faker
-                    // 2. ai columns creation
-                    // 3. ai indexes creation
+                    // 2. ai indexes creation
+                    // 3. ai columns creation
                     if (
                         !isWaterfallFromFaker &&
                         !$showIndexesSuggestions &&
