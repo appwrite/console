@@ -115,7 +115,7 @@
             <Fieldset legend="Targets">
                 <Targets type={MessagingProviderType.Sms} bind:topics bind:targets />
             </Fieldset>
-            <Fieldset legend="Schedule">
+            <Fieldset legend="Settings">
                 <Schedule bind:scheduledAt {targets} />
             </Fieldset>
         </Layout.Stack>
