@@ -458,7 +458,7 @@
 </div>
 
 {#if selectedColumn}
-    <DeleteColumn bind:showDelete {selectedColumn} />
+    <DeleteColumn bind:showDelete bind:selectedColumn />
 {:else if selectedColumns && selectedColumns.length}
     <DeleteColumn bind:showDelete bind:selectedColumn={selectedColumns} />
 {/if}
@@ -476,3 +476,13 @@
 {#if showFailed}
     <FailedModal bind:show={showFailed} title="Create attribute" header="Creation failed" {error} />
 {/if}
+
+<style>
+    .floating-action-bar {
+        left: 50%;
+        width: 100%;
+        z-index: 14;
+        position: absolute;
+        transform: translateX(-50%);
+    }
+</style>
