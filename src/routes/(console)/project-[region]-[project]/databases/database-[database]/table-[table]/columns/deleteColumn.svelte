@@ -61,7 +61,7 @@
 
             await invalidate(Dependencies.TABLE);
             showDelete = false;
-            selectedColumn = [];
+            selectedColumn = Array.isArray(selectedColumn) ? [] : null;
         } catch (e) {
             error = e.message;
             trackError(e, Submit.ColumnDelete);

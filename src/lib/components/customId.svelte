@@ -27,10 +27,12 @@
             id = null;
         }
 
-        if (!id?.length) {
+        if (id !== null && !id.length) {
             id = null;
         }
+    });
 
+    $effect(() => {
         if (show) {
             trackEvent(Click.ShowCustomIdClick);
         }
