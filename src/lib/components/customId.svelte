@@ -27,7 +27,7 @@
             id = null;
         }
 
-        if (!id?.length) {
+        if (id !== null && !id?.length) {
             id = null;
         }
 
