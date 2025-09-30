@@ -21,14 +21,16 @@
 </script>
 
 <Layout.Stack>
-    <header class="form-header" class:hide-divider={!$$slots.subtitle}>
-        <Typography.Title><slot name="title" /></Typography.Title>
-        {#if $$slots.subtitle}
-            <p>
-                <slot name="subtitle" />
-            </p>
-        {/if}
-    </header>
+    {#if $$slots.title || $$slots.subtitle}
+        <header class="form-header" class:hide-divider={!$$slots.subtitle}>
+            <Typography.Title><slot name="title" /></Typography.Title>
+            {#if $$slots.subtitle}
+                <p>
+                    <slot name="subtitle" />
+                </p>
+            {/if}
+        </header>
+    {/if}
 
     <slot />
 </Layout.Stack>
