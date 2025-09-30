@@ -227,7 +227,9 @@
                         hasDivider
                         href={`https://appwrite.io/docs/products/messaging/${$provider}`}
                         title="Read the guide in the docs"
-                        icon={IconBookOpen} />
+                        icon={IconBookOpen}
+                        target="_blank"
+                        rel="noreferrer" />
                     <ActionList.Item.Button
                         on:click={() => {
                             $newMemberModal = true;
