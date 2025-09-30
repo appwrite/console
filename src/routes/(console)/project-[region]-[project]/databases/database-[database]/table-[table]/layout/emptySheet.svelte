@@ -18,7 +18,7 @@
         spreadsheetLoading,
         expandTabs
     } from '../store';
-    import { SpreadsheetContainer } from '$database/(entity)/views/(layouts)';
+    import { SpreadsheetContainer } from '$database/(entity)';
     import { onDestroy, onMount } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
     import { columnOptions } from '../columns/store';
