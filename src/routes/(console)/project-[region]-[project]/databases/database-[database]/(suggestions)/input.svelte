@@ -34,10 +34,8 @@
             <IconAI />
 
             <Layout.Stack direction="column" gap="none">
-                <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography.Text variant="m-500" color="--fgcolor-neutral-primary"
-                        >{title}</Typography.Text>
-                </Layout.Stack>
+                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary"
+                    >{title}</Typography.Text>
 
                 <Typography.Text color="--fgcolor-neutral-secondary">
                     {subtitle}
