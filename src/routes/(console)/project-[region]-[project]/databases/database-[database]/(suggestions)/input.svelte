@@ -1,13 +1,11 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
+    import { isCloud } from '$lib/system';
     import IconAI from './icon/ai.svelte';
     import { slide } from 'svelte/transition';
     import { tableColumnSuggestions } from './store';
     import { Button, InputTextarea } from '$lib/elements/forms';
-    import { Card, Icon, Layout, Selector, Typography } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
-    import { isSmallViewport } from '$lib/stores/viewport';
-    import { isCloud } from '$lib/system';
-    import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
+    import { Card, Layout, Selector, Typography } from '@appwrite.io/pink-svelte';
 
     onMount(() => {
         if (featureActive) {
@@ -17,51 +15,49 @@
 
     const featureActive = $derived(isCloud);
 
+    const title = $derived.by(() => {
+        return featureActive
+            ? 'Smart column suggestions'
+            : 'Smart column suggestions available on Cloud';
+    });
+
     const subtitle = $derived.by(() => {
         return featureActive
             ? 'Enable AI to suggest useful columns based on your table name'
-            : 'AI suggestions are available on all Appwrite Cloud projects';
+            : 'Sign up for Cloud to generate columns based on your table name';
     });
 </script>
 
 <Card.Base variant="secondary" radius="s" padding="xs">
-    <Layout.Stack gap="m">
-        <Layout.Stack
-            gap="s"
-            direction="row"
-            alignItems={$isSmallViewport ? 'flex-start' : 'center'}>
+    <Layout.Stack gap={featureActive ? 'm' : 'l'}>
+        <Layout.Stack gap="s" direction="row" alignItems="flex-start">
             <IconAI />
 
             <Layout.Stack direction="column" gap="none">
                 <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                     <Typography.Text variant="m-500" color="--fgcolor-neutral-primary"
-                        >Smart column suggestions</Typography.Text>
-
-                    <div class="suggestions-switch">
-                        <Selector.Switch
-                            id="suggestions"
-                            label={undefined}
-                            disabled={!featureActive}
-                            bind:checked={$tableColumnSuggestions.enabled} />
-                    </div>
+                        >{title}</Typography.Text>
                 </Layout.Stack>
 
                 <Typography.Text color="--fgcolor-neutral-secondary">
                     {subtitle}
                 </Typography.Text>
             </Layout.Stack>
+
+            {#if featureActive}
+                <div class="suggestions-switch">
+                    <Selector.Switch
+                        id="suggestions"
+                        label={undefined}
+                        bind:checked={$tableColumnSuggestions.enabled} />
+                </div>
+            {/if}
         </Layout.Stack>
 
         {#if !featureActive}
-            <Layout.Stack inline alignItems="flex-end">
-                <Button
-                    external
-                    secondary
-                    fullWidthMobile
-                    href="https://cloud.appwrite.io/register">
+            <Layout.Stack>
+                <Button external secondary href="https://cloud.appwrite.io/register">
                     Sign up
-
-                    <Icon icon={IconExternalLink} size="s" />
                 </Button>
             </Layout.Stack>
         {/if}
