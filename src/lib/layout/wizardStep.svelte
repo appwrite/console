@@ -22,8 +22,13 @@
 
 <Layout.Stack>
     {#if $$slots.title || $$slots.subtitle}
-        <header class="form-header" class:hide-divider={!$$slots.subtitle}>
-            <Typography.Title><slot name="title" /></Typography.Title>
+        <header
+            class="form-header"
+            class:hide-divider={!$$slots.subtitle}
+            class:only-subtitle={!$$slots.title && $$slots.subtitle}>
+            {#if $$slots.title}
+                <Typography.Title><slot name="title" /></Typography.Title>
+            {/if}
             {#if $$slots.subtitle}
                 <p>
                     <slot name="subtitle" />
@@ -43,5 +48,9 @@
     .hide-divider {
         padding-block-end: 0;
         border-block-end: none;
+    }
+
+    .only-subtitle {
+        margin-block-end: 0.5rem;
     }
 </style>
