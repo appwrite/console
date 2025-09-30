@@ -456,10 +456,18 @@
                 customColumns = customColumns.slice(0, mappedColumns.length);
             }
 
-            // length should match at this point.!
+            // replace existing placeholders and
+            // add any additional columns if needed
             mappedColumns.forEach((column, index) => {
                 setTimeout(() => {
-                    customColumns[index] = { ...column, isPlaceholder: false };
+                    if (index < customColumns.length) {
+                        // replace existing placeholder
+                        customColumns[index] = { ...column, isPlaceholder: false };
+                    } else {
+                        // new column directly if we have more than expected
+                        // just added in case the max ever changes on backend!
+                        customColumns.push({ ...column, isPlaceholder: false });
+                    }
 
                     // recalculate overlay bounds
                     // after each column is populated!
