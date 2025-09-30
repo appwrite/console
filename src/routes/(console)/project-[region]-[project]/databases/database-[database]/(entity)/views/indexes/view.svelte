@@ -28,7 +28,13 @@
     import { type ComponentProps, type Snippet } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { type Entity, type CreateIndexesCallbackType, EntityContainer, SpreadsheetContainer, SideSheet } from '$database/(entity)';
+    import {
+        type Entity,
+        type CreateIndexesCallbackType,
+        EntityContainer,
+        SpreadsheetContainer,
+        SideSheet
+    } from '$database/(entity)';
 
     // TODO: change `column` to `entity`!
 
