@@ -297,7 +297,7 @@
         switch (type) {
             case 'string':
                 return IconText;
-            case 'float':
+            case 'double':
             case 'integer':
                 return IconHashtag;
             case 'boolean':
