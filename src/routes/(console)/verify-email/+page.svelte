@@ -9,6 +9,7 @@
     import { base } from '$app/paths';
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/state';
+    import { realtime } from '$lib/stores/sdk';
 
     let sideBarIsOpen = writable(false);
     let showAccountMenu = writable(false);
@@ -60,12 +61,20 @@
             return;
         }
 
+        const unsubscribe = realtime.forProject('', '').subscribe(['account'], async () => {
+            await invalidate(Dependencies.ACCOUNT);
+            checkEmailVerification();
+        });
+
         const interval = setInterval(async () => {
             await invalidate(Dependencies.ACCOUNT);
             checkEmailVerification();
-        }, 2000);
+        }, 10000);
 
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            unsubscribe();
+        };
     });
 </script>
 
