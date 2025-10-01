@@ -6,11 +6,13 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { Badge, Divider, Layout, Sheet, Tag, Typography } from '@appwrite.io/pink-svelte';
     import type { HTMLAttributes } from 'svelte/elements';
+    import { beforeNavigate } from '$app/navigation';
 
     let {
         show = $bindable(false),
         title,
         closeOnBlur = false,
+        autoCloseOnNavigate = true,
         submit,
         cancel,
         children = null,
@@ -23,6 +25,7 @@
         title: string;
         titleBadge?: string;
         closeOnBlur?: boolean;
+        autoCloseOnNavigate?: boolean;
         topAction?:
             | {
                   text: string;
@@ -54,6 +57,9 @@
     let submitting = $state(writable(false));
 
     let copyText = $state(undefined);
+    beforeNavigate(() => {
+        if (autoCloseOnNavigate) show = false;
+    });
 </script>
 
 <div class="sheet-container" data-side-sheet-visible={show} {...restProps}>
