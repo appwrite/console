@@ -20,13 +20,11 @@
     let resendTimer = $state(0);
     let timerInterval: ReturnType<typeof setInterval> | null = null;
 
-    async function logout(redirect = true) {
+    async function logout() {
         try {
             await sdk.forConsole.account.deleteSession({ sessionId: 'current' });
-            if (redirect) {
-                await invalidate(Dependencies.ACCOUNT);
-                goto(`${base}/login`);
-            }
+            await invalidate(Dependencies.ACCOUNT);
+            goto(`${base}/login`);
         } catch (error) {
             addNotification({
                 type: 'error',
