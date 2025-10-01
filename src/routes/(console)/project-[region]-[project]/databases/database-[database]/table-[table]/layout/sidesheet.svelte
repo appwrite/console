@@ -12,7 +12,6 @@
         show = $bindable(false),
         title,
         closeOnBlur = false,
-        autoCloseOnNavigate = true,
         submit,
         cancel,
         children = null,
@@ -25,7 +24,6 @@
         title: string;
         titleBadge?: string;
         closeOnBlur?: boolean;
-        autoCloseOnNavigate?: boolean;
         topAction?:
             | {
                   text: string;
@@ -58,7 +56,7 @@
 
     let copyText = $state(undefined);
     beforeNavigate(() => {
-        if (autoCloseOnNavigate) show = false;
+        show = false;
     });
 </script>
 
