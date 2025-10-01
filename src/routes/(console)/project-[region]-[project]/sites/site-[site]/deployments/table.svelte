@@ -61,6 +61,7 @@
         } finally {
             selectedRows = [];
             invalidate(Dependencies.DEPLOYMENTS);
+            invalidate(Dependencies.SITE);
         }
     }
 </script>

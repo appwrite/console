@@ -22,6 +22,7 @@
                 siteId: selectedDeployment.resourceId,
                 deploymentId: selectedDeployment.$id
             });
+            await invalidate(Dependencies.DEPLOYMENTS);
             await invalidate(Dependencies.SITE);
             if (page.url.href.includes(`deployment-${selectedDeployment.$id}`)) {
                 await goto(
