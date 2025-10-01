@@ -25,23 +25,18 @@
         tableColumnSuggestions,
         basicColumnOptions,
         mockSuggestions,
-        createTableRequest,
         showIndexesSuggestions
     } from './store';
     import { addNotification, dismissNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { sleep } from '$lib/helpers/promises';
-    import { invalidate, beforeNavigate, goto } from '$app/navigation';
-    import { showCreateTable } from '../store';
-    import { showSubNavigation } from '$lib/stores/layout';
-    import { navigationCancelled } from '$lib/stores/navigation';
+    import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { isWithinSafeRange } from '$lib/helpers/numbers';
     import type { Columns } from '../table-[table]/store';
     import { columnOptions } from '../table-[table]/columns/store';
     import Options from './options.svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
-    import { Confirm } from '$lib/components';
     import { isCloud, VARS } from '$lib/system';
 
     import IconAINotification from './icon/aiNotification.svelte';
@@ -61,10 +56,6 @@
     let showFloatingBar = $state(true);
     let hasTransitioned = $state(false);
     let scrollAnimationFrame: number | null = null;
-
-    let confirmDismiss = $state(false);
-    let confirmNavigation = $state(false);
-    let pendingNavigationUrl: string | null = null;
 
     let creatingColumns = $state(false);
     const baseColProps = { draggable: false, resizable: false };
@@ -289,26 +280,6 @@
         });
     };
 
-    // Handle create table requests from subNavigation
-    const unsubscribeCreateTable = createTableRequest.subscribe((requested) => {
-        if (requested) {
-            const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
-            if (hasRealColumns && !creatingColumns) {
-                confirmNavigation = true;
-                pendingNavigationUrl = 'create-table';
-            } else {
-                executeCreateTable();
-            }
-
-            createTableRequest.set(false);
-        }
-    });
-
-    function executeCreateTable() {
-        $showCreateTable = true;
-        $showSubNavigation = false;
-    }
-
     const customSuggestedColumns = $derived.by(() => {
         return customColumns.map((col: SuggestedColumnSchema) => {
             const columnOption = getColumnOption(col.type, col.format);
@@ -381,17 +352,6 @@
         ];
     };
 
-    // Handle browser back/forward navigation
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-        const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
-        if (hasRealColumns && !creatingColumns) {
-            event.preventDefault();
-            event.returnValue =
-                'You have unsaved column suggestions. Are you sure you want to leave?';
-            return event.returnValue;
-        }
-    };
-
     const spreadsheetColumns = $derived(getRowColumns());
     const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
 
@@ -403,16 +363,6 @@
 
         requestAnimationFrame(recalcAll);
         await suggestColumns();
-    });
-
-    beforeNavigate(({ cancel, to }) => {
-        const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
-        if (hasRealColumns && !creatingColumns) {
-            cancel();
-            confirmNavigation = true;
-            $navigationCancelled = true;
-            pendingNavigationUrl = to?.url?.pathname || null;
-        }
     });
 
     function resetSuggestionsStore(fullReset: boolean = true) {
@@ -459,7 +409,7 @@
                         databaseId: page.params.database,
                         tableId: page.params.table,
                         context: $tableColumnSuggestions.context ?? undefined,
-                        min: 6 // TODO: to not break the sheet layout's width!
+                        min: 6
                     })) as unknown as {
                     total: number;
                     columns: ColumnInput[];
@@ -740,11 +690,10 @@
 
         customColumns = [];
         resetSuggestionsStore();
-        unsubscribeCreateTable();
     });
 </script>
 
-<svelte:window on:resize={recalcAll} on:scroll={recalcAll} on:beforeunload={handleBeforeUnload} />
+<svelte:window on:resize={recalcAll} on:scroll={recalcAll} />
 
 <div
     bind:this={spreadsheetContainer}
@@ -1023,7 +972,10 @@
                             size="xs"
                             variant="text"
                             disabled={creatingColumns}
-                            on:click={() => (confirmDismiss = true)}
+                            on:click={() => {
+                                customColumns = [];
+                                resetSuggestionsStore();
+                            }}
                             style="opacity: {creatingColumns ? '0' : '1'}"
                             >Dismiss
                         </Button.Button>
@@ -1041,42 +993,6 @@
         </div>
     {/if}
 </div>
-
-<Confirm
-    confirmDeletion
-    action="Dismiss"
-    title="Dismiss columns"
-    bind:open={confirmDismiss}
-    onSubmit={() => {
-        customColumns = [];
-        resetSuggestionsStore();
-    }}>
-    Are you sure you want to dismiss these columns suggested by AI? This action is irreversible.
-</Confirm>
-
-<Confirm
-    confirmDeletion
-    action="Leave"
-    title="Leave page"
-    bind:open={confirmNavigation}
-    onSubmit={() => {
-        customColumns = [];
-        resetSuggestionsStore();
-        confirmNavigation = false;
-
-        if (pendingNavigationUrl) {
-            if (pendingNavigationUrl === 'create-table') {
-                executeCreateTable();
-            } else {
-                goto(pendingNavigationUrl);
-            }
-
-            pendingNavigationUrl = null;
-        }
-    }}>
-    You have unsaved column suggestions. If you leave this page, you'll lose these suggestions. Are
-    you sure you want to continue?
-</Confirm>
 
 <style lang="scss">
     .spreadsheet-container-outer {
