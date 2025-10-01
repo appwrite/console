@@ -28,7 +28,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { subNavigation } from '$lib/stores/database';
-    import { createTableRequest, tableColumnSuggestions } from './(suggestions)/store';
 
     let data = $derived(page.data) as PageData;
 
@@ -147,15 +146,8 @@
                     <Button
                         compact
                         on:click={() => {
-                            if (
-                                $tableColumnSuggestions.enabled &&
-                                $tableColumnSuggestions.table?.id
-                            ) {
-                                $createTableRequest = true;
-                            } else {
-                                $showCreateTable = true;
-                                $showSubNavigation = false;
-                            }
+                            $showCreateTable = true;
+                            $showSubNavigation = false;
                         }}>
                         Create table
                     </Button>

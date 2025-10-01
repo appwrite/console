@@ -46,8 +46,6 @@ export const tableColumnSuggestions = writable<TableColumnSuggestions>({
     table: null
 });
 
-export const createTableRequest = writable<boolean>(false);
-
 export const showIndexesSuggestions = writable<boolean>(false);
 
 export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
