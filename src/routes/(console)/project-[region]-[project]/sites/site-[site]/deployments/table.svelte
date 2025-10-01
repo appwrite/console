@@ -60,8 +60,10 @@
             trackError(error, Submit.DeploymentDelete);
         } finally {
             selectedRows = [];
-            invalidate(Dependencies.DEPLOYMENTS);
-            invalidate(Dependencies.SITE);
+            await Promise.all([
+                invalidate(Dependencies.DEPLOYMENTS),
+                invalidate(Dependencies.SITE)
+            ]);
         }
     }
 </script>
