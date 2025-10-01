@@ -27,6 +27,13 @@
 
     let creatingTable = $state(false);
 
+    function enableThinkingModeForSuggestions() {
+        if ($tableColumnSuggestions.enabled) {
+            // if enabled, trigger thinking mode!
+            $tableColumnSuggestions.thinking = true;
+        }
+    }
+
     async function createTable() {
         error = null;
         try {
@@ -53,6 +60,9 @@
             name = id = null;
             showCreate = false;
             creatingTable = false;
+
+            // don't wait for UI to mount!
+            enableThinkingModeForSuggestions();
         } catch (e) {
             error = e.message;
             trackError(e, Submit.TableCreate);

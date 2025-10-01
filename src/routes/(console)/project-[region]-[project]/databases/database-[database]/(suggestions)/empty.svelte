@@ -352,17 +352,6 @@
         ];
     };
 
-    // Handle browser back/forward navigation
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-        const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
-        if (hasRealColumns && !creatingColumns) {
-            event.preventDefault();
-            event.returnValue =
-                'You have unsaved column suggestions. Are you sure you want to leave?';
-            return event.returnValue;
-        }
-    };
-
     const spreadsheetColumns = $derived(getRowColumns());
     const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
 
@@ -420,7 +409,7 @@
                         databaseId: page.params.database,
                         tableId: page.params.table,
                         context: $tableColumnSuggestions.context ?? undefined,
-                        min: 6 // TODO: to not break the sheet layout's width!
+                        min: 6
                     })) as unknown as {
                     total: number;
                     columns: ColumnInput[];
@@ -704,7 +693,7 @@
     });
 </script>
 
-<svelte:window on:resize={recalcAll} on:scroll={recalcAll} on:beforeunload={handleBeforeUnload} />
+<svelte:window on:resize={recalcAll} on:scroll={recalcAll} />
 
 <div
     bind:this={spreadsheetContainer}
