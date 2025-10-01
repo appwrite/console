@@ -97,7 +97,7 @@
     export let data: PageData;
     export let showRowCreateSheet: {
         show: boolean;
-        row: Models.Row | null;
+        row: Partial<Models.Row> | null;
     };
 
     $: rows = writable(data.rows);
@@ -543,7 +543,13 @@
             }
 
             if (action === 'duplicate-row') {
-                showRowCreateSheet.row = row;
+                /**
+                 * remove dates because
+                 * console can override timestamps!
+                 */
+                const { $createdAt, $updatedAt, ...rowWithoutDates } = row;
+
+                showRowCreateSheet.row = rowWithoutDates;
                 showRowCreateSheet.show = true;
             }
 
