@@ -6,6 +6,7 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { Badge, Divider, Layout, Sheet, Tag, Typography } from '@appwrite.io/pink-svelte';
     import type { HTMLAttributes } from 'svelte/elements';
+    import { beforeNavigate } from '$app/navigation';
 
     let {
         show = $bindable(false),
@@ -54,6 +55,9 @@
     let submitting = $state(writable(false));
 
     let copyText = $state(undefined);
+    beforeNavigate(() => {
+        show = false;
+    });
 </script>
 
 <div class="sheet-container" data-side-sheet-visible={show} {...restProps}>
