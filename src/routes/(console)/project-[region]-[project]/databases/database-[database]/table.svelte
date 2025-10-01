@@ -14,6 +14,7 @@
     import type { PageData } from './$types';
     import { tableViewColumns } from './store';
     import Confirm from '$lib/components/confirm.svelte';
+    import { subNavigation } from '$lib/stores/database';
 
     export let data: PageData;
     const databaseId = page.params.database;
@@ -38,7 +39,8 @@
                 type: 'success',
                 message: `${selectedTables.length} table${selectedTables.length > 1 ? 's' : ''} deleted`
             });
-            invalidate(Dependencies.TABLES);
+            await invalidate(Dependencies.TABLES);
+            subNavigation.update();
         } catch (error) {
             addNotification({
                 type: 'error',

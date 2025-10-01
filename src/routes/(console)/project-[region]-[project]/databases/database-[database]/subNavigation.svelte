@@ -29,12 +29,12 @@
     import { onMount } from 'svelte';
     import { subNavigation } from '$lib/stores/database';
 
-    let data = $derived(page.data) as PageData;
+    const data = $derived(page.data) as PageData;
 
-    let region = $derived(page.params.region);
-    let project = $derived(page.params.project);
-    let tableId = $derived(page.params.table);
-    let databaseId = $derived(page.params.database);
+    const region = $derived(page.params.region);
+    const project = $derived(page.params.project);
+    const tableId = $derived(page.params.table);
+    const databaseId = $derived(page.params.database);
 
     let openBottomSheet = $state(false);
 

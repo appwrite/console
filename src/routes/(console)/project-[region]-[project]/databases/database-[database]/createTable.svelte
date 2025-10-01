@@ -19,6 +19,7 @@
     } = $props();
 
     const databaseId = page.params.database;
+    const isOnTablesPage = $derived(page.route?.id.endsWith('table-[table]'));
 
     let name = $state('');
     let id: string = $state(null);
@@ -27,10 +28,17 @@
 
     let creatingTable = $state(false);
 
-    function enableThinkingModeForSuggestions() {
+    function enableThinkingModeForSuggestions(table: Models.Table) {
         if ($tableColumnSuggestions.enabled) {
             // if enabled, trigger thinking mode!
-            $tableColumnSuggestions.thinking = true;
+            tableColumnSuggestions.update((store) => ({
+                ...store,
+                thinking: true,
+                table: {
+                    id: table.$id,
+                    name: table.name
+                }
+            }));
         }
     }
 
@@ -45,14 +53,6 @@
                     name
                 });
 
-            tableColumnSuggestions.update((store) => ({
-                ...store,
-                table: {
-                    id: table.$id,
-                    name: table.name
-                }
-            }));
-
             updateAndCleanup();
 
             await onTableCreated(table);
@@ -62,7 +62,7 @@
             creatingTable = false;
 
             // don't wait for UI to mount!
-            enableThinkingModeForSuggestions();
+            enableThinkingModeForSuggestions(table);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.TableCreate);
@@ -101,6 +101,12 @@
             id = null;
             error = null;
             touchedId = false;
+        }
+    });
+
+    $effect(() => {
+        if (showCreate && isOnTablesPage && $tableColumnSuggestions.table) {
+            $tableColumnSuggestions.table = null;
         }
     });
 </script>
