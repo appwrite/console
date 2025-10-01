@@ -106,7 +106,10 @@
 
     $effect(() => {
         if (showCreate && isOnTablesPage && $tableColumnSuggestions.table) {
-            $tableColumnSuggestions.table = null;
+            tableColumnSuggestions.update((store) => ({
+                ...store,
+                table: null
+            }));
         }
     });
 </script>
