@@ -8,7 +8,8 @@
         Spreadsheet,
         Typography,
         FloatingActionBar,
-        Popover
+        Popover,
+        Badge
     } from '@appwrite.io/pink-svelte';
     import { IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
@@ -60,6 +61,7 @@
 
     let creatingColumns = $state(false);
     let selectedColumnId = $state<string | null>(null);
+    let selectedColumnName = $state<string | null>(null);
     let previousColumnId = $state<string | null>(null);
     const baseColProps = { draggable: false, resizable: false };
 
@@ -262,8 +264,41 @@
 
             directAccessScroller.scrollTo({
                 left: Math.max(0, scrollLeft),
-                behavior: 'smooth'
+                behavior: 'instant',
             });
+        }
+    };
+
+    function updateColumnHighlight() {
+        if (!spreadsheetContainer || !selectedColumnId) return;
+
+        const headerCell = spreadsheetContainer.querySelector(
+            `[role="rowheader"] [role="cell"][data-column-id="${selectedColumnId}"]`
+        );
+
+        if (!headerCell) return;
+
+        // calculate position similar to columns-range-overlay logic
+        if (!headerElement || !headerElement.isConnected) {
+            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+        }
+
+        if (!headerElement) return;
+
+        const containerRect = spreadsheetContainer.getBoundingClientRect();
+        const cellRect = headerCell.getBoundingClientRect();
+
+        const left = Math.round(cellRect.left - containerRect.left);
+        const width = cellRect.width;
+
+        spreadsheetContainer.style.setProperty('--highlight-left', `${left - 2}px`);
+        spreadsheetContainer.style.setProperty('--highlight-width', `${width + 2}px`);
+    }
+
+    const handleGlobalClick = (event: MouseEvent) => {
+        const target = event.target as HTMLElement;
+        if (!target?.closest('[role="rowheader"]')) {
+            resetSelectedColumn();
         }
     };
 
@@ -281,6 +316,12 @@
 
         scrollAnimationFrame = requestAnimationFrame(() => {
             recalcAll();
+
+            // check if selected column is still visible after scroll
+            if (selectedColumnId && !isColumnVisible(selectedColumnId)) {
+                resetSelectedColumn();
+            }
+
             scrollAnimationFrame = null;
         });
     };
@@ -384,6 +425,9 @@
 
         $tableColumnSuggestions.context = null;
         $tableColumnSuggestions.thinking = false;
+
+        // reset selection!
+        resetSelectedColumn();
     }
 
     async function suggestColumns() {
@@ -497,6 +541,9 @@
                 hScroller.scrollLeft = currentScrollLeft;
             }
         });
+
+        // reset selection!
+        resetSelectedColumn();
     }
 
     function updateColumn(columnId: string, updates: Partial<SuggestedColumnSchema>) {
@@ -518,6 +565,80 @@
 
     function isCustomColumn(id: string) {
         return !['$id', '$createdAt', '$updatedAt', 'actions'].includes(id);
+    }
+
+    function resetSelectedColumn() {
+        selectedColumnId = null;
+        previousColumnId = null;
+        selectedColumnName = null;
+    }
+
+    function isColumnVisible(columnId: string) {
+        if (!spreadsheetContainer || !hScroller) return true;
+
+        const columnCell = spreadsheetContainer.querySelector(
+            `[role="rowheader"] [role="cell"][data-column-id="${columnId}"]`
+        );
+
+        if (!columnCell) return false;
+
+        const cellRect = columnCell.getBoundingClientRect();
+        const scrollerRect = hScroller.getBoundingClientRect();
+
+        // stickies have 40px width
+        const STICKY_COLUMN_WIDTH = 40;
+
+        // calculate available viewport bounds (excluding both 40px sticky columns)
+        const leftBound = scrollerRect.left + STICKY_COLUMN_WIDTH; // Selection column (40px)
+        const rightBound = scrollerRect.right - STICKY_COLUMN_WIDTH; // Actions column (40px)
+
+        const safetyMargin = 2;
+        return (
+            cellRect.left >= leftBound - safetyMargin && cellRect.right <= rightBound + safetyMargin
+        );
+    }
+
+    function scrollColumnIntoView(columnId: string) {
+        if (!spreadsheetContainer || !hScroller) return false;
+
+        const columnCell = spreadsheetContainer.querySelector(
+            `[role="rowheader"] [role="cell"][data-column-id="${columnId}"]`
+        );
+
+        if (!columnCell) return false;
+
+        const cellRect = columnCell.getBoundingClientRect();
+        const scrollerRect = hScroller.getBoundingClientRect();
+
+        // calculate scroll needed to center the column in view
+        const scrollLeft =
+            hScroller.scrollLeft +
+            cellRect.left -
+            scrollerRect.left -
+            (scrollerRect.width - cellRect.width) / 2;
+
+        hScroller.scrollTo({
+            left: Math.max(0, scrollLeft),
+            behavior: 'smooth',
+        });
+
+        return true;
+    }
+
+    function deleteColumn() {
+        if (!selectedColumnId) return;
+
+        // remove the selected column from customColumns
+        const columnIndex = customColumns.findIndex((col) => col.key === selectedColumnId);
+        if (columnIndex !== -1) {
+            customColumns = customColumns.filter((_, index) => index !== columnIndex);
+        }
+
+        // reset selection!
+        resetSelectedColumn();
+
+        // recalculate view after deletion
+        requestAnimationFrame(() => recalcAll());
     }
 
     function showIndexSuggestionsNotification() {
@@ -686,40 +807,17 @@
         };
     }
 
-    const handleGlobalClick = (event: MouseEvent) => {
-        // check if click is outside spreadsheet header area
-        const target = event.target as HTMLElement;
-        if (!target?.closest('[role="rowheader"]')) {
-            selectedColumnId = null;
-            previousColumnId = null; // reset so next selection won't slide
+    // scroll to view if needed and select!
+    function selectColumnWithId(column: Column) {
+        const columnId = column.id;
+        selectedColumnName = column.title;
+        if (!isColumnVisible(columnId)) {
+            scrollColumnIntoView(columnId);
+            setTimeout(() => (selectedColumnId = columnId), 300);
+        } else {
+            selectedColumnId = columnId;
         }
-    };
-
-    const updateColumnHighlight = () => {
-        if (!spreadsheetContainer || !selectedColumnId) return;
-
-        const headerCell = spreadsheetContainer.querySelector(
-            `[role="rowheader"] [role="cell"][data-column-id="${selectedColumnId}"]`
-        );
-
-        if (!headerCell) return;
-
-        // calculate position similar to columns-range-overlay logic
-        if (!headerElement || !headerElement.isConnected) {
-            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
-        }
-
-        if (!headerElement) return;
-
-        const containerRect = spreadsheetContainer.getBoundingClientRect();
-        const cellRect = headerCell.getBoundingClientRect();
-
-        const left = Math.round(cellRect.left - containerRect.left);
-        const width = cellRect.width;
-
-        spreadsheetContainer.style.setProperty('--highlight-left', `${left - 2}px`);
-        spreadsheetContainer.style.setProperty('--highlight-width', `${width + 2}px`);
-    };
+    }
 
     $effect(() => {
         if (!spreadsheetContainer) return;
@@ -767,7 +865,7 @@
         } else {
             // fresh after a deselect
             // set it for future switches
-            setTimeout(() => previousColumnId = selectedColumnId, 25);
+            setTimeout(() => (previousColumnId = selectedColumnId), 25);
         }
     });
 
@@ -845,7 +943,7 @@
                             onShowStateChanged={onPopoverShowStateChanged}
                             onChildrenClick={() => {
                                 if (isColumnInteractable && !$isTabletViewport) {
-                                    selectedColumnId = column.id;
+                                    selectColumnWithId(column);
                                 }
                             }}>
                             {#snippet children(toggle)}
@@ -891,6 +989,7 @@
                                                             !$isTabletViewport
                                                         ) {
                                                             toggle(event);
+                                                            resetSelectedColumn();
                                                         }
                                                     }}>
                                                     {#if !columnObj?.isPlaceholder}
@@ -1048,10 +1147,45 @@
             </FloatingActionBar>
         </div>
     {:else if customColumns.some((col) => !col.isPlaceholder) && showFloatingBar}
+        <!-- delete and cancel sub action -->
+        <div class="floating-action-wrapper expanded" class:selection={selectedColumnId !== null}>
+            <FloatingActionBar>
+                <svelte:fragment slot="start">
+                    <Typography.Caption
+                        variant="400"
+                        color="--fgcolor-neutral-primary"
+                        style="white-space: nowrap;">
+                        <Badge size="xs" content={selectedColumnName} variant="secondary" />
+                        column selected
+                    </Typography.Caption>
+                </svelte:fragment>
+
+                <svelte:fragment slot="end">
+                    <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                        <Button.Button
+                            size="xs"
+                            variant="text"
+                            on:click={() => (selectedColumnId = null)}>
+                            Cancel
+                        </Button.Button>
+                        <Button.Button
+                            size="xs"
+                            variant="secondary"
+                            disabled={customColumns.filter((col) => !col.isPlaceholder).length <= 1}
+                            on:click={deleteColumn}>
+                            Delete
+                        </Button.Button>
+                    </Layout.Stack>
+                </svelte:fragment>
+            </FloatingActionBar>
+        </div>
+
+        <!-- review columns action -->
         <div
             class="floating-action-wrapper"
             class:expanded={!creatingColumns}
-            class:creating-columns={creatingColumns}>
+            class:creating-columns={creatingColumns}
+            class:has-selection={selectedColumnId !== null}>
             <FloatingActionBar>
                 <svelte:fragment slot="start">
                     <Layout.Stack gap="xl" direction="row" alignItems="center">
@@ -1216,8 +1350,12 @@
         }
 
         & .floating-action-wrapper {
-            & :global(:first-child) {
-                z-index: 21;
+            // probably limited, but has good support
+            // for height transition with fit-content and auto, etc.
+            interpolate-size: allow-keywords;
+
+            & :global(div:first-of-type) {
+                z-index: 22;
                 left: calc(65% - 480px / 2);
                 transition: all 600ms cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -1231,7 +1369,7 @@
                 }
             }
 
-            &.expanded :global(:first-child) {
+            &.expanded :global(div:first-of-type) {
                 left: calc(60% - 480px / 2);
                 max-width: 480px !important;
 
@@ -1243,6 +1381,21 @@
                     left: calc(50% - 400px / 2);
                     max-width: 400px !important;
                 }
+            }
+
+            &.expanded.has-selection :global(div:first-of-type) {
+                height: 44px;
+            }
+
+            &.selection :global(div:first-of-type) {
+                z-index: 21;
+                bottom: 80px; /* oddly specific maybe, but diff as per design */
+                height: fit-content;
+                padding-bottom: 10px;
+                border-bottom: unset;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+                background: var(--bgcolor-neutral-default);
             }
 
             &.creating-columns :global(:first-child) {
