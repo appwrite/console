@@ -94,53 +94,110 @@
     const getCustomColumns = (): Column[] =>
         customColumns.map((col: Column) => ({
             ...col,
-            width: 180,
             hide: false,
             icon: columnOptions.find((colOpt) => colOpt.type === col?.type)?.icon,
             ...baseColProps
         }));
 
-    const getRowColumns = (): Column[] => [
-        {
-            id: '$id',
-            title: '$id',
-            type: 'string',
-            width: 180,
-            icon: IconFingerPrint,
-            ...baseColProps
-        },
-        ...getCustomColumns(),
-        {
-            id: '$createdAt',
-            title: '$createdAt',
-            type: 'datetime',
-            width: 180,
-            icon: IconCalendar,
-            ...baseColProps
-        },
-        {
-            id: '$updatedAt',
-            title: '$updatedAt',
-            type: 'datetime',
-            width: 180,
-            icon: IconCalendar,
-            ...baseColProps
-        },
-        {
-            id: 'actions',
-            title: '',
-            type: 'string',
-            icon: IconPlus,
-            width: customColumns.length ? 555 : 832,
-            ...baseColProps
-        },
-        {
-            id: 'empty',
-            title: '',
-            type: 'string',
-            ...baseColProps
+    const getRowColumns = (): Column[] => {
+        const minColumnWidth = 180;
+        const fixedWidths = { id: 180, actions: 40 };
+        const hasCustomColumns = customColumns.length > 0;
+
+        const customColumnsData = getCustomColumns();
+
+        // Calculate column widths based on whether we have custom columns
+        let columnWidths = {
+            id: fixedWidths.id,
+            createdAt: fixedWidths.id,
+            updatedAt: fixedWidths.id,
+            custom: minColumnWidth,
+            actions: hasCustomColumns ? fixedWidths.actions : 1387
+        };
+
+        if (hasCustomColumns) {
+            const equalWidthColumns = [
+                ...customColumnsData,
+                { id: '$createdAt' },
+                { id: '$updatedAt' }
+            ];
+
+            const totalBaseWidth =
+                fixedWidths.id + fixedWidths.actions + equalWidthColumns.length * minColumnWidth;
+
+            const viewportWidth =
+                spreadsheetContainer?.clientWidth ||
+                (typeof window !== 'undefined' ? window.innerWidth : totalBaseWidth);
+
+            const excessSpace = Math.max(0, viewportWidth - totalBaseWidth);
+            const extraPerColumn =
+                equalWidthColumns.length > 0 ? excessSpace / equalWidthColumns.length : 0;
+            const distributedWidth = minColumnWidth + extraPerColumn;
+
+            columnWidths.createdAt = distributedWidth;
+            columnWidths.updatedAt = distributedWidth;
+            columnWidths.custom = distributedWidth;
         }
-    ];
+
+        const columns: Column[] = [
+            {
+                id: '$id',
+                title: '$id',
+                type: 'string',
+                width: columnWidths.id,
+                icon: IconFingerPrint,
+                ...baseColProps
+            }
+        ];
+
+        if (hasCustomColumns) {
+            columns.push(
+                ...customColumnsData.map((col) => ({
+                    ...col,
+                    width: columnWidths.custom
+                }))
+            );
+        }
+
+        columns.push(
+            {
+                id: '$createdAt',
+                title: '$createdAt',
+                type: 'datetime',
+                width: columnWidths.createdAt,
+                icon: IconCalendar,
+                ...baseColProps
+            },
+            {
+                id: '$updatedAt',
+                title: '$updatedAt',
+                type: 'datetime',
+                width: columnWidths.updatedAt,
+                icon: IconCalendar,
+                ...baseColProps
+            },
+            {
+                id: 'actions',
+                title: '',
+                type: 'string',
+                icon: IconPlus,
+                isAction: hasCustomColumns,
+                width: columnWidths.actions,
+                ...baseColProps
+            }
+        );
+
+        if (!hasCustomColumns) {
+            columns.push({
+                id: 'empty',
+                title: '',
+                type: 'string',
+                ...baseColProps
+            });
+        }
+
+        return columns;
+    };
 
     const getIndexesColumns = (): Column[] =>
         [
@@ -165,6 +222,7 @@
 
 <div
     class="databases-spreadsheet spreadsheet-container-outer"
+    class:custom-columns={customColumns.length > 0}
     data-mode={mode}
     bind:this={spreadsheetContainer}>
     <SpreadsheetContainer>
@@ -179,20 +237,23 @@
             }}>
             <svelte:fragment slot="header" let:root>
                 {#each spreadsheetColumns as column (column.id)}
-                    {@const columnActionsById = column.id === 'actions'}
-                    <!-- svelte-ignore a11y_click_events_have_key_events -->
-                    <div
-                        role="button"
-                        tabindex="0"
-                        style:cursor={columnActionsById ? 'pointer' : null}
-                        onclick={() => {
-                            if (columnActionsById && mode === 'rows') {
-                                $showCreateColumnSheet.show = true;
-                                $showCreateColumnSheet.title = 'Create column';
-                                $showCreateColumnSheet.columns = $tableColumns;
-                                $showCreateColumnSheet.columnsOrder = $columnsOrder;
-                            }
-                        }}>
+                    {#if column.isAction}
+                        <Spreadsheet.Header.Cell column="actions" {root}>
+                            <Button.Button
+                                icon
+                                variant="extra-compact"
+                                onclick={() => {
+                                    if (mode === 'rows') {
+                                        $showCreateColumnSheet.show = true;
+                                        $showCreateColumnSheet.title = 'Create column';
+                                        $showCreateColumnSheet.columns = $tableColumns;
+                                        $showCreateColumnSheet.columnsOrder = $columnsOrder;
+                                    }
+                                }}>
+                                <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
+                            </Button.Button>
+                        </Spreadsheet.Header.Cell>
+                    {:else}
                         <Spreadsheet.Header.Cell
                             {root}
                             column={column.id}
@@ -215,7 +276,7 @@
                                 </Layout.Stack>
                             {/if}
                         </Spreadsheet.Header.Cell>
-                    </div>
+                    {/if}
                 {/each}
             </svelte:fragment>
 
@@ -236,6 +297,7 @@
     {#if !$spreadsheetLoading}
         <div
             class="spreadsheet-fade-bottom"
+            class:custom-columns={customColumns.length > 0}
             data-collapsed-tabs={!$expandTabs}
             style:--dynamic-overlay-height={dynamicOverlayHeight}>
             <div class="empty-actions">
@@ -291,6 +353,31 @@
         position: fixed;
         overflow: hidden;
 
+        & :global(.spreadsheet-container) {
+            overflow-x: auto;
+            overflow-y: auto;
+        }
+
+        & :global([data-select='true']) {
+            opacity: 0.85;
+            pointer-events: none;
+        }
+
+        &.custom-columns {
+            width: unset;
+        }
+
+        &:not(.custom-columns) :global(.spreadsheet-container) {
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+
+        /* alternative selector for header selection */
+        & :global(.sticky-header [data-select='true']) {
+            opacity: 1;
+            pointer-events: none;
+        }
+
         &[data-mode='rows'] {
             & :global([role='rowheader'] :nth-last-child(2) [role='presentation']) {
                 display: none;
@@ -305,16 +392,6 @@
                     opacity: 0.5;
                 }
             }
-        }
-
-        & :global(.spreadsheet-container) {
-            overflow-x: hidden;
-            overflow-y: hidden;
-        }
-
-        & :global([data-select='true']) {
-            opacity: 0.85;
-            pointer-events: none;
         }
     }
 
@@ -342,6 +419,10 @@
         @media (min-width: 1024px) {
             height: var(--dynamic-overlay-height, 70.35vh);
         }
+
+        &.custom-columns {
+            pointer-events: none;
+        }
     }
 
     :global(.theme-dark) .spreadsheet-fade-bottom {
@@ -358,6 +439,7 @@
         left: 50%;
         bottom: 35%;
         position: fixed;
+        pointer-events: auto;
 
         @media (max-width: 768px) and (max-height: 768px) {
             left: unset;
@@ -366,7 +448,7 @@
 
         @media (max-width: 768px) and (max-height: 1024px) {
             left: unset;
-            bottom: 15% !important;
+            bottom: 20% !important;
         }
 
         @media (max-width: 1024px) and (max-height: 1024px) {
