@@ -769,7 +769,7 @@
             // set it for future switches
             tick().then(() => {
                 previousColumnId = selectedColumnId;
-            })
+            });
         }
     });
 
@@ -1143,11 +1143,11 @@
             border-radius: var(--border-radius-s, 4px);
             border: var(--border-width-l, 2px) solid rgba(253, 54, 110, 0.6);
 
-          &.slide {
-            transition:
+            &.slide {
+                transition:
                     left 0.3s ease-out,
                     width 0.3s ease-out;
-          }
+            }
         }
 
         @keyframes fadeIn {
