@@ -17,14 +17,14 @@
         </CoverTitle>
         <Layout.Stack direction="row" inline>
             {#if $key?.secret}
-                <Copy value={$key.secret} copyText="Copy API key">
+                <Copy value={$key.secret} copyText="Copy API secret">
                     <Tag size="xs" variant="code">
                         <Icon icon={IconDuplicate} size="s" slot="start" />
                         <span
                             style:white-space="nowrap"
                             style:overflow="hidden"
                             style:word-break="break-all">
-                            API key
+                            API secret
                         </span>
                     </Tag>
                 </Copy>

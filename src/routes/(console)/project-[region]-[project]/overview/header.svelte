@@ -2,14 +2,15 @@
     import { page } from '$app/state';
     import { Id, ApiEndpoint } from '$lib/components';
     import { Cover } from '$lib/layout';
-    import { project } from '../store';
+    import { project, projectRegion } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { Layout, Button, Typography } from '@appwrite.io/pink-svelte';
+    import { Layout, Button, Typography, Tag } from '@appwrite.io/pink-svelte';
     import { user } from '$lib/stores/user';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { trackEvent } from '$lib/actions/analytics';
+    import { getFlagUrl } from '$lib/helpers/flag';
 
     function dismissOnboarding() {
         setHasOnboardingDismissed($project.$id, $user);
@@ -30,6 +31,21 @@
                 <Layout.Stack direction="row" inline>
                     <Id value={$project.$id} copyText="Copy project ID">{$project.$id}</Id>
                     <ApiEndpoint />
+                    {#if $projectRegion?.flag}
+                        <Tag size="xs" variant="code">
+                            <img
+                                src={getFlagUrl($projectRegion.flag)}
+                                alt={$projectRegion.flag}
+                                slot="start"
+                                style="width: 16px; height: 12px;" />
+                            <span
+                                style:white-space="nowrap"
+                                style:overflow="hidden"
+                                style:word-break="break-all">
+                                {$projectRegion.name}
+                            </span>
+                        </Tag>
+                    {/if}
                 </Layout.Stack>
             </Layout.Stack>
         </svelte:fragment>

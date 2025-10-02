@@ -99,7 +99,9 @@
                                 </Layout.Stack>
                             </div>
                             <Layout.Stack gap="l">
-                                <Layout.Stack gap="l" direction="row">
+                                <Layout.Stack
+                                    gap="l"
+                                    direction={$isSmallViewport ? 'column' : 'row'}>
                                     <Card.Button
                                         on:click={() => {
                                             openPlatformWizard(0, platformMap.get('Web'));
