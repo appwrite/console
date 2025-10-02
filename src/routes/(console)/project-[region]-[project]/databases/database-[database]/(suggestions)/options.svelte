@@ -7,6 +7,7 @@
     let {
         children,
         tooltipChildren,
+        mobileFooterChildren,
         toggleOnTapClick = true,
         onShowStateChanged = null,
         enabled = true,
@@ -14,6 +15,7 @@
     }: {
         children: Snippet<[toggle: (event: Event) => void]>;
         tooltipChildren: Snippet<[toggle: (event: Event) => void]>;
+        mobileFooterChildren?: Snippet<[toggle: (event: Event) => void]>;
         toggleOnTapClick?: boolean;
         onShowStateChanged?: (showing: boolean) => void;
         enabled?: boolean;
@@ -58,6 +60,11 @@
                 showSheet = false;
             }
         }}>
+
+        {#snippet footer()}
+            {@render mobileFooterChildren?.(() => (showSheet = false))}
+        {/snippet}
+
         {@render tooltipChildren(() => (showSheet = false))}
     </SideSheet>
 {/if}

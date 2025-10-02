@@ -90,7 +90,7 @@
     const updateOverlayHeight = () => {
         if (!spreadsheetContainer) return;
         if (!headerElement || !headerElement.isConnected) {
-            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+            headerElement = spreadsheetContainer?.querySelector('[role="rowheader"]');
         }
 
         if (!headerElement) return;
@@ -111,7 +111,7 @@
     const updateOverlayBounds = () => {
         if (!spreadsheetContainer) return;
         if (!headerElement || !headerElement.isConnected) {
-            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+            headerElement = spreadsheetContainer?.querySelector('[role="rowheader"]');
         }
         if (!headerElement) return;
 
@@ -264,7 +264,7 @@
 
             directAccessScroller.scrollTo({
                 left: Math.max(0, scrollLeft),
-                behavior: 'instant',
+                behavior: 'instant'
             });
         }
     };
@@ -522,8 +522,7 @@
         }
     }
 
-    function onPopoverShowStateChanged(value: boolean) {
-        showFloatingBar = !value;
+    async function updateOverlaysForMobile(value: boolean) {
         if ($isSmallViewport) {
             setTimeout(() => {
                 [rangeOverlayEl, fadeBottomOverlayEl].forEach((el) => {
@@ -533,6 +532,11 @@
                 });
             }, 0);
         }
+    }
+
+    function onPopoverShowStateChanged(value: boolean) {
+        showFloatingBar = !value;
+        updateOverlaysForMobile(value);
 
         const currentScrollLeft = hScroller?.scrollLeft || 0;
 
@@ -619,23 +623,26 @@
 
         hScroller.scrollTo({
             left: Math.max(0, scrollLeft),
-            behavior: 'smooth',
+            behavior: 'smooth'
         });
 
         return true;
     }
 
-    function deleteColumn() {
-        if (!selectedColumnId) return;
+    function deleteColumn(columnId: string) {
+        if (!columnId) return;
 
         // remove the selected column from customColumns
-        const columnIndex = customColumns.findIndex((col) => col.key === selectedColumnId);
+        const columnIndex = customColumns.findIndex((col) => col.key === columnId);
         if (columnIndex !== -1) {
             customColumns = customColumns.filter((_, index) => index !== columnIndex);
         }
 
         // reset selection!
         resetSelectedColumn();
+
+        // see overlay is visible after deletion on mobile!
+        setTimeout(() => updateOverlaysForMobile(false), 150);
 
         // recalculate view after deletion
         requestAnimationFrame(() => recalcAll());
@@ -828,32 +835,34 @@
 
         if (!selectedColumnId) return;
 
-        // hide borders for selected column and previous column
-        const selectedCells = spreadsheetContainer.querySelectorAll(
-            `[role="cell"][data-column-id="${selectedColumnId}"]`
-        );
+        setTimeout(() => {
+            // hide borders for selected column and previous column
+            const selectedCells = spreadsheetContainer.querySelectorAll(
+                `[role="cell"][data-column-id="${selectedColumnId}"]`
+            );
 
-        selectedCells.forEach((cell) => cell.classList.add('hide-border'));
+            selectedCells.forEach((cell) => cell.classList.add('hide-border'));
 
-        // find and hide previous column's borders (which create the left edge of selected column)
-        const allHeaders = Array.from(
-            spreadsheetContainer.querySelectorAll(
-                '[role="rowheader"] [role="cell"][data-column-id]'
-            )
-        );
-        const selectedIndex = allHeaders.findIndex(
-            (cell) => cell.getAttribute('data-column-id') === selectedColumnId
-        );
+            // find and hide previous column's borders (which create the left edge of selected column)
+            const allHeaders = Array.from(
+                spreadsheetContainer.querySelectorAll(
+                    '[role="rowheader"] [role="cell"][data-column-id]'
+                )
+            );
+            const selectedIndex = allHeaders.findIndex(
+                (cell) => cell.getAttribute('data-column-id') === selectedColumnId
+            );
 
-        if (selectedIndex > 0) {
-            const prevColumnId = allHeaders[selectedIndex - 1].getAttribute('data-column-id');
-            if (prevColumnId) {
-                const previousCells = spreadsheetContainer.querySelectorAll(
-                    `[role="cell"][data-column-id="${prevColumnId}"]`
-                );
-                previousCells.forEach((cell) => cell.classList.add('hide-border'));
+            if (selectedIndex > 0) {
+                const prevColumnId = allHeaders[selectedIndex - 1].getAttribute('data-column-id');
+                if (prevColumnId) {
+                    const previousCells = spreadsheetContainer.querySelectorAll(
+                        `[role="cell"][data-column-id="${prevColumnId}"]`
+                    );
+                    previousCells.forEach((cell) => cell.classList.add('hide-border'));
+                }
             }
-        }
+        }, 300);
 
         // update position
         updateColumnHighlight();
@@ -1109,6 +1118,19 @@
                                     </Layout.Stack>
                                 {/if}
                             {/snippet}
+
+                            {#snippet mobileFooterChildren(toggle)}
+                                <Button.Button
+                                    size="s"
+                                    variant="danger"
+                                    on:click={(event) => {
+                                        toggle(event);
+                                        deleteColumn(column.id);
+                                    }}
+                                    style="position: absolute; left: 1rem;"
+                                    >Delete
+                                </Button.Button>
+                            {/snippet}
                         </Options>
                     {/if}
                 {/each}
@@ -1172,7 +1194,7 @@
                             size="xs"
                             variant="secondary"
                             disabled={customColumns.filter((col) => !col.isPlaceholder).length <= 1}
-                            on:click={deleteColumn}>
+                            on:click={() => deleteColumn(selectedColumnName)}>
                             Delete
                         </Button.Button>
                     </Layout.Stack>
