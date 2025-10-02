@@ -35,7 +35,7 @@
                         <Tag size="xs" variant="code">
                             <img
                                 src={getFlagUrl($projectRegion.flag)}
-                                alt={$projectRegion.flag}
+                                alt={$projectRegion.name}
                                 slot="start"
                                 style="width: 16px; height: 12px;" />
                             <span
