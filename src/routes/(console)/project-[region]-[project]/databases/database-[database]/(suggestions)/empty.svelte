@@ -767,9 +767,7 @@
         } else {
             // fresh after a deselect
             // set it for future switches
-            tick().then(() => {
-                previousColumnId = selectedColumnId;
-            });
+            setTimeout(() => previousColumnId = selectedColumnId, 25);
         }
     });
 
