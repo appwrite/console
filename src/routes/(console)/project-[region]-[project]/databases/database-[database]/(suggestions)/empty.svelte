@@ -38,6 +38,7 @@
     import Options from './options.svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { isCloud, VARS } from '$lib/system';
+    import { fade } from 'svelte/transition';
 
     import IconAINotification from './icon/aiNotification.svelte';
 
@@ -58,6 +59,8 @@
     let scrollAnimationFrame: number | null = null;
 
     let creatingColumns = $state(false);
+    let selectedColumnId = $state<string | null>(null);
+    let previousColumnId = $state<string | null>(null);
     const baseColProps = { draggable: false, resizable: false };
 
     const NOTIFICATION_AND_MOCK_DELAY = 1250;
@@ -136,7 +139,8 @@
 
         const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
         if (!hasRealColumns) {
-            // For placeholders or no columns, position overlay to cover custom columns area
+            // for placeholders or no columns,
+            // position overlay to cover custom columns area
             const idCell = getById('$id');
             const actionsCell = headerElement!.querySelector<HTMLElement>(
                 '[role="cell"][data-column-id="actions"]'
@@ -266,6 +270,7 @@
     const recalcAll = () => {
         updateOverlayHeight();
         updateOverlayBounds();
+        updateColumnHighlight();
     };
 
     /**
@@ -681,6 +686,93 @@
         };
     }
 
+    const handleGlobalClick = (event: MouseEvent) => {
+        // check if click is outside spreadsheet header area
+        const target = event.target as HTMLElement;
+        if (!target?.closest('[role="rowheader"]')) {
+            selectedColumnId = null;
+            previousColumnId = null; // reset so next selection won't slide
+        }
+    };
+
+    const updateColumnHighlight = () => {
+        if (!spreadsheetContainer || !selectedColumnId) return;
+
+        const headerCell = spreadsheetContainer.querySelector(
+            `[role="rowheader"] [role="cell"][data-column-id="${selectedColumnId}"]`
+        );
+
+        if (!headerCell) return;
+
+        // calculate position similar to columns-range-overlay logic
+        if (!headerElement || !headerElement.isConnected) {
+            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+        }
+
+        if (!headerElement) return;
+
+        const containerRect = spreadsheetContainer.getBoundingClientRect();
+        const cellRect = headerCell.getBoundingClientRect();
+
+        const left = Math.round(cellRect.left - containerRect.left);
+        const width = cellRect.width;
+
+        spreadsheetContainer.style.setProperty('--highlight-left', `${left - 2}px`);
+        spreadsheetContainer.style.setProperty('--highlight-width', `${width + 2}px`);
+    };
+
+    $effect(() => {
+        if (!spreadsheetContainer) return;
+
+        // remove existing hide-border classes
+        const hiddenCells = spreadsheetContainer.querySelectorAll('[role="cell"].hide-border');
+        hiddenCells.forEach((cell) => cell.classList.remove('hide-border'));
+
+        if (!selectedColumnId) return;
+
+        // hide borders for selected column and previous column
+        const selectedCells = spreadsheetContainer.querySelectorAll(
+            `[role="cell"][data-column-id="${selectedColumnId}"]`
+        );
+
+        selectedCells.forEach((cell) => cell.classList.add('hide-border'));
+
+        // find and hide previous column's borders (which create the left edge of selected column)
+        const allHeaders = Array.from(
+            spreadsheetContainer.querySelectorAll(
+                '[role="rowheader"] [role="cell"][data-column-id]'
+            )
+        );
+        const selectedIndex = allHeaders.findIndex(
+            (cell) => cell.getAttribute('data-column-id') === selectedColumnId
+        );
+
+        if (selectedIndex > 0) {
+            const prevColumnId = allHeaders[selectedIndex - 1].getAttribute('data-column-id');
+            if (prevColumnId) {
+                const previousCells = spreadsheetContainer.querySelectorAll(
+                    `[role="cell"][data-column-id="${prevColumnId}"]`
+                );
+                previousCells.forEach((cell) => cell.classList.add('hide-border'));
+            }
+        }
+
+        // update position
+        updateColumnHighlight();
+
+        // track for next selection -
+        // but only if we had a `real` previous selection
+        if (previousColumnId !== null) {
+            previousColumnId = selectedColumnId;
+        } else {
+            // fresh after a deselect
+            // set it for future switches
+            tick().then(() => {
+                previousColumnId = selectedColumnId;
+            })
+        }
+    });
+
     onDestroy(() => {
         resizeObserver?.disconnect();
         hScroller?.removeEventListener('scroll', recalcAllThrottled);
@@ -693,7 +785,7 @@
     });
 </script>
 
-<svelte:window on:resize={recalcAll} on:scroll={recalcAll} />
+<svelte:window on:resize={recalcAll} on:scroll={recalcAll} on:click={handleGlobalClick} />
 
 <div
     bind:this={spreadsheetContainer}
@@ -710,6 +802,18 @@
             class:no-transition={hasTransitioned && customColumns.length > 0}
             class:thinking={$tableColumnSuggestions.thinking || creatingColumns}>
         </div>
+
+        <!-- selection border -->
+        {#if selectedColumnId}
+            <div
+                class="column-highlight-overlay"
+                class:slide={previousColumnId !== null}
+                style:height="100%"
+                style:left="var(--highlight-left, 0px)"
+                style:width="var(--highlight-width, 0px)"
+                out:fade={{ duration: 200 }}>
+            </div>
+        {/if}
     </div>
 
     <SpreadsheetContainer>
@@ -729,9 +833,9 @@
                         </Spreadsheet.Header.Cell>
                     {:else}
                         {@const columnObj = getColumn(column.id)}
-                        {@const columnIcon = basicColumnOptions.find(
+                        <!--{@const columnIcon = basicColumnOptions.find(
                             (col) => col.type === columnObj?.type
-                        )?.icon}
+                        )?.icon}-->
                         {@const columnIconColor = !columnObj?.type
                             ? '--non-overlay-icon-color'
                             : '--overlay-icon-color'}
@@ -740,12 +844,16 @@
 
                         <Options
                             enabled={isColumnInteractable}
-                            onShowStateChanged={onPopoverShowStateChanged}>
+                            onShowStateChanged={onPopoverShowStateChanged}
+                            onChildrenClick={() => {
+                                if (isColumnInteractable && !$isTabletViewport) {
+                                    selectedColumnId = column.id;
+                                }
+                            }}>
                             {#snippet children(toggle)}
                                 <Spreadsheet.Header.Cell
                                     {root}
                                     isEditable={isColumnInteractable && !$isTabletViewport}
-                                    openEditOnTap={isColumnInteractable && !$isTabletViewport}
                                     column={column.id}
                                     on:contextmenu={(event) => {
                                         // tablet viewport check because context-menu
@@ -839,14 +947,14 @@
                                                     required
                                                     bind:value={columnObj.key}
                                                     pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$">
-                                                    <svelte:fragment slot="end">
+                                                    <!--<svelte:fragment slot="end">
                                                         {#if columnIcon}
                                                             <Icon
                                                                 size="s"
                                                                 icon={columnIcon}
                                                                 color={columnIconColor} />
                                                         {/if}
-                                                    </svelte:fragment>
+                                                    </svelte:fragment>-->
                                                 </InputText>
                                             </div>
                                         {/if}
@@ -1026,6 +1134,36 @@
             }
         }
 
+        .column-highlight-overlay {
+            opacity: 0;
+            z-index: 10;
+            position: absolute;
+            pointer-events: none;
+            animation: fadeIn 0.2s ease-out forwards;
+            border-radius: var(--border-radius-s, 4px);
+            border: var(--border-width-l, 2px) solid rgba(253, 54, 110, 0.6);
+
+          &.slide {
+            transition:
+                    left 0.3s ease-out,
+                    width 0.3s ease-out;
+          }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Hide selected column borders when overlay is active - targeted via JS */
+        & :global([role='cell'].hide-border .column-resizer-disabled) {
+            display: none !important;
+        }
+
         .columns-range-overlay {
             position: absolute;
             left: var(--group-left, 0px);
@@ -1082,11 +1220,11 @@
         & .floating-action-wrapper {
             & :global(:first-child) {
                 z-index: 21;
-                left: calc(65% - 525px / 2);
+                left: calc(65% - 480px / 2);
                 transition: all 600ms cubic-bezier(0.4, 0, 0.2, 1);
 
                 @media (max-width: 1024px) {
-                    left: calc(50% - 525px / 2);
+                    left: calc(50% - 480px / 2);
                 }
 
                 @media (max-width: 768px) {
@@ -1096,11 +1234,11 @@
             }
 
             &.expanded :global(:first-child) {
-                left: calc(60% - 525px / 2);
-                max-width: 525px !important;
+                left: calc(60% - 480px / 2);
+                max-width: 480px !important;
 
                 @media (max-width: 1024px) {
-                    left: calc(50% - 525px / 2);
+                    left: calc(50% - 480px / 2);
                 }
 
                 @media (max-width: 768px) {
@@ -1110,7 +1248,7 @@
             }
 
             &.creating-columns :global(:first-child) {
-                left: calc(67.5% - 525px / 2);
+                left: calc(67.5% - 480px / 2);
                 max-width: 300px !important;
 
                 @media (max-width: 1024px) {
