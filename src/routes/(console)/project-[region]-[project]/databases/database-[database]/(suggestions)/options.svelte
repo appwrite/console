@@ -60,7 +60,6 @@
                 showSheet = false;
             }
         }}>
-
         {#snippet footer()}
             {@render mobileFooterChildren?.(() => (showSheet = false))}
         {/snippet}

@@ -574,7 +574,7 @@
     function resetSelectedColumn() {
         selectedColumnId = null;
         previousColumnId = null;
-        selectedColumnName = null;
+        /*selectedColumnName = null;*/
     }
 
     function isColumnVisible(columnId: string) {
@@ -676,6 +676,16 @@
     async function createColumns() {
         creatingColumns = true;
         const client = sdk.forProject(page.params.region, page.params.project);
+
+        const isAnyEmpty = customColumns.some((col) => !col.key);
+        if (isAnyEmpty) {
+            creatingColumns = false;
+            addNotification({
+                type: 'warning',
+                message: 'Some columns have invalid keys'
+            });
+            return;
+        }
 
         try {
             const results = [];
@@ -938,9 +948,9 @@
                         </Spreadsheet.Header.Cell>
                     {:else}
                         {@const columnObj = getColumn(column.id)}
-                        <!--{@const columnIcon = basicColumnOptions.find(
+                        {@const columnIcon = basicColumnOptions.find(
                             (col) => col.type === columnObj?.type
-                        )?.icon}-->
+                        )?.icon}
                         {@const columnIconColor = !columnObj?.type
                             ? '--non-overlay-icon-color'
                             : '--overlay-icon-color'}
@@ -979,88 +989,41 @@
                                             {column.title}
                                         </span>
 
-                                        <Popover
-                                            let:toggle
-                                            portal
-                                            padding="none"
-                                            placement="bottom-start">
-                                            <div
-                                                class="column-icon-wrapper"
-                                                class:animate-in={!columnObj?.isPlaceholder}
-                                                style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}>
-                                                <Button.Button
-                                                    size="xs"
-                                                    variant="extra-compact"
-                                                    disabled={!isColumnInteractable}
-                                                    on:click={(event) => {
-                                                        if (
-                                                            isColumnInteractable &&
-                                                            !$isTabletViewport
-                                                        ) {
-                                                            toggle(event);
-                                                            resetSelectedColumn();
-                                                        }
-                                                    }}>
-                                                    {#if !columnObj?.isPlaceholder}
-                                                        <Icon
-                                                            size="s"
-                                                            color={columnIconColor}
-                                                            icon={column.icon ?? undefined} />
-                                                    {/if}
-                                                </Button.Button>
-                                            </div>
-
-                                            <div
-                                                let:toggle
-                                                slot="tooltip"
-                                                class="actions-menu-wrapper">
-                                                <ActionMenu.Root width="228px">
-                                                    <Layout.Stack
-                                                        gap="none"
-                                                        direction="column"
-                                                        class="filter-modal-actions-menu variant">
-                                                        {#each basicColumnOptions as option}
-                                                            <ActionMenu.Item.Button
-                                                                on:click={() => {
-                                                                    toggle();
-                                                                    updateColumn(column.id, {
-                                                                        type: option.type,
-                                                                        format:
-                                                                            option.format || null
-                                                                    });
-                                                                }}>
-                                                                <Layout.Stack
-                                                                    gap="s"
-                                                                    direction="row"
-                                                                    alignContent="center">
-                                                                    <Icon icon={option.icon} />
-                                                                    {option.name}
-                                                                </Layout.Stack>
-                                                            </ActionMenu.Item.Button>
-                                                        {/each}
-                                                    </Layout.Stack>
-                                                </ActionMenu.Root>
-                                            </div>
-                                        </Popover>
+                                        {@render changeColumnTypePopover({
+                                            id: column.id,
+                                            columnObj,
+                                            iconColor: columnIconColor,
+                                            icon: column.icon,
+                                            isColumnInteractable,
+                                            index
+                                        })}
                                     </Layout.Stack>
 
                                     <svelte:fragment slot="cell-editor">
                                         {#if !$isTabletViewport}
-                                            <div class="cell-editor">
+                                            <div
+                                                class="cell-editor"
+                                                onfocusin={resetSelectedColumn}
+                                            >
                                                 <InputText
                                                     id="key"
                                                     autofocus
                                                     required
                                                     bind:value={columnObj.key}
-                                                    pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$">
-                                                    <!--<svelte:fragment slot="end">
+                                                    pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$"
+                                                >
+                                                    <svelte:fragment slot="end">
                                                         {#if columnIcon}
-                                                            <Icon
-                                                                size="s"
-                                                                icon={columnIcon}
-                                                                color={columnIconColor} />
+                                                            {@render changeColumnTypePopover({
+                                                                id: column.id,
+                                                                columnObj,
+                                                                iconColor: columnIconColor,
+                                                                icon: column.icon,
+                                                                isColumnInteractable,
+                                                                index
+                                                            })}
                                                         {/if}
-                                                    </svelte:fragment>-->
+                                                    </svelte:fragment>
                                                 </InputText>
                                             </div>
                                         {/if}
@@ -1255,6 +1218,55 @@
         </div>
     {/if}
 </div>
+
+{#snippet changeColumnTypePopover({ id, columnObj, iconColor, icon, isColumnInteractable, index })}
+    <Popover let:toggle portal padding="none" placement="bottom-start">
+        <div
+            class="column-icon-wrapper"
+            class:animate-in={!columnObj?.isPlaceholder}
+            style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}>
+            <Button.Button
+                size="xs"
+                variant="extra-compact"
+                disabled={!isColumnInteractable}
+                on:click={(event) => {
+                    if (isColumnInteractable && !$isTabletViewport) {
+                        toggle(event);
+                        resetSelectedColumn();
+                    }
+                }}>
+                {#if !columnObj?.isPlaceholder}
+                    <Icon size="s" color={iconColor ?? undefined} icon={icon ?? undefined} />
+                {/if}
+            </Button.Button>
+        </div>
+
+        <div let:toggle slot="tooltip" class="actions-menu-wrapper">
+            <ActionMenu.Root width="228px">
+                <Layout.Stack
+                    gap="none"
+                    direction="column"
+                    class="filter-modal-actions-menu variant">
+                    {#each basicColumnOptions as option}
+                        <ActionMenu.Item.Button
+                            on:click={() => {
+                                toggle();
+                                updateColumn(id, {
+                                    type: option.type,
+                                    format: option.format || null
+                                });
+                            }}>
+                            <Layout.Stack gap="s" direction="row" alignContent="center">
+                                <Icon icon={option.icon} />
+                                {option.name}
+                            </Layout.Stack>
+                        </ActionMenu.Item.Button>
+                    {/each}
+                </Layout.Stack>
+            </ActionMenu.Root>
+        </div>
+    </Popover>
+{/snippet}
 
 <style lang="scss">
     .spreadsheet-container-outer {
@@ -1534,8 +1546,8 @@
         border: var(--border-width-L, 2px) solid rgba(253, 54, 110, 0.24) !important;
 
         & :global(i) {
-            margin-inline-end: 6px !important;
-            margin-block-start: -4px !important;
+            margin-inline-end: 4px !important;
+            //margin-block-start: -4px !important;
         }
 
         & :global(::selection) {
