@@ -80,9 +80,7 @@
                         ariaLabel="create table">Documentation</Button>
 
                     {#if $canWriteTables}
-                        <Button
-                            secondary
-                            on:click={() => ($showCreateEntity = true)}>
+                        <Button secondary on:click={() => ($showCreateEntity = true)}>
                             Create table
                         </Button>
                     {/if}
