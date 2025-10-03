@@ -25,23 +25,18 @@
         tableColumnSuggestions,
         basicColumnOptions,
         mockSuggestions,
-        createTableRequest,
         showIndexesSuggestions
     } from './store';
     import { addNotification, dismissNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { sleep } from '$lib/helpers/promises';
-    import { invalidate, beforeNavigate, goto } from '$app/navigation';
-    import { showCreateTable } from '../store';
-    import { showSubNavigation } from '$lib/stores/layout';
-    import { navigationCancelled } from '$lib/stores/navigation';
+    import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { isWithinSafeRange } from '$lib/helpers/numbers';
     import type { Columns } from '../table-[table]/store';
     import { columnOptions } from '../table-[table]/columns/store';
     import Options from './options.svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
-    import { Confirm } from '$lib/components';
     import { isCloud, VARS } from '$lib/system';
 
     import IconAINotification from './icon/aiNotification.svelte';
@@ -61,10 +56,6 @@
     let showFloatingBar = $state(true);
     let hasTransitioned = $state(false);
     let scrollAnimationFrame: number | null = null;
-
-    let confirmDismiss = $state(false);
-    let confirmNavigation = $state(false);
-    let pendingNavigationUrl: string | null = null;
 
     let creatingColumns = $state(false);
     const baseColProps = { draggable: false, resizable: false };
@@ -156,10 +147,8 @@
                 const actionsRect = actionsCell.getBoundingClientRect();
                 const left = Math.round(idRect.right - containerRect.left);
                 const actionsLeft = actionsRect.left - containerRect.left;
-                const width = Math.min(
-                    customColumns.length * 180, // estimated minimum placeholder width
-                    actionsLeft - left // don't exceed actions column
-                );
+
+                const width = actionsLeft - left;
 
                 spreadsheetContainer.style.setProperty('--group-left', `${left - 2}px`);
                 spreadsheetContainer.style.setProperty('--group-width', `${width + 2}px`);
@@ -219,27 +208,22 @@
 
         const left = Math.round(startLeft - containerRect.left);
 
-        // maximum possible width of all custom columns
-        const totalFullWidth = customColumns.reduce(
-            (total, col) => total + getColumnWidth(col.key),
-            0
-        );
-
         // get the actions column and use its left border as the boundary
         const actionsCell = headerElement!.querySelector<HTMLElement>(
             '[role="cell"][data-column-id="actions"]'
         );
-        const rawVisibleWidth = Math.round(visibleRight - idRect.right);
-        let maxAllowedWidth = rawVisibleWidth;
 
-        if (actionsCell) {
-            const actionsRect = actionsCell.getBoundingClientRect();
-            const actionsLeft = actionsRect.left - containerRect.left;
-            maxAllowedWidth = Math.min(rawVisibleWidth, actionsLeft - left);
+        if (!actionsCell) {
+            if (rangeOverlayEl) {
+                rangeOverlayEl.style.display = 'none';
+            }
+            return;
         }
 
-        // Set overlay width to not exceed actions column boundary
-        const width = Math.min(totalFullWidth, maxAllowedWidth);
+        const actionsRect = actionsCell.getBoundingClientRect();
+        const actionsLeft = actionsRect.left - containerRect.left;
+
+        const width = actionsLeft - left;
 
         // Apply overlay positioning
         spreadsheetContainer.style.setProperty('--group-left', `${left - 2}px`);
@@ -296,26 +280,6 @@
         });
     };
 
-    // Handle create table requests from subNavigation
-    const unsubscribeCreateTable = createTableRequest.subscribe((requested) => {
-        if (requested) {
-            const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
-            if (hasRealColumns && !creatingColumns) {
-                confirmNavigation = true;
-                pendingNavigationUrl = 'create-table';
-            } else {
-                executeCreateTable();
-            }
-
-            createTableRequest.set(false);
-        }
-    });
-
-    function executeCreateTable() {
-        $showCreateTable = true;
-        $showSubNavigation = false;
-    }
-
     const customSuggestedColumns = $derived.by(() => {
         return customColumns.map((col: SuggestedColumnSchema) => {
             const columnOption = getColumnOption(col.type, col.format);
@@ -338,35 +302,54 @@
         });
     });
 
-    const getRowColumns = (): Column[] => [
-        {
-            id: '$id',
-            title: '$id',
-            type: 'string',
-            width: 180,
-            icon: IconFingerPrint,
-            ...baseColProps
-        },
-        ...customSuggestedColumns,
-        {
-            id: 'actions',
-            title: '',
-            type: 'string' as Column['type'],
-            width: 40,
-            isAction: true,
-            ...baseColProps
-        }
-    ];
+    const getRowColumns = (): Column[] => {
+        const minColumnWidth = 180;
+        const fixedWidths = { id: minColumnWidth, actions: 40, selection: 40 };
 
-    // Handle browser back/forward navigation
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-        const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
-        if (hasRealColumns && !creatingColumns) {
-            event.preventDefault();
-            event.returnValue =
-                'You have unsaved column suggestions. Are you sure you want to leave?';
-            return event.returnValue;
-        }
+        // calculate base widths and total
+        const columnsWithBase = customSuggestedColumns.map((col) => ({
+            ...col,
+            baseWidth: Math.max(minColumnWidth, getColumnWidth(col.id))
+        }));
+
+        const totalUsed =
+            fixedWidths.id +
+            fixedWidths.actions +
+            fixedWidths.selection +
+            columnsWithBase.reduce((sum, col) => sum + col.baseWidth, 0);
+
+        // distribute excess space equally across custom columns
+        const viewportWidth =
+            spreadsheetContainer?.clientWidth ||
+            (typeof window !== 'undefined' ? window.innerWidth : totalUsed);
+
+        const extraPerColumn =
+            Math.max(0, viewportWidth - totalUsed) / (columnsWithBase.length || 1);
+
+        const finalCustomColumns = columnsWithBase.map((col) => ({
+            ...col,
+            width: { min: col.baseWidth + extraPerColumn }
+        }));
+
+        return [
+            {
+                id: '$id',
+                title: '$id',
+                type: 'string',
+                width: fixedWidths.id,
+                icon: IconFingerPrint,
+                ...baseColProps
+            },
+            ...finalCustomColumns,
+            {
+                id: 'actions',
+                title: '',
+                type: 'string' as Column['type'],
+                width: fixedWidths.actions,
+                isAction: true,
+                ...baseColProps
+            }
+        ];
     };
 
     const spreadsheetColumns = $derived(getRowColumns());
@@ -380,16 +363,6 @@
 
         requestAnimationFrame(recalcAll);
         await suggestColumns();
-    });
-
-    beforeNavigate(({ cancel, to }) => {
-        const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
-        if (hasRealColumns && !creatingColumns) {
-            cancel();
-            confirmNavigation = true;
-            $navigationCancelled = true;
-            pendingNavigationUrl = to?.url?.pathname || null;
-        }
     });
 
     function resetSuggestionsStore(fullReset: boolean = true) {
@@ -436,7 +409,7 @@
                         databaseId: page.params.database,
                         tableId: page.params.table,
                         context: $tableColumnSuggestions.context ?? undefined,
-                        min: 6 // TODO: to not break the sheet layout's width!
+                        min: 6
                     })) as unknown as {
                     total: number;
                     columns: ColumnInput[];
@@ -451,16 +424,28 @@
 
             const mappedColumns = mapSuggestedColumns(suggestedColumns.columns);
 
-            mappedColumns.forEach((column, index) => {
-                if (index < customColumns.length) {
-                    setTimeout(() => {
-                        customColumns[index] = { ...column, isPlaceholder: false };
+            // replace with actual columns and trim excess
+            if (mappedColumns.length < customColumns.length) {
+                customColumns = customColumns.slice(0, mappedColumns.length);
+            }
 
-                        // recalculate overlay bounds
-                        // after each column is populated!
-                        requestAnimationFrame(() => updateOverlayBounds());
-                    }, index * 150);
-                }
+            // replace existing placeholders and
+            // add any additional columns if needed
+            mappedColumns.forEach((column, index) => {
+                setTimeout(() => {
+                    if (index < customColumns.length) {
+                        // replace existing placeholder
+                        customColumns[index] = { ...column, isPlaceholder: false };
+                    } else {
+                        // new column directly if we have more than expected
+                        // just added in case the max ever changes on backend!
+                        customColumns.push({ ...column, isPlaceholder: false });
+                    }
+
+                    // recalculate overlay bounds
+                    // after each column is populated!
+                    requestAnimationFrame(() => updateOverlayBounds());
+                }, index * 150);
             });
 
             if (mappedColumns.length > 0) {
@@ -705,11 +690,10 @@
 
         customColumns = [];
         resetSuggestionsStore();
-        unsubscribeCreateTable();
     });
 </script>
 
-<svelte:window on:resize={recalcAll} on:scroll={recalcAll} on:beforeunload={handleBeforeUnload} />
+<svelte:window on:resize={recalcAll} on:scroll={recalcAll} />
 
 <div
     bind:this={spreadsheetContainer}
@@ -988,7 +972,10 @@
                             size="xs"
                             variant="text"
                             disabled={creatingColumns}
-                            on:click={() => (confirmDismiss = true)}
+                            on:click={() => {
+                                customColumns = [];
+                                resetSuggestionsStore();
+                            }}
                             style="opacity: {creatingColumns ? '0' : '1'}"
                             >Dismiss
                         </Button.Button>
@@ -1007,47 +994,11 @@
     {/if}
 </div>
 
-<Confirm
-    confirmDeletion
-    action="Dismiss"
-    title="Dismiss columns"
-    bind:open={confirmDismiss}
-    onSubmit={() => {
-        customColumns = [];
-        resetSuggestionsStore();
-    }}>
-    Are you sure you want to dismiss these columns suggested by AI? This action is irreversible.
-</Confirm>
-
-<Confirm
-    confirmDeletion
-    action="Leave"
-    title="Leave page"
-    bind:open={confirmNavigation}
-    onSubmit={() => {
-        customColumns = [];
-        resetSuggestionsStore();
-        confirmNavigation = false;
-
-        if (pendingNavigationUrl) {
-            if (pendingNavigationUrl === 'create-table') {
-                executeCreateTable();
-            } else {
-                goto(pendingNavigationUrl);
-            }
-
-            pendingNavigationUrl = null;
-        }
-    }}>
-    You have unsaved column suggestions. If you leave this page, you'll lose these suggestions. Are
-    you sure you want to continue?
-</Confirm>
-
 <style lang="scss">
     .spreadsheet-container-outer {
         width: 100%;
         position: fixed;
-        overflow: hidden;
+        overflow: visible;
         scrollbar-width: none;
 
         &.custom-columns {
@@ -1174,8 +1125,8 @@
         }
 
         & :global(.spreadsheet-container) {
-            overflow-x: hidden;
-            overflow-y: hidden;
+            overflow-x: auto;
+            overflow-y: auto;
             scrollbar-width: none;
         }
 

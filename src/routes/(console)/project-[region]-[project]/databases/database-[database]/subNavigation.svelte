@@ -28,14 +28,13 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { subNavigation } from '$lib/stores/database';
-    import { createTableRequest, tableColumnSuggestions } from './(suggestions)/store';
 
-    let data = $derived(page.data) as PageData;
+    const data = $derived(page.data) as PageData;
 
-    let region = $derived(page.params.region);
-    let project = $derived(page.params.project);
-    let tableId = $derived(page.params.table);
-    let databaseId = $derived(page.params.database);
+    const region = $derived(page.params.region);
+    const project = $derived(page.params.project);
+    const tableId = $derived(page.params.table);
+    const databaseId = $derived(page.params.database);
 
     let openBottomSheet = $state(false);
 
@@ -147,15 +146,8 @@
                     <Button
                         compact
                         on:click={() => {
-                            if (
-                                $tableColumnSuggestions.enabled &&
-                                $tableColumnSuggestions.table?.id
-                            ) {
-                                $createTableRequest = true;
-                            } else {
-                                $showCreateTable = true;
-                                $showSubNavigation = false;
-                            }
+                            $showCreateTable = true;
+                            $showSubNavigation = false;
                         }}>
                         Create table
                     </Button>
