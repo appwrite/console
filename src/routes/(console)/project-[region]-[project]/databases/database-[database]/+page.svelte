@@ -2,7 +2,7 @@
     import { EmptySearch, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { showCreateTable, tableViewColumns } from './store';
+    import { showCreateEntity, tableViewColumns } from './store';
     import Table from './table.svelte';
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
@@ -33,7 +33,7 @@
                 hideView={!data.tables.total} />
 
             {#if $canWriteTables}
-                <Button event="create_table" on:click={() => ($showCreateTable = true)}>
+                <Button event="create_table" on:click={() => ($showCreateEntity = true)}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create table
                 </Button>
@@ -43,7 +43,7 @@
 
     {#if data.tables.total}
         {#if data.view === 'grid'}
-            <Grid {data} bind:showCreate={$showCreateTable} />
+            <Grid {data} bind:showCreate={$showCreateEntity} />
         {:else}
             <Table {data} />
         {/if}
@@ -82,9 +82,7 @@
                     {#if $canWriteTables}
                         <Button
                             secondary
-                            on:click={() => {
-                                $showCreateTable = true;
-                            }}>
+                            on:click={() => ($showCreateEntity = true)}>
                             Create table
                         </Button>
                     {/if}

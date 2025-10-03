@@ -2,9 +2,8 @@
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import type { PageProps } from './$types';
-    import EmptySheet from '../layout/emptySheet.svelte';
     import { showCreateColumnSheet } from '$database/table-[table]/store';
-    import { type CreateIndexesCallbackType, Indexes } from '$database/(entity)';
+    import { type CreateIndexesCallbackType, Indexes, EmptySheet } from '$database/(entity)';
     import { onDestroy } from 'svelte';
 
     let { data }: PageProps = $props();

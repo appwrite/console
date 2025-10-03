@@ -16,7 +16,8 @@
         showCreateColumnSheet,
         type Columns,
         randomDataModalState,
-        expandTabs
+        expandTabs,
+        columnsOrder
     } from './store';
     import SpreadSheet from './spreadsheet.svelte';
     import { writable } from 'svelte/store';
@@ -28,10 +29,11 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { IconChevronDown, IconChevronUp, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
-    import EmptySheet from './layout/emptySheet.svelte';
     import CreateRow from './rows/create.svelte';
     import { onDestroy } from 'svelte';
     import { isCloud } from '$lib/system';
+    import { columnOptions } from './columns/store';
+    import { EmptySheet } from '$database/(entity)';
     import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
 
     export let data: PageData;
@@ -49,7 +51,8 @@
             hide: !!selected?.includes(column.key),
             array: column?.array,
             format: 'format' in column && column?.format === 'enum' ? column.format : null,
-            elements: 'elements' in column ? column.elements : null
+            elements: 'elements' in column ? column.elements : null,
+            icon: columnOptions.find((option) => option.type === column.type)?.icon
         }));
     }
 
@@ -230,6 +233,12 @@
                 mode="rows"
                 title="You have no columns yet"
                 showActions={$canWriteTables}
+                onOpenCreateColumn={() => {
+                    $showCreateColumnSheet.show = true;
+                    $showCreateColumnSheet.title = 'Create column';
+                    $showCreateColumnSheet.columns = $tableColumns;
+                    $showCreateColumnSheet.columnsOrder = $columnsOrder;
+                }}
                 actions={{
                     primary: {
                         text: 'Create column',

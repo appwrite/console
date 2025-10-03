@@ -11,17 +11,10 @@
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
-    import {
-        tableColumns,
-        columnsOrder,
-        showCreateColumnSheet,
-        spreadsheetLoading,
-        expandTabs
-    } from '../store';
     import { SpreadsheetContainer } from '$database/(entity)';
     import { onDestroy, onMount } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
-    import { columnOptions } from '../columns/store';
+    import { expandTabs, spreadsheetLoading } from '$database/table-[table]/store';
 
     type Mode = 'rows' | 'rows-filtered' | 'indexes';
 
@@ -33,20 +26,22 @@
 
     const {
         mode,
+        title,
+        actions,
         showActions = true,
         customColumns = [],
-        title,
-        actions
-    } = $props<{
+        onOpenCreateColumn
+    }: {
         mode: Mode;
-        showActions?: boolean;
-        customColumns?: Column[];
         title?: string;
+        showActions?: boolean;
+        customColumns?: Column[]; // these are filtered with `hide`
+        onOpenCreateColumn?: () => Promise<void> | void;
         actions?: {
             primary?: Action;
             random?: Action;
         };
-    }>();
+    } = $props();
 
     let spreadsheetContainer: HTMLElement;
     let headerElement: HTMLElement | null = null;
@@ -96,7 +91,6 @@
             ...col,
             width: 180,
             hide: false,
-            icon: columnOptions.find((colOpt) => colOpt.type === col?.type)?.icon,
             ...baseColProps
         }));
 
@@ -184,13 +178,10 @@
                     <div
                         role="button"
                         tabindex="0"
-                        style:cursor={columnActionsById ? 'pointer' : null}
+                        style:cursor={columnActionsById && onOpenCreateColumn ? 'pointer' : null}
                         onclick={() => {
                             if (columnActionsById && mode === 'rows') {
-                                $showCreateColumnSheet.show = true;
-                                $showCreateColumnSheet.title = 'Create column';
-                                $showCreateColumnSheet.columns = $tableColumns;
-                                $showCreateColumnSheet.columnsOrder = $columnsOrder;
+                                onOpenCreateColumn?.();
                             }
                         }}>
                         <Spreadsheet.Header.Cell

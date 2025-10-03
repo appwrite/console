@@ -10,8 +10,7 @@
     } from '$lib/commandCenter';
     import { tablesSearcher } from '$lib/commandCenter/searchers';
     import { Dependencies } from '$lib/constants';
-    import CreateTable from './createTable.svelte';
-    import { showCreateTable } from './store';
+    import { showCreateEntity } from './store';
     import { TablesPanel } from '$lib/commandCenter/panels';
     import { canWriteTables, canWriteDatabases } from '$lib/stores/roles';
     import { showCreateBackup, showCreatePolicy } from './backups/store';
@@ -19,6 +18,8 @@
     import { currentPlan } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { noWidthTransition } from '$lib/stores/sidebar';
+    import { CreateEntity } from '$database/(entity)';
+    import { sdk } from '$lib/stores/sdk';
 
     const project = page.params.project;
     const databaseId = page.params.database;
@@ -27,7 +28,7 @@
         {
             label: 'Create table',
             callback() {
-                $showCreateTable = true;
+                $showCreateEntity = true;
                 if (!page.url.pathname.endsWith(databaseId)) {
                     goto(
                         `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}`
@@ -135,6 +136,21 @@
     $: $updateCommandGroupRanks({ tables: 10 });
 
     $noWidthTransition = true;
+
+    async function createEntity(tableId: string, name: string) {
+        const table = await sdk
+            .forProject(page.params.region, page.params.project)
+            .tablesDB.createTable({
+                databaseId,
+                tableId,
+                name
+            });
+
+        await invalidate(Dependencies.DATABASE);
+        await goto(
+            `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/table-${table.$id}`
+        );
+    }
 </script>
 
 <svelte:head>
@@ -143,11 +159,4 @@
 
 <slot />
 
-<CreateTable
-    bind:showCreate={$showCreateTable}
-    onTableCreated={async (table) => {
-        await invalidate(Dependencies.DATABASE);
-        await goto(
-            `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/table-${table.$id}`
-        );
-    }} />
+<CreateEntity bind:show={$showCreateEntity} onCreateEntity={createEntity} />
