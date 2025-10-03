@@ -4,15 +4,13 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
     import Confirm from '$lib/components/confirm.svelte';
-    import type { DependenciesResult } from '$database/(entity)';
+    import { getTerminologies } from '$database/(entity)';
 
     let {
-        dependencies,
         showDelete = $bindable(false),
         selectedIndex = $bindable(null),
         onDeleteIndexes
     }: {
-        dependencies: DependenciesResult;
         showDelete: boolean;
         selectedIndex: Models.ColumnIndex | string[] | null;
         onDeleteIndexes: (selectedKeys: string[]) => Promise<void>;
@@ -20,6 +18,8 @@
 
     let error: string = $state(null);
     let selectedKeys = $derived(getKeys(selectedIndex));
+
+    const { dependencies } = getTerminologies();
 
     function getKeys(selected: Models.ColumnIndex | string[]): string[] {
         return Array.isArray(selected) ? selected : [selected.key];

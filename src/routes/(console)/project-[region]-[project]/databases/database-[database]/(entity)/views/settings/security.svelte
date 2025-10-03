@@ -5,10 +5,8 @@
     import { Button, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import {
-        EntityContainer,
         type Entity,
-        type AnalyticsResult,
-        type DependenciesResult
+        getTerminologies
     } from '$database/(entity)';
 
     let {
@@ -24,7 +22,7 @@
 
     const hasChanges = $derived(entitySecurity !== entity.rowSecurity);
 
-    async function cleanup(analytics: AnalyticsResult, dependencies: DependenciesResult) {
+    async function cleanup() {
         // events and notif!
         trackEvent(analytics.submit.entity('UpdateSecurity'));
         addNotification({ message: `${entity.name} has been updated`, type: 'success' });
@@ -33,47 +31,40 @@
         await invalidate(dependencies.entity.singular);
     }
 
-    async function updateSecurity(analytics: AnalyticsResult, dependencies: DependenciesResult) {
+    async function updateSecurity() {
         try {
             await onChangeSecurity(entitySecurity);
-            await cleanup(analytics, dependencies);
+            await cleanup();
         } catch (error) {
             addNotification({ message: error.message, type: 'error' });
             trackError(error, analytics.submit.entity('UpdateSecurity'));
         }
     }
+
+    const { analytics, dependencies, terminology } = getTerminologies();
+
+    const title = terminology.record.title.singular;
+    const recordLower = terminology.record.lower.singular;
+    const recordsLower = terminology.record.lower.plural;
+    const entityLower = terminology.entity.lower.singular;
 </script>
 
-<EntityContainer>
-    {#snippet children(analytics, dependencies, terminology)}
-        {@const title = terminology.record.title.singular}
-        {@const recordLower = terminology.record.lower.singular}
-        {@const recordsLower = terminology.record.lower.plural}
-        {@const entityLower = terminology.entity.lower.singular}
+<CardGrid>
+    <svelte:fragment slot="title">{title} security</svelte:fragment>
+    <svelte:fragment slot="aside">
+        <InputSwitch bind:value={entitySecurity} id="security" label="{title} security" />
 
-        <CardGrid>
-            <svelte:fragment slot="title">{title} security</svelte:fragment>
-            <svelte:fragment slot="aside">
-                <InputSwitch bind:value={entitySecurity} id="security" label="{title} security" />
-
-                <p class="text">
-                    When {recordLower} security is enabled, users will be able to access {recordsLower}
-                    for which they have been granted
-                    <b>either {recordLower} or {entityLower} permissions</b>.
-                </p>
-                <p class="text">
-                    If {recordLower} security is disabled, users can access rows
-                    <b>only if they have {entityLower} permissions</b>. Row permissions will be
-                    ignored.
-                </p>
-            </svelte:fragment>
-            <svelte:fragment slot="actions">
-                <Button
-                    disabled={!hasChanges}
-                    on:click={async () => {
-                        await updateSecurity(analytics, dependencies);
-                    }}>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
-    {/snippet}
-</EntityContainer>
+        <p class="text">
+            When {recordLower} security is enabled, users will be able to access {recordsLower}
+            for which they have been granted
+            <b>either {recordLower} or {entityLower} permissions</b>.
+        </p>
+        <p class="text">
+            If {recordLower} security is disabled, users can access rows
+            <b>only if they have {entityLower} permissions</b>. Row permissions will be ignored.
+        </p>
+    </svelte:fragment>
+    <svelte:fragment slot="actions">
+        <Button disabled={!hasChanges} on:click={updateSecurity}>Update</Button>
+    </svelte:fragment>
+</CardGrid>

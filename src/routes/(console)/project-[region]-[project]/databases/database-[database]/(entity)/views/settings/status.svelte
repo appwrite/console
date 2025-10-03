@@ -5,8 +5,10 @@
     import { Button, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { trackEvent, trackError } from '$lib/actions/analytics';
-    import type { AnalyticsResult, DependenciesResult, Entity } from '$database/(entity)';
-    import { EntityContainer } from '$database/(entity)/index.js';
+    import {
+        type Entity,
+        getTerminologies
+    } from '$database/(entity)';
 
     let {
         entity,
@@ -18,7 +20,9 @@
 
     let enabled: boolean = $state(entity.enabled);
 
-    async function cleanup(analytics: AnalyticsResult, dependencies: DependenciesResult) {
+    const { analytics, dependencies } = getTerminologies();
+
+    async function cleanup() {
         // events and notif!
         trackEvent(analytics.submit.entity('UpdateEnabled'));
         addNotification({ message: `${entity.name} has been updated`, type: 'success' });
@@ -27,10 +31,10 @@
         await invalidate(dependencies.entity.singular);
     }
 
-    async function updateStatus(analytics: AnalyticsResult, dependencies: DependenciesResult) {
+    async function updateStatus() {
         try {
             await onChangeStatus(enabled);
-            await cleanup(analytics, dependencies);
+            await cleanup();
         } catch (error) {
             addNotification({ message: error.message, type: 'error' });
             trackError(error, analytics.submit.entity('UpdateEnabled'));
@@ -38,30 +42,22 @@
     }
 </script>
 
-<EntityContainer>
-    {#snippet children(analytics, dependencies)}
-        <CardGrid>
-            <svelte:fragment slot="title">{entity.name}</svelte:fragment>
-            <svelte:fragment slot="aside">
-                <ul>
-                    <InputSwitch
-                        id="toggle"
-                        label={enabled ? 'Enabled' : 'Disabled'}
-                        bind:value={enabled} />
-                </ul>
-                <div>
-                    <p>Created: {toLocaleDateTime(entity.$createdAt)}</p>
-                    <p>Last updated: {toLocaleDateTime(entity.$updatedAt)}</p>
-                </div>
-            </svelte:fragment>
+<CardGrid>
+    <svelte:fragment slot="title">{entity.name}</svelte:fragment>
+    <svelte:fragment slot="aside">
+        <ul>
+            <InputSwitch
+                id="toggle"
+                label={enabled ? 'Enabled' : 'Disabled'}
+                bind:value={enabled} />
+        </ul>
+        <div>
+            <p>Created: {toLocaleDateTime(entity.$createdAt)}</p>
+            <p>Last updated: {toLocaleDateTime(entity.$updatedAt)}</p>
+        </div>
+    </svelte:fragment>
 
-            <svelte:fragment slot="actions">
-                <Button
-                    disabled={enabled === entity.enabled}
-                    on:click={async () => {
-                        await updateStatus(analytics, dependencies);
-                    }}>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
-    {/snippet}
-</EntityContainer>
+    <svelte:fragment slot="actions">
+        <Button disabled={enabled === entity.enabled} on:click={updateStatus}>Update</Button>
+    </svelte:fragment>
+</CardGrid>

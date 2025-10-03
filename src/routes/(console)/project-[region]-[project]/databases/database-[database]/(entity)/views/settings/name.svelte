@@ -4,8 +4,10 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { subNavigation } from '$lib/stores/database';
-    import type { AnalyticsResult, DependenciesResult, Entity } from '$database/(entity)';
-    import { EntityContainer } from '$database/(entity)/index.js';
+    import {
+        type Entity,
+        getTerminologies
+    } from '$database/(entity)';
     import { invalidate } from '$app/navigation';
 
     let {
@@ -17,8 +19,9 @@
     } = $props();
 
     let entityName: string = $state(entity.name);
+    const { analytics, dependencies } = getTerminologies();
 
-    async function cleanup(analytics: AnalyticsResult, dependencies: DependenciesResult) {
+    async function cleanup() {
         subNavigation.update(); // update the side entity table.
 
         // events and notif!
@@ -29,10 +32,10 @@
         await invalidate(dependencies.entity.singular);
     }
 
-    async function updateName(analytics: AnalyticsResult, dependencies: DependenciesResult) {
+    async function updateName() {
         try {
             await onChangeName(entityName);
-            await cleanup(analytics, dependencies);
+            await cleanup();
         } catch (error) {
             addNotification({ message: error.message, type: 'error' });
             trackError(error, analytics.submit.entity('UpdateName'));
@@ -40,26 +43,21 @@
     }
 </script>
 
-<EntityContainer>
-    {#snippet children(analytics, dependencies)}
-        <Form onSubmit={() => updateName(analytics, dependencies)}>
-            <CardGrid>
-                <svelte:fragment slot="title">Name</svelte:fragment>
-                <svelte:fragment slot="aside">
-                    <InputText
-                        required
-                        id="name"
-                        label="Name"
-                        placeholder="Enter name"
-                        autocomplete={false}
-                        bind:value={entityName} />
-                </svelte:fragment>
+<Form onSubmit={updateName}>
+    <CardGrid>
+        <svelte:fragment slot="title">Name</svelte:fragment>
+        <svelte:fragment slot="aside">
+            <InputText
+                required
+                id="name"
+                label="Name"
+                placeholder="Enter name"
+                autocomplete={false}
+                bind:value={entityName} />
+        </svelte:fragment>
 
-                <svelte:fragment slot="actions">
-                    <Button disabled={entityName === entity.name || !entityName} submit
-                        >Update</Button>
-                </svelte:fragment>
-            </CardGrid>
-        </Form>
-    {/snippet}
-</EntityContainer>
+        <svelte:fragment slot="actions">
+            <Button disabled={entityName === entity.name || !entityName} submit>Update</Button>
+        </svelte:fragment>
+    </CardGrid>
+</Form>

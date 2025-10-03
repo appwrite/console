@@ -2,16 +2,15 @@
     import { InputText } from '$lib/elements/forms';
     import { Layout } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
-    import type { TerminologyResult } from '$database/(entity)';
+    import { getTerminologies } from '$database/(entity)';
 
     let {
-        terminology,
         selectedIndex = null
     }: {
-        terminology: TerminologyResult;
         selectedIndex: Models.ColumnIndex;
     } = $props();
 
+    const { terminology } = getTerminologies();
     const entityType = terminology.entity.title.singular;
 </script>
 

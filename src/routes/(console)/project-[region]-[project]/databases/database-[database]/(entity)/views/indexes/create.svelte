@@ -20,22 +20,18 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconCalendar, IconFingerPrint, IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import type { DependenciesResult, Entity, TerminologyResult } from '$database/(entity)';
+    import { type Entity, getTerminologies } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { IndexType } from '@appwrite.io/console';
     import { columnOptions as baseColumnOptions } from '$database/table-[table]/columns/store';
 
     let {
         entity,
-        terminology,
-        dependencies,
         showCreateIndex = $bindable(false),
         externalFieldKey = null,
         onCreateIndex
     }: {
         entity: Entity;
-        terminology: TerminologyResult;
-        dependencies: DependenciesResult;
         showCreateIndex: boolean;
         externalFieldKey?: string;
         onCreateIndex: (index: CreateIndexesCallbackType) => Promise<void>;
@@ -44,6 +40,8 @@
     let key = $state('');
 
     let selectedType = $state<IndexType>(IndexType.Key);
+
+    const { dependencies, terminology } = getTerminologies();
 
     const fieldOptions = $derived(
         // TODO: could be columns or attributes!

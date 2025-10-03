@@ -18,7 +18,7 @@
     import { currentPlan } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { noWidthTransition } from '$lib/stores/sidebar';
-    import { CreateEntity } from '$database/(entity)';
+    import { CreateEntity, setTerminologies } from '$database/(entity)';
     import { sdk } from '$lib/stores/sdk';
 
     const project = page.params.project;
@@ -151,6 +151,8 @@
             `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/table-${table.$id}`
         );
     }
+
+    $: setTerminologies(page);
 </script>
 
 <svelte:head>

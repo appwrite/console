@@ -46,7 +46,7 @@
     import { base } from '$app/paths';
     import { canWriteTables } from '$lib/stores/roles';
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
-    import { SideSheet } from '$database/(entity)';
+    import { getTerminologies, SideSheet } from '$database/(entity)';
     import EditRow from './rows/edit.svelte';
     import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
@@ -63,8 +63,8 @@
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
+    import { CreateIndex } from '$database/(entity)';
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
-    import { CreateIndex, EntityContainer } from '$database/(entity)';
     import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
 
     let editRow: EditRow;
@@ -442,32 +442,22 @@
             await createIndex.create();
         }
     }}>
-    <EntityContainer>
-        <!-- TODO: @itznotabug, not the best way, see what we can do. -->
-        <!-- Maybe a better setContext logic would suffice! would also avoid using snippets! -->
-        {#snippet children(_, dependencies, terminology)}
-            <CreateIndex
-                entity={$table}
-                bind:this={createIndex}
-                bind:showCreateIndex={$showCreateIndexSheet.show}
-                externalFieldKey={$showCreateIndexSheet.column}
-                {dependencies}
-                {terminology}
-                onCreateIndex={async (index) => {
-                    await sdk
-                        .forProject(page.params.region, page.params.project)
-                        .tablesDB.createIndex({
-                            databaseId: page.params.database,
-                            tableId: page.params.table,
-                            key: index.key,
-                            type: index.type,
-                            columns: index.fields,
-                            lengths: index.lengths,
-                            orders: index.orders
-                        });
-                }} />
-        {/snippet}
-    </EntityContainer>
+    <CreateIndex
+        entity={$table}
+        bind:this={createIndex}
+        bind:showCreateIndex={$showCreateIndexSheet.show}
+        externalFieldKey={$showCreateIndexSheet.column}
+        onCreateIndex={async (index) => {
+            await sdk.forProject(page.params.region, page.params.project).tablesDB.createIndex({
+                databaseId: page.params.database,
+                tableId: page.params.table,
+                key: index.key,
+                type: index.type,
+                columns: index.fields,
+                lengths: index.lengths,
+                orders: index.orders
+            });
+        }} />
 </SideSheet>
 
 <SideSheet
