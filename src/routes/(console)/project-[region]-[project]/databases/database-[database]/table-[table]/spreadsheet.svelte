@@ -860,6 +860,7 @@
                         id={row?.$id}
                         virtualItem={item}
                         select={rowSelection}
+                        hoverEffect
                         showSelectOnHover
                         valueWithoutHover={row.$sequence}>
                         {#each $tableColumns as { id: columnId, isEditable } (columnId)}

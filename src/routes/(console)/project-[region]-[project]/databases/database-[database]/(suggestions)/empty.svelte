@@ -297,7 +297,7 @@
 
     const handleGlobalClick = (event: MouseEvent) => {
         const target = event.target as HTMLElement;
-        if (!target?.closest('[role="rowheader"]')) {
+        if (!target?.closest('[role="rowheader"]') && !target?.closest('[role="row"]')) {
             resetSelectedColumn();
         }
     };
@@ -577,6 +577,36 @@
         /*selectedColumnName = null;*/
     }
 
+    // small decor, hides previous cell's right border visibility!
+    function handlePreviousColumnsBorder(columnId: string, hide: boolean = true) {
+        const allHeaders = Array.from(
+            spreadsheetContainer.querySelectorAll(
+                '[role="rowheader"] [role="cell"][data-column-id]'
+            )
+        );
+
+        const selectedIndex = allHeaders.findIndex(
+            (cell) => cell.getAttribute('data-column-id') === columnId
+        );
+
+        if (selectedIndex > 0) {
+            const prevColumnId = allHeaders[selectedIndex - 1].getAttribute('data-column-id');
+            if (prevColumnId) {
+                const previousCells = spreadsheetContainer.querySelectorAll(
+                    `[role="rowheader"] [role="cell"][data-column-id="${prevColumnId}"]`
+                );
+
+                previousCells.forEach((cell) => {
+                    if (hide) {
+                        cell.classList.add('hide-border');
+                    } else {
+                        cell.classList.remove('hide-border');
+                    }
+                });
+            }
+        }
+    }
+
     function isColumnVisible(columnId: string) {
         if (!spreadsheetContainer || !hScroller) return true;
 
@@ -837,6 +867,10 @@
     }
 
     $effect(() => {
+        console.log('selectedColumnId changed:', selectedColumnId);
+    });
+
+    $effect(() => {
         if (!spreadsheetContainer) return;
 
         // remove existing hide-border classes
@@ -933,11 +967,11 @@
 
     <SpreadsheetContainer>
         <Spreadsheet.Root
-            {emptyCells}
             allowSelection
             height="100%"
             columns={spreadsheetColumns}
-            bottomActionClick={() => {}}>
+            bottomActionClick={() => {}}
+            let:root>
             <svelte:fragment slot="header" let:root>
                 {#each spreadsheetColumns as column, index (index)}
                     {#if column.isAction}
@@ -959,16 +993,12 @@
 
                         <Options
                             enabled={isColumnInteractable}
-                            onShowStateChanged={onPopoverShowStateChanged}
-                            onChildrenClick={() => {
-                                if (isColumnInteractable && !$isTabletViewport) {
-                                    selectColumnWithId(column);
-                                }
-                            }}>
+                            onShowStateChanged={onPopoverShowStateChanged}>
                             {#snippet children(toggle)}
                                 <Spreadsheet.Header.Cell
                                     {root}
                                     isEditable={isColumnInteractable && !$isTabletViewport}
+                                    openEditOnTap={isColumnInteractable && !$isTabletViewport}
                                     column={column.id}
                                     on:contextmenu={(event) => {
                                         // tablet viewport check because context-menu
@@ -1003,15 +1033,18 @@
                                         {#if !$isTabletViewport}
                                             <div
                                                 class="cell-editor"
-                                                onfocusin={resetSelectedColumn}
-                                            >
+                                                onfocusin={() => {
+                                                    resetSelectedColumn();
+                                                    handlePreviousColumnsBorder(column.id);
+                                                }}
+                                                onfocusout={() =>
+                                                    handlePreviousColumnsBorder(column.id, false)}>
                                                 <InputText
                                                     id="key"
                                                     autofocus
                                                     required
                                                     bind:value={columnObj.key}
-                                                    pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$"
-                                                >
+                                                    pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$">
                                                     <svelte:fragment slot="end">
                                                         {#if columnIcon}
                                                             {@render changeColumnTypePopover({
@@ -1098,6 +1131,26 @@
                     {/if}
                 {/each}
             </svelte:fragment>
+
+            {#each Array.from({ length: emptyCells }) as _}
+                <Spreadsheet.Row.Base {root} select="disabled">
+                    {#each spreadsheetColumns as column}
+                        {@const columnObj = getColumn(column.id)}
+                        {@const isColumnInteractable =
+                            isCustomColumn(column.id) && !columnObj.isPlaceholder}
+                        <Spreadsheet.Cell {root} column={column.id} isEditable={false}>
+                            <button
+                                class="column-selector-button"
+                                aria-label="Select column"
+                                onclick={() => {
+                                    if (isColumnInteractable && !$isTabletViewport) {
+                                        selectColumnWithId(column);
+                                    }
+                                }}></button>
+                        </Spreadsheet.Cell>
+                    {/each}
+                </Spreadsheet.Row.Base>
+            {/each}
         </Spreadsheet.Root>
     </SpreadsheetContainer>
 
@@ -1328,6 +1381,16 @@
         /* Hide selected column borders when overlay is active - targeted via JS */
         & :global([role='cell'].hide-border .column-resizer-disabled) {
             display: none !important;
+        }
+
+        & :global([role='cell']:has(.column-selector-button)) {
+            padding: unset;
+        }
+
+        & :global(.column-selector-button) {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
         }
 
         .columns-range-overlay {
