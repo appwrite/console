@@ -1,17 +1,12 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { Id, Tab, Tabs } from '$lib/components';
-    import { isTabSelected } from '$lib/helpers/load';
-    import { Cover } from '$lib/layout';
-    import AnimatedTitle from '$lib/layout/animatedTitle.svelte';
-    import { canWriteTables } from '$lib/stores/roles';
+    import { Header } from '$database/(entity)';
     import { expandTabs, table } from './store';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { canWriteTables } from '$lib/stores/roles';
     import { preferences } from '$lib/stores/preferences';
 
     const databaseId = $derived(page.params.database);
-
     const tableId = $derived(page.params.table);
 
     const path = $derived(
@@ -76,33 +71,7 @@
 </script>
 
 <div class:nonSheetPages>
-    <Cover animate expanded collapsed={!$expandTabs} blocksize={$expandTabs ? '152px' : '90px'}>
-        <svelte:fragment slot="header">
-            <Layout.Stack direction="row" alignContent="center" alignItems="center" inline>
-                <AnimatedTitle href={link} collapsed={!$expandTabs}>
-                    {$table?.name}
-                </AnimatedTitle>
-
-                {#key $table?.$id}
-                    <Id value={$table?.$id} tooltipPlacement={$expandTabs ? undefined : 'right'}
-                        >{$table?.$id}</Id>
-                {/key}
-            </Layout.Stack>
-        </svelte:fragment>
-
-        <div class="tabs-container" class:collapsed={!$expandTabs}>
-            <Tabs>
-                {#each tabs as tab}
-                    <Tab
-                        href={tab.href}
-                        selected={isTabSelected(tab, page.url.pathname, path, tabs)}
-                        event={tab.event}>
-                        {tab.title}
-                    </Tab>
-                {/each}
-            </Tabs>
-        </div>
-    </Cover>
+    <Header {tabs} entity={$table} parentHref={link} bind:expanded={$expandTabs} />
 </div>
 
 <style lang="scss">
@@ -113,20 +82,6 @@
 
         @media (min-width: 1728px) {
             padding-inline: 10.25rem !important;
-        }
-    }
-
-    .tabs-container {
-        opacity: 1;
-        transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
-
-        &.collapsed {
-            opacity: 0;
-            pointer-events: none;
-
-            & :global([role='tab']) {
-                cursor: default;
-            }
         }
     }
 </style>

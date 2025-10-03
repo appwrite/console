@@ -3,8 +3,8 @@
     import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
     import { columnOptions, type Option } from './store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import CsvDisabled from '../csvDisabled.svelte';
     import { isCsvImportInProgress } from '../store';
+    import { CsvDisabled } from '$database/(entity)';
 
     export let showCreate = false;
     export let selectedOption: Option['name'] = null;

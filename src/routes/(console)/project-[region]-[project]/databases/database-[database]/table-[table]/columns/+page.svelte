@@ -42,9 +42,8 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { type ComponentProps, onDestroy, onMount } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import CsvDisabled from '../csvDisabled.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { SideSheet, SpreadsheetContainer, FailedModal } from '$database/(entity)';
+    import { SideSheet, SpreadsheetContainer, FailedModal, CsvDisabled } from '$database/(entity)';
     import { showCreateColumnSheet } from '../store';
     import { type Models } from '@appwrite.io/console';
     import { preferences } from '$lib/stores/preferences';
