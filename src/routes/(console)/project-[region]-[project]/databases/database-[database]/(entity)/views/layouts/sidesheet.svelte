@@ -55,9 +55,9 @@
     let submitting = $state(writable(false));
 
     let copyText = $state(undefined);
-    beforeNavigate(() => {
-        show = false;
-    });
+
+    // hide on a nav trigger!
+    beforeNavigate(() => (show = false));
 </script>
 
 <div class="sheet-container" data-side-sheet-visible={show} {...restProps}>
