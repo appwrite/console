@@ -51,7 +51,6 @@
     import { type Models } from '@appwrite.io/console';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
-    import { formatName } from '$lib/helpers/string';
 
     const updatedColumnsForSheet = $derived.by(() => {
         const baseAttrs = [
@@ -251,8 +250,17 @@
                     column['system'] || column.type === 'relationship' ? 'disabled' : true}
                 <Spreadsheet.Row.Base {root} select={isSelectable} id={column.key}>
                     <Spreadsheet.Cell column="key" {root} isEditable={false}>
-                        <Layout.Stack direction="row" justifyContent="space-between">
-                            <Layout.Stack direction="row" alignItems="center" inline>
+                        <Layout.Stack
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="space-between"
+                            style="min-width:0">
+                            <Layout.Stack
+                                gap="s"
+                                inline
+                                direction="row"
+                                alignItems="center"
+                                style="min-width:0; flex:1 1 auto;">
                                 {#if isRelationship(column)}
                                     <Icon
                                         size="s"
@@ -268,33 +276,35 @@
                                     <Icon icon={option.icon} size="s" />
                                 {/if}
 
-                                <Layout.Stack direction="row" alignItems="center" gap="s">
-                                    <Layout.Stack
-                                        inline
-                                        direction="row"
-                                        alignItems="center"
-                                        gap="xxs">
-                                        <Typography.Text truncate>
-                                            {#if isSystemColumnKey(column)}
-                                                {column.key}
-                                            {:else}
-                                                {@const key = !column.required
-                                                    ? column.key
-                                                    : formatName(column.key, 6)}
-                                                {key}
-                                                {column.array ? '[]' : undefined}
-                                            {/if}
-                                        </Typography.Text>
-                                        {#if isString(column) && column.encrypt}
-                                            <Tooltip>
-                                                <Icon
-                                                    size="s"
-                                                    icon={IconLockClosed}
-                                                    color="--fgcolor-neutral-tertiary" />
-                                                <div slot="tooltip">Encrypted</div>
-                                            </Tooltip>
+                                <Layout.Stack
+                                    gap="s"
+                                    inline
+                                    direction="row"
+                                    alignItems="center"
+                                    style="min-width:0; flex:1 1 auto; overflow:hidden;">
+                                    <Typography.Text truncate>
+                                        {#if isSystemColumnKey(column)}
+                                            {column.key}
+                                        {:else}
+                                            {column.key}{column.array ? '[]' : undefined}
                                         {/if}
-                                    </Layout.Stack>
+                                    </Typography.Text>
+                                    {#if isString(column) && column.encrypt}
+                                        <Tooltip>
+                                            <Icon
+                                                size="s"
+                                                icon={IconLockClosed}
+                                                color="--fgcolor-neutral-tertiary" />
+                                            <div slot="tooltip">Encrypted</div>
+                                        </Tooltip>
+                                    {/if}
+                                </Layout.Stack>
+                                <Layout.Stack
+                                    gap="s"
+                                    inline
+                                    direction="row"
+                                    alignItems="center"
+                                    style="flex:0 0 auto; white-space:nowrap;">
                                     {#if column.status !== 'available'}
                                         <Badge
                                             size="s"
