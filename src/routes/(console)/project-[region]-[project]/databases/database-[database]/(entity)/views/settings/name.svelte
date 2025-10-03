@@ -4,10 +4,7 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { subNavigation } from '$lib/stores/database';
-    import {
-        type Entity,
-        getTerminologies
-    } from '$database/(entity)';
+    import { type Entity, getTerminologies } from '$database/(entity)';
     import { invalidate } from '$app/navigation';
 
     let {

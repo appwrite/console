@@ -5,10 +5,7 @@
     import { Button, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { trackEvent, trackError } from '$lib/actions/analytics';
-    import {
-        type Entity,
-        getTerminologies
-    } from '$database/(entity)';
+    import { type Entity, getTerminologies } from '$database/(entity)';
 
     let {
         entity,

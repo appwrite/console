@@ -4,10 +4,7 @@
     import { CardGrid } from '$lib/components';
     import { Button, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import {
-        type Entity,
-        getTerminologies
-    } from '$database/(entity)';
+    import { type Entity, getTerminologies } from '$database/(entity)';
 
     let {
         entity,
