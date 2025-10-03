@@ -1153,7 +1153,7 @@
         </Table.Root>
 
         <Layout.Stack direction="column" gap="m">
-            <Alert.Inline>To change the selection edit the relationship settings.</Alert.Inline>
+            <Alert.Inline title="To change the selection edit the relationship settings." />
         </Layout.Stack>
     {:else}
         <p class="u-bold">This action is irreversible.</p>
