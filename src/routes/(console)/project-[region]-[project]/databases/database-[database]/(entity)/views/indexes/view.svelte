@@ -36,20 +36,18 @@
         SideSheet
     } from '$database/(entity)';
 
-    // TODO: change `column` to `entity`!
-
     let {
         entity,
         onCreateIndex,
         onDeleteIndexes,
         emptyIndexesSheetView,
-        emptyColumnsSheetView
+        emptyEntitiesSheetView
     }: {
         entity: Entity;
         onCreateIndex: (index: CreateIndexesCallbackType) => Promise<void>;
         onDeleteIndexes: (indexKeys: string[]) => Promise<void>;
         emptyIndexesSheetView: Snippet<[() => void]>;
-        emptyColumnsSheetView?: Snippet;
+        emptyEntitiesSheetView?: Snippet;
     } = $props();
 
     let showCreateIndex = $state(false);
@@ -63,7 +61,7 @@
     let showDelete = $state(false);
     let showOverview = $state(false);
 
-    let columns = $state([
+    let entities = $state([
         { id: 'key' },
         { id: 'type' },
         { id: 'columns' },
@@ -72,7 +70,7 @@
         { id: 'actions', width: 40, isAction: true }
     ]);
 
-    function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {
+    function getEntityStatusBadge(status: string): ComponentProps<Badge>['type'] {
         switch (status) {
             case 'processing':
                 return 'warning';
@@ -89,10 +87,6 @@
     const emptyCellsCount = $derived(
         entity.indexes.length >= emptyCellsLimit ? 0 : emptyCellsLimit - entity.indexes.length
     );
-
-    $effect(() => {
-        console.log(`$effect > selectedIndexes`, $state.snapshot(selectedIndexes));
-    });
 </script>
 
 <EntityContainer>
@@ -121,7 +115,7 @@
                     <SpreadsheetContainer>
                         <Spreadsheet.Root
                             let:root
-                            {columns}
+                            columns={entities}
                             height="100%"
                             allowSelection
                             emptyCells={emptyCellsCount}
@@ -151,7 +145,7 @@
                                                     size="s"
                                                     variant="secondary"
                                                     content={index.status}
-                                                    type={getColumnStatusBadge(index.status)} />
+                                                    type={getEntityStatusBadge(index.status)} />
                                                 {#if index.error}
                                                     <Link.Button
                                                         variant="muted"
@@ -237,7 +231,7 @@
                     {@render emptyIndexesSheetView(() => (showCreateIndex = true))}
                 {/if}
             {:else}
-                {@render emptyColumnsSheetView()}
+                {@render emptyEntitiesSheetView()}
             {/if}
 
             {#if selectedIndexes.length > 0}

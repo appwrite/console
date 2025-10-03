@@ -52,7 +52,7 @@
             }} />
     {/snippet}
 
-    {#snippet emptyColumnsSheetView()}
+    {#snippet emptyEntitiesSheetView()}
         <EmptySheet
             mode="indexes"
             title="You have no columns yet"

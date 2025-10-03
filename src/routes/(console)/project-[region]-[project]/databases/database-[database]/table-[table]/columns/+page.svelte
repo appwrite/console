@@ -16,7 +16,6 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { isRelationship, isSpatialType, isString } from '../rows/store';
-    import FailedModal from '../failedModal.svelte';
     import {
         columns,
         type Columns,
@@ -45,7 +44,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import CsvDisabled from '../csvDisabled.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { SideSheet, SpreadsheetContainer } from '$database/(entity)';
+    import { SideSheet, SpreadsheetContainer, FailedModal } from '$database/(entity)';
     import { showCreateColumnSheet } from '../store';
     import { type Models } from '@appwrite.io/console';
     import { preferences } from '$lib/stores/preferences';
@@ -481,9 +480,7 @@
     <EditColumn showEdit isModal={false} {selectedColumn} bind:this={editColumn} />
 </SideSheet>
 
-{#if showFailed}
-    <FailedModal bind:show={showFailed} title="Create column" header="Creation failed" {error} />
-{/if}
+<FailedModal bind:show={showFailed} title="Create column" header="Creation failed" {error} />
 
 <style>
     .floating-action-bar {

@@ -1,8 +1,7 @@
 <script lang="ts">
-    import Modal from '$lib/components/modal.svelte';
+    import { Modal } from '$lib/components';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
-    import { IconExclamationCircle } from '@appwrite.io/pink-icons-svelte';
 
     let {
         show = $bindable(),
@@ -17,16 +16,8 @@
     } = $props();
 </script>
 
-<!-- TODO: @itznotabug, Stacks please -->
-<Modal {title} bind:show>
-    <div class="box u-flex-vertical u-gap-24">
-        <p class="u-inline-flex u-cross-center u-gap-8">
-            <Icon icon={IconExclamationCircle} size="m" color="--color-danger-100" />
-
-            {header}
-        </p>
-        <p>{error}</p>
-    </div>
+<Modal {title} bind:show size="s">
+    <Alert.Inline title={header} status="error">{error}</Alert.Inline>
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Close</Button>
