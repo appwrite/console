@@ -6,7 +6,7 @@
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteTables, canWriteRows } from '$lib/stores/roles';
-    import { Icon, Layout, Divider } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Divider, Tooltip } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import {
         table,
@@ -121,21 +121,31 @@
         <Layout.Stack direction="column" gap="xl">
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Layout.Stack direction="row" gap="s">
-                    <ViewSelector
-                        onlyIcon
-                        ui="new"
-                        view={data.view}
-                        columns={tableColumns}
-                        hideView
-                        showAnyway
-                        isCustomTable />
+                    <Tooltip>
+                        <div>
+                            <ViewSelector
+                                onlyIcon
+                                ui="new"
+                                view={data.view}
+                                columns={tableColumns}
+                                hideView
+                                showAnyway
+                                isCustomTable />
+                        </div>
 
-                    <Filters
-                        onlyIcon
-                        query={data.query}
-                        columns={filterColumns}
-                        disabled={!(hasColumns && hasValidColumns)}
-                        analyticsSource="database_rows" />
+                        <svelte:fragment slot="tooltip">Toggle columns</svelte:fragment>
+                    </Tooltip>
+
+                    <Tooltip>
+                        <Filters
+                            onlyIcon
+                            query={data.query}
+                            columns={filterColumns}
+                            disabled={!(hasColumns && hasValidColumns)}
+                            analyticsSource="database_tables" />
+
+                        <svelte:fragment slot="tooltip">Filters</svelte:fragment>
+                    </Tooltip>
                 </Layout.Stack>
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     <Button
