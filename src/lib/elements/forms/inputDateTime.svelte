@@ -4,7 +4,7 @@
 
     export let id: string;
     export let label: string = '';
-    export let value: string;
+    export let value: string | null;
     export let required = false;
     export let nullable = false;
     export let disabled = false;
@@ -17,6 +17,7 @@
 
     let error: string;
     let element: HTMLInputElement;
+    let previousValue: string | null = null;
 
     onMount(() => {
         if (element && autofocus) {
@@ -24,14 +25,16 @@
         }
     });
 
-    let prevValue = '';
     function handleNullChange(e: CustomEvent<boolean>) {
         const isNull = e.detail;
+
         if (isNull) {
-            prevValue = value;
+            if (value) {
+                previousValue = value;
+            }
             value = null;
         } else {
-            value = prevValue;
+            value = previousValue;
         }
     }
 
@@ -39,9 +42,7 @@
         error = null;
     }
 
-    function onChange(event: CustomEvent) {
-        value = (event.target as HTMLInputElement).value;
-    }
+    $: isValueNull = value === null;
 </script>
 
 <Layout.Stack gap="s" direction="row">
@@ -51,20 +52,20 @@
         {disabled}
         {readonly}
         {required}
-        {value}
+        bind:value
         {step}
         {type}
         helper={error}
         {leadingIcon}
-        on:change={onChange}
         autocomplete={autocomplete ? 'on' : 'off'}>
-        {#if nullable}
-            <Selector.Checkbox
-                size="s"
-                slot="end"
-                label="NULL"
-                checked={value === null}
-                on:change={handleNullChange} />
-        {/if}
+        <svelte:fragment slot="end">
+            {#if nullable}
+                <Selector.Checkbox
+                    size="s"
+                    label="NULL"
+                    checked={isValueNull}
+                    on:change={handleNullChange} />
+            {/if}
+        </svelte:fragment>
     </Input.DateTime>
 </Layout.Stack>
