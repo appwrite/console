@@ -26,10 +26,6 @@
         if (!show) {
             id = null;
         }
-
-        if (id !== null && !id.length) {
-            id = null;
-        }
     });
 
     $effect(() => {
@@ -61,7 +57,7 @@
                 <Divider />
             </span>
             {#if isProject}
-                <InputProjectId on:input bind:value={id} {autofocus} />
+                <InputProjectId {required} on:input bind:value={id} {autofocus} />
             {:else}
                 <InputId {required} on:input bind:value={id} {autofocus} />
             {/if}

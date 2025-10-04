@@ -4,6 +4,7 @@
 
     export let value = '';
     export let autofocus = true;
+    export let required = false;
     export let leadingIcon: ComponentType | undefined = undefined;
 
     let error = false;
@@ -12,11 +13,7 @@
 
     const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
         event.preventDefault();
-
-        if (event.currentTarget.validity.patternMismatch) {
-            error = true;
-            return;
-        }
+        error = true;
     };
 
     $: if (value) {
@@ -27,6 +24,7 @@
 <Input.Text
     {pattern}
     {autofocus}
+    {required}
     {leadingIcon}
     id="id"
     placeholder="Enter ID"
