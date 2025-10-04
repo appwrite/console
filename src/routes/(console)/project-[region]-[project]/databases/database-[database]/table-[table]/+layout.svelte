@@ -40,13 +40,13 @@
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
     import { CreateColumnPanel } from '$lib/commandCenter/panels';
-    import { database, showCreateTable } from '../store';
+    import { database, showCreateEntity } from '../store';
     import { project } from '../../../store';
     import { page } from '$app/state';
     import { base } from '$app/paths';
     import { canWriteTables } from '$lib/stores/roles';
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
-    import SideSheet from './layout/sidesheet.svelte';
+    import { SideSheet } from '$database/(entity)';
     import EditRow from './rows/edit.svelte';
     import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
@@ -57,13 +57,13 @@
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
     import { sleep } from '$lib/helpers/promises';
-    import CreateIndex from './indexes/createIndex.svelte';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
     import { buildRowUrl, isRelationship } from './rows/store';
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
+    import { CreateIndex } from '$database/(entity)';
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
     import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
 
@@ -94,8 +94,8 @@
                 ) {
                     // don't invalidate when -
                     // 1. from faker
-                    // 2. ai columns creation
-                    // 3. ai indexes creation
+                    // 2. ai indexes creation
+                    // 3. ai columns creation
                     if (
                         !isWaterfallFromFaker &&
                         !$showIndexesSuggestions &&
@@ -112,7 +112,7 @@
         {
             label: 'Create row',
             keys: page.url.pathname.endsWith($table.$id) ? ['t'] : ['t', 'd'],
-            callback: () => ($showCreateTable = true),
+            callback: () => ($showCreateEntity = true),
             icon: IconPlus,
             group: 'rows'
         },
@@ -443,9 +443,21 @@
         }
     }}>
     <CreateIndex
+        entity={$table}
         bind:this={createIndex}
         bind:showCreateIndex={$showCreateIndexSheet.show}
-        externalColumnKey={$showCreateIndexSheet.column} />
+        externalFieldKey={$showCreateIndexSheet.column}
+        onCreateIndex={async (index) => {
+            await sdk.forProject(page.params.region, page.params.project).tablesDB.createIndex({
+                databaseId: page.params.database,
+                tableId: page.params.table,
+                key: index.key,
+                type: index.type,
+                columns: index.fields,
+                lengths: index.lengths,
+                orders: index.orders
+            });
+        }} />
 </SideSheet>
 
 <SideSheet

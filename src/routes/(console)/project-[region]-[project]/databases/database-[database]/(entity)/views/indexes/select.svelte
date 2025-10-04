@@ -3,6 +3,8 @@
     import { Icon } from '@appwrite.io/pink-svelte';
     import { IconChevronDown } from '@appwrite.io/pink-icons-svelte';
 
+    // TODO: @itznotabug: svelte5
+
     export let value: string;
     export let id: string;
     export let label: string;

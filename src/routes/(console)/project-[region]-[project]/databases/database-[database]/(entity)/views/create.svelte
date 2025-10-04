@@ -1,68 +1,68 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-
     import { Modal, CustomId } from '$lib/components';
+    import { subNavigation } from '$lib/stores/database';
+    import { ID } from '@appwrite.io/console';
     import { Button, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import { ID, type Models } from '@appwrite.io/console';
-    import { subNavigation } from '$lib/stores/database';
-    import { Input as SuggestionsInput, tableColumnSuggestions } from './(suggestions)/index';
+    import {
+        Input as SuggestionsInput,
+        tableColumnSuggestions
+    } from '$database/(suggestions)/index';
+
+    import { useTerminology } from '../helpers';
 
     let {
-        showCreate = $bindable(false),
-        onTableCreated
+        show = $bindable(false),
+        useSuggestions = true,
+        onCreateEntity
     }: {
-        showCreate: boolean;
-        onTableCreated: (table: Models.Table) => void | Promise<void>;
+        show: boolean;
+        useSuggestions?: boolean;
+        onCreateEntity: (id: string, name: string) => Promise<void>;
     } = $props();
 
-    const databaseId = page.params.database;
-    const isOnTablesPage = $derived(page.route?.id.endsWith('table-[table]'));
+    const entity = $derived(useTerminology(page).entity);
+    const lower = $derived(entity.lower.singular);
+    const title = $derived(entity.title.singular);
+
+    // example - `table-[table]`, `collection-[collection]`
+    const isOnEntitiesPage = $derived(page.route?.id.endsWith(`${lower}-[${lower}]`));
 
     let name = $state('');
-    let id: string = $state(null);
+    let id = $state(null);
+    let error = $state(null);
     let touchedId = $state(false);
-    let error: string = $state(null);
+    let creatingEntity = $state(false);
 
-    let creatingTable = $state(false);
+    function enableThinkingModeForSuggestions(id: string, name: string) {
+        if (!useSuggestions) return;
 
-    function enableThinkingModeForSuggestions(table: Models.Table) {
         if ($tableColumnSuggestions.enabled) {
             // if enabled, trigger thinking mode!
             tableColumnSuggestions.update((store) => ({
                 ...store,
                 thinking: true,
                 table: {
-                    id: table.$id,
-                    name: table.name
+                    id,
+                    name
                 }
             }));
         }
     }
 
-    async function createTable() {
+    async function createEntity() {
         error = null;
         try {
-            const table = await sdk
-                .forProject(page.params.region, page.params.project)
-                .tablesDB.createTable({
-                    databaseId,
-                    tableId: id ? id : ID.unique(),
-                    name
-                });
+            // early init setup!
+            enableThinkingModeForSuggestions(id, name);
 
+            // create entity.
+            await onCreateEntity(id ? id : ID.unique(), name);
+
+            // cleanup
             updateAndCleanup();
-
-            await onTableCreated(table);
-
-            name = id = null;
-            showCreate = false;
-            creatingTable = false;
-
-            // don't wait for UI to mount!
-            enableThinkingModeForSuggestions(table);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.TableCreate);
@@ -78,6 +78,10 @@
         });
 
         trackEvent(Submit.TableCreate, { customId: !!id });
+
+        // reset vars!
+        name = id = null;
+        show = creatingEntity = false;
     }
 
     function toIdFormat(str: string): string {
@@ -96,7 +100,7 @@
             id = toIdFormat(name);
         }
 
-        if (!showCreate) {
+        if (!show) {
             name = '';
             id = null;
             error = null;
@@ -105,7 +109,8 @@
     });
 
     $effect(() => {
-        if (showCreate && isOnTablesPage && $tableColumnSuggestions.table) {
+        // reset is OK here, we don't have to check for entity type!
+        if (show && isOnEntitiesPage && $tableColumnSuggestions.table) {
             tableColumnSuggestions.update((store) => ({
                 ...store,
                 table: null
@@ -114,11 +119,11 @@
     });
 </script>
 
-<Modal title="Create table" size="m" bind:show={showCreate} onSubmit={createTable} bind:error>
+<Modal size="m" bind:show bind:error title="Create {lower}" onSubmit={createEntity}>
     <InputText
         id="name"
         label="Name"
-        placeholder="Enter table name"
+        placeholder="Enter {lower} name"
         bind:value={name}
         autofocus
         required
@@ -133,19 +138,20 @@
         bind:id
         required={false}
         autofocus={false}
-        name="Table"
+        name={title}
         on:input={() => {
             if (!touchedId) {
                 touchedId = true;
             }
         }} />
 
-    <SuggestionsInput />
+    {#if useSuggestions}
+        <SuggestionsInput />
+    {/if}
 
     <svelte:fragment slot="footer">
-        <Button secondary disabled={creatingTable} on:click={() => (showCreate = false)}
-            >Cancel</Button>
-        <Button submit disabled={creatingTable} submissionLoader forceShowLoader={creatingTable}
+        <Button secondary disabled={creatingEntity} on:click={() => (show = false)}>Cancel</Button>
+        <Button submit disabled={creatingEntity} submissionLoader forceShowLoader={creatingEntity}
             >Create</Button>
     </svelte:fragment>
 </Modal>

@@ -22,6 +22,43 @@ export function singular(str: string): string {
 }
 
 /**
+ * Given a string, returns the plural version of it.
+ *
+ * Handles common English pluralization rules:
+ * - Words ending in consonant + y → ies
+ * - Words ending in vowel + y → s
+ * - Words ending in sibilants (s, sh, ch, x, z) → es
+ * - Regular words → s
+ *
+ * @export
+ * @param {string} str
+ * @returns {string}
+ */
+export function plural(str: string): string {
+    if (!str) return str;
+
+    const lower = str.toLowerCase();
+
+    // Words ending in sibilants: s, sh, ch, x, z
+    if (/[sxz]$/.test(lower) || /[cs]h$/.test(lower)) {
+        return str + 'es';
+    }
+
+    // Words ending in consonant + y → ies
+    // Words ending in vowel + y → s
+    if (str.endsWith('y')) {
+        const beforeY = str.slice(-2, -1).toLowerCase();
+        if (beforeY && !['a', 'e', 'i', 'o', 'u'].includes(beforeY)) {
+            return str.slice(0, -1) + 'ies';
+        }
+        return str + 's';
+    }
+
+    // Default: add 's'
+    return str + 's';
+}
+
+/**
  * Convert a dash/underscore/space separated string to camelCase.
  *
  * @export

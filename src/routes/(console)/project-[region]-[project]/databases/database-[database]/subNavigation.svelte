@@ -4,7 +4,7 @@
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
     import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
-    import { showCreateTable, databaseSubNavigationItems } from './store';
+    import { showCreateEntity, databaseSubNavigationItems } from './store';
 
     import {
         Icon,
@@ -146,7 +146,7 @@
                     <Button
                         compact
                         on:click={() => {
-                            $showCreateTable = true;
+                            $showCreateEntity = true;
                             $showSubNavigation = false;
                         }}>
                         Create table

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { goto, invalidate } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Confirm, Id, SortButton } from '$lib/components';
     import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
     import { Button as ConsoleButton, InputSelect } from '$lib/elements/forms';
@@ -83,7 +83,7 @@
     import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
     import SheetOptions from './sheetOptions.svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
-    import SpreadsheetContainer from './layout/spreadsheet.svelte';
+    import { SpreadsheetContainer } from '$database/(entity)';
     import EditRowCell from './rows/cell/edit.svelte';
     import { copy } from '$lib/helpers/copy';
     import { writable } from 'svelte/store';
@@ -419,7 +419,7 @@
             }
 
             await invalidate(Dependencies.ROWS);
-            trackEvent(Submit.RowDelete);
+            trackEvent(Click.DatabaseRowDelete);
 
             if (!hadErrors) {
                 // error is already shown above!
