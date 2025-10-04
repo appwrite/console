@@ -1217,6 +1217,10 @@
             padding-inline: 8px !important;
         }
 
+        & :global(.input:has([type^='date'])) {
+            padding: 12px !important;
+        }
+
         & :global(.input:focus-within) {
             top: 0 !important;
         }
