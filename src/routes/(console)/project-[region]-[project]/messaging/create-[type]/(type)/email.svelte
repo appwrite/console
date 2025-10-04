@@ -133,7 +133,7 @@
             <Fieldset legend="Targets">
                 <Targets type={MessagingProviderType.Email} bind:topics bind:targets />
             </Fieldset>
-            <Fieldset legend="Schedule">
+            <Fieldset legend="Settings">
                 <Schedule bind:scheduledAt {targets} />
             </Fieldset>
         </Layout.Stack>

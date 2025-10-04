@@ -71,9 +71,7 @@
             await Promise.all(promises);
             addNotification({
                 type: 'success',
-                message: `Added ${targetIds.length} subscriber${
-                    targetIds.length > 1 ? 's' : ''
-                } to topic`
+                message: `${targetIds.length} subscriber${targetIds.length !== 1 ? 's' : ''} have been added`
             });
             trackEvent(Submit.MessagingTopicSubscriberAdd);
             await invalidate(Dependencies.MESSAGING_TOPIC_SUBSCRIBERS);
@@ -146,7 +144,7 @@
                 href="https://appwrite.io/docs/products/messaging/topics#subscribe-targets-to-topics"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="link">Learn more about subscribers</a
+                class="link">Learn more</a
             >.
         </p>
     </svelte:fragment>

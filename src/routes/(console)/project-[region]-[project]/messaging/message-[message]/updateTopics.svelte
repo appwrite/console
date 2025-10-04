@@ -16,6 +16,7 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
+    import { Link } from '$lib/elements';
 
     export let message: Models.Message;
     export let selectedTopicsById: Record<string, Models.Topic>;
@@ -141,17 +142,13 @@
                 <Empty on:click={() => (showTopics = true)}>Add a topic</Empty>
             {:else}
                 <Card.Base padding="none">
-                    <PinkEmpty
-                        type="secondary"
-                        title="No topics were selected"
-                        description="No topics were selected for this message. Need a hand? Check out our documentation.">
-                        <svelte:fragment slot="actions">
-                            <Button
-                                secondary
+                    <PinkEmpty type="secondary" title="No topics were selected">
+                        <svelte:fragment slot="description">
+                            Need a hand? Check out our <Link
+                                variant="muted"
                                 href="https://appwrite.io/docs/products/messaging/topics"
-                                external>
-                                Documentation
-                            </Button>
+                                >documentation</Link
+                            >.
                         </svelte:fragment>
                     </PinkEmpty>
                 </Card.Base>
