@@ -4,16 +4,21 @@
     import { Typography } from '@appwrite.io/pink-svelte';
     import { user } from '$lib/stores/user';
     import SendVerificationEmailModal from '../account/sendVerificationEmailModal.svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { wizard, isNewWizardStatusOpen } from '$lib/stores/wizard';
-    import { isCloud } from '$lib/system';
+    import { isCloud, VARS } from '$lib/system';
 
     const hasUser = $derived(!!$user);
     const needsEmailVerification = $derived(hasUser && !$user.emailVerification);
-    const notOnOnboarding = $derived(!$page.route.id.includes('/onboarding'));
+    const notOnOnboarding = $derived(!page.route.id.includes('/onboarding'));
     const notOnWizard = $derived(!$wizard.show && !$isNewWizardStatusOpen);
     const shouldShowEmailBanner = $derived(
-        isCloud && hasUser && needsEmailVerification && notOnOnboarding && notOnWizard
+        VARS.EMAIL_VERIFICATION &&
+            isCloud &&
+            hasUser &&
+            needsEmailVerification &&
+            notOnOnboarding &&
+            notOnWizard
     );
 
     let showSendVerification = $state(false);

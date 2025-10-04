@@ -66,16 +66,19 @@ function safePrefsKey(widthPreferences: TeamPreferences['widths'], from: string,
     }
 }
 
-function safePrefsKeyForOrder(
-    orderPreferences: TeamPreferences['order'],
-    from: string,
-    to: string
-) {
-    if (orderPreferences.includes(from)) {
-        const index = orderPreferences.indexOf(from);
+function safePrefsKeyForOrder(order: TeamPreferences['order'], from: string, to: string) {
+    if (order.includes(from)) {
+        const index = order.indexOf(from);
         if (index !== -1) {
-            orderPreferences[index] = to;
+            order[index] = to;
         }
+    }
+
+    // move to first since its primary!
+    const toIndex = order.indexOf(to);
+    if (toIndex !== -1 && toIndex !== 0) {
+        order.splice(toIndex, 1);
+        order.unshift(to);
     }
 }
 

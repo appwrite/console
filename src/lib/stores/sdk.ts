@@ -31,10 +31,12 @@ import {
     REGION_NYC,
     REGION_SYD,
     REGION_SFO,
+    REGION_SGP,
     SUBDOMAIN_FRA,
     SUBDOMAIN_NYC,
     SUBDOMAIN_SFO,
-    SUBDOMAIN_SYD
+    SUBDOMAIN_SYD,
+    SUBDOMAIN_SGP
 } from '$lib/constants';
 import { building } from '$app/environment';
 import { getProjectId } from '$lib/helpers/project';
@@ -63,6 +65,8 @@ const getSubdomain = (region?: string) => {
             return SUBDOMAIN_NYC;
         case REGION_SFO:
             return SUBDOMAIN_SFO;
+        case REGION_SGP:
+            return SUBDOMAIN_SGP;
         default:
             return '';
     }
@@ -99,8 +103,8 @@ const clientProject = new Client();
 const clientRealtime = new Client();
 
 if (!building) {
+    scopedConsoleClient.setProject('console');
     clientConsole.setEndpoint(endpoint).setProject('console');
-    scopedConsoleClient.setMode(endpoint).setProject('console');
 
     clientRealtime.setEndpoint(endpoint).setProject('console');
     clientProject.setEndpoint(endpoint).setMode('admin');
@@ -126,7 +130,8 @@ const sdkForProject = {
     proxy: new Proxy(clientProject),
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
-    tablesDB: new TablesDB(clientProject)
+    tablesDB: new TablesDB(clientProject),
+    console: new Console(clientProject) // for suggestions API
 };
 
 export const realtime = {

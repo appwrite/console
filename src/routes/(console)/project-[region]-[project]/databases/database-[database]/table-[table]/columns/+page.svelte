@@ -164,6 +164,28 @@
         }
     }
 
+    function getRelationshipTypeForColumn(column: Columns): string | null {
+        if (!isRelationship(column)) {
+            return null;
+        }
+
+        const relationshipMap = {
+            oneToOne: 'One to one',
+            oneToMany: 'One to many',
+            manyToOne: 'Many to one',
+            manyToMany: 'Many to many'
+        };
+
+        const relationType = (column as Models.ColumnRelationship).relationType;
+        const formattedType = relationshipMap[relationType] || relationType;
+
+        return `Type: ${formattedType}`;
+    }
+
+    function isSystemColumnKey(column: Columns) {
+        return column.key.startsWith('$');
+    }
+
     onDestroy(() => ($showCreateColumnSheet.show = false));
 
     $effect(() => {
@@ -208,9 +230,9 @@
             bind:selectedRows={selectedColumns}
             columns={[
                 // more size until we decide if we want a new column!
-                { id: 'key', width: { min: $isSmallViewport ? 250 : 200 } },
-                { id: 'indexed', width: { min: 150 } },
-                { id: 'default', width: { min: 200 } },
+                { id: 'key', width: { min: 300 }, resizable: false },
+                { id: 'indexed', width: { min: 150 }, resizable: false },
+                { id: 'default', width: { min: 200 }, resizable: false },
                 { id: 'actions', width: 40, isAction: true }
             ]}
             bottomActionClick={() => ($showCreateColumnSheet.show = true)}>
@@ -222,15 +244,23 @@
                 <Spreadsheet.Header.Cell column="actions" {root} />
             </svelte:fragment>
 
-            <!-- TODO: variable and terminology changes -->
-            {#each updatedColumnsForSheet as column, index}
+            {#each updatedColumnsForSheet as column, index (column.key)}
                 {@const option = columnOptions.find((option) => option.type === column.type)}
                 {@const isSelectable =
                     column['system'] || column.type === 'relationship' ? 'disabled' : true}
                 <Spreadsheet.Row.Base {root} select={isSelectable} id={column.key}>
                     <Spreadsheet.Cell column="key" {root} isEditable={false}>
-                        <Layout.Stack direction="row" justifyContent="space-between">
-                            <Layout.Stack direction="row" alignItems="center" inline>
+                        <Layout.Stack
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="space-between"
+                            style="min-width:0">
+                            <Layout.Stack
+                                gap="s"
+                                inline
+                                direction="row"
+                                alignItems="center"
+                                style="min-width:0; flex:1 1 auto;">
                                 {#if isRelationship(column)}
                                     <Icon
                                         size="s"
@@ -246,29 +276,35 @@
                                     <Icon icon={option.icon} size="s" />
                                 {/if}
 
-                                <Layout.Stack direction="row" alignItems="center" gap="s">
-                                    <Layout.Stack
-                                        inline
-                                        direction="row"
-                                        alignItems="center"
-                                        gap="xxs">
-                                        <span class="text u-trim-1" data-private>
-                                            {#if column.key === '$id' || column.key === '$sequence' || column.key === '$createdAt' || column.key === '$updatedAt'}
-                                                {column['name']}
-                                            {:else}
-                                                {column.key} {column.array ? '[]' : undefined}
-                                            {/if}
-                                        </span>
-                                        {#if isString(column) && column.encrypt}
-                                            <Tooltip>
-                                                <Icon
-                                                    size="s"
-                                                    icon={IconLockClosed}
-                                                    color="--fgcolor-neutral-tertiary" />
-                                                <div slot="tooltip">Encrypted</div>
-                                            </Tooltip>
+                                <Layout.Stack
+                                    gap="s"
+                                    inline
+                                    direction="row"
+                                    alignItems="center"
+                                    style="min-width:0; flex:1 1 auto; overflow:hidden;">
+                                    <Typography.Text truncate>
+                                        {#if isSystemColumnKey(column)}
+                                            {column.key}
+                                        {:else}
+                                            {column.key}{column.array ? '[]' : undefined}
                                         {/if}
-                                    </Layout.Stack>
+                                    </Typography.Text>
+                                    {#if isString(column) && column.encrypt}
+                                        <Tooltip>
+                                            <Icon
+                                                size="s"
+                                                icon={IconLockClosed}
+                                                color="--fgcolor-neutral-tertiary" />
+                                            <div slot="tooltip">Encrypted</div>
+                                        </Tooltip>
+                                    {/if}
+                                </Layout.Stack>
+                                <Layout.Stack
+                                    gap="s"
+                                    inline
+                                    direction="row"
+                                    alignItems="center"
+                                    style="flex:0 0 auto; white-space:nowrap;">
                                     {#if column.status !== 'available'}
                                         <Badge
                                             size="s"
@@ -290,11 +326,18 @@
                                 </Layout.Stack>
                             </Layout.Stack>
                             {@const minMaxSize = getMinMaxSizeForColumn(column)}
+                            {@const relationType = getRelationshipTypeForColumn(column)}
                             {#if minMaxSize}
                                 <Typography.Caption
                                     variant="400"
                                     color="--fgcolor-neutral-tertiary">
                                     {minMaxSize}
+                                </Typography.Caption>
+                            {:else if relationType}
+                                <Typography.Caption
+                                    variant="400"
+                                    color="--fgcolor-neutral-tertiary">
+                                    {relationType}
                                 </Typography.Caption>
                             {/if}
                         </Layout.Stack>
@@ -410,7 +453,6 @@
         </Spreadsheet.Root>
     </SpreadsheetContainer>
 
-    <!-- TODO: terminologies -->
     {#if selectedColumns.length > 0}
         <div class="floating-action-bar">
             <FloatingActionBar>
@@ -435,7 +477,7 @@
 </div>
 
 {#if selectedColumn}
-    <DeleteColumn bind:showDelete {selectedColumn} />
+    <DeleteColumn bind:showDelete bind:selectedColumn />
 {:else if selectedColumns && selectedColumns.length}
     <DeleteColumn bind:showDelete bind:selectedColumn={selectedColumns} />
 {/if}
@@ -453,3 +495,13 @@
 {#if showFailed}
     <FailedModal bind:show={showFailed} title="Create attribute" header="Creation failed" {error} />
 {/if}
+
+<style>
+    .floating-action-bar {
+        left: 50%;
+        width: 100%;
+        z-index: 14;
+        position: absolute;
+        transform: translateX(-50%);
+    }
+</style>

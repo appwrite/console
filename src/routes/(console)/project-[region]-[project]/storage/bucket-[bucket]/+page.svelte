@@ -33,6 +33,7 @@
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     export let data;
 
@@ -60,7 +61,7 @@
 
     async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
-        uploader.removeFile(event.detail);
+        await uploader.removeFile(event.detail);
         await invalidate(Dependencies.FILES);
     }
 
@@ -150,7 +151,7 @@
             allowSelection
             bind:selectedRows={selectedFiles}
             columns={[
-                { id: 'filename' },
+                { id: 'filename', width: $isSmallViewport ? 24 : undefined },
                 { id: 'type', width: { min: 140 } },
                 { id: 'size', width: { min: 100 } },
                 { id: 'created', width: { min: 120 } },
