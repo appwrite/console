@@ -225,6 +225,7 @@ function createPreferences() {
             delete teamPreferences?.columnOrder?.[tableId];
             delete teamPreferences?.columnWidths?.[tableId];
             delete teamPreferences?.columnWidths?.[tableId + '#columns'];
+            delete teamPreferences?.columnWidths?.[tableId + '#indexes'];
 
             const removeTablePreferences = sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,
