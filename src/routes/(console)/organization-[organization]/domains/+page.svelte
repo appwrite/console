@@ -4,7 +4,7 @@
     import { EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components/index.js';
     import { Button } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import Container from '$lib/layout/container.svelte';
     import { protocol } from '$routes/(console)/store.js';
     import {
@@ -103,9 +103,13 @@
                                 {:else if column.id === 'nameservers'}
                                     {domain.nameservers || '-'}
                                 {:else if column.id === 'expiry_date'}
-                                    {domain?.expire ? toLocaleDateTime(domain.expire) : '-'}
+                                    {#if domain?.expire}
+                                        <DualTimeView time={domain.expire} />
+                                    {:else}-{/if}
                                 {:else if column.id === 'renewal'}
-                                    {domain?.renewal ? toLocaleDateTime(domain.renewal) : '-'}
+                                    {#if domain?.renewal}
+                                        <DualTimeView time={domain.renewal} />
+                                    {:else}-{/if}
                                 {:else if column.id === 'auto_renewal'}
                                     {domain?.autoRenewal ? 'On' : 'Off'}
                                 {/if}
