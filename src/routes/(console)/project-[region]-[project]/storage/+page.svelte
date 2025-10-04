@@ -4,7 +4,7 @@
 
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { Empty, PaginationWithLimit } from '$lib/components';
+    import { Empty, EmptySearch, PaginationWithLimit } from '$lib/components';
     import Create from './create.svelte';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { base } from '$app/paths';
@@ -18,10 +18,13 @@
     import Grid from './grid.svelte';
     import Table from './table.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
 
     export let data;
 
     const project = page.params.project;
+    let searchQuery: { clearInput: () => void } | undefined;
+    const clearSearch = () => clearSearchInput(searchQuery);
 
     async function bucketCreated(event: CustomEvent<Models.Bucket>) {
         showCreateBucket.set(false);
@@ -33,10 +36,11 @@
 
 <Container>
     <ResponsiveContainerHeader
-        {columns}
         hasSearch
+        {columns}
         bind:view={data.view}
-        searchPlaceholder="Search by name or ID">
+        searchPlaceholder="Search by name or ID"
+        bind:searchQuery>
         {#if $canWriteBuckets}
             <Button on:click={() => ($showCreateBucket = true)} event="create_bucket" size="s">
                 <Icon icon={IconPlus} slot="start" size="s" />
@@ -57,6 +61,10 @@
             limit={data.limit}
             offset={data.offset}
             total={data.buckets.total} />
+    {:else if data.search}
+        <EmptySearch target="buckets" hidePagination>
+            <Button secondary on:click={clearSearch}>Clear search</Button>
+        </EmptySearch>
     {:else}
         <Empty
             single

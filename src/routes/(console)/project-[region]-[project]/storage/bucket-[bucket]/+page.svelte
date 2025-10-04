@@ -4,6 +4,7 @@
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Avatar, Empty, EmptySearch, PaginationWithLimit, SearchQuery } from '$lib/components';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
     import { Dependencies } from '$lib/constants';
     import { Badge } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
@@ -36,6 +37,9 @@
     import { isSmallViewport } from '$lib/stores/viewport';
 
     export let data;
+
+    let searchQuery;
+    const clearSearch = () => clearSearchInput(searchQuery);
 
     let showDelete = false;
     let selectedFile: Models.File = null;
@@ -132,7 +136,7 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search files" />
+            <SearchQuery bind:this={searchQuery} placeholder="Search files" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button
@@ -252,12 +256,7 @@
             total={data.files.total} />
     {:else if data.search}
         <EmptySearch target="files" search={data.search} hidePagination={data.files.total === 0}>
-            <Button
-                secondary
-                size="s"
-                href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${bucketId}`}>
-                Clear Search
-            </Button>
+            <Button secondary size="s" on:click={clearSearch}>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty

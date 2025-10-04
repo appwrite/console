@@ -19,6 +19,7 @@
     import EmptyDark from './(images)/empty-sites-dark.svg';
     import Grid from './grid.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
     import { columns } from './store';
     import { View } from '$lib/helpers/load';
     import Table from './table.svelte';
@@ -30,6 +31,8 @@
     export let data;
 
     let show = false;
+    let searchQuery;
+    const clearSearch = () => clearSearchInput(searchQuery);
 
     $: $registerCommands([
         {
@@ -60,7 +63,7 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search by name" />
+            <SearchQuery bind:this={searchQuery} placeholder="Search by name" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <ViewSelector
@@ -89,7 +92,9 @@
             offset={data.offset}
             total={data.siteList.total} />
     {:else if data.search}
-        <EmptySearch target="sites" />
+        <EmptySearch target="sites">
+            <Button secondary on:click={clearSearch}>Clear search</Button>
+        </EmptySearch>
     {:else}
         <Empty
             single
