@@ -85,14 +85,14 @@
         label="Min"
         placeholder="Enter size"
         bind:value={data.min}
-        step="any"
+        step={0.1}
         required={editing} />
     <InputNumber
         id="max"
         label="Max"
         placeholder="Enter size"
         bind:value={data.max}
-        step="any"
+        step={0.1}
         required={editing} />
 </Layout.Stack>
 <InputNumber
@@ -104,7 +104,7 @@
     bind:value={data.default}
     disabled={data.required || data.array}
     nullable={!data.required && !data.array}
-    step="any" />
+    step={0.1} />
 <Selector.Checkbox
     size="s"
     id="required"
