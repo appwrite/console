@@ -20,6 +20,7 @@
     import {
         columns,
         type Columns,
+        type ColumnsWidth,
         indexes,
         isCsvImportInProgress,
         reorderItems,
@@ -51,6 +52,14 @@
     import { type Models } from '@appwrite.io/console';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
+    import { debounce } from '$lib/helpers/debounce';
+    import type { PageData } from './$types';
+
+    const {
+        data
+    }: {
+        data: PageData;
+    } = $props();
 
     const updatedColumnsForSheet = $derived.by(() => {
         const baseAttrs = [
@@ -104,8 +113,11 @@
     let selectedColumn: Columns = $state(null);
     let columnIndexMap: Record<string, boolean> = $state({});
 
-    let columnsOrder = $state([]);
+    let columnsOrder = $state<string[]>([]);
+    let columnsWidth = $state<ColumnsWidth | null>(null);
+
     const tableId = page.params.table;
+    const organizationId = data.organization.$id ?? data.project.teamId;
 
     let showEdit = $state(false);
     let editColumn: EditColumn;
@@ -126,6 +138,7 @@
 
     onMount(() => {
         columnsOrder = preferences.getColumnOrder(tableId);
+        columnsWidth = preferences.getColumnWidths(tableId + '#columns');
     });
 
     function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {
@@ -186,7 +199,69 @@
         return column.key.startsWith('$');
     }
 
+    function getColumnWidth(columnId: string, defaultWidth: number): number {
+        const savedWidth = columnsWidth?.[columnId];
+        if (!savedWidth) return defaultWidth;
+
+        return savedWidth.resized;
+    }
+
+    function saveColumnsWidth({ columnId, newWidth }: { columnId: string; newWidth: number }) {
+        const existing = columnsWidth?.[columnId];
+        const fixed = existing
+            ? typeof existing?.fixed === 'number'
+                ? existing.fixed
+                : existing?.fixed?.min
+            : newWidth;
+
+        columnsWidth = {
+            ...(columnsWidth ?? {}),
+            [columnId]: {
+                fixed,
+                resized: Math.ceil(newWidth)
+            }
+        };
+
+        saveColumnWidthsToPreferences({ columnId, newWidth, fixedWidth: fixed });
+    }
+
+    const saveColumnWidthsToPreferences = debounce(
+        (column: { columnId: string; newWidth: number; fixedWidth: number }) => {
+            if (!organizationId) return;
+
+            preferences.saveColumnWidths(organizationId, tableId + '#columns', {
+                [column.columnId]: {
+                    fixed: column.fixedWidth,
+                    resized: Math.ceil(column.newWidth)
+                }
+            });
+        },
+        1000
+    );
+
     onDestroy(() => ($showCreateColumnSheet.show = false));
+
+    const spreadsheetColumns = $derived([
+        {
+            id: 'key',
+            width: getColumnWidth('key', 300),
+            minimumWidth: 300,
+            resizable: true
+        },
+        {
+            id: 'indexed',
+            width: getColumnWidth('indexed', 150),
+            minimumWidth: 150,
+            resizable: true
+        },
+        {
+            id: 'default',
+            width: getColumnWidth('default', 200),
+            minimumWidth: 200,
+            resizable: true
+        },
+        { id: 'actions', width: 40, isAction: true, resizable: false }
+    ]);
 
     $effect(() => {
         if (!$showCreateIndexSheet.show && $showCreateIndexSheet.column) {
@@ -228,14 +303,9 @@
             height="100%"
             emptyCells={emptyCellsCount}
             bind:selectedRows={selectedColumns}
-            columns={[
-                // more size until we decide if we want a new column!
-                { id: 'key', width: { min: 300 }, resizable: false },
-                { id: 'indexed', width: { min: 150 }, resizable: false },
-                { id: 'default', width: { min: 200 }, resizable: false },
-                { id: 'actions', width: 40, isAction: true }
-            ]}
-            bottomActionClick={() => ($showCreateColumnSheet.show = true)}>
+            columns={spreadsheetColumns}
+            bottomActionClick={() => ($showCreateColumnSheet.show = true)}
+            on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}>
             <svelte:fragment slot="header" let:root>
                 <Spreadsheet.Header.Cell column="key" {root}>Column name</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="indexed" {root}>Indexed</Spreadsheet.Header.Cell>

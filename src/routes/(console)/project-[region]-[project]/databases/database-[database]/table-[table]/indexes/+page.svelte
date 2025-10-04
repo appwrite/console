@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { table } from '../store';
+    import { table, type ColumnsWidth } from '../store';
     import Delete from './deleteIndex.svelte';
     import CreateIndex from './createIndex.svelte';
     import Overview from './overviewIndex.svelte';
@@ -8,6 +8,8 @@
     import { Button } from '$lib/elements/forms';
     import FailedModal from '../failedModal.svelte';
     import { canWriteTables } from '$lib/stores/roles';
+    import { preferences } from '$lib/stores/preferences';
+    import { debounce } from '$lib/helpers/debounce';
     import {
         ActionMenu,
         Badge,
@@ -26,7 +28,7 @@
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type ComponentProps, onDestroy } from 'svelte';
+    import { type ComponentProps, onDestroy, onMount } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import EmptySheet from '../layout/emptySheet.svelte';
     import SpreadsheetContainer from '../layout/spreadsheet.svelte';
@@ -34,6 +36,7 @@
     import type { PageData } from './$types';
     import { showCreateColumnSheet } from '../store';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { page } from '$app/state';
 
     let {
         data
@@ -52,14 +55,48 @@
     let showDelete = $state(false);
     let showOverview = $state(false);
 
-    let columns = $derived([
-        { id: 'key', width: { min: $isSmallViewport ? 250 : 200 }, resizable: false },
-        { id: 'type', width: 120, resizable: false },
-        { id: 'columns', width: { min: 200 }, resizable: false },
+    let columnsWidth = $state<ColumnsWidth | null>(null);
+
+    const tableId = page.params.table;
+    const organizationId = data.organization.$id ?? data.project.teamId;
+
+    const spreadsheetColumns = $derived([
+        {
+            id: 'key',
+            width: getColumnWidth('key', $isSmallViewport ? 250 : 200),
+            minimumWidth: $isSmallViewport ? 250 : 200,
+            resizable: true
+        },
+        {
+            id: 'type',
+            width: getColumnWidth('type', 120),
+            minimumWidth: 120,
+            resizable: true
+        },
+        {
+            id: 'columns',
+            width: getColumnWidth('columns', 200),
+            minimumWidth: 200,
+            resizable: true
+        },
         // { id: 'orders' }, // design doesn't have orders atm
-        { id: 'lengths', width: { min: 180 }, resizable: false },
-        { id: 'actions', width: 40, isAction: true }
+        {
+            id: 'lengths',
+            width: getColumnWidth('lengths', 180),
+            minimumWidth: 180,
+            resizable: true
+        },
+        {
+            id: 'actions',
+            width: 40,
+            isAction: true,
+            resizable: false
+        }
     ]);
+
+    onMount(() => {
+        columnsWidth = preferences.getColumnWidths(tableId + '#indexes');
+    });
 
     function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {
         switch (status) {
@@ -73,6 +110,46 @@
                 return undefined;
         }
     }
+
+    function getColumnWidth(columnId: string, defaultWidth: number): number {
+        const savedWidth = columnsWidth?.[columnId];
+        if (!savedWidth) return defaultWidth;
+
+        return savedWidth.resized;
+    }
+
+    function saveColumnsWidth({ columnId, newWidth }: { columnId: string; newWidth: number }) {
+        const existing = columnsWidth?.[columnId];
+        const fixed = existing
+            ? typeof existing?.fixed === 'number'
+                ? existing.fixed
+                : existing?.fixed?.min
+            : newWidth;
+
+        columnsWidth = {
+            ...(columnsWidth ?? {}),
+            [columnId]: {
+                fixed,
+                resized: Math.ceil(newWidth)
+            }
+        };
+
+        saveColumnWidthsToPreferences({ columnId, newWidth, fixedWidth: fixed });
+    }
+
+    const saveColumnWidthsToPreferences = debounce(
+        (column: { columnId: string; newWidth: number; fixedWidth: number }) => {
+            if (!organizationId) return;
+
+            preferences.saveColumnWidths(organizationId, tableId + '#indexes', {
+                [column.columnId]: {
+                    fixed: column.fixedWidth,
+                    resized: Math.ceil(column.newWidth)
+                }
+            });
+        },
+        1000
+    );
 
     onDestroy(() => ($showCreateColumnSheet.show = false));
 
@@ -108,12 +185,13 @@
             <SpreadsheetContainer>
                 <Spreadsheet.Root
                     let:root
-                    {columns}
+                    columns={spreadsheetColumns}
                     height="100%"
                     allowSelection
                     emptyCells={emptyCellsCount}
                     bind:selectedRows={selectedIndexes}
-                    bottomActionClick={() => (showCreateIndex = true)}>
+                    bottomActionClick={() => (showCreateIndex = true)}
+                    on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}>
                     <svelte:fragment slot="header" let:root>
                         <Spreadsheet.Header.Cell column="key" {root}>Key</Spreadsheet.Header.Cell>
                         <Spreadsheet.Header.Cell column="type" {root}>Type</Spreadsheet.Header.Cell>
