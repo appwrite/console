@@ -29,7 +29,7 @@
         const isNull = e.detail;
 
         if (isNull) {
-            if (value) {
+            if (value !== null) {
                 previousValue = value;
             }
             value = null;
