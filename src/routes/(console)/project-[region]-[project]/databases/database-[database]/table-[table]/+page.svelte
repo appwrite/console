@@ -209,7 +209,7 @@
                                 queries.clearAll();
                                 queries.apply();
                                 trackEvent(Submit.FilterClear, {
-                                    source: 'database_rows'
+                                    source: 'database_tables'
                                 });
                             }
                         }
