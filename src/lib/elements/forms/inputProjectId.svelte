@@ -12,11 +12,7 @@
 
     const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
         event.preventDefault();
-
-        if (event.currentTarget.validity.patternMismatch) {
-            error = true;
-            return;
-        }
+        error = true; // show on any error
     };
 
     $: if (value) {
