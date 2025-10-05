@@ -1,85 +1,33 @@
 <script lang="ts">
-    import Sidebar from '$lib/components/sidebar.svelte';
-    import Navbar from '$lib/components/navbar.svelte';
-    import SendVerificationEmailModal from '$lib/components/account/sendVerificationEmailModal.svelte';
-    import { writable } from 'svelte/store';
-    import { invalidate } from '$app/navigation';
-    import { goto } from '$app/navigation';
-    import { onMount } from 'svelte';
-    import { base } from '$app/paths';
-    import { Dependencies } from '$lib/constants';
     import { page } from '$app/state';
-    import { realtime } from '$lib/stores/sdk';
+    import { writable } from 'svelte/store';
+    import type { Models } from '@appwrite.io/console';
+    import { Navbar, SendVerificationEmailModal, Sidebar } from '$lib/components';
 
     let sideBarIsOpen = writable(false);
     let showAccountMenu = writable(false);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let project: any = {
-        $id: 'verify-email-project',
-        region: 'us-east-1',
-        name: 'Verify Email Project'
-    };
-    let avatar = '/images/default-avatar.png';
-    let progressCard = {
-        title: 'Get started',
-        percentage: 33
-    };
-
-    let navbarProps = {
-        logo: {
-            src: '/images/appwrite-logo-light.svg',
-            alt: 'Appwrite Logo'
-        },
-        avatar: avatar,
-        organizations: [],
-        currentProject: project
-    };
-
     let showVerificationModal = $state(!page.data.account?.emailVerification);
 
-    $effect(() => {
-        if (page.data.account?.emailVerification) {
-            checkEmailVerification();
-        }
-    });
+    // fake props!
+    const project = {
+        region: 'fra',
+        $id: 'appwrite',
+        name: 'Appwrite Project'
+    } as Models.Project;
 
-    async function checkEmailVerification() {
-        if (page.data.account?.emailVerification) {
-            await goto(`${base}/`);
-        }
-    }
-
-    onMount(() => {
-        if (!page.data.account) {
-            goto(`${base}/login`);
-            return;
-        }
-
-        // If email is already verified, redirect immediately
-        if (page.data.account?.emailVerification) {
-            checkEmailVerification();
-            return;
-        }
-
-        const unsubscribe = realtime.forProject('', '').subscribe(['account'], async () => {
-            await invalidate(Dependencies.ACCOUNT);
-            checkEmailVerification();
-        });
-
-        const interval = setInterval(async () => {
-            await invalidate(Dependencies.ACCOUNT);
-            checkEmailVerification();
-        }, 10000);
-
-        return () => {
-            clearInterval(interval);
-            unsubscribe();
-        };
-    });
+    const progressCard = { title: 'Get started', percentage: 33 };
+    const navbarProps = {
+        logo: {
+            src: 'https://appwrite.io/images/logos/logo.svg',
+            alt: 'Logo Appwrite'
+        },
+        avatar: undefined,
+        organizations: []
+    };
 </script>
 
 <svelte:head>
-    <title>Verify Email - Appwrite Console</title>
+    <title>Verify Email - Appwrite</title>
 </svelte:head>
 
 <div class="verify-email-page">
@@ -92,7 +40,7 @@
         bind:sideBarIsOpen={$sideBarIsOpen}
         bind:showAccountMenu={$showAccountMenu}
         {project}
-        {avatar}
+        avatar={navbarProps.avatar}
         {progressCard}
         state="open" />
 

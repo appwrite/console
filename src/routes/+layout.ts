@@ -6,10 +6,10 @@ import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import { redirectTo } from './store';
-import { base } from '$app/paths';
+import { base, resolve } from '$app/paths';
 import type { Account } from '$lib/stores/user';
 import type { AppwriteException } from '@appwrite.io/console';
-import { isCloud } from '$lib/system';
+import { isCloud, VARS } from '$lib/system';
 import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
 export const ssr = false;
@@ -29,13 +29,12 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     }
 
     if (account) {
-        if (isCloud && !account.emailVerification) {
-            const isPublicRoute = route.id?.startsWith('/(public)');
-            const isAuthRoute = route.id?.startsWith('/(authenticated)');
-            const isVerifyEmailPage = url.pathname === `${base}/verify-email`;
+        if (isCloud && !account.emailVerification && VARS.EMAIL_VERIFICATION) {
+            const isConsoleRoute = route.id?.startsWith('/(console)');
+            const isVerifyEmailPage = url.pathname === resolve('/verify-email');
 
-            if (!isPublicRoute && !isAuthRoute && !isVerifyEmailPage) {
-                redirect(303, `${base}/verify-email`);
+            if (isConsoleRoute && !isVerifyEmailPage) {
+                redirect(303, resolve('/verify-email'));
             }
         }
 

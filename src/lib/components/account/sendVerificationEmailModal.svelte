@@ -10,44 +10,51 @@
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';
     import { onMount, onDestroy } from 'svelte';
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { browser } from '$app/environment';
-    import { addNotification } from '$lib/stores/notifications';
+    import { slide } from 'svelte/transition';
 
-    let { show = $bindable(false), email }: { show?: boolean; email?: string } = $props();
+    let {
+        show = $bindable(false),
+        email
+    }: {
+        show?: boolean;
+        email?: string;
+    } = $props();
+
+    let error = $state(null);
     let creating = $state(false);
     let emailSent = $state(false);
     let resendTimer = $state(0);
     let timerInterval: ReturnType<typeof setInterval> | null = null;
 
     async function logout() {
+        error = null;
         try {
             await sdk.forConsole.account.deleteSession({ sessionId: 'current' });
             await invalidate(Dependencies.ACCOUNT);
-            goto(`${base}/login`);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                title: 'Logout failed',
-                message: 'Unable to log out. Please try again or refresh the page.'
-            });
+            await goto(resolve('/login'));
+        } catch (err) {
+            error = err.message;
         }
     }
 
     const cleanUrl = $derived(page.url.origin + page.url.pathname);
 
-    // Manage resend timer in localStorage
-    const TIMER_END_KEY = 'email_verification_timer_end';
+    // manage resend timer in localStorage
     const EMAIL_SENT_KEY = 'email_verification_sent';
+    const TIMER_END_KEY = 'email_verification_timer_end';
 
     function startResendTimer() {
-        const timerEndTime = Date.now() + 60 * 1000;
         resendTimer = 60;
         emailSent = true;
+        const timerEndTime = Date.now() + 60 * 1000;
+
         if (browser) {
-            localStorage.setItem(TIMER_END_KEY, timerEndTime.toString());
             localStorage.setItem(EMAIL_SENT_KEY, 'true');
+            localStorage.setItem(TIMER_END_KEY, timerEndTime.toString());
         }
+
         startTimerCountdown(timerEndTime);
     }
 
@@ -55,18 +62,21 @@
         if (!browser) return;
         const savedTimerEnd = localStorage.getItem(TIMER_END_KEY);
         const savedEmailSent = localStorage.getItem(EMAIL_SENT_KEY);
+
         if (savedTimerEnd && savedEmailSent) {
             const timerEndTime = parseInt(savedTimerEnd);
             const now = Date.now();
             const remainingTime = Math.max(0, Math.ceil((timerEndTime - now) / 1000));
+
             if (remainingTime > 0) {
                 resendTimer = remainingTime;
                 emailSent = true;
                 startTimerCountdown(timerEndTime);
             } else {
-                // Timer has expired, clean up
+                // timer has expired, clean up
                 localStorage.removeItem(TIMER_END_KEY);
                 localStorage.removeItem(EMAIL_SENT_KEY);
+
                 resendTimer = 0;
                 emailSent = false;
             }
@@ -91,57 +101,26 @@
 
     async function onSubmit() {
         if (creating || resendTimer > 0) return;
+        error = null;
         creating = true;
         try {
             await sdk.forConsole.account.createVerification({ url: cleanUrl });
             emailSent = true;
             startResendTimer();
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                title: 'Failed to send verification email',
-                message: 'Unable to send verification email. Please try again.'
-            });
-            console.error('Failed to send verification email:', error);
+        } catch (err) {
+            error = err.message;
         } finally {
             creating = false;
         }
     }
 
-    async function updateEmailVerification() {
-        const searchParams = page.url.searchParams;
-        const userId = searchParams.get('userId');
-        const secret = searchParams.get('secret');
-
-        if (userId && secret) {
-            try {
-                await sdk.forConsole.account.updateVerification({ userId, secret });
-                await Promise.all([
-                    invalidate(Dependencies.ACCOUNT),
-                    invalidate(Dependencies.FACTORS)
-                ]);
-
-                goto(`${base}/`);
-            } catch (error) {
-                addNotification({
-                    type: 'error',
-                    title: 'Email verification failed',
-                    message: 'Unable to verify your email. Please try again.'
-                });
-                console.error('Failed to verify email:', error);
-            }
-        }
-    }
-
-    onMount(() => {
-        updateEmailVerification();
-        restoreTimerState(); // Check for existing timer
-    });
+    onMount(() => restoreTimerState);
 
     onDestroy(() => {
         if (timerInterval) {
             clearInterval(timerInterval);
         }
+
         if (browser) {
             localStorage.removeItem(TIMER_END_KEY);
             localStorage.removeItem(EMAIL_SENT_KEY);
@@ -152,12 +131,13 @@
 <div class="email-verification-scrim">
     <Modal
         bind:show
+        bind:error
         title="Verify your email address"
         {onSubmit}
         dismissible={false}
         autoClose={false}>
         <Card.Base variant="secondary" padding="s">
-            <Layout.Stack gap="s">
+            <Layout.Stack gap="xxs">
                 <Typography.Text gap="m">
                     To continue using Appwrite Cloud, please verify your email address. An email
                     will be sent to <Typography.Text
@@ -165,21 +145,27 @@
                         color="neutral-secondary"
                         style="display: inline;">{email || get(user)?.email}</Typography.Text>
                 </Typography.Text>
-                <Layout.Stack class="u-margin-block-start-4 u-margin-block-end-24">
-                    <Layout.Stack direction="row">
-                        <Link variant="default" on:click={() => logout()}>Switch account</Link>
-                    </Layout.Stack>
-                </Layout.Stack>
+
+                <Link variant="default" on:click={() => logout()}>Switch account</Link>
+
                 {#if emailSent && resendTimer > 0}
-                    <Typography.Text color="neutral-secondary">
-                        Didn't get the email? Try again in {resendTimer}s
-                    </Typography.Text>
+                    <div transition:slide={{ duration: 150 }}>
+                        <Typography.Text
+                            color="neutral-secondary"
+                            style="margin-block-start: var(--gap-L, 16px);">
+                            Didn't get the email? Try again in {resendTimer}s
+                        </Typography.Text>
+                    </div>
                 {/if}
             </Layout.Stack>
         </Card.Base>
 
         <svelte:fragment slot="footer">
-            <Button submit disabled={creating || resendTimer > 0}>
+            <Button
+                submit
+                submissionLoader
+                forceShowLoader={creating}
+                disabled={creating || resendTimer > 0}>
                 {emailSent ? 'Resend email' : 'Send email'}
             </Button>
         </svelte:fragment>
@@ -198,5 +184,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+    /* avoids the background scroll and bars */
+    :global(html:has(.email-verification-scrim)) {
+        height: 100%;
+        overflow: hidden !important;
     }
 </style>
