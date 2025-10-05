@@ -6,7 +6,8 @@
     import { Button } from '$lib/elements/forms';
     import { canWriteKeys } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
-    import { diffDays, toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
+    import { diffDays } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { devKeyColumns, keyColumns, showDevKeysCreateModal } from '../store';
     import { Badge, FloatingActionBar, Layout, Table } from '@appwrite.io/pink-svelte';
     import DeleteBatch from './deleteBatch.svelte';
@@ -69,12 +70,20 @@
                     {key.name}
                 </Table.Cell>
                 <Table.Cell {root}>
-                    {key.accessedAt ? toLocaleDate(key.accessedAt) : 'never'}
+                    {#if key.accessedAt}
+                        <DualTimeView time={key.accessedAt} />
+                    {:else}
+                        never
+                    {/if}
                 </Table.Cell>
                 <Table.Cell {root}>
                     {@const expiration = getExpiryDetails(key)}
                     <Layout.Stack gap="s" direction="row">
-                        {key.expire ? toLocaleDateTime(key.expire) : 'never'}
+                        {#if key.expire}
+                            <DualTimeView time={key.expire} />
+                        {:else}
+                            never
+                        {/if}
 
                         {#if expiration.status}
                             <Badge

@@ -3,7 +3,7 @@
     import { Button } from '$lib/elements/forms';
     import type { PageData } from './$types';
     import { columns } from './store';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import ProviderType from '$routes/(console)/project-[region]-[project]/messaging/providerType.svelte';
     import Provider from '$routes/(console)/project-[region]-[project]/messaging/provider.svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -83,7 +83,7 @@
                             <Provider provider={provider.provider} />
                         {/if}
                     {:else if column.id === '$createdAt'}
-                        {toLocaleDateTime(target[column.id])}
+                        <DualTimeView time={target[column.id]} />
                     {:else}
                         {target[column.id]}
                     {/if}
