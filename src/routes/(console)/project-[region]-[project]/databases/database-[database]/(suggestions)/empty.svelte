@@ -522,7 +522,7 @@
         setTimeout(() => {
             const notifId = addNotification({
                 isHtml: true,
-                title: '<b>Next step: Add indexes</b>',
+                title: '<b>Next step: add indexes</b>',
                 message: 'See suggested indexes based on your columns',
                 dismissible: true,
                 icon: IconAINotification,
