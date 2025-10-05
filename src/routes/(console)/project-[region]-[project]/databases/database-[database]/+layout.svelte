@@ -10,7 +10,6 @@
     } from '$lib/commandCenter';
     import { tablesSearcher } from '$lib/commandCenter/searchers';
     import { Dependencies } from '$lib/constants';
-    import type { Models } from '@appwrite.io/console';
     import CreateTable from './createTable.svelte';
     import { showCreateTable } from './store';
     import { TablesPanel } from '$lib/commandCenter/panels';
@@ -23,14 +22,6 @@
 
     const project = page.params.project;
     const databaseId = page.params.database;
-
-    async function handleCreate(event: CustomEvent<Models.Table>) {
-        $showCreateTable = false;
-        await invalidate(Dependencies.DATABASE);
-        await goto(
-            `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/table-${event.detail.$id}`
-        );
-    }
 
     $: $registerCommands([
         {
@@ -147,9 +138,19 @@
 </script>
 
 <svelte:head>
-    <title>Database - Appwrite</title>
+    <!-- svelte bug, the table header just stays! -->
+    {#key page.url.pathname}
+        <title>Database - Appwrite</title>
+    {/key}
 </svelte:head>
 
 <slot />
 
-<CreateTable bind:showCreate={$showCreateTable} on:created={handleCreate} />
+<CreateTable
+    bind:showCreate={$showCreateTable}
+    onTableCreated={async (table) => {
+        await invalidate(Dependencies.DATABASE);
+        await goto(
+            `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/table-${table.$id}`
+        );
+    }} />

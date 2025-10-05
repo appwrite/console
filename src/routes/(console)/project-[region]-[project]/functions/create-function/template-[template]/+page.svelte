@@ -49,7 +49,7 @@
     let isSubmitting = writable(false);
 
     let name = data.template.name;
-    let id: string;
+    let id: string | null = null;
     let runtime: Runtime;
     let branch = 'main';
     let rootDir = './';
