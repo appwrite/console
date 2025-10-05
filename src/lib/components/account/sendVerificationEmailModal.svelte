@@ -114,7 +114,7 @@
         }
     }
 
-    onMount(() => restoreTimerState);
+    onMount(restoreTimerState);
 
     onDestroy(() => {
         if (timerInterval) {
