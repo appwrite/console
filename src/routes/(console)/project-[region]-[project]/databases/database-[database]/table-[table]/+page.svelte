@@ -133,7 +133,7 @@
                                 isCustomTable />
                         </div>
 
-                        <svelte:fragment slot="tooltip">Toggle columns</svelte:fragment>
+                        <svelte:fragment slot="tooltip">Columns</svelte:fragment>
                     </Tooltip>
 
                     <Tooltip>
