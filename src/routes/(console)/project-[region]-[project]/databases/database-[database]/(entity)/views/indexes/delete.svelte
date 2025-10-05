@@ -41,8 +41,6 @@
                     : `${selectedKeys.length} indexes have been deleted`
         });
 
-        console.log(`cleanup > selectedIndex`, selectedIndex, selectedKeys);
-
         // invalidate proper dependency.
         await invalidate(dependencies.entity.singular);
     }
