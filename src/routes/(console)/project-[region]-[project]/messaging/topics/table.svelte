@@ -8,7 +8,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import type { Column } from '$lib/helpers/types';
     import { page } from '$app/state';
     import { canWriteTopics } from '$lib/stores/roles';
@@ -72,7 +72,9 @@
                             <Id value={topic.$id}>{topic.$id}</Id>
                         {/key}
                     {:else if column.type === 'datetime'}
-                        {topic[column.id] ? toLocaleDateTime(topic[column.id]) : '-'}
+                        {#if topic[column.id]}
+                            <DualTimeView time={topic[column.id]} />
+                        {:else}-{/if}
                     {:else if column.id === 'total'}
                         {topic.emailTotal + topic.smsTotal + topic.pushTotal}
                     {:else}
