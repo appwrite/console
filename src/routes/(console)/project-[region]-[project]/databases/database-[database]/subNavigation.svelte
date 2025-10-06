@@ -167,7 +167,7 @@
                         {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/${action.href}`}
 
                         <Layout.Stack gap="s" direction="row" alignItems="center">
-                            <li>
+                            <li class="bottom-nav-item">
                                 <a
                                     {href}
                                     class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8">
@@ -267,8 +267,8 @@
         scrollbar-width: none;
         -ms-overflow-style: none;
 
-        //scrollbar-width: thin;
-        //scrollbar-color: var(--border-neutral, #ededf0) transparent;
+        // scrollbar-width: thin;
+        // scrollbar-color: var(--border-neutral, #ededf0) transparent;
 
         &::-webkit-scrollbar {
             width: 4px;
@@ -333,12 +333,16 @@
             position: relative;
             padding-inline-end: 0.5rem;
             margin-inline-start: 0.5rem;
-        }
 
-        li:hover {
-            color: var(--fgcolor-neutral-primary);
-            border-radius: var(--border-radius-s, 6px);
-            background: var(--bgcolor-neutral-secondary);
+            &:hover {
+                color: var(--fgcolor-neutral-primary);
+                border-radius: var(--border-radius-s, 6px);
+                background: var(--bgcolor-neutral-secondary);
+            }
+
+            &.bottom-nav-item:hover {
+                margin-inline-end: 1.25rem;
+            }
         }
 
         .table-name {
@@ -386,7 +390,6 @@
         left: 1.25rem;
         position: absolute;
         padding-block-end: 1rem;
-        background: var(--bgcolor-neutral-primary, #ffffff);
     }
 
     .action-menu-divider {
