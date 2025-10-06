@@ -18,15 +18,15 @@
 <Typography.Title>
     <div class="overlay-container">
         {#if loading}
-            <div class="overlay-item skeleton" transition:fade={{ duration: 300 }}>
+            <div class="overlay-item skeleton" transition:fade={{ duration: 150 }}>
                 <Skeleton
-                    height="100%"
+                    height="80%"
                     width="5rem"
                     variant="line"
-                    style="opacity: 0.35; margin-bottom: 1rem; margin-inline-start: -2px" />
+                    style="opacity: 0.35; margin-inline-start: -2px" />
             </div>
         {:else}
-            <div class="overlay-item" transition:fade={{ duration: 300, delay: 150 }}>
+            <div class="overlay-item" transition:fade={{ duration: 150, delay: 75 }}>
                 {value}
                 {#if unit}
                     <span style:line-height="0%" style:font-size="var(--font-size-0)">

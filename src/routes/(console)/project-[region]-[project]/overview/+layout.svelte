@@ -38,14 +38,13 @@
     afterNavigate(handle);
 
     async function handle() {
+        $usage = null;
         $loadingProjectUsage = true;
         const promise = changePeriod(period);
 
-        if ($usage) {
-            await promise.finally(() => {
-                $loadingProjectUsage = false;
-            });
-        }
+        await promise.finally(() => {
+            $loadingProjectUsage = false;
+        });
     }
 
     function changePeriod(newPeriod: UsagePeriods) {
@@ -94,8 +93,6 @@
     $: $updateCommandGroupRanks({ integrations: 10 });
 
     $: path = `${base}/project-${page.params.region}-${page.params.project}/overview`;
-
-    $: console.log(`$loadingProjectUsage: ${$loadingProjectUsage}`);
 </script>
 
 <svelte:head>

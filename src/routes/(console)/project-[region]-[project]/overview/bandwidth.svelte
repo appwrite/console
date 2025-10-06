@@ -22,6 +22,7 @@
     import type { EChartsOption } from 'echarts';
     import { generateFakeBarChartData } from '$lib/helpers/faker';
     import ExtendedValueSkeleton from './(components)/skeletons/extended.svelte';
+    import { fade } from 'svelte/transition';
 
     let {
         period,
@@ -49,11 +50,10 @@
         return {
             animation: true,
             animationDuration: 500,
-            animationEasing: 'cubicOut',
-
+            animationEasing: 'quadraticInOut',
             animationDurationUpdate: 500,
-            animationEasingUpdate: 'cubicOut',
-
+            animationEasingUpdate: 'quadraticInOut',
+            universalTransition: true,
             yAxis: {
                 axisLabel: {
                     formatter: (value: number) => {
@@ -98,15 +98,19 @@
         </Popover>
     </Layout.Stack>
 
-    {#if bandwidth.value !== '0' || loading}
-        <div style="height: 12rem;">
-            {#key loading}
+    <div style="height: 12rem; position: relative;">
+        {#if loading || bandwidth.value !== '0'}
+            <div
+                in:fade|local={{ duration: 500 }}
+                out:fade|local={{ duration: 500 }}
+                style="position: absolute; inset: 0;">
                 <BarChart
                     options={chartOptions}
                     series={[
                         {
                             name: 'Bandwidth',
                             data: chartData,
+                            universalTransition: true,
                             tooltip: loading
                                 ? undefined
                                 : {
@@ -116,14 +120,23 @@
                                   }
                         }
                     ]} />
-            {/key}
-        </div>
-    {:else}
-        <Card isDashed style="height: 12rem;" fullHeightChild>
-            <Layout.Stack gap="xs" height="100%" alignItems="center" justifyContent="center">
-                <Icon icon={IconChartSquareBar} size="l" />
-                <Typography.Text variant="m-600">No data to show</Typography.Text>
-            </Layout.Stack>
-        </Card>
-    {/if}
+            </div>
+        {:else}
+            <div
+                in:fade|local={{ duration: 500 }}
+                out:fade|local={{ duration: 500 }}
+                style="position: absolute; inset: 0;">
+                <Card isDashed fullHeightChild style="height: 100%">
+                    <Layout.Stack
+                        gap="xs"
+                        height="100%"
+                        alignItems="center"
+                        justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
+                </Card>
+            </div>
+        {/if}
+    </div>
 </Layout.Stack>
