@@ -84,14 +84,20 @@
 
             <ActionMenu.Root width="fit-content" slot="tooltip" let:toggle>
                 <ActionMenu.Item.Button
-                    on:click={(event) => toggle(event) && dispatch('change', '24h')}
-                    >24h</ActionMenu.Item.Button>
+                    on:click={(event) => {
+                        toggle(event);
+                        dispatch('change', '24h');
+                    }}>24h</ActionMenu.Item.Button>
                 <ActionMenu.Item.Button
-                    on:click={(event) => toggle(event) && dispatch('change', '30d')}
-                    >30d</ActionMenu.Item.Button>
+                    on:click={(event) => {
+                        toggle(event);
+                        dispatch('change', '30d');
+                    }}>30d</ActionMenu.Item.Button>
                 <ActionMenu.Item.Button
-                    on:click={(event) => toggle(event) && dispatch('change', '90d')}
-                    >90d</ActionMenu.Item.Button>
+                    on:click={(event) => {
+                        toggle(event);
+                        dispatch('change', '90d');
+                    }}>90d</ActionMenu.Item.Button>
             </ActionMenu.Root>
         </Popover>
     </Layout.Stack>

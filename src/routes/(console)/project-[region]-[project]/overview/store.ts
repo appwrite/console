@@ -22,7 +22,13 @@ export const usage = cachedStore<
     return {
         load: async (start, end, period) => {
             const currentData = get(usage);
-            const currentParamsHash = hash([page.params.project, start, end, period.toString()]);
+            const currentParamsHash = hash([
+                page.params.project,
+                page.params.region,
+                start,
+                end,
+                period.toString()
+            ]);
 
             // don't hit the API call if we have the data!
             if (lastParamsHash === currentParamsHash && currentData && !isDev) {

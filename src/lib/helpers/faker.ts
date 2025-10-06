@@ -256,24 +256,24 @@ function seededRandom(seed: number) {
     return x - Math.floor(x);
 }
 
+const BASE_TIME_MS = Date.now();
+
 export function generateFakeBarChartData(seed = 1) {
     const fakeData: [number, number][] = [];
-    const now = Date.now();
     for (let i = 23; i >= 0; i--) {
         const val = seededRandom(seed + i) * 1_000_000;
-        fakeData.push([now - i * 60 * 60 * 1000, Math.round(val)]);
+        fakeData.push([BASE_TIME_MS - i * 60 * 60 * 1000, Math.round(val)]);
     }
     return fakeData;
 }
 
 export function generateFakeLineChartData(seed = 2) {
     const fakeData: [number, number][] = [];
-    const now = Date.now();
     let value = seededRandom(seed) * 5000 + 5000;
     for (let i = 23; i >= 0; i--) {
         value += (seededRandom(seed + i) - 0.5) * 1000;
         value = Math.max(0, value);
-        fakeData.push([now - i * 60 * 60 * 1000, Math.round(value)]);
+        fakeData.push([BASE_TIME_MS - i * 60 * 60 * 1000, Math.round(value)]);
     }
     return fakeData;
 }
