@@ -42,11 +42,19 @@
     import { onMount } from 'svelte';
 
     interface Props {
-        data?: Partial<Models.ColumnPolygon>;
         editing?: boolean;
+        disabled?: boolean;
+        data?: Partial<Models.ColumnPolygon>;
     }
 
-    let { data = { required: false, default: null }, editing = false }: Props = $props();
+    let {
+        data = {
+            default: null,
+            required: false
+        },
+        editing = false,
+        disabled = false
+    }: Props = $props();
 
     let savedDefault = $state(data.default);
     let defaultChecked = $state(!!data.default);
@@ -117,6 +125,7 @@
     size="s"
     id="required"
     label="Required"
+    {disabled}
     bind:checked={$required}
     on:change={(e) => {
         if (e.detail) defaultChecked = false;
@@ -128,6 +137,7 @@
     size="s"
     id="default"
     label="Default value"
+    {disabled}
     bind:checked={defaultChecked}
     on:change={(e) => {
         if (e.detail) {
@@ -148,6 +158,7 @@
     {/if}
 
     <InputPolygon
+        {disabled}
         values={defaultChecked ? data.default : null}
         onAddLine={pushLine}
         onAddPoint={pushCoordinate}

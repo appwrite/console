@@ -14,6 +14,7 @@
         onDeletePoint: (index: number) => void;
         onChangePoint: (pointIndex: number, coordIndex: number, newValue: number) => void;
         addLineButton?: Snippet;
+        disabled?: boolean;
     };
 
     let {
@@ -24,7 +25,8 @@
         onAddPoint,
         onDeletePoint,
         onChangePoint,
-        addLineButton
+        addLineButton,
+        disabled
     }: Props = $props();
 
     function isDeleteDisabled(index: number) {
@@ -40,6 +42,7 @@
     <Layout.Stack>
         {#each values as value, index}
             <InputPoint
+                {disabled}
                 {nullable}
                 values={value}
                 deletePoints
@@ -52,7 +55,11 @@
 
     {#if values}
         <Layout.Stack direction="row" gap="s" alignItems="center">
-            <Button size="xs" compact on:click={() => onAddPoint(-1)} disabled={nullable}>
+            <Button
+                size="xs"
+                compact
+                on:click={() => onAddPoint(-1)}
+                disabled={nullable || disabled}>
                 <Icon icon={IconPlus} size="s" /> Add coordinate
             </Button>
             {@render addLineButton?.()}

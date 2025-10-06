@@ -55,6 +55,7 @@
     };
 
     export let editing = false;
+    export let disabled = false;
 
     let savedDefault = data.default;
 
@@ -88,6 +89,7 @@
     id="size"
     label="Size"
     required
+    {disabled}
     placeholder="Enter size"
     bind:value={data.size}
     min={supportsStringEncryption && data.encrypt ? 150 : undefined}
@@ -102,7 +104,7 @@
     placeholder="Enter string"
     maxlength={data.size}
     bind:value={data.default}
-    disabled={data.required || data.array}
+    disabled={data.required || data.array || disabled}
     nullable={!data.required && !data.array} />
 
 <Selector.Checkbox
@@ -110,7 +112,7 @@
     id="required"
     label="Required"
     bind:checked={data.required}
-    disabled={data.array}
+    disabled={data.array || disabled}
     description="Indicate whether this column is required." />
 
 <Selector.Checkbox
@@ -118,28 +120,28 @@
     id="array"
     label="Array"
     bind:checked={data.array}
-    disabled={data.required || editing}
+    disabled={data.required || editing || disabled}
     description="Indicate whether this column is an array. Defaults to an empty array." />
 
 <Layout.Stack gap="xs" direction="column">
     <div
         class="popover-holder"
-        class:cursor-not-allowed={editing}
-        class:disabled-checkbox={!supportsStringEncryption || editing}>
+        class:cursor-not-allowed={editing || disabled}
+        class:disabled-checkbox={!supportsStringEncryption || editing || disabled}>
         <Layout.Stack inline gap="s" alignItems="flex-start" direction="row">
             <Popover let:toggle placement="bottom-start">
                 <Selector.Checkbox
                     size="s"
                     id="encrypt"
                     bind:checked={data.encrypt}
-                    disabled={!supportsStringEncryption || editing} />
+                    disabled={!supportsStringEncryption || editing || disabled} />
 
                 <Layout.Stack gap="xxs" direction="column">
                     <button
                         type="button"
-                        disabled={editing}
+                        disabled={editing || disabled}
                         class:cursor-pointer={!editing}
-                        class:cursor-not-allowed={editing}
+                        class:cursor-not-allowed={editing || disabled}
                         on:click={(e) => {
                             if (!supportsStringEncryption) {
                                 toggle(e);

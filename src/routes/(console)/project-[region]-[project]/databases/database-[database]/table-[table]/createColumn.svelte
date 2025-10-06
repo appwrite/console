@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { type Columns, type ColumnDirection } from './store';
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
@@ -11,6 +11,8 @@
     import type { Column } from '$lib/helpers/types';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
+    import { resolve } from '$app/paths';
+    import { Input as SuggestionsInput, tableColumnSuggestions } from '../(suggestions)/index';
 
     let {
         direction = null,
@@ -35,6 +37,9 @@
     const tableId = page.params.table;
     const databaseId = page.params.database;
 
+    // flow isn't complete yet!
+    const isSuggestionsFeatureEnabled = false;
+
     let key: string = $state(column?.key ?? null);
     let data: Partial<Columns> = $state({
         required: column?.required ?? false,
@@ -46,6 +51,16 @@
     let ColumnComponent = $derived(
         columnOptions.find((option) => option.name === selectedOption).component
     );
+
+    function initSuggestionsStore() {
+        if (!isSuggestionsFeatureEnabled) return;
+
+        $tableColumnSuggestions.table = null;
+        $tableColumnSuggestions.enabled = false;
+
+        $tableColumnSuggestions.context = null;
+        $tableColumnSuggestions.thinking = false;
+    }
 
     function init() {
         key = null;
@@ -59,6 +74,9 @@
         /* default to string */
         selectedOption = 'String';
         $option = columnOptions[0];
+
+        /* init suggestions */
+        initSuggestionsStore();
     }
 
     function insertColumnInOrder() {
@@ -137,6 +155,33 @@
     }
 
     export async function submit() {
+        if (isSuggestionsEnabled) {
+            const tableInUse = page.data.table;
+            // TODO: confirm what flow to use!
+            tableColumnSuggestions.update((store) => ({
+                ...store,
+                thinking: true,
+                table: {
+                    id: tableInUse.$id,
+                    name: tableInUse.name
+                }
+            }));
+
+            const { region, project, database, table } = page.params;
+            await goto(
+                resolve(
+                    '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]',
+                    {
+                        region,
+                        project,
+                        database,
+                        table
+                    }
+                )
+            );
+            return true;
+        }
+
         try {
             await $option.create(databaseId, tableId, key, data);
 
@@ -177,9 +222,17 @@
             $option = columnOptions.find((option) => option.name === selectedOption);
         }
     });
+
+    const isSuggestionsEnabled = $derived(
+        isSuggestionsFeatureEnabled && $tableColumnSuggestions.enabled
+    );
 </script>
 
 <Layout.Stack gap="xl">
+    {#if isSuggestionsFeatureEnabled}
+        <SuggestionsInput />
+    {/if}
+
     <Layout.Stack direction="row">
         <InputText
             id="key"
@@ -187,7 +240,7 @@
             placeholder="Enter key"
             bind:value={key}
             autofocus
-            disabled={selectedOption === 'Relationship'}
+            disabled={selectedOption === 'Relationship' || isSuggestionsEnabled}
             required
             pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$" />
 
@@ -195,6 +248,7 @@
             id="type"
             label="Type"
             bind:value={selectedOption}
+            disabled={isSuggestionsEnabled}
             options={columnOptions.map((attr) => {
                 return {
                     label: attr.name,
@@ -206,6 +260,9 @@
     </Layout.Stack>
 
     {#if selectedOption}
-        <ColumnComponent bind:data onclose={() => ($option = null)} />
+        <ColumnComponent
+            disabled={isSuggestionsEnabled}
+            bind:data
+            onclose={() => ($option = null)} />
     {/if}
 </Layout.Stack>
