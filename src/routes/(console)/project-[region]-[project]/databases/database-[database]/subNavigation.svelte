@@ -55,10 +55,11 @@
 
     const isMainDatabaseScreen = $derived(page.route.id.endsWith('database-[database]'));
 
-    // If banner open, `-1rem` to adjust banner size, else `-70.5px`.
+    // If banner open, adjust bottom position to account for banner container.
     // 70.5px is the size of the container of the banner holder and not just the banner!
     // Needed because things vary a bit much on how different browsers treat bottom layouts.
-    const bottomNavHeight = $derived(`calc(20% ${$bannerSpacing ? '- 1rem' : '- 70.5px'})`);
+    const bottomNavOffset = $derived($bannerSpacing ? '70.5px' : '0px');
+    const tableContentPadding = $derived($bannerSpacing ? '210px' : '140px');
 
     async function loadTables() {
         tables = await sdk.forProject(region, project).tablesDB.listTables({
@@ -92,7 +93,10 @@
 
                 {data.database?.name}
             </a>
-            <div class="table-content">
+            <div
+                class="table-content"
+                style:padding-bottom={tableContentPadding}
+            >
                 {#if tables?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
                         {#each sortedTables as table, index}
@@ -154,10 +158,10 @@
                 </Layout.Stack>
             </div>
 
-            <Layout.Stack
-                gap="xxs"
-                direction="column"
-                style="bottom: 1rem; position: relative; height: {bottomNavHeight}">
+            <div
+                class="bottom-nav-container"
+                style:bottom={bottomNavOffset}
+            >
                 <div class="action-menu-divider">
                     <Divider />
                 </div>
@@ -183,7 +187,7 @@
                         </Layout.Stack>
                     {/each}
                 </ul>
-            </Layout.Stack>
+            </div>
         </section>
     </Sidebar.Base>
 {:else if data?.database?.name && !isMainDatabaseScreen}
@@ -263,10 +267,14 @@
         overflow-x: hidden;
         min-height: 0;
         margin-bottom: auto;
-        padding-bottom: 16px;
-        scrollbar-width: thin;
-        scrollbar-color: var(--border-neutral, #ededf0) transparent;
         color: var(--fgcolor-neutral-secondary, #56565c);
+
+        /* hide scrollbars */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+
+        //scrollbar-width: thin;
+        //scrollbar-color: var(--border-neutral, #ededf0) transparent;
 
         &::-webkit-scrollbar {
             width: 4px;
@@ -295,6 +303,10 @@
         position: relative;
         font-size: var(--font-size-sm);
         color: var(--fgcolor-neutral-secondary);
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
 
         &:not(.bottom-nav)::before {
             content: '';
@@ -374,8 +386,17 @@
         line-height: 150%; /* 21px */
     }
 
+    .bottom-nav-container {
+        right: 0;
+        bottom: 0;
+        left: 1.25rem;
+        position: absolute;
+        padding-block-end: 1rem;
+        background: var(--bgcolor-neutral-primary, #ffffff);
+    }
+
     .action-menu-divider {
-        margin-inline: -1.2rem;
         padding-block-end: 0.25rem;
+        margin-inline-start: -1.25rem;
     }
 </style>
