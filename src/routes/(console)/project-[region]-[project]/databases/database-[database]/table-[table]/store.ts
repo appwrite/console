@@ -33,9 +33,12 @@ export const tableColumns = writable<Column[]>([]);
 export const isCsvImportInProgress = writable(false);
 
 export const columnsOrder = writable<string[]>([]);
-export const columnsWidth = writable<{
+
+export type ColumnsWidth = {
     [columnId: string]: { fixed: number | { min: number }; resized: number };
-}>();
+};
+
+export const columnsWidth = writable<ColumnsWidth>();
 
 type DatabaseSheetOptions = {
     show: boolean;

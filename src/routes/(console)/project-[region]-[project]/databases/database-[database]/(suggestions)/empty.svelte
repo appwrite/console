@@ -685,7 +685,7 @@
         setTimeout(() => {
             const notifId = addNotification({
                 isHtml: true,
-                title: '<b>Next step: Add indexes</b>',
+                title: '<b>Next step: add indexes</b>',
                 message: 'See suggested indexes based on your columns',
                 dismissible: true,
                 icon: IconAINotification,
@@ -1327,6 +1327,7 @@
         position: fixed;
         overflow: visible;
         scrollbar-width: none;
+        --columns-range-pink-border-color: rgba(253, 54, 110, 0.24);
 
         &.custom-columns {
             width: unset;
@@ -1336,19 +1337,19 @@
             display: none;
         }
 
-        &:not(:has(.columns-range-overlay.thinking)) {
+        &:has(.columns-range-overlay) {
             &
                 :global(
                     [role='cell']:has(.column-resizer-disabled):not([data-column-id^='$']):not(
                             [data-column-id='actions']
                         )
                 ) {
-                box-shadow: 0 -1px 0 0 rgba(253, 54, 110, 0.24) inset !important;
+                box-shadow: 0 -1px 0 0 var(--columns-range-pink-border-color) inset !important;
                 transition: box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
 
             & :global([role='cell']:not([data-column-id='actions']) .column-resizer-disabled) {
-                border-left: var(--border-width-s, 1px) solid rgba(253, 54, 110, 0.24) !important;
+                border-left: var(--border-width-s, 1px) solid var(--columns-range-pink-border-color) !important;
                 transition: border-color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
         }
@@ -1438,7 +1439,7 @@
                     background: linear-gradient(
                         90deg,
                         transparent,
-                        rgba(255, 255, 255, 0.08),
+                        rgba(255, 255, 255, 0.8),
                         transparent
                     );
                     animation: inner-shimmer 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
@@ -1542,7 +1543,7 @@
         background: linear-gradient(
             180deg,
             rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.855) 21%,
+            rgba(255, 255, 255, 0.86) 32.25%,
             #fff 100%
         );
         z-index: 20; /* under overlay */
@@ -1556,10 +1557,9 @@
     :global(.theme-dark) .spreadsheet-fade-bottom {
         background: linear-gradient(
             180deg,
-            rgba(25, 25, 28, 0.38) 13%,
-            rgba(25, 25, 28, 0.7) 21%,
-            rgba(25, 25, 28, 0.95) 38%,
-            var(--bgcolor-neutral-default, #19191c) 100%
+            rgba(29, 29, 33, 0) 0%,
+            rgba(29, 29, 33, 0.86) 21%,
+            #1d1d21 100%
         );
     }
 
@@ -1578,6 +1578,10 @@
             left: 100%;
             opacity: 0;
         }
+    }
+
+    :global(.theme-dark) .spreadsheet-container-outer {
+        --columns-range-pink-border-color: rgba(253, 54, 110, 0.12) !important;
     }
 
     :global(.theme-dark) .columns-range-overlay.thinking {

@@ -68,6 +68,7 @@
         array: false,
         ...data
     });
+
     $: listen(data);
 
     $: handleDefaultState($required || $array);

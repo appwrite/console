@@ -54,7 +54,7 @@
         </p>
 
         {#if error}
-            <Alert.Inline status="warning">{error}</Alert.Inline>
+            <Alert.Inline status="warning" title={error} />
         {/if}
     </Layout.Stack>
 
