@@ -37,7 +37,10 @@
     ];
     let currentPath: string = './';
     let currentDir: Directory;
-    export let expanded = writable(['lib-0', 'tree-0']);
+    export let expanded = writable([]);
+    let initialized = false;
+    let initialPath: string = './';
+    let pathNotFound = false;
 
     onMount(async () => {
         try {
@@ -61,13 +64,13 @@
                 }));
             currentDir = directories[0];
             isLoading = false;
+            $expanded = Array.from(new Set([...$expanded, './']));
         } catch {
             return;
         }
     });
 
-    async function fetchContents(e: CustomEvent) {
-        const path = e.detail.fullPath as string;
+    async function loadPath(path: string) {
         currentPath = path;
 
         const pathSegments = path.split('/').filter((segment) => segment !== '.' && segment !== '');
@@ -99,6 +102,7 @@
                 const contentDirectories = content.contents.filter((e) => e.isDirectory);
 
                 if (contentDirectories.length === 0) {
+                    $expanded = Array.from(new Set([...$expanded, path]));
                     return;
                 }
 
@@ -133,13 +137,67 @@
                     });
                 }
                 directories = [...directories];
-                $expanded = [...$expanded, path];
+                $expanded = Array.from(new Set([...$expanded, path]));
             } catch (error) {
                 console.error(error);
             } finally {
                 currentDir.loading = false;
             }
         }
+    }
+
+    async function fetchContents(e: CustomEvent) {
+        const path = e.detail.fullPath as string;
+        await loadPath(path);
+    }
+
+    function normalizePath(path: string): string {
+        if (!path || path === '') return './';
+        if (path === './') return './';
+        if (path.startsWith('./')) return path.replace(/\/$/, '');
+        if (path.startsWith('/')) return '.' + path.replace(/\/$/, '');
+        return './' + path.replace(/\/$/, '');
+    }
+
+    async function expandToPath(path: string) {
+        pathNotFound = false;
+        const normalized = normalizePath(path);
+        const segments = normalized.split('/').filter((s) => s !== '.' && s !== '');
+        let cumulative = './';
+        $expanded = Array.from(new Set([...$expanded, './']));
+        for (const segment of segments) {
+            cumulative = cumulative === './' ? `./${segment}` : `${cumulative}/${segment}`;
+            const parentSegments = cumulative.split('/').filter((s) => s !== '.' && s !== '');
+            let cursor = directories[0];
+            for (const s of parentSegments.slice(0, -1)) {
+                const next = cursor.children?.find((d) => d.title === s);
+                if (!next) {
+                    pathNotFound = true;
+                    return;
+                }
+                cursor = next;
+            }
+            await loadPath(cursor.fullPath ?? './');
+            const exists = cursor.children?.some((d) => d.title === segment);
+            if (!exists) {
+                pathNotFound = true;
+                return;
+            }
+            $expanded = Array.from(new Set([...$expanded, cumulative]));
+        }
+        currentPath = normalized;
+    }
+
+    $: if (show && !initialized && !isLoading) {
+        initialized = true;
+        initialPath = normalizePath(rootDir ?? './');
+        currentPath = initialPath;
+        expandToPath(initialPath);
+    }
+
+    $: if (!show && initialized) {
+        initialized = false;
+        pathNotFound = false;
     }
 
     function handleSubmit() {
@@ -156,6 +214,6 @@
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit disabled={isLoading}>Save</Button>
+        <Button submit disabled={isLoading || currentPath === initialPath}>Save</Button>
     </svelte:fragment>
 </Modal>
