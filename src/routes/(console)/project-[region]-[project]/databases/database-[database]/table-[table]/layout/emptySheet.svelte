@@ -19,7 +19,7 @@
         expandTabs
     } from '../store';
     import SpreadsheetContainer from './spreadsheet.svelte';
-    import { onDestroy, onMount } from 'svelte';
+    import { type ComponentType, onDestroy, onMount, type Snippet } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
     import { columnOptions } from '../columns/store';
 
@@ -29,6 +29,7 @@
         text?: string;
         disabled?: boolean;
         onClick?: () => void;
+        icon?: ComponentType;
     }
 
     const {
@@ -36,15 +37,17 @@
         showActions = true,
         customColumns = [],
         title,
+        subtitle,
         actions
     } = $props<{
         mode: Mode;
         showActions?: boolean;
         customColumns?: Column[];
         title?: string;
+        subtitle?: Snippet;
         actions?: {
             primary?: Action;
-            random?: Action;
+            secondary?: Action;
         };
     }>();
 
@@ -52,9 +55,30 @@
     let headerElement: HTMLElement | null = null;
 
     let resizeObserver: ResizeObserver;
+    let overlayOffsetHandler: ResizeObserver;
+
+    let overlayLeftOffset = $state('0px');
+    let overlayTopOffset = $state('auto');
     let dynamicOverlayHeight = $state('60.5vh');
 
     const baseColProps = { draggable: false, resizable: false };
+
+    const updateOverlayLeftOffset = () => {
+        if (spreadsheetContainer) {
+            const containerRect = spreadsheetContainer.getBoundingClientRect();
+            overlayLeftOffset = `${containerRect.left}px`;
+        }
+
+        // calculate vertical top position
+        if (!headerElement || !headerElement.isConnected) {
+            headerElement = spreadsheetContainer?.querySelector('[role="rowheader"]');
+        }
+
+        if (headerElement) {
+            const headerRect = headerElement.getBoundingClientRect();
+            overlayTopOffset = `${headerRect.bottom}px`;
+        }
+    };
 
     const updateOverlayHeight = () => {
         if (!spreadsheetContainer) return;
@@ -82,12 +106,19 @@
         if (spreadsheetContainer) {
             resizeObserver = new ResizeObserver(debouncedUpdateOverlayHeight);
             resizeObserver.observe(spreadsheetContainer);
+
+            overlayOffsetHandler = new ResizeObserver(updateOverlayLeftOffset);
+            overlayOffsetHandler.observe(spreadsheetContainer);
         }
     });
 
     onDestroy(() => {
         if (resizeObserver) {
             resizeObserver.disconnect();
+        }
+
+        if (overlayOffsetHandler) {
+            overlayOffsetHandler.disconnect();
         }
     });
 
@@ -199,19 +230,25 @@
         return columns;
     };
 
-    const getIndexesColumns = (): Column[] =>
-        [
+    const getIndexesColumns = (): Column[] => {
+        const columns = [
             { id: 'key', title: 'Key', icon: null, isPrimary: false },
             { id: 'type', title: 'Type', icon: null, isPrimary: false },
-            { id: 'columns', title: 'Columns', icon: null, isPrimary: false },
-            {
+            { id: 'columns', title: 'Columns', icon: null, isPrimary: false }
+        ] as Column[];
+
+        if (!$isSmallViewport) {
+            columns.push({
                 id: 'empty',
                 title: '',
                 width: 40,
                 isAction: true,
                 isPrimary: false
-            }
-        ] as Column[];
+            } as Column);
+        }
+
+        return columns;
+    };
 
     const spreadsheetColumns = $derived(mode === 'rows' ? getRowColumns() : getIndexesColumns());
 
@@ -221,10 +258,10 @@
 </script>
 
 <div
-    class="databases-spreadsheet spreadsheet-container-outer"
-    class:custom-columns={customColumns.length > 0}
     data-mode={mode}
-    bind:this={spreadsheetContainer}>
+    bind:this={spreadsheetContainer}
+    class:custom-columns={customColumns.length > 0}
+    class="databases-spreadsheet spreadsheet-container-outer">
     <SpreadsheetContainer>
         <Spreadsheet.Root
             {emptyCells}
@@ -299,10 +336,20 @@
             class="spreadsheet-fade-bottom"
             class:custom-columns={customColumns.length > 0}
             data-collapsed-tabs={!$expandTabs}
+            style:--overlay-left={overlayLeftOffset}
+            style:--overlay-top={overlayTopOffset}
             style:--dynamic-overlay-height={dynamicOverlayHeight}>
             <div class="empty-actions">
-                <Layout.Stack gap="xl" alignItems="center">
-                    <Typography.Title>{title ?? `You have no ${mode} yet`}</Typography.Title>
+                <Layout.Stack
+                    gap="xl"
+                    alignItems="center"
+                    alignContent="center"
+                    style="max-width: 353px">
+                    <Layout.Stack gap="l" alignItems="center" alignContent="center">
+                        <Typography.Title>{title ?? `You have no ${mode} yet`}</Typography.Title>
+
+                        {@render subtitle?.()}
+                    </Layout.Stack>
 
                     {#if showActions}
                         <Layout.Stack
@@ -317,17 +364,24 @@
                                     variant="secondary"
                                     disabled={actions?.primary?.disabled}
                                     onclick={actions?.primary?.onClick}>
-                                    <Icon icon={IconPlus} size="s" />
+                                    {@const icon = actions?.primary?.icon ?? IconPlus}
+
+                                    <Icon {icon} size="s" />
+
                                     {actions?.primary?.text ?? `Create ${mode}`}
                                 </Button.Button>
 
-                                {#if mode === 'rows'}
+                                {#if mode === 'rows' || mode === 'indexes'}
                                     <Button.Button
                                         size="s"
                                         variant="secondary"
-                                        disabled={actions?.random?.disabled}
-                                        onclick={actions?.random?.onClick}>
-                                        {actions?.random?.text ?? `Generate sample data`}
+                                        disabled={actions?.secondary?.disabled}
+                                        onclick={actions?.secondary?.onClick}>
+                                        {#if actions?.secondary?.icon}
+                                            <Icon icon={actions?.secondary?.icon} size="s" />
+                                        {/if}
+
+                                        {actions?.secondary?.text ?? `Generate sample data`}
                                     </Button.Button>
                                 {/if}
                             {:else}
@@ -336,6 +390,10 @@
                                     variant="secondary"
                                     disabled={actions?.primary?.disabled}
                                     onclick={actions?.primary?.onClick}>
+                                    {#if actions?.primary?.icon}
+                                        <Icon icon={actions?.primary?.icon} size="s" />
+                                    {/if}
+
                                     {actions?.primary?.text}
                                 </Button.Button>
                             {/if}
@@ -385,6 +443,10 @@
         }
 
         &[data-mode='indexes'] {
+            & :global([role='cell']:last-child [role='presentation']) {
+                display: none;
+            }
+
             & :global([role='rowheader'] [role='cell']:nth-last-child(1)) {
                 pointer-events: none;
 
@@ -396,9 +458,11 @@
     }
 
     .spreadsheet-fade-bottom {
+        right: 0;
         bottom: 0;
-        width: 100%;
         position: fixed;
+        top: var(--overlay-top, auto);
+        left: var(--overlay-left, 0px);
         background: linear-gradient(
             180deg,
             rgba(255, 255, 255, 0) 0%,
@@ -407,18 +471,9 @@
         );
         z-index: 20;
         display: flex;
+        align-items: center;
         justify-content: center;
         transition: none !important;
-
-        height: var(--dynamic-overlay-height, 70.5vh);
-
-        @media (max-width: 1024px) {
-            height: var(--dynamic-overlay-height, 63.35vh);
-        }
-
-        @media (min-width: 1024px) {
-            height: var(--dynamic-overlay-height, 70.35vh);
-        }
 
         &.custom-columns {
             pointer-events: none;
@@ -435,37 +490,7 @@
     }
 
     .empty-actions {
-        left: 50%;
-        bottom: 35%;
-        position: fixed;
+        margin-bottom: 8%;
         pointer-events: auto;
-
-        @media (max-width: 768px) and (max-height: 768px) {
-            left: unset;
-            bottom: 12.5% !important;
-        }
-
-        @media (max-width: 768px) and (max-height: 1024px) {
-            left: unset;
-            bottom: 20% !important;
-        }
-
-        @media (max-width: 1024px) and (max-height: 1024px) {
-            left: unset;
-            bottom: 15%;
-        }
-
-        @media (max-width: 1024px) {
-            left: unset;
-            bottom: 30%;
-        }
-
-        @media (min-width: 1280px) {
-            bottom: 37.5%;
-        }
-
-        @media (min-width: 1440px) {
-            bottom: 40%;
-        }
     }
 </style>

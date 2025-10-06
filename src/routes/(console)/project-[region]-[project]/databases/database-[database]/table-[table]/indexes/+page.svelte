@@ -37,6 +37,8 @@
     import { showCreateColumnSheet } from '../store';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { page } from '$app/state';
+    import { showIndexesSuggestions } from '../../(suggestions)';
+    import IconAI from '../../(suggestions)/icon/aiForButton.svelte';
 
     let {
         data
@@ -291,10 +293,29 @@
                 mode="indexes"
                 actions={{
                     primary: {
+                        icon: IconAI,
+                        text: 'Suggest indexes',
+                        onClick: () => showIndexesSuggestions.update(() => true),
+                        disabled: !$table?.columns?.length
+                    },
+                    secondary: {
+                        icon: IconPlus,
+                        text: 'Create index',
                         onClick: () => (showCreateIndex = true),
                         disabled: !$table?.columns?.length
                     }
-                }} />
+                }}>
+                {#snippet subtitle()}
+                    <Typography.Text align="center">
+                        Create indexes to improve query and sorting performance. Learn more in the
+                        <Link.Anchor
+                            target="_blank"
+                            href="https://appwrite.io/docs/products/databases/tables#indexes">
+                            docs.
+                        </Link.Anchor>
+                    </Typography.Text>
+                {/snippet}
+            </EmptySheet>
         {/if}
     {:else}
         <EmptySheet
