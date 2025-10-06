@@ -93,10 +93,7 @@
 
                 {data.database?.name}
             </a>
-            <div
-                class="table-content"
-                style:padding-bottom={tableContentPadding}
-            >
+            <div class="table-content" style:padding-bottom={tableContentPadding}>
                 {#if tables?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
                         {#each sortedTables as table, index}
@@ -158,10 +155,7 @@
                 </Layout.Stack>
             </div>
 
-            <div
-                class="bottom-nav-container"
-                style:bottom={bottomNavOffset}
-            >
+            <div class="bottom-nav-container" style:bottom={bottomNavOffset}>
                 <div class="action-menu-divider">
                     <Divider />
                 </div>
@@ -305,7 +299,7 @@
         color: var(--fgcolor-neutral-secondary);
 
         &::-webkit-scrollbar {
-          display: none;
+            display: none;
         }
 
         &:not(.bottom-nav)::before {
