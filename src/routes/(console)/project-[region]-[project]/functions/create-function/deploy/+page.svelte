@@ -105,7 +105,7 @@
                     commands: installCommand || undefined,
                     scopes: selectedScopes?.length ? selectedScopes : undefined,
                     providerSilentMode: false,
-                    specification: specification || undefined
+                    specification: undefined
                 });
 
             // Add domain

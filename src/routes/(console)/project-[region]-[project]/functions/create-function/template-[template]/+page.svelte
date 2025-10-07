@@ -148,7 +148,7 @@
                         providerBranch: branch,
                         providerSilentMode: silentMode,
                         providerRootDirectory: rootDir,
-                        specification: specification || undefined
+                        specification: undefined
                     });
 
                 // Add domain

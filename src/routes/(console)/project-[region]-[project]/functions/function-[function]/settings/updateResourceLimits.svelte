@@ -44,7 +44,7 @@
                 providerBranch: func.providerBranch || undefined,
                 providerSilentMode: func.providerSilentMode || undefined,
                 providerRootDirectory: func.providerRootDirectory || undefined,
-                specification: specification || undefined
+                specification: undefined
             });
 
             await invalidate(Dependencies.FUNCTION);

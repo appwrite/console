@@ -86,7 +86,7 @@
                 providerBranch: selectedBranch || undefined,
                 providerSilentMode: silentMode || undefined,
                 providerRootDirectory: selectedDir || undefined,
-                specification: site?.specification || undefined
+                specification: undefined
             });
             await invalidate(Dependencies.SITE);
             addNotification({
@@ -133,7 +133,7 @@
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
                 providerBranch: 'main',
-                specification: site?.specification || undefined
+                specification: undefined
             });
 
             invalidate(Dependencies.SITE);
