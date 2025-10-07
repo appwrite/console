@@ -19,7 +19,7 @@
     let {
         providerType,
         show = $bindable(),
-        topicsById,
+        topicsById = $bindable(),
         title = 'Select topics'
     } = $props<{
         providerType: MessagingProviderType;
