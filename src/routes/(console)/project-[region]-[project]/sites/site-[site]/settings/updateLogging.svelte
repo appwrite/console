@@ -8,6 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { isCloud } from '$lib/system';
     import { Typography } from '@appwrite.io/pink-svelte';
 
     export let site: Models.Site;
@@ -33,7 +34,7 @@
                 providerBranch: site?.providerBranch || undefined,
                 providerSilentMode: site?.providerSilentMode || undefined,
                 providerRootDirectory: site?.providerRootDirectory || undefined,
-                specification: site?.specification || undefined
+                specification: isCloud ? site?.specification || undefined : undefined
             });
             await invalidate(Dependencies.SITE);
             addNotification({

@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime, type Models } from '@appwrite.io/console';
+    import { isCloud } from '$lib/system';
     import { page } from '$app/state';
 
     export let func: Models.Function;
@@ -36,7 +37,7 @@
                 providerBranch: func.providerBranch || undefined,
                 providerSilentMode: func.providerSilentMode || undefined,
                 providerRootDirectory: func.providerRootDirectory || undefined,
-                specification: func.specification || undefined
+                specification: isCloud ? func.specification || undefined : undefined
             });
 
             await invalidate(Dependencies.FUNCTION);

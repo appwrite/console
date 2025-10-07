@@ -7,6 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { isCloud } from '$lib/system';
     import { Card, Fieldset, Icon, InlineCode, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { iconPath } from '$lib/stores/app';
     import { Link } from '$lib/elements';
@@ -136,7 +137,7 @@
                 providerBranch: site.providerBranch || undefined,
                 providerSilentMode: site.providerSilentMode || undefined,
                 providerRootDirectory: site.providerRootDirectory || undefined,
-                specification: specToSend || undefined
+                specification: isCloud ? specToSend || undefined : undefined
             });
             await invalidate(Dependencies.SITE);
             addNotification({

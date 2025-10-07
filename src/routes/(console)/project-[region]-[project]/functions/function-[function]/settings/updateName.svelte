@@ -11,6 +11,7 @@
     import { func } from '../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
+    import { isCloud } from '$lib/system';
 
     const functionId = page.params.function;
     let functionName: string = null;
@@ -42,7 +43,7 @@
                 providerBranch: $func.providerBranch || undefined,
                 providerSilentMode: $func.providerSilentMode || undefined,
                 providerRootDirectory: $func.providerRootDirectory || undefined,
-                specification: $func.specification || undefined
+                specification: isCloud ? $func.specification || undefined : undefined
             });
             await invalidate(Dependencies.FUNCTION);
             addNotification({

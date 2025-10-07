@@ -15,6 +15,7 @@
     import { Button } from '$lib/elements/forms';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
+    import { isCloud } from '$lib/system';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
 
@@ -47,7 +48,7 @@
                 providerBranch: $func.providerBranch || undefined,
                 providerSilentMode: $func.providerSilentMode || undefined,
                 providerRootDirectory: $func.providerRootDirectory || undefined,
-                specification: $func.specification || undefined
+                specification: isCloud ? $func.specification || undefined : undefined
             });
             await invalidate(Dependencies.FUNCTION);
             addNotification({

@@ -7,6 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { isCloud } from '$lib/system';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
     import { installation, repository as repositoryStore, sortBranches } from '$lib/stores/vcs';
@@ -86,7 +87,7 @@
                 providerBranch: selectedBranch || undefined,
                 providerSilentMode: silentMode || undefined,
                 providerRootDirectory: selectedDir || undefined,
-                specification: site?.specification || undefined
+                specification: isCloud ? site?.specification || undefined : undefined
             });
             await invalidate(Dependencies.SITE);
             addNotification({
@@ -133,7 +134,7 @@
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
                 providerBranch: 'main',
-                specification: site?.specification || undefined
+                specification: isCloud ? site?.specification || undefined : undefined
             });
 
             invalidate(Dependencies.SITE);

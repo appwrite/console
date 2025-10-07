@@ -11,6 +11,7 @@
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { sdk } from '$lib/stores/sdk';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { isCloud } from '$lib/system';
 
     export let site: Models.Site;
     export let frameworks: Models.Framework[];
@@ -43,7 +44,7 @@
                 providerBranch: site?.providerBranch || undefined,
                 providerSilentMode: site?.providerSilentMode || undefined,
                 providerRootDirectory: site?.providerRootDirectory || undefined,
-                specification: site?.specification || undefined
+                specification: isCloud ? site?.specification || undefined : undefined
             });
             await invalidate(Dependencies.SITE);
             addNotification({
