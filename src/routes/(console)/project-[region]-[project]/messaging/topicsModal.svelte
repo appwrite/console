@@ -116,8 +116,8 @@
 
     $effect(() => {
         if (!show) return;
-        offset;
-        search;
+        offset ?? null;
+        search ?? null;
         request();
     });
 
