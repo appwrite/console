@@ -16,21 +16,29 @@
     import { getProviderText } from './helper';
     import { page } from '$app/state';
 
-    export let providerType: MessagingProviderType;
-    export let show: boolean;
-    export let topicsById: Record<string, Models.Topic>;
-    export let title = 'Select topics';
+    let {
+        providerType,
+        show = $bindable(),
+        topicsById,
+        title = 'Select topics'
+    } = $props<{
+        providerType: MessagingProviderType;
+        show: boolean;
+        topicsById: Record<string, Models.Topic>;
+        title?: string;
+    }>();
 
     const dispatch = createEventDispatcher();
 
-    let search = '';
-    let offset = 0;
-    let totalResults = 0;
-    let topicResultsById: Record<string, Models.Topic> = {}; // use a hash map so we can quickly look up a user by id
-    let selected: Record<string, Models.Topic> = {};
-    let hasSelection = false;
+    let search = $state('');
+    let offset = $state(0);
+    let totalResults = $state(0);
+    let topicResultsById = $state<Record<string, Models.Topic>>({}); // use a hash map so we can quickly look up a user by id
+    let selected = $state<Record<string, Models.Topic>>({});
+    let emptyTopicsExists = $state(false);
 
-    let emptyTopicsExists = false;
+    let previousSearch = $state('');
+    let wasOpen = $state(false);
 
     function getTopicTotal(topic: Models.Topic): number {
         switch (providerType) {
@@ -99,37 +107,42 @@
         }
     }
 
-    $: if (show) {
+    $effect(() => {
+        if (search !== previousSearch) {
+            previousSearch = search;
+            offset = 0;
+        }
+    });
+
+    $effect(() => {
+        if (!show) return;
+        offset;
+        search;
         request();
-    }
-    $: if (offset !== null) {
-        request();
-    }
-    $: if (search !== null) {
-        offset = 0;
-        request();
-    }
+    });
 
-    $: selectedSize = Object.keys(selected).length;
+    $effect(() => {
+        if (show && !wasOpen) {
+            selected = topicsById;
+        }
+        wasOpen = show;
+    });
 
-    $: hasSelection = selectedSize > 0;
+    let selectedSize = $derived(Object.keys(selected).length);
+    let hasSelection = $derived(selectedSize > 0);
 
-    $: if (show) {
-        selected = topicsById;
-    }
-
-    $: topicSelectionStates = Object.fromEntries(
-        Object.keys(topicResultsById).map((id) => [id, !!selected[id]])
+    let topicSelectionStates = $derived(
+        Object.fromEntries(Object.keys(topicResultsById).map((id) => [id, !!selected[id]]))
     );
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset}>
-    <slot slot="description" name="description">
+    <svelte:fragment slot="description">
         <Typography.Text>
             Select existing topics you want to send this message to its targets. The message will be
             sent only to {getProviderText(providerType)} targets.
         </Typography.Text>
-    </slot>
+    </svelte:fragment>
     <Layout.Stack>
         <InputSearch
             autofocus
