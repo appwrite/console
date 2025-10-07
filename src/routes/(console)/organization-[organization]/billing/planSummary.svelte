@@ -597,7 +597,7 @@
                                 disabled={$organization?.markedForDeletion}
                                 href={$upgradeURL}
                                 on:click={() =>
-                                    trackEvent(Click.OrganizationPlanUpdate, {
+                                    trackEvent(Click.OrganizationClickUpgrade, {
                                         from: 'button',
                                         source: 'billing_tab'
                                     })}>
