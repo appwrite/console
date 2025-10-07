@@ -90,11 +90,11 @@
 
         if (isRelationship(attribute)) {
             if (isRelationshipToMany(attribute as Models.AttributeRelationship)) {
-                const workIds = workAttribute.map((doc: string | Record<string, unknown>) =>
+                const workIds = workAttribute?.map((doc: string | Record<string, unknown>) =>
                     typeof doc === 'string' ? doc : doc.$id
                 );
 
-                const relatedIds = docAttribute.map((doc: string | Record<string, unknown>) =>
+                const relatedIds = docAttribute?.map((doc: string | Record<string, unknown>) =>
                     typeof doc === 'string' ? doc : doc.$id
                 );
                 return !symmetricDifference(workIds, relatedIds).length;

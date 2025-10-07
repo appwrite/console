@@ -92,7 +92,10 @@
             "@sentry/cli",
             "esbuild",
             "svelte-preprocess"
-        ]
+        ],
+        "overrides": {
+            "devalue": "5.3.2"
+        }
     },
     "packageManager": "pnpm@10.13.1"
 }
