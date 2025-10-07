@@ -58,7 +58,7 @@
                       },
                       {} as Record<string, unknown>
                   ),
-            permissions: [],
+            permissions: existingData?.$permissions ?? [],
             columns: availableColumns
         };
     }

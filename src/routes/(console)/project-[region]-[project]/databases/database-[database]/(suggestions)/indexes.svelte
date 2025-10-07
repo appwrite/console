@@ -398,9 +398,7 @@
             }
         }}>
         {#if modalError}
-            <Alert.Inline status="error">
-                {modalError}
-            </Alert.Inline>
+            <Alert.Inline status="error" title={modalError} />
         {/if}
 
         {#await loadIndexSuggestions()}

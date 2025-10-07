@@ -4,7 +4,7 @@
     import { Empty, EmptyFilter, EmptySearch, Id, PaginationWithLimit } from '$lib/components';
     import { hasPageQueries } from '$lib/components/filters';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { MessagingProviderType } from '@appwrite.io/console';
     import CreateMessageDropdown from './createMessageDropdown.svelte';
@@ -208,7 +208,7 @@
                                 {#if !message[column.id]}
                                     -
                                 {:else}
-                                    {toLocaleDateTime(message[column.id])}
+                                    <DualTimeView time={message[column.id]} />
                                 {/if}
                             {:else}
                                 {message[column.id]}

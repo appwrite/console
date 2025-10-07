@@ -465,7 +465,7 @@
     title="Row permissions"
     bind:show={$rowPermissionSheet.show}
     submit={{
-        text: 'Create',
+        text: 'Update',
         disabled: editRowPermissions?.disableSubmit(),
         onClick: async () => editRowPermissions?.updatePermissions()
     }}>

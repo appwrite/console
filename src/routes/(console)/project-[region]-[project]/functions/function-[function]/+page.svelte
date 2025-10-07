@@ -86,10 +86,11 @@
                     </svelte:fragment>
                 </Alert.Inline>
             {:else}
-                <Alert.Inline status="info" dismissible on:dismiss={() => (showAlert = false)}>
-                    Some configuration changes are not live yet. Your function is redeploying —
-                    changes will be applied once the build is complete.
-                </Alert.Inline>
+                <Alert.Inline
+                    status="info"
+                    dismissible
+                    on:dismiss={() => (showAlert = false)}
+                    title="Some configuration changes are not live yet. Your function is redeploying — changes will be applied once the build is complete." />
             {/if}
         {/if}
         <Layout.Stack gap="xxxl">
