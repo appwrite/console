@@ -96,8 +96,6 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
         nextPlan: billingPlanDowngrade,
         // expose pagination for components
         limit: getLimit(url, route, 5),
-        offset: pageToOffset(getPage(url) || 1, getLimit(url, route, 5)),
-        // unique key to force component refresh on page change
-        aggregationKey: `agg:${getPage(url) || 1}:${getLimit(url, route, 5)}`
+        offset: pageToOffset(getPage(url) || 1, getLimit(url, route, 5))
     };
 };

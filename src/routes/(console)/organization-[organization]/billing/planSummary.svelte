@@ -31,8 +31,7 @@
         availableCredit = undefined,
         currentAggregation = undefined,
         limit = undefined,
-        offset = undefined,
-        aggregationKey = undefined
+        offset = undefined
     }: {
         currentPlan: Plan;
         nextPlan?: Plan | null;
@@ -40,7 +39,6 @@
         currentAggregation?: AggregationTeam | undefined;
         limit?: number | undefined;
         offset?: number | undefined;
-        aggregationKey?: string | undefined;
     } = $props();
 
     let showCancel = $state(false);
@@ -168,6 +166,10 @@
             null) ||
             currentAggregation?.breakdown?.length ||
             0
+    );
+
+    const aggregationKey = $derived(
+        `agg:${Number(page.url.searchParams.get('page')) || 1}:${projectsLimit}`
     );
 
     function getBillingData(currentPlan, currentAggregation, isSmallViewport) {
