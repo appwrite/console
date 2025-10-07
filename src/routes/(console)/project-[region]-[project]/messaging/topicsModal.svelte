@@ -124,10 +124,12 @@
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset}>
-    <Typography.Text>
-        Select existing topics you want to send this message to its targets. The message will be
-        sent only to {getProviderText(providerType)} targets.
-    </Typography.Text>
+    <slot slot="description" name="description">
+        <Typography.Text>
+            Select existing topics you want to send this message to its targets. The message will be
+            sent only to {getProviderText(providerType)} targets.
+        </Typography.Text>
+    </slot>
     <Layout.Stack>
         <InputSearch
             autofocus

@@ -46,11 +46,7 @@
     {:else if $hasPageQueries}
         <EmptyFilter resource="providers" />
     {:else if data.search && data.search !== 'empty'}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no providers that match your search.</p>
-            </div>
+        <EmptySearch target="providers" search={data.search}>
             <Button
                 secondary
                 href={`${base}/project-${page.params.region}-${page.params.project}/messaging/providers`}>
