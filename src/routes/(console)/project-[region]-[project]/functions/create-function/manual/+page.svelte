@@ -71,8 +71,7 @@
                     execute: roles?.length ? roles : undefined,
                     enabled: true,
                     entrypoint,
-                    commands: buildCommand,
-                    specification: undefined
+                    commands: buildCommand
                 });
 
             // Add domain

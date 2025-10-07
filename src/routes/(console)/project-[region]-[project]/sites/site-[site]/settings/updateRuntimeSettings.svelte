@@ -43,7 +43,7 @@
                 providerBranch: site?.providerBranch || undefined,
                 providerSilentMode: site?.providerSilentMode || undefined,
                 providerRootDirectory: site?.providerRootDirectory || undefined,
-                specification: undefined
+                specification: site?.specification || undefined
             });
             await invalidate(Dependencies.SITE);
             addNotification({

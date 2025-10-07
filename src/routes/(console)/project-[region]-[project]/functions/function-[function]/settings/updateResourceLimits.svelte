@@ -43,8 +43,7 @@
                 providerRepositoryId: func.providerRepositoryId || undefined,
                 providerBranch: func.providerBranch || undefined,
                 providerSilentMode: func.providerSilentMode || undefined,
-                providerRootDirectory: func.providerRootDirectory || undefined,
-                specification: undefined
+                providerRootDirectory: func.providerRootDirectory || undefined
             });
 
             await invalidate(Dependencies.FUNCTION);

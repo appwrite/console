@@ -104,8 +104,7 @@
                     entrypoint: entrypoint || undefined,
                     commands: installCommand || undefined,
                     scopes: selectedScopes?.length ? selectedScopes : undefined,
-                    providerSilentMode: false,
-                    specification: undefined
+                    providerSilentMode: false
                 });
 
             // Add domain

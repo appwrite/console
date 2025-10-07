@@ -47,7 +47,7 @@
                 providerBranch: $func.providerBranch || undefined,
                 providerSilentMode: $func.providerSilentMode || undefined,
                 providerRootDirectory: $func.providerRootDirectory || undefined,
-                specification: undefined
+                specification: $func.specification || undefined
             });
             await invalidate(Dependencies.FUNCTION);
             addNotification({

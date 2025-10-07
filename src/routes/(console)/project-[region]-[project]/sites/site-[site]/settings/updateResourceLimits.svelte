@@ -38,8 +38,7 @@
                 providerRepositoryId: site?.providerRepositoryId || undefined,
                 providerBranch: site?.providerBranch || undefined,
                 providerSilentMode: site?.providerSilentMode || undefined,
-                providerRootDirectory: site?.providerRootDirectory || undefined,
-                specification: undefined
+                providerRootDirectory: site?.providerRootDirectory || undefined
             });
             await invalidate(Dependencies.SITE);
             originalSpecification = specification;

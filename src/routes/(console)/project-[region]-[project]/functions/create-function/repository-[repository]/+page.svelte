@@ -107,8 +107,7 @@
                     providerRepositoryId: $repository.id,
                     providerBranch: branch,
                     providerSilentMode: silentMode,
-                    providerRootDirectory: rootDir,
-                    specification: undefined
+                    providerRootDirectory: rootDir
                 });
 
             // Add domain
