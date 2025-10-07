@@ -76,7 +76,7 @@ export function trackEvent(name: string, data: object = null): void {
 }
 
 export function trackError(exception: Error, event: Submit): void {
-    if (exception instanceof AppwriteException && exception.type) {
+    if (exception instanceof AppwriteException && exception.type && event) {
         trackEvent(Submit.Error, {
             type: exception.type,
             form: event

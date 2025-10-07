@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { subNavigation } from '$lib/stores/database';
     import { ID } from '@appwrite.io/console';
@@ -11,7 +11,7 @@
         tableColumnSuggestions
     } from '$database/(suggestions)/index';
 
-    import { useTerminology } from '../helpers';
+    import { getTerminologies } from '../helpers';
 
     let {
         show = $bindable(false),
@@ -23,9 +23,11 @@
         onCreateEntity: (id: string, name: string) => Promise<void>;
     } = $props();
 
-    const entity = $derived(useTerminology(page).entity);
-    const lower = $derived(entity.lower.singular);
-    const title = $derived(entity.title.singular);
+    const { analytics, terminology } = getTerminologies();
+
+    const lower = terminology.entity.lower.singular;
+    const title = terminology.entity.title.singular;
+    const analyticsCreateSubmit = analytics.submit.entity('Create');
 
     // example - `table-[table]`, `collection-[collection]`
     const isOnEntitiesPage = $derived(page.route?.id.endsWith(`${lower}-[${lower}]`));
@@ -65,7 +67,7 @@
             updateAndCleanup();
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.TableCreate);
+            trackError(e, analyticsCreateSubmit);
         }
     }
 
@@ -77,7 +79,7 @@
             message: `${name} has been created`
         });
 
-        trackEvent(Submit.TableCreate, { customId: !!id });
+        trackEvent(analyticsCreateSubmit, { customId: !!id });
 
         // reset vars!
         name = id = null;
