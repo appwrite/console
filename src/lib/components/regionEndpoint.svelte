@@ -21,7 +21,7 @@
 </script>
 
 {#if region}
-    <Copy value={getProjectEndpoint()} copyText={`Copy API endpoint (${region.name})`}>
+    <Copy value={getProjectEndpoint()} copyText={`Copy endpoint (${region.name})`}>
         <Tag size="xs" variant="code">
             <Icon icon={IconDuplicate} size="s" slot="start" />
             <span class="endpoint-label"> API endpoint </span>
