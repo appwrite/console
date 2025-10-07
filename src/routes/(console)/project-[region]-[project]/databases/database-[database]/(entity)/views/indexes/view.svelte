@@ -25,7 +25,7 @@
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type ComponentProps, type Snippet } from 'svelte';
+    import { type ComponentProps, onMount, type Snippet } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
@@ -34,6 +34,9 @@
         SpreadsheetContainer,
         SideSheet
     } from '$database/(entity)';
+    import { preferences } from '$lib/stores/preferences';
+    import { debounce } from '$lib/helpers/debounce';
+    import { page } from '$app/state';
 
     let {
         entity,
@@ -60,14 +63,52 @@
     let showDelete = $state(false);
     let showOverview = $state(false);
 
-    let entities = $state([
-        { id: 'key' },
-        { id: 'type' },
-        { id: 'columns' },
+    let columnsWidth = $state(null);
+
+    const organizationId = $derived(page.data.organization?.$id ?? page.data.project?.teamId);
+
+    const spreadsheetColumns = $derived([
+        {
+            id: 'key',
+            width: getColumnWidth('key', $isSmallViewport ? 250 : 200),
+            minimumWidth: $isSmallViewport ? 250 : 200,
+            resizable: true
+        },
+        {
+            id: 'type',
+            width: getColumnWidth('type', 120),
+            minimumWidth: 120,
+            resizable: true
+        },
+        {
+            id: 'columns',
+            width: getColumnWidth('columns', 200),
+            minimumWidth: 200,
+            resizable: true
+        },
         // { id: 'orders' }, // design doesn't have orders atm
-        { id: 'lengths' },
-        { id: 'actions', width: 40, isAction: true }
+        {
+            id: 'lengths',
+            width: getColumnWidth('lengths', 180),
+            minimumWidth: 180,
+            resizable: true
+        },
+        {
+            id: 'actions',
+            width: 40,
+            isAction: true,
+            resizable: false
+        }
     ]);
+
+    const emptyCellsLimit = $derived($isSmallViewport ? 14 : 17);
+    const emptyCellsCount = $derived(
+        entity.indexes.length >= emptyCellsLimit ? 0 : emptyCellsLimit - entity.indexes.length
+    );
+
+    onMount(() => {
+        columnsWidth = preferences.getColumnWidths(entity.$id + '#indexes');
+    });
 
     function getEntityStatusBadge(status: string): ComponentProps<Badge>['type'] {
         switch (status) {
@@ -82,9 +123,44 @@
         }
     }
 
-    const emptyCellsLimit = $derived($isSmallViewport ? 14 : 17);
-    const emptyCellsCount = $derived(
-        entity.indexes.length >= emptyCellsLimit ? 0 : emptyCellsLimit - entity.indexes.length
+    function getColumnWidth(columnId: string, defaultWidth: number): number {
+        const savedWidth = columnsWidth?.[columnId];
+        if (!savedWidth) return defaultWidth;
+
+        return savedWidth.resized;
+    }
+
+    function saveColumnsWidth({ columnId, newWidth }: { columnId: string; newWidth: number }) {
+        const existing = columnsWidth?.[columnId];
+        const fixed = existing
+            ? typeof existing?.fixed === 'number'
+                ? existing.fixed
+                : existing?.fixed?.min
+            : newWidth;
+
+        columnsWidth = {
+            ...(columnsWidth ?? {}),
+            [columnId]: {
+                fixed,
+                resized: Math.ceil(newWidth)
+            }
+        };
+
+        saveColumnWidthsToPreferences({ columnId, newWidth, fixedWidth: fixed });
+    }
+
+    const saveColumnWidthsToPreferences = debounce(
+        (column: { columnId: string; newWidth: number; fixedWidth: number }) => {
+            if (!organizationId) return;
+
+            preferences.saveColumnWidths(organizationId, entity.$id + '#indexes', {
+                [column.columnId]: {
+                    fixed: column.fixedWidth,
+                    resized: Math.ceil(column.newWidth)
+                }
+            });
+        },
+        1000
     );
 </script>
 
@@ -112,19 +188,20 @@
             <SpreadsheetContainer>
                 <Spreadsheet.Root
                     let:root
-                    columns={entities}
                     height="100%"
                     allowSelection
+                    columns={spreadsheetColumns}
                     emptyCells={emptyCellsCount}
                     bind:selectedRows={selectedIndexes}
-                    bottomActionClick={() => (showCreateIndex = true)}>
+                    bottomActionClick={() => (showCreateIndex = true)}
+                    on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}>
                     <svelte:fragment slot="header" let:root>
                         <Spreadsheet.Header.Cell column="key" {root}>Key</Spreadsheet.Header.Cell>
                         <Spreadsheet.Header.Cell column="type" {root}>Type</Spreadsheet.Header.Cell>
                         <Spreadsheet.Header.Cell column="columns" {root}
                             >Columns</Spreadsheet.Header.Cell>
-                        <!--                        <Spreadsheet.Header.Cell column="orders" {root}-->
-                        <!--                            >Orders</Spreadsheet.Header.Cell>-->
+                        <!--<Spreadsheet.Header.Cell column="orders" {root}
+                            >Orders</Spreadsheet.Header.Cell>-->
                         <Spreadsheet.Header.Cell column="lengths" {root}
                             >Lengths</Spreadsheet.Header.Cell>
                         <Spreadsheet.Header.Cell column="actions" {root} />
@@ -158,9 +235,9 @@
                             <Spreadsheet.Cell column="columns" {root} isEditable={false}>
                                 {index.columns.join(', ')}
                             </Spreadsheet.Cell>
-                            <!--                            <Spreadsheet.Cell column="orders" {root} isEditable={false}>-->
-                            <!--                                {index.orders}-->
-                            <!--                            </Spreadsheet.Cell>-->
+                            <!--<Spreadsheet.Cell column="orders" {root} isEditable={false}>
+                                {index.orders}
+                            </Spreadsheet.Cell>-->
                             <Spreadsheet.Cell column="lengths" {root} isEditable={false}>
                                 {index.lengths}
                             </Spreadsheet.Cell>
