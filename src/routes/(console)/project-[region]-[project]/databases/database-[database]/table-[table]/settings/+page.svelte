@@ -10,13 +10,10 @@
         UpdateSecurity,
         UpdateStatus
     } from '$database/(entity)';
-    import type { PageData } from './$types';
+    import type { PageProps } from './$types';
 
-    const {
-        data
-    }: {
-        data: PageData; /* served from parent layout */
-    } = $props();
+    /* served from parent layout */
+    const { data }: PageProps = $props();
 
     const table = $derived(data.table);
 
