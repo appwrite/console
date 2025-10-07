@@ -12,8 +12,9 @@
     import { Card, Empty, Icon } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import type { PageData } from './$types';
 
-    let { data }: { data: any } = $props();
+    let { data }: { data: PageData } = $props();
 </script>
 
 <Container>
