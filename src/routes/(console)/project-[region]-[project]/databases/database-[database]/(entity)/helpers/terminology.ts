@@ -1,8 +1,8 @@
 import type { Page } from '@sveltejs/kit';
 
-import { type Models } from '@appwrite.io/console';
 import { capitalize, plural } from '$lib/helpers/string';
 import type { Columns } from '$database/table-[table]/store';
+import { AppwriteException, type Models } from '@appwrite.io/console';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
 export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectordb';
@@ -61,6 +61,11 @@ const terminologyData = Object.fromEntries(
  */
 export function useTerminology(page: Page): TerminologyResult {
     const type = page.data?.database?.type as DatabaseType;
+    if (!type) {
+        // strict check because this should always be available!
+        throw new AppwriteException('Database type is required', 500);
+    }
+
     const dbTerminologies = terminologyData[type] || {};
     return {
         source: dbTerminologies,
