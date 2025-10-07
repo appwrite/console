@@ -52,7 +52,7 @@ const analytics = Analytics({
 });
 
 export function trackEvent(name: string, data: object = null): void {
-    if (!isTrackingAllowed()) {
+    if (!name || !isTrackingAllowed()) {
         return;
     }
 
