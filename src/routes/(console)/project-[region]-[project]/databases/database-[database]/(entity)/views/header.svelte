@@ -36,12 +36,13 @@
 
     const basePath = $derived.by(() => {
         const entityType = terminology.entity.lower.singular;
+        const entityId = page.params[entityType];
         return withPath(
             resolveRoute(
                 `/(console)/project-[region]-[project]/databases/database-[database]`,
                 page.params
             ),
-            `/${entityType}-[${entityType}]`
+            `${entityType}-${entityId}`
         );
     });
 </script>

@@ -1,17 +1,30 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Header } from '$database/(entity)';
     import { expandTabs, table } from './store';
     import { canWriteTables } from '$lib/stores/roles';
     import { preferences } from '$lib/stores/preferences';
-
-    const databaseId = $derived(page.params.database);
-    const tableId = $derived(page.params.table);
+    import { resolveRoute } from '$lib/stores/navigation';
 
     const path = $derived(
-        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${tableId}`
+        resolveRoute(
+            '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]',
+            page.params
+        )
     );
+
+    const link = $derived(
+        resolveRoute(
+            '/(console)/project-[region]-[project]/databases/database-[database]',
+            page.params
+        )
+    );
+
+    const nonSheetPages = $derived.by(() => {
+        const endings = ['table-[table]', 'table-[table]/columns', 'table-[table]/indexes'];
+        const isSpreadsheetPage = endings.some((end) => page.route.id?.endsWith(end));
+        return !isSpreadsheetPage;
+    });
 
     const tabs = $derived(
         [
@@ -51,16 +64,6 @@
             }
         ].filter((tab) => !tab.disabled)
     );
-
-    const link = $derived(
-        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`
-    );
-
-    const nonSheetPages = $derived.by(() => {
-        const endings = ['table-[table]', 'table-[table]/columns', 'table-[table]/indexes'];
-        const isSpreadsheetPage = endings.some((end) => page.route.id?.endsWith(end));
-        return !isSpreadsheetPage;
-    });
 
     $effect(() => {
         if (nonSheetPages) expandTabs.set(true);

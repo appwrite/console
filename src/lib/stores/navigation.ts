@@ -10,7 +10,14 @@ type ResolveArgs<T extends RouteId | Pathname> = T extends RouteId
     : [route: T];
 
 export function withPath(base: string, ...parts: string[]) {
-    return [base.replace(/\/+$/, ''), ...parts].join('/');
+    // remove slashes at the end if any
+    const normalizedBase = base.replace(/\/+$/, '');
+
+    // remove slashes at the start of each part if any
+    const normalizedParts = parts.map((part) => part.replace(/^\/+/, ''));
+
+    // join em with slashes
+    return [normalizedBase, ...normalizedParts].join('/');
 }
 
 export function resolveRoute<T extends RouteId>(route: T, params?: Record<string, string>) {
