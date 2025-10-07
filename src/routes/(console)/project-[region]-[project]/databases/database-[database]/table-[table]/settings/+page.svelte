@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { table } from '../store';
     import { sdk } from '$lib/stores/sdk';
     import { Container } from '$lib/layout';
     import DisplayName from './displayName.svelte';
@@ -11,10 +10,19 @@
         UpdateSecurity,
         UpdateStatus
     } from '$database/(entity)';
+    import type { PageData } from './$types';
+
+    const {
+        data
+    }: {
+        data: PageData; /* served from parent layout */
+    } = $props();
+
+    const table = $derived(data.table);
 
     const params = $derived.by(() => {
         return {
-            name: $table.name,
+            name: table.name,
             tableId: page.params.table,
             databaseId: page.params.database
         };
@@ -42,22 +50,20 @@
 
 <div class="wide-screen-wrapper databases-spreadsheet">
     <Container expanded slotSpacing databasesScreen>
-        {#if $table}
-            <UpdateStatus entity={$table} onChangeStatus={(enabled) => updateTable({ enabled })} />
+        <UpdateStatus entity={table} onChangeStatus={(enabled) => updateTable({ enabled })} />
 
-            <UpdateName entity={$table} onChangeName={(name) => updateTable({ name })} />
+        <UpdateName entity={table} onChangeName={(name) => updateTable({ name })} />
 
-            <DisplayName />
+        <DisplayName />
 
-            <UpdatePermissions
-                entity={$table}
-                onChangePermissions={(permissions) => updateTable({ permissions })} />
+        <UpdatePermissions
+            entity={table}
+            onChangePermissions={(permissions) => updateTable({ permissions })} />
 
-            <UpdateSecurity
-                entity={$table}
-                onChangeSecurity={(rowSecurity) => updateTable({ rowSecurity })} />
+        <UpdateSecurity
+            entity={table}
+            onChangeSecurity={(rowSecurity) => updateTable({ rowSecurity })} />
 
-            <DangerZone entity={$table} onDelete={deleteTable} />
-        {/if}
+        <DangerZone entity={table} onDelete={deleteTable} />
     </Container>
 </div>
