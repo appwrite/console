@@ -176,10 +176,19 @@
                                 Provide the request body to include the main data you want to send
                                 to the server.
                             </Typography.Text>
-                            <InputTextarea
-                                placeholder="Enter request body here..."
-                                id="body"
-                                bind:value={body} />
+                            <div
+                                role="textbox"
+                                tabindex="-1"
+                                on:keyup={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.stopPropagation();
+                                    }
+                                }}>
+                                <InputTextarea
+                                    placeholder="Enter request body here..."
+                                    id="body"
+                                    bind:value={body} />
+                            </div>
                         </Layout.Stack>
                     </Accordion>
                 </Fieldset>
@@ -289,10 +298,19 @@
                                         Provide the request body to include the main data you want
                                         to send to the server.
                                     </Typography.Text>
-                                    <InputTextarea
-                                        placeholder="Enter request body here..."
-                                        id="body"
-                                        bind:value={body} />
+                                    <div
+                                        role="textbox"
+                                        tabindex="-1"
+                                        on:keyup={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.stopPropagation();
+                                            }
+                                        }}>
+                                        <InputTextarea
+                                            placeholder="Enter request body heresssss..."
+                                            id="body"
+                                            bind:value={body} />
+                                    </div>
                                 </Layout.Stack>
                             </Accordion>
                         </Layout.Stack>
