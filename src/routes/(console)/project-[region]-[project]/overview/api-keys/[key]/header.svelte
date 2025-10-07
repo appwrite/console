@@ -3,9 +3,10 @@
     import { page } from '$app/state';
     import { Cover, CoverTitle } from '$lib/layout';
     import { key } from './store';
-    import { ApiEndpoint, Copy } from '$lib/components';
+    import { RegionEndpoint, Copy } from '$lib/components';
     import { Layout, Tag, Icon } from '@appwrite.io/pink-svelte';
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
+    import { projectRegion } from '../../../store';
 
     const projectId = page.params.project;
 </script>
@@ -29,7 +30,9 @@
                     </Tag>
                 </Copy>
             {/if}
-            <ApiEndpoint />
+            {#if $projectRegion}
+                <RegionEndpoint region={$projectRegion} />
+            {/if}
         </Layout.Stack>
     </svelte:fragment>
 </Cover>
