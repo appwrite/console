@@ -147,7 +147,7 @@
                             Need a hand? Check out our <Link
                                 variant="muted"
                                 href="https://appwrite.io/docs/products/messaging/topics"
-                                >documentation</Link
+                                external>documentation</Link
                             >.
                         </svelte:fragment>
                     </PinkEmpty>

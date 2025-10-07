@@ -13,7 +13,7 @@
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
-    export let data;
+    let { data }: { data: any } = $props();
 </script>
 
 <Container>
@@ -62,7 +62,7 @@
             <Empty
                 title="Create your first provider"
                 description="Need a hand? Learn more in our documentation.">
-                <slot name="actions" slot="actions">
+                <svelte:fragment slot="actions">
                     <Button
                         external
                         href="https://appwrite.io/docs/products/messaging/providers"
@@ -76,7 +76,7 @@
                             </Button>
                         </CreateProviderDropdown>
                     {/if}
-                </slot>
+                </svelte:fragment>
             </Empty>
         </Card.Base>
     {/if}

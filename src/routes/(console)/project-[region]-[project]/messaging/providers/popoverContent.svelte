@@ -12,7 +12,7 @@
     {/each}
 
     {#if image}
-        <Layout.Stack class="image-wrapper">
+        <Layout.Stack>
             <ImagePreview darkSrc={image.src.dark} lightSrc={image.src.light} alt={image.alt} />
         </Layout.Stack>
     {/if}
