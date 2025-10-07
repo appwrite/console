@@ -4,10 +4,8 @@ import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters';
-import { buildWildcardAttributesQuery } from './document-[document]/attributes/store';
 
-export const load: PageLoad = async ({ params, depends, url, route, parent }) => {
-    const { collection } = await parent();
+export const load: PageLoad = async ({ params, depends, url, route }) => {
     depends(Dependencies.DOCUMENTS);
 
     const page = getPage(url);
@@ -32,8 +30,7 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
                 Query.limit(limit),
                 Query.offset(offset),
                 Query.orderDesc(''),
-                ...parsedQueries.values(),
-                ...buildWildcardAttributesQuery(collection)
+                ...parsedQueries.values()
             ])
     };
 };
