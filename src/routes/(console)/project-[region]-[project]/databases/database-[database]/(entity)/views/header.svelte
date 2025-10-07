@@ -5,7 +5,10 @@
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Layout } from '@appwrite.io/pink-svelte';
-    import { type Entity, getTerminologies } from '$database/(entity)';
+    import {
+        type Entity,
+        useTerminology
+    } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
 
     interface EntityTab {
@@ -27,7 +30,12 @@
         expanded?: boolean;
     } = $props();
 
-    const { terminology } = getTerminologies();
+    /**
+     * `useTerminology` is needed because -
+     * 1. headers are initialized **before** content,
+     * 2. `getTerminologies` isn't available at that point.
+     */
+    const { terminology } = useTerminology(page);
 
     const basePath = $derived.by(() => {
         const entityType = terminology.entity.lower.singular;
