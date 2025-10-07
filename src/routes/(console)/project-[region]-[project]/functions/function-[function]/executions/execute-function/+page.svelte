@@ -307,7 +307,7 @@
                                             }
                                         }}>
                                         <InputTextarea
-                                            placeholder="Enter request body heresssss..."
+                                            placeholder="Enter request body here..."
                                             id="body"
                                             bind:value={body} />
                                     </div>
