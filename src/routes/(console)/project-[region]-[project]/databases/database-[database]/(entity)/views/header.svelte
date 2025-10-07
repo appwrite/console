@@ -5,8 +5,8 @@
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Layout } from '@appwrite.io/pink-svelte';
-    import { base } from '$app/paths';
-    import { type Entity, useTerminology } from '$database/(entity)';
+    import { type Entity, getTerminologies } from '$database/(entity)';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
 
     interface EntityTab {
         href: string;
@@ -27,11 +27,18 @@
         expanded?: boolean;
     } = $props();
 
-    const terminology = $derived(useTerminology(page));
-    const entityType = $derived(terminology.entity.lower.singular);
-    const basePath = $derived(
-        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/${entityType}-${page.params[entityType]}`
-    );
+    const { terminology } = getTerminologies();
+
+    const basePath = $derived.by(() => {
+        const entityType = terminology.entity.lower.singular;
+        return withPath(
+            resolveRoute(
+                `/(console)/project-[region]-[project]/databases/database-[database]`,
+                page.params
+            ),
+            `/${entityType}-[${entityType}]`
+        );
+    });
 </script>
 
 <Cover animate {expanded} collapsed={!expanded} blocksize={expanded ? '152px' : '90px'}>

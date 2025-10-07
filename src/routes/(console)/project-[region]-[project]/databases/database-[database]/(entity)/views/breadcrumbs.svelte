@@ -1,27 +1,30 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Breadcrumbs } from '$lib/layout';
     import { database } from '$database/store';
-    import { useTerminology } from '$database/(entity)';
+    import { getTerminologies } from '$database/(entity)';
+    import { resolveRoute } from '$lib/stores/navigation';
 
-    const terminology = $derived(useTerminology(page));
-    const entity = $derived(terminology.entity);
-    const entityType = $derived(terminology.entity.lower.singular);
+    const { terminology } = getTerminologies();
+
+    const entity = terminology.entity;
+    const entityType = terminology.entity.lower.singular;
 
     const breadcrumbs = $derived.by(() => {
-        const entityId = page.params[entityType];
-        const { region, project, database: databaseId } = page.params;
-
-        const projectPath = `${base}/project-${region}-${project}`;
-        const databasePath = `${projectPath}/databases/database-${databaseId}`;
+        const params = page.params;
+        const entityId = params[entityType];
+        const databases = resolveRoute('/(console)/project-[region]-[project]/databases', params);
+        const databasePath = resolveRoute(
+            `/(console)/project-[region]-[project]/databases/database-[database]`,
+            params
+        );
 
         return [
             {
                 title: '...'
             },
             {
-                href: `${projectPath}/databases`,
+                href: databases,
                 title: 'Databases'
             },
             {

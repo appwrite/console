@@ -1,11 +1,11 @@
 import type { Page } from '@sveltejs/kit';
-import { page as pageState } from '$app/state';
 
 import { useTerminology } from './terminology';
 import { Submit, Click } from '$lib/actions/analytics';
 import type { AnalyticsResult, TerminologyResult, TerminologyShape } from './types';
 
-export function useAnalytics(pageOrTerms: Page | TerminologyResult = pageState): AnalyticsResult {
+export function useAnalytics(pageOrTerms: Page | TerminologyResult): AnalyticsResult {
+    // source is in `TerminologyResult`.
     const terminology = 'source' in pageOrTerms ? pageOrTerms : useTerminology(pageOrTerms);
 
     const createSubmitHandler = <TAction extends string>(termType: keyof TerminologyShape) => {

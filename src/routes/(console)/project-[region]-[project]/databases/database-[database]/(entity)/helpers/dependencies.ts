@@ -1,13 +1,10 @@
 import type { Page } from '@sveltejs/kit';
-import { page as pageState } from '$app/state';
 
 import { useTerminology } from './terminology';
 import { Dependencies } from '$lib/constants';
 import type { DependenciesResult, Term, TerminologyResult } from './types';
 
-export function useDependencies(
-    pageOrTerms: Page | TerminologyResult = pageState
-): DependenciesResult {
+export function useDependencies(pageOrTerms: Page | TerminologyResult): DependenciesResult {
     // source is in `TerminologyResult`.
     const terminology = 'source' in pageOrTerms ? pageOrTerms : useTerminology(pageOrTerms);
 

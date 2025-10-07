@@ -1,5 +1,4 @@
 import type { Page } from '@sveltejs/kit';
-import { page as pageStage } from '$app/state';
 
 import { type Models } from '@appwrite.io/console';
 import { capitalize, plural } from '$lib/helpers/string';
@@ -56,7 +55,11 @@ const terminologyData = Object.fromEntries(
     ])
 );
 
-export function useTerminology(page: Page = pageStage): TerminologyResult {
+/**
+ * @internal
+ * Use `getTerminologies()` instead when in `database-[database]` routes where context is available.
+ */
+export function useTerminology(page: Page): TerminologyResult {
     const type = page.data?.database?.type as DatabaseType;
     const dbTerminologies = terminologyData[type] || {};
     return {
