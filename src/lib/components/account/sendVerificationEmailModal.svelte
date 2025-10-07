@@ -1,79 +1,194 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
+    import { invalidate, goto } from '$app/navigation';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { get } from 'svelte/store';
     import { page } from '$app/state';
+    import Link from '$lib/elements/link.svelte';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
+    import { resolve } from '$app/paths';
+    import { browser } from '$app/environment';
+    import { slide } from 'svelte/transition';
 
-    let { show = $bindable(false) } = $props();
+    let {
+        show = $bindable(false),
+        email
+    }: {
+        show?: boolean;
+        email?: string;
+    } = $props();
+
+    let error = $state(null);
     let creating = $state(false);
     let emailSent = $state(false);
+    let resendTimer = $state(0);
+    let timerInterval: ReturnType<typeof setInterval> | null = null;
 
-    let cleanUrl = $derived(page.url.origin + page.url.pathname);
+    async function logout() {
+        error = null;
+        try {
+            await sdk.forConsole.account.deleteSession({ sessionId: 'current' });
+            await invalidate(Dependencies.ACCOUNT);
+            await goto(resolve('/login'));
+        } catch (err) {
+            error = err.message;
+        }
+    }
+
+    const cleanUrl = $derived(page.url.origin + page.url.pathname);
+
+    // manage resend timer in localStorage
+    const EMAIL_SENT_KEY = 'email_verification_sent';
+    const TIMER_END_KEY = 'email_verification_timer_end';
+
+    function startResendTimer() {
+        resendTimer = 60;
+        emailSent = true;
+        const timerEndTime = Date.now() + 60 * 1000;
+
+        if (browser) {
+            localStorage.setItem(EMAIL_SENT_KEY, 'true');
+            localStorage.setItem(TIMER_END_KEY, timerEndTime.toString());
+        }
+
+        startTimerCountdown(timerEndTime);
+    }
+
+    function restoreTimerState() {
+        if (!browser) return;
+        const savedTimerEnd = localStorage.getItem(TIMER_END_KEY);
+        const savedEmailSent = localStorage.getItem(EMAIL_SENT_KEY);
+
+        if (savedTimerEnd && savedEmailSent) {
+            const timerEndTime = parseInt(savedTimerEnd);
+            const now = Date.now();
+            const remainingTime = Math.max(0, Math.ceil((timerEndTime - now) / 1000));
+
+            if (remainingTime > 0) {
+                resendTimer = remainingTime;
+                emailSent = true;
+                startTimerCountdown(timerEndTime);
+            } else {
+                // timer has expired, clean up
+                localStorage.removeItem(TIMER_END_KEY);
+                localStorage.removeItem(EMAIL_SENT_KEY);
+
+                resendTimer = 0;
+                emailSent = false;
+            }
+        }
+    }
+
+    function startTimerCountdown(timerEndTime: number) {
+        timerInterval = setInterval(() => {
+            const now = Date.now();
+            const remainingTime = Math.max(0, Math.ceil((timerEndTime - now) / 1000));
+            resendTimer = remainingTime;
+            if (remainingTime <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                if (browser) {
+                    localStorage.removeItem(TIMER_END_KEY);
+                    localStorage.removeItem(EMAIL_SENT_KEY);
+                }
+            }
+        }, 1000);
+    }
 
     async function onSubmit() {
-        if (creating) return;
+        if (creating || resendTimer > 0) return;
+        error = null;
         creating = true;
         try {
             await sdk.forConsole.account.createVerification({ url: cleanUrl });
-            addNotification({ message: 'Verification email has been sent', type: 'success' });
             emailSent = true;
-            show = false;
-        } catch (error) {
-            addNotification({ message: error.message, type: 'error' });
+            startResendTimer();
+        } catch (err) {
+            error = err.message;
         } finally {
             creating = false;
         }
     }
 
-    async function updateEmailVerification() {
-        const searchParams = page.url.searchParams;
-        const userId = searchParams.get('userId');
-        const secret = searchParams.get('secret');
+    onMount(restoreTimerState);
 
-        if (userId && secret) {
-            try {
-                await sdk.forConsole.account.updateVerification({ userId, secret });
-                addNotification({
-                    message: 'Email verified successfully',
-                    type: 'success'
-                });
-                await Promise.all([
-                    invalidate(Dependencies.ACCOUNT),
-                    invalidate(Dependencies.FACTORS)
-                ]);
-            } catch (error) {
-                addNotification({
-                    message: error.message,
-                    type: 'error'
-                });
-            }
+    onDestroy(() => {
+        if (timerInterval) {
+            clearInterval(timerInterval);
         }
-    }
 
-    onMount(() => {
-        updateEmailVerification();
+        if (browser) {
+            localStorage.removeItem(TIMER_END_KEY);
+            localStorage.removeItem(EMAIL_SENT_KEY);
+        }
     });
 </script>
 
-<Modal bind:show title="Send verification email" {onSubmit}>
-    <Card.Base variant="secondary" padding="s">
-        <Layout.Stack gap="m">
-            <Typography.Text gap="m">
-                To continue using Appwrite Cloud, please verify your email address. An email will be
-                sent to <Typography.Text variant="m-600" style="display: inline;"
-                    >{get(user)?.email}</Typography.Text>
-            </Typography.Text>
-        </Layout.Stack>
-    </Card.Base>
+<div class="email-verification-scrim">
+    <Modal
+        bind:show
+        bind:error
+        title="Verify your email address"
+        {onSubmit}
+        dismissible={false}
+        autoClose={false}>
+        <Card.Base variant="secondary" padding="s">
+            <Layout.Stack gap="xxs">
+                <Typography.Text gap="m">
+                    To continue using Appwrite Cloud, please verify your email address. An email
+                    will be sent to <Typography.Text
+                        variant="m-600"
+                        color="neutral-secondary"
+                        style="display: inline;">{email || get(user)?.email}</Typography.Text>
+                </Typography.Text>
 
-    <svelte:fragment slot="footer">
-        <Button submit disabled={creating}>{emailSent ? 'Resend email' : 'Send email'}</Button>
-    </svelte:fragment>
-</Modal>
+                <Link variant="default" on:click={() => logout()}>Switch account</Link>
+
+                {#if emailSent && resendTimer > 0}
+                    <div transition:slide={{ duration: 150 }}>
+                        <Typography.Text
+                            color="neutral-secondary"
+                            style="margin-block-start: var(--gap-L, 16px);">
+                            Didn't get the email? Try again in {resendTimer}s
+                        </Typography.Text>
+                    </div>
+                {/if}
+            </Layout.Stack>
+        </Card.Base>
+
+        <svelte:fragment slot="footer">
+            <Button
+                submit
+                submissionLoader
+                forceShowLoader={creating}
+                disabled={creating || resendTimer > 0}>
+                {emailSent ? 'Resend email' : 'Send email'}
+            </Button>
+        </svelte:fragment>
+    </Modal>
+</div>
+
+<style>
+    .email-verification-scrim {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: hsl(240 5% 8% / 0.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* avoids the background scroll and bars */
+    :global(html:has(.email-verification-scrim)) {
+        height: 100%;
+        overflow: hidden !important;
+    }
+</style>
