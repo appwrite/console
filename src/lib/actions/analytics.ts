@@ -173,6 +173,7 @@ export enum Click {
     PlatformCreateClick = 'click_platform_create',
     OrganizationClickCreate = 'click_create_organization',
     OrganizationClickUpgrade = 'click_organization_upgrade',
+    OrganizationPlanUpdate = 'click_organization_plan_update',
     OnboardingSetupDatabaseClick = 'click_onboarding_setup_database',
     OnboardingApiReferencesClick = 'click_onboarding_api_references',
     OnboardingTutorialsClick = 'click_onboarding_tutorials',
