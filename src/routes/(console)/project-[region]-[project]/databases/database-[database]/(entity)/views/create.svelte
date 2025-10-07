@@ -56,6 +56,7 @@
 
     async function createEntity() {
         error = null;
+        creatingEntity = true;
         try {
             // early init setup!
             enableThinkingModeForSuggestions(id, name);
@@ -68,6 +69,8 @@
         } catch (e) {
             error = e.message;
             trackError(e, analyticsCreateSubmit);
+        } finally {
+            creatingEntity = false;
         }
     }
 
@@ -82,8 +85,8 @@
         trackEvent(analyticsCreateSubmit, { customId: !!id });
 
         // reset vars!
+        show = false;
         name = id = null;
-        show = creatingEntity = false;
     }
 
     function toIdFormat(str: string): string {
