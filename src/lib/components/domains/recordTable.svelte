@@ -1,14 +1,8 @@
 <script lang="ts">
     import { Link } from '$lib/elements';
-    import {
-        Badge,
-        Layout,
-        Typography,
-        Table,
-        InteractiveText,
-        Alert
-    } from '@appwrite.io/pink-svelte';
+    import { Badge, Layout, Typography, Table, InteractiveText } from '@appwrite.io/pink-svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import CnameAlert from './cnameAlert.svelte';
 
     export let domain: string;
     export let verified = undefined;
@@ -65,14 +59,7 @@
     </Table.Root>
     <Layout.Stack gap="s" direction="row" alignItems="center">
         {#if variant === 'cname'}
-            <Alert.Inline>
-                If your domain uses CAA records, ensure certainly.com is authorized — otherwise, SSL
-                setup may fail. A list of all domain providers and their DNS setting is available <Link
-                    variant="muted"
-                    external
-                    href="https://appwrite.io/docs/advanced/platform/custom-domains">here</Link
-                >.
-            </Alert.Inline>
+            <CnameAlert />
         {:else}
             <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
                 A list of all domain providers and their DNS setting is available <Link

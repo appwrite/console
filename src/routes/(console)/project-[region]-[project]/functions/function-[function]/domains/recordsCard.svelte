@@ -1,17 +1,15 @@
 <script lang="ts">
-    import { Link } from '$lib/elements';
-    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import {
         Badge,
         Layout,
         Typography,
         Table,
         Fieldset,
-        Icon,
         InteractiveText
     } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import CnameAlert from '$lib/components/domains/cnameAlert.svelte';
 
     export let proxyRule: Models.ProxyRule;
 </script>
@@ -48,13 +46,7 @@
                 </Table.Row.Base>
             </Table.Root>
             <Layout.Stack gap="s" direction="row" alignItems="center">
-                <Icon icon={IconInfo} size="s" color="--fgcolor-neutral-secondary" />
-                <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
-                    A list of all domain providers and their DNS setting is available <Link
-                        variant="muted"
-                        href="#">here</Link
-                    >.
-                </Typography.Text>
+                <CnameAlert />
             </Layout.Stack>
         </Layout.Stack>
         <slot />
