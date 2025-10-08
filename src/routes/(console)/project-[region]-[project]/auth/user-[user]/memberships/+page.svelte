@@ -7,7 +7,7 @@
     import DeleteMembership from '../deleteMembership.svelte';
     import type { Models } from '@appwrite.io/console';
     import { trackEvent, Submit, trackError } from '$lib/actions/analytics';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import {
         Table,
         Layout,
@@ -108,7 +108,7 @@
                         {membership.roles}
                     </Table.Cell>
                     <Table.Cell column="joined" {root}>
-                        {toLocaleDateTime(membership.joined)}
+                        <DualTimeView time={membership.joined} />
                     </Table.Cell>
                     <Table.Cell column="actions" {root}>
                         <button

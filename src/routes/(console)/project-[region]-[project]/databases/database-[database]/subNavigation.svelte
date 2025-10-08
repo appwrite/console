@@ -1,9 +1,11 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { showCreateTable, databaseSubNavigationItems } from './store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
+    import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
+    import { showCreateTable, databaseSubNavigationItems } from './store';
+
     import {
         Icon,
         Sidebar,
@@ -27,12 +29,12 @@
     import { onMount } from 'svelte';
     import { subNavigation } from '$lib/stores/database';
 
-    let data = $derived(page.data) as PageData;
+    const data = $derived(page.data) as PageData;
 
-    let region = $derived(page.params.region);
-    let project = $derived(page.params.project);
-    let tableId = $derived(page.params.table);
-    let databaseId = $derived(page.params.database);
+    const region = $derived(page.params.region);
+    const project = $derived(page.params.project);
+    const tableId = $derived(page.params.table);
+    const databaseId = $derived(page.params.database);
 
     let openBottomSheet = $state(false);
 
@@ -52,6 +54,12 @@
     const isTablesScreen = $derived(page.route.id.endsWith('table-[table]'));
 
     const isMainDatabaseScreen = $derived(page.route.id.endsWith('database-[database]'));
+
+    // If banner open, adjust bottom position to account for banner container.
+    // 70.5px is the size of the container of the banner holder and not just the banner!
+    // Needed because things vary a bit much on how different browsers treat bottom layouts.
+    const bottomNavOffset = $derived($bannerSpacing ? '70.5px' : '0px');
+    const tableContentPadding = $derived($bannerSpacing ? '210px' : '140px');
 
     async function loadTables() {
         tables = await sdk.forProject(region, project).tablesDB.listTables({
@@ -85,7 +93,7 @@
 
                 {data.database?.name}
             </a>
-            <div class="table-content">
+            <div class="table-content" style:padding-bottom={tableContentPadding}>
                 {#if tables?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
                         {#each sortedTables as table, index}
@@ -147,7 +155,7 @@
                 </Layout.Stack>
             </div>
 
-            <Layout.Stack direction="column" gap="xxs" style="bottom: 1rem; position: sticky;">
+            <div class="bottom-nav-container" style:bottom={bottomNavOffset}>
                 <div class="action-menu-divider">
                     <Divider />
                 </div>
@@ -159,7 +167,7 @@
                         {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/${action.href}`}
 
                         <Layout.Stack gap="s" direction="row" alignItems="center">
-                            <li>
+                            <li class="bottom-nav-item">
                                 <a
                                     {href}
                                     class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8">
@@ -173,7 +181,7 @@
                         </Layout.Stack>
                     {/each}
                 </ul>
-            </Layout.Stack>
+            </div>
         </section>
     </Sidebar.Base>
 {:else if data?.database?.name && !isMainDatabaseScreen}
@@ -253,10 +261,14 @@
         overflow-x: hidden;
         min-height: 0;
         margin-bottom: auto;
-        padding-bottom: 16px;
-        scrollbar-width: thin;
-        scrollbar-color: var(--border-neutral, #ededf0) transparent;
         color: var(--fgcolor-neutral-secondary, #56565c);
+
+        /* hide scrollbars */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+
+        // scrollbar-width: thin;
+        // scrollbar-color: var(--border-neutral, #ededf0) transparent;
 
         &::-webkit-scrollbar {
             width: 4px;
@@ -285,6 +297,10 @@
         position: relative;
         font-size: var(--font-size-sm);
         color: var(--fgcolor-neutral-secondary);
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
 
         &:not(.bottom-nav)::before {
             content: '';
@@ -317,12 +333,16 @@
             position: relative;
             padding-inline-end: 0.5rem;
             margin-inline-start: 0.5rem;
-        }
 
-        li:hover {
-            color: var(--fgcolor-neutral-primary);
-            border-radius: var(--border-radius-s, 6px);
-            background: var(--bgcolor-neutral-secondary);
+            &:hover {
+                color: var(--fgcolor-neutral-primary);
+                border-radius: var(--border-radius-s, 6px);
+                background: var(--bgcolor-neutral-secondary);
+            }
+
+            &.bottom-nav-item:hover {
+                margin-inline-end: 1.25rem;
+            }
         }
 
         .table-name {
@@ -364,8 +384,16 @@
         line-height: 150%; /* 21px */
     }
 
+    .bottom-nav-container {
+        right: 0;
+        bottom: 0;
+        left: 1.25rem;
+        position: absolute;
+        padding-block-end: 1rem;
+    }
+
     .action-menu-divider {
-        margin-inline: -1.2rem;
         padding-block-end: 0.25rem;
+        margin-inline-start: -1.25rem;
     }
 </style>
