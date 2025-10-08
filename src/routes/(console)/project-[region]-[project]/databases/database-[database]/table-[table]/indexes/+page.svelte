@@ -39,6 +39,7 @@
     import { page } from '$app/state';
     import { showIndexesSuggestions } from '../../(suggestions)';
     import IconAI from '../../(suggestions)/icon/aiForButton.svelte';
+    import EmptySheetCards from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/layout/emptySheetCards.svelte';
 
     let {
         data
@@ -289,22 +290,7 @@
                 </Spreadsheet.Root>
             </SpreadsheetContainer>
         {:else}
-            <EmptySheet
-                mode="indexes"
-                actions={{
-                    primary: {
-                        icon: IconAI,
-                        text: 'Suggest indexes',
-                        onClick: () => showIndexesSuggestions.update(() => true),
-                        disabled: !$table?.columns?.length
-                    },
-                    secondary: {
-                        icon: IconPlus,
-                        text: 'Create index',
-                        onClick: () => (showCreateIndex = true),
-                        disabled: !$table?.columns?.length
-                    }
-                }}>
+            <EmptySheet mode="indexes">
                 {#snippet subtitle()}
                     <Typography.Text align="center">
                         Create indexes to improve query and sorting performance. Learn more in the
@@ -315,20 +301,48 @@
                         </Link.Anchor>
                     </Typography.Text>
                 {/snippet}
+
+                {#snippet actions()}
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create index"
+                        disabled={!$table?.columns?.length}
+                        subtitle="Create indexes manually"
+                        onClick={() => {
+                            showIndexesSuggestions.update(() => true);
+                        }} />
+
+                    <EmptySheetCards
+                        icon={IconAI}
+                        title="Suggest indexes"
+                        disabled={!$table?.columns?.length}
+                        subtitle="Use AI to generate indexes"
+                        onClick={() => {
+                            showIndexesSuggestions.update(() => true);
+                        }} />
+                {/snippet}
             </EmptySheet>
         {/if}
     {:else}
-        <EmptySheet
-            mode="indexes"
-            title="You have no columns yet"
-            actions={{
-                primary: {
-                    text: 'Create columns',
-                    onClick: async () => {
+        <EmptySheet mode="indexes" title="You have no columns yet">
+            {#snippet actions()}
+                <EmptySheetCards
+                    icon={IconPlus}
+                    title="Create column"
+                    subtitle="Create columns manually"
+                    onClick={() => {
                         $showCreateColumnSheet.show = true;
-                    }
-                }
-            }} />
+                    }} />
+
+                <EmptySheetCards
+                    icon={IconAI}
+                    title="Suggest columns"
+                    subtitle="Use AI to generate columns"
+                    onClick={() => {
+                        // TODO: add a modal and show input, no toggle.
+                    }} />
+            {/snippet}
+        </EmptySheet>
     {/if}
 
     {#if selectedIndexes.length > 0}

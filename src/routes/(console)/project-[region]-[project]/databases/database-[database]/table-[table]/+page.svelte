@@ -26,13 +26,21 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { IconChevronDown, IconChevronUp, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconBookOpen,
+        IconChevronDown,
+        IconChevronUp,
+        IconPlus,
+        IconViewBoards
+    } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import EmptySheet from './layout/emptySheet.svelte';
     import CreateRow from './rows/create.svelte';
     import { onDestroy } from 'svelte';
     import { isCloud } from '$lib/system';
     import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
+    import EmptySheetCards from './layout/emptySheetCards.svelte';
+    import IconAI from '../(suggestions)/icon/aiForButton.svelte';
 
     export let data: PageData;
 
@@ -201,58 +209,82 @@
                 <EmptySheet
                     mode="rows-filtered"
                     title="There are no rows that match your filters"
-                    customColumns={createTableColumns($table.columns, selected)}
-                    actions={{
-                        primary: {
-                            text: 'Clear filters',
-                            onClick: () => {
+                    customColumns={createTableColumns($table.columns, selected)}>
+                    {#snippet actions()}
+                        <Button
+                            size="s"
+                            secondary
+                            on:click={() => {
                                 queries.clearAll();
                                 queries.apply();
                                 trackEvent(Submit.FilterClear, {
                                     source: 'database_tables'
                                 });
-                            }
-                        }
-                    }} />
+                            }}>
+                            Clear filters
+                        </Button>
+                    {/snippet}
+                </EmptySheet>
             {:else}
                 <EmptySheet
                     mode="rows"
-                    customColumns={createTableColumns($table.columns, selected)}
                     showActions={$canWriteRows}
-                    actions={{
-                        primary: {
-                            text: 'Create rows',
-                            onClick: () => {
+                    customColumns={createTableColumns($table.columns, selected)}>
+                    {#snippet actions()}
+                        <EmptySheetCards
+                            icon={IconPlus}
+                            title="Create rows"
+                            subtitle="Create rows manually"
+                            onClick={() => {
                                 $showRowCreateSheet.show = true;
-                            }
-                        },
-                        random: {
-                            onClick: () => {
+                            }} />
+
+                        <EmptySheetCards
+                            icon={IconViewBoards}
+                            title="Generate random data"
+                            subtitle="Generate data for testing"
+                            onClick={() => {
                                 $randomDataModalState.show = true;
-                            }
-                        }
-                    }} />
+                            }} />
+                    {/snippet}
+                </EmptySheet>
             {/if}
         {:else if isCloud && canShowSuggestionsSheet}
             <SuggestionsEmptySheet />
         {:else}
-            <EmptySheet
-                mode="rows"
-                title="You have no columns yet"
-                showActions={$canWriteTables}
-                actions={{
-                    primary: {
-                        text: 'Create column',
-                        onClick: async () => {
+            <EmptySheet mode="rows" showActions={$canWriteTables} title="You have no columns yet">
+                {#snippet actions()}
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create column"
+                        subtitle="Create columns manually"
+                        onClick={() => {
                             $showCreateColumnSheet.show = true;
-                        }
-                    },
-                    random: {
-                        onClick: () => {
+                        }} />
+
+                    <EmptySheetCards
+                        icon={IconAI}
+                        title="Suggest columns"
+                        subtitle="Use AI to generate columns"
+                        onClick={() => {
+                            // todo: add a modal and show input, no toggle.
+                        }} />
+
+                    <EmptySheetCards
+                        icon={IconViewBoards}
+                        title="Generate random data"
+                        subtitle="Generate data for testing"
+                        onClick={() => {
                             $randomDataModalState.show = true;
-                        }
-                    }
-                }} />
+                        }} />
+
+                    <EmptySheetCards
+                        icon={IconBookOpen}
+                        title="Documentation"
+                        subtitle="Read the Appwrite Databases docs"
+                        href="https://appwrite.io/docs/products/databases" />
+                {/snippet}
+            </EmptySheet>
         {/if}
     </div>
 {/key}

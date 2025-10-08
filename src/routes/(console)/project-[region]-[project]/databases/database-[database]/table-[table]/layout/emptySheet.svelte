@@ -19,36 +19,26 @@
         expandTabs
     } from '../store';
     import SpreadsheetContainer from './spreadsheet.svelte';
-    import { type ComponentType, onDestroy, onMount, type Snippet } from 'svelte';
+    import { onDestroy, onMount, type Snippet } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
     import { columnOptions } from '../columns/store';
 
     type Mode = 'rows' | 'rows-filtered' | 'indexes';
 
-    interface Action {
-        text?: string;
-        disabled?: boolean;
-        onClick?: () => void;
-        icon?: ComponentType;
-    }
-
     const {
         mode,
-        showActions = true,
         customColumns = [],
         title,
         subtitle,
-        actions
+        actions,
+        showActions
     } = $props<{
         mode: Mode;
-        showActions?: boolean;
         customColumns?: Column[];
         title?: string;
         subtitle?: Snippet;
-        actions?: {
-            primary?: Action;
-            secondary?: Action;
-        };
+        actions?: Snippet;
+        showActions?: boolean;
     }>();
 
     let spreadsheetContainer: HTMLElement;
@@ -250,7 +240,7 @@
         return columns;
     };
 
-    const spreadsheetColumns = $derived(mode === 'rows' ? getRowColumns() : getIndexesColumns());
+    const spreadsheetColumns = $derived(mode === 'indexes' ? getIndexesColumns() : getRowColumns());
 
     const emptyCells = $derived(
         ($isSmallViewport ? 14 : $isTabletViewport ? 17 : 24) + (!$expandTabs ? 2 : 0)
@@ -344,58 +334,22 @@
                     gap="xl"
                     alignItems="center"
                     alignContent="center"
-                    style="max-width: 353px">
+                    style="width: 653px; max-width: {$isSmallViewport ? '353px' : undefined}">
                     <Layout.Stack gap="l" alignItems="center" alignContent="center">
                         <Typography.Title>{title ?? `You have no ${mode} yet`}</Typography.Title>
 
                         {@render subtitle?.()}
                     </Layout.Stack>
 
-                    {#if showActions}
-                        <Layout.Stack
-                            inline
-                            gap="s"
-                            alignItems="center"
-                            direction={$isSmallViewport ? 'column' : 'row'}>
-                            {#if mode !== 'rows-filtered'}
-                                <Button.Button
-                                    icon
-                                    size="s"
-                                    variant="secondary"
-                                    disabled={actions?.primary?.disabled}
-                                    onclick={actions?.primary?.onClick}>
-                                    {@const icon = actions?.primary?.icon ?? IconPlus}
-
-                                    <Icon {icon} size="s" />
-
-                                    {actions?.primary?.text ?? `Create ${mode}`}
-                                </Button.Button>
-
-                                {#if mode === 'rows' || mode === 'indexes'}
-                                    <Button.Button
-                                        size="s"
-                                        variant="secondary"
-                                        disabled={actions?.secondary?.disabled}
-                                        onclick={actions?.secondary?.onClick}>
-                                        {#if actions?.secondary?.icon}
-                                            <Icon icon={actions?.secondary?.icon} size="s" />
-                                        {/if}
-
-                                        {actions?.secondary?.text ?? `Generate sample data`}
-                                    </Button.Button>
-                                {/if}
+                    {#if showActions && actions}
+                        {@const inline = mode === 'rows-filtered'}
+                        <Layout.Stack {inline}>
+                            {#if inline}
+                                {@render actions?.()}
                             {:else}
-                                <Button.Button
-                                    size="s"
-                                    variant="secondary"
-                                    disabled={actions?.primary?.disabled}
-                                    onclick={actions?.primary?.onClick}>
-                                    {#if actions?.primary?.icon}
-                                        <Icon icon={actions?.primary?.icon} size="s" />
-                                    {/if}
-
-                                    {actions?.primary?.text}
-                                </Button.Button>
+                                <Layout.Grid columns={2} columnsXS={1}>
+                                    {@render actions?.()}
+                                </Layout.Grid>
                             {/if}
                         </Layout.Stack>
                     {/if}
@@ -490,7 +444,12 @@
     }
 
     .empty-actions {
-        margin-bottom: 8%;
+        margin-bottom: 10%;
         pointer-events: auto;
+
+        @media (max-width: 1024px) {
+            // experiment
+            margin-bottom: 15%;
+        }
     }
 </style>
