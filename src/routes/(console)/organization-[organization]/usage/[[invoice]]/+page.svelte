@@ -445,24 +445,31 @@
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.storageTotal}
                 {@const totalGbHours = mbSecondsToGBHours(
-                    data.organizationUsage.executionsMBSecondsTotal +
-                        data.organizationUsage.buildsMBSecondsTotal
+                    Math.max(
+                        0,
+                        data.organizationUsage.executionsMBSecondsTotal +
+                            data.organizationUsage.buildsMBSecondsTotal
+                    )
                 )}
                 {@const progressBarStorageDate = [
                     {
-                        size: mbSecondsToGBHours(data.organizationUsage.executionsMBSecondsTotal),
+                        size: mbSecondsToGBHours(
+                            Math.max(0, data.organizationUsage.executionsMBSecondsTotal)
+                        ),
                         color: '#85DBD8',
                         tooltip: {
                             title: 'Executions',
-                            label: `${(Math.round(mbSecondsToGBHours(data.organizationUsage.executionsMBSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
+                            label: `${(Math.round(mbSecondsToGBHours(Math.max(0, data.organizationUsage.executionsMBSecondsTotal)) * 100) / 100).toLocaleString('en-US')} GB hours`
                         }
                     },
                     {
-                        size: mbSecondsToGBHours(data.organizationUsage.buildsMBSecondsTotal),
+                        size: mbSecondsToGBHours(
+                            Math.max(0, data.organizationUsage.buildsMBSecondsTotal)
+                        ),
                         color: '#FE9567',
                         tooltip: {
                             title: 'Deployments',
-                            label: `${(Math.round(mbSecondsToGBHours(data.organizationUsage.buildsMBSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
+                            label: `${(Math.round(mbSecondsToGBHours(Math.max(0, data.organizationUsage.buildsMBSecondsTotal)) * 100) / 100).toLocaleString('en-US')} GB hours`
                         }
                     }
                 ]}
@@ -505,7 +512,9 @@
                     <Layout.Stack direction="row">
                         <Layout.Stack gap="s" direction="row" alignItems="baseline">
                             <Typography.Title>
-                                {formatNumberWithCommas(data.organizationUsage.authPhoneTotal)}
+                                {formatNumberWithCommas(
+                                    Math.max(0, data.organizationUsage.authPhoneTotal)
+                                )}
                             </Typography.Title>
                             <Typography.Text>OTPs</Typography.Text>
                         </Layout.Stack>

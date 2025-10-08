@@ -84,7 +84,10 @@
 
                         metric.value = time !== '0s' ? time : '-';
                     } else {
-                        metric.value = usage[metric.id] ?? '-';
+                        metric.value =
+                            usage[metric.id] !== undefined
+                                ? Math.max(0, usage[metric.id]).toString()
+                                : '-';
                     }
                     return metric;
                 });

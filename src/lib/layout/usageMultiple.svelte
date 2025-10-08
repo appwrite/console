@@ -41,7 +41,10 @@
 
     <Card>
         {#if count}
-            {@const totalCount = total.reduce((a, b) => a + b, 0)}
+            {@const totalCount = Math.max(
+                0,
+                total.reduce((a, b) => a + b, 0)
+            )}
 
             <Layout.Stack gap="xs">
                 <Typography.Title>{formatNumberWithCommas(totalCount)}</Typography.Title>

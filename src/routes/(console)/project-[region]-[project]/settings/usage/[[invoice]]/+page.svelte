@@ -24,10 +24,12 @@
     $: usersTotal = data.usage.usersTotal;
     $: executions = data.usage.executions;
     $: executionsTotal = data.usage.executionsTotal;
-    $: storage =
+    $: storage = Math.max(
+        0,
         data.usage.filesStorageTotal +
-        data.usage.deploymentsStorageTotal +
-        data.usage.buildsStorageTotal;
+            data.usage.deploymentsStorageTotal +
+            data.usage.buildsStorageTotal
+    );
     $: imageTransformations = data.usage.imageTransformations;
     $: imageTransformationsTotal = data.usage.imageTransformationsTotal;
     $: dbReads = data.usage.databasesReads;
@@ -36,11 +38,17 @@
     $: legendData = [
         {
             name: 'Reads',
-            value: data.usage.databasesReads.reduce((sum, item) => sum + item.value, 0)
+            value: Math.max(
+                0,
+                data.usage.databasesReads.reduce((sum, item) => sum + item.value, 0)
+            )
         },
         {
             name: 'Writes',
-            value: data.usage.databasesWrites.reduce((sum, item) => sum + item.value, 0)
+            value: Math.max(
+                0,
+                data.usage.databasesWrites.reduce((sum, item) => sum + item.value, 0)
+            )
         }
     ];
 
@@ -132,7 +140,7 @@
         Total user in your project.
         <svelte:fragment slot="aside">
             {#if users}
-                {@const current = formatNum(usersTotal)}
+                {@const current = formatNum(Math.max(0, usersTotal))}
                 <Layout.Stack gap="s" direction="row" alignItems="baseline">
                     <Typography.Title>
                         {current}
@@ -208,7 +216,7 @@
         Total unique image transformations in your project.
         <svelte:fragment slot="aside">
             {#if imageTransformations}
-                {@const current = formatNum(imageTransformationsTotal)}
+                {@const current = formatNum(Math.max(0, imageTransformationsTotal))}
                 <div class="u-flex u-flex-vertical">
                     <div class="u-flex u-main-space-between">
                         <p>
@@ -246,7 +254,7 @@
         Calculated for all functions that are executed in this project.
         <svelte:fragment slot="aside">
             {#if executions}
-                {@const current = formatNum(executionsTotal)}
+                {@const current = formatNum(Math.max(0, executionsTotal))}
                 <Layout.Stack gap="s" direction="row" alignItems="baseline">
                     <Typography.Title>
                         {current}
@@ -356,23 +364,26 @@
         <svelte:fragment slot="aside">
             {#if data.usage.executionsMbSecondsTotal}
                 {@const totalGbHours = mbSecondsToGBHours(
-                    data.usage.executionsMbSecondsTotal + data.usage.buildsMbSecondsTotal
+                    Math.max(
+                        0,
+                        data.usage.executionsMbSecondsTotal + data.usage.buildsMbSecondsTotal
+                    )
                 )}
                 {@const progressBarStorageDate = [
                     {
-                        size: mbSecondsToGBHours(data.usage.executionsMbSecondsTotal),
+                        size: mbSecondsToGBHours(Math.max(0, data.usage.executionsMbSecondsTotal)),
                         color: '#85DBD8',
                         tooltip: {
                             title: 'Executions',
-                            label: `${(Math.round(mbSecondsToGBHours(data.usage.executionsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
+                            label: `${(Math.round(mbSecondsToGBHours(Math.max(0, data.usage.executionsMbSecondsTotal)) * 100) / 100).toLocaleString('en-US')} GB hours`
                         }
                     },
                     {
-                        size: mbSecondsToGBHours(data.usage.buildsMbSecondsTotal),
+                        size: mbSecondsToGBHours(Math.max(0, data.usage.buildsMbSecondsTotal)),
                         color: '#FE9567',
                         tooltip: {
                             title: 'Deployments',
-                            label: `${(Math.round(mbSecondsToGBHours(data.usage.buildsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
+                            label: `${(Math.round(mbSecondsToGBHours(Math.max(0, data.usage.buildsMbSecondsTotal)) * 100) / 100).toLocaleString('en-US')} GB hours`
                         }
                     }
                 ]}
@@ -405,7 +416,7 @@
                 <div class="u-flex u-main-space-between">
                     <Layout.Stack gap="s" direction="row" alignItems="baseline">
                         <Typography.Title>
-                            {formatNumberWithCommas(data.usage.authPhoneTotal)}
+                            {formatNumberWithCommas(Math.max(0, data.usage.authPhoneTotal))}
                         </Typography.Title>
                         <Typography.Text>OTPs</Typography.Text>
                     </Layout.Stack>
