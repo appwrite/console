@@ -1133,7 +1133,7 @@
             </svelte:fragment>
 
             {#each Array.from({ length: emptyCells }) as _}
-                <Spreadsheet.Row.Base {root} select="disabled">
+                <Spreadsheet.Row.Base {root} select="disabled" hoverEffect={false}>
                     {#each spreadsheetColumns as column}
                         {@const columnObj = getColumn(column.id)}
                         {@const isColumnInteractable =
@@ -1365,8 +1365,8 @@
 
             &.slide {
                 transition:
-                    left 0.3s ease-out,
-                    width 0.3s ease-out;
+                left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
         }
 
