@@ -6,9 +6,9 @@
     export let image: { src: { dark: string; light: string }; alt: string } | null = null;
 </script>
 
-<div class="u-flex-vertical u-gap-16 popover-content">
+<Layout.Stack direction="column" gap="m" style="max-inline-size: 260px;">
     {#each lines as line}
-        <p>{@html line}</p>
+        <p class="popover-content">{@html line}</p>
     {/each}
 
     {#if image}
@@ -16,22 +16,10 @@
             <ImagePreview darkSrc={image.src.dark} lightSrc={image.src.light} alt={image.alt} />
         </Layout.Stack>
     {/if}
-</div>
+</Layout.Stack>
 
 <style>
-    .popover-content {
-        max-inline-size: 260px;
-    }
-
-    div > p {
-        color: hsl(var(--color-neutral-50));
-
-        &:first-child {
-            color: hsl(var(--color-neutral-70));
-        }
-    }
-
-    :global(.theme-dark) div > p {
+    :global(.theme-dark) .popover-content {
         color: hsl(var(--color-neutral-20));
 
         &:first-child {
