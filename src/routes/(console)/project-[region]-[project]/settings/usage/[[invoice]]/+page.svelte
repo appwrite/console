@@ -10,7 +10,7 @@
     import { total } from '$lib/layout/usage.svelte';
     import { BillingPlan } from '$lib/constants.js';
     import { base } from '$app/paths';
-    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { formatCurrency, formatNumberWithCommas, clampMin } from '$lib/helpers/numbers';
     import { getCountryName } from '$lib/helpers/diallingCodes.js';
     import { Accordion, Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconChartSquareBar } from '@appwrite.io/pink-icons-svelte';
@@ -24,12 +24,10 @@
     $: usersTotal = data.usage.usersTotal;
     $: executions = data.usage.executions;
     $: executionsTotal = data.usage.executionsTotal;
-    $: storage = Math.max(
-        0,
+    $: storage =
         data.usage.filesStorageTotal +
-            data.usage.deploymentsStorageTotal +
-            data.usage.buildsStorageTotal
-    );
+        data.usage.deploymentsStorageTotal +
+        data.usage.buildsStorageTotal;
     $: imageTransformations = data.usage.imageTransformations;
     $: imageTransformationsTotal = data.usage.imageTransformationsTotal;
     $: dbReads = data.usage.databasesReads;
@@ -38,17 +36,11 @@
     $: legendData = [
         {
             name: 'Reads',
-            value: Math.max(
-                0,
-                data.usage.databasesReads.reduce((sum, item) => sum + item.value, 0)
-            )
+            value: clampMin(data.usage.databasesReads.reduce((sum, item) => sum + item.value, 0))
         },
         {
             name: 'Writes',
-            value: Math.max(
-                0,
-                data.usage.databasesWrites.reduce((sum, item) => sum + item.value, 0)
-            )
+            value: clampMin(data.usage.databasesWrites.reduce((sum, item) => sum + item.value, 0))
         }
     ];
 
@@ -140,7 +132,7 @@
         Total user in your project.
         <svelte:fragment slot="aside">
             {#if users}
-                {@const current = formatNum(Math.max(0, usersTotal))}
+                {@const current = formatNum(usersTotal)}
                 <Layout.Stack gap="s" direction="row" alignItems="baseline">
                     <Typography.Title>
                         {current}
@@ -216,7 +208,7 @@
         Total unique image transformations in your project.
         <svelte:fragment slot="aside">
             {#if imageTransformations}
-                {@const current = formatNum(Math.max(0, imageTransformationsTotal))}
+                {@const current = formatNum(imageTransformationsTotal)}
                 <div class="u-flex u-flex-vertical">
                     <div class="u-flex u-main-space-between">
                         <p>
@@ -254,7 +246,7 @@
         Calculated for all functions that are executed in this project.
         <svelte:fragment slot="aside">
             {#if executions}
-                {@const current = formatNum(Math.max(0, executionsTotal))}
+                {@const current = formatNum(executionsTotal)}
                 <Layout.Stack gap="s" direction="row" alignItems="baseline">
                     <Typography.Title>
                         {current}
@@ -364,26 +356,23 @@
         <svelte:fragment slot="aside">
             {#if data.usage.executionsMbSecondsTotal}
                 {@const totalGbHours = mbSecondsToGBHours(
-                    Math.max(
-                        0,
-                        data.usage.executionsMbSecondsTotal + data.usage.buildsMbSecondsTotal
-                    )
+                    data.usage.executionsMbSecondsTotal + data.usage.buildsMbSecondsTotal
                 )}
                 {@const progressBarStorageDate = [
                     {
-                        size: mbSecondsToGBHours(Math.max(0, data.usage.executionsMbSecondsTotal)),
+                        size: mbSecondsToGBHours(data.usage.executionsMbSecondsTotal),
                         color: '#85DBD8',
                         tooltip: {
                             title: 'Executions',
-                            label: `${(Math.round(mbSecondsToGBHours(Math.max(0, data.usage.executionsMbSecondsTotal)) * 100) / 100).toLocaleString('en-US')} GB hours`
+                            label: `${(Math.round(mbSecondsToGBHours(data.usage.executionsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
                         }
                     },
                     {
-                        size: mbSecondsToGBHours(Math.max(0, data.usage.buildsMbSecondsTotal)),
+                        size: mbSecondsToGBHours(data.usage.buildsMbSecondsTotal),
                         color: '#FE9567',
                         tooltip: {
                             title: 'Deployments',
-                            label: `${(Math.round(mbSecondsToGBHours(Math.max(0, data.usage.buildsMbSecondsTotal)) * 100) / 100).toLocaleString('en-US')} GB hours`
+                            label: `${(Math.round(mbSecondsToGBHours(data.usage.buildsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
                         }
                     }
                 ]}
@@ -416,7 +405,7 @@
                 <div class="u-flex u-main-space-between">
                     <Layout.Stack gap="s" direction="row" alignItems="baseline">
                         <Typography.Title>
-                            {formatNumberWithCommas(Math.max(0, data.usage.authPhoneTotal))}
+                            {formatNumberWithCommas(data.usage.authPhoneTotal)}
                         </Typography.Title>
                         <Typography.Text>OTPs</Typography.Text>
                     </Layout.Stack>

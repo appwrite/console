@@ -9,6 +9,7 @@
     import { UsageCard } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
+    import { clampMin } from '$lib/helpers/numbers';
 
     const now = new Date();
     const rangeOptions = [
@@ -86,7 +87,7 @@
                     } else {
                         metric.value =
                             usage[metric.id] !== undefined
-                                ? Math.max(0, usage[metric.id]).toString()
+                                ? clampMin(usage[metric.id]).toString()
                                 : '-';
                     }
                     return metric;

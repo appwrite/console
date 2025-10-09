@@ -1,10 +1,11 @@
 <script lang="ts" context="module">
     import { total } from '$lib/helpers/array';
+    import { clampMin } from '$lib/helpers/numbers';
     import type { Metric } from '$lib/sdk/usage';
 
     export function totalMetrics(set: Array<unknown>): number {
         if (!set) return 0;
-        return Math.max(0, total((set as Metric[]).map((c) => c.value)));
+        return clampMin(total((set as Metric[]).map((c) => c.value)));
     }
 </script>
 
@@ -100,7 +101,7 @@
 <Container overlapCover>
     <Layout.Stack gap="xxl">
         {#if $usage}
-            {@const storage = humanFileSize(Math.max(0, $usage.filesStorageTotal ?? 0))}
+            {@const storage = humanFileSize($usage.filesStorageTotal ?? 0)}
             <Layout.Stack gap="xl">
                 <Layout.Stack gap="l" direction={$isSmallViewport ? 'column' : 'row'}>
                     <Card.Base
@@ -132,7 +133,7 @@
 
                             <div class="grid-item-1-end-start">
                                 <Typography.Title>
-                                    {formatNum(Math.max(0, $usage.documentsTotal ?? 0))}
+                                    {formatNum($usage.documentsTotal ?? 0)}
                                 </Typography.Title>
                                 <Typography.Text>Rows</Typography.Text>
                             </div>
@@ -177,7 +178,7 @@
 
                             <div class="grid-item-1-end-start">
                                 <Typography.Title>
-                                    {formatNum(Math.max(0, $usage.usersTotal ?? 0))}
+                                    {formatNum($usage.usersTotal ?? 0)}
                                 </Typography.Title>
                                 <Typography.Text>Users</Typography.Text>
                             </div>
@@ -199,7 +200,7 @@
 
                             <div class="grid-item-1-end-start">
                                 <Typography.Title>
-                                    {formatNum(Math.max(0, $usage.executionsTotal ?? 0))}
+                                    {formatNum($usage.executionsTotal ?? 0)}
                                 </Typography.Title>
                                 <Typography.Text>Executions</Typography.Text>
                             </div>

@@ -45,8 +45,9 @@ const formatter = Intl.NumberFormat('en', {
     notation: 'compact'
 });
 
-export function formatNum(number: number): string {
-    return formatter.format(number);
+export function formatNum(number: number, min: number = 0): string {
+    const value = Math.max(min, number);
+    return formatter.format(value);
 }
 
 /**

@@ -119,7 +119,7 @@
     <Card>
         {#if count}
             <Layout.Stack gap="xs">
-                <Typography.Title>{formatNumberWithCommas(Math.max(0, total))}</Typography.Title>
+                <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
                 <Typography.Text>{countMetadata.title}</Typography.Text>
             </Layout.Stack>
             <div class="chart-container">
