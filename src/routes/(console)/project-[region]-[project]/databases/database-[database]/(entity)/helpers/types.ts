@@ -1,6 +1,6 @@
-import { Click, Submit } from '$lib/actions/analytics';
-import type { baseTerminology } from './terminology';
 import { Dependencies } from '$lib/constants';
+import { Click, Submit } from '$lib/actions/analytics';
+import type { baseTerminology, DatabaseType } from './terminology';
 
 export type TerminologyShape = {
     entity: string;
@@ -11,6 +11,7 @@ export type TerminologyShape = {
 export type Term = { singular: string; plural: string };
 
 export type TerminologyResult = {
+    type: DatabaseType;
     source: {
         entity?: { lower: Term; title: Term };
         field?: { lower: Term; title: Term };
@@ -59,7 +60,7 @@ export type AnalyticsResult = {
 
 // for derived dependencies!
 export type DependenciesResult = {
-    [K in keyof Omit<TerminologyResult, 'source'>]: {
+    [K in keyof Omit<TerminologyResult, 'source' | 'type'>]: {
         singular: Dependencies;
         plural: Dependencies;
     };

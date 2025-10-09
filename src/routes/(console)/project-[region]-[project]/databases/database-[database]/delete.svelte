@@ -7,9 +7,10 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-    import { type Models, Query } from '@appwrite.io/console';
+    import { Query } from '@appwrite.io/console';
     import { Spinner, Table } from '@appwrite.io/pink-svelte';
     import { resolveRoute } from '$lib/stores/navigation';
+    import { type EntityList, getTerminologies, toSupportiveEntity } from '$database/(entity)';
 
     let {
         showDelete = $bindable(false)
@@ -21,17 +22,20 @@
     let confirmedDeletion = $state(false);
     let isLoadingRowsCount = $state(false);
 
-    let tableItems = $state([]);
-    let tables: Models.TableList | null = $state(null);
+    let entityItems = $state([]);
+    let entities: EntityList | null = $state(null);
 
+    const { terminology } = getTerminologies();
     const database = $derived(page.data.database);
+
+    const projectSdk = $derived(sdk.forProject(page.params.region, page.params.project));
 
     function buildQueries(): string[] {
         const queries = [Query.orderDesc('$updatedAt')];
 
-        if (tableItems.length > 0) {
+        if (entityItems.length > 0) {
             queries.push(Query.limit(25));
-            queries.push(Query.offset(tableItems.length));
+            queries.push(Query.offset(entityItems.length));
         } else {
             queries.push(Query.limit(3));
         }
@@ -47,23 +51,31 @@
 
         try {
             const queries = buildQueries();
+            const params = { databaseId: page.params.database, queries };
 
-            tables = await sdk
-                .forProject(page.params.region, page.params.project)
-                .tablesDB.listTables({
-                    databaseId: page.params.database,
-                    queries
-                });
+            switch (terminology.type) {
+                case 'tablesdb': {
+                    const { total, tables } = await projectSdk.tablesDB.listTables(params);
+                    entities = { total, entities: tables.map(toSupportiveEntity) };
+                    break;
+                }
+                case 'documentsdb': {
+                    const { total, collections } =
+                        await projectSdk.documentsDB.listCollections(params);
+                    entities = { total, entities: collections.map(toSupportiveEntity) };
+                    break;
+                }
+            }
 
-            const tablePromises = tables.tables.map(async (table) => {
+            const entityPromises = entities.entities.map(async (entity) => {
                 return {
-                    id: table.$id,
-                    name: table.name,
-                    updatedAt: table.$updatedAt
+                    id: entity.$id,
+                    name: entity.name,
+                    updatedAt: entity.$updatedAt
                 };
             });
 
-            tableItems = [...tableItems, ...(await Promise.all(tablePromises))];
+            entityItems = [...entityItems, ...(await Promise.all(entityPromises))];
         } catch (err) {
             error = true;
         } finally {
@@ -73,10 +85,17 @@
 
     const handleDelete = async () => {
         try {
-            // TODO: namespace as per database type!
-            await sdk.forProject(page.params.region, page.params.project).tablesDB.delete({
-                databaseId: page.params.database
-            });
+            const params = { databaseId: page.params.database };
+
+            switch (terminology.type) {
+                case 'tablesdb':
+                    await projectSdk.tablesDB.delete(params);
+                    break;
+
+                case 'documentsdb':
+                    await projectSdk.documentsDB.delete(params);
+                    break;
+            }
 
             showDelete = false;
 
@@ -102,8 +121,8 @@
     /* reset data on modal close */
     $effect(() => {
         if (!showDelete) {
-            tables = null;
-            tableItems = [];
+            entities = null;
+            entityItems = [];
 
             error = false;
             confirmedDeletion = false;
@@ -119,7 +138,7 @@
 
 <Modal title="Delete database" bind:show={showDelete} onSubmit={handleDelete}>
     <p class="text" slot="description">
-        {#if tableItems.length > 0}
+        {#if entityItems.length > 0}
             The following tables and all data associated with <b>{database.name}</b>, will be
             permanently deleted.
         {:else}
@@ -135,14 +154,14 @@
         <p class="text">
             Are you sure you want to delete <b>{database.name}</b>?
         </p>
-    {:else if tableItems.length > 0}
+    {:else if entityItems.length > 0}
         <div class="u-flex-vertical u-gap-16">
             <Table.Root columns={2} let:root>
                 <svelte:fragment slot="header" let:root>
                     <Table.Header.Cell {root}>Table</Table.Header.Cell>
                     <Table.Header.Cell {root}>Last Updated</Table.Header.Cell>
                 </svelte:fragment>
-                {#each tableItems as table}
+                {#each entityItems as table}
                     <Table.Row.Base {root}>
                         <Table.Cell {root}>{table.name}</Table.Cell>
                         <Table.Cell {root}>
@@ -152,7 +171,7 @@
                 {/each}
             </Table.Root>
 
-            {#if tableItems.length < tables.total}
+            {#if entityItems.length < entities.total}
                 <div class="u-flex u-gap-16 u-cross-center">
                     <button class="u-underline" onclick={listTables} type="button">
                         Show more
@@ -162,11 +181,11 @@
                         <div class="loader is-small"></div>
                     {/if}
                 </div>
-            {:else if tableItems.length > 25}
+            {:else if entityItems.length > 25}
                 <button
                     class="u-underline"
                     onclick={() => {
-                        tableItems = tableItems.slice(0, 3);
+                        entityItems = entityItems.slice(0, 3);
                     }}
                     type="button">
                     Show less

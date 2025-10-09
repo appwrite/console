@@ -1,6 +1,8 @@
 import { writable } from 'svelte/store';
 import type { Column } from '$lib/helpers/types';
 import { IconChartBar, IconCloudUpload, IconCog } from '@appwrite.io/pink-icons-svelte';
+import { resolveRoute, withPath } from '$lib/stores/navigation';
+import type { Page } from '@sveltejs/kit';
 
 export const showCreateEntity = writable(false);
 
@@ -33,3 +35,13 @@ export const databaseSubNavigationItems = [
     { title: 'Usage', href: 'usage', icon: IconChartBar },
     { title: 'Settings', href: 'settings', icon: IconCog }
 ];
+
+export function buildEntityRoute(page: Page, entityType: string, entityId: string): string {
+    return withPath(
+        resolveRoute(
+            '/(console)/project-[region]-[project]/databases/database-[database]',
+            page.params
+        ),
+        `/${entityType}-${entityId}`
+    );
+}

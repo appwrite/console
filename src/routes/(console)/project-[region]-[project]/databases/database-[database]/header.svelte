@@ -5,8 +5,10 @@
     import { isTabSelected } from '$lib/helpers/load';
     import { canWriteDatabases } from '$lib/stores/roles';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
+    import { useTerminology } from '$database/(entity)';
 
     const database = $derived(page.data.database);
+    const terminology = $derived(useTerminology(page));
 
     const baseDatabasesPath = $derived(
         resolveRoute('/(console)/project-[region]-[project]/databases', page.params)
@@ -23,8 +25,8 @@
         [
             {
                 href: baseDatabasePath,
-                title: 'Tables',
-                event: 'tables',
+                title: terminology.entity.title.plural,
+                event: terminology.entity.lower.plural,
                 hasChildren: true
             },
             {

@@ -21,6 +21,11 @@ export type Index = Partial<Models.Index | Models.ColumnIndex> & {
     fields: Models.Index['attributes'] | Models.ColumnIndex['columns'];
 };
 
+export type EntityList = {
+    total: number;
+    entities: Entity[];
+};
+
 export const baseTerminology = {
     tablesdb: {
         entity: 'table',
@@ -103,6 +108,7 @@ export function useTerminology(page: Page): TerminologyResult {
 
     const dbTerminologies = terminologyData[type] || {};
     return {
+        type,
         source: dbTerminologies,
         field: dbTerminologies.field,
         record: dbTerminologies.record,

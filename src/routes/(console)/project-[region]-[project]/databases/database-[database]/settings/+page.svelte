@@ -14,6 +14,7 @@
     import { Query } from '@appwrite.io/console';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import type { PageProps } from './$types';
+    import { getTerminologies } from '$database/(entity)';
 
     const { data }: PageProps = $props();
 
@@ -26,19 +27,27 @@
     let errorType: 'error' | 'warning' | 'success' = $state('error');
     let showError: false | 'name' | 'email' | 'password' = $state(false);
 
+    const { terminology } = getTerminologies();
+
     onMount(async () => {
         databaseName ??= database.name;
     });
 
-    async function loadTableCount() {
-        const { total } = await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDB.listTables({
-                databaseId: database.$id,
-                queries: [Query.limit(1)]
-            });
-
-        return total;
+    async function loadEntityCount() {
+        const params = { databaseId: database.$id, queries: [Query.limit(1)] };
+        const projectSdk = sdk.forProject(page.params.region, page.params.project);
+        switch (terminology.type) {
+            case 'tablesdb': {
+                const { total } = await projectSdk.tablesDB.listTables(params);
+                return total;
+            }
+            case 'documentsdb': {
+                const { total } = await projectSdk.documentsDB.listCollections(params);
+                return total;
+            }
+            default:
+                return 0;
+        }
     }
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
@@ -53,11 +62,14 @@
                 databaseId: page.params.database,
                 name: databaseName
             });
+
             await invalidate(Dependencies.DATABASE);
+
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
             });
+
             trackEvent(Submit.DatabaseUpdateName);
         } catch (error) {
             addError('name', error.message, 'error');
@@ -106,18 +118,20 @@
 
         <CardGrid>
             <svelte:fragment slot="title">Delete database</svelte:fragment>
-            The database will be permanently deleted, including all tables within it. This action is
-            irreversible.
+            The database will be permanently deleted, including all {terminology.entity.lower
+                .plural} within it. This action is irreversible.
             <svelte:fragment slot="aside">
                 <BoxAvatar>
                     <svelte:fragment slot="title">
                         <Layout.Stack direction="column" gap="xxs">
                             <h6 class="u-bold u-trim-1">{database.name}</h6>
                             <Layout.Stack direction="row" gap="s">
-                                {#await loadTableCount()}
+                                {#await loadEntityCount()}
                                     <Skeleton variant="line" width="100%" height={19.5} />
                                 {:then count}
-                                    {count} {count === 1 ? 'Table' : 'Tables'}
+                                    {@const entity = terminology.entity.title}
+                                    {count}
+                                    {count === 1 ? entity.singular : entity.plural}
                                 {/await}
                             </Layout.Stack>
                         </Layout.Stack>

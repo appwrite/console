@@ -12,6 +12,9 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         databaseId: params.database
     });
 
+    // only for tests
+    // database.type = 'documentsdb';
+
     return {
         database,
         header: Header,
