@@ -4,7 +4,7 @@
     import type { Metric } from '$lib/sdk/usage';
     import Container from '$lib/layout/container.svelte';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
-    import { type DatabaseType, getTerminologies } from '$database/(entity)';
+    import { getTerminologies } from '$database/(entity)';
 
     let {
         total,
@@ -12,7 +12,6 @@
     }: {
         total: number;
         count: Metric[];
-        type?: DatabaseType;
     } = $props();
 
     const { terminology } = getTerminologies();

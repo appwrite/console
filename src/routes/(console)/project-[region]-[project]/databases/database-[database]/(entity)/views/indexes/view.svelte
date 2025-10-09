@@ -53,7 +53,7 @@
     } = $props();
 
     let showCreateIndex = $state(false);
-    let selectedIndex: Index = $state(null);
+    let selectedIndex: Index | null = $state(null);
 
     let createIndex: CreateIndex;
     let selectedIndexes = $state([]);

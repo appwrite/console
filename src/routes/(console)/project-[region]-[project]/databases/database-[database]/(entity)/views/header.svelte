@@ -8,6 +8,9 @@
     import { type Entity, useTerminology } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
 
+    import { preferences } from '$lib/stores/preferences';
+    import { expandTabs } from '$database/table-[table]/store';
+
     interface EntityTab {
         href: string;
         title: string;
@@ -18,13 +21,11 @@
     let {
         entity,
         parentHref,
-        tabs,
-        expanded = $bindable(true)
+        tabs
     }: {
         entity: Entity;
         parentHref: string;
         tabs: EntityTab[];
-        expanded?: boolean;
     } = $props();
 
     /**
@@ -45,25 +46,38 @@
             `${entityType}-${entityId}`
         );
     });
+
+    const nonSheetPages = $derived.by(() => {
+        const endings = ['table-[table]', 'table-[table]/columns', 'table-[table]/indexes'];
+        const isSpreadsheetPage = endings.some((end) => page.route.id?.endsWith(end));
+        return !isSpreadsheetPage;
+    });
+
+    $effect(() => {
+        if (nonSheetPages) expandTabs.set(true);
+        else {
+            expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
+        }
+    });
 </script>
 
-{#if entity}
-    <Cover animate {expanded} collapsed={!expanded} blocksize={expanded ? '152px' : '90px'}>
+<div class:nonSheetPages>
+    <Cover animate expanded collapsed={!$expandTabs} blocksize={$expandTabs ? '152px' : '90px'}>
         <svelte:fragment slot="header">
             <Layout.Stack direction="row" alignContent="center" alignItems="center" inline>
-                <AnimatedTitle href={parentHref} collapsed={!expanded}>
-                    {entity.name}
+                <AnimatedTitle href={parentHref} collapsed={!$expandTabs}>
+                    {entity?.name}
                 </AnimatedTitle>
 
-                {#key entity.$id}
-                    <Id value={entity.$id} tooltipPlacement={expanded ? undefined : 'right'}>
-                        {entity.$id}
+                {#key entity?.$id}
+                    <Id value={entity?.$id} tooltipPlacement={$expandTabs ? undefined : 'right'}>
+                        {entity?.$id}
                     </Id>
                 {/key}
             </Layout.Stack>
         </svelte:fragment>
 
-        <div class="tabs-container" class:collapsed={!expanded}>
+        <div class="tabs-container" class:collapsed={!$expandTabs}>
             <Tabs>
                 {#each tabs as tab}
                     <Tab
@@ -76,9 +90,19 @@
             </Tabs>
         </div>
     </Cover>
-{/if}
+</div>
 
 <style lang="scss">
+    .nonSheetPages :global(.cover-container) {
+        @media (min-width: 1440px) {
+            padding-inline: 7px !important;
+        }
+
+        @media (min-width: 1728px) {
+            padding-inline: 10.25rem !important;
+        }
+    }
+
     .tabs-container {
         opacity: 1;
         transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
