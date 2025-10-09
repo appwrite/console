@@ -48,7 +48,12 @@
     });
 
     const nonSheetPages = $derived.by(() => {
-        const endings = ['table-[table]', 'table-[table]/columns', 'table-[table]/indexes'];
+        const field = terminology.field.lower.plural;
+        const entityType = terminology.entity.lower.singular;
+
+        const resourceSeg = `${entityType}-[${entityType}]`;
+
+        const endings = [resourceSeg, `${resourceSeg}/${field}`, `${resourceSeg}/indexes`];
         const isSpreadsheetPage = endings.some((end) => page.route.id?.endsWith(end));
         return !isSpreadsheetPage;
     });
