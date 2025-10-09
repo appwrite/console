@@ -28,8 +28,10 @@
                     </span>
                 </Typography.Title>
                 <Layout.Stack direction="row" inline>
-                    <Id value={$project.$id}>{$project.$id}</Id>
-                    <RegionEndpoint region={$projectRegion} />
+                    <Id value={$project.$id} copyText="Copy project ID">{$project.$id}</Id>
+                    {#if $projectRegion}
+                        <RegionEndpoint region={$projectRegion} />
+                    {/if}
                 </Layout.Stack>
             </Layout.Stack>
         </svelte:fragment>
