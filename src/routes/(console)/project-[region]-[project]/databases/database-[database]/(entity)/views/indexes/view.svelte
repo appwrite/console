@@ -37,6 +37,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { debounce } from '$lib/helpers/debounce';
     import { page } from '$app/state';
+    import type { ColumnsWidth } from '$database/table-[table]/store';
 
     let {
         entity,
@@ -63,7 +64,7 @@
     let showDelete = $state(false);
     let showOverview = $state(false);
 
-    let columnsWidth = $state(null);
+    let columnsWidth: ColumnsWidth | null = $state(null);
 
     const organizationId = $derived(page.data.organization?.$id ?? page.data.project?.teamId);
 

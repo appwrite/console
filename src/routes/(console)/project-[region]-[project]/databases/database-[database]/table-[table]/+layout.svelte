@@ -167,7 +167,7 @@
             label: 'Go to activity',
             keys: ['g', 'c'],
             callback() {
-                goto(withPath(basePath, '/indexes'));
+                goto(withPath(basePath, '/activity'));
             },
             disabled: page.url.pathname.endsWith('activity'),
             group: 'tables'
