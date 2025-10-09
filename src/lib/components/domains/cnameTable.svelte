@@ -52,8 +52,10 @@
             {/if}
         </Layout.Stack>
         <Typography.Text variant="m-400">
-            Add the following record on your DNS provider. Note that DNS changes may take up to 48
-            hours to propagate fully.
+            Add the following {$regionalConsoleVariables._APP_DOMAIN_TARGET_CAA
+                ? 'records'
+                : 'record'} on your DNS provider. Note that DNS changes may take up to 48 hours to propagate
+            fully.
         </Typography.Text>
     </Layout.Stack>
 
