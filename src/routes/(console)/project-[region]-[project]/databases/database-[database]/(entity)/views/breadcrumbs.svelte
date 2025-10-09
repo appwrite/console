@@ -1,14 +1,15 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { Breadcrumbs } from '$lib/layout';
-    import { database } from '$database/store';
     import { getTerminologies } from '$database/(entity)';
-    import { resolveRoute } from '$lib/stores/navigation';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
 
     const { terminology } = getTerminologies();
 
     const entity = terminology.entity;
     const entityType = terminology.entity.lower.singular;
+
+    const database = $derived(page.data.database);
 
     const breadcrumbs = $derived.by(() => {
         const params = page.params;
@@ -29,10 +30,10 @@
             },
             {
                 href: databasePath,
-                title: $database?.name ?? 'Database'
+                title: database?.name ?? 'Database'
             },
             {
-                href: `${databasePath}/${entityType}-${entityId}`,
+                href: withPath(databasePath, `/${entityType}-${entityId}`),
                 title: entity.title.singular
             }
         ];

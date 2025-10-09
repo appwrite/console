@@ -1,10 +1,7 @@
-import { page } from '$app/stores';
+import { writable } from 'svelte/store';
 import type { Column } from '$lib/helpers/types';
-import type { Models } from '@appwrite.io/console';
-import { derived, writable } from 'svelte/store';
 import { IconChartBar, IconCloudUpload, IconCog } from '@appwrite.io/pink-icons-svelte';
 
-export const database = derived(page, ($page) => $page.data.database as Models.Database);
 export const showCreateEntity = writable(false);
 
 export const tableViewColumns = writable<Column[]>([

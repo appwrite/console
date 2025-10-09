@@ -1,27 +1,30 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button, InputCheckbox } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { database } from './store';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { type Models, Query } from '@appwrite.io/console';
     import { Spinner, Table } from '@appwrite.io/pink-svelte';
+    import { resolveRoute } from '$lib/stores/navigation';
 
-    const databaseId = page.params.database;
+    let {
+        showDelete = $bindable(false)
+    }: {
+        showDelete: boolean;
+    } = $props();
 
-    export let showDelete = false;
-    let confirmedDeletion = false;
+    let error = $state(null);
+    let confirmedDeletion = $state(false);
+    let isLoadingRowsCount = $state(false);
 
-    let error = null;
-    let isLoadingRowsCount = false;
+    let tableItems = $state([]);
+    let tables: Models.TableList | null = $state(null);
 
-    $: tableItems = [];
-    let tables: Models.TableList = null;
+    const database = $derived(page.data.database);
 
     function buildQueries(): string[] {
         const queries = [Query.orderDesc('$updatedAt')];
@@ -48,7 +51,7 @@
             tables = await sdk
                 .forProject(page.params.region, page.params.project)
                 .tablesDB.listTables({
-                    databaseId,
+                    databaseId: page.params.database,
                     queries
                 });
 
@@ -70,16 +73,21 @@
 
     const handleDelete = async () => {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .tablesDB.delete({ databaseId });
+            await sdk.forProject(page.params.region, page.params.project).tablesDB.delete({
+                databaseId: page.params.database
+            });
             showDelete = false;
+
             addNotification({
                 type: 'success',
-                message: `${$database.name} has been deleted`
+                message: `${database.name} has been deleted`
             });
-            await goto(`${base}/project-${page.params.region}-${page.params.project}/databases`);
+
             trackEvent(Submit.DatabaseDelete);
+
+            await goto(
+                resolveRoute('/(console)/project-[region]-[project]/databases', page.params)
+            );
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -90,21 +98,27 @@
     };
 
     /* reset data on modal close */
-    $: if (!showDelete) {
-        tables = null;
-        tableItems = [];
-    } else {
-        listTables();
-    }
+    $effect(() => {
+        if (!showDelete) {
+            tables = null;
+            tableItems = [];
+        }
+    });
+
+    $effect(() => {
+        if (showDelete) {
+            listTables();
+        }
+    });
 </script>
 
 <Modal title="Delete database" bind:show={showDelete} onSubmit={handleDelete}>
     <p class="text" slot="description">
         {#if tableItems.length > 0}
-            The following tables and all data associated with <b>{$database.name}</b>, will be
+            The following tables and all data associated with <b>{database.name}</b>, will be
             permanently deleted.
         {:else}
-            Are you sure you want to delete <b>{$database.name}</b>?
+            Are you sure you want to delete <b>{database.name}</b>?
         {/if}
     </p>
 
@@ -114,7 +128,7 @@
         </div>
     {:else if error}
         <p class="text">
-            Are you sure you want to delete <b>{$database.name}</b>?
+            Are you sure you want to delete <b>{database.name}</b>?
         </p>
     {:else if tableItems.length > 0}
         <div class="u-flex-vertical u-gap-16">
@@ -135,7 +149,7 @@
 
             {#if tableItems.length < tables.total}
                 <div class="u-flex u-gap-16 u-cross-center">
-                    <button class="u-underline" on:click={listTables} type="button">
+                    <button class="u-underline" onclick={listTables} type="button">
                         Show more
                     </button>
 
@@ -146,7 +160,7 @@
             {:else if tableItems.length > 25}
                 <button
                     class="u-underline"
-                    on:click={() => {
+                    onclick={() => {
                         tableItems = tableItems.slice(0, 3);
                     }}
                     type="button">

@@ -11,34 +11,40 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import Delete from '../delete.svelte';
-    import { database } from '../store';
     import { Query } from '@appwrite.io/console';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
+    import type { PageProps } from './$types';
 
-    let showDelete = false;
-    let showError: false | 'name' | 'email' | 'password' = false;
-    let errorMessage = 'Something went wrong';
-    let errorType: 'error' | 'warning' | 'success' = 'error';
-    let databaseName: string = null;
+    const { data }: PageProps = $props();
+
+    const database = $derived(data.database);
+
+    let showDelete = $state(false);
+    let databaseName: string = $state(null);
+
+    let errorMessage: string = $state('Something went wrong');
+    let errorType: 'error' | 'warning' | 'success' = $state('error');
+    let showError: false | 'name' | 'email' | 'password' = $state(false);
 
     onMount(async () => {
-        databaseName ??= $database.name;
+        databaseName ??= database.name;
     });
 
     async function loadTableCount() {
         const { total } = await sdk
             .forProject(page.params.region, page.params.project)
             .tablesDB.listTables({
-                databaseId: $database.$id,
+                databaseId: database.$id,
                 queries: [Query.limit(1)]
             });
+
         return total;
     }
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
+        errorType = type;
         showError = location;
         errorMessage = message;
-        errorType = type;
     }
 
     async function updateName() {
@@ -60,14 +66,14 @@
     }
 </script>
 
-{#if $database}
+{#if database}
     <Container databasesMainScreen>
         <CardGrid>
-            <svelte:fragment slot="title">{$database.name}</svelte:fragment>
+            <svelte:fragment slot="title">{database.name}</svelte:fragment>
             <svelte:fragment slot="aside">
                 <div class="grid-1-2-col-2">
-                    <p>Created: {toLocaleDateTime($database.$createdAt)}</p>
-                    <p>Last updated: {toLocaleDateTime($database.$updatedAt)}</p>
+                    <p>Created: {toLocaleDateTime(database.$createdAt)}</p>
+                    <p>Last updated: {toLocaleDateTime(database.$updatedAt)}</p>
                 </div>
             </svelte:fragment>
         </CardGrid>
@@ -91,7 +97,7 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={databaseName === $database.name || !databaseName} submit
+                    <Button disabled={databaseName === database.name || !databaseName} submit
                         >Update
                     </Button>
                 </svelte:fragment>
@@ -106,7 +112,7 @@
                 <BoxAvatar>
                     <svelte:fragment slot="title">
                         <Layout.Stack direction="column" gap="xxs">
-                            <h6 class="u-bold u-trim-1">{$database.name}</h6>
+                            <h6 class="u-bold u-trim-1">{database.name}</h6>
                             <Layout.Stack direction="row" gap="s">
                                 {#await loadTableCount()}
                                     <Skeleton variant="line" width="100%" height={19.5} />

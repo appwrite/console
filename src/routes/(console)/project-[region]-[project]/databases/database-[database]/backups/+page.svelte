@@ -5,7 +5,7 @@
     import BackupPolicy from './policy.svelte';
     import LockedCard from './locked.svelte';
     import Table from './table.svelte';
-    import type { PageData } from './$types';
+    import type { PageProps } from './$types';
     import CreatePolicy from './createPolicy.svelte';
     import { Button } from '$lib/elements/forms';
     import { addNotification, dismissAllNotifications } from '$lib/stores/notifications';
@@ -25,11 +25,12 @@
     import { page } from '$app/state';
     import IconQuestionMarkCircle from './components/questionIcon.svelte';
 
-    let policyCreateError: string;
-    let totalPolicies: UserBackupPolicy[] = [];
-    let isDisabled = isSelfHosted || (isCloud && !$currentPlan.backupsEnabled);
+    const { data }: PageProps = $props();
 
-    export let data: PageData;
+    let policyCreateError: string = $state(null);
+    let totalPolicies: UserBackupPolicy[] = $state([]);
+
+    const isDisabled = $derived(isSelfHosted || (isCloud && !$currentPlan.backupsEnabled));
 
     const showFeedbackNotification = () => {
         let counter = localStorage.getItem('createBackupsCounter');
@@ -86,7 +87,7 @@
         }
     };
 
-    const trackEvents = (policies) => {
+    const trackEvents = (policies: UserBackupPolicy[]) => {
         policies.forEach((policy) => {
             let actualDay = null;
             const monthlyBackupFrequency = policy.monthlyBackupFrequency;

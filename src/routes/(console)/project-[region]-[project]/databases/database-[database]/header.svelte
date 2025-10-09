@@ -1,11 +1,12 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { database } from './store';
     import { Cover, CoverTitle } from '$lib/layout';
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { canWriteDatabases } from '$lib/stores/roles';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
+
+    const database = $derived(page.data.database);
 
     const baseDatabasesPath = $derived(
         resolveRoute('/(console)/project-[region]-[project]/databases', page.params)
@@ -51,10 +52,10 @@
 <Cover databasesMainScreen>
     <svelte:fragment slot="header">
         <CoverTitle href={baseDatabasesPath} style="margin-inline-start: -2.5rem;">
-            {$database.name}
+            {database?.name}
         </CoverTitle>
 
-        <Id value={$database.$id}>{$database.$id}</Id>
+        <Id value={database?.$id}>{database?.$id}</Id>
     </svelte:fragment>
 
     <Tabs>
@@ -62,8 +63,7 @@
             <Tab
                 href={tab.href}
                 event={tab.event}
-                selected={isTabSelected(tab, page.url.pathname, baseDatabasePath, tabs)}
-            >
+                selected={isTabSelected(tab, page.url.pathname, baseDatabasePath, tabs)}>
                 {tab.title}
             </Tab>
         {/each}
