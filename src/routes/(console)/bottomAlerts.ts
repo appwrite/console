@@ -5,8 +5,8 @@ import SpatialColumnsLight from '$lib/images/promos/spatial-columns-api-light.pn
 import SpatialColumnsDark from '$lib/images/promos/spatial-columns-api-dark.png';
 import InversionQueriesDark from '$lib/images/promos/inversion-queries-dark.png';
 import InversionQueriesLight from '$lib/images/promos/inversion-queries-light.png';
-import TimeHelperQueriesDark from '$lib/images/promos/time-helper-queries-dark.png';
-import TimeHelperQueriesLight from '$lib/images/promos/time-helper-queries-light.png';
+import TransactionsApiDark from '$lib/images/promos/transactions-api-dark.png';
+import TransactionsApiLight from '$lib/images/promos/transactions-api-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -51,26 +51,26 @@ if (isCloud) {
         show: true
     };
 
-    const timeHelperQueriesPromo: BottomModalAlertItem = {
-        id: 'modal:time_helper_queries_announcement',
+    const transactionsApiPromo: BottomModalAlertItem = {
+        id: 'modal:transactions_api_announcement',
         src: {
-            dark: TimeHelperQueriesDark,
-            light: TimeHelperQueriesLight
+            dark: TransactionsApiDark,
+            light: TransactionsApiLight
         },
-        title: 'Announcing Time helper queries',
-        message: 'New before/after filters for simpler time-based queries.',
+        title: 'Announcing Transactions API',
+        message: 'Ensure data consistency across tables with atomic, all-or-nothing commits.',
         plan: 'free',
         importance: 8,
         scope: 'project',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-time-helper-queries',
+            link: () => 'https://appwrite.io/blog/post/announcing-transactions-api',
             external: true,
             hideOnClick: true
         },
         show: true
     };
-    listOfPromotions.push(spatialColumnsPromo, inversionQueriesPromo, timeHelperQueriesPromo);
+    listOfPromotions.push(spatialColumnsPromo, inversionQueriesPromo, transactionsApiPromo);
 }
 
 export function addBottomModalAlerts() {
