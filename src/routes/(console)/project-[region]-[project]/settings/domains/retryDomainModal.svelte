@@ -45,14 +45,19 @@
                 .forProject(page.params.region, page.params.project)
                 .proxy.updateRuleVerification({ ruleId: selectedDomain.$id });
 
-            show = false;
             verified = domain.status === 'verified';
             await invalidate(Dependencies.DOMAINS);
 
-            addNotification({
-                type: 'success',
-                message: `${selectedDomain.domain} has been verified`
-            });
+            if (verified) {
+                show = false;
+                addNotification({
+                    type: 'success',
+                    message: `${selectedDomain.domain} has been verified`
+                });
+            } else {
+                error =
+                    'Domain verification failed. Please check your domain settings or try again later';
+            }
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
             error =
