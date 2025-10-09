@@ -20,7 +20,7 @@
     const database = $derived(data.database);
 
     let showDelete = $state(false);
-    let databaseName: string = $state(null);
+    let databaseName: string | null = $state(null);
 
     let errorMessage: string = $state('Something went wrong');
     let errorType: 'error' | 'warning' | 'success' = $state('error');

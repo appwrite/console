@@ -142,7 +142,7 @@
             callback() {
                 goto(basePath);
             },
-            disabled: page.url.pathname.endsWith(table.$id),
+            disabled: page.url.pathname.endsWith(table?.$id),
             group: 'tables'
         },
         {

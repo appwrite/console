@@ -57,7 +57,10 @@
 
     let showRestore = $state(false);
     let showCustomId = $state(false);
-    let newDatabaseInfo: { name: string; id: string } = $state({ name: null, id: null });
+    let newDatabaseInfo: { name: string | null; id: string | null } = $state({
+        name: null,
+        id: null
+    });
 
     let confirmSameDbRestore = $state(false);
     let selectedRestoreOption = $state('new');

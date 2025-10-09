@@ -27,7 +27,7 @@
 
     const { data }: PageProps = $props();
 
-    let policyCreateError: string = $state(null);
+    let policyCreateError: string | null = $state(null);
     let totalPolicies: UserBackupPolicy[] = $state([]);
 
     const isDisabled = $derived(isSelfHosted || (isCloud && !$currentPlan.backupsEnabled));

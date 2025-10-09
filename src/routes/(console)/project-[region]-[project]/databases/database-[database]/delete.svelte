@@ -73,9 +73,11 @@
 
     const handleDelete = async () => {
         try {
+            // TODO: namespace as per database type!
             await sdk.forProject(page.params.region, page.params.project).tablesDB.delete({
                 databaseId: page.params.database
             });
+
             showDelete = false;
 
             addNotification({
@@ -102,6 +104,9 @@
         if (!showDelete) {
             tables = null;
             tableItems = [];
+
+            error = false;
+            confirmedDeletion = false;
         }
     });
 
