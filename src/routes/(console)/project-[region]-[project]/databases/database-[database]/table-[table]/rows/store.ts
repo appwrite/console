@@ -2,6 +2,7 @@ import { page } from '$app/state';
 import type { Column } from '$lib/helpers/types';
 import type { Columns } from '../store';
 import { type Models, Query } from '@appwrite.io/console';
+import type { Entity } from '$database/(entity)';
 
 export function isRelationshipToMany(col: Columns) {
     if (!col) return false;
@@ -38,13 +39,13 @@ export function isSpatialType(
 }
 
 /**
- * Returns select queries for all main and related fields in a table.
+ * Returns select queries for all main and related fields in an `Entity`.
  */
-export function buildWildcardColumnsQuery(table: Models.Table | null = null): string[] {
+export function buildWildcardColumnsQuery(entity: Entity | null = null): string[] {
     return [
-        ...(table?.columns
-            ?.filter((col) => col.status === 'available' && isRelationship(col))
-            ?.map((col) => Query.select([`${col.key}.*`])) ?? []),
+        ...(entity?.fields
+            ?.filter((field) => field.status === 'available' && isRelationship(field))
+            ?.map((field) => Query.select([`${field.key}.*`])) ?? []),
 
         Query.select(['*'])
     ];

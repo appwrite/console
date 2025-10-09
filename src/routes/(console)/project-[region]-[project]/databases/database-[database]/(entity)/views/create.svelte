@@ -58,11 +58,13 @@
         error = null;
         creatingEntity = true;
         try {
+            const finalId = id || ID.unique();
+
             // early init setup!
-            enableThinkingModeForSuggestions(id, name);
+            enableThinkingModeForSuggestions(finalId, name);
 
             // create entity.
-            await onCreateEntity(id ? id : ID.unique(), name);
+            await onCreateEntity(finalId, name);
 
             // cleanup
             updateAndCleanup();
@@ -106,7 +108,6 @@
         }
 
         if (!show) {
-            name = '';
             id = null;
             error = null;
             touchedId = false;

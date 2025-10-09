@@ -47,7 +47,7 @@
             actions={{
                 primary: {
                     onClick: toggle,
-                    disabled: !data.table.columns?.length
+                    disabled: !data.table.fields?.length
                 }
             }} />
     {/snippet}

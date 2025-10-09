@@ -44,8 +44,7 @@
     const { dependencies, terminology } = getTerminologies();
 
     const fieldOptions = $derived(
-        // TODO: could be columns or attributes!
-        entity.columns
+        entity.fields
             .filter((field) => {
                 if (selectedType === IndexType.Spatial) {
                     // keep only spatial
@@ -104,8 +103,7 @@
     }
 
     function initialize() {
-        // TODO: could be columns or attributes or something else!
-        const field = entity.columns.filter((field) => externalFieldKey === field.key);
+        const field = entity.fields.filter((field) => externalFieldKey === field.key);
         const isSpatial = field.length && isSpatialType(field[0]);
         const order = isSpatial ? null : 'ASC';
         selectedType = isSpatial ? IndexType.Spatial : IndexType.Key;

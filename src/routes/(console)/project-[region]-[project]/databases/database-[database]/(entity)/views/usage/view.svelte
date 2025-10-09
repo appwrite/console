@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Usage } from '$lib/layout';
     import type { Metric } from '$lib/sdk/usage';
     import Container from '$lib/layout/container.svelte';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { type DatabaseType, getTerminologies } from '$database/(entity)';
 
     let {
@@ -19,15 +19,27 @@
 
     const records = terminology.record.lower.plural;
     const entity = terminology.entity.lower.singular;
+
+    const usagePath = $derived(
+        withPath(
+            // base path
+            resolveRoute(
+                '/(console)/project-[region]-[project]/databases/database-[database]',
+                page.params
+            ),
+
+            // append dynamic path
+            `${entity}-${page.params[entity]}/usage`
+        )
+    );
 </script>
 
 <div class="wide-screen-wrapper databases-spreadsheet">
-    <!-- TODO: use resolve instead of base if possible -->
     <Container expanded slotSpacing paddingInlineEnd databasesScreen>
         <Usage
-            path={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/${entity}-${page.params[entity]}/usage`}
             {total}
             {count}
+            path={usagePath}
             countMetadata={{
                 legend: records,
                 title: `Total ${records}`

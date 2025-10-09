@@ -9,7 +9,6 @@
     import { Icon, Layout, Divider, Tooltip } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import {
-        table,
         tableColumns,
         isCsvImportInProgress,
         showRowCreateSheet,
@@ -37,6 +36,8 @@
     import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
 
     export let data: PageData;
+
+    $: table = data.table;
 
     let showImportCSV = false;
 
@@ -71,14 +72,14 @@
 
     $: selected = preferences.getCustomTableColumns(page.params.table);
 
-    $: if ($table.columns) {
-        const freshColumns = createTableColumns($table.columns, selected);
+    $: if (table.fields) {
+        const freshColumns = createTableColumns(table.fields, selected);
         tableColumns.set(freshColumns);
         filterColumns.set(createFilterableColumns(freshColumns, selected));
     }
 
-    $: hasColumns = !!$table.columns.length;
-    $: hasValidColumns = $table?.columns?.some((col) => col.status === 'available');
+    $: hasColumns = !!table.fields.length;
+    $: hasValidColumns = table?.fields?.some((col: Columns) => col.status === 'available');
     $: canShowSuggestionsSheet =
         // enabled, has table details
         // and it matches current table
@@ -204,7 +205,7 @@
                 <EmptySheet
                     mode="rows-filtered"
                     title="There are no rows that match your filters"
-                    customColumns={createTableColumns($table.columns, selected)}
+                    customColumns={createTableColumns(table.fields, selected)}
                     actions={{
                         primary: {
                             text: 'Clear filters',
@@ -220,7 +221,7 @@
             {:else}
                 <EmptySheet
                     mode="rows"
-                    customColumns={createTableColumns($table.columns, selected)}
+                    customColumns={createTableColumns(table.fields, selected)}
                     showActions={$canWriteRows}
                     actions={{
                         primary: {
@@ -282,7 +283,7 @@
 {/if}
 
 <CreateRow
-    table={$table}
+    {table}
     bind:showSheet={$showRowCreateSheet.show}
     bind:existingData={$showRowCreateSheet.row} />
 

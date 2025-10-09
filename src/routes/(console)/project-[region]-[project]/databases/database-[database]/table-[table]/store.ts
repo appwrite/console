@@ -20,11 +20,10 @@ export type Columns =
     | Models.ColumnPolygon
     | (Models.ColumnRelationship & { default?: never });
 
-type Table = Omit<Models.Table, 'columns'> & {
+export type Table = Omit<Models.Table, 'columns'> & {
     columns: Array<Columns>;
 };
 
-export const table = derived(page, ($page) => $page.data.table as Table);
 export const columns = derived(page, ($page) => $page.data.table.columns as Columns[]);
 export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.ColumnIndex[]);
 

@@ -1,10 +1,11 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { Header } from '$database/(entity)';
-    import { expandTabs, table } from './store';
+    import { expandTabs } from './store';
     import { canWriteTables } from '$lib/stores/roles';
     import { preferences } from '$lib/stores/preferences';
     import { resolveRoute } from '$lib/stores/navigation';
+
+    import { type Entity, Header } from '$database/(entity)';
 
     const path = $derived(
         resolveRoute(
@@ -25,6 +26,8 @@
         const isSpreadsheetPage = endings.some((end) => page.route.id?.endsWith(end));
         return !isSpreadsheetPage;
     });
+
+    const table = $derived(page.data.table) as Entity;
 
     const tabs = $derived(
         [
@@ -74,7 +77,7 @@
 </script>
 
 <div class:nonSheetPages>
-    <Header {tabs} entity={$table} parentHref={link} bind:expanded={$expandTabs} />
+    <Header {tabs} entity={table} parentHref={link} bind:expanded={$expandTabs} />
 </div>
 
 <style lang="scss">

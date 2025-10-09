@@ -14,6 +14,7 @@
     import { Accordion, Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import { preferences } from '$lib/stores/preferences';
+    import type { Entity } from '$database/(entity)';
 
     const databaseId = page.params.database;
 
@@ -27,7 +28,7 @@
 
     let loading = $state(false);
     let fetchedRows = $state<Models.Row[]>([]);
-    let relatedTable = $state<Models.Table | null>(null);
+    let relatedTable = $state<Entity | null>(null);
 
     let disabledState = $state(calculateAndCompareDisabledState());
 
@@ -208,7 +209,7 @@
     }
 
     function calculateAndCompareDisabledState() {
-        if (!relatedTable?.columns?.length || !fetchedRows.length) return true;
+        if (!relatedTable?.fields?.length || !fetchedRows.length) return true;
 
         if (isSingleStore()) {
             const rowId = fetchedRows[0].$id;
@@ -218,7 +219,9 @@
             if (!row || !work) return true;
 
             const workValue = get(work);
-            return relatedTable.columns.every((column) => compareColumns(column, workValue, row));
+            return relatedTable.fields.every((column: Columns) =>
+                compareColumns(column, workValue, row)
+            );
         } else {
             return fetchedRows.every((row) => {
                 const work = workData.get(row.$id);
@@ -226,7 +229,7 @@
 
                 const workValue = get(work);
 
-                return relatedTable.columns.every((column) =>
+                return relatedTable.fields.every((column: Columns) =>
                     compareColumns(column, workValue, row)
                 );
             });
@@ -341,16 +344,16 @@
     <div style:margin-inline-end="2.25rem">
         <Skeleton variant="line" height={40} width="auto" />
     </div>
-{:else if relatedTable?.columns?.length && fetchedRows.length}
+{:else if relatedTable?.fields?.length && fetchedRows.length}
     <!-- we should not show current table column items in this view -->
     {@const twoWayKeys = new Set(
-        relatedTable.columns
+        relatedTable.fields
             .filter((column: Models.ColumnRelationship) => column.twoWay)
             .map((c) => c.key)
     )}
 
     <!-- render the filtered ones -->
-    {@const columnsToRender = relatedTable.columns.filter((c) => !twoWayKeys.has(c.key))}
+    {@const columnsToRender = relatedTable.fields.filter((c) => !twoWayKeys.has(c.key))}
 
     <div bind:this={columnFormWrapper}>
         {#if fetchedRows.length === 1}

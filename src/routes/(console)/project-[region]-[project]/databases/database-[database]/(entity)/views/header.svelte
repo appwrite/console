@@ -47,34 +47,36 @@
     });
 </script>
 
-<Cover animate {expanded} collapsed={!expanded} blocksize={expanded ? '152px' : '90px'}>
-    <svelte:fragment slot="header">
-        <Layout.Stack direction="row" alignContent="center" alignItems="center" inline>
-            <AnimatedTitle href={parentHref} collapsed={!expanded}>
-                {entity.name}
-            </AnimatedTitle>
+{#if entity}
+    <Cover animate {expanded} collapsed={!expanded} blocksize={expanded ? '152px' : '90px'}>
+        <svelte:fragment slot="header">
+            <Layout.Stack direction="row" alignContent="center" alignItems="center" inline>
+                <AnimatedTitle href={parentHref} collapsed={!expanded}>
+                    {entity.name}
+                </AnimatedTitle>
 
-            {#key entity.$id}
-                <Id value={entity.$id} tooltipPlacement={expanded ? undefined : 'right'}>
-                    {entity.$id}
-                </Id>
-            {/key}
-        </Layout.Stack>
-    </svelte:fragment>
+                {#key entity.$id}
+                    <Id value={entity.$id} tooltipPlacement={expanded ? undefined : 'right'}>
+                        {entity.$id}
+                    </Id>
+                {/key}
+            </Layout.Stack>
+        </svelte:fragment>
 
-    <div class="tabs-container" class:collapsed={!expanded}>
-        <Tabs>
-            {#each tabs as tab}
-                <Tab
-                    href={tab.href}
-                    selected={isTabSelected(tab, page.url.pathname, basePath, tabs)}
-                    event={tab.event}>
-                    {tab.title}
-                </Tab>
-            {/each}
-        </Tabs>
-    </div>
-</Cover>
+        <div class="tabs-container" class:collapsed={!expanded}>
+            <Tabs>
+                {#each tabs as tab}
+                    <Tab
+                        href={tab.href}
+                        selected={isTabSelected(tab, page.url.pathname, basePath, tabs)}
+                        event={tab.event}>
+                        {tab.title}
+                    </Tab>
+                {/each}
+            </Tabs>
+        </div>
+    </Cover>
+{/if}
 
 <style lang="scss">
     .tabs-container {

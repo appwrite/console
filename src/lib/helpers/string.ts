@@ -40,7 +40,13 @@ export function plural(str: string): string {
     const lower = str.toLowerCase();
 
     // Words ending in sibilants: s, sh, ch, x, z
-    if (/[sxz]$/.test(lower) || /[cs]h$/.test(lower)) {
+    if (
+        lower.endsWith('s') ||
+        lower.endsWith('x') ||
+        lower.endsWith('z') ||
+        lower.endsWith('ch') ||
+        lower.endsWith('sh')
+    ) {
         return str + 'es';
     }
 
