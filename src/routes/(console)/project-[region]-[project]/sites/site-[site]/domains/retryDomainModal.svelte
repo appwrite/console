@@ -10,7 +10,6 @@
     import { Divider, Tabs } from '@appwrite.io/pink-svelte';
     import { isCloud } from '$lib/system';
     import { page } from '$app/state';
-    import { isASubdomain } from '$lib/helpers/tlds';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
@@ -23,12 +22,10 @@
         selectedProxyRule: Models.ProxyRule;
     } = $props();
 
-    const isSubDomain = $derived.by(() => isASubdomain(selectedProxyRule?.domain));
-
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
 
     $effect(() => {
-        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
+        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME) {
             selectedTab = 'cname';
         } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
             selectedTab = 'a';
@@ -48,14 +45,19 @@
                 .forProject(page.params.region, page.params.project)
                 .proxy.updateRuleVerification({ ruleId: selectedProxyRule.$id });
 
-            show = false;
             verified = domain.status === 'verified';
             await invalidate(Dependencies.SITES_DOMAINS);
 
-            addNotification({
-                type: 'success',
-                message: `${selectedProxyRule.domain} has been verified`
-            });
+            if (verified) {
+                show = false;
+                addNotification({
+                    type: 'success',
+                    message: `${selectedProxyRule.domain} has been verified`
+                });
+            } else {
+                error =
+                    'Domain verification failed. Please check your domain settings or try again later';
+            }
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
             error =
@@ -75,7 +77,7 @@
 <Modal title="Retry verification" bind:show onSubmit={retryDomain} bind:error>
     <div>
         <Tabs.Root variant="secondary" let:root>
-            {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
+            {#if !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'cname')}
@@ -111,13 +113,20 @@
         <Divider />
     </div>
     {#if selectedTab === 'nameserver'}
-        <NameserverTable domain={selectedProxyRule.domain} {verified} />
+        <NameserverTable
+            domain={selectedProxyRule.domain}
+            {verified}
+            ruleStatus={selectedProxyRule.status} />
     {:else}
         <RecordTable
             {verified}
             service="sites"
             variant={selectedTab}
-            domain={selectedProxyRule.domain} />
+            domain={selectedProxyRule.domain}
+            ruleStatus={selectedProxyRule.status}
+            onNavigateToNameservers={() => (selectedTab = 'nameserver')}
+            onNavigateToA={() => (selectedTab = 'a')}
+            onNavigateToAAAA={() => (selectedTab = 'aaaa')} />
     {/if}
 
     <svelte:fragment slot="footer">
