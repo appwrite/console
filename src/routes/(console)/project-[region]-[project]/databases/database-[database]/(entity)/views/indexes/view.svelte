@@ -294,7 +294,7 @@
             {@render emptyIndexesSheetView(() => (showCreateIndex = true))}
         {/if}
     {:else}
-        {@render emptyEntitiesSheetView()}
+        {@render emptyEntitiesSheetView?.()}
     {/if}
 
     {#if selectedIndexes.length > 0}
