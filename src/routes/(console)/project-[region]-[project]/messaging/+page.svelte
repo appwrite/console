@@ -243,11 +243,7 @@
     {:else if $hasPageQueries}
         <EmptyFilter resource="messages" />
     {:else if data.search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no messages that match your search.</p>
-            </div>
+        <EmptySearch target="messages" search={data.search}>
             <div class="u-flex u-gap-16">
                 <Button external href="https://appwrite.io/docs/products/messaging/messages" text>
                     Documentation

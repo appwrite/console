@@ -25,8 +25,9 @@
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import { base } from '$app/paths';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Link } from '$lib/elements';
 
     export let data;
     let showAdd = false;
@@ -71,9 +72,7 @@
             await Promise.all(promises);
             addNotification({
                 type: 'success',
-                message: `Added ${targetIds.length} subscriber${
-                    targetIds.length > 1 ? 's' : ''
-                } to topic`
+                message: `${targetIds.length} subscriber${targetIds.length !== 1 ? 's' : ''} have been added`
             });
             trackEvent(Submit.MessagingTopicSubscriberAdd);
             await invalidate(Dependencies.MESSAGING_TOPIC_SUBSCRIBERS);
@@ -141,13 +140,14 @@
     bind:targetsById={$targetsById}
     on:update={addTargets}>
     <svelte:fragment slot="description">
-        <p class="text">
-            Add subscribers to this topic by selecting the targets for directing messages. <a
+        <Typography.Text>
+            Add subscribers to this topic by selecting the targets for directing messages.{' '}
+            <Link
                 href="https://appwrite.io/docs/products/messaging/topics#subscribe-targets-to-topics"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link">Learn more about subscribers</a
-            >.
-        </p>
+                external>
+                Learn more
+            </Link>
+            .
+        </Typography.Text>
     </svelte:fragment>
 </UserTargetsModal>

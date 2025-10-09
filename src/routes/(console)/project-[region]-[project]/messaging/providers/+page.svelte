@@ -1,45 +1,40 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
-    import {
-        EmptySearch,
-        SearchQuery,
-        PaginationWithLimit,
-        ViewSelector,
-        EmptyFilter
-    } from '$lib/components';
-    import { Container } from '$lib/layout';
+    import { EmptySearch, PaginationWithLimit, EmptyFilter } from '$lib/components';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { columns } from './store';
-    import { Filters, hasPageQueries } from '$lib/components/filters';
+    import { hasPageQueries } from '$lib/components/filters';
     import CreateProviderDropdown from './createProviderDropdown.svelte';
     import Table from './table.svelte';
     import { base } from '$app/paths';
     import { canWriteProviders } from '$lib/stores/roles';
-    import { Card, Layout, Empty, Icon } from '@appwrite.io/pink-svelte';
+    import { Card, Empty, Icon } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import type { PageData } from './$types';
 
-    export let data;
+    let { data }: { data: PageData } = $props();
 </script>
 
 <Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search providers" />
-        </Layout.Stack>
-        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Filters query={data.query} {columns} analyticsSource="messaging_providers" />
-            <ViewSelector ui="new" view={View.Table} {columns} hideView />
-            {#if $canWriteProviders}
-                <CreateProviderDropdown let:toggle>
-                    <Button on:click={toggle} event="create_provider">
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Create provider
-                    </Button>
-                </CreateProviderDropdown>
-            {/if}
-        </Layout.Stack>
-    </Layout.Stack>
+    <ResponsiveContainerHeader
+        {columns}
+        view={View.Table}
+        hideView
+        hasFilters
+        hasSearch
+        analyticsSource="messaging_providers"
+        searchPlaceholder="Search by name or ID">
+        {#if $canWriteProviders}
+            <CreateProviderDropdown let:toggle>
+                <Button on:click={toggle} event="create_provider">
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create provider
+                </Button>
+            </CreateProviderDropdown>
+        {/if}
+    </ResponsiveContainerHeader>
 
     {#if data.providers.total}
         <Table {data} />
@@ -52,11 +47,7 @@
     {:else if $hasPageQueries}
         <EmptyFilter resource="providers" />
     {:else if data.search && data.search !== 'empty'}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no providers that match your search.</p>
-            </div>
+        <EmptySearch target="providers" search={data.search}>
             <Button
                 secondary
                 href={`${base}/project-${page.params.region}-${page.params.project}/messaging/providers`}>
@@ -68,7 +59,7 @@
             <Empty
                 title="Create your first provider"
                 description="Need a hand? Learn more in our documentation.">
-                <slot name="actions" slot="actions">
+                <svelte:fragment slot="actions">
                     <Button
                         external
                         href="https://appwrite.io/docs/products/messaging/providers"
@@ -82,7 +73,7 @@
                             </Button>
                         </CreateProviderDropdown>
                     {/if}
-                </slot>
+                </svelte:fragment>
             </Empty>
         </Card.Base>
     {/if}

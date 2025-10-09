@@ -216,7 +216,7 @@
                 <Badge variant="secondary" content={selectedUsers.toString()} />
                 <span>Users selected</span>
             </Layout.Stack>
-            <Button submit disabled={!hasSelection}>Add</Button>
+            <Button submit disabled={!hasSelection}>Create</Button>
         </Layout.Stack>
     </svelte:fragment>
 </Modal>
