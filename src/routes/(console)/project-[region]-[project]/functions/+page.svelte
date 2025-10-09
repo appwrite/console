@@ -31,6 +31,11 @@
     export let data;
 
     let offset = 0;
+    let searchQuery;
+
+    function clearSearch() {
+        searchQuery?.clearInput();
+    }
 
     const project = page.params.project;
 
@@ -80,7 +85,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search by name or ID" />
+        <SearchQuery bind:this={searchQuery} placeholder="Search by name or ID" />
 
         <Button href={`${base}/project-${page.params.region}-${project}/functions/create-function`}>
             <Icon icon={IconPlus} slot="start" />
@@ -133,11 +138,7 @@
             total={data.functions.total} />
     {:else if data?.search}
         <EmptySearch hidePages bind:search={data.search} target="functions">
-            <Button
-                secondary
-                href={`${base}/project-${page.params.region}-${page.params.project}/functions`}>
-                Clear search
-            </Button>
+            <Button secondary on:click={clearSearch}>Clear search</Button>
         </EmptySearch>
     {:else}
         <Empty

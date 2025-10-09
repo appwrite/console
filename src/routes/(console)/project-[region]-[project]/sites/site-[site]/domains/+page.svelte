@@ -9,14 +9,21 @@
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
     import Table from './table.svelte';
 
     export let data;
+
+    let searchQuery: { clearInput?: () => void } | undefined;
+
+    function clearSearch() {
+        clearSearchInput(searchQuery);
+    }
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search domain" />
+        <SearchQuery bind:this={searchQuery} placeholder="Search domain" />
         <Button
             href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}
             on:click={() => {
@@ -38,12 +45,8 @@
             offset={data.offset}
             total={data.proxyRules.total} />
     {:else if data?.search}
-        <EmptySearch hidePages bind:search={data.search} target="domains" hidePagination>
-            <Button
-                secondary
-                on:click={() => {
-                    data.search = '';
-                }}>Clear search</Button>
+        <EmptySearch hidePages search={data.search} target="domains" hidePagination>
+            <Button secondary on:click={clearSearch}>Clear search</Button>
         </EmptySearch>
     {:else}
         <Card.Base padding="none">

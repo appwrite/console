@@ -9,6 +9,7 @@
         ViewSelector,
         EmptyFilter
     } from '$lib/components';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
     import { Container } from '$lib/layout';
     import { ID, type Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
@@ -24,12 +25,13 @@
     import { View } from '$lib/helpers/load';
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
-    import { base } from '$app/paths';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
     let showAdd = false;
+    let searchQuery;
+    const clearSearch = () => clearSearchInput(searchQuery);
     let subscribersByTargetId: Record<string, Models.Subscriber> = {};
     const columns = writable<Column[]>([
         { id: '$id', title: 'Subscriber ID', type: 'string', width: 200 },
@@ -89,7 +91,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search by type or IDs"></SearchQuery>
+        <SearchQuery bind:this={searchQuery} placeholder="Search by type or IDs"></SearchQuery>
         <Layout.Stack direction="row" inline>
             <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
             <ViewSelector ui="new" view={View.Table} {columns} hideView />
@@ -121,10 +123,7 @@
                 <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no subscribers that match your search.</p>
             </div>
-            <Button
-                secondary
-                href={`${base}/project-${page.params.region}-${page.params.project}/messaging/topics/topic-${page.params.topic}/subscribers`}>
-            </Button>
+            <Button secondary on:click={clearSearch}>Clear search</Button>
         </EmptySearch>
     {:else}
         <Empty
