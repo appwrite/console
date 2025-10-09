@@ -20,9 +20,8 @@ export function toDecimals(num: number, decimals: number = 1): number {
 
 export function formatNumberWithCommas(number: number, min: number = 0): string {
     if (isNaN(number)) return String(number);
-    const value = Math.max(min, number);
     const formatter = new Intl.NumberFormat('en');
-    return formatter.format(value);
+    return formatter.format(clampMin(number, min));
 }
 
 export function formatCurrency(
@@ -32,12 +31,11 @@ export function formatCurrency(
     min: number = 0
 ): string {
     if (isNaN(number)) return String(number);
-    const value = Math.max(min, number);
     const formatter = new Intl.NumberFormat(locale, {
         style: 'currency',
         currency
     });
-    return formatter.format(value);
+    return formatter.format(clampMin(number, min));
 }
 
 export function isWithinSafeRange(val: number) {
