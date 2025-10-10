@@ -251,7 +251,7 @@
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
-        let columns: Columns[];
+        let columns: Columns[] = [];
         const currentFields = table.fields;
         const hasAnyRelationships = currentFields.some((field: Field) => isRelationship(field));
         const filteredColumns = currentFields.filter(
