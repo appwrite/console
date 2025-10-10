@@ -40,7 +40,7 @@
         return queries;
     }
 
-    async function listTables() {
+    async function listEntities() {
         // let's just wait...
         if (isLoadingRowsCount) return;
 
@@ -53,7 +53,7 @@
                 queries
             });
 
-            const entityPromises = entities.entities.map(async (entity) => {
+            const entityInfo = entities.entities.map((entity) => {
                 return {
                     id: entity.$id,
                     name: entity.name,
@@ -61,7 +61,7 @@
                 };
             });
 
-            entityItems = [...entityItems, ...(await Promise.all(entityPromises))];
+            entityItems = [...entityItems, ...entityInfo];
         } catch (err) {
             error = true;
         } finally {
@@ -98,18 +98,16 @@
 
     /* reset data on modal close */
     $effect(() => {
-        if (!showDelete) {
+        if (showDelete) {
+            if (entityItems.length === 0 && !entities) {
+                listEntities();
+            }
+        } else {
             entities = null;
             entityItems = [];
 
             error = false;
             confirmedDeletion = false;
-        }
-    });
-
-    $effect(() => {
-        if (showDelete) {
-            listTables();
         }
     });
 </script>
@@ -151,7 +149,7 @@
 
             {#if entityItems.length < entities.total}
                 <div class="u-flex u-gap-16 u-cross-center">
-                    <button class="u-underline" onclick={listTables} type="button">
+                    <button class="u-underline" onclick={listEntities} type="button">
                         Show more
                     </button>
 
