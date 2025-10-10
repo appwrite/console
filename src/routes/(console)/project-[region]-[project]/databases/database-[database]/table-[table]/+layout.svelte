@@ -64,6 +64,9 @@
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
+    import IndexesSuggestions from '../(suggestions)/indexes.svelte';
+    import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
+
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
     let editRowPermissions: EditRowPermissions;
@@ -89,7 +92,15 @@
                     response.events.includes('databases.*.tables.*.columns.*') ||
                     response.events.includes('databases.*.tables.*.indexes.*')
                 ) {
-                    if (!isWaterfallFromFaker) {
+                    // don't invalidate when -
+                    // 1. from faker
+                    // 2. ai columns creation
+                    // 3. ai indexes creation
+                    if (
+                        !isWaterfallFromFaker &&
+                        !$showIndexesSuggestions &&
+                        !$tableColumnSuggestions.table
+                    ) {
                         invalidate(Dependencies.TABLE);
                     }
                 }
@@ -442,7 +453,7 @@
     title="Row permissions"
     bind:show={$rowPermissionSheet.show}
     submit={{
-        text: 'Create',
+        text: 'Update',
         disabled: editRowPermissions?.disableSubmit(),
         onClick: async () => editRowPermissions?.updatePermissions()
     }}>
@@ -470,3 +481,5 @@
         </Layout.Stack>
     </svelte:fragment>
 </Dialog>
+
+<IndexesSuggestions />

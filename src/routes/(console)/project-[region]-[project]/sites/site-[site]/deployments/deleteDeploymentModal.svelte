@@ -22,7 +22,10 @@
                 siteId: selectedDeployment.resourceId,
                 deploymentId: selectedDeployment.$id
             });
-            await invalidate(Dependencies.SITE);
+            await Promise.all([
+                invalidate(Dependencies.DEPLOYMENTS),
+                invalidate(Dependencies.SITE)
+            ]);
             if (page.url.href.includes(`deployment-${selectedDeployment.$id}`)) {
                 await goto(
                     `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments`

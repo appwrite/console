@@ -325,7 +325,7 @@
         background: linear-gradient(
             180deg,
             rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.855) 21%,
+            rgba(255, 255, 255, 0.86) 32.25%,
             #ffffff 100%
         );
         z-index: 20;
@@ -347,10 +347,9 @@
     :global(.theme-dark) .spreadsheet-fade-bottom {
         background: linear-gradient(
             180deg,
-            rgba(25, 25, 28, 0.38) 13%,
-            rgba(25, 25, 28, 0.7) 21%,
-            rgba(25, 25, 28, 0.95) 38%,
-            var(--bgcolor-neutral-default, #19191c) 100%
+            rgba(29, 29, 33, 0) 0%,
+            rgba(29, 29, 33, 0.86) 21%,
+            #1d1d21 100%
         );
     }
 

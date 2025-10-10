@@ -1,42 +1,67 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
+    import { isCloud } from '$lib/system';
     import IconAI from './icon/ai.svelte';
     import { slide } from 'svelte/transition';
     import { tableColumnSuggestions } from './store';
-    import { InputTextarea } from '$lib/elements/forms';
+    import { Button, InputTextarea } from '$lib/elements/forms';
     import { Card, Layout, Selector, Typography } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
 
     onMount(() => {
-        // enable by default!
-        $tableColumnSuggestions.enabled = true;
+        if (featureActive) {
+            $tableColumnSuggestions.enabled = true;
+        }
+    });
+
+    const featureActive = $derived(isCloud);
+
+    const title = $derived.by(() => {
+        return featureActive
+            ? 'Smart column suggestions'
+            : 'Smart column suggestions available on Cloud';
+    });
+
+    const subtitle = $derived.by(() => {
+        return featureActive
+            ? 'Enable AI to suggest useful columns based on your table name'
+            : 'Sign up for Cloud to generate columns based on your table name';
     });
 </script>
 
 <Card.Base variant="secondary" radius="s" padding="xs">
-    <Layout.Stack gap="m">
-        <Layout.Stack direction="row" gap="s" alignItems="center">
+    <Layout.Stack gap={featureActive ? 'm' : 'l'}>
+        <Layout.Stack gap="s" direction="row" alignItems="flex-start">
             <IconAI />
 
             <Layout.Stack direction="column" gap="none">
-                <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography.Text variant="m-500" color="--fgcolor-neutral-primary"
-                        >Smart column suggestions</Typography.Text>
-
-                    <div class="suggestions-switch">
-                        <Selector.Switch
-                            id="suggestions"
-                            label={undefined}
-                            bind:checked={$tableColumnSuggestions.enabled} />
-                    </div>
-                </Layout.Stack>
+                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary"
+                    >{title}</Typography.Text>
 
                 <Typography.Text color="--fgcolor-neutral-secondary">
-                    Enable AI to suggest useful columns based on your table name
+                    {subtitle}
                 </Typography.Text>
             </Layout.Stack>
+
+            {#if featureActive}
+                <div class="suggestions-switch">
+                    <Selector.Switch
+                        id="suggestions"
+                        label={undefined}
+                        bind:checked={$tableColumnSuggestions.enabled} />
+                </div>
+            {/if}
         </Layout.Stack>
 
-        {#if $tableColumnSuggestions.enabled}
+        {#if !featureActive}
+            <Layout.Stack>
+                <Button external secondary href="https://cloud.appwrite.io/register">
+                    Sign up
+                </Button>
+            </Layout.Stack>
+        {/if}
+
+        <!-- just being safe with extra guard! -->
+        {#if $tableColumnSuggestions.enabled && featureActive}
             <div transition:slide={{ duration: 200 }}>
                 <InputTextarea
                     id="context"
@@ -50,7 +75,7 @@
 </Card.Base>
 
 <style lang="scss">
-    .suggestions-switch :global(button) {
+    .suggestions-switch :global(button):not(:disabled) {
         cursor: pointer;
     }
 </style>

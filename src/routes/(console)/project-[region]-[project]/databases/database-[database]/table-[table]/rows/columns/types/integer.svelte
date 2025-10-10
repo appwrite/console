@@ -31,5 +31,5 @@
     min={column.min}
     max={column.max}
     required={column.required}
-    step={column.type === 'double' ? 'any' : 1}
+    step={column.type === 'double' ? 0.1 : 1}
     leadingIcon={!limited ? IconHashtag : undefined} />

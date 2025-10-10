@@ -3,7 +3,7 @@
     import { onMount } from 'svelte';
     import { CardGrid, PaginationInline } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Invoice, InvoiceList } from '$lib/sdk/billing';
     import { getApiEndpoint, sdk } from '$lib/stores/sdk';
@@ -112,8 +112,9 @@
                     {#each invoiceList?.invoices as invoice (invoice.$id)}
                         {@const status = invoice.status}
                         <Table.Row.Base {root}>
-                            <Table.Cell column="dueDate" {root}
-                                >{toLocaleDate(invoice.dueAt)}</Table.Cell>
+                            <Table.Cell column="dueDate" {root}>
+                                <DualTimeView time={invoice.dueAt} />
+                            </Table.Cell>
                             <Table.Cell column="status" {root}>
                                 {@const isDanger =
                                     status === 'overdue' ||

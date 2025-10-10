@@ -4,7 +4,7 @@
     import { Card, SecondaryTabs, SecondaryTabsItem } from '$lib/components';
     import { page } from '$app/state';
     import { type Models } from '@appwrite.io/console';
-    import { formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { formatNumberWithCommas, clampMin } from '$lib/helpers/numbers';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let title: string;
@@ -41,7 +41,7 @@
 
     <Card>
         {#if count}
-            {@const totalCount = total.reduce((a, b) => a + b, 0)}
+            {@const totalCount = clampMin(total.reduce((a, b) => a + b, 0))}
 
             <Layout.Stack gap="xs">
                 <Typography.Title>{formatNumberWithCommas(totalCount)}</Typography.Title>

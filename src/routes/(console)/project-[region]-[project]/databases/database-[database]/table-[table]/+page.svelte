@@ -6,7 +6,7 @@
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteTables, canWriteRows } from '$lib/stores/roles';
-    import { Icon, Layout, Divider } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Divider, Tooltip } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import {
         table,
@@ -31,6 +31,7 @@
     import EmptySheet from './layout/emptySheet.svelte';
     import CreateRow from './rows/create.svelte';
     import { onDestroy } from 'svelte';
+    import { isCloud } from '$lib/system';
     import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
 
     export let data: PageData;
@@ -75,6 +76,12 @@
 
     $: hasColumns = !!$table.columns.length;
     $: hasValidColumns = $table?.columns?.some((col) => col.status === 'available');
+    $: canShowSuggestionsSheet =
+        // enabled, has table details
+        // and it matches current table
+        $tableColumnSuggestions.enabled &&
+        $tableColumnSuggestions.table &&
+        $tableColumnSuggestions.table.id === page.params.table;
 
     async function onSelect(file: Models.File, localFile = false) {
         $isCsvImportInProgress = true;
@@ -114,21 +121,31 @@
         <Layout.Stack direction="column" gap="xl">
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Layout.Stack direction="row" gap="s">
-                    <ViewSelector
-                        onlyIcon
-                        ui="new"
-                        view={data.view}
-                        columns={tableColumns}
-                        hideView
-                        showAnyway
-                        isCustomTable />
+                    <Tooltip>
+                        <div>
+                            <ViewSelector
+                                onlyIcon
+                                ui="new"
+                                view={data.view}
+                                columns={tableColumns}
+                                hideView
+                                showAnyway
+                                isCustomTable />
+                        </div>
 
-                    <Filters
-                        onlyIcon
-                        query={data.query}
-                        columns={filterColumns}
-                        disabled={!(hasColumns && hasValidColumns)}
-                        analyticsSource="database_rows" />
+                        <svelte:fragment slot="tooltip">Columns</svelte:fragment>
+                    </Tooltip>
+
+                    <Tooltip>
+                        <Filters
+                            onlyIcon
+                            query={data.query}
+                            columns={filterColumns}
+                            disabled={!(hasColumns && hasValidColumns)}
+                            analyticsSource="database_tables" />
+
+                        <svelte:fragment slot="tooltip">Filters</svelte:fragment>
+                    </Tooltip>
                 </Layout.Stack>
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     <Button
@@ -192,7 +209,7 @@
                                 queries.clearAll();
                                 queries.apply();
                                 trackEvent(Submit.FilterClear, {
-                                    source: 'database_rows'
+                                    source: 'database_tables'
                                 });
                             }
                         }
@@ -216,7 +233,7 @@
                         }
                     }} />
             {/if}
-        {:else if $tableColumnSuggestions.enabled && $tableColumnSuggestions.table && $tableColumnSuggestions.table.id === page.params.table}
+        {:else if isCloud && canShowSuggestionsSheet}
             <SuggestionsEmptySheet />
         {:else}
             <EmptySheet
