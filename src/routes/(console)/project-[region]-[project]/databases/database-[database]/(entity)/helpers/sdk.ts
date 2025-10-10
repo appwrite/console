@@ -9,7 +9,7 @@ export type DatabaseSdkResult = {
         queries?: string[];
         search?: string;
     }) => Promise<EntityList>;
-    deleteEntity: (params: { databaseId: string }) => Promise<{}>;
+    delete: (params: { databaseId: string }) => Promise<{}>;
 };
 
 export function useDatabasesSdk(
@@ -53,7 +53,7 @@ export function useDatabasesSdk(
             }
         },
 
-        async deleteEntity(params) {
+        async delete(params) {
             switch (type) {
                 case 'legacy': /* databases api */
                 case 'tablesdb':

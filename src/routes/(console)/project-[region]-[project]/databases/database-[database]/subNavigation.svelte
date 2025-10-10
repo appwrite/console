@@ -240,7 +240,7 @@
                     ? {
                           items: [
                               {
-                                  name: 'All tables',
+                                  name: `All ${entityTypePlural}`,
                                   leadingIcon: IconTable,
                                   href: databaseBaseRoute
                               }

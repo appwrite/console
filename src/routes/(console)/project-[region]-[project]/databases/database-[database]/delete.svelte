@@ -71,7 +71,7 @@
 
     const handleDelete = async () => {
         try {
-            await databaseSdk.deleteEntity({
+            await databaseSdk.delete({
                 databaseId: page.params.database
             });
 
