@@ -7,19 +7,13 @@
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { useTerminology } from '$database/(entity)';
 
+    const terminology = useTerminology(page);
+    const baseDatabasePath = resolveRoute(
+        '/(console)/project-[region]-[project]/databases/database-[database]',
+        page.params
+    );
+
     const database = $derived(page.data.database);
-    const terminology = $derived(useTerminology(page));
-
-    const baseDatabasesPath = $derived(
-        resolveRoute('/(console)/project-[region]-[project]/databases', page.params)
-    );
-
-    const baseDatabasePath = $derived(
-        resolveRoute(
-            '/(console)/project-[region]-[project]/databases/database-[database]',
-            page.params
-        )
-    );
 
     const tabs = $derived(
         [
@@ -52,6 +46,7 @@
 </script>
 
 <Cover databasesMainScreen>
+    {@const baseDatabasesPath = resolveRoute('/(console)/project-[region]-[project]/databases', page.params)}
     <svelte:fragment slot="header">
         <CoverTitle href={baseDatabasesPath} style="margin-inline-start: -2.5rem;">
             {database?.name}

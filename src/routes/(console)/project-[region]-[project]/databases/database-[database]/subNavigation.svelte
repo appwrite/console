@@ -38,13 +38,12 @@
     const data = $derived(page.data) as PageData;
 
     // terminologies
-    const terminology = $derived(useTerminology(page));
-    const databasesSdk = $derived(useDatabasesSdk(page, terminology));
+    const terminology = useTerminology(page);
+    const databasesSdk = useDatabasesSdk(page, terminology);
 
     const entityTypePlural = $derived(terminology.entity.lower.plural);
     const entityTypeSingular = $derived(terminology.entity.lower.singular);
 
-    const databaseId = $derived(page.params.database);
     const entityId = $derived(page.params[entityTypeSingular]);
 
     let openBottomSheet = $state(false);
@@ -71,16 +70,14 @@
     const bottomNavOffset = $derived($bannerSpacing ? '70.5px' : '0px');
     const entityContentPadding = $derived($bannerSpacing ? '210px' : '140px');
 
-    const databaseBaseRoute = $derived(
-        resolveRoute(
-            '/(console)/project-[region]-[project]/databases/database-[database]',
-            page.params
-        )
+    const databaseBaseRoute = resolveRoute(
+        '/(console)/project-[region]-[project]/databases/database-[database]',
+        page.params
     );
 
     async function loadEntities() {
         entities = await databasesSdk.listEntities({
-            databaseId,
+            databaseId: page.params.database,
             queries: [Query.orderDesc(''), Query.limit(100)]
         });
     }
