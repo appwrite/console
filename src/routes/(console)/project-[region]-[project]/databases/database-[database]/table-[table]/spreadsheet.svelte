@@ -799,10 +799,11 @@
                             </Tooltip>
                         </Spreadsheet.Header.Cell>
                     {:else}
+                        {@const structureColumn = $columns.find((col) => col.key === column.id)}
                         <SheetOptions
                             type="header"
                             columnId={column.id}
-                            column={$columns.find((col) => col.key === column.id)}
+                            column={structureColumn}
                             onSelect={(option, columnId) =>
                                 onSelectSheetOption(option, columnId, 'header')}>
                             {#snippet children(toggle)}
@@ -824,10 +825,12 @@
                                         <!-- array indicator -->
                                         {#if column.array}[]{/if}
 
-                                        <SortButton
-                                            onSort={sort}
-                                            column={column.id}
-                                            state={sortState} />
+                                        {#if !isRelationship(structureColumn)}
+                                            <SortButton
+                                                onSort={sort}
+                                                column={column.id}
+                                                state={sortState} />
+                                        {/if}
                                     </Layout.Stack>
                                 </Spreadsheet.Header.Cell>
                             {/snippet}
