@@ -9,10 +9,9 @@
     import Link from '$lib/elements/link.svelte';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';
-    import { onMount, onDestroy } from 'svelte';
+    import { onDestroy } from 'svelte';
     import { resolve } from '$app/paths';
-    import { browser } from '$app/environment';
-    import { slide } from 'svelte/transition';
+    import ResendCooldown from '$lib/components/resendCooldown.svelte';
 
     let {
         show = $bindable(false),
@@ -25,8 +24,6 @@
     let error = $state(null);
     let creating = $state(false);
     let emailSent = $state(false);
-    let resendTimer = $state(0);
-    let timerInterval: ReturnType<typeof setInterval> | null = null;
 
     async function logout() {
         error = null;
@@ -41,72 +38,15 @@
 
     const cleanUrl = $derived(page.url.origin + page.url.pathname);
 
-    // manage resend timer in localStorage
-    const EMAIL_SENT_KEY = 'email_verification_sent';
-    const TIMER_END_KEY = 'email_verification_timer_end';
-
-    function startResendTimer() {
-        resendTimer = 60;
-        emailSent = true;
-        const timerEndTime = Date.now() + 60 * 1000;
-
-        if (browser) {
-            localStorage.setItem(EMAIL_SENT_KEY, 'true');
-            localStorage.setItem(TIMER_END_KEY, timerEndTime.toString());
-        }
-
-        startTimerCountdown(timerEndTime);
-    }
-
-    function restoreTimerState() {
-        if (!browser) return;
-        const savedTimerEnd = localStorage.getItem(TIMER_END_KEY);
-        const savedEmailSent = localStorage.getItem(EMAIL_SENT_KEY);
-
-        if (savedTimerEnd && savedEmailSent) {
-            const timerEndTime = parseInt(savedTimerEnd);
-            const now = Date.now();
-            const remainingTime = Math.max(0, Math.ceil((timerEndTime - now) / 1000));
-
-            if (remainingTime > 0) {
-                resendTimer = remainingTime;
-                emailSent = true;
-                startTimerCountdown(timerEndTime);
-            } else {
-                // timer has expired, clean up
-                localStorage.removeItem(TIMER_END_KEY);
-                localStorage.removeItem(EMAIL_SENT_KEY);
-
-                resendTimer = 0;
-                emailSent = false;
-            }
-        }
-    }
-
-    function startTimerCountdown(timerEndTime: number) {
-        timerInterval = setInterval(() => {
-            const now = Date.now();
-            const remainingTime = Math.max(0, Math.ceil((timerEndTime - now) / 1000));
-            resendTimer = remainingTime;
-            if (remainingTime <= 0) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                if (browser) {
-                    localStorage.removeItem(TIMER_END_KEY);
-                    localStorage.removeItem(EMAIL_SENT_KEY);
-                }
-            }
-        }, 1000);
-    }
+    // Timer UI handled by ResendCooldown component
 
     async function onSubmit() {
-        if (creating || resendTimer > 0) return;
+        if (creating) return;
         error = null;
         creating = true;
         try {
             await sdk.forConsole.account.createVerification({ url: cleanUrl });
             emailSent = true;
-            startResendTimer();
         } catch (err) {
             error = err.message;
         } finally {
@@ -114,18 +54,7 @@
         }
     }
 
-    onMount(restoreTimerState);
-
-    onDestroy(() => {
-        if (timerInterval) {
-            clearInterval(timerInterval);
-        }
-
-        if (browser) {
-            localStorage.removeItem(TIMER_END_KEY);
-            localStorage.removeItem(EMAIL_SENT_KEY);
-        }
-    });
+    onDestroy(() => {});
 </script>
 
 <div class="email-verification-scrim">
@@ -147,27 +76,21 @@
                 </Typography.Text>
 
                 <Link variant="default" on:click={() => logout()}>Switch account</Link>
-
-                {#if emailSent && resendTimer > 0}
-                    <div transition:slide={{ duration: 150 }}>
-                        <Typography.Text
-                            color="neutral-secondary"
-                            style="margin-block-start: var(--gap-L, 16px);">
-                            Didn't get the email? Try again in {resendTimer}s
-                        </Typography.Text>
-                    </div>
-                {/if}
             </Layout.Stack>
         </Card.Base>
 
         <svelte:fragment slot="footer">
-            <Button
-                submit
-                submissionLoader
-                forceShowLoader={creating}
-                disabled={creating || resendTimer > 0}>
-                {emailSent ? 'Resend email' : 'Send email'}
-            </Button>
+            {#if emailSent}
+                <ResendCooldown
+                    storageKey="email_verification_resend"
+                    seconds={60}
+                    bind:disabled={creating}
+                    onResend={onSubmit} />
+            {:else}
+                <Button submit submissionLoader forceShowLoader={creating} disabled={creating}>
+                    Send email
+                </Button>
+            {/if}
         </svelte:fragment>
     </Modal>
 </div>

@@ -9,8 +9,9 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { redirectTo } from '$routes/store';
     import { user } from '$lib/stores/user';
-    import { Layout, Typography, Link } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
+    import ResendCooldown from '$lib/components/resendCooldown.svelte';
 
     let otpCode: string = '';
     let disabled: boolean = false;
@@ -74,7 +75,6 @@
                 email: email
             });
             userId = sessionToken.userId;
-
             addNotification({
                 type: 'success',
                 message: 'New sign in code sent to your email.'
@@ -111,7 +111,11 @@
 
             <Typography.Text align="center">
                 Didn't get it?
-                <Link.Button on:click={resendCode} {disabled}>Resend code</Link.Button>
+                <ResendCooldown
+                    storageKey={`otp_resend_${email}`}
+                    seconds={60}
+                    bind:disabled
+                    onResend={resendCode} />
             </Typography.Text>
         </Layout.Stack>
     </svelte:fragment>
