@@ -20,11 +20,9 @@
 
     let {
         entity,
-        parentHref,
         tabs
     }: {
         entity: Entity;
-        parentHref: string;
         tabs: EntityTab[];
     } = $props();
 
@@ -34,6 +32,13 @@
      * 2. `getTerminologies` isn't available at that point.
      */
     const terminology = useTerminology(page);
+
+    const parentHref = $derived(
+        resolveRoute(
+            '/(console)/project-[region]-[project]/databases/database-[database]',
+            page.params
+        )
+    );
 
     const basePath = $derived.by(() => {
         const entityType = terminology.entity.lower.singular;

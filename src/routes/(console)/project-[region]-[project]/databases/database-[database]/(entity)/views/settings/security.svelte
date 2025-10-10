@@ -56,8 +56,8 @@
             <b>either {recordLower} or {entityLower} permissions</b>.
         </p>
         <p class="text">
-            If {recordLower} security is disabled, users can access rows
-            <b>only if they have {entityLower} permissions</b>. Row permissions will be ignored.
+            If {recordLower} security is disabled, users can access {recordsLower}
+            <b>only if they have {entityLower} permissions</b>. {title} permissions will be ignored.
         </p>
     </svelte:fragment>
     <svelte:fragment slot="actions">

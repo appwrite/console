@@ -27,27 +27,19 @@
     let errorType: 'error' | 'warning' | 'success' = $state('error');
     let showError: false | 'name' | 'email' | 'password' = $state(false);
 
-    const { terminology } = getTerminologies();
+    const { databaseSdk, terminology } = getTerminologies();
 
     onMount(async () => {
         databaseName ??= database.name;
     });
 
     async function loadEntityCount() {
-        const params = { databaseId: database.$id, queries: [Query.limit(1)] };
-        const projectSdk = sdk.forProject(page.params.region, page.params.project);
-        switch (terminology.type) {
-            case 'tablesdb': {
-                const { total } = await projectSdk.tablesDB.listTables(params);
-                return total;
-            }
-            case 'documentsdb': {
-                const { total } = await projectSdk.documentsDB.listCollections(params);
-                return total;
-            }
-            default:
-                return 0;
-        }
+        const { total } = await databaseSdk.listEntities({
+            databaseId: database.$id,
+            queries: [Query.limit(1)]
+        });
+
+        return total;
     }
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {

@@ -317,7 +317,7 @@
     <Form onSubmit={updateSecurity}>
         <CardGrid>
             <svelte:fragment slot="title">Security settings</svelte:fragment>
-            Enable or disable security services for the bucket including <b>Ecryption</b>
+            Enable or disable security services for the bucket including <b>Encryption</b>
             and <b>Antivirus scanning.</b>
             <svelte:fragment slot="aside">
                 <Selector.Switch

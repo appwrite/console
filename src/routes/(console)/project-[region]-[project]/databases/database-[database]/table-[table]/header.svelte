@@ -12,13 +12,6 @@
         )
     );
 
-    const link = $derived(
-        resolveRoute(
-            '/(console)/project-[region]-[project]/databases/database-[database]',
-            page.params
-        )
-    );
-
     const table = $derived(page.data.table) as Entity;
 
     const tabs = $derived(
@@ -61,4 +54,6 @@
     );
 </script>
 
-<Header {tabs} entity={table} parentHref={link} />
+{#if table}
+    <Header {tabs} entity={table} />
+{/if}

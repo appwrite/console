@@ -24,13 +24,12 @@
     import { BottomSheet } from '$lib/components';
     import Button from '$lib/elements/forms/button.svelte';
     import { Query } from '@appwrite.io/console';
-    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { subNavigation } from '$lib/stores/database';
     import {
         type Entity,
         type EntityList,
-        toSupportiveEntity,
+        useDatabasesSdk,
         useTerminology
     } from '$database/(entity)';
     import { resolveRoute } from '$lib/stores/navigation';
@@ -40,11 +39,11 @@
 
     // terminologies
     const terminology = $derived(useTerminology(page));
+    const databasesSdk = $derived(useDatabasesSdk(page, terminology));
+
     const entityTypePlural = $derived(terminology.entity.lower.plural);
     const entityTypeSingular = $derived(terminology.entity.lower.singular);
 
-    const region = $derived(page.params.region);
-    const project = $derived(page.params.project);
     const databaseId = $derived(page.params.database);
     const entityId = $derived(page.params[entityTypeSingular]);
 
@@ -80,21 +79,10 @@
     );
 
     async function loadEntities() {
-        const projectSdk = sdk.forProject(region, project);
-        const params = { databaseId, queries: [Query.orderDesc(''), Query.limit(100)] };
-
-        switch (terminology.type) {
-            case 'tablesdb': {
-                const { total, tables } = await projectSdk.tablesDB.listTables(params);
-                entities = { total, entities: tables.map(toSupportiveEntity) };
-                break;
-            }
-            case 'documentsdb': {
-                const { total, collections } = await projectSdk.documentsDB.listCollections(params);
-                entities = { total, entities: collections.map(toSupportiveEntity) };
-                break;
-            }
-        }
+        entities = await databasesSdk.listEntities({
+            databaseId,
+            queries: [Query.orderDesc(''), Query.limit(100)]
+        });
     }
 
     onMount(() => {

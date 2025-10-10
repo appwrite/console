@@ -5,12 +5,11 @@
     import { Modal } from '$lib/components';
     import { Button, InputCheckbox } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Query } from '@appwrite.io/console';
     import { Spinner, Table } from '@appwrite.io/pink-svelte';
     import { resolveRoute } from '$lib/stores/navigation';
-    import { type EntityList, getTerminologies, toSupportiveEntity } from '$database/(entity)';
+    import { type EntityList, getTerminologies } from '$database/(entity)';
 
     let {
         showDelete = $bindable(false)
@@ -25,10 +24,8 @@
     let entityItems = $state([]);
     let entities: EntityList | null = $state(null);
 
-    const { terminology } = getTerminologies();
+    const { databaseSdk } = getTerminologies();
     const database = $derived(page.data.database);
-
-    const projectSdk = $derived(sdk.forProject(page.params.region, page.params.project));
 
     function buildQueries(): string[] {
         const queries = [Query.orderDesc('$updatedAt')];
@@ -51,21 +48,10 @@
 
         try {
             const queries = buildQueries();
-            const params = { databaseId: page.params.database, queries };
-
-            switch (terminology.type) {
-                case 'tablesdb': {
-                    const { total, tables } = await projectSdk.tablesDB.listTables(params);
-                    entities = { total, entities: tables.map(toSupportiveEntity) };
-                    break;
-                }
-                case 'documentsdb': {
-                    const { total, collections } =
-                        await projectSdk.documentsDB.listCollections(params);
-                    entities = { total, entities: collections.map(toSupportiveEntity) };
-                    break;
-                }
-            }
+            entities = await databaseSdk.listEntities({
+                databaseId: page.params.database,
+                queries
+            });
 
             const entityPromises = entities.entities.map(async (entity) => {
                 return {
@@ -85,17 +71,9 @@
 
     const handleDelete = async () => {
         try {
-            const params = { databaseId: page.params.database };
-
-            switch (terminology.type) {
-                case 'tablesdb':
-                    await projectSdk.tablesDB.delete(params);
-                    break;
-
-                case 'documentsdb':
-                    await projectSdk.documentsDB.delete(params);
-                    break;
-            }
+            await databaseSdk.deleteEntity({
+                databaseId: page.params.database
+            });
 
             showDelete = false;
 
