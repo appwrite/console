@@ -31,7 +31,7 @@
     import { onDestroy } from 'svelte';
     import { isCloud } from '$lib/system';
     import { columnOptions } from './columns/store';
-    import { EmptySheet, type Field, toRelationalField } from '$database/(entity)';
+    import { EmptySheet, type Field } from '$database/(entity)';
     import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
 
     export let data: PageData;
@@ -45,16 +45,15 @@
 
     function createTableColumns(fields: Field[], selected: string[] = []): Column[] {
         return fields.map((field) => {
-            const column = toRelationalField(field);
             return {
-                id: column.key,
-                title: column.key,
-                type: column.type as ColumnType,
-                hide: !!selected?.includes(column.key),
-                array: column?.array,
-                format: 'format' in column && column?.format === 'enum' ? column.format : null,
-                elements: 'elements' in column ? column.elements : null,
-                icon: columnOptions.find((option) => option.type === column.type)?.icon
+                id: field.key,
+                title: field.key,
+                type: field.type as ColumnType,
+                hide: !!selected?.includes(field.key),
+                array: field?.array,
+                format: 'format' in field && field?.format === 'enum' ? field.format : null,
+                elements: 'elements' in field ? field.elements : null,
+                icon: columnOptions.find((option) => option.type === field.type)?.icon
             };
         });
     }

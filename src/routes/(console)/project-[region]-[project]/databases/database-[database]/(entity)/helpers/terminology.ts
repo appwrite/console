@@ -2,14 +2,14 @@ import type { Page } from '@sveltejs/kit';
 
 import { capitalize, plural } from '$lib/helpers/string';
 import { AppwriteException, type Models } from '@appwrite.io/console';
-import type { Attributes, Collection, Columns, Table } from '$database/table-[table]/store';
+import type { Attributes, Columns, Table } from '$database/table-[table]/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
 export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectordb';
 
 export type Entity = Partial<Models.Collection | Table> & {
     indexes?: Index[];
-    fields?: Collection['attributes'] | Table['columns'];
+    fields?: (Attributes | Columns)[];
     recordSecurity?: Models.Collection['documentSecurity'] | Models.Table['rowSecurity'];
 };
 

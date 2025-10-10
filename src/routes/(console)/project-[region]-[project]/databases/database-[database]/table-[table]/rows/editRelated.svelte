@@ -348,15 +348,14 @@
     <!-- we should not show current table column items in this view -->
     {@const twoWayKeys = new Set(
         relatedTable.fields
-            .map(toRelationalField)
             .filter((column: Models.ColumnRelationship) => column.twoWay)
             .map((c) => c.key)
     )}
 
     <!-- render the filtered ones -->
-    {@const columnsToRender = relatedTable.fields
-        .map(toRelationalField)
-        .filter((field: Field) => !twoWayKeys.has(field.key))}
+    {@const columnsToRender = relatedTable.fields.filter(
+        (field: Field) => !twoWayKeys.has(field.key)
+    )}
 
     <div bind:this={columnFormWrapper}>
         {#if fetchedRows.length === 1}

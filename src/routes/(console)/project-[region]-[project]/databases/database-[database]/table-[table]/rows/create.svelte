@@ -10,7 +10,7 @@
     import { type Columns, spreadsheetRenderKey } from '../store';
     import { ID, type Models } from '@appwrite.io/console';
     import { Alert, Layout, Typography, Selector } from '@appwrite.io/pink-svelte';
-    import { type Entity, type Field, SideSheet, toRelationalField } from '$database/(entity)';
+    import { type Entity, SideSheet, toRelationalField } from '$database/(entity)';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { tick } from 'svelte';
@@ -46,16 +46,16 @@
 
     function computeInitialCreateRow(): CreateRow {
         const availableColumns = table.fields
-            .filter((field: Field) => field.status === 'available')
-            .map(toRelationalField);
+            .map(toRelationalField)
+            .filter((column: Columns) => column.status === 'available');
 
         return {
             id: null,
             row: existingData
                 ? existingData
                 : availableColumns.reduce(
-                      (acc, attr) => {
-                          acc[attr.key] = attr.array ? [] : null;
+                      (acc, field) => {
+                          acc[field.key] = field.array ? [] : null;
                           return acc;
                       },
                       {} as Record<string, unknown>
