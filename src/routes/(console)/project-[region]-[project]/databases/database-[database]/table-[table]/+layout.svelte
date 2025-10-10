@@ -45,7 +45,7 @@
     import { page } from '$app/state';
     import { canWriteTables } from '$lib/stores/roles';
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
-    import { SideSheet } from '$database/(entity)';
+    import { type Field, SideSheet } from '$database/(entity)';
     import EditRow from './rows/edit.svelte';
     import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
@@ -251,9 +251,12 @@
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
-        let columns = table.fields;
-        const hasAnyRelationships = columns.some((column: Columns) => isRelationship(column));
-        const filteredColumns = columns.filter((col: Columns) => col.type !== 'relationship');
+        let columns: Columns[];
+        const currentFields = table.fields;
+        const hasAnyRelationships = currentFields.some((field: Field) => isRelationship(field));
+        const filteredColumns = currentFields.filter(
+            (field: Field) => field.type !== 'relationship'
+        );
 
         if (!filteredColumns.length) {
             try {

@@ -82,7 +82,7 @@
     import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
     import SheetOptions from './sheetOptions.svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
-    import { SpreadsheetContainer } from '$database/(entity)';
+    import { type Field, SpreadsheetContainer, toRelationalField } from '$database/(entity)';
     import EditRowCell from './rows/cell/edit.svelte';
     import { copy } from '$lib/helpers/copy';
     import { writable } from 'svelte/store';
@@ -152,19 +152,23 @@
     function makeTableColumns() {
         const selectedColumnsToHide = preferences.getCustomTableColumns(tableId);
 
-        const baseColumns: Column[] = table.fields.map((col: Columns) => ({
-            id: col.key,
-            title: col.key,
-            type: col.type as ColumnType,
-            hide: !!selectedColumnsToHide?.includes(col.key),
-            array: col?.array,
-            width: getColumnWidth(col.key, { min: minimumWidth }),
-            minimumWidth: minimumWidth,
-            draggable: true,
-            icon: getAppropriateIcon(col.type),
-            format: 'format' in col && col?.format === 'enum' ? col.format : null,
-            elements: 'elements' in col ? col.elements : null
-        }));
+        const baseColumns: Column[] = table.fields.map((field: Field) => {
+            const col = toRelationalField(field);
+
+            return {
+                id: col.key,
+                title: col.key,
+                type: col.type as ColumnType,
+                hide: !!selectedColumnsToHide?.includes(col.key),
+                array: col?.array,
+                width: getColumnWidth(col.key, { min: minimumWidth }),
+                minimumWidth: minimumWidth,
+                draggable: true,
+                icon: getAppropriateIcon(col.type),
+                format: 'format' in col && col?.format === 'enum' ? col.format : null,
+                elements: 'elements' in col ? col.elements : null
+            };
+        });
 
         const staticColumns: Column[] = [
             {
@@ -373,9 +377,7 @@
                 });
             } else {
                 if (selectedRows.length) {
-                    const hasAnyRelationships = table.fields.some((column: Columns) =>
-                        isRelationship(column)
-                    );
+                    const hasAnyRelationships = table.fields.some(isRelationship);
 
                     const tablesSDK = sdk.forProject(
                         page.params.region,

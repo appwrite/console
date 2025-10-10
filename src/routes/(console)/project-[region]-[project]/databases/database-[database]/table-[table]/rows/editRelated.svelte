@@ -14,7 +14,7 @@
     import { Accordion, Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import { preferences } from '$lib/stores/preferences';
-    import type { Entity } from '$database/(entity)';
+    import { type Entity, type Field, toRelationalField } from '$database/(entity)';
 
     const databaseId = page.params.database;
 
@@ -348,12 +348,15 @@
     <!-- we should not show current table column items in this view -->
     {@const twoWayKeys = new Set(
         relatedTable.fields
+            .map(toRelationalField)
             .filter((column: Models.ColumnRelationship) => column.twoWay)
             .map((c) => c.key)
     )}
 
     <!-- render the filtered ones -->
-    {@const columnsToRender = relatedTable.fields.filter((c) => !twoWayKeys.has(c.key))}
+    {@const columnsToRender = relatedTable.fields
+        .map(toRelationalField)
+        .filter((field: Field) => !twoWayKeys.has(field.key))}
 
     <div bind:this={columnFormWrapper}>
         {#if fetchedRows.length === 1}
@@ -363,10 +366,10 @@
                     {#each columnsToRender as column}
                         {@const label = column.key}
                         <ColumnItem
-                            {column}
                             {label}
                             editing
                             formValues={workStore}
+                            column={toRelationalField(column)}
                             onUpdateFormValues={handleFormUpdate(fetchedRows[0].$id)} />
                     {/each}
                 </Layout.Stack>
@@ -384,10 +387,10 @@
                                     {#each columnsToRender as column}
                                         {@const label = column.key}
                                         <ColumnItem
-                                            {column}
                                             {label}
                                             editing
                                             formValues={workStore}
+                                            column={toRelationalField(column)}
                                             onUpdateFormValues={handleFormUpdate(row.$id)} />
                                     {/each}
                                 </Layout.Stack>

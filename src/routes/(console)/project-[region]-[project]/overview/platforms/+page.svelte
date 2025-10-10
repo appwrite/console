@@ -7,6 +7,7 @@
     import CreateWeb from './createWeb.svelte';
     import { createPlatform } from './wizard/store';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { PlatformType } from '@appwrite.io/console/src/enums/platform-type';
 
     export enum Platform {
         Web,
@@ -29,7 +30,7 @@
         platform: Platform,
         name: string,
         key: string,
-        type: string
+        type: PlatformType
     ) {
         createPlatform.set({
             name: name,

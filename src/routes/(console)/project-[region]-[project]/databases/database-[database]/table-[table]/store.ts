@@ -20,6 +20,24 @@ export type Columns =
     | Models.ColumnPolygon
     | (Models.ColumnRelationship & { default?: never });
 
+export type Attributes =
+    | Models.AttributeBoolean
+    | Models.AttributeEmail
+    | Models.AttributeEnum
+    | Models.AttributeFloat
+    | Models.AttributeInteger
+    | Models.AttributeIp
+    | Models.AttributeString
+    | Models.AttributeUrl
+    | Models.AttributePoint
+    | Models.AttributeLine
+    | Models.AttributePolygon
+    | (Models.AttributeRelationship & { default?: never });
+
+export type Collection = Omit<Models.Collection, 'attributes'> & {
+    attributes: Array<Attributes>;
+};
+
 export type Table = Omit<Models.Table, 'columns'> & {
     columns: Array<Columns>;
 };

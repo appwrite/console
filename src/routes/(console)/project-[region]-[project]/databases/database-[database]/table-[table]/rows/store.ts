@@ -1,14 +1,14 @@
 import { page } from '$app/state';
 import type { Column } from '$lib/helpers/types';
-import type { Columns } from '../store';
+import type { Attributes, Columns } from '../store';
 import { type Models, Query } from '@appwrite.io/console';
-import type { Entity } from '$database/(entity)';
+import type { Entity, Field } from '$database/(entity)';
 
-export function isRelationshipToMany(col: Columns) {
-    if (!col) return false;
-    if (!isRelationship(col)) return false;
+export function isRelationshipToMany(field: Field) {
+    if (!field) return false;
+    if (!isRelationship(field)) return false;
 
-    const column = col as Models.ColumnRelationship;
+    const column = field as Models.ColumnRelationship | Models.AttributeRelationship;
 
     if (!column?.relationType) return false;
     if (column?.side === 'child') {
@@ -18,24 +18,32 @@ export function isRelationshipToMany(col: Columns) {
     }
 }
 
-export function isRelationship(column: Columns): column is Models.ColumnRelationship {
-    if (!column) return false;
-    return column?.type === 'relationship';
+export function isRelationship(
+    field: Field
+): field is Models.ColumnRelationship | Models.AttributeRelationship {
+    if (!field) return false;
+    return field?.type === 'relationship';
 }
 
-export function isString(column: Columns): column is Models.ColumnString {
-    if (!column) return false;
-    return column?.type === 'string';
+export function isString(field: Field): field is Models.ColumnString | Models.AttributeString {
+    if (!field) return false;
+    return field?.type === 'string';
 }
 
 export function isSpatialType(
-    column: Columns | Column
-): column is Models.ColumnPoint | Models.ColumnLine | Models.ColumnPolygon {
-    if (!column) return false;
+    field: Columns | Attributes | Column
+): field is
+    | Models.ColumnPoint
+    | Models.ColumnLine
+    | Models.ColumnPolygon
+    | Models.AttributePoint
+    | Models.AttributeLine
+    | Models.AttributePolygon {
+    if (!field) return false;
 
     const spatialTypes = ['point', 'linestring', 'polygon'];
 
-    return spatialTypes.includes(column.type.toLowerCase());
+    return spatialTypes.includes(field.type.toLowerCase());
 }
 
 /**

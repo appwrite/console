@@ -13,7 +13,6 @@
         isCsvImportInProgress,
         showRowCreateSheet,
         showCreateColumnSheet,
-        type Columns,
         randomDataModalState,
         expandTabs,
         columnsOrder
@@ -32,7 +31,7 @@
     import { onDestroy } from 'svelte';
     import { isCloud } from '$lib/system';
     import { columnOptions } from './columns/store';
-    import { EmptySheet } from '$database/(entity)';
+    import { EmptySheet, type Field, toRelationalField } from '$database/(entity)';
     import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
 
     export let data: PageData;
@@ -44,17 +43,20 @@
     // todo: might need a type fix here.
     const filterColumns = writable<Column[]>([]);
 
-    function createTableColumns(columns: Columns[], selected: string[] = []): Column[] {
-        return columns.map((column) => ({
-            id: column.key,
-            title: column.key,
-            type: column.type as ColumnType,
-            hide: !!selected?.includes(column.key),
-            array: column?.array,
-            format: 'format' in column && column?.format === 'enum' ? column.format : null,
-            elements: 'elements' in column ? column.elements : null,
-            icon: columnOptions.find((option) => option.type === column.type)?.icon
-        }));
+    function createTableColumns(fields: Field[], selected: string[] = []): Column[] {
+        return fields.map((field) => {
+            const column = toRelationalField(field);
+            return {
+                id: column.key,
+                title: column.key,
+                type: column.type as ColumnType,
+                hide: !!selected?.includes(column.key),
+                array: column?.array,
+                format: 'format' in column && column?.format === 'enum' ? column.format : null,
+                elements: 'elements' in column ? column.elements : null,
+                icon: columnOptions.find((option) => option.type === column.type)?.icon
+            };
+        });
     }
 
     function createFilterableColumns(columns: Column[], selected: string[] = []): Column[] {
@@ -79,7 +81,7 @@
     }
 
     $: hasColumns = !!table.fields.length;
-    $: hasValidColumns = table?.fields?.some((col: Columns) => col.status === 'available');
+    $: hasValidColumns = table?.fields?.some((field: Field) => field.status === 'available');
     $: canShowSuggestionsSheet =
         // enabled, has table details
         // and it matches current table

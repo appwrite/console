@@ -13,7 +13,7 @@
     import { buildWildcardColumnsQuery, isRelationship, isRelationshipToMany } from './store';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
-    import type { Entity } from '$database/(entity)';
+    import { type Entity, toRelationalField } from '$database/(entity)';
 
     let {
         table,
@@ -172,10 +172,10 @@
             {#each table.fields as column}
                 {@const label = column.key}
                 <ColumnItem
-                    {column}
                     {label}
                     editing
                     formValues={$work}
+                    column={toRelationalField(column)}
                     onUpdateFormValues={updateRowData} />
             {/each}
         </Layout.Stack>

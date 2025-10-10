@@ -1,21 +1,19 @@
 import type { Page } from '@sveltejs/kit';
 
 import { capitalize, plural } from '$lib/helpers/string';
-import type { Columns, Table } from '$database/table-[table]/store';
 import { AppwriteException, type Models } from '@appwrite.io/console';
+import type { Attributes, Collection, Columns, Table } from '$database/table-[table]/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
 export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectordb';
 
 export type Entity = Partial<Models.Collection | Table> & {
     indexes?: Index[];
-    // TODO: will be updated in the DocumentsDB PR!
-    fields?: Models.Collection['attributes'] | Table['columns'];
+    fields?: Collection['attributes'] | Table['columns'];
     recordSecurity?: Models.Collection['documentSecurity'] | Models.Table['rowSecurity'];
 };
 
-// TODO: will be updated in the DocumentsDB PR!
-export type Field = Partial<Columns>;
+export type Field = Partial<Attributes> | Partial<Columns>;
 
 export type Index = Partial<Models.Index | Models.ColumnIndex> & {
     fields: Models.Index['attributes'] | Models.ColumnIndex['columns'];
@@ -93,6 +91,10 @@ export function toSupportiveEntity(raw: Models.Collection | Models.Table): Entit
         recordSecurity,
         indexes
     } as Entity;
+}
+
+export function toRelationalField(raw: Field): Columns {
+    return raw as Columns;
 }
 
 /**
