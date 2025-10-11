@@ -56,18 +56,16 @@
 </script>
 
 <script lang="ts">
-    import { InputText, InputSelect } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { Box } from '$lib/components';
-    import { table } from '../store';
     import arrowOne from './arrow-one.svg';
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
+    import { debounce } from '$lib/helpers/debounce';
+    import { InputText, InputSelect } from '$lib/elements/forms';
     import { Card, Layout, Input } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight, IconSwitchHorizontal } from '@appwrite.io/pink-icons-svelte';
-    import { debounce } from '$lib/helpers/debounce';
 
-    // Props
     export let editing = false;
     export let data: Models.ColumnRelationship;
 
@@ -121,7 +119,9 @@
     });
 
     // Reactive statements
-    $: tables = tableList?.tables?.filter((n) => n.$id !== $table.$id) ?? [];
+    $: currentTable = page.data.table;
+
+    $: tables = tableList?.tables?.filter((n) => n.$id !== currentTable.$id) ?? [];
 
     $: if (editing) {
         way = data.twoWay ? 'two' : 'one';
@@ -129,7 +129,7 @@
         if (way === 'two') {
             data.twoWay = true;
             if (!data.twoWayKey) {
-                data.twoWayKey = camelize($table.name);
+                data.twoWayKey = camelize(currentTable.name);
             }
         } else {
             data.twoWay = false;
@@ -216,7 +216,7 @@
     <div class="u-flex u-flex-vertical u-gap-16">
         <Box>
             <div class="u-flex u-align u-cross-center u-main-center u-gap-32">
-                <span data-private>{camelize($table.name)}</span>
+                <span data-private>{camelize(currentTable.name)}</span>
                 {#if data.twoWay}
                     <img src={arrowTwo} alt={'Two way relationship'} />
                 {:else}
@@ -228,7 +228,7 @@
         {#if data.relationType}
             <div>
                 <p class="u-text-center">
-                    <b data-private>{camelize($table.name)}</b> can contain {[
+                    <b data-private>{camelize(currentTable.name)}</b> can contain {[
                         'oneToOne',
                         'manyToOne'
                     ].includes(data.relationType)
@@ -241,7 +241,7 @@
                     can belong to {['oneToOne', 'oneToMany'].includes(data.relationType)
                         ? 'one'
                         : 'many'}
-                    <b data-private>{camelize($table.name)}</b>
+                    <b data-private>{camelize(currentTable.name)}</b>
                 </p>
             </div>
         {/if}

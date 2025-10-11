@@ -1,13 +1,16 @@
 <script lang="ts">
     import { InputText } from '$lib/elements/forms';
     import { Layout } from '@appwrite.io/pink-svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { getTerminologies, type Index } from '$database/(entity)';
 
     let {
         selectedIndex = null
     }: {
-        selectedIndex: Models.ColumnIndex;
+        selectedIndex: Index;
     } = $props();
+
+    const { terminology } = getTerminologies();
+    const entityType = terminology.entity.title.singular;
 </script>
 
 <InputText
@@ -17,6 +20,7 @@
     placeholder="Enter key"
     value={selectedIndex.key}
     readonly />
+
 <InputText
     required
     id="type"
@@ -25,14 +29,14 @@
     value={selectedIndex.type}
     readonly />
 
-{#if selectedIndex?.columns?.length}
-    {#each selectedIndex.columns as column, i}
+{#if selectedIndex?.fields?.length}
+    {#each selectedIndex.fields as field, i}
         <Layout.Stack direction="row">
             <InputText
                 required
-                label={i === 0 ? 'Column' : ''}
-                id={`value-${column}`}
-                value={column}
+                label={i === 0 ? entityType : ''}
+                id={`value-${field}`}
+                value={field}
                 readonly />
             <InputText
                 required

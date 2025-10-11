@@ -52,6 +52,7 @@ async function fetchDatabasesAndBackups(
 
     const projectSDK = sdk.forProject(params.region, params.project);
 
+    // TODO: make use of `useDatabasesSdk`;
     const databases = await projectSDK.tablesDB.list({
         queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
         search: search || undefined
@@ -61,6 +62,7 @@ async function fetchDatabasesAndBackups(
 
     await Promise.all(
         // TODO: backend should allow `Query.select` for perf!
+        // TODO: make use of `useDatabasesSdk`;
         databases.databases.map(async ({ $id }) => {
             const res = await projectSDK.tablesDB.listTables({
                 databaseId: $id,

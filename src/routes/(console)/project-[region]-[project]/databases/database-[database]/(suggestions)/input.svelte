@@ -4,6 +4,7 @@
     import IconAI from './icon/ai.svelte';
     import { slide } from 'svelte/transition';
     import { tableColumnSuggestions } from './store';
+    import { getTerminologies } from '$database/(entity)';
     import { Button, InputTextarea } from '$lib/elements/forms';
     import { Card, Layout, Selector, Typography } from '@appwrite.io/pink-svelte';
 
@@ -14,17 +15,20 @@
     });
 
     const featureActive = $derived(isCloud);
+    const { terminology } = getTerminologies();
+    const field = terminology.field.lower;
+    const entity = terminology.entity.lower.singular;
 
     const title = $derived.by(() => {
         return featureActive
-            ? 'Smart column suggestions'
-            : 'Smart column suggestions available on Cloud';
+            ? `Smart ${field.singular} suggestions`
+            : `Smart ${field.singular} suggestions available on Cloud`;
     });
 
     const subtitle = $derived.by(() => {
         return featureActive
-            ? 'Enable AI to suggest useful columns based on your table name'
-            : 'Sign up for Cloud to generate columns based on your table name';
+            ? `Enable AI to suggest useful ${field.plural} based on your ${entity} name`
+            : `Sign up for Cloud to generate ${field.plural} based on your ${entity} name`;
     });
 </script>
 
