@@ -910,7 +910,7 @@
                                                     variant="muted"
                                                     on:click={() => {
                                                         $databaseRelatedRowSheetOptions.tableId =
-                                                            row[columnId]?.['tableId'];
+                                                            row[columnId]?.['$tableId'];
                                                         $databaseRelatedRowSheetOptions.rows =
                                                             row[columnId]?.['$id'];
                                                         $databaseRelatedRowSheetOptions.show = true;

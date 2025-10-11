@@ -1,9 +1,10 @@
 import { sdk } from '$lib/stores/sdk';
 import type { Page } from '@sveltejs/kit';
 import type { TerminologyResult } from './types';
-import { type DatabaseType, type EntityList, toSupportiveEntity } from './terminology';
+import { type DatabaseType, type Entity, type EntityList, toSupportiveEntity } from './terminology';
 
 export type DatabaseSdkResult = {
+    getEntity: (params: { databaseId: string; entityId: string }) => Promise<Entity>;
     listEntities: (params: {
         databaseId: string;
         queries?: string[];
@@ -34,6 +35,29 @@ export function useDatabasesSdk(
     const baseSdk = sdk.forProject(region, project);
 
     return {
+        async getEntity(params) {
+            switch (type) {
+                case 'legacy': /* databases api */
+                case 'tablesdb': {
+                    const table = await baseSdk.tablesDB.getTable({
+                        databaseId: params.databaseId,
+                        tableId: params.entityId
+                    });
+                    return toSupportiveEntity(table);
+                }
+                case 'documentsdb': {
+                    const table = await baseSdk.documentsDB.getCollection({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId
+                    });
+                    return toSupportiveEntity(table);
+                }
+                case 'vectordb':
+                    throw new Error(`Database type not supported yet`);
+                default:
+                    throw new Error(`Unknown database type`);
+            }
+        },
         async listEntities(params) {
             switch (type) {
                 case 'legacy': /* databases api */

@@ -14,6 +14,10 @@
     );
 
     const database = $derived(page.data.database);
+    const baseDatabasesPath = resolveRoute(
+        '/(console)/project-[region]-[project]/databases',
+        page.params
+    );
 
     const tabs = $derived(
         [
@@ -46,7 +50,6 @@
 </script>
 
 <Cover databasesMainScreen>
-    {@const baseDatabasesPath = resolveRoute('/(console)/project-[region]-[project]/databases', page.params)}
     <svelte:fragment slot="header">
         <CoverTitle href={baseDatabasesPath} style="margin-inline-start: -2.5rem;">
             {database?.name}

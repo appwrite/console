@@ -86,9 +86,9 @@
 
         trackEvent(analyticsCreateSubmit, { customId: !!id });
 
-        // reset vars!
+        id = null;
+        name = '';
         show = false;
-        name = id = null;
     }
 
     function toIdFormat(str: string): string {

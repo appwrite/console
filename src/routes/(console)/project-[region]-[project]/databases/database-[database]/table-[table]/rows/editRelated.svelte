@@ -14,7 +14,13 @@
     import { Accordion, Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import { preferences } from '$lib/stores/preferences';
-    import { type Entity, type Field, toRelationalField } from '$database/(entity)';
+    import {
+        type Entity,
+        type Field,
+        getTerminologies,
+        toRelationalField
+    } from '$database/(entity)';
+    import { onMount } from 'svelte';
 
     const databaseId = page.params.database;
 
@@ -35,6 +41,16 @@
     let workData = $state<Map<string, Writable<Models.Row>>>(new Map());
     let columnFormWrapper = $state<HTMLElement | null>(null);
 
+    const { databaseSdk } = getTerminologies();
+
+    onMount(() => {
+        if (rows && tableId) {
+            loadRelatedRow().then(() => {
+                focusFirstInput();
+            });
+        }
+    });
+
     function isSingleStore() {
         return typeof rows === 'string';
     }
@@ -44,15 +60,6 @@
 
         try {
             if (isSingleStore()) {
-                relatedTable =
-                    page.data.tables?.[tableId] ??
-                    (await sdk
-                        .forProject(page.params.region, page.params.project)
-                        .tablesDB.getTable({
-                            databaseId,
-                            tableId: tableId
-                        }));
-
                 const fetchedRow = await sdk
                     .forProject(page.params.region, page.params.project)
                     .tablesDB.getRow({
@@ -61,6 +68,12 @@
                         rowId: rows as string,
                         queries: buildWildcardColumnsQuery(relatedTable)
                     });
+
+                // cannot use page.data.entities!
+                relatedTable = await databaseSdk.getEntity({
+                    databaseId,
+                    entityId: tableId
+                });
 
                 fetchedRows = [fetchedRow];
             } else {
@@ -76,19 +89,18 @@
                 });
 
                 if (missingTableIds.length > 0) {
-                    const tablesResponse = await sdk
-                        .forProject(page.params.region, page.params.project)
-                        .tablesDB.listTables({
-                            databaseId,
-                            queries: [
-                                Query.equal('$id', missingTableIds),
-                                Query.limit(missingTableIds.length)
-                            ]
-                        });
-                    fetchedTables = tablesResponse.tables;
+                    const tablesResponse = await databaseSdk.listEntities({
+                        databaseId,
+                        queries: [
+                            Query.equal('$id', missingTableIds),
+                            Query.limit(missingTableIds.length)
+                        ]
+                    });
+
+                    fetchedTables = tablesResponse.entities;
                 }
 
-                const allTables = [...(page.data.tables || []), ...fetchedTables];
+                const allTables = [...(page.data.entities || []), ...fetchedTables];
                 relatedTable = allTables.find((table) => table.$id === firstTableId) || null;
 
                 let rowsMissingData = [];
@@ -154,7 +166,8 @@
                     return obj;
                 }, {});
 
-                newWorkData.set(row.$id, writable(deepClone(workingData as Models.Row)));
+                const clonedObject = deepClone(workingData as Models.Row);
+                newWorkData.set(row.$id, writable(clonedObject));
             });
 
             workData = newWorkData;
@@ -169,20 +182,20 @@
         }
     }
 
-    function compareColumns(column: Columns, $work: Models.Row, originalRow: Models.Row) {
-        if (!column) {
+    function compareColumns(field: Field, $work: Models.Row, originalRow: Models.Row) {
+        if (!field) {
             return false;
         }
 
-        const workColumn = $work?.[column.key];
-        const currentColumn = originalRow?.[column.key];
+        const workColumn = $work?.[field.key];
+        const currentColumn = originalRow?.[field.key];
 
-        if (column.array) {
+        if (field.array) {
             return !symmetricDifference(Array.from(workColumn), Array.from(currentColumn)).length;
         }
 
-        if (isRelationship(column)) {
-            if (isRelationshipToMany(column as Models.ColumnRelationship)) {
+        if (isRelationship(field)) {
+            if (isRelationshipToMany(field as Models.ColumnRelationship)) {
                 if (!Array.isArray(workColumn) || !Array.isArray(currentColumn)) {
                     return workColumn === currentColumn;
                 }
@@ -219,8 +232,8 @@
             if (!row || !work) return true;
 
             const workValue = get(work);
-            return relatedTable.fields.every((column: Columns) =>
-                compareColumns(column, workValue, row)
+            return relatedTable.fields.every((field: Field) =>
+                compareColumns(field, workValue, row)
             );
         } else {
             return fetchedRows.every((row) => {
@@ -229,8 +242,8 @@
 
                 const workValue = get(work);
 
-                return relatedTable.fields.every((column: Columns) =>
-                    compareColumns(column, workValue, row)
+                return relatedTable.fields.every((field: Field) =>
+                    compareColumns(field, workValue, row)
                 );
             });
         }
@@ -330,14 +343,6 @@
 
         return `${values.join(' | ')} (...${row.$id.slice(-5)})`;
     }
-
-    $effect(() => {
-        if (rows && tableId) {
-            loadRelatedRow().then(() => {
-                focusFirstInput();
-            });
-        }
-    });
 </script>
 
 {#if loading}

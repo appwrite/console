@@ -34,6 +34,6 @@ function buildTerminologies(page: Page) {
         terminology,
         analytics: useAnalytics(terminology),
         dependencies: useDependencies(terminology),
-        databaseSdk: useDatabasesSdk(page, terminology)
+        databasesSdk: useDatabasesSdk(page, terminology)
     };
 }

@@ -16,8 +16,8 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
 
     const databaseType = database.type as DatabaseType;
 
-    const databaseSdk = useDatabasesSdk(params.region, params.project, databaseType);
-    const entities = await databaseSdk.listEntities({
+    const databasesSdk = useDatabasesSdk(params.region, params.project, databaseType);
+    const entities = await databasesSdk.listEntities({
         databaseId: database.$id,
         search: search || undefined,
         queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('')]

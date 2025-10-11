@@ -1,20 +1,22 @@
-import { sdk } from '$lib/stores/sdk';
-import { Dependencies } from '$lib/constants';
-import type { LayoutLoad } from './$types';
 import Header from './header.svelte';
-import { Breadcrumbs, toSupportiveEntity } from '$database/(entity)';
+import type { LayoutLoad } from './$types';
+import { Dependencies } from '$lib/constants';
+import { Breadcrumbs, useDatabasesSdk } from '$database/(entity)';
 
-export const load: LayoutLoad = async ({ params, depends }) => {
+export const load: LayoutLoad = async ({ params, depends, parent }) => {
+    const { database } = await parent();
     depends(Dependencies.TABLE);
 
-    const table = await sdk.forProject(params.region, params.project).tablesDB.getTable({
+    const databasesSdk = useDatabasesSdk(params.region, params.project, database.type);
+
+    const table = await databasesSdk.getEntity({
         databaseId: params.database,
-        tableId: params.table
+        entityId: params.table
     });
 
     return {
+        table,
         header: Header,
-        breadcrumbs: Breadcrumbs,
-        table: toSupportiveEntity(table)
+        breadcrumbs: Breadcrumbs
     };
 };
