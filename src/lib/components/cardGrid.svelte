@@ -3,9 +3,11 @@
 
     export let hideFooter = false;
     export let gap: 'none' | 'xxxs' | 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | 'xxl' | 'xxxl' = 'l';
+    export let style = '';
+    export let zIndex: number | undefined = undefined;
 </script>
 
-<Card.Base>
+<Card.Base style="{zIndex !== undefined ? `position: relative; z-index: ${zIndex};` : ''} {style}">
     <Layout.Stack gap="xl" justifyContent="space-around">
         <Layout.GridFraction gap="xxxl" rowGap="xl" start={1} end={2}>
             <Layout.Stack gap="xxs">

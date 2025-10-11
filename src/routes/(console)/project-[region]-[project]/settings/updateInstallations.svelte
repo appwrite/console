@@ -77,7 +77,7 @@
     }
 </script>
 
-<CardGrid>
+<CardGrid zIndex={10}>
     <svelte:fragment slot="title">Git configuration</svelte:fragment>
     Add a Git installation to your project so you can connect repositories later through your function
     or site settings.
