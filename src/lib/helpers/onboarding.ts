@@ -1,7 +1,9 @@
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 import { sdk } from '$lib/stores/sdk';
 import type { Account } from '$lib/stores/user';
 
 export function hasOnboardingDismissed(projectId: string, account?: Account) {
+    if (!resolvedProfile.showOnboarding) return true;
     const currentPrefs = account?.prefs;
     const onboardingDismissed = currentPrefs?.onboardingDismissed;
     return (

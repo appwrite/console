@@ -45,3 +45,8 @@
     font-display: swap;
     src: url('poppins/poppins-v19-latin-700.woff2') format('woff2');
 }
+
+@property --tw-leading {
+    syntax: '*';
+    inherits: false;
+}

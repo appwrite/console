@@ -101,6 +101,11 @@ const commandsEnabled = derived(disabledMap, ($disabledMap) => {
 });
 
 function isInputEvent(event: KeyboardEvent) {
+    if (
+        event.target instanceof HTMLElement &&
+        customElements.get(event.target.tagName.toLowerCase())
+    )
+        return true;
     return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
 }
 

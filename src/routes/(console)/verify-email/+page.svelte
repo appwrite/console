@@ -3,6 +3,7 @@
     import { writable } from 'svelte/store';
     import type { Models } from '@appwrite.io/console';
     import { Navbar, SendVerificationEmailModal, Sidebar } from '$lib/components';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let sideBarIsOpen = writable(false);
     let showAccountMenu = writable(false);
@@ -17,10 +18,7 @@
 
     const progressCard = { title: 'Get started', percentage: 33 };
     const navbarProps = {
-        logo: {
-            src: 'https://appwrite.io/images/logos/logo.svg',
-            alt: 'Logo Appwrite'
-        },
+        logo: resolvedProfile.logo,
         avatar: undefined,
         organizations: []
     };

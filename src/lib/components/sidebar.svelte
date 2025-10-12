@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { app } from '$lib/stores/app';
     import { fade } from 'svelte/transition';
     import {
@@ -20,6 +20,7 @@
         IconChartBar,
         IconChatBubble,
         IconCog,
+        IconCommand,
         IconDatabase,
         IconFolder,
         IconGlobeAlt,
@@ -43,8 +44,9 @@
     import type { Models } from '@appwrite.io/console';
     import { noWidthTransition } from '$lib/stores/sidebar';
     import { base } from '$app/paths';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
-    type $$Props = HTMLAttributes<HTMLElement> & {
+    type Props = HTMLAttributes<HTMLElement> & {
         state?: 'closed' | 'open' | 'icons';
         project: Models.Project | undefined;
         avatar: string;
@@ -57,13 +59,16 @@
         subNavigation?: ComponentType;
     };
 
-    export let state: $$Props['state'] = 'icons';
-    export let project: $$Props['project'];
-    export let avatar: $$Props['avatar'];
-    export let progressCard: $$Props['progressCard'] = undefined;
-    export let sideBarIsOpen: boolean;
-    export let showAccountMenu: boolean;
-    export let subNavigation = undefined;
+    let {
+        state = $bindable('icons'),
+        project,
+        avatar,
+        progressCard = undefined,
+        sideBarIsOpen = $bindable(),
+        showAccountMenu = $bindable(),
+        subNavigation = $bindable(undefined),
+        ...rest
+    }: Props = $props();
 
     function toggleFeedback() {
         trackEvent(Click.FeedbackSubmitClick);
@@ -74,7 +79,13 @@
         }
     }
 
-    const projectOptions = [
+    const projectOptions: Array<{
+        name: string;
+        icon: ComponentType;
+        slug: string;
+        category: 'build' | 'deploy';
+        badge?: string;
+    }> = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth', category: 'build' },
         { name: 'Databases', icon: IconDatabase, slug: 'databases', category: 'build' },
         { name: 'Functions', icon: IconLightningBolt, slug: 'functions', category: 'build' },
@@ -90,15 +101,17 @@
     ];
 
     const isSelected = (service: string): boolean => {
-        return $page.route.id?.includes(service);
+        return page.route.id?.includes(service);
     };
 
-    $: state = $isTabletViewport
-        ? 'closed'
-        : // example: manual resize
-          isInDatabasesRoute($page.route)
-          ? 'icons'
-          : getSidebarState();
+    $effect(() => {
+        state = $isTabletViewport
+            ? 'closed'
+            : // example: manual resize
+              isInDatabasesRoute(page.route)
+              ? 'icons'
+              : getSidebarState();
+    });
 </script>
 
 <div
@@ -109,7 +122,7 @@
         ? 'var(--neutral-750)'
         : 'var(--neutral-100)'}>
     <Sidebar.Base
-        {...$$props}
+        {...rest}
         bind:state
         on:resize={(event) => updateSidebarState(event.detail)}
         resizable>
@@ -140,7 +153,7 @@
                     <a
                         class="progress-card"
                         href={`${base}/project-${project?.region}-${project?.$id}/get-started`}
-                        on:click={() => {
+                        onclick={() => {
                             trackEvent('click_menu_get_started');
                             sideBarIsOpen = false;
                         }}>
@@ -161,12 +174,33 @@
             {/if}
             {#if project}
                 <Layout.Stack direction="column" gap="s">
+                    {#if resolvedProfile.id === 'studio'}
+                        <Tooltip placement="right" disabled={state !== 'icons'}>
+                            <a
+                                data-sveltekit-preload-data="off"
+                                href={`${base}/project-${project.region}-${project.$id}/studio`}
+                                class="link"
+                                class:active={isSelected('studio')}
+                                onclick={() => {
+                                    trackEvent(Click.MenuOverviewClick);
+                                    sideBarIsOpen = false;
+                                }}
+                                ><span class="link-icon"
+                                    ><Icon icon={IconCommand} size="s" />
+                                </span><span
+                                    class:no-text={state === 'icons'}
+                                    class:has-text={state === 'open'}
+                                    class="link-text">Studio</span
+                                ></a>
+                            <span slot="tooltip">Studio</span>
+                        </Tooltip>
+                    {/if}
                     <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
                             href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}
                             class="link"
                             class:active={isSelected('overview')}
-                            on:click={() => {
+                            onclick={() => {
                                 trackEvent(Click.MenuOverviewClick);
                                 sideBarIsOpen = false;
                             }}
@@ -196,7 +230,7 @@
                                 href={`${base}/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
                                 class:active={isSelected(projectOption.slug)}
-                                on:click={() => {
+                                onclick={() => {
                                     trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;
                                 }}
@@ -227,7 +261,7 @@
                                 href={`${base}/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
                                 class:active={isSelected(projectOption.slug)}
-                                on:click={() => {
+                                onclick={() => {
                                     trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;
                                 }}>
@@ -255,7 +289,7 @@
                             <Tooltip placement="right" disabled={state !== 'icons'}>
                                 <a
                                     href={`${base}/project-${project.region}-${project.$id}/settings`}
-                                    on:click={() => {
+                                    onclick={() => {
                                         trackEvent('click_menu_settings');
                                         sideBarIsOpen = false;
                                     }}
@@ -316,7 +350,7 @@
                         <a
                             href={`${base}/project-${project.region}-${project.$id}/settings`}
                             class="link"
-                            on:click={() => {
+                            onclick={() => {
                                 trackEvent('click_menu_settings');
                             }}
                             class:active={isSelected('/settings') && !isSelected('sites')}
@@ -365,11 +399,12 @@
 
 <div style:--banner-spacing={$bannerSpacing ? $bannerSpacing : undefined}>
     {#if subNavigation}
+        {@const SubNavigation = subNavigation}
         <div
             class="sub-navigation"
             class:icons={state === 'icons'}
             class:no-transitions={$noWidthTransition}>
-            <svelte:component this={subNavigation} />
+            <SubNavigation />
         </div>
     {/if}
 </div>

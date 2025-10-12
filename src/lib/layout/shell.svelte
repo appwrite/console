@@ -19,6 +19,7 @@
     import type { Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let showHeader = true;
     export let showFooter = true;
@@ -142,10 +143,7 @@
     $: sideSize = $hasSubNavigation ? ($isNarrow ? '17rem' : '25rem') : '12.5rem';
 
     $: navbarProps = {
-        logo: {
-            src: 'https://appwrite.io/images/logos/logo.svg',
-            alt: 'Logo Appwrite'
-        },
+        logo: resolvedProfile.logo,
 
         avatar: sdk.forConsole.avatars
             .getInitials({

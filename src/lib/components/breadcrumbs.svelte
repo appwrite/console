@@ -27,6 +27,7 @@
     import { page } from '$app/state';
     import { BillingPlan } from '$lib/constants';
     import { onDestroy } from 'svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     type Organization = {
         name: string;
@@ -160,7 +161,10 @@
             const projectLinks = loadedProjects.projects.slice(0, 4).map((project) => {
                 return {
                     name: project.name,
-                    href: `${base}/project-${project.region}-${project.$id}/overview/platforms`
+                    href: resolvedProfile.getProjectRoute({
+                        region: project.region,
+                        project: project.$id
+                    })
                 };
             });
 
@@ -409,7 +413,10 @@
                                 <div use:melt={$itemProjects}>
                                     <ActionMenu.Root>
                                         <ActionMenu.Item.Anchor
-                                            href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
+                                            href={resolvedProfile.getProjectRoute({
+                                                region: project.region,
+                                                project: project.region
+                                            })}>
                                             <span class="projectName dropdown">{project.name}</span>
                                         </ActionMenu.Item.Anchor>
                                     </ActionMenu.Root>

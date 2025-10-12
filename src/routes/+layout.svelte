@@ -14,15 +14,25 @@
     import { user } from '$lib/stores/user';
     import { loading } from '$routes/store';
     import { Root } from '@appwrite.io/pink-svelte';
-    import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
+    import {
+        ThemeDark,
+        ThemeLight,
+        ThemeDarkCloud,
+        ThemeLightCloud,
+        ThemeDarkStudio,
+        ThemeLightStudio
+    } from '../themes';
     import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
     import { feedback } from '$lib/stores/feedback';
+    import { PUBLIC_CONSOLE_PROFILE } from '$env/static/public';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
             case 'dark':
+                if (PUBLIC_CONSOLE_PROFILE === 'studio') return ThemeDarkStudio;
                 return isCloud ? ThemeDarkCloud : ThemeDark;
             case 'light':
+                if (PUBLIC_CONSOLE_PROFILE === 'studio') return ThemeLightStudio;
                 return isCloud ? ThemeLightCloud : ThemeLight;
         }
     }

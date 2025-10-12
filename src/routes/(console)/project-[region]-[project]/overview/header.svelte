@@ -5,16 +5,16 @@
     import { project, projectRegion } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { Layout, Button, Typography } from '@appwrite.io/pink-svelte';
     import { user } from '$lib/stores/user';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { trackEvent } from '$lib/actions/analytics';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     function dismissOnboarding() {
         setHasOnboardingDismissed($project.$id, $user);
         trackEvent('onboarding_hub_platform_dismiss');
-        goto(`${base}/project-${$project.region}-${$project.$id}/overview/platforms`);
+        goto(resolvedProfile.getProjectRoute({ region: $project.region, project: $project.$id }));
     }
 </script>
 

@@ -3,7 +3,10 @@
 
     export type BaseNavbarProps = HTMLAttributes<HTMLHeadElement> & {
         logo: {
-            src: string;
+            src: {
+                dark: string;
+                light: string;
+            };
             alt: string;
         };
         avatar: string;
@@ -126,7 +129,7 @@
         <a
             href={currentOrg?.$id ? `${base}/organization-${currentOrg?.$id}` : base}
             class="only-desktop">
-            <img src={logo.src} alt={logo.alt} />
+            <img src={$app.theme === 'dark' ? logo.src.dark : logo.src.light} alt={logo.alt} />
         </a>
 
         <Breadcrumbs {organizations} {currentProject} />

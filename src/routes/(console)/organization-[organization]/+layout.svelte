@@ -9,41 +9,45 @@
     import { openMigrationWizard } from '../(migration-wizard)';
     import { base } from '$app/paths';
     import { isOwner } from '$lib/stores/roles';
-    import type { PageData } from './$types';
+    import type { LayoutProps } from './$types';
 
-    export let data: PageData;
+    let { data, children }: LayoutProps = $props();
 
-    $: if ($requestedMigration) {
-        openMigrationWizard();
-    }
-
-    $: $registerCommands([
-        {
-            label: 'Go to members',
-            callback: () => {
-                goto(`${base}/organization-${data.organization.$id}/members`);
-            },
-            keys: ['g', 'm'],
-            disabled: page.url.pathname.endsWith('/members') || !$isOwner,
-            group: 'navigation'
-        },
-        {
-            label: 'Go to settings',
-            callback: () => {
-                goto(`${base}/organization-${data.organization.$id}/settings`);
-            },
-            keys: ['g', 's'],
-            disabled: page.url.pathname.endsWith('/settings') || !$isOwner,
-            group: 'navigation'
+    $effect(() => {
+        if ($requestedMigration) {
+            openMigrationWizard();
         }
-    ]);
+    });
+
+    $effect(() =>
+        $registerCommands([
+            {
+                label: 'Go to members',
+                callback: () => {
+                    goto(`${base}/organization-${data.organization.$id}/members`);
+                },
+                keys: ['g', 'm'],
+                disabled: page.url.pathname.endsWith('/members') || !$isOwner,
+                group: 'navigation'
+            },
+            {
+                label: 'Go to settings',
+                callback: () => {
+                    goto(`${base}/organization-${data.organization.$id}/settings`);
+                },
+                keys: ['g', 's'],
+                disabled: page.url.pathname.endsWith('/settings') || !$isOwner,
+                group: 'navigation'
+            }
+        ])
+    );
 </script>
 
 <svelte:head>
     <title>Organizations - Appwrite</title>
 </svelte:head>
 
-<slot />
+{@render children()}
 
 <Create bind:show={$newOrgModal} />
 <CreateMember bind:showCreate={$newMemberModal} />

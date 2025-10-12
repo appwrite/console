@@ -57,6 +57,7 @@
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
+    import Studio from '$lib/studio/studio.svelte';
 
     export let data: LayoutData;
 
@@ -331,6 +332,7 @@
     });
 </script>
 
+<Studio region={page.params.region} projectId={page.params.project} />
 <CommandCenter />
 <Shell
     showSideNavigation={page.url.pathname !== '/' &&

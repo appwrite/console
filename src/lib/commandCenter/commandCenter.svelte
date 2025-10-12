@@ -96,10 +96,17 @@
     }, 1000);
 
     function isInputEvent(event: KeyboardEvent) {
+        if (
+            event.target instanceof HTMLElement &&
+            customElements.get(event.target.tagName.toLowerCase())
+        )
+            return true;
         return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
     }
 
     const handleKeydown = (e: KeyboardEvent) => {
+        // check if in any webcomponent
+
         if (!$subPanels.length) {
             if (isInputEvent(e)) return;
             keys = [...keys, e.key].slice(-10);
