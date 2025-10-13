@@ -16,8 +16,6 @@
         Tooltip
     } from '@appwrite.io/pink-svelte';
     import SearchQuery from '$lib/components/searchQuery.svelte';
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
     import CertificateInfoModal from './certificateInfoModal.svelte';
     import DeleteCertificateModal from './deleteCertificateModal.svelte';
 
@@ -26,13 +24,18 @@
     let showDelete = false;
     let showAdvancedInfo = false;
     let selectedCertificate = null; //TODO: add type
+    let searchQuery;
+
+    function clearSearch() {
+        searchQuery?.clearInput();
+    }
 
     const now = new Date();
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search by ID" />
+        <SearchQuery bind:this={searchQuery} placeholder="Search by ID" />
     </Layout.Stack>
 
     {#if data.certificates.total}
@@ -138,13 +141,9 @@
             offset={data.offset}
             total={data.certificates.total} />
     {:else if data?.search}
-        <EmptySearch hidePages bind:search={data.search} target="certificates">
+        <EmptySearch hidePages search={data.search} target="certificates">
             <svelte:fragment slot="actions">
-                <Button
-                    secondary
-                    href={`${base}/organization-${page.params.organization}/domains/domain-${page.params.domain}/certificates`}>
-                    Clear search
-                </Button>
+                <Button secondary on:click={clearSearch}>Clear search</Button>
             </svelte:fragment>
         </EmptySearch>
     {:else}

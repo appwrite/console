@@ -12,6 +12,7 @@
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
     import Table from './table.svelte';
 
     let { data } = $props();
@@ -19,11 +20,16 @@
     let showDelete = $state(false);
     let showRetry = $state(false);
     let selectedProxyRule: Models.ProxyRule = null;
+    let searchQuery: { clearInput?: () => void } | undefined;
+
+    function clearSearch() {
+        clearSearchInput(searchQuery);
+    }
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search domain" />
+        <SearchQuery bind:this={searchQuery} placeholder="Search domain" />
         <Button
             href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/domains/add-domain`}
             on:click={() => {
@@ -44,14 +50,8 @@
             offset={data.offset}
             total={data.proxyRules.total} />
     {:else if data?.search}
-        <EmptySearch hidePages bind:search={data.search} target="domains" hidePagination>
-            <svelte:fragment slot="actions">
-                <Button
-                    secondary
-                    on:click={() => {
-                        data.search = '';
-                    }}>Clear search</Button>
-            </svelte:fragment>
+        <EmptySearch hidePages search={data.search} target="domains" hidePagination>
+            <Button secondary on:click={clearSearch}>Clear search</Button>
         </EmptySearch>
     {:else}
         <Card.Base padding="none">

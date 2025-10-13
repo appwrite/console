@@ -38,6 +38,11 @@
     let deleting = false;
     let showFailed = false;
     let errors: string[] = [];
+    let searchQuery;
+
+    function clearSearch() {
+        searchQuery?.clearInput();
+    }
 
     const columns = writable<Column[]>([
         { id: '$id', title: 'Message ID', type: 'string', width: 200 },
@@ -152,7 +157,8 @@
         hasFilters
         hasSearch
         analyticsSource="messaging_messages"
-        searchPlaceholder="Search by description, type, status, or ID">
+        searchPlaceholder="Search by description, type, status, or ID"
+        bind:searchQuery>
         {#if $canWriteMessages}
             <CreateMessageDropdown />
         {/if}
@@ -243,19 +249,11 @@
     {:else if $hasPageQueries}
         <EmptyFilter resource="messages" />
     {:else if data.search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no messages that match your search.</p>
-            </div>
-            <div class="u-flex u-gap-16">
-                <Button external href="https://appwrite.io/docs/products/messaging/messages" text>
-                    Documentation
-                </Button>
-                <Button secondary href={`${base}/project-${region}-${project}/messaging`}>
-                    Clear search
-                </Button>
-            </div>
+        <EmptySearch target="messages" search={data.search}>
+            <Button external href="https://appwrite.io/docs/products/messaging/messages" text>
+                Documentation
+            </Button>
+            <Button secondary on:click={clearSearch}>Clear search</Button>
         </EmptySearch>
     {:else}
         <Empty single target="message" on:click={() => ($showCreate = true)}>

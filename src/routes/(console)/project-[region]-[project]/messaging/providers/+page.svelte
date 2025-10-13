@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import {
         EmptySearch,
@@ -13,19 +12,22 @@
     import { Filters, hasPageQueries } from '$lib/components/filters';
     import CreateProviderDropdown from './createProviderDropdown.svelte';
     import Table from './table.svelte';
-    import { base } from '$app/paths';
     import { canWriteProviders } from '$lib/stores/roles';
     import { Card, Layout, Empty, Icon } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
 
     export let data;
+
+    let searchQuery;
+    const clearSearch = () => clearSearchInput(searchQuery);
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search providers" />
+            <SearchQuery bind:this={searchQuery} placeholder="Search providers" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Filters query={data.query} {columns} analyticsSource="messaging_providers" />
@@ -52,16 +54,8 @@
     {:else if $hasPageQueries}
         <EmptyFilter resource="providers" />
     {:else if data.search && data.search !== 'empty'}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no providers that match your search.</p>
-            </div>
-            <Button
-                secondary
-                href={`${base}/project-${page.params.region}-${page.params.project}/messaging/providers`}>
-                Clear search
-            </Button>
+        <EmptySearch target="providers" search={data.search}>
+            <Button secondary on:click={clearSearch}>Clear search</Button>
         </EmptySearch>
     {:else}
         <Card.Base padding="none">

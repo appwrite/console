@@ -14,6 +14,7 @@
         PaginationWithLimit,
         SearchQuery
     } from '$lib/components';
+    import { clearSearchInput } from '$lib/helpers/clearSearch';
     import { Button } from '$lib/elements/forms';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Container } from '$lib/layout';
@@ -42,6 +43,9 @@
     import Confirm from '$lib/components/confirm.svelte';
 
     export let data;
+
+    let searchQuery;
+    const clearSearch = () => clearSearchInput(searchQuery);
 
     const columns = writable<Column[]>([
         { id: '$id', title: 'User ID', type: 'string', width: 200 },
@@ -104,7 +108,9 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search by name, email, phone, or ID" />
+            <SearchQuery
+                bind:this={searchQuery}
+                placeholder="Search by name, email, phone, or ID" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <ViewSelector ui="new" view={View.Table} {columns} hideView />
@@ -219,10 +225,7 @@
             total={data.users.total} />
     {:else if data.search}
         <EmptySearch target="users" hidePagination>
-            <Button
-                href={`${base}/project-${page.params.region}-${page.params.project}/auth`}
-                size="s"
-                secondary>Clear Search</Button>
+            <Button on:click={clearSearch} size="s" secondary>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty

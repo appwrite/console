@@ -21,6 +21,12 @@
 
     export let data: PageData;
 
+    let searchQuery;
+
+    function clearSearch() {
+        searchQuery?.clearInput();
+    }
+
     const region = page.params.region;
     const project = page.params.project;
     const columns = writable<Column[]>([
@@ -72,7 +78,8 @@
         hasFilters
         hasSearch
         analyticsSource="messaging_topics_filter"
-        searchPlaceholder="Search by name or ID">
+        searchPlaceholder="Search by name or ID"
+        bind:searchQuery>
         {#if $canWriteTopics}
             <Button
                 on:click={() => {
@@ -97,16 +104,8 @@
     {:else if $hasPageQueries}
         <EmptyFilter resource="topics" />
     {:else if data.search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no topics that match your search.</p>
-            </div>
-            <Button
-                secondary
-                href={`${base}/project-${page.params.region}-${page.params.project}/messaging/topics`}>
-                Clear Search
-            </Button>
+        <EmptySearch target="topics" search={data.search}>
+            <Button secondary on:click={clearSearch}>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty
