@@ -25,25 +25,78 @@
     export let role: string;
     export let placement: ComponentProps<Popover>['placement'] = 'bottom-start';
 
+    interface ParsedPermission {
+        type: 'user' | 'team' | 'other';
+        id: string;
+        roleName?: string;
+        isValid: boolean;
+    }
+
+    function parsePermission(permission: string): ParsedPermission {
+        try {
+            const [type, rest] = permission.split(':');
+            if (!rest) {
+                return { type: 'other', id: permission, isValid: false };
+            }
+
+            const [id, roleName] = rest.split('/');
+            if (!id) {
+                return { type: 'other', id: permission, isValid: false };
+            }
+
+            if (type === 'user' || type === 'team') {
+                return {
+                    type: type as 'user' | 'team',
+                    id,
+                    roleName,
+                    isValid: true
+                };
+            }
+
+            return { type: 'other', id: permission, isValid: false };
+        } catch (error) {
+            return { type: 'other', id: permission, isValid: false };
+        }
+    }
+
     async function getData(
         permission: string
     ): Promise<
-        Partial<Models.User<Record<string, unknown>> & Models.Team<Record<string, unknown>>>
+        Partial<Models.User<Record<string, unknown>> & Models.Team<Record<string, unknown>>> & {
+            notFound?: boolean;
+            roleName?: string;
+            customName?: string;
+        }
     > {
-        const role = permission.split(':')[0];
-        const id = permission.split(':')[1].split('/')[0];
-        if (role === 'user') {
-            const user = await sdk
-                .forProject(page.params.region, page.params.project)
-                .users.get({ userId: id });
-            return user;
+        const parsed = parsePermission(permission);
+
+        if (!parsed.isValid || parsed.type === 'other') {
+            return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
         }
-        if (role === 'team') {
-            const team = await sdk
-                .forProject(page.params.region, page.params.project)
-                .teams.get({ teamId: id });
-            return team;
+
+        if (parsed.type === 'user') {
+            try {
+                const user = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .users.get({ userId: parsed.id });
+                return user;
+            } catch (error) {
+                return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
+            }
         }
+
+        if (parsed.type === 'team') {
+            try {
+                const team = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .teams.get({ teamId: parsed.id });
+                return team;
+            } catch (error) {
+                return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
+            }
+        }
+
+        return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
     }
 
     let isMouseOverTooltip = false;
@@ -58,6 +111,11 @@
                 hideTooltip();
             }
         }, 150);
+    }
+
+    function isCustomPermission(role: string): boolean {
+        const parsed = parsePermission(role);
+        return !!parsed.roleName || !parsed.isValid;
     }
 </script>
 
@@ -77,22 +135,28 @@
             }}
             on:mouseleave={() => hidePopover(hide)}>
             <slot>
-                <Layout.Stack direction="row" gap="s" alignItems="center" inline>
-                    <Typography.Text>
-                        {#await getData(role)}
-                            {role}
-                        {:then data}
-                            {formatName(
-                                data.name ?? data?.email ?? data?.phone ?? '-',
-                                $isSmallViewport ? 5 : 12
-                            )}
-                        {/await}
-                    </Typography.Text>
-                    <Badge
-                        size="xs"
-                        variant="secondary"
-                        content={role.startsWith('user') ? 'User' : 'Team'} />
-                </Layout.Stack>
+                {#if isCustomPermission(role)}
+                    <Link.Anchor>
+                        {formatName(role, $isSmallViewport ? 8 : 15)}
+                    </Link.Anchor>
+                {:else}
+                    <Layout.Stack direction="row" gap="s" alignItems="center" inline>
+                        <Typography.Text>
+                            {#await getData(role)}
+                                {role}
+                            {:then data}
+                                {formatName(
+                                    data.name ?? data?.email ?? data?.phone ?? '-',
+                                    $isSmallViewport ? 5 : 12
+                                )}
+                            {/await}
+                        </Typography.Text>
+                        <Badge
+                            size="xs"
+                            variant="secondary"
+                            content={role.startsWith('user') ? 'User' : 'Team'} />
+                    </Layout.Stack>
+                {/if}
             </slot>
         </button>
 
@@ -101,8 +165,7 @@
             let:showing
             slot="tooltip"
             role="tooltip"
-            style:padding="1rem"
-            style:margin="-1rem"
+            class="popover"
             on:mouseenter={() => (isMouseOverTooltip = true)}
             on:mouseleave={() => hidePopover(hide, false)}>
             {#if showing}
@@ -112,76 +175,129 @@
                             <Spinner />
                         </Layout.Stack>
                     {:then data}
-                        {@const isUser = role.startsWith('user')}
-                        {@const isAnonymous = !data.email && !data.phone && !data.name && isUser}
-                        {@const id = role.split(':')[1].split('/')[0]}
-
-                        <Layout.Stack gap="s" alignItems="flex-start">
-                            <Layout.Stack
-                                direction="row"
-                                gap="s"
-                                alignItems="center"
-                                justifyContent="flex-start">
-                                {#if isAnonymous}
-                                    <Avatar alt="avatar" size="m">
-                                        <Icon icon={IconAnonymous} size="s" />
-                                    </Avatar>
-                                {:else if data.name}
-                                    <AvatarInitials name={data.name} size="m" />
-                                {:else}
+                        {#if data.notFound}
+                            <Layout.Stack gap="s" alignItems="flex-start">
+                                <Layout.Stack
+                                    direction="row"
+                                    gap="s"
+                                    alignItems="center"
+                                    justifyContent="flex-start">
                                     <Avatar alt="avatar" size="m">
                                         <Icon icon={IconMinusSm} size="s" />
                                     </Avatar>
-                                {/if}
 
-                                <Layout.Stack alignItems="flex-start" gap="xxs">
-                                    <Layout.Stack style="padding-left: 0.25rem;">
-                                        <Link.Anchor
-                                            variant="quiet"
-                                            href={role.startsWith('user')
-                                                ? `${base}/project-${page.params.region}-${page.params.project}/auth/user-${id}`
-                                                : `${base}/project-${page.params.region}-${page.params.project}/auth/teams/team-${id}`}>
+                                    <Layout.Stack alignItems="flex-start" gap="xxs">
+                                        <Layout.Stack style="padding-left: 0.25rem;">
                                             <Typography.Text
                                                 size="s"
                                                 color="--fgcolor-neutral-primary">
-                                                {formatName(
-                                                    data.name ?? data?.email ?? data?.phone ?? '-',
-                                                    $isSmallViewport ? 12 : 24
-                                                )}
+                                                {data.customName}
                                             </Typography.Text>
-                                        </Link.Anchor>
+                                        </Layout.Stack>
+                                        {#if data.roleName}
+                                            <InteractiveText
+                                                isVisible
+                                                variant="copy"
+                                                text={data.roleName}
+                                                value={data.roleName} />
+                                        {:else}
+                                            <InteractiveText
+                                                isVisible
+                                                variant="copy"
+                                                text={role}
+                                                value={role} />
+                                        {/if}
                                     </Layout.Stack>
-                                    <InteractiveText
-                                        isVisible
-                                        variant="copy"
-                                        text={id}
-                                        value={id} />
                                 </Layout.Stack>
                             </Layout.Stack>
+                        {:else}
+                            {@const isUser = role.startsWith('user')}
+                            {@const isAnonymous =
+                                !data.email && !data.phone && !data.name && isUser}
+                            {@const id = role.split(':')[1].split('/')[0]}
 
-                            {#if isUser && (data.email || data.phone)}
-                                <Divider />
-                                <Layout.Stack gap="xs" alignItems="flex-start">
-                                    {#if data.email}
-                                        <Typography.Text
-                                            size="xs"
-                                            color="--fgcolor-neutral-secondary">
-                                            Email: {data.email}
-                                        </Typography.Text>
+                            <Layout.Stack gap="s" alignItems="flex-start">
+                                <Layout.Stack
+                                    direction="row"
+                                    gap="s"
+                                    alignItems="center"
+                                    justifyContent="flex-start">
+                                    {#if isAnonymous}
+                                        <Avatar alt="avatar" size="m">
+                                            <Icon icon={IconAnonymous} size="s" />
+                                        </Avatar>
+                                    {:else if data.name}
+                                        <AvatarInitials name={data.name} size="m" />
+                                    {:else}
+                                        <Avatar alt="avatar" size="m">
+                                            <Icon icon={IconMinusSm} size="s" />
+                                        </Avatar>
                                     {/if}
-                                    {#if data.phone}
-                                        <Typography.Text
-                                            size="xs"
-                                            color="--fgcolor-neutral-secondary">
-                                            Phone: {data.phone}
-                                        </Typography.Text>
-                                    {/if}
+
+                                    <Layout.Stack alignItems="flex-start" gap="xxs">
+                                        <Layout.Stack style="padding-left: 0.25rem;">
+                                            <Link.Anchor
+                                                variant="quiet"
+                                                href={role.startsWith('user')
+                                                    ? `${base}/project-${page.params.region}-${page.params.project}/auth/user-${id}`
+                                                    : `${base}/project-${page.params.region}-${page.params.project}/auth/teams/team-${id}`}>
+                                                <Typography.Text
+                                                    size="s"
+                                                    color="--fgcolor-neutral-primary">
+                                                    {formatName(
+                                                        data.name ??
+                                                            data?.email ??
+                                                            data?.phone ??
+                                                            '-',
+                                                        $isSmallViewport ? 12 : 24
+                                                    )}
+                                                </Typography.Text>
+                                            </Link.Anchor>
+                                        </Layout.Stack>
+                                        <InteractiveText
+                                            isVisible
+                                            variant="copy"
+                                            text={id}
+                                            value={id} />
+                                    </Layout.Stack>
                                 </Layout.Stack>
-                            {/if}
-                        </Layout.Stack>
+
+                                {#if isUser && (data.email || data.phone)}
+                                    <Divider />
+                                    <Layout.Stack gap="xs" alignItems="flex-start">
+                                        {#if data.email}
+                                            <Typography.Text
+                                                size="xs"
+                                                color="--fgcolor-neutral-secondary">
+                                                Email: {data.email}
+                                            </Typography.Text>
+                                        {/if}
+                                        {#if data.phone}
+                                            <Typography.Text
+                                                size="xs"
+                                                color="--fgcolor-neutral-secondary">
+                                                Phone: {data.phone}
+                                            </Typography.Text>
+                                        {/if}
+                                    </Layout.Stack>
+                                {/if}
+                            </Layout.Stack>
+                        {/if}
                     {/await}
                 </Layout.Stack>
             {/if}
         </div>
     </Popover>
 {/if}
+
+<style lang="scss">
+    .popover {
+        display: flex;
+        width: 260px;
+        min-width: 260px;
+        padding: var(--space-5, 10px) var(--space-6, 12px);
+        align-items: flex-start;
+        gap: var(--gap-XXS, 4px);
+        margin: -1rem;
+    }
+</style>
