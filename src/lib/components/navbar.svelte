@@ -129,7 +129,7 @@
         <a
             href={currentOrg?.$id ? `${base}/organization-${currentOrg?.$id}` : base}
             class="only-desktop">
-            <img src={$app.theme === 'dark' ? logo.src.dark : logo.src.light} alt={logo.alt} />
+            <img src={$app.themeInUse === 'dark' ? logo.src.dark : logo.src.light} alt={logo.alt} />
         </a>
 
         <Breadcrumbs {organizations} {currentProject} />
