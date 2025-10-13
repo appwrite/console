@@ -41,8 +41,8 @@
     const terminology = useTerminology(page);
     const databasesSdk = useDatabasesSdk(page, terminology);
 
-    const entityTypePlural = $derived(terminology.entity.lower.plural);
-    const entityTypeSingular = $derived(terminology.entity.lower.singular);
+    const entityTypePlural = terminology.entity.lower.plural;
+    const entityTypeSingular = terminology.entity.lower.singular;
 
     const entityId = $derived(page.params[entityTypeSingular]);
 
@@ -114,7 +114,10 @@
                             {@const isFirst = index === 0}
                             {@const isSelected = entityId === entity.$id}
                             {@const isLast = index === sortedEntities.length - 1}
-                            {@const href = buildEntityRoute(page, entityTypeSingular, entity.$id)}
+                            {@const href = withPath(
+                                databaseBaseRoute,
+                                `/${entityTypeSingular}-${entityId}`
+                            )}
 
                             <Layout.Stack gap="s" direction="row" alignItems="center">
                                 <li

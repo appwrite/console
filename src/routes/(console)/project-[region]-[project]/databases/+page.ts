@@ -8,6 +8,7 @@ import type { BackupPolicy } from '$lib/sdk/backups';
 import { isSelfHosted } from '$lib/system';
 import { isCloud } from '$lib/system';
 import type { Plan } from '$lib/sdk/billing';
+import { useDatabasesSdk } from '$database/(entity)';
 
 export const load: PageLoad = async ({ url, route, depends, params, parent }) => {
     depends(Dependencies.DATABASES);
@@ -21,7 +22,7 @@ export const load: PageLoad = async ({ url, route, depends, params, parent }) =>
     // already loaded by parent.
     const { currentPlan } = await parent();
 
-    const { databases, tables, policies, lastBackups } = await fetchDatabasesAndBackups(
+    const { databases, entities, policies, lastBackups } = await fetchDatabasesAndBackups(
         limit,
         offset,
         params,
@@ -34,7 +35,7 @@ export const load: PageLoad = async ({ url, route, depends, params, parent }) =>
         limit,
         view,
         search,
-        tables,
+        entities,
         policies,
         databases,
         lastBackups
@@ -50,26 +51,24 @@ async function fetchDatabasesAndBackups(
 ) {
     const backupsEnabled = currentPlan?.backupsEnabled ?? true;
 
-    const projectSDK = sdk.forProject(params.region, params.project);
-
-    // TODO: make use of `useDatabasesSdk`;
-    const databases = await projectSDK.tablesDB.list({
+    const databasesSdk = useDatabasesSdk(params.region, params.project);
+    const databases = await databasesSdk.list({
         queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
         search: search || undefined
     });
 
-    const tables: Record<string, string | null> = {};
+    const entities: Record<string, string | null> = {};
 
     await Promise.all(
         // TODO: backend should allow `Query.select` for perf!
-        // TODO: make use of `useDatabasesSdk`;
-        databases.databases.map(async ({ $id }) => {
-            const res = await projectSDK.tablesDB.listTables({
+        databases.databases.map(async ({ $id, type }) => {
+            const res = await databasesSdk.listEntities({
                 databaseId: $id,
+                databaseType: type,
                 queries: [Query.limit(1), Query.orderDesc('')]
             });
 
-            tables[$id] = res.tables?.[0]?.$id ?? null;
+            entities[$id] = res.entities?.[0]?.$id ?? null;
         })
     );
 
@@ -82,7 +81,7 @@ async function fetchDatabasesAndBackups(
         ]);
     }
 
-    return { databases, tables, policies, lastBackups };
+    return { databases, entities, policies, lastBackups };
 }
 
 async function fetchPolicies(databases: Models.DatabaseList, params: RouteParams) {

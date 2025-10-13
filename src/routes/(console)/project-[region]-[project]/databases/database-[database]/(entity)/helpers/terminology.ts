@@ -25,17 +25,22 @@ export type EntityList = {
 };
 
 export const baseTerminology = {
+    /**
+     * this is no longer used on console so
+     * we don't really show old terminology for older databases and,
+     * therefore we use the new routes, terms and sdk for these databases.
+     */
+    legacy: {
+        entity: 'table',
+        field: 'column',
+        record: 'row'
+    },
     tablesdb: {
         entity: 'table',
         field: 'column',
         record: 'row'
     },
     documentsdb: {
-        entity: 'collection',
-        field: 'attribute',
-        record: 'document'
-    },
-    legacy: {
         entity: 'collection',
         field: 'attribute',
         record: 'document'
@@ -101,8 +106,11 @@ export function toRelationalField(raw: Field): Columns {
  * @internal
  * Use `getTerminologies()` instead when in `database-[database]` routes where context is available.
  */
-export function useTerminology(page: Page): TerminologyResult {
-    const type = page.data?.database?.type as DatabaseType;
+export function useTerminology(pageOrType: Page | DatabaseType): TerminologyResult {
+    const type =
+        typeof pageOrType === 'object'
+            ? (pageOrType.data?.database?.type as DatabaseType)
+            : pageOrType;
     if (!type) {
         // strict check because this should always be available!
         throw new AppwriteException('Database type is required', 500);
