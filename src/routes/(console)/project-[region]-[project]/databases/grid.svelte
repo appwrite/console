@@ -37,11 +37,7 @@
                 <Layout.Stack inline direction="row" gap="s" alignItems="center">
                     {database.name}
 
-                    <Badge
-                        size="xs"
-                        type="success"
-                        variant="secondary"
-                        content={getDatabaseTypeTitle(database)} />
+                    <Badge size="xs" variant="secondary" content={getDatabaseTypeTitle(database)} />
                 </Layout.Stack>
             </svelte:fragment>
 
@@ -66,9 +62,3 @@
         <p>Create a database</p>
     </svelte:fragment>
 </CardContainer>
-
-<style>
-    .icon-exclamation {
-        color: hsl(var(--color-warning-100)) !important;
-    }
-</style>

@@ -21,13 +21,18 @@
     import { app } from '$lib/stores/app';
     import EmptyDarkTablet from '$lib/images/backups/upgrade/backups-tablet-dark.png';
     import EmptyLightTablet from '$lib/images/backups/upgrade/backups-tablet-light.png';
+    import { sdk } from '$lib/stores/sdk';
+    import { trackEvent } from '$lib/actions/analytics';
+    import CreatePolicy from '$database/backups/createPolicy.svelte';
+    import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
 
     let formComponent: Form;
 
     let databaseId = $state(null);
     let databaseName = $state(null);
 
-    let backupGroup = $state(null);
+    let showCreatePolicies = $state(false);
+    let totalPolicies: UserBackupPolicy[] = $state([]);
 
     let showCustomId = $state(false);
     let showExitModal = $state(false);
@@ -62,40 +67,76 @@
         }
     ];
 
-    // TODO: implement!
-    const backupOptions = [
-        {
-            id: 'daily',
-            title: 'Backup every 24 hours',
-            subtitle: 'One backup every 24 hours, retained for 30 days'
-        },
-        {
-            id: 'custom',
-            title: '',
-            subtitle: '',
-            policy: ''
-        },
-        {
-            id: '',
-            title: '',
-            subtitle: '',
-            policy: ''
-        }
-    ];
-
     afterNavigate(({ from }) => (previousPage = from?.url?.pathname || previousPage));
 
-    // TODO: Backup policies!
+    function trackPolicyEvents() {
+        totalPolicies.forEach((policy: UserBackupPolicy) => {
+            let actualDay = null;
+            const monthlyBackupFrequency = policy.monthlyBackupFrequency;
+            switch (monthlyBackupFrequency) {
+                case 'first':
+                    actualDay = '1st';
+                    break;
+                case 'middle':
+                    actualDay = '15th';
+                    break;
+                case 'end':
+                default:
+                    actualDay = '28th';
+                    break;
+            }
+
+            const message = {
+                keepFor: `${policy.retained} days`,
+                frequency: policy.plainTextFrequency,
+                policy: policy.default ? 'preset' : 'custom'
+            };
+
+            if (actualDay) {
+                message['monthlyInterval'] = actualDay;
+            }
+
+            trackEvent('submit_policy_submit', message);
+        });
+
+        totalPolicies = [];
+    }
+
+    async function createPolicies(resourceId: string) {
+        if (!totalPolicies.length) return;
+
+        const totalPoliciesPromise = totalPolicies.map((policy) => {
+            cronExpression(policy);
+
+            return sdk
+                .forProject(page.params.region, page.params.project)
+                .backups.createPolicy(
+                    ID.unique(),
+                    ['databases'],
+                    policy.retained,
+                    policy.schedule,
+                    policy.label,
+                    resourceId
+                );
+        });
+
+        await Promise.all(totalPoliciesPromise);
+        trackPolicyEvents();
+    }
+
     async function createDatabase() {
         try {
             databaseId ??= ID.unique();
 
             let database: Models.Database;
             const databasesSdk = useDatabasesSdk(page.params.region, page.params.project);
+
             database = await databasesSdk.create(type, {
                 databaseId,
                 name: databaseName
             });
+
+            await createPolicies(database.$id);
 
             addNotification({
                 type: 'success',
@@ -187,20 +228,14 @@
 </Wizard>
 
 {#snippet cloudBackupOptions()}
-    {#if $organization?.billingPlan === BillingPlan.FREE}
-        <Layout.Grid columns={3} columnsS={1}>
-            {#each Array.from({ length: 3 }) as _}
-                <Card.Selector
-                    bind:group={backupGroup}
-                    name="24h"
-                    id="everyDay"
-                    value="24h"
-                    title="Backup every 24 hours"
-                    imageRadius="s">
-                    One backup every 24 hours, retained for 30 days
-                </Card.Selector>
-            {/each}
-        </Layout.Grid>
+    {#if $organization?.billingPlan !== BillingPlan.FREE}
+        <div style:width="100%">
+            <CreatePolicy
+                bind:totalPolicies
+                title="Backup policies"
+                bind:isShowing={showCreatePolicies}
+                subtitle="Protect your data and ensure quick recovery by adding backup policies." />
+        </div>
     {:else}
         <Alert.Inline title="This database won't be backed up" status="warning">
             Upgrade your plan to ensure your data stays safe and backed up.
@@ -245,16 +280,30 @@
                     </div>
                 </div>
             {:else}
-                {#each Array.from({ length }) as _}
+                {#each Array.from({ length }) as _, index}
+                    {@const options = [
+                        {
+                            title: 'Backup every 24 hours',
+                            description: 'One backup every 24 hours, retained for 30 days'
+                        },
+                        {
+                            title: 'Custom policy',
+                            description: 'Define your own schedule and retention'
+                        },
+                        {
+                            title: 'No backup',
+                            description: 'Skip backups. You can change this later'
+                        }
+                    ]}
                     <Card.Selector
-                        bind:group={backupGroup}
-                        name="24h"
-                        id="everyDay"
-                        value="24h"
-                        title="Backup every 24 hours"
+                        group={undefined}
+                        name={`backup-${index}`}
+                        id={`backup-${index}`}
+                        value={`backup-${index}`}
+                        title={options[index].title}
                         imageRadius="s"
                         disabled>
-                        One backup every 24 hours, retained for 30 days
+                        {options[index].description}
                     </Card.Selector>
                 {/each}
             {/if}
@@ -283,6 +332,7 @@
     <Layout.Grid columns={2} columnsS={1}>
         {#each databaseTypes as databaseType}
             <Card.Selector
+                variant="secondary"
                 bind:group={type}
                 name={databaseType.type}
                 id={databaseType.type}

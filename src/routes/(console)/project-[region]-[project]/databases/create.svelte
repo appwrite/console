@@ -142,8 +142,8 @@
         {:else}
             <CreatePolicy
                 bind:totalPolicies
-                bind:isShowing={showCreate}
                 title="Backup policies"
+                bind:isShowing={showCreate}
                 subtitle="Protect your data and ensure quick recovery by adding backup policies." />
         {/if}
     {/if}
