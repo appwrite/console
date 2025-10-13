@@ -33,7 +33,7 @@
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
 
     $effect(() => {
-        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME) {
+        if ($regionalConsoleVariables._APP_DOMAIN_SITES) {
             selectedTab = 'cname';
         } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
             selectedTab = 'a';
@@ -150,7 +150,7 @@
                 <Layout.Stack gap="xl">
                     <div>
                         <Tabs.Root variant="secondary" let:root>
-                            {#if !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
+                            {#if !!$regionalConsoleVariables._APP_DOMAIN_SITES && $regionalConsoleVariables._APP_DOMAIN_SITES !== 'localhost'}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'cname')}

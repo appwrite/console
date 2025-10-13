@@ -168,7 +168,7 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
-                                {#if proxyRule.logs && (proxyRule.status === 'unverified' || proxyRule.status === 'verifying')}
+                                {#if proxyRule.logs && proxyRule.logs.length > 0}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconTerminal}
                                         on:click={(e) => {
@@ -191,7 +191,7 @@
                                     </ActionMenu.Item.Button>
                                 {/if}
                                 <DnsRecordsAction rule={proxyRule} {organizationDomains} />
-                                {#if proxyRule.logs && (proxyRule.status === 'unverified' || proxyRule.status === 'verifying')}
+                                {#if proxyRule.logs && proxyRule.logs.length > 0}
                                     <div class="action-menu-divider">
                                         <Divider />
                                     </div>

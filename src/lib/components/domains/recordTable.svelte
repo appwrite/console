@@ -25,7 +25,7 @@
         domain: string;
         verified?: boolean | undefined;
         variant: 'cname' | 'a' | 'aaaa';
-        service?: 'sites' | 'general';
+        service?: 'sites' | 'functions' | 'general';
         ruleStatus?: string | undefined;
         onNavigateToNameservers?: () => void;
         onNavigateToA?: () => void;
@@ -54,9 +54,13 @@
     function setTarget() {
         switch (variant) {
             case 'cname':
-                return service === 'general'
-                    ? $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME
-                    : $regionalConsoleVariables._APP_DOMAIN_SITES;
+                if (service === 'sites') {
+                    return $regionalConsoleVariables._APP_DOMAIN_SITES;
+                } else if (service === 'functions') {
+                    return $regionalConsoleVariables._APP_DOMAIN_FUNCTIONS;
+                } else {
+                    return $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME;
+                }
             case 'a':
                 return $regionalConsoleVariables._APP_DOMAIN_TARGET_A;
             case 'aaaa':
