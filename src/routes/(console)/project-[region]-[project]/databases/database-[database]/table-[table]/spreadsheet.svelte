@@ -13,7 +13,6 @@
     import type { PageData } from './$types';
     import {
         buildRowUrl,
-        buildWildcardColumnsQuery,
         isRelationship,
         isRelationshipToMany,
         isSpatialType,
@@ -38,10 +37,8 @@
         paginatedRows,
         paginatedRowsLoading,
         spreadsheetRenderKey,
-        expandTabs,
         databaseRelatedRowSheetOptions,
-        rowPermissionSheet,
-        type Columns
+        rowPermissionSheet
     } from './store';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import {
@@ -92,6 +89,7 @@
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { chunks } from '$lib/helpers/array';
     import { mapToQueryParams } from '$lib/components/filters/store';
+    import { expandTabs, type Columns, buildWildcardEntitiesQuery } from '$database/store';
 
     export let data: PageData;
     export let showRowCreateSheet: {
@@ -655,7 +653,7 @@
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
                     Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
                     ...filterQueries /* filter queries */,
-                    ...buildWildcardColumnsQuery(table)
+                    ...buildWildcardEntitiesQuery(table)
                 ]
             });
 
@@ -682,7 +680,7 @@
                         getCorrectOrderQuery(),
                         Query.limit(SPREADSHEET_PAGE_LIMIT),
                         Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
-                        ...buildWildcardColumnsQuery(table)
+                        ...buildWildcardEntitiesQuery(table)
                     ]
                 });
 

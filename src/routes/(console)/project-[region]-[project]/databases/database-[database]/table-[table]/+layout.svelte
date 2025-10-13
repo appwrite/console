@@ -32,10 +32,9 @@
         spreadsheetLoading,
         rowActivitySheet,
         spreadsheetRenderKey,
-        expandTabs,
         databaseRelatedRowSheetOptions,
         rowPermissionSheet,
-        type Columns
+        showRowCreateSheet
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
@@ -61,6 +60,8 @@
     import { buildRowUrl, isRelationship } from './rows/store';
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+
+    import { expandTabs, type Columns } from '../store';
 
     import type { LayoutData } from './$types';
 
@@ -93,7 +94,7 @@
     );
 
     onMount(() => {
-        expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
+        expandTabs.set(preferences.getKey('entityHeaderExpanded', true));
 
         return realtime
             .forProject(page.params.region, page.params.project)
@@ -121,8 +122,12 @@
     $: $registerCommands([
         {
             label: 'Create row',
-            keys: page.url.pathname.endsWith(table?.$id) ? ['t'] : ['t', 'd'],
-            callback: () => ($showCreateEntity = true),
+            keys: page.url.pathname.endsWith(table?.$id) ? ['r'] : ['r', 'd'],
+            callback: () => {
+                if (table.fields) {
+                    $showRowCreateSheet.show = true;
+                }
+            },
             icon: IconPlus,
             group: 'rows'
         },

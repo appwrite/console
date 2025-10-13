@@ -5,42 +5,7 @@ import { derived, writable } from 'svelte/store';
 import type { SortDirection } from '$lib/components';
 import { SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
 import { createSparsePagedDataStore } from '@appwrite.io/pink-svelte';
-
-export type Columns =
-    | Models.ColumnBoolean
-    | Models.ColumnEmail
-    | Models.ColumnEnum
-    | Models.ColumnFloat
-    | Models.ColumnInteger
-    | Models.ColumnIp
-    | Models.ColumnString
-    | Models.ColumnUrl
-    | Models.ColumnPoint
-    | Models.ColumnLine
-    | Models.ColumnPolygon
-    | (Models.ColumnRelationship & { default?: never });
-
-export type Attributes =
-    | Models.AttributeBoolean
-    | Models.AttributeEmail
-    | Models.AttributeEnum
-    | Models.AttributeFloat
-    | Models.AttributeInteger
-    | Models.AttributeIp
-    | Models.AttributeString
-    | Models.AttributeUrl
-    | Models.AttributePoint
-    | Models.AttributeLine
-    | Models.AttributePolygon
-    | (Models.AttributeRelationship & { default?: never });
-
-export type Collection = Omit<Models.Collection, 'attributes'> & {
-    attributes: Array<Attributes>;
-};
-
-export type Table = Omit<Models.Table, 'columns'> & {
-    columns: Array<Columns>;
-};
+import type { Columns } from '$database/store';
 
 export const columns = derived(page, ($page) => $page.data.table.columns as Columns[]);
 export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.ColumnIndex[]);
@@ -194,7 +159,6 @@ export const rowPermissionSheet = writable({
     row: null as Models.Row
 });
 
-export const expandTabs = writable(null);
 export const spreadsheetRenderKey = writable('initial');
 
 export const paginatedRowsLoading = writable(false);

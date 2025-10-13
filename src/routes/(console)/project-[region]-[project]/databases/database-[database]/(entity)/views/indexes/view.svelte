@@ -50,7 +50,7 @@
         onCreateIndex: (index: CreateIndexesCallbackType) => Promise<void>;
         onDeleteIndexes: (indexKeys: string[]) => Promise<void>;
         emptyIndexesSheetView: Snippet<[() => void]>;
-        emptyEntitiesSheetView?: Snippet;
+        emptyEntitiesSheetView?: Snippet<[() => void]>;
     } = $props();
 
     let showCreateIndex = $state(false);
@@ -294,7 +294,7 @@
             {@render emptyIndexesSheetView(() => (showCreateIndex = true))}
         {/if}
     {:else}
-        {@render emptyEntitiesSheetView?.()}
+        {@render emptyEntitiesSheetView?.(() => (showCreateIndex = true))}
     {/if}
 
     {#if selectedIndexes.length > 0}

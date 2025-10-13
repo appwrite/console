@@ -8,9 +8,10 @@
     import { type Models, Query } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { type Columns, PROHIBITED_ROW_KEYS } from '../store';
+    import { PROHIBITED_ROW_KEYS } from '../store';
+    import { type Columns, buildWildcardEntitiesQuery } from '$database/store';
     import ColumnItem from './columns/columnItem.svelte';
-    import { buildWildcardColumnsQuery, isRelationship, isRelationshipToMany } from './store';
+    import { isRelationship, isRelationshipToMany } from './store';
     import { Accordion, Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import { preferences } from '$lib/stores/preferences';
@@ -66,11 +67,11 @@
                         databaseId,
                         tableId: tableId,
                         rowId: rows as string,
-                        queries: buildWildcardColumnsQuery(relatedTable)
+                        queries: buildWildcardEntitiesQuery(relatedTable)
                     });
 
                 // cannot use page.data.entities!
-                relatedTable = await databaseSdk.getEntity({
+                relatedTable = await databasesSdk.getEntity({
                     databaseId,
                     entityId: tableId
                 });
@@ -141,7 +142,7 @@
                                     queries: [
                                         Query.equal('$id', rowIds),
                                         Query.limit(rowIds.length),
-                                        ...buildWildcardColumnsQuery(rowTable)
+                                        ...buildWildcardEntitiesQuery(rowTable)
                                     ]
                                 });
                             return response.rows;

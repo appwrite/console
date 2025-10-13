@@ -13,7 +13,7 @@
     import { IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import type { Column } from '$lib/helpers/types';
-    import { expandTabs } from '../table-[table]/store';
+    import { expandTabs, type Columns } from '../store';
     import { SpreadsheetContainer } from '$database/(entity)';
     import { onDestroy, onMount, tick } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -33,7 +33,6 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { isWithinSafeRange } from '$lib/helpers/numbers';
-    import type { Columns } from '../table-[table]/store';
     import { columnOptions } from '../table-[table]/columns/store';
     import Options from './options.svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';

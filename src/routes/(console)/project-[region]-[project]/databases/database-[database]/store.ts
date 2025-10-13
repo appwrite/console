@@ -3,6 +3,47 @@ import type { Column } from '$lib/helpers/types';
 import { IconChartBar, IconCloudUpload, IconCog } from '@appwrite.io/pink-icons-svelte';
 import { resolveRoute, withPath } from '$lib/stores/navigation';
 import type { Page } from '@sveltejs/kit';
+import { type Models, Query } from '@appwrite.io/console';
+import type { Entity, Field } from '$database/(entity)';
+import { isRelationship } from '$database/table-[table]/rows/store';
+
+export type Columns =
+    | Models.ColumnBoolean
+    | Models.ColumnEmail
+    | Models.ColumnEnum
+    | Models.ColumnFloat
+    | Models.ColumnInteger
+    | Models.ColumnIp
+    | Models.ColumnString
+    | Models.ColumnUrl
+    | Models.ColumnPoint
+    | Models.ColumnLine
+    | Models.ColumnPolygon
+    | (Models.ColumnRelationship & { default?: never });
+
+export type Attributes =
+    | Models.AttributeBoolean
+    | Models.AttributeEmail
+    | Models.AttributeEnum
+    | Models.AttributeFloat
+    | Models.AttributeInteger
+    | Models.AttributeIp
+    | Models.AttributeString
+    | Models.AttributeUrl
+    | Models.AttributePoint
+    | Models.AttributeLine
+    | Models.AttributePolygon
+    | (Models.AttributeRelationship & { default?: never });
+
+export type Collection = Omit<Models.Collection, 'attributes'> & {
+    attributes: Array<Attributes>;
+};
+
+export type Table = Omit<Models.Table, 'columns'> & {
+    columns: Array<Columns>;
+};
+
+export const expandTabs = writable(null);
 
 export const showCreateEntity = writable(false);
 
@@ -44,4 +85,17 @@ export function buildEntityRoute(page: Page, entityType: string, entityId: strin
         ),
         `/${entityType}-${entityId}`
     );
+}
+
+/**
+ * Returns select queries for all main and related fields in an `Entity`.
+ */
+export function buildWildcardEntitiesQuery(entity: Entity | null = null): string[] {
+    return [
+        ...(entity?.fields
+            ?.filter((field: Field) => field.status === 'available' && isRelationship(field))
+            ?.map((field: Field) => Query.select([`${field.key}.*`])) ?? []),
+
+        Query.select(['*'])
+    ];
 }

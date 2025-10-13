@@ -18,8 +18,10 @@
     import { currentPlan } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { noWidthTransition } from '$lib/stores/sidebar';
-    import { CreateEntity, setTerminologies } from '$database/(entity)';
-    import { sdk } from '$lib/stores/sdk';
+    import { CreateEntity, getTerminologies, setTerminologies } from '$database/(entity)';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
+
+    setTerminologies(page);
 
     const project = page.params.project;
     const databaseId = page.params.database;
@@ -137,22 +139,26 @@
 
     $noWidthTransition = true;
 
-    async function createEntity(tableId: string, name: string) {
-        const table = await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDB.createTable({
-                databaseId,
-                tableId,
-                name
-            });
+    async function createEntity(entityId: string, name: string) {
+        const entity = await databasesSdk.createEntity({
+            databaseId,
+            entityId,
+            name
+        });
 
         await invalidate(Dependencies.DATABASE);
         await goto(
-            `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/table-${table.$id}`
+            withPath(
+                resolveRoute(
+                    '/(console)/project-[region]-[project]/databases/database-[database]',
+                    page.params
+                ),
+                `/${terminology.entity.lower.singular}-${entity.$id}`
+            )
         );
     }
 
-    $: setTerminologies(page);
+    const { databasesSdk, terminology } = getTerminologies();
 </script>
 
 <svelte:head>

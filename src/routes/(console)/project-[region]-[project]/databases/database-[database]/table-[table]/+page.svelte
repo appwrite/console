@@ -14,7 +14,6 @@
         showRowCreateSheet,
         showCreateColumnSheet,
         randomDataModalState,
-        expandTabs,
         columnsOrder
     } from './store';
     import SpreadSheet from './spreadsheet.svelte';
@@ -33,6 +32,7 @@
     import { columnOptions } from './columns/store';
     import { EmptySheet, type Field } from '$database/(entity)';
     import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
+    import { expandTabs } from '$database/store';
 
     export let data: PageData;
 
@@ -177,7 +177,7 @@
                             class="small-button-dimensions"
                             on:click={() => {
                                 $expandTabs = !$expandTabs;
-                                preferences.setKey('tableHeaderExpanded', $expandTabs);
+                                preferences.setKey('entityHeaderExpanded', $expandTabs);
                             }}>
                             <Icon icon={!$expandTabs ? IconChevronDown : IconChevronUp} size="s" />
                         </Button>

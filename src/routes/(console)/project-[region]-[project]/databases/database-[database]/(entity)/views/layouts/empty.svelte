@@ -14,7 +14,8 @@
     import { SpreadsheetContainer } from '$database/(entity)';
     import { onDestroy, onMount } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
-    import { expandTabs, spreadsheetLoading } from '$database/table-[table]/store';
+    import { expandTabs } from '$database/store';
+    import { spreadsheetLoading } from '$database/table-[table]/store';
 
     type Mode = 'rows' | 'rows-filtered' | 'indexes';
 

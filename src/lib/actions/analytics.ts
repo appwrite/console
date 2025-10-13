@@ -288,6 +288,11 @@ export enum Submit {
     RowUpdate = 'submit_row_update',
     RowUpdatePermissions = 'submit_row_update_permissions',
 
+    DocumentCreate = 'submit_document_create',
+    DocumentDelete = 'submit_document_delete',
+    DocumentUpdate = 'submit_document_update',
+    DocumentUpdatePermissions = 'submit_document_update_permissions',
+
     IndexCreate = 'submit_index_create',
     IndexDelete = 'submit_index_delete',
 
@@ -298,6 +303,14 @@ export enum Submit {
     TableUpdateSecurity = 'submit_table_update_security',
     TableUpdateEnabled = 'submit_table_update_enabled',
     TableUpdateDisplayNames = 'submit_table_update_display_names',
+
+    CollectionCreate = 'submit_collection_create',
+    CollectionDelete = 'submit_collection_delete',
+    CollectionUpdateName = 'submit_collection_update_name',
+    CollectionUpdatePermissions = 'submit_collection_update_permissions',
+    CollectionUpdateSecurity = 'submit_collection_update_security',
+    CollectionUpdateEnabled = 'submit_collection_update_enabled',
+    CollectionUpdateDisplayNames = 'submit_collection_update_display_names',
 
     FunctionCreate = 'submit_function_create',
     FunctionDelete = 'submit_function_delete',

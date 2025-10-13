@@ -4,13 +4,13 @@ import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters';
-import { buildWildcardEntitiesQuery } from '$database/store';
 import type { TagValue } from '$lib/components/filters/store';
 import type { Entity } from '$database/(entity)';
+import { buildWildcardEntitiesQuery } from '$database/store';
 
 export const load: PageLoad = async ({ params, depends, url, route, parent }) => {
-    const { table } = await parent();
-    depends(Dependencies.ROWS);
+    const { collection } = await parent();
+    depends(Dependencies.DOCUMENTS);
 
     const page = getPage(url);
     const limit = getLimit(url, route, SPREADSHEET_PAGE_LIMIT);
@@ -22,42 +22,28 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
     const parsedQueries = queryParamToMap(paramQueries || '[]');
     queries.set(parsedQueries);
 
-    const currentSort = extractSortFromQueries(parsedQueries);
+    // const currentSort = extractSortFromQueries(parsedQueries);
 
     return {
         offset,
         limit,
         view,
         query,
-        currentSort,
+        // currentSort,
         parsedQueries,
-        rows: await sdk.forProject(params.region, params.project).tablesDB.listRows({
+        documents: await sdk.forProject(params.region, params.project).documentsDB.listDocuments({
             databaseId: params.database,
-            tableId: params.table,
-            queries: buildGridQueries(limit, offset, parsedQueries, table)
+            collectionId: params.collection,
+            queries: buildGridQueries(limit, offset, parsedQueries, collection)
         })
     };
 };
-
-function extractSortFromQueries(parsedQueries: Map<TagValue, string>) {
-    for (const [tagValue, queryString] of parsedQueries.entries()) {
-        if (queryString.includes('orderAsc') || queryString.includes('orderDesc')) {
-            const isAsc = queryString.includes('orderAsc');
-            return {
-                column: tagValue.value,
-                direction: isAsc ? 'asc' : 'desc'
-            };
-        }
-    }
-
-    return { column: null, direction: 'default' };
-}
 
 function buildGridQueries(
     limit: number,
     offset: number,
     parsedQueries: Map<TagValue, string>,
-    table: Entity
+    entity: Entity
 ) {
     const hasOrderQuery = Array.from(parsedQueries.values()).some(
         (q) => q.includes('orderAsc') || q.includes('orderDesc')
@@ -70,7 +56,7 @@ function buildGridQueries(
         queryArray.push(Query.orderDesc(''));
     }
 
-    queryArray.push(...parsedQueries.values(), ...buildWildcardEntitiesQuery(table));
+    queryArray.push(...parsedQueries.values(), ...buildWildcardEntitiesQuery(entity));
 
     return queryArray;
 }
