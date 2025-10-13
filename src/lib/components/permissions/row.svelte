@@ -59,9 +59,7 @@
         }
     }
 
-    async function getData(
-        permission: string
-    ): Promise<
+    async function getData(permission: string): Promise<
         Partial<Models.User<Record<string, unknown>> & Models.Team<Record<string, unknown>>> & {
             notFound?: boolean;
             roleName?: string;
