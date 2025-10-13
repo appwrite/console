@@ -375,7 +375,7 @@
                 });
             } else {
                 if (selectedRows.length) {
-                    const hasAnyRelationships = table.fields.some(isRelationship);
+                    const hasAnyRelationships = table.fields.some(isRelationship) ?? false;
 
                     const tablesSDK = sdk.forProject(
                         page.params.region,

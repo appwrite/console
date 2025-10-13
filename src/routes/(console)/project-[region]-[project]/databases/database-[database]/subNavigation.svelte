@@ -116,7 +116,7 @@
                             {@const isLast = index === sortedEntities.length - 1}
                             {@const href = withPath(
                                 databaseBaseRoute,
-                                `/${entityTypeSingular}-${entityId}`
+                                `/${entityTypeSingular}-${entity.$id}`
                             )}
 
                             <Layout.Stack gap="s" direction="row" alignItems="center">
