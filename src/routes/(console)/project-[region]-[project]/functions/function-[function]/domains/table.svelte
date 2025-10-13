@@ -58,7 +58,7 @@
         {/each}
         <Table.Header.Cell column="actions" {root} />
     </svelte:fragment>
-    {#each proxyRules.rules as proxyRule}
+    {#each proxyRules.rules as proxyRule (proxyRule.$id)}
         <Table.Row.Base {root}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
