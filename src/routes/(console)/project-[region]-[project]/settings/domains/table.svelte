@@ -103,6 +103,18 @@
                                         variant="secondary"
                                         content="Generating certificate"
                                         size="xs" />
+                                    {#if domain.logs && domain.logs.length > 0}
+                                        <Link
+                                            size="s"
+                                            variant="muted"
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                selectedDomain = domain;
+                                                showLogs = true;
+                                            }}>
+                                            View logs
+                                        </Link>
+                                    {/if}
                                 </Layout.Stack>
                             {:else if domain.status === 'unverified'}
                                 <Layout.Stack direction="row" gap="s" alignItems="center">
@@ -111,20 +123,19 @@
                                         type="error"
                                         content="Certificate generation failed"
                                         size="xs" />
+                                    {#if domain.logs && domain.logs.length > 0}
+                                        <Link
+                                            size="s"
+                                            variant="muted"
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                selectedDomain = domain;
+                                                showLogs = true;
+                                            }}>
+                                            View logs
+                                        </Link>
+                                    {/if}
                                 </Layout.Stack>
-                            {/if}
-
-                            {#if domain.logs && domain.logs.length > 0}
-                                <Link
-                                    size="s"
-                                    variant="muted"
-                                    on:click={(e) => {
-                                        e.preventDefault();
-                                        selectedDomain = domain;
-                                        showLogs = true;
-                                    }}>
-                                    View logs
-                                </Link>
                             {/if}
                         </Layout.Stack>
                     {:else if column.id === 'updated'}

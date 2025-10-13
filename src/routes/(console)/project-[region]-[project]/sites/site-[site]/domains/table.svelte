@@ -97,6 +97,18 @@
                                         variant="secondary"
                                         content="Generating certificate"
                                         size="xs" />
+                                    {#if rule.logs && rule.logs.length > 0}
+                                        <Link
+                                            size="s"
+                                            variant="muted"
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                selectedProxyRule = rule;
+                                                showLogs = true;
+                                            }}>
+                                            View logs
+                                        </Link>
+                                    {/if}
                                 </Layout.Stack>
                             {:else if rule.status === 'unverified'}
                                 <Layout.Stack direction="row" gap="s" alignItems="center">
@@ -105,20 +117,19 @@
                                         type="error"
                                         content="Certificate generation failed"
                                         size="xs" />
+                                    {#if rule.logs && rule.logs.length > 0}
+                                        <Link
+                                            size="s"
+                                            variant="muted"
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                selectedProxyRule = rule;
+                                                showLogs = true;
+                                            }}>
+                                            View logs
+                                        </Link>
+                                    {/if}
                                 </Layout.Stack>
-                            {/if}
-
-                            {#if rule.logs && rule.logs.length > 0}
-                                <Link
-                                    size="s"
-                                    variant="muted"
-                                    on:click={(e) => {
-                                        e.preventDefault();
-                                        selectedProxyRule = rule;
-                                        showLogs = true;
-                                    }}>
-                                    View logs
-                                </Link>
                             {/if}
                         </Layout.Stack>
                     {:else if column.id === 'target'}
