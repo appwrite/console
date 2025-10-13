@@ -16,19 +16,39 @@
 
     const featureActive = $derived(isCloud);
     const { terminology } = getTerminologies();
+
+    const type = terminology.type;
     const field = terminology.field.lower;
     const entity = terminology.entity.lower.singular;
 
     const title = $derived.by(() => {
-        return featureActive
-            ? `Smart ${field.singular} suggestions`
-            : `Smart ${field.singular} suggestions available on Cloud`;
+        switch (type) {
+            default:
+            case 'legacy':
+            case 'tablesdb':
+                return featureActive
+                    ? `Smart ${field.singular} suggestions`
+                    : `Smart ${field.singular} suggestions available on Cloud`;
+
+            case 'documentsdb':
+                return featureActive ? `Sample Data` : `Sample Data available on Cloud`;
+        }
     });
 
     const subtitle = $derived.by(() => {
-        return featureActive
-            ? `Enable AI to suggest useful ${field.plural} based on your ${entity} name`
-            : `Sign up for Cloud to generate ${field.plural} based on your ${entity} name`;
+        switch (type) {
+            default:
+            case 'legacy':
+            case 'tablesdb':
+                return featureActive
+                    ? `Enable AI to suggest useful ${field.plural} based on your ${entity} name`
+                    : `Sign up for Cloud to generate ${field.plural} based on your ${entity} name`;
+
+            case 'documentsdb':
+                return featureActive
+                    ? `Enable AI to generate sample documents based on your ${entity} name`
+                    : `Sign up for Cloud to generate sample documents based on your ${entity} name`;
+        }
     });
 </script>
 

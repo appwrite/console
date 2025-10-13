@@ -24,7 +24,7 @@
     let entityItems = $state([]);
     let entities: EntityList | null = $state(null);
 
-    const { databaseSdk } = getTerminologies();
+    const { databasesSdk } = getTerminologies();
     const database = $derived(page.data.database);
 
     function buildQueries(): string[] {
@@ -48,7 +48,7 @@
 
         try {
             const queries = buildQueries();
-            entities = await databaseSdk.listEntities({
+            entities = await databasesSdk.listEntities({
                 databaseId: page.params.database,
                 queries
             });
@@ -71,7 +71,7 @@
 
     const handleDelete = async () => {
         try {
-            await databaseSdk.delete({
+            await databasesSdk.delete({
                 databaseId: page.params.database
             });
 

@@ -1,35 +1,29 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
-    import { Empty, PaginationWithLimit } from '$lib/components';
+    import { PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
-    import type { Models } from '@appwrite.io/console';
 
-    import Create from './create.svelte';
     import Grid from './grid.svelte';
     import { columns } from './store';
     import Table from './table.svelte';
     import type { PageProps } from './$types';
-    import { Icon } from '@appwrite.io/pink-svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import EmptySearch from '$lib/components/emptySearch.svelte';
-
-    import { resolveRoute } from '$lib/stores/navigation';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
+    import EmptyDatabaseCloud from './empty.svelte';
 
     const { data }: PageProps = $props();
 
     let showCreate = $state(false);
 
-    async function handleCreate(event: CustomEvent<Models.Database>) {
-        showCreate = false;
+    async function goToCreateDatabaseWizard() {
         await goto(
-            resolveRoute('/(console)/project-[region]-[project]/databases/database-[database]', {
-                ...page.params,
-                database: event.detail.$id
-            })
+            resolveRoute('/(console)/project-[region]-[project]/databases/create', page.params)
         );
     }
 
@@ -51,22 +45,11 @@
 </script>
 
 <Container>
-    <ResponsiveContainerHeader
-        hasSearch
-        {columns}
-        bind:view={data.view}
-        searchPlaceholder="Search by name or ID">
-        {#if $canWriteDatabases}
-            <Button event="create_database" on:click={() => (showCreate = true)}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create database
-            </Button>
-        {/if}
-    </ResponsiveContainerHeader>
-
     {#if data.databases.total}
+        {@render containerHeader()}
+
         {#if data.view === 'grid'}
-            <Grid {data} bind:showCreate />
+            <Grid {data} onCreateDatabaseClick={goToCreateDatabaseWizard} />
         {:else}
             <Table {data} />
         {/if}
@@ -84,13 +67,33 @@
                 secondary>Clear Search</Button>
         </EmptySearch>
     {:else}
-        <Empty
-            single
-            href="https://appwrite.io/docs/products/databases/databases"
-            target="database"
-            allowCreate={$canWriteDatabases}
-            on:click={() => (showCreate = true)} />
+        <EmptyDatabaseCloud
+            disabled={$canWriteDatabases}
+            onDatabaseTypeSelected={async (type) => {
+                await goto(
+                    withPath(
+                        resolveRoute(
+                            '/(console)/project-[region]-[project]/databases/create',
+                            page.params
+                        ),
+                        `?type=${type}`
+                    )
+                );
+            }} />
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={handleCreate} />
+{#snippet containerHeader()}
+    <ResponsiveContainerHeader
+        hasSearch
+        {columns}
+        bind:view={data.view}
+        searchPlaceholder="Search by name or ID">
+        {#if $canWriteDatabases}
+            <Button event="create_database" on:click={goToCreateDatabaseWizard}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create database
+            </Button>
+        {/if}
+    </ResponsiveContainerHeader>
+{/snippet}

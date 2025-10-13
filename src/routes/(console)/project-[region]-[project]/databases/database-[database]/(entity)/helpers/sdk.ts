@@ -5,6 +5,14 @@ import { type DatabaseType, type Entity, type EntityList, toSupportiveEntity } f
 import type { Models } from '@appwrite.io/console';
 
 export type DatabaseSdkResult = {
+    create: (
+        type: DatabaseType,
+        params: {
+            databaseId: string;
+            name: string;
+            enabled?: boolean;
+        }
+    ) => Promise<Models.Database>;
     list: (params: { queries?: string[]; search?: string }) => Promise<Models.DatabaseList>;
     getEntity: (params: {
         databaseId: string;
@@ -42,6 +50,22 @@ export function useDatabasesSdk(
     const baseSdk = sdk.forProject(region, project);
 
     return {
+        async create(type, params): Promise<Models.Database> {
+            switch (type) {
+                case 'legacy': /* databases api */
+                case 'tablesdb': {
+                    return await baseSdk.tablesDB.create(params);
+                }
+                case 'documentsdb': {
+                    return await baseSdk.documentsDB.create(params);
+                }
+                case 'vectordb':
+                    throw new Error(`Database type not supported yet`);
+                default:
+                    throw new Error('Unknown database type');
+            }
+        },
+
         async list(params): Promise<Models.DatabaseList> {
             const results = await Promise.all([
                 baseSdk.tablesDB.list(params)
@@ -74,7 +98,7 @@ export function useDatabasesSdk(
                 case 'vectordb':
                     throw new Error(`Database type not supported yet`);
                 default:
-                    throw new Error(`Unknown database type`);
+                    throw new Error('Unknown database type');
             }
         },
 

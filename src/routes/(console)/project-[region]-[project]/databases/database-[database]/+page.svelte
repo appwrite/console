@@ -34,6 +34,17 @@
     function getImageRoute(type: 'light' | 'dark'): string {
         return withPath(resolveRoute('/'), `/images/empty-database-${type}.svg`);
     }
+
+    const emptyPageText = $derived.by(() => {
+        switch (terminology.type) {
+            default:
+            case 'legacy':
+            case 'tablesdb':
+                return `Create, organize, and query structured data with ${entityTitle.plural}.`;
+            case 'documentsdb':
+                return `Create, organize, and query flexible data with ${entityTitle.plural}.`;
+        }
+    });
 </script>
 
 <Container databasesMainScreen>
@@ -53,7 +64,7 @@
             {#if $canWriteTables}
                 <Button event="create_table" on:click={() => ($showCreateEntity = true)}>
                     <Icon icon={IconPlus} slot="start" size="s" />
-                    Create table
+                    Create {entityLower.singular}
                 </Button>
             {/if}
         </Layout.Stack>
@@ -86,9 +97,7 @@
             <Empty
                 src={getImageRoute($app.themeInUse)}
                 title="Create your first {entityLower.singular}">
-                <span slot="description">
-                    Create, organize, and query structured data with {entityTitle.plural}.
-                </span>
+                <span slot="description">{emptyPageText}</span>
 
                 <span slot="actions">
                     <Button

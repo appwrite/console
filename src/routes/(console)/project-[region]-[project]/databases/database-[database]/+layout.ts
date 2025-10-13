@@ -1,8 +1,8 @@
-import { sdk } from '$lib/stores/sdk';
-import { Dependencies } from '$lib/constants';
-import type { LayoutLoad } from './$types';
-import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
+import { sdk } from '$lib/stores/sdk';
+import type { LayoutLoad } from './$types';
+import { Dependencies } from '$lib/constants';
+import Breadcrumbs from './breadcrumbs.svelte';
 import SubNavigation from './subNavigation.svelte';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
