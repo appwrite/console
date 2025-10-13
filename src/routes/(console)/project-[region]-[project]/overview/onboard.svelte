@@ -39,6 +39,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
+    import { Platform } from './platforms/+page.svelte';
 
     function createKey() {
         trackEvent(Click.KeyCreateClick, {
@@ -52,10 +53,10 @@
         );
     }
 
-    export let platforms: Models.Platform[] = [];
     export let pingCount = 0;
+    export let platforms: Models.Platform[] = [];
 
-    function openPlatformWizard(type: number, platform?: Models.Platform) {
+    function openPlatformWizard(type: Platform, platform?: Models.Platform) {
         if (platform) {
             continuePlatform(type, platform.name, platform.key, platform.type);
         } else {
@@ -106,7 +107,10 @@
                                 <Layout.Stack gap="l" direction="row">
                                     <Card.Button
                                         on:click={() => {
-                                            openPlatformWizard(0, platformMap.get('Web'));
+                                            openPlatformWizard(
+                                                Platform.Web,
+                                                platformMap.get('Web')
+                                            );
                                         }}
                                         padding="s"
                                         ><Layout.Stack
@@ -149,7 +153,10 @@
                                         </Layout.Stack></Card.Button>
                                     <Card.Button
                                         on:click={() => {
-                                            openPlatformWizard(4, platformMap.get('React Native'));
+                                            openPlatformWizard(
+                                                Platform.ReactNative,
+                                                platformMap.get('React Native')
+                                            );
                                         }}
                                         padding="s"
                                         ><Layout.Stack
@@ -199,7 +206,10 @@
                                     direction={$isSmallViewport ? 'column' : 'row'}>
                                     <Card.Button
                                         on:click={() => {
-                                            openPlatformWizard(3, platformMap.get('Apple'));
+                                            openPlatformWizard(
+                                                Platform.Apple,
+                                                platformMap.get('Apple')
+                                            );
                                         }}
                                         padding="s">
                                         <Layout.Stack
@@ -246,7 +256,10 @@
                                     </Card.Button>
                                     <Card.Button
                                         on:click={() => {
-                                            openPlatformWizard(2, platformMap.get('Android'));
+                                            openPlatformWizard(
+                                                Platform.Android,
+                                                platformMap.get('Android')
+                                            );
                                         }}
                                         padding="s">
                                         <Layout.Stack
@@ -294,7 +307,10 @@
                                     </Card.Button>
                                     <Card.Button
                                         on:click={() => {
-                                            openPlatformWizard(1, platformMap.get('Flutter'));
+                                            openPlatformWizard(
+                                                Platform.Flutter,
+                                                platformMap.get('Flutter')
+                                            );
                                         }}
                                         padding="s">
                                         <Layout.Stack
