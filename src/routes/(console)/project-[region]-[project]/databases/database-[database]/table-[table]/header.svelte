@@ -1,10 +1,9 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { Header } from '$database/(entity)';
-    import { expandTabs, table } from './store';
     import { canWriteTables } from '$lib/stores/roles';
-    import { preferences } from '$lib/stores/preferences';
     import { resolveRoute } from '$lib/stores/navigation';
+
+    import { type Entity, Header } from '$database/(entity)';
 
     const path = $derived(
         resolveRoute(
@@ -13,18 +12,7 @@
         )
     );
 
-    const link = $derived(
-        resolveRoute(
-            '/(console)/project-[region]-[project]/databases/database-[database]',
-            page.params
-        )
-    );
-
-    const nonSheetPages = $derived.by(() => {
-        const endings = ['table-[table]', 'table-[table]/columns', 'table-[table]/indexes'];
-        const isSpreadsheetPage = endings.some((end) => page.route.id?.endsWith(end));
-        return !isSpreadsheetPage;
-    });
+    const table = $derived(page.data.table) as Entity;
 
     const tabs = $derived(
         [
@@ -64,27 +52,8 @@
             }
         ].filter((tab) => !tab.disabled)
     );
-
-    $effect(() => {
-        if (nonSheetPages) expandTabs.set(true);
-        else {
-            expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
-        }
-    });
 </script>
 
-<div class:nonSheetPages>
-    <Header {tabs} entity={$table} parentHref={link} bind:expanded={$expandTabs} />
-</div>
-
-<style lang="scss">
-    .nonSheetPages :global(.cover-container) {
-        @media (min-width: 1440px) {
-            padding-inline: 7px !important;
-        }
-
-        @media (min-width: 1728px) {
-            padding-inline: 10.25rem !important;
-        }
-    }
-</style>
+{#if table}
+    <Header {tabs} entity={table} />
+{/if}

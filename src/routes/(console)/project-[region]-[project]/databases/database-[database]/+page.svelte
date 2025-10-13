@@ -5,17 +5,35 @@
     import { showCreateEntity, tableViewColumns } from './store';
     import Table from './table.svelte';
     import Grid from './grid.svelte';
-    import type { PageData } from './$types';
+    import type { PageProps } from './$types';
     import { Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
-    import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { canWriteTables } from '$lib/stores/roles';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
+    import { resolveRoute } from '$lib/stores/navigation';
+    import { getTerminologies } from '$database/(entity)';
+    import { withPath } from '$lib/stores/navigation.js';
 
-    export let data: PageData;
+    const { data }: PageProps = $props();
 
-    const databaseId = page.params.database;
+    const { terminology } = getTerminologies();
+    const entityTitle = terminology.entity.title;
+    const entityLower = terminology.entity.lower;
+
+    /**
+     * init update because `getContext`
+     * doesn't work on typescript context!
+     */
+    tableViewColumns.update((columns) => {
+        /* $id */
+        columns[0].title = `${entityTitle.singular} ID`;
+        return columns;
+    });
+
+    function getImageRoute(type: 'light' | 'dark'): string {
+        return withPath(resolveRoute('/'), `/images/empty-database-${type}.svg`);
+    }
 </script>
 
 <Container databasesMainScreen>
@@ -29,8 +47,8 @@
                 ui="new"
                 view={data.view}
                 columns={tableViewColumns}
-                hideColumns={!data.tables.total}
-                hideView={!data.tables.total} />
+                hideColumns={!data.entities.total}
+                hideView={!data.entities.total} />
 
             {#if $canWriteTables}
                 <Button event="create_table" on:click={() => ($showCreateEntity = true)}>
@@ -41,47 +59,48 @@
         </Layout.Stack>
     </Layout.Stack>
 
-    {#if data.tables.total}
+    {#if data.entities.total}
         {#if data.view === 'grid'}
-            <Grid {data} bind:showCreate={$showCreateEntity} />
+            <Grid {data} {terminology} bind:showCreate={$showCreateEntity} />
         {:else}
-            <Table {data} />
+            <Table {data} {terminology} />
         {/if}
 
         <PaginationWithLimit
-            name="Tables"
             limit={data.limit}
             offset={data.offset}
-            total={data.tables.total} />
+            total={data.entities.total}
+            name={entityTitle.plural} />
     {:else if data.search}
-        <EmptySearch target="tables" hidePagination>
+        <EmptySearch target={entityLower.singular} hidePagination>
             <Button
                 size="s"
                 secondary
-                href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`}
-                >Clear Search</Button>
+                href={resolveRoute(
+                    '/(console)/project-[region]-[project]/databases/database-[database]',
+                    page.params
+                )}>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Card.Base padding="none">
             <Empty
-                title="Create your first table"
-                src={$app.themeInUse === 'dark'
-                    ? `${base}/images/empty-database-dark.svg`
-                    : `${base}/images/empty-database-light.svg`}>
+                src={getImageRoute($app.themeInUse)}
+                title="Create your first {entityLower.singular}">
                 <span slot="description">
-                    Create, organize, and query structured data with Tables.
+                    Create, organize, and query structured data with {entityTitle.plural}.
                 </span>
+
                 <span slot="actions">
                     <Button
                         external
                         href="https://appwrite.io/docs/products/databases/databases"
                         text
                         event="empty_documentation"
-                        ariaLabel="create table">Documentation</Button>
+                        ariaLabel="create {entityLower.singular}">Documentation</Button>
 
                     {#if $canWriteTables}
                         <Button secondary on:click={() => ($showCreateEntity = true)}>
-                            Create table
+                            Create {entityLower.singular}
                         </Button>
                     {/if}
                 </span>

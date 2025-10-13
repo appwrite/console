@@ -24,6 +24,7 @@
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { IndexType } from '@appwrite.io/console';
     import { columnOptions as baseColumnOptions } from '$database/table-[table]/columns/store';
+    import { IndexOrder } from '$database/(suggestions)';
 
     let {
         entity,
@@ -33,19 +34,18 @@
     }: {
         entity: Entity;
         showCreateIndex: boolean;
-        externalFieldKey?: string;
+        externalFieldKey?: string | null;
         onCreateIndex: (index: CreateIndexesCallbackType) => Promise<void>;
     } = $props();
 
     let key = $state('');
-
+    let initializedForOpen = $state(false);
     let selectedType = $state<IndexType>(IndexType.Key);
 
     const { dependencies, terminology } = getTerminologies();
 
     const fieldOptions = $derived(
-        // TODO: could be columns or attributes!
-        entity.columns
+        entity.fields
             .filter((field) => {
                 if (selectedType === IndexType.Spatial) {
                     // keep only spatial
@@ -61,7 +61,11 @@
             }))
     );
 
-    let fieldList = $state([{ value: '', order: '', length: null }]);
+    let fieldList: Array<{
+        value: string;
+        order: IndexOrder | null;
+        length: number | null;
+    }> = $state([{ value: '', order: null, length: null }]);
 
     const types = [
         { value: IndexType.Key, label: 'Key' },
@@ -104,14 +108,16 @@
     }
 
     function initialize() {
-        // TODO: could be columns or attributes or something else!
-        const field = entity.columns.filter((field) => externalFieldKey === field.key);
+        const field = entity.fields.filter((field) => externalFieldKey === field.key);
         const isSpatial = field.length && isSpatialType(field[0]);
-        const order = isSpatial ? null : 'ASC';
+        const order = isSpatial ? null : IndexOrder.ASC;
+
         selectedType = isSpatial ? IndexType.Spatial : IndexType.Key;
+
         fieldList = externalFieldKey
             ? [{ value: externalFieldKey, order, length: null }]
             : [{ value: '', order, length: null }];
+
         key = `index_${entity.indexes.length + 1}`;
     }
 
@@ -132,13 +138,13 @@
         return withPath(base, `${type}-${entity.$id}`, 'indexes');
     });
 
-    let initializedForOpen = $state(false);
     $effect(() => {
         if (showCreateIndex && !initializedForOpen) {
             initialize();
             key = generateIndexKey();
             initializedForOpen = true;
         }
+
         if (!showCreateIndex && initializedForOpen) {
             initializedForOpen = false;
         }
@@ -146,6 +152,7 @@
 
     export async function create() {
         const fieldType = terminology.field.lower.singular;
+
         if (!key || !selectedType || (selectedType !== IndexType.Spatial && addFieldDisabled)) {
             addNotification({
                 type: 'error',
@@ -155,7 +162,11 @@
         }
 
         try {
-            const orders = fieldList.map((a) => a.order).filter((order) => order !== null);
+            const orders = fieldList
+                .map((field) => field.order)
+                .filter((order: IndexOrder) => order !== null)
+                .map((order) => String(order));
+
             await onCreateIndex({
                 key,
                 type: selectedType,
@@ -196,8 +207,8 @@
     function addField() {
         if (addFieldDisabled) return;
 
-        // We assign instead of pushing to trigger Svelte's reactivity
-        fieldList = [...fieldList, { value: '', order: '', length: null }];
+        // we assign instead of pushing to trigger Svelte's reactivity
+        fieldList = [...fieldList, { value: '', order: null, length: null }];
     }
 </script>
 

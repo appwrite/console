@@ -10,13 +10,11 @@
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { ID } from '@appwrite.io/console';
     import { columns } from './store';
-    import { database } from '../store';
     import type { BackupArchive } from '$lib/sdk/backups';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { copy } from '$lib/helpers/copy';
     import { LabelCard } from '$lib/components/index.js';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-
     import { Dependencies } from '$lib/constants';
     import {
         ActionMenu,
@@ -43,21 +41,31 @@
     import Confirm from '$lib/components/confirm.svelte';
     import { page } from '$app/state';
 
-    export let data: PageData;
+    const {
+        data
+    }: {
+        data: PageData;
+    } = $props();
 
-    let showDelete = false;
-    let selectedBackup: BackupArchive = null;
+    const database = $derived(data.database);
 
-    let showDropdown = [];
-    let selectedBackups: string[] = [];
+    let showDelete = $state(false);
+    let selectedBackup: BackupArchive | null = $state(null);
 
-    let showRestore = false;
-    let showCustomId = false;
-    let newDatabaseInfo: { name: string; id: string } = { name: null, id: null };
+    let showDropdown = $state([]);
+    let selectedBackups: string[] = $state([]);
 
-    let confirmSameDbRestore = false;
-    let selectedRestoreOption = 'new';
-    let restoreOptions = [
+    let showRestore = $state(false);
+    let showCustomId = $state(false);
+    let newDatabaseInfo: { name: string | null; id: string | null } = $state({
+        name: null,
+        id: null
+    });
+
+    let confirmSameDbRestore = $state(false);
+    let selectedRestoreOption = $state('new');
+
+    const restoreOptions = [
         {
             id: 'new',
             title: 'Restore in new database',
@@ -87,7 +95,7 @@
                 message,
                 type: 'success'
             });
-            invalidate(Dependencies.BACKUPS);
+            await invalidate(Dependencies.BACKUPS);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -102,8 +110,8 @@
 
     const restoreBackup = async () => {
         if (selectedRestoreOption === 'same') {
-            newDatabaseInfo.id = $database.$id;
-            newDatabaseInfo.name = $database.name;
+            newDatabaseInfo.id = database.$id;
+            newDatabaseInfo.name = database.name;
         }
 
         try {
@@ -120,7 +128,7 @@
                 message: 'Database restore initiated'
             });
 
-            invalidate(Dependencies.BACKUPS);
+            await invalidate(Dependencies.BACKUPS);
             trackEvent('backup_restore_submit', {
                 newDatabaseName: newDatabaseInfo.name
             });
@@ -140,20 +148,6 @@
     const cleanBackupName = (backup: BackupArchive) =>
         toLocaleDateTime(backup.$createdAt).replaceAll(',', '');
 
-    $: if (!showRestore && !showDelete) {
-        showCustomId = false;
-        selectedBackup = null;
-
-        confirmSameDbRestore = false;
-        selectedRestoreOption = 'new';
-        newDatabaseInfo = { name: null, id: null };
-    }
-
-    $: disableButton =
-        (selectedRestoreOption === 'new' &&
-            (!newDatabaseInfo.name || $database.$id === newDatabaseInfo.id)) ||
-        (selectedRestoreOption === 'same' && !confirmSameDbRestore);
-
     function getBackupStatus(backup: BackupArchive) {
         switch (backup.status) {
             case 'pending':
@@ -169,6 +163,25 @@
                 return 'waiting';
         }
     }
+
+    const disableButton = $derived.by(() => {
+        return (
+            (selectedRestoreOption === 'new' &&
+                (!newDatabaseInfo.name || database.$id === newDatabaseInfo.id)) ||
+            (selectedRestoreOption === 'same' && !confirmSameDbRestore)
+        );
+    });
+
+    $effect(() => {
+        if (!showRestore && !showDelete) {
+            showCustomId = false;
+            selectedBackup = null;
+
+            confirmSameDbRestore = false;
+            selectedRestoreOption = 'new';
+            newDatabaseInfo = { name: null, id: null };
+        }
+    });
 </script>
 
 <Table.Root let:root allowSelection columns={$columns} bind:selectedRows={selectedBackups}>
@@ -358,7 +371,7 @@
                     autofocus={false}
                     name="Database"
                     bind:show={showCustomId}
-                    databaseId={$database.$id}
+                    databaseId={database.$id}
                     bind:id={newDatabaseInfo.id} />
             {/if}
         </Layout.Stack>
@@ -368,7 +381,7 @@
             size="s"
             id="delete_policy"
             bind:checked={confirmSameDbRestore}
-            label="Overwrite '{$database.name}' with the selected backup version">
+            label="Overwrite '{database.name}' with the selected backup version">
         </InputCheckbox>
     {/if}
 

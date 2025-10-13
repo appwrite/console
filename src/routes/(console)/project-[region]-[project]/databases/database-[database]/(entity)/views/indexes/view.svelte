@@ -5,7 +5,6 @@
     import Overview from './overview.svelte';
     import CreateIndex from './create.svelte';
     import FailedModal from '../failedModal.svelte';
-    import type { Models } from '@appwrite.io/console';
     import { canWriteTables } from '$lib/stores/roles';
     import {
         ActionMenu,
@@ -32,11 +31,13 @@
         type Entity,
         type CreateIndexesCallbackType,
         SpreadsheetContainer,
-        SideSheet
+        SideSheet,
+        type Index
     } from '$database/(entity)';
     import { preferences } from '$lib/stores/preferences';
     import { debounce } from '$lib/helpers/debounce';
     import { page } from '$app/state';
+    import type { ColumnsWidth } from '$database/table-[table]/store';
 
     let {
         entity,
@@ -53,7 +54,7 @@
     } = $props();
 
     let showCreateIndex = $state(false);
-    let selectedIndex: Models.ColumnIndex = $state(null);
+    let selectedIndex: Index | null = $state(null);
 
     let createIndex: CreateIndex;
     let selectedIndexes = $state([]);
@@ -63,7 +64,7 @@
     let showDelete = $state(false);
     let showOverview = $state(false);
 
-    let columnsWidth = $state(null);
+    let columnsWidth: ColumnsWidth | null = $state(null);
 
     const organizationId = $derived(page.data.organization?.$id ?? page.data.project?.teamId);
 
@@ -173,7 +174,7 @@
             <Button
                 secondary
                 event="create_index"
-                disabled={!entity.columns?.length}
+                disabled={!entity.fields?.length}
                 on:click={() => (showCreateIndex = true)}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create index
@@ -183,7 +184,7 @@
 </Container>
 
 <div class="databases-spreadsheet">
-    {#if entity.columns?.length}
+    {#if entity.fields?.length}
         {#if entity.indexes.length}
             <SpreadsheetContainer>
                 <Spreadsheet.Root
@@ -233,7 +234,7 @@
                             <Spreadsheet.Cell column="type" {root} isEditable={false}
                                 >{index.type}</Spreadsheet.Cell>
                             <Spreadsheet.Cell column="columns" {root} isEditable={false}>
-                                {index.columns.join(', ')}
+                                {index.fields.join(', ')}
                             </Spreadsheet.Cell>
                             <!--<Spreadsheet.Cell column="orders" {root} isEditable={false}>
                                 {index.orders}
@@ -293,7 +294,7 @@
             {@render emptyIndexesSheetView(() => (showCreateIndex = true))}
         {/if}
     {:else}
-        {@render emptyEntitiesSheetView()}
+        {@render emptyEntitiesSheetView?.()}
     {/if}
 
     {#if selectedIndexes.length > 0}

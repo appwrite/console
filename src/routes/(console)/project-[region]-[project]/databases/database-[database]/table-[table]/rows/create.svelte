@@ -10,7 +10,7 @@
     import { type Columns, spreadsheetRenderKey } from '../store';
     import { ID, type Models } from '@appwrite.io/console';
     import { Alert, Layout, Typography, Selector } from '@appwrite.io/pink-svelte';
-    import { SideSheet } from '$database/(entity)';
+    import { type Entity, SideSheet, toRelationalField } from '$database/(entity)';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { tick } from 'svelte';
@@ -29,8 +29,8 @@
         showSheet = $bindable(false),
         existingData = $bindable(null)
     }: {
+        table: Entity;
         showSheet: boolean;
-        table: Models.Table;
         existingData: Models.Row | null;
     } = $props();
 
@@ -45,15 +45,17 @@
     }
 
     function computeInitialCreateRow(): CreateRow {
-        const availableColumns = table.columns.filter((a) => a.status === 'available');
+        const availableColumns = table.fields
+            .map(toRelationalField)
+            .filter((column: Columns) => column.status === 'available');
 
         return {
             id: null,
             row: existingData
                 ? existingData
                 : availableColumns.reduce(
-                      (acc, attr) => {
-                          acc[attr.key] = attr.array ? [] : null;
+                      (acc, field) => {
+                          acc[field.key] = field.array ? [] : null;
                           return acc;
                       },
                       {} as Record<string, unknown>
@@ -189,7 +191,7 @@
                         Choose which permission scopes to grant your application. It is best
                         practice to allow only the permissions you need to meet your project goals.
                     </Typography.Text>
-                    {#if table.rowSecurity}
+                    {#if table.recordSecurity}
                         <Alert.Inline status="info">
                             <svelte:fragment slot="title">Row security is enabled</svelte:fragment>
                             Users will be able to access this row if they have been granted

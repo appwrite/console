@@ -21,7 +21,6 @@
     } from './rows/store';
     import {
         columns,
-        table,
         tableColumns,
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
@@ -83,7 +82,7 @@
     import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
     import SheetOptions from './sheetOptions.svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
-    import { SpreadsheetContainer } from '$database/(entity)';
+    import { type Field, SpreadsheetContainer } from '$database/(entity)';
     import EditRowCell from './rows/cell/edit.svelte';
     import { copy } from '$lib/helpers/copy';
     import { writable } from 'svelte/store';
@@ -100,6 +99,7 @@
         row: Partial<Models.Row> | null;
     };
 
+    $: table = data.table;
     $: rows = writable(data.rows);
     $: if (rows) {
         paginatedRows.clear();
@@ -152,19 +152,21 @@
     function makeTableColumns() {
         const selectedColumnsToHide = preferences.getCustomTableColumns(tableId);
 
-        const baseColumns = $table.columns.map((col) => ({
-            id: col.key,
-            title: col.key,
-            type: col.type as ColumnType,
-            hide: !!selectedColumnsToHide?.includes(col.key),
-            array: col?.array,
-            width: getColumnWidth(col.key, { min: minimumWidth }),
-            minimumWidth: minimumWidth,
-            draggable: true,
-            icon: getAppropriateIcon(col.type),
-            format: 'format' in col && col?.format === 'enum' ? col.format : null,
-            elements: 'elements' in col ? col.elements : null
-        }));
+        const baseColumns: Column[] = table.fields.map((field: Field) => {
+            return {
+                id: field.key,
+                title: field.key,
+                type: field.type as ColumnType,
+                hide: !!selectedColumnsToHide?.includes(field.key),
+                array: field?.array,
+                width: getColumnWidth(field.key, { min: minimumWidth }),
+                minimumWidth: minimumWidth,
+                draggable: true,
+                icon: getAppropriateIcon(field.type),
+                format: 'format' in field && field?.format === 'enum' ? field.format : null,
+                elements: 'elements' in field ? field.elements : null
+            };
+        });
 
         const staticColumns: Column[] = [
             {
@@ -373,9 +375,7 @@
                 });
             } else {
                 if (selectedRows.length) {
-                    const hasAnyRelationships = $table.columns.some((column) =>
-                        isRelationship(column)
-                    );
+                    const hasAnyRelationships = table.fields.some(isRelationship) ?? false;
 
                     const tablesSDK = sdk.forProject(
                         page.params.region,
@@ -605,7 +605,7 @@
         try {
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId,
-                tableId: $table.$id,
+                tableId: table.$id,
                 rowId: row.$id,
                 data: row,
                 permissions: row.$permissions
@@ -655,7 +655,7 @@
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
                     Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
                     ...filterQueries /* filter queries */,
-                    ...buildWildcardColumnsQuery($table)
+                    ...buildWildcardColumnsQuery(table)
                 ]
             });
 
@@ -682,7 +682,7 @@
                         getCorrectOrderQuery(),
                         Query.limit(SPREADSHEET_PAGE_LIMIT),
                         Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
-                        ...buildWildcardColumnsQuery($table)
+                        ...buildWildcardColumnsQuery(table)
                     ]
                 });
 
@@ -697,8 +697,8 @@
         let tableId = null;
         if (typeof relatedTable === 'string') {
             tableId = relatedTable;
-        } else if (typeof relatedTable === 'object' && '$tableId' in relatedTable) {
-            tableId = relatedTable.$tableId;
+        } else if (typeof relatedTable === 'object' && 'tableId' in relatedTable) {
+            tableId = relatedTable.tableId;
         }
 
         return preferences.getDisplayNames(tableId) ?? ['$id'];
@@ -740,7 +740,7 @@
 
     $: canShowDatetimePopover = true;
 
-    $: if ($table.columns) {
+    $: if (table.fields) {
         makeTableColumns();
     }
 
@@ -1105,17 +1105,17 @@
     bind:open={showDelete}
     onSubmit={handleDelete}
     confirmDeletionLabel={relatedColumns?.length
-        ? `Delete ${selectedRowForDelete !== null ? 'row' : 'rows'} from ${$table.name}`
+        ? `Delete ${selectedRowForDelete !== null ? 'row' : 'rows'} from ${table.name}`
         : undefined}
     title={selectedRows.length === 1 ? 'Delete Row' : 'Delete Rows'}>
     {@const isSingle = selectedRowForDelete !== null}
 
     <p>
         {#if isSingle}
-            Are you sure you want to delete this row from <b>{$table.name}</b>?
+            Are you sure you want to delete this row from <b>{table.name}</b>?
         {:else}
             Are you sure you want to delete <b>{selectedRows.length}</b>
-            {selectedRows.length > 1 ? 'rows' : 'row'} from <b>{$table.name}</b>?
+            {selectedRows.length > 1 ? 'rows' : 'row'} from <b>{table.name}</b>?
         {/if}
     </p>
 

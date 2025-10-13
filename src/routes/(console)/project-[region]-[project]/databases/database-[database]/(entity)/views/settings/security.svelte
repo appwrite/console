@@ -14,10 +14,9 @@
         onChangeSecurity: (updatedSecurity: boolean) => Promise<void>;
     } = $props();
 
-    // TODO: note that this can be documentSecurity as well!
-    let entitySecurity: boolean = $state(entity.rowSecurity);
+    let recordSecurity: boolean = $state(entity.recordSecurity);
 
-    const hasChanges = $derived(entitySecurity !== entity.rowSecurity);
+    const hasChanges = $derived(recordSecurity !== entity.recordSecurity);
 
     async function cleanup() {
         // events and notif!
@@ -30,7 +29,7 @@
 
     async function updateSecurity() {
         try {
-            await onChangeSecurity(entitySecurity);
+            await onChangeSecurity(recordSecurity);
             await cleanup();
         } catch (error) {
             addNotification({ message: error.message, type: 'error' });
@@ -49,7 +48,7 @@
 <CardGrid>
     <svelte:fragment slot="title">{title} security</svelte:fragment>
     <svelte:fragment slot="aside">
-        <InputSwitch bind:value={entitySecurity} id="security" label="{title} security" />
+        <InputSwitch bind:value={recordSecurity} id="security" label="{title} security" />
 
         <p class="text">
             When {recordLower} security is enabled, users will be able to access {recordsLower}
@@ -57,8 +56,8 @@
             <b>either {recordLower} or {entityLower} permissions</b>.
         </p>
         <p class="text">
-            If {recordLower} security is disabled, users can access rows
-            <b>only if they have {entityLower} permissions</b>. Row permissions will be ignored.
+            If {recordLower} security is disabled, users can access {recordsLower}
+            <b>only if they have {entityLower} permissions</b>. {title} permissions will be ignored.
         </p>
     </svelte:fragment>
     <svelte:fragment slot="actions">

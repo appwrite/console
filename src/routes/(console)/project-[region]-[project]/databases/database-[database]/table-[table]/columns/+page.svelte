@@ -544,9 +544,9 @@
 </div>
 
 {#if selectedColumn}
-    <DeleteColumn bind:showDelete bind:selectedColumn />
+    <DeleteColumn table={data.table} bind:showDelete bind:selectedColumn />
 {:else if selectedColumns && selectedColumns.length}
-    <DeleteColumn bind:showDelete bind:selectedColumn={selectedColumns} />
+    <DeleteColumn table={data.table} bind:showDelete bind:selectedColumn={selectedColumns} />
 {/if}
 
 <SideSheet

@@ -1,10 +1,9 @@
 <script lang="ts">
     import { addNotification } from '$lib/stores/notifications';
-    import type { Models } from '@appwrite.io/console';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
     import Confirm from '$lib/components/confirm.svelte';
-    import { getTerminologies } from '$database/(entity)';
+    import { getTerminologies, type Index } from '$database/(entity)';
 
     let {
         showDelete = $bindable(false),
@@ -12,7 +11,7 @@
         onDeleteIndexes
     }: {
         showDelete: boolean;
-        selectedIndex: Models.ColumnIndex | string[] | null;
+        selectedIndex: Index | string[] | null;
         onDeleteIndexes: (selectedKeys: string[]) => Promise<void>;
     } = $props();
 
@@ -21,7 +20,7 @@
 
     const { dependencies } = getTerminologies();
 
-    function getKeys(selected: Models.ColumnIndex | string[]): string[] {
+    function getKeys(selected: Index | string[]): string[] {
         return Array.isArray(selected) ? selected : [selected.key];
     }
 

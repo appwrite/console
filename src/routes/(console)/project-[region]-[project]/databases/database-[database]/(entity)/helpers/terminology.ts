@@ -1,26 +1,46 @@
 import type { Page } from '@sveltejs/kit';
 
 import { capitalize, plural } from '$lib/helpers/string';
-import type { Columns } from '$database/table-[table]/store';
 import { AppwriteException, type Models } from '@appwrite.io/console';
+import type { Attributes, Columns, Table } from '$database/table-[table]/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
 export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectordb';
-export type Entity = Partial<Models.Table>;
-export type Field = Partial<Columns>;
-export type Index = Partial<Models.Index | Models.ColumnIndex>;
+
+export type Entity = Partial<Models.Collection | Table> & {
+    indexes?: Index[];
+    fields?: (Attributes | Columns)[];
+    recordSecurity?: Models.Collection['documentSecurity'] | Models.Table['rowSecurity'];
+};
+
+export type Field = Partial<Attributes> | Partial<Columns>;
+
+export type Index = Partial<Models.Index | Models.ColumnIndex> & {
+    fields: Models.Index['attributes'] | Models.ColumnIndex['columns'];
+};
+
+export type EntityList = {
+    total: number;
+    entities: Entity[];
+};
 
 export const baseTerminology = {
+    /**
+     * this is no longer used on console so
+     * we don't really show old terminology for older databases and,
+     * therefore we use the new routes, terms and sdk for these databases.
+     */
+    legacy: {
+        entity: 'table',
+        field: 'column',
+        record: 'row'
+    },
     tablesdb: {
         entity: 'table',
         field: 'column',
         record: 'row'
     },
     documentsdb: {
-        entity: 'collection',
-        record: 'document'
-    },
-    legacy: {
         entity: 'collection',
         field: 'attribute',
         record: 'document'
@@ -55,12 +75,42 @@ const terminologyData = Object.fromEntries(
     ])
 );
 
+const toIndex = (index: Models.Index | Models.ColumnIndex): Index => ({
+    ...index,
+    fields: (index as Models.Index).attributes ?? (index as Models.ColumnIndex).columns ?? []
+});
+
+/**
+ * Transforms a raw `Collection` / `Table` model to normalized `Entity`.
+ */
+export function toSupportiveEntity(raw: Models.Collection | Models.Table): Entity {
+    const isTable = 'columns' in raw;
+    const indexes = raw.indexes?.map(toIndex) ?? [];
+
+    const fields = isTable ? raw.columns : raw.attributes;
+    const recordSecurity = isTable ? raw.rowSecurity : raw.documentSecurity;
+
+    return {
+        ...raw,
+        fields,
+        recordSecurity,
+        indexes
+    } as Entity;
+}
+
+export function toRelationalField(raw: Field): Columns {
+    return raw as Columns;
+}
+
 /**
  * @internal
  * Use `getTerminologies()` instead when in `database-[database]` routes where context is available.
  */
-export function useTerminology(page: Page): TerminologyResult {
-    const type = page.data?.database?.type as DatabaseType;
+export function useTerminology(pageOrType: Page | DatabaseType): TerminologyResult {
+    const type =
+        typeof pageOrType === 'object'
+            ? (pageOrType.data?.database?.type as DatabaseType)
+            : pageOrType;
     if (!type) {
         // strict check because this should always be available!
         throw new AppwriteException('Database type is required', 500);
@@ -68,6 +118,7 @@ export function useTerminology(page: Page): TerminologyResult {
 
     const dbTerminologies = terminologyData[type] || {};
     return {
+        type,
         source: dbTerminologies,
         field: dbTerminologies.field,
         record: dbTerminologies.record,
