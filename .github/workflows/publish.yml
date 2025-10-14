@@ -41,7 +41,7 @@ jobs:
                       "PUBLIC_CONSOLE_MODE=cloud"
                       "PUBLIC_CONSOLE_FEATURE_FLAGS="
                       "PUBLIC_APPWRITE_MULTI_REGION=true"
-                      "PUBLIC_CONSOLE_EMAIL_VERIFICATION=true"
+                      "PUBLIC_CONSOLE_EMAIL_VERIFICATION=false"
                       "PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS=false"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY }}"
