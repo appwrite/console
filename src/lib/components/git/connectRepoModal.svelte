@@ -38,6 +38,7 @@
     let selectedRepository = $state('');
     let installations = $state({ installations: [], total: 0 });
     let error = $state('');
+    let isConnecting = $state(false);
 
     onMount(async () => {
         installations = await sdk
@@ -53,6 +54,9 @@
     });
 
     async function connectRepo() {
+        if (isConnecting) return;
+        isConnecting = true;
+
         try {
             if (repositoryBehaviour === 'new') {
                 const repo = await sdk
@@ -74,6 +78,8 @@
             });
         } catch (e) {
             error = e.message;
+        } finally {
+            isConnecting = false;
         }
     }
 </script>
@@ -131,7 +137,10 @@
             </Layout.Stack>
         {:else if repositoryBehaviour === 'new'}
             <Button text size="s" on:click={() => (show = false)}>Cancel</Button>
-            <Button size="s" submit disabled={!repositoryName || !$installation?.$id}>
+            <Button
+                size="s"
+                submit
+                disabled={!repositoryName || !$installation?.$id || isConnecting}>
                 Create
             </Button>
         {/if}
