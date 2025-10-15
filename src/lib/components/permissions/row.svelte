@@ -134,9 +134,9 @@
             on:mouseleave={() => hidePopover(hide)}>
             <slot>
                 {#if isCustomPermission(role)}
-                    <Link.Anchor>
-                        {formatName(role, $isSmallViewport ? 8 : 15)}
-                    </Link.Anchor>
+					<Typography.Text style="text-decoration: underline;">
+						{formatName(role, $isSmallViewport ? 8 : 15)}
+					</Typography.Text>
                 {:else}
                     <Layout.Stack direction="row" gap="s" alignItems="center" inline>
                         <Typography.Text>
