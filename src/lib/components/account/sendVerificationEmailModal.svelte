@@ -6,8 +6,7 @@
     import { user } from '$lib/stores/user';
     import { get } from 'svelte/store';
     import { page } from '$app/state';
-    import Link from '$lib/elements/link.svelte';
-    import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Card, Layout, Typography, Link } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';
     import { onMount, onDestroy } from 'svelte';
     import { resolve } from '$app/paths';
@@ -146,7 +145,8 @@
                         style="display: inline;">{email || get(user)?.email}</Typography.Text>
                 </Typography.Text>
 
-                <Link variant="default" on:click={() => logout()}>Switch account</Link>
+                <Link.Anchor variant="default" on:click={() => logout()}
+                    >Switch account</Link.Anchor>
 
                 {#if emailSent && resendTimer > 0}
                     <div transition:slide={{ duration: 150 }}>
