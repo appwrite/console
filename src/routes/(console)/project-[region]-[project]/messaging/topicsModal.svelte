@@ -33,7 +33,7 @@
     let search = $state('');
     let offset = $state(0);
     let totalResults = $state(0);
-    let topicResultsById = $state<Record<string, Models.Topic>>({}); // use a hash map so we can quickly look up a user by id
+    let topicResultsById = $state<Record<string, Models.Topic>>({});
     let selected = $state<Record<string, Models.Topic>>({});
     let emptyTopicsExists = $state(false);
 
