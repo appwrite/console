@@ -39,6 +39,10 @@
     let error = $state(null);
     let verified = $state(false);
 
+    $effect(() => {
+        error = selectedProxyRule?.verificationLogs || null;
+    });
+
     async function retryProxyRule() {
         try {
             const domain = await sdk

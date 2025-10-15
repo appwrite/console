@@ -10,9 +10,9 @@
             .forProject(page.params.region, page.params.project)
             .subscribe('console', (response) => {
                 if (
-                    response.events.includes('proxy.rules.*.update') ||
-                    response.events.includes('proxy.rules.*.create') ||
-                    response.events.includes('proxy.rules.*.delete')
+                    response.events.includes('rules.*.update') ||
+                    response.events.includes('rules.*.create') ||
+                    response.events.includes('rules.*.delete')
                 ) {
                     if ((response.payload as any)?.deploymentResourceId === page.params.function) {
                         invalidate(Dependencies.FUNCTION_DOMAINS);
