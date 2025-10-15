@@ -11,7 +11,7 @@ RUN corepack prepare pnpm@10.0.0 --activate
 ADD ./package.json /app/package.json
 ADD ./pnpm-lock.yaml /app/pnpm-lock.yaml
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 ADD ./build.js /app/build.js
 ADD ./tsconfig.json /app/tsconfig.json
