@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type ComponentProps } from 'svelte';
+    import { type ComponentProps, type Snippet } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { AvatarInitials } from '../';
@@ -22,15 +22,31 @@
     import { base } from '$app/paths';
     import { formatName } from '$lib/helpers/string';
 
-    export let role: string;
-    export let placement: ComponentProps<Popover>['placement'] = 'bottom-start';
+    const permissionDataCache: Map<
+        string,
+        Promise<
+            Partial<Models.User<Record<string, unknown>> & Models.Team<Record<string, unknown>>> & {
+                notFound?: boolean;
+                roleName?: string;
+                customName?: string;
+            }
+        >
+    > = new Map();
 
-    interface ParsedPermission {
+    interface Props {
+        role: string;
+        placement?: ComponentProps<Popover>['placement'];
+        children?: Snippet;
+    }
+
+    let { role, placement = 'bottom-start', children }: Props = $props();
+
+    type ParsedPermission = {
         type: 'user' | 'team' | 'other';
         id: string;
         roleName?: string;
         isValid: boolean;
-    }
+    };
 
     function parsePermission(permission: string): ParsedPermission {
         try {
@@ -66,38 +82,46 @@
             customName?: string;
         }
     > {
-        const parsed = parsePermission(permission);
+        const cached = permissionDataCache.get(permission);
+        if (cached) return cached;
 
-        if (!parsed.isValid || parsed.type === 'other') {
+        const fetchPromise = (async () => {
+            const parsed = parsePermission(permission);
+
+            if (!parsed.isValid || parsed.type === 'other') {
+                return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
+            }
+
+            if (parsed.type === 'user') {
+                try {
+                    const user = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .users.get({ userId: parsed.id });
+                    return user;
+                } catch (error) {
+                    return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
+                }
+            }
+
+            if (parsed.type === 'team') {
+                try {
+                    const team = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .teams.get({ teamId: parsed.id });
+                    return team;
+                } catch (error) {
+                    return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
+                }
+            }
+
             return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
-        }
+        })();
 
-        if (parsed.type === 'user') {
-            try {
-                const user = await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .users.get({ userId: parsed.id });
-                return user;
-            } catch (error) {
-                return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
-            }
-        }
-
-        if (parsed.type === 'team') {
-            try {
-                const team = await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .teams.get({ teamId: parsed.id });
-                return team;
-            } catch (error) {
-                return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
-            }
-        }
-
-        return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
+        permissionDataCache.set(permission, fetchPromise);
+        return fetchPromise;
     }
 
-    let isMouseOverTooltip = false;
+    let isMouseOverTooltip = $state(false);
     function hidePopover(hideTooltip: () => void, timeout = true) {
         if (!timeout) {
             isMouseOverTooltip = false;
@@ -126,36 +150,35 @@
 {:else}
     <Popover let:show let:hide {placement} portal>
         <button
-            on:mouseenter={() => {
+            onmouseenter={() => {
                 if (!$menuOpen) {
                     setTimeout(show, 150);
                 }
             }}
-            on:mouseleave={() => hidePopover(hide)}>
-            <slot>
-                {#if isCustomPermission(role)}
-					<Typography.Text style="text-decoration: underline;">
-						{formatName(role, $isSmallViewport ? 8 : 15)}
-					</Typography.Text>
-                {:else}
-                    <Layout.Stack direction="row" gap="s" alignItems="center" inline>
-                        <Typography.Text>
-                            {#await getData(role)}
-                                {role}
-                            {:then data}
-                                {formatName(
-                                    data.name ?? data?.email ?? data?.phone ?? '-',
-                                    $isSmallViewport ? 5 : 12
-                                )}
-                            {/await}
-                        </Typography.Text>
-                        <Badge
-                            size="xs"
-                            variant="secondary"
-                            content={role.startsWith('user') ? 'User' : 'Team'} />
-                    </Layout.Stack>
-                {/if}
-            </slot>
+            onmouseleave={() => hidePopover(hide)}>
+            {@render children?.()}
+            {#if isCustomPermission(role)}
+                <Typography.Text style="text-decoration: underline;">
+                    {formatName(role, $isSmallViewport ? 8 : 15)}
+                </Typography.Text>
+            {:else}
+                <Layout.Stack direction="row" gap="s" alignItems="center" inline>
+                    <Typography.Text>
+                        {#await getData(role)}
+                            {role}
+                        {:then data}
+                            {formatName(
+                                data.name ?? data?.email ?? data?.phone ?? '-',
+                                $isSmallViewport ? 5 : 7
+                            )}
+                        {/await}
+                    </Typography.Text>
+                    <Badge
+                        size="xs"
+                        variant="secondary"
+                        content={role.startsWith('user') ? 'User' : 'Team'} />
+                </Layout.Stack>
+            {/if}
         </button>
 
         <div
@@ -164,8 +187,8 @@
             slot="tooltip"
             role="tooltip"
             class="popover"
-            on:mouseenter={() => (isMouseOverTooltip = true)}
-            on:mouseleave={() => hidePopover(hide, false)}>
+            onmouseenter={() => (isMouseOverTooltip = true)}
+            onmouseleave={() => hidePopover(hide, false)}>
             {#if showing}
                 <Layout.Stack gap="s" alignContent="flex-start">
                     {#await getData(role)}
@@ -247,7 +270,7 @@
                                                             data?.email ??
                                                             data?.phone ??
                                                             '-',
-                                                        $isSmallViewport ? 12 : 24
+                                                        $isSmallViewport ? 12 : 20
                                                     )}
                                                 </Typography.Text>
                                             </Link.Anchor>
@@ -291,7 +314,7 @@
 <style lang="scss">
     .popover {
         display: flex;
-        width: 260px;
+        width: 280px;
         min-width: 260px;
         padding: var(--space-5, 10px) var(--space-6, 12px);
         align-items: flex-start;
