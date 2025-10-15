@@ -21,6 +21,8 @@
     import { providers } from './store';
     import CreateMember from '$routes/(console)/organization-[organization]/createMember.svelte';
 
+    let formRef: Form;
+
     async function create() {
         try {
             let response: Models.Provider;
@@ -185,7 +187,7 @@
 </script>
 
 <Wizard title="Create provider" columnSize="l">
-    <Form onSubmit={create} isModal={false}>
+    <Form bind:this={formRef} onSubmit={create} isModal={false}>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Provider">
                 <Provider />
@@ -193,9 +195,6 @@
             <Fieldset legend="Settings">
                 <Settings />
             </Fieldset>
-            <Layout.Stack justifyContent="flex-end" direction="row">
-                <Button submit>Create</Button>
-            </Layout.Stack>
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
@@ -227,7 +226,9 @@
                         hasDivider
                         href={`https://appwrite.io/docs/products/messaging/${$provider}`}
                         title="Read the guide in the docs"
-                        icon={IconBookOpen} />
+                        icon={IconBookOpen}
+                        target="_blank"
+                        rel="noreferrer" />
                     <ActionList.Item.Button
                         on:click={() => {
                             $newMemberModal = true;
@@ -241,4 +242,9 @@
     {#if $newMemberModal}
         <CreateMember bind:showCreate={$newMemberModal} />
     {/if}
+    <svelte:fragment slot="footer">
+        <Layout.Stack justifyContent="flex-end" direction="row">
+            <Button on:click={() => formRef.triggerSubmit()}>Create</Button>
+        </Layout.Stack>
+    </svelte:fragment>
 </Wizard>
