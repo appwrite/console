@@ -48,11 +48,7 @@
     import { project } from '../../store';
     import { type PlatformProps, type FrameworkType, getCorrectTitle } from './store';
 
-    let {
-        key,
-        isConnectPlatform = false,
-        platform = PlatformType.Web
-    }: PlatformProps = $props();
+    let { key, isConnectPlatform = false, platform = PlatformType.Web }: PlatformProps = $props();
 
     let showExitModal = $state(false);
     let isCreatingPlatform = $state(false);
