@@ -10,8 +10,7 @@
         Typography,
         Fieldset,
         InlineCode,
-        Tooltip,
-        Alert
+        Tooltip
     } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { IconAndroid, IconAppwrite, IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -26,11 +25,16 @@
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
     import { project } from '../../store';
+    import { getCorrectTitle, type PlatformProps } from './store';
+    import LlmBanner from './llmBanner.svelte';
 
-    let showExitModal = false;
-    let isPlatformCreated = false;
-    let isCreatingPlatform = false;
-    let connectionSuccessful = false;
+    let { isConnectPlatform = false }: PlatformProps = $props();
+
+    let showExitModal = $state(false);
+    let isCreatingPlatform = $state(false);
+    let connectionSuccessful = $state(false);
+    let isPlatformCreated = $state(isConnectPlatform);
+
     const projectId = page.params.project;
 
     const gitCloneCode =
@@ -39,31 +43,6 @@
     const configCode = `const val APPWRITE_PROJECT_ID = "${projectId}"
 const val APPWRITE_PROJECT_NAME = "${$project.name}"
 const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"`;
-
-    const prompt = `
-        1. If you're starting a new project, you can clone our starter kit from GitHub using the terminal, VSCode or Android Studio.
-
-        \`\`\`bash
-        ${gitCloneCode}
-        \`\`\`
-
-        2. Open the file \`constants/AppwriteConfig.kt\` and update the configuration settings.
-        
-            
-        \`\`\`kotlin
-        ${configCode}
-        \`\`\`
-
-        3. Run the app on a connected device or emulator, then click the \`Send a ping\` button to verify the setup.
-    `;
-
-    async function copyPrompt() {
-        await navigator.clipboard.writeText(prompt);
-        addNotification({
-            type: 'success',
-            message: 'Prompt copied to clipboard'
-        });
-    }
 
     async function createAndroidPlatform() {
         try {
@@ -119,7 +98,10 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
     });
 </script>
 
-<Wizard title="Add Android platform" bind:showExitModal confirmExit={!isPlatformCreated}>
+<Wizard
+    bind:showExitModal
+    confirmExit={!isPlatformCreated}
+    title={getCorrectTitle(isConnectPlatform, 'Android')}>
     <Layout.Stack gap="xxl">
         <!-- Step One -->
         {#if !isPlatformCreated}
@@ -188,18 +170,8 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
         {#if isPlatformCreated}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
-                    <Alert.Inline
-                        status="info"
-                        title={`Copy prompt: starter kit for Appwrite in Kotlin`}>
-                        <Typography.Text variant="m-500">
-                            Paste it into your LLM to generate a working setup.
-                        </Typography.Text>
-                        <Button
-                            compact
-                            size="s"
-                            on:click={copyPrompt}
-                            disabled={!prompt || prompt.length === 0}>Copy prompt</Button>
-                    </Alert.Inline>
+                    <LlmBanner platform="android" {configCode} />
+
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
                         GitHub using the terminal, VSCode or Android Studio.

@@ -11,8 +11,7 @@
         Fieldset,
         InlineCode,
         Card,
-        Tooltip,
-        Alert
+        Tooltip
     } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import {
@@ -27,7 +26,7 @@
         IconJs
     } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
-    import { type ComponentType, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
@@ -47,14 +46,21 @@
     } from './components/index';
     import { extendedHostnameRegex } from '$lib/helpers/string';
     import { project } from '../../store';
+    import {
+        type PlatformProps,
+        type FrameworkType,
+        type LLMPromptConfig,
+        getCorrectTitle
+    } from './store';
+    import LlmBanner from './llmBanner.svelte';
 
-    export let key;
+    let { key, isConnectPlatform = false, platform = PlatformType.Web }: PlatformProps = $props();
 
-    let showExitModal = false;
-    let isPlatformCreated = !!key;
-    let isCreatingPlatform = false;
-    let connectionSuccessful = false;
-    let isChangingFramework = false;
+    let showExitModal = $state(false);
+    let isCreatingPlatform = $state(false);
+    let connectionSuccessful = $state(false);
+    let isChangingFramework = $state(false);
+    let isPlatformCreated = $state(isConnectPlatform);
 
     const projectId = page.params.project;
 
@@ -62,19 +68,9 @@
 ${prefix}APPWRITE_PROJECT_NAME = "${$project.name}"
 ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
-    type FrameworkType = {
-        key: string;
-        label: string;
-        icon: ComponentType;
-        smallIcon: ComponentType;
-        portNumber: number;
-        runCommand: string;
-        updateConfigCode: string;
-    };
-    export let platform: PlatformType = PlatformType.Flutterandroid;
-    export let selectedFrameworkKey: string | undefined = key ? key : undefined;
-    let hostname;
-    let hostnameError = false;
+
+    let hostname = $state(null);
+    let hostnameError = $state(false);
 
     let frameworks: Array<FrameworkType> = [
         {
@@ -150,47 +146,26 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
         }
     ];
 
-    $: selectedFramework = frameworks.find((framework) => framework.key === selectedFrameworkKey);
-    $: selectedFrameworkIcon = selectedFramework ? selectedFramework.icon : NoFrameworkIcon;
-    $: prompt = `1. If you're starting a new project, you can clone our starter kit from
-                        GitHub using the terminal or VSCode.
-                        
-                \`\`\`bash
-                git clone https://github.com/appwrite/starter-for-${selectedFramework.key}
-                cd starter-for-${selectedFramework.key}
-                \`\`\`
-                
-                2. Copy the file \`.env.example\` to \`.env\` and update the configuration settings.
-                
-                \`\`\`dotenv
-                APPWRITE_PROJECT_ID=${projectId}
-                APPWRITE_PROJECT_NAME=${$project.name}
-                APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}
-                \`\`\`
+    const selectedFramework = $derived(frameworks.find((framework) => framework.key === key));
 
-                3. Install project dependencies
-                
-                \`\`\`bash
-                npm install
-                \`\`\`
+    const selectedFrameworkIcon = $derived(
+        selectedFramework ? selectedFramework.icon : NoFrameworkIcon
+    );
 
-                4. Run the app, then click the \`Send a ping\` button
-                to verify the setup.
-                
-                \`\`\`bash
-                ${selectedFramework.runCommand}
-                \`\`\`
-                
-                Demo app runs on http://localhost:${selectedFramework.portNumber}
-                `;
-
-    async function copyPrompt() {
-        await navigator.clipboard.writeText(prompt);
-        addNotification({
-            type: 'success',
-            message: 'Prompt copied to clipboard'
-        });
-    }
+    const llmConfig: LLMPromptConfig = $derived({
+        title: `Copy prompt: starter kit for Appwrite in ${selectedFramework?.label || 'Web'}`,
+        cloneCommand: `git clone https://github.com/appwrite/starter-for-${selectedFramework?.key}\ncd starter-for-${selectedFramework?.key}`,
+        configFile:
+            selectedFramework?.key === 'angular'
+                ? 'src/environments/environment.ts'
+                : '.env.example',
+        configCode:
+            selectedFramework?.key === 'angular'
+                ? `APPWRITE_PROJECT_ID=${projectId}\nAPPWRITE_PROJECT_NAME=${$project.name}\nAPPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}`
+                : selectedFramework?.updateConfigCode || '',
+        configLanguage: selectedFramework?.key === 'angular' ? 'ts' : 'dotenv',
+        runInstructions: `${selectedFramework?.key === 'angular' ? 'Replace the file with the configuration above' : 'Copy the file `.env.example` to `.env` and update the configuration settings'}. Install project dependencies using \`npm install\`, then run the app using \`${selectedFramework?.runCommand}\`. Demo app runs on http://localhost:${selectedFramework?.portNumber}. Click the \`Send a ping\` button to verify the setup.`
+    });
 
     async function createWebPlatform() {
         hostnameError = hostname !== '' ? !new RegExp(extendedHostnameRegex).test(hostname) : null;
@@ -205,7 +180,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                 projectId,
                 type: PlatformType.Web,
                 name: `${selectedFramework.label} app`,
-                key: selectedFrameworkKey,
+                key: key,
                 hostname: hostname === '' ? undefined : hostname
             });
 
@@ -253,7 +228,10 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     });
 </script>
 
-<Wizard title="Add web platform" bind:showExitModal confirmExit={!isPlatformCreated}>
+<Wizard
+    bind:showExitModal
+    confirmExit={!isPlatformCreated}
+    title={getCorrectTitle(isConnectPlatform, 'Web')}>
     <Layout.Stack gap="xxl">
         <!-- Step One -->
         {#if !isPlatformCreated || isChangingFramework}
@@ -264,7 +242,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                             <div class="frameworks">
                                 {#each frameworks as framework}
                                     <Card.Selector
-                                        bind:group={selectedFrameworkKey}
+                                        bind:group={key}
                                         name="framework"
                                         id={framework.key}
                                         value={framework.key}
@@ -317,6 +295,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                     <Button
                         size="s"
                         secondary
+                        disabled={isConnectPlatform}
                         on:click={() => {
                             isChangingFramework = true;
                         }}>Change</Button>
@@ -327,18 +306,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
         {#if isPlatformCreated && !isChangingFramework}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
-                    <Alert.Inline
-                        status="info"
-                        title={`Copy prompt: starter kit for Appwrite in ${selectedFramework.label}`}>
-                        <Typography.Text variant="m-500">
-                            Paste it into your LLM to generate a working setup.
-                        </Typography.Text>
-                        <Button
-                            compact
-                            size="s"
-                            on:click={copyPrompt}
-                            disabled={!prompt || prompt.length === 0}>Copy prompt</Button>
-                    </Alert.Inline>
+                    <LlmBanner config={llmConfig} />
 
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
