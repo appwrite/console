@@ -27,8 +27,10 @@
     import { PlatformType } from '@appwrite.io/console';
     import { project } from '../../store';
 
+    export let isPlatformCreated = false;
+    export let platform: PlatformType = PlatformType.Reactnativeandroid;
+
     let showExitModal = false;
-    let isPlatformCreated = false;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
     const projectId = page.params.project;
@@ -39,8 +41,6 @@
     const updateConfigCode = `EXPO_PUBLIC_APPWRITE_PROJECT_ID=${projectId}
 EXPO_PUBLIC_APPWRITE_PROJECT_NAME="${$project.name}"
 EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}`;
-
-    export let platform: PlatformType = PlatformType.Reactnativeandroid;
 
     let platforms: { [key: string]: PlatformType } = {
         Android: PlatformType.Reactnativeandroid,

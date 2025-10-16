@@ -48,9 +48,10 @@
     import { project } from '../../store';
 
     export let key;
+    export let isPlatformCreated = false;
+    export let platform: PlatformType = PlatformType.Web;
 
     let showExitModal = false;
-    let isPlatformCreated = !!key;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
     let isChangingFramework = false;
@@ -70,9 +71,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
         runCommand: string;
         updateConfigCode: string;
     };
-    export let platform: PlatformType = PlatformType.Flutterandroid;
-    export let selectedFrameworkKey: string | undefined = key ? key : undefined;
-    let hostname;
+
+    let hostname: string;
     let hostnameError = false;
 
     let frameworks: Array<FrameworkType> = [
@@ -149,7 +149,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
         }
     ];
 
-    $: selectedFramework = frameworks.find((framework) => framework.key === selectedFrameworkKey);
+    $: selectedFramework = frameworks.find((framework) => framework.key === key);
     $: selectedFrameworkIcon = selectedFramework ? selectedFramework.icon : NoFrameworkIcon;
 
     async function createWebPlatform() {
@@ -165,7 +165,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                 projectId,
                 type: PlatformType.Web,
                 name: `${selectedFramework.label} app`,
-                key: selectedFrameworkKey,
+                key: key,
                 hostname: hostname === '' ? undefined : hostname
             });
 
@@ -224,7 +224,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                             <div class="frameworks">
                                 {#each frameworks as framework}
                                     <Card.Selector
-                                        bind:group={selectedFrameworkKey}
+                                        bind:group={key}
                                         name="framework"
                                         id={framework.key}
                                         value={framework.key}

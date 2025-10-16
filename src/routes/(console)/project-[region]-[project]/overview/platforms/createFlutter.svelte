@@ -27,8 +27,10 @@
     import { PlatformType } from '@appwrite.io/console';
     import { project } from '../../store';
 
+    export let isPlatformCreated = false;
+    export let platform: PlatformType = PlatformType.Flutterandroid;
+
     let showExitModal = false;
-    let isPlatformCreated = false;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
     const projectId = page.params.project;
@@ -41,8 +43,6 @@
   static const String appwriteProjectName = '${$project.name}';
   static const String appwritePublicEndpoint = '${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}';
 }`;
-
-    export let platform: PlatformType = PlatformType.Flutterandroid;
 
     let platforms: { [key: string]: PlatformType } = {
         Android: PlatformType.Flutterandroid,

@@ -26,8 +26,9 @@
     import { PlatformType } from '@appwrite.io/console';
     import { project } from '../../store';
 
+    export let isPlatformCreated = false;
+
     let showExitModal = false;
-    let isPlatformCreated = false;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
     const projectId = page.params.project;

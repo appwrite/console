@@ -28,8 +28,10 @@
     import { app } from '$lib/stores/app';
     import { project } from '../../store';
 
+    export let isPlatformCreated = false;
+    export let platform: PlatformType = PlatformType.Appleios;
+
     let showExitModal = false;
-    let isPlatformCreated = false;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
     const projectId = page.params.project;
@@ -40,8 +42,6 @@
     const configCode = `APPWRITE_PROJECT_ID: "${projectId}"
 APPWRITE_PROJECT_NAME: "${$project.name}"
 APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"`;
-
-    export let platform: PlatformType = PlatformType.Appleios;
 
     let platforms: { [key: string]: PlatformType } = {
         iOS: PlatformType.Appleios,
