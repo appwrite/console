@@ -51,7 +51,7 @@
     let {
         key,
         isConnectPlatform = false,
-        platform = PlatformType.Flutterandroid
+        platform = PlatformType.Web
     }: PlatformProps = $props();
 
     let showExitModal = $state(false);
