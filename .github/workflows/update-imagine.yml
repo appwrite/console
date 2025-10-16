@@ -1,0 +1,74 @@
+name: Update @appwrite/imagine Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_message:
+        description: 'Custom commit message (optional)'
+        required: false
+        default: 'chore: update @appwrite/imagine package'
+
+jobs:
+  update-imagine:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run update script
+        run: node update_imagine.js
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected"
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected"
+          fi
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          
+          COMMIT_MESSAGE="${{ github.event.inputs.commit_message }}"
+          if [ -z "$COMMIT_MESSAGE" ]; then
+            COMMIT_MESSAGE="chore: update @appwrite/imagine package"
+          fi
+          
+          git commit -m "$COMMIT_MESSAGE"
+          git push
+
+      - name: No changes to commit
+        if: steps.check_changes.outputs.changes == 'false'
+        run: echo "No changes were made to the package files"
+
+      - name: Summary
+        run: |
+          if [[ "${{ steps.check_changes.outputs.changes }}" == "true" ]]; then
+            echo "✅ Successfully updated @appwrite/imagine package and committed changes"
+          else
+            echo "ℹ️ No updates were needed - package is already up to date"
+          fi

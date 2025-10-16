@@ -28,7 +28,7 @@
         "@appwrite.io/pink-legacy": "^1.0.3",
         "@appwrite.io/pink-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@8f82877",
         "@faker-js/faker": "^9.9.0",
-        "@imagine.dev/web-components": "https://pkg.vc/-/@appwrite/@imagine.dev/web-components~refs/heads/main",
+        "@imagine.dev/web-components": "https://pkg.vc/-/@appwrite/@imagine.dev/web-components@689ce1b",
         "@popperjs/core": "^2.11.8",
         "@sentry/sveltekit": "^8.55.0",
         "@stripe/stripe-js": "^3.5.0",
