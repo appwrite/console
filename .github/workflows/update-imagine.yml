@@ -1,12 +1,10 @@
 name: Update @appwrite/imagine Package
 
 on:
-  workflow_dispatch:
-    inputs:
-      commit_message:
-        description: 'Custom commit message (optional)'
-        required: false
-        default: 'chore: update @appwrite/imagine package'
+  schedule:
+    # Run every 5 minutes
+    - cron: '*/5 * * * *'
+
 
 jobs:
   update-imagine:
