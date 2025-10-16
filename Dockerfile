@@ -47,10 +47,6 @@ ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 ENV SENTRY_RELEASE=$SENTRY_RELEASE
 ENV NODE_OPTIONS=--max_old_space_size=8192
 
-# TEMP FIX
-ARG CACHEBUST=1
-RUN pnpm up --latest @imagine.dev/web-components
-
 RUN pnpm run build
 
 FROM nginx:1.26.3-alpine
