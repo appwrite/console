@@ -1,6 +1,7 @@
 name: Update @appwrite/imagine Package
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       commit_message:
