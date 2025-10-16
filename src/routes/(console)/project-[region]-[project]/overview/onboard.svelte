@@ -40,6 +40,9 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
 
+    export let pingCount = 0;
+    export let platforms: Models.Platform[] = [];
+
     function createKey() {
         trackEvent(Click.KeyCreateClick, {
             source: 'onboarding'
@@ -51,9 +54,6 @@
             }
         );
     }
-
-    export let platforms: Models.Platform[] = [];
-    export let pingCount = 0;
 
     function openPlatformWizard(type: number, platform?: Models.Platform) {
         if (platform) {
