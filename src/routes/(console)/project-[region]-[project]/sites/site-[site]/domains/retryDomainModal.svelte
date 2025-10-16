@@ -117,7 +117,8 @@
             {verified}
             service="sites"
             variant={selectedTab}
-            domain={selectedProxyRule.domain} />
+            domain={selectedProxyRule.domain}
+            onNavigateToNameservers={() => (selectedTab = 'nameserver')} />
     {/if}
 
     <svelte:fragment slot="footer">
