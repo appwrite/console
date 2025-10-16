@@ -37,6 +37,7 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import { type Columns, databaseColumnSheetOptions } from './store';
+    import { isRelationship } from './rows/store';
 
     interface MenuItem {
         label?: string;
@@ -120,6 +121,11 @@
             }
 
             if (['delete', 'update', 'duplicate-header'].includes(item.action) && isSystemColumn) {
+                return false;
+            }
+
+            // hide sort options for relationship columns
+            if (isRelationship(column) && ['sort-asc', 'sort-desc'].includes(item.action ?? '')) {
                 return false;
             }
         }
