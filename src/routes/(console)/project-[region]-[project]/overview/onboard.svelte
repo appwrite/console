@@ -41,6 +41,9 @@
     import { page } from '$app/state';
     import { Platform } from './platforms/+page.svelte';
 
+    export let pingCount = 0;
+    export let platforms: Models.Platform[] = [];
+
     function createKey() {
         trackEvent(Click.KeyCreateClick, {
             source: 'onboarding'
@@ -52,9 +55,6 @@
             }
         );
     }
-
-    export let pingCount = 0;
-    export let platforms: Models.Platform[] = [];
 
     function openPlatformWizard(type: Platform, platform?: Models.Platform) {
         if (platform) {
