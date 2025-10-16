@@ -10,7 +10,7 @@
     } from '$lib/commandCenter';
     import { tablesSearcher } from '$lib/commandCenter/searchers';
     import { Dependencies } from '$lib/constants';
-    import { showCreateEntity } from './store';
+    import { showCreateEntity, randomDataModalState } from './store';
     import { TablesPanel } from '$lib/commandCenter/panels';
     import { canWriteTables, canWriteDatabases } from '$lib/stores/roles';
     import { showCreateBackup, showCreatePolicy } from './backups/store';
@@ -20,11 +20,15 @@
     import { noWidthTransition } from '$lib/stores/sidebar';
     import { CreateEntity, getTerminologies, setTerminologies } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
+    import { Dialog, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Button, Seekbar } from '$lib/elements/forms';
 
     setTerminologies(page);
 
     const project = page.params.project;
     const databaseId = page.params.database;
+
+    const { databasesSdk, terminology } = getTerminologies();
 
     $: $registerCommands([
         {
@@ -157,8 +161,6 @@
             )
         );
     }
-
-    const { databasesSdk, terminology } = getTerminologies();
 </script>
 
 <svelte:head>
@@ -171,3 +173,22 @@
 <slot />
 
 <CreateEntity bind:show={$showCreateEntity} onCreateEntity={createEntity} />
+
+<Dialog title="Generate sample data" bind:open={$randomDataModalState.show}>
+    {@const records = terminology.record.lower.singular}
+    <Layout.Stack style="gap: 28px;">
+        <Typography.Text>
+            Select how many sample {records} to generate for testing. This won't delete or replace any
+            existing {records}.
+        </Typography.Text>
+
+        <Seekbar max={100} breakpointCount={5} bind:value={$randomDataModalState.value} />
+    </Layout.Stack>
+
+    <svelte:fragment slot="footer">
+        <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
+            <Button text on:click={() => ($randomDataModalState.show = false)}>Cancel</Button>
+            <Button on:click={() => $randomDataModalState.onSubmit?.()}>Create</Button>
+        </Layout.Stack>
+    </svelte:fragment>
+</Dialog>

@@ -1,12 +1,9 @@
 import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
 import { getLimit, getPage, getQuery, getView, pageToOffset, View } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
-import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters';
-import { buildWildcardEntitiesQuery } from '$database/store';
-import type { TagValue } from '$lib/components/filters/store';
-import type { Entity } from '$database/(entity)';
+import { buildGridQueries, extractSortFromQueries } from '$database/store';
 
 export const load: PageLoad = async ({ params, depends, url, route, parent }) => {
     const { table } = await parent();
@@ -38,39 +35,3 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         })
     };
 };
-
-function extractSortFromQueries(parsedQueries: Map<TagValue, string>) {
-    for (const [tagValue, queryString] of parsedQueries.entries()) {
-        if (queryString.includes('orderAsc') || queryString.includes('orderDesc')) {
-            const isAsc = queryString.includes('orderAsc');
-            return {
-                column: tagValue.value,
-                direction: isAsc ? 'asc' : 'desc'
-            };
-        }
-    }
-
-    return { column: null, direction: 'default' };
-}
-
-function buildGridQueries(
-    limit: number,
-    offset: number,
-    parsedQueries: Map<TagValue, string>,
-    table: Entity
-) {
-    const hasOrderQuery = Array.from(parsedQueries.values()).some(
-        (q) => q.includes('orderAsc') || q.includes('orderDesc')
-    );
-
-    const queryArray = [Query.limit(limit), Query.offset(offset)];
-
-    // don't override if there's a user created sort!
-    if (!hasOrderQuery) {
-        queryArray.push(Query.orderDesc(''));
-    }
-
-    queryArray.push(...parsedQueries.values(), ...buildWildcardEntitiesQuery(table));
-
-    return queryArray;
-}

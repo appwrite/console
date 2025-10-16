@@ -11,13 +11,13 @@
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
-    import { SpreadsheetContainer } from '$database/(entity)';
+    import { getTerminologies, SpreadsheetContainer } from '$database/(entity)';
     import { onDestroy, onMount } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
     import { expandTabs } from '$database/store';
     import { spreadsheetLoading } from '$database/table-[table]/store';
 
-    type Mode = 'rows' | 'rows-filtered' | 'indexes';
+    type Mode = 'records' | 'records-filtered' | 'indexes';
 
     interface Action {
         text?: string;
@@ -51,6 +51,8 @@
     let dynamicOverlayHeight = $state('60.5vh');
 
     const baseColProps = { draggable: false, resizable: false };
+
+    const { terminology } = getTerminologies();
 
     const updateOverlayHeight = () => {
         if (!spreadsheetContainer) return;
@@ -151,11 +153,13 @@
             }
         ] as Column[];
 
-    const spreadsheetColumns = $derived(mode === 'rows' ? getRowColumns() : getIndexesColumns());
+    const spreadsheetColumns = $derived(mode === 'records' ? getRowColumns() : getIndexesColumns());
 
     const emptyCells = $derived(
         ($isSmallViewport ? 14 : $isTabletViewport ? 17 : 24) + (!$expandTabs ? 2 : 0)
     );
+
+    const modeTerminology = $derived(terminology.record.lower.plural);
 </script>
 
 <div
@@ -181,7 +185,7 @@
                         tabindex="0"
                         style:cursor={columnActionsById && onOpenCreateColumn ? 'pointer' : null}
                         onclick={() => {
-                            if (columnActionsById && mode === 'rows') {
+                            if (columnActionsById && mode === 'records') {
                                 onOpenCreateColumn?.();
                             }
                         }}>
@@ -232,7 +236,8 @@
             style:--dynamic-overlay-height={dynamicOverlayHeight}>
             <div class="empty-actions">
                 <Layout.Stack gap="xl" alignItems="center">
-                    <Typography.Title>{title ?? `You have no ${mode} yet`}</Typography.Title>
+                    <Typography.Title
+                        >{title ?? `You have no ${modeTerminology} yet`}</Typography.Title>
 
                     {#if showActions}
                         <Layout.Stack
@@ -240,7 +245,7 @@
                             gap="s"
                             alignItems="center"
                             direction={$isSmallViewport ? 'column' : 'row'}>
-                            {#if mode !== 'rows-filtered'}
+                            {#if mode !== 'records-filtered'}
                                 <Button.Button
                                     icon
                                     size="s"
@@ -251,7 +256,7 @@
                                     {actions?.primary?.text ?? `Create ${mode}`}
                                 </Button.Button>
 
-                                {#if mode === 'rows'}
+                                {#if mode === 'records'}
                                     <Button.Button
                                         size="s"
                                         variant="secondary"
@@ -283,7 +288,7 @@
         position: fixed;
         overflow: hidden;
 
-        &[data-mode='rows'] {
+        &[data-mode='records'] {
             & :global([role='rowheader'] :nth-last-child(2) [role='presentation']) {
                 display: none;
             }

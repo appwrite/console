@@ -6,6 +6,8 @@ import type { Page } from '@sveltejs/kit';
 import { type Models, Query } from '@appwrite.io/console';
 import type { Entity, Field } from '$database/(entity)';
 import { isRelationship } from '$database/table-[table]/rows/store';
+import type { TagValue } from '$lib/components/filters/store';
+import type { SortDirection } from '$lib/components';
 
 export type Columns =
     | Models.ColumnBoolean
@@ -43,6 +45,17 @@ export type Table = Omit<Models.Table, 'columns'> & {
     columns: Array<Columns>;
 };
 
+export type SortState = {
+    column?: string;
+    direction: SortDirection;
+};
+
+export type RandomDataSchema = {
+    show: boolean;
+    value: number;
+    onSubmit?: () => Promise<void> | void;
+};
+
 export const expandTabs = writable(null);
 
 export const showCreateEntity = writable(false);
@@ -77,6 +90,11 @@ export const databaseSubNavigationItems = [
     { title: 'Settings', href: 'settings', icon: IconCog }
 ];
 
+export const randomDataModalState = writable<RandomDataSchema>({
+    show: false,
+    value: 25 // initial value!
+});
+
 export function buildEntityRoute(page: Page, entityType: string, entityId: string): string {
     return withPath(
         resolveRoute(
@@ -98,4 +116,40 @@ export function buildWildcardEntitiesQuery(entity: Entity | null = null): string
 
         Query.select(['*'])
     ];
+}
+
+export function extractSortFromQueries(parsedQueries: Map<TagValue, string>) {
+    for (const [tagValue, queryString] of parsedQueries.entries()) {
+        if (queryString.includes('orderAsc') || queryString.includes('orderDesc')) {
+            const isAsc = queryString.includes('orderAsc');
+            return {
+                column: tagValue.value,
+                direction: isAsc ? 'asc' : 'desc'
+            };
+        }
+    }
+
+    return { column: null, direction: 'default' };
+}
+
+export function buildGridQueries(
+    limit: number,
+    offset: number,
+    parsedQueries: Map<TagValue, string>,
+    table: Entity
+) {
+    const hasOrderQuery = Array.from(parsedQueries.values()).some(
+        (q) => q.includes('orderAsc') || q.includes('orderDesc')
+    );
+
+    const queryArray = [Query.limit(limit), Query.offset(offset)];
+
+    // don't override if there's a user created sort!
+    if (!hasOrderQuery) {
+        queryArray.push(Query.orderDesc(''));
+    }
+
+    queryArray.push(...parsedQueries.values(), ...buildWildcardEntitiesQuery(table));
+
+    return queryArray;
 }

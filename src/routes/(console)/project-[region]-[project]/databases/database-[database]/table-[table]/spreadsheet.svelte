@@ -28,10 +28,8 @@
         reorderItems,
         columnsOrder,
         columnsWidth,
-        randomDataModalState,
         spreadsheetLoading,
         showCreateIndexSheet,
-        type SortState,
         Deletion,
         rowActivitySheet,
         paginatedRows,
@@ -89,7 +87,13 @@
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { chunks } from '$lib/helpers/array';
     import { mapToQueryParams } from '$lib/components/filters/store';
-    import { expandTabs, type Columns, buildWildcardEntitiesQuery } from '$database/store';
+    import {
+        expandTabs,
+        type Columns,
+        buildWildcardEntitiesQuery,
+        type SortState,
+        randomDataModalState
+    } from '$database/store';
 
     export let data: PageData;
     export let showRowCreateSheet: {

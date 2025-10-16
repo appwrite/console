@@ -10,10 +10,9 @@
     import type { PageData } from './$types';
     import {
         tableColumns,
-        isCsvImportInProgress,
+        isTablesCsvImportInProgress,
         showRowCreateSheet,
         showCreateColumnSheet,
-        randomDataModalState,
         columnsOrder
     } from './store';
     import SpreadSheet from './spreadsheet.svelte';
@@ -32,7 +31,7 @@
     import { columnOptions } from './columns/store';
     import { EmptySheet, type Field } from '$database/(entity)';
     import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
-    import { expandTabs } from '$database/store';
+    import { expandTabs, randomDataModalState } from '$database/store';
 
     export let data: PageData;
 
@@ -89,7 +88,7 @@
         $tableColumnSuggestions.table.id === page.params.table;
 
     async function onSelect(file: Models.File, localFile = false) {
-        $isCsvImportInProgress = true;
+        $isTablesCsvImportInProgress = true;
 
         try {
             await sdk
@@ -114,7 +113,7 @@
                 message: e.message
             });
         } finally {
-            $isCsvImportInProgress = false;
+            $isTablesCsvImportInProgress = false;
         }
     }
 
@@ -204,7 +203,7 @@
                 <SpreadSheet {data} bind:showRowCreateSheet={$showRowCreateSheet} />
             {:else if $hasPageQueries}
                 <EmptySheet
-                    mode="rows-filtered"
+                    mode="records-filtered"
                     title="There are no rows that match your filters"
                     customColumns={createTableColumns(table.fields, selected)}
                     actions={{
@@ -221,7 +220,7 @@
                     }} />
             {:else}
                 <EmptySheet
-                    mode="rows"
+                    mode="records"
                     customColumns={createTableColumns(table.fields, selected)}
                     showActions={$canWriteRows}
                     actions={{
@@ -242,7 +241,7 @@
             <SuggestionsEmptySheet />
         {:else}
             <EmptySheet
-                mode="rows"
+                mode="records"
                 title="You have no columns yet"
                 showActions={$canWriteTables}
                 onOpenCreateColumn={() => {

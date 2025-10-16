@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { hasPageQueries } from '$lib/components/filters';
+    import { hasPageQueries, queries } from '$lib/components/filters';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
@@ -13,7 +13,11 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { IconChevronDown, IconChevronUp, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
-    import { expandTabs } from '$database/store';
+    import { expandTabs, randomDataModalState } from '$database/store';
+    import { EmptySheet } from '$database/(entity)';
+    import { isCollectionsCsvImportInProgress } from './store';
+    import { canWriteRows } from '$lib/stores/roles';
+    import SpreadSheet from './spreadsheet.svelte';
 
     export let data: PageData;
 
@@ -22,7 +26,7 @@
     let showImportCSV = false;
 
     async function onSelect(file: Models.File, localFile = false) {
-        // $isCsvImportInProgress = true;
+        $isCollectionsCsvImportInProgress = true;
 
         try {
             await sdk
@@ -47,11 +51,9 @@
                 message: e.message
             });
         } finally {
-            // $isCsvImportInProgress = false;
+            $isCollectionsCsvImportInProgress = false;
         }
     }
-
-    // onDestroy(() => ($showCreateColumnSheet.show = false));
 </script>
 
 {#key page.params.collection}
@@ -98,17 +100,40 @@
         {#if data.documents.total}
             <Divider />
 
-            {JSON.stringify(
-                {
-                    documents: data.documents
-                },
-                2,
-                null
-            )}
+            <SpreadSheet {data} />
         {:else if $hasPageQueries}
-            Nothing here, please go
+            <EmptySheet
+                mode="records-filtered"
+                title="There are no documents that match your filters"
+                actions={{
+                    primary: {
+                        text: 'Clear filters',
+                        onClick: () => {
+                            queries.clearAll();
+                            queries.apply();
+                            trackEvent(Submit.FilterClear, {
+                                source: 'database_collections'
+                            });
+                        }
+                    }
+                }} />
         {:else}
-            Nothing here, please go
+            <EmptySheet
+                mode="records"
+                showActions={$canWriteRows}
+                actions={{
+                    primary: {
+                        text: 'Create documents',
+                        onClick: () => {
+                            // some side sheet with a json editor
+                        }
+                    },
+                    random: {
+                        onClick: () => {
+                            $randomDataModalState.show = true;
+                        }
+                    }
+                }} />
         {/if}
     </div>
 {/key}

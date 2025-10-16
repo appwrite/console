@@ -10,7 +10,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { realtime } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { page } from '$app/state';
@@ -18,9 +18,14 @@
     import { IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
     import { preferences } from '$lib/stores/preferences';
 
-    import { expandTabs } from '../store';
+    import { expandTabs, randomDataModalState } from '../store';
     import type { LayoutData } from './$types';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
+    import { generateFakeRecords } from '$lib/helpers/faker';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sleep } from '$lib/helpers/promises';
+    import { hash } from '$lib/helpers/string';
+    import { spreadsheetLoading, spreadsheetRenderKey } from './store';
 
     export let data: LayoutData;
 
@@ -38,6 +43,9 @@
 
     onMount(() => {
         expandTabs.set(preferences.getKey('entityHeaderExpanded', true));
+
+        // set faker method.
+        $randomDataModalState.onSubmit = async () => await createFakeData();
 
         return realtime
             .forProject(page.params.region, page.params.project)
@@ -155,6 +163,54 @@
         collections: 800,
         indexes: 700
     });
+
+    async function createFakeData() {
+        isWaterfallFromFaker = true;
+
+        $spreadsheetLoading = true;
+        $randomDataModalState.show = false;
+
+        /* let the columns be processed! */
+        await sleep(1250);
+
+        let documentIds = [];
+        try {
+            const { records, ids } = generateFakeRecords(
+                $randomDataModalState.value,
+                'documentsdb'
+            );
+
+            documentIds = ids;
+
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .documentsDB.createDocuments({
+                    databaseId: page.params.database,
+                    collectionId: page.params.collection,
+                    documents: records
+                });
+
+            addNotification({
+                type: 'success',
+                message: 'Sample data added successfully'
+            });
+
+            await invalidate(Dependencies.DOCUMENTS);
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        } finally {
+            // reset value to 25 default!
+            $randomDataModalState.value = 25;
+        }
+
+        $spreadsheetLoading = false;
+        isWaterfallFromFaker = false;
+
+        spreadsheetRenderKey.set(hash(documentIds));
+    }
 </script>
 
 <svelte:head>

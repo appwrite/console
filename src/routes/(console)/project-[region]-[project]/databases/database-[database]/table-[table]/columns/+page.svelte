@@ -21,7 +21,7 @@
         type Columns,
         type ColumnsWidth,
         indexes,
-        isCsvImportInProgress,
+        isTablesCsvImportInProgress,
         reorderItems,
         showCreateIndexSheet
     } from '../store';
@@ -282,7 +282,7 @@
             <Button
                 size="s"
                 secondary
-                disabled={$isCsvImportInProgress}
+                disabled={$isTablesCsvImportInProgress}
                 on:click={() => ($showCreateColumnSheet.show = true)}
                 event="create_attribute">
                 <Icon icon={IconPlus} slot="start" size="s" />
@@ -443,7 +443,7 @@
                         {/if}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="actions" {root} isEditable={false}>
-                        {#if $isCsvImportInProgress}
+                        {#if $isTablesCsvImportInProgress}
                             <CsvDisabled>
                                 <Button disabled text icon ariaLabel="more options">
                                     <Icon icon={IconDotsHorizontal} size="s" />

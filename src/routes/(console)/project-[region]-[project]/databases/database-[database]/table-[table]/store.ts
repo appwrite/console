@@ -2,17 +2,16 @@ import { page } from '$app/stores';
 import type { Column, ColumnType } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
-import type { SortDirection } from '$lib/components';
 import { SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
 import { createSparsePagedDataStore } from '@appwrite.io/pink-svelte';
-import type { Columns } from '$database/store';
+import type { Columns, SortState } from '$database/store';
 
 export const columns = derived(page, ($page) => $page.data.table.columns as Columns[]);
 export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.ColumnIndex[]);
 
 export const tableColumns = writable<Column[]>([]);
 
-export const isCsvImportInProgress = writable(false);
+export const isTablesCsvImportInProgress = writable(false);
 
 export const columnsOrder = writable<string[]>([]);
 
@@ -71,11 +70,6 @@ export const showRowCreateSheet = writable({
     row: null
 });
 
-export type SortState = {
-    column?: string;
-    direction: SortDirection;
-};
-
 export const sortState = writable<SortState>({
     column: null,
     direction: 'default'
@@ -132,11 +126,6 @@ export function reorderItems<T extends { id: string } | { key: string }>(
         ...items.filter((item) => !orderSet.has(getItemId(item)))
     ];
 }
-
-export const randomDataModalState = writable({
-    show: false,
-    value: 25 // initial value!
-});
 
 export const spreadsheetLoading = writable(false);
 

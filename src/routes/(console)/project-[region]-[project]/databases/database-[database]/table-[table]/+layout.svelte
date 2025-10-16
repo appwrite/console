@@ -26,7 +26,6 @@
         columnsOrder,
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
-        randomDataModalState,
         showCreateColumnSheet,
         showCreateIndexSheet,
         spreadsheetLoading,
@@ -39,7 +38,6 @@
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
     import { CreateColumnPanel } from '$lib/commandCenter/panels';
-    import { showCreateEntity } from '../store';
     import { project } from '../../../store';
     import { page } from '$app/state';
     import { canWriteTables } from '$lib/stores/roles';
@@ -50,8 +48,7 @@
     import EditColumn from './columns/edit.svelte';
     import RowActivity from './rows/activity.svelte';
     import EditRowPermissions from './rows/editPermissions.svelte';
-    import { Dialog, Layout, Typography, Selector } from '@appwrite.io/pink-svelte';
-    import { Button, Seekbar } from '$lib/elements/forms';
+    import { Layout, Selector } from '@appwrite.io/pink-svelte';
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
     import { sleep } from '$lib/helpers/promises';
@@ -61,7 +58,7 @@
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
-    import { expandTabs, type Columns } from '../store';
+    import { expandTabs, randomDataModalState } from '../store';
 
     import type { LayoutData } from './$types';
 
@@ -95,6 +92,9 @@
 
     onMount(() => {
         expandTabs.set(preferences.getKey('entityHeaderExpanded', true));
+
+        // set faker method.
+        $randomDataModalState.onSubmit = async () => await createFakeData();
 
         return realtime
             .forProject(page.params.region, page.params.project)
@@ -256,14 +256,12 @@
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
-        let columns: Columns[] = [];
+        let columns: Field[] = [];
         const currentFields = table.fields;
         const hasAnyRelationships = currentFields.some((field: Field) => isRelationship(field));
-        const filteredColumns = currentFields.filter(
-            (field: Field) => field.type !== 'relationship'
-        );
+        columns = currentFields.filter((field: Field) => field.type !== 'relationship');
 
-        if (!filteredColumns.length) {
+        if (!columns.length) {
             try {
                 columns = await generateColumns($project, page.params.database, page.params.table);
 
@@ -284,13 +282,17 @@
 
         let rowIds = [];
         try {
-            const { rows, ids } = generateFakeRecords(columns, $randomDataModalState.value);
+            const { records, ids } = generateFakeRecords(
+                $randomDataModalState.value,
+                'tablesdb',
+                columns
+            );
 
             rowIds = ids;
             const tablesSDK = sdk.forProject(page.params.region, page.params.project).tablesDB;
 
             if (hasAnyRelationships) {
-                for (const batch of chunks(rows)) {
+                for (const batch of chunks(records)) {
                     try {
                         await Promise.all(
                             batch.map((row) =>
@@ -310,7 +312,7 @@
                 await tablesSDK.createRows({
                     databaseId: page.params.database,
                     tableId: page.params.table,
-                    rows
+                    rows: records
                 });
             }
 
@@ -478,23 +480,5 @@
 <SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
     <RowActivity />
 </SideSheet>
-
-<Dialog title="Generate sample data" bind:open={$randomDataModalState.show}>
-    <Layout.Stack style="gap: 28px;">
-        <Typography.Text>
-            Select how many sample rows to generate for testing. This won't delete or replace any
-            existing rows.
-        </Typography.Text>
-
-        <Seekbar max={100} breakpointCount={5} bind:value={$randomDataModalState.value} />
-    </Layout.Stack>
-
-    <svelte:fragment slot="footer">
-        <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
-            <Button text on:click={() => ($randomDataModalState.show = false)}>Cancel</Button>
-            <Button on:click={createFakeData}>Create</Button>
-        </Layout.Stack>
-    </svelte:fragment>
-</Dialog>
 
 <IndexesSuggestions {table} />

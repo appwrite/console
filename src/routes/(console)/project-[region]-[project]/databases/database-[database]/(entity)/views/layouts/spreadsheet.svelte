@@ -2,11 +2,17 @@
     import { debounce } from '$lib/helpers/debounce';
     import { scrollStore, sheetHeightStore } from './store';
     import { onMount, onDestroy, type Snippet, tick } from 'svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
+    import { SideSheet } from '$database/(entity)';
 
     let {
-        children
+        children,
+        noSqlEditor,
+        showEditorSideSheet = $bindable(false)
     }: {
         children: Snippet;
+        noSqlEditor?: Snippet;
+        showEditorSideSheet: boolean;
     } = $props();
 
     let spreadsheetWrapper: HTMLDivElement;
@@ -112,12 +118,44 @@
     });
 </script>
 
-<div bind:this={spreadsheetWrapper} class="spreadsheet-wrapper" style:height={spreadsheetHeight}>
+<div
+    bind:this={spreadsheetWrapper}
+    class="spreadsheet-wrapper"
+    style:height={spreadsheetHeight}
+    class:has-json-editor={typeof noSqlEditor !== 'undefined'}>
     {@render children()}
+
+    {#if !$isSmallViewport}
+        {@render noSqlEditor?.()}
+    {:else}
+        <SideSheet
+            noContentPadding
+            title="Edit document"
+            bind:show={showEditorSideSheet}
+            submit={{
+                text: 'Update'
+            }}>
+            {@render noSqlEditor?.()}
+        </SideSheet>
+    {/if}
 </div>
 
-<style>
+<style lang="scss">
     .spreadsheet-wrapper {
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+        &.has-json-editor {
+            gap: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            & :global(.cm-indent-markers) {
+                --indent-markers: unset !important;
+            }
+
+            @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+            }
+        }
     }
 </style>

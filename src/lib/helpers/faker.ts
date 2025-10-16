@@ -1,9 +1,10 @@
 import { faker } from '@faker-js/faker';
-import type { Columns } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/store';
 import { ID, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { isWithinSafeRange } from '$lib/helpers/numbers';
 import type { NestedNumberArray } from './types';
+import type { Columns } from '$database/store';
+import type { DatabaseType, Field } from '$database/(entity)';
 
 export async function generateColumns(
     project: Models.Project,
@@ -64,58 +65,71 @@ export async function generateColumns(
     ]);
 }
 
+function generateDefaultRecord(
+    id: string
+): Record<
+    string,
+    string | number | boolean | Array<string | number | boolean | NestedNumberArray>
+> {
+    return {
+        $id: id,
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        age: faker.number.int({ min: 18, max: 80 }),
+        city: faker.location.city(),
+        description: faker.lorem.sentence(),
+        active: faker.datatype.boolean(),
+        location: [faker.location.longitude(), faker.location.latitude()],
+        route: Array.from({ length: 5 }, () => [
+            faker.location.longitude(),
+            faker.location.latitude()
+        ])
+    };
+}
+
 export function generateFakeRecords(
-    columns: Columns[],
-    count: number
+    count: number,
+    type: DatabaseType = 'tablesdb',
+    field?: Field[]
 ): {
     ids: string[];
-    rows: Models.Row[];
+    records: (Models.Document | Models.Row)[];
 } {
-    if (count <= 0) return { ids: [], rows: [] };
+    if (count <= 0) return { ids: [], records: [] };
 
-    const filteredColumns = columns.filter(
-        (col) => col.type !== 'relationship' && col.status === 'available'
-    );
-
-    const ids: string[] = [];
-    const rows: Models.Row[] = [];
+    const ids = [];
+    const records = [];
 
     for (let i = 0; i < count; i++) {
         const id = ID.unique();
         ids.push(id);
 
-        let row: Record<
+        let record: Record<
             string,
             string | number | boolean | Array<string | number | boolean | NestedNumberArray>
-        > = {
-            $id: id
-        };
+        >;
 
-        if (filteredColumns.length === 0) {
-            row = {
-                $id: id,
-                name: faker.person.fullName(),
-                email: faker.internet.email(),
-                age: faker.number.int({ min: 18, max: 80 }),
-                city: faker.location.city(),
-                description: faker.lorem.sentence(),
-                active: faker.datatype.boolean(),
-                location: [faker.location.longitude(), faker.location.latitude()],
-                route: Array.from({ length: 5 }, () => [
-                    faker.location.longitude(),
-                    faker.location.latitude()
-                ])
-            };
+        if (type === 'documentsdb') {
+            record = generateDefaultRecord(id);
         } else {
-            for (const column of filteredColumns) {
-                row[column.key] = generateValueForColumn(column);
+            const filteredColumns =
+                field?.filter((col) => col.type !== 'relationship' && col.status === 'available') ??
+                [];
+
+            if (filteredColumns.length === 0) {
+                record = generateDefaultRecord(id);
+            } else {
+                record = { $id: id };
+                for (const column of filteredColumns) {
+                    record[column.key] = generateValueForColumn(column);
+                }
             }
         }
 
-        rows.push(row as unknown as Models.Row);
+        records.push(record);
     }
 
-    return { ids, rows };
+    return { ids, records };
 }
 
 function generateStringValue(key: string, maxLength: number): string {
@@ -141,15 +155,15 @@ function generateStringValue(key: string, maxLength: number): string {
 }
 
 function generateValueForColumn(
-    column: Columns
+    field: Field
 ): string | number | boolean | null | Array<string | number | boolean | NestedNumberArray> {
-    if (column.array) {
+    if (field.array) {
         const arraySize = faker.number.int({ min: 1, max: 5 });
         const items: Array<string | number | NestedNumberArray | boolean> = [];
 
         for (let i = 0; i < arraySize; i++) {
-            const itemAttribute = { ...column, array: false };
-            const item = generateSingleValue(itemAttribute);
+            const itemField = { ...field, array: false };
+            const item = generateSingleValue(itemField);
             if (item !== null) {
                 items.push(item);
             }
@@ -158,16 +172,14 @@ function generateValueForColumn(
         return items;
     }
 
-    return generateSingleValue(column);
+    return generateSingleValue(field);
 }
 
-function generateSingleValue(
-    column: Columns
-): string | number | boolean | NestedNumberArray | null {
-    switch (column.type) {
+function generateSingleValue(field: Field): string | number | boolean | NestedNumberArray | null {
+    switch (field.type) {
         case 'string': {
-            if ('format' in column && column.format) {
-                switch (column.format) {
+            if ('format' in field && field.format) {
+                switch (field.format) {
                     case 'email': {
                         return faker.internet.email();
                     }
@@ -181,7 +193,7 @@ function generateSingleValue(
                     }
 
                     case 'enum': {
-                        const enumAttr = column as Models.ColumnEnum;
+                        const enumAttr = field as Models.ColumnEnum;
                         if (enumAttr.elements?.length > 0) {
                             return faker.helpers.arrayElement(enumAttr.elements);
                         }
@@ -190,14 +202,14 @@ function generateSingleValue(
                 }
                 return '';
             } else {
-                const stringAttr = column as Models.ColumnString;
+                const stringAttr = field as Models.ColumnString;
                 const maxLength = Math.min(stringAttr.size ?? 255, 1000);
-                return generateStringValue(column.key, maxLength);
+                return generateStringValue(field.key, maxLength);
             }
         }
 
         case 'integer': {
-            const intAttr = column as Models.ColumnInteger;
+            const intAttr = field as Models.ColumnInteger;
             const min = isWithinSafeRange(intAttr.min) ? intAttr.min : 0;
             const fallbackMax = Math.max(min + 100, 100);
             const max = isWithinSafeRange(intAttr.max)
@@ -207,7 +219,7 @@ function generateSingleValue(
         }
 
         case 'double': {
-            const floatAttr = column as Models.ColumnFloat;
+            const floatAttr = field as Models.ColumnFloat;
             const min = isWithinSafeRange(floatAttr.min) ? floatAttr.min : 0;
             const fallbackMax = Math.max(min + 100, 100);
             const max = isWithinSafeRange(floatAttr.max)

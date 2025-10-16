@@ -103,7 +103,14 @@ const commandsEnabled = derived(disabledMap, ($disabledMap) => {
 });
 
 function isInputEvent(event: KeyboardEvent) {
-    return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
+    const element = event.target as HTMLElement | null;
+    if (!element) return false;
+
+    const tag = element.tagName;
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return true;
+
+    if (element.isContentEditable) return true;
+    return !!element.closest?.('.cm-editor');
 }
 
 function getCommandRank(command: KeyedCommand) {

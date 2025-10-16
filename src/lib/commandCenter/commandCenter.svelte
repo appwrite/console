@@ -96,7 +96,15 @@
     }, 1000);
 
     function isInputEvent(event: KeyboardEvent) {
-        return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
+        const element = event.target as HTMLElement | null;
+        if (!element) return false;
+
+        const tag = element.tagName;
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return true;
+
+        // Treat contenteditable and CodeMirror editor as input contexts
+        if (element.isContentEditable) return true;
+        return !!element.closest?.('.cm-editor');
     }
 
     const handleKeydown = (e: KeyboardEvent) => {
