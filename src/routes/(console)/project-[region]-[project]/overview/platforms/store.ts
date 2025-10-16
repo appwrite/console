@@ -17,6 +17,6 @@ export type FrameworkType = {
     updateConfigCode: string;
 };
 
-export function getCorrectTitle(isPlatformCreated: boolean, platform: string) {
-    return isPlatformCreated ? `Connect your ${platform} app` : `Add ${platform} platform`;
+export function getCorrectTitle(isConnectPlatform: boolean, platform: string) {
+    return isConnectPlatform ? `Connect your ${platform} app` : `Add ${platform} platform`;
 }
