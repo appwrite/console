@@ -47,7 +47,7 @@
     import { extendedHostnameRegex } from '$lib/helpers/string';
     import { project } from '../../store';
 
-    export let key;
+    export let key: string;
     export let isPlatformCreated = false;
     export let platform: PlatformType = PlatformType.Web;
 
