@@ -26,7 +26,7 @@
         IconJs
     } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
-    import { type ComponentType, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
@@ -46,15 +46,19 @@
     } from './components/index';
     import { extendedHostnameRegex } from '$lib/helpers/string';
     import { project } from '../../store';
+    import { type PlatformProps, type FrameworkType, getCorrectTitle } from './store';
 
-    export let key: string;
-    export let isPlatformCreated = false;
-    export let platform: PlatformType = PlatformType.Web;
+    let {
+        key,
+        isConnectPlatform = false,
+        platform = PlatformType.Flutterandroid
+    }: PlatformProps = $props();
 
-    let showExitModal = false;
-    let isCreatingPlatform = false;
-    let connectionSuccessful = false;
-    let isChangingFramework = false;
+    let showExitModal = $state(false);
+    let isCreatingPlatform = $state(false);
+    let connectionSuccessful = $state(false);
+    let isChangingFramework = $state(false);
+    let isPlatformCreated = $state(isConnectPlatform);
 
     const projectId = page.params.project;
 
@@ -62,18 +66,9 @@
 ${prefix}APPWRITE_PROJECT_NAME = "${$project.name}"
 ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
-    type FrameworkType = {
-        key: string;
-        label: string;
-        icon: ComponentType;
-        smallIcon: ComponentType;
-        portNumber: number;
-        runCommand: string;
-        updateConfigCode: string;
-    };
 
-    let hostname: string;
-    let hostnameError = false;
+    let hostname = $state(null);
+    let hostnameError = $state(false);
 
     let frameworks: Array<FrameworkType> = [
         {
@@ -149,8 +144,11 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
         }
     ];
 
-    $: selectedFramework = frameworks.find((framework) => framework.key === key);
-    $: selectedFrameworkIcon = selectedFramework ? selectedFramework.icon : NoFrameworkIcon;
+    const selectedFramework = $derived(frameworks.find((framework) => framework.key === key));
+
+    const selectedFrameworkIcon = $derived(
+        selectedFramework ? selectedFramework.icon : NoFrameworkIcon
+    );
 
     async function createWebPlatform() {
         hostnameError = hostname !== '' ? !new RegExp(extendedHostnameRegex).test(hostname) : null;
@@ -213,7 +211,10 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     });
 </script>
 
-<Wizard title="Add web platform" bind:showExitModal confirmExit={!isPlatformCreated}>
+<Wizard
+    bind:showExitModal
+    confirmExit={!isPlatformCreated}
+    title={getCorrectTitle(isConnectPlatform, 'Web')}>
     <Layout.Stack gap="xxl">
         <!-- Step One -->
         {#if !isPlatformCreated || isChangingFramework}
@@ -277,6 +278,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                     <Button
                         size="s"
                         secondary
+                        disabled={isConnectPlatform}
                         on:click={() => {
                             isChangingFramework = true;
                         }}>Change</Button>

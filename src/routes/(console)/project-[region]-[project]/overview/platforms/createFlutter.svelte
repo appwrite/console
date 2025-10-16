@@ -26,13 +26,16 @@
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
     import { project } from '../../store';
+    import { getCorrectTitle, type PlatformProps } from './store';
 
-    export let isPlatformCreated = false;
-    export let platform: PlatformType = PlatformType.Flutterandroid;
+    let { isConnectPlatform = false, platform = PlatformType.Flutterandroid }: PlatformProps =
+        $props();
 
-    let showExitModal = false;
-    let isCreatingPlatform = false;
-    let connectionSuccessful = false;
+    let showExitModal = $state(false);
+    let isCreatingPlatform = $state(false);
+    let connectionSuccessful = $state(false);
+    let isPlatformCreated = $state(isConnectPlatform);
+
     const projectId = page.params.project;
 
     const gitCloneCode =
@@ -169,7 +172,10 @@
     });
 </script>
 
-<Wizard title="Add Flutter platform" bind:showExitModal confirmExit={!isPlatformCreated}>
+<Wizard
+    bind:showExitModal
+    confirmExit={!isPlatformCreated}
+    title={getCorrectTitle(isConnectPlatform, 'Flutter')}>
     <Layout.Stack gap="xxl">
         <Form onSubmit={createFlutterPlatform}>
             <Layout.Stack gap="xxl">

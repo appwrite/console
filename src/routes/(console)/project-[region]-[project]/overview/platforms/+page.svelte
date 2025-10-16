@@ -41,7 +41,7 @@
             state: 'continue'
         });
         wizard.start(platforms[platform], null, 1, {
-            isPlatformCreated: true,
+            isConnectPlatform: true,
             platform: type,
             key: key
         });

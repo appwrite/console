@@ -56,7 +56,6 @@
     }
 
     function openPlatformWizard(type: number, platform?: Models.Platform) {
-
         if (platform) {
             continuePlatform(type, platform.name, platform.key, platform.type);
         } else {
