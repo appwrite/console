@@ -12,7 +12,7 @@
     }: {
         children: Snippet;
         noSqlEditor?: Snippet;
-        showEditorSideSheet: boolean;
+        showEditorSideSheet?: boolean;
     } = $props();
 
     let spreadsheetWrapper: HTMLDivElement;

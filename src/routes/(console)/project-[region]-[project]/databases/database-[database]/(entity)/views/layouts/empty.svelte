@@ -48,11 +48,32 @@
     let headerElement: HTMLElement | null = null;
 
     let resizeObserver: ResizeObserver;
+    let overlayOffsetHandler: ResizeObserver;
+
+    let overlayLeftOffset = $state('0px');
+    let overlayTopOffset = $state('auto');
     let dynamicOverlayHeight = $state('60.5vh');
 
     const baseColProps = { draggable: false, resizable: false };
 
     const { terminology } = getTerminologies();
+
+    const updateOverlayLeftOffset = () => {
+        if (spreadsheetContainer) {
+            const containerRect = spreadsheetContainer.getBoundingClientRect();
+            overlayLeftOffset = `${containerRect.left}px`;
+        }
+
+        // calculate vertical top position
+        if (!headerElement || !headerElement.isConnected) {
+            headerElement = spreadsheetContainer?.querySelector('[role="rowheader"]');
+        }
+
+        if (headerElement) {
+            const headerRect = headerElement.getBoundingClientRect();
+            overlayTopOffset = `${headerRect.bottom}px`;
+        }
+    };
 
     const updateOverlayHeight = () => {
         if (!spreadsheetContainer) return;
@@ -80,12 +101,19 @@
         if (spreadsheetContainer) {
             resizeObserver = new ResizeObserver(debouncedUpdateOverlayHeight);
             resizeObserver.observe(spreadsheetContainer);
+
+            overlayOffsetHandler = new ResizeObserver(updateOverlayLeftOffset);
+            overlayOffsetHandler.observe(spreadsheetContainer);
         }
     });
 
     onDestroy(() => {
         if (resizeObserver) {
             resizeObserver.disconnect();
+        }
+
+        if (overlayOffsetHandler) {
+            overlayOffsetHandler.disconnect();
         }
     });
 
@@ -233,6 +261,8 @@
         <div
             class="spreadsheet-fade-bottom"
             data-collapsed-tabs={!$expandTabs}
+            style:--overlay-top={overlayTopOffset}
+            style:--overlay-left={overlayLeftOffset}
             style:--dynamic-overlay-height={dynamicOverlayHeight}>
             <div class="empty-actions">
                 <Layout.Stack gap="xl" alignItems="center">
@@ -316,9 +346,11 @@
     }
 
     .spreadsheet-fade-bottom {
+        right: 0;
         bottom: 0;
-        width: 100%;
         position: fixed;
+        top: var(--overlay-top, auto);
+        left: var(--overlay-left, 0px);
         background: linear-gradient(
             180deg,
             rgba(255, 255, 255, 0) 0%,
@@ -327,18 +359,11 @@
         );
         z-index: 20;
         display: flex;
+        align-items: center;
         justify-content: center;
         transition: none !important;
 
-        height: var(--dynamic-overlay-height, 70.5vh);
-
-        @media (max-width: 1024px) {
-            height: var(--dynamic-overlay-height, 63.35vh);
-        }
-
-        @media (min-width: 1024px) {
-            height: var(--dynamic-overlay-height, 70.35vh);
-        }
+        height: var(--dynamic-overlay-height, 70.35vh);
     }
 
     :global(.theme-dark) .spreadsheet-fade-bottom {
@@ -351,36 +376,12 @@
     }
 
     .empty-actions {
-        left: 50%;
-        bottom: 35%;
-        position: fixed;
-
-        @media (max-width: 768px) and (max-height: 768px) {
-            left: unset;
-            bottom: 12.5% !important;
-        }
-
-        @media (max-width: 768px) and (max-height: 1024px) {
-            left: unset;
-            bottom: 15% !important;
-        }
-
-        @media (max-width: 1024px) and (max-height: 1024px) {
-            left: unset;
-            bottom: 15%;
-        }
+        margin-bottom: 10%;
+        pointer-events: auto;
 
         @media (max-width: 1024px) {
-            left: unset;
-            bottom: 30%;
-        }
-
-        @media (min-width: 1280px) {
-            bottom: 37.5%;
-        }
-
-        @media (min-width: 1440px) {
-            bottom: 40%;
+            // experiment
+            margin-bottom: 15%;
         }
     }
 </style>
