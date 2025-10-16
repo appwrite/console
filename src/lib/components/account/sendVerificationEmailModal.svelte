@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate, goto } from '$app/navigation';
-    import { Modal } from '$lib/components';
+    import { NonBlockingModal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
@@ -129,13 +129,13 @@
 </script>
 
 <div class="email-verification-scrim">
-    <Modal
+    <NonBlockingModal
         bind:show
         bind:error
         title="Verify your email address"
         {onSubmit}
         dismissible={false}
-        autoClose={false}>
+        size="m">
         <Card.Base variant="secondary" padding="s">
             <Layout.Stack gap="xxs">
                 <Typography.Text gap="m">
@@ -169,7 +169,7 @@
                 {emailSent ? 'Resend email' : 'Send email'}
             </Button>
         </svelte:fragment>
-    </Modal>
+    </NonBlockingModal>
 </div>
 
 <style>

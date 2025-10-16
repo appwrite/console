@@ -22,7 +22,7 @@
     onMount(async () => {});
 
     function handleBLur(event: MouseEvent) {
-        if (event.target === backdrop) {
+        if (event.target === backdrop && closable) {
             trackEvent(Click.ModalCloseClick, {
                 from: 'backdrop'
             });
@@ -36,7 +36,7 @@
     }
 
     function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Escape') {
+        if (event.key === 'Escape' && closable) {
             event.preventDefault();
             trackEvent(Click.ModalCloseClick, {
                 from: 'escape'
