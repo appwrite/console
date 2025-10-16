@@ -11,7 +11,8 @@
         Typography,
         Fieldset,
         InlineCode,
-        Tooltip
+        Tooltip,
+        Alert
     } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { IconReact, IconAppwrite, IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -39,6 +40,22 @@
     const updateConfigCode = `EXPO_PUBLIC_APPWRITE_PROJECT_ID=${projectId}
 EXPO_PUBLIC_APPWRITE_PROJECT_NAME="${$project.name}"
 EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}`;
+
+    const prompt = `
+        1. If you're starting a new project, you can clone our starter kit from GitHub using the terminal or VSCode.
+
+        \`\`\`bash
+        ${gitCloneCode}
+        \`\`\`
+
+        2. Add your Appwrite credentials to \`.env.example\` then rename it to \`.env\` if needed.
+        
+        \`\`\`dotenv
+        ${updateConfigCode}
+        \`\`\`
+
+        3. Run the app on a connected device or simulator using \`npm install\` followed by \`npm run ios\` or \`npm run android\`, then click the \`Send a ping\` button to verify the setup.
+    `;
 
     export let platform: PlatformType = PlatformType.Reactnativeandroid;
 
@@ -75,6 +92,14 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
         [PlatformType.Reactnativeandroid]: 'Package name',
         [PlatformType.Reactnativeios]: 'Bundle ID'
     };
+
+    async function copyPrompt() {
+        await navigator.clipboard.writeText(prompt);
+        addNotification({
+            type: 'success',
+            message: 'Prompt copied to clipboard'
+        });
+    }
 
     async function createReactNativePlatform() {
         try {
@@ -217,6 +242,19 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
         {#if isPlatformCreated}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
+                    <Alert.Inline
+                        status="info"
+                        title={`Copy prompt: starter kit for Appwrite in React Native`}>
+                        <Typography.Text variant="m-500">
+                            Paste it into your LLM to generate a working setup.
+                        </Typography.Text>
+                        <Button
+                            compact
+                            size="s"
+                            on:click={copyPrompt}
+                            disabled={!prompt || prompt.length === 0}>Copy prompt</Button>
+                    </Alert.Inline>
+
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
                         GitHub using the terminal or VSCode.

@@ -11,7 +11,8 @@
         Fieldset,
         InlineCode,
         Card,
-        Tooltip
+        Tooltip,
+        Alert
     } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import {
@@ -151,6 +152,45 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 
     $: selectedFramework = frameworks.find((framework) => framework.key === selectedFrameworkKey);
     $: selectedFrameworkIcon = selectedFramework ? selectedFramework.icon : NoFrameworkIcon;
+    $: prompt = `1. If you're starting a new project, you can clone our starter kit from
+                        GitHub using the terminal or VSCode.
+                        
+                \`\`\`bash
+                git clone https://github.com/appwrite/starter-for-${selectedFramework.key}
+                cd starter-for-${selectedFramework.key}
+                \`\`\`
+                
+                2. Copy the file \`.env.example\` to \`.env\` and update the configuration settings.
+                
+                \`\`\`dotenv
+                APPWRITE_PROJECT_ID=${projectId}
+                APPWRITE_PROJECT_NAME=${$project.name}
+                APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}
+                \`\`\`
+
+                3. Install project dependencies
+                
+                \`\`\`bash
+                npm install
+                \`\`\`
+
+                4. Run the app, then click the \`Send a ping\` button
+                to verify the setup.
+                
+                \`\`\`bash
+                ${selectedFramework.runCommand}
+                \`\`\`
+                
+                Demo app runs on http://localhost:${selectedFramework.portNumber}
+                `;
+
+    async function copyPrompt() {
+        await navigator.clipboard.writeText(prompt);
+        addNotification({
+            type: 'success',
+            message: 'Prompt copied to clipboard'
+        });
+    }
 
     async function createWebPlatform() {
         hostnameError = hostname !== '' ? !new RegExp(extendedHostnameRegex).test(hostname) : null;
@@ -287,6 +327,19 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
         {#if isPlatformCreated && !isChangingFramework}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
+                    <Alert.Inline
+                        status="info"
+                        title={`Copy prompt: starter kit for Appwrite in ${selectedFramework.label}`}>
+                        <Typography.Text variant="m-500">
+                            Paste it into your LLM to generate a working setup.
+                        </Typography.Text>
+                        <Button
+                            compact
+                            size="s"
+                            on:click={copyPrompt}
+                            disabled={!prompt || prompt.length === 0}>Copy prompt</Button>
+                    </Alert.Inline>
+
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
                         GitHub using the terminal or VSCode.
