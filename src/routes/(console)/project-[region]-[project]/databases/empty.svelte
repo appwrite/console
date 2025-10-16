@@ -3,16 +3,19 @@
     import { Card } from '$lib/components';
 
     import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
-    import { Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Icon, Divider } from '@appwrite.io/pink-svelte';
 
-    // TODO: the images have bottom rounded borders.
     import MongoDB from './(assets)/mongo-db.svg';
     import MongoDBDark from './(assets)/dark/mongo-db.svg';
 
     import TablesDB from './(assets)/tables-db.svg';
+    import TablesDBDark from './(assets)/dark/tables-db.svg';
+
     import DocumentsDB from './(assets)/documents-db.svg';
+    import DocumentsDBDark from './(assets)/dark/documents-db.svg';
+
+    import { isSmallViewport } from '$lib/stores/viewport';
     import type { DatabaseType } from '$database/(entity)';
-    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
 
     const {
         disabled,
@@ -24,6 +27,8 @@
 
     const isDark = $derived($app.themeInUse === 'dark');
     const mongoDbImage = $derived(isDark ? MongoDBDark : MongoDB);
+    const tablesDbImage = $derived(isDark ? TablesDBDark : TablesDB);
+    const documentsDbImage = $derived(isDark ? DocumentsDBDark : DocumentsDB);
 </script>
 
 {#if $isSmallViewport}
@@ -51,7 +56,7 @@
             title: 'TablesDB',
             subtitle:
                 'Structure your data in rows and columns. Best for relational data and advanced querying.',
-            image: TablesDB
+            image: tablesDbImage
         })}
 
         <!-- documentsDB -->
@@ -60,7 +65,7 @@
             title: 'DocumentsDB',
             subtitle:
                 'Store flexible data without a fixed schema. Best for unstructured data and simple querying.',
-            image: DocumentsDB,
+            image: documentsDbImage,
             footer: true
         })}
     </Layout.Grid>
@@ -73,8 +78,13 @@
         padding="none"
         {disabled}
         on:click={() => onDatabaseTypeSelected?.(type)}>
-        <Layout.Stack gap="none" direction={$isTabletViewport ? 'column' : 'row'}>
+        {@const direction = $isSmallViewport ? 'column' : 'row'}
+        <Layout.Stack gap="none" {direction}>
             <img class="database-image" src={image} alt="database type artwork" />
+
+            {#if $isSmallViewport}
+                <Divider />
+            {/if}
 
             <Layout.Stack
                 gap="xxs"
@@ -118,11 +128,19 @@
 {/snippet}
 
 <style lang="scss">
-    @media (max-width: 768px) {
-        .database-image {
+    .database-image {
+        border-radius: var(--border-radius-s) 0 0 var(--border-radius-s);
+
+        @media (max-width: 768px) {
+            max-height: 236px;
             object-fit: cover;
-            background: white; /* because images have rounded borders atm */
-            object-position: center 20%;
+            object-position: center 10%;
+            border-radius: var(--border-radius-s) var(--border-radius-s) 0 0;
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+            max-height: 236px;
+            object-fit: cover;
             border-radius: var(--border-radius-s) var(--border-radius-s) 0 0;
         }
     }

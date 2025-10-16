@@ -36,8 +36,9 @@
         IconSortDescending,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type Columns, databaseColumnSheetOptions } from './store';
+    import { databaseColumnSheetOptions } from './store';
     import { isRelationship } from './rows/store';
+    import { type Columns } from '../store';
 
     interface MenuItem {
         label?: string;
