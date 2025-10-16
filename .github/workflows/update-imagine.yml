@@ -1,4 +1,4 @@
-name: Update @appwrite/imagine Package
+name: Update Studio Package
 
 on:
   schedule:
