@@ -14,6 +14,7 @@
     };
     export let title = '';
     export let hideFooter = false;
+    export let mode: 'modal' | 'modeless' = 'modal';
 
     let alert: HTMLElement;
 
@@ -29,7 +30,7 @@
 </script>
 
 <Form isModal {onSubmit}>
-    <Modal {size} {title} bind:open={show} {hideFooter} {dismissible}>
+    <Modal {mode} {size} {title} bind:open={show} {hideFooter} {dismissible}>
         <slot slot="description" name="description" />
         {#if error}
             <div bind:this={alert}>
