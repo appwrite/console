@@ -30,8 +30,8 @@ importers:
         specifier: ^9.9.0
         version: 9.9.0
       '@imagine.dev/web-components':
-        specifier: https://pkg.vc/-/@appwrite/%40imagine.dev%2Fweb-components@2825cf6
-        version: https://pkg.vc/-/@appwrite/%40imagine.dev%2Fweb-components@2825cf6(@types/react@18.3.26)(@types/three@0.180.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.0))
+        specifier: https://pkg.vc/-/@appwrite/%40imagine.dev%2Fweb-components@d640591
+        version: https://pkg.vc/-/@appwrite/%40imagine.dev%2Fweb-components@d640591(@types/react@18.3.26)(@types/three@0.180.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.0))
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -725,8 +725,8 @@ packages:
   '@iconify/utils@3.0.2':
     resolution: {integrity: sha512-EfJS0rLfVuRuJRn4psJHtK2A9TqVnkxPpHY6lYHiB9+8eSuudsxbwMiavocG45ujOo6FJ+CIRlRnlOGinzkaGQ==}
 
-  '@imagine.dev/web-components@https://pkg.vc/-/@appwrite/%40imagine.dev%2Fweb-components@2825cf6':
-    resolution: {tarball: https://pkg.vc/-/@appwrite/%40imagine.dev%2Fweb-components@2825cf6}
+  '@imagine.dev/web-components@https://pkg.vc/-/@appwrite/%40imagine.dev%2Fweb-components@d640591':
+    resolution: {tarball: https://pkg.vc/-/@appwrite/%40imagine.dev%2Fweb-components@d640591}
     version: 0.0.10
     peerDependencies:
       react: 19.1.0
@@ -5221,6 +5221,17 @@ packages:
   undici-types@7.14.0:
     resolution: {integrity: sha512-QQiYxHuyZ9gQUIrmPo3IA+hUl4KYk8uSA7cHrcKd/l3p1OTpZcM0Tbp9x7FAtXdAYhlasd60ncPpgu6ihG6TOA==}
 
+  unicornstudio-react@1.4.33:
+    resolution: {integrity: sha512-K6TQXqQ2szHOrx2ja9yts56WDjZ9bsy5yz+2fBDdjX0AOvepeSy1wtZXiaqYo8KYQ22xp81VZIldI04eoirzhQ==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      next: '*'
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+    peerDependenciesMeta:
+      next:
+        optional: true
+
   unified@11.0.5:
     resolution: {integrity: sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA==}
 
@@ -6073,7 +6084,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@imagine.dev/web-components@https://pkg.vc/-/@appwrite/%40imagine.dev%2Fweb-components@2825cf6(@types/react@18.3.26)(@types/three@0.180.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.0))':
+  '@imagine.dev/web-components@https://pkg.vc/-/@appwrite/%40imagine.dev%2Fweb-components@d640591(@types/react@18.3.26)(@types/three@0.180.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.0))':
     dependencies:
       '@ai-sdk/openai': 2.0.52(zod@4.1.12)
       '@ai-sdk/react': 2.0.73(react@19.2.0)(zod@4.1.12)
@@ -6133,6 +6144,7 @@ snapshots:
       tailwind-scrollbar: 4.0.2(react@19.2.0)(tailwindcss@4.1.14)
       tailwindcss: 4.1.14
       three: 0.180.0
+      unicornstudio-react: 1.4.33(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       use-stick-to-bottom: 1.1.1(react@19.2.0)
       vscode-icons-js: 11.6.1
       xterm: 5.3.0
@@ -6149,6 +6161,7 @@ snapshots:
       - expo-asset
       - expo-file-system
       - expo-gl
+      - next
       - react-native
       - supports-color
       - typescript
@@ -11219,6 +11232,11 @@ snapshots:
   ufo@1.6.1: {}
 
   undici-types@7.14.0: {}
+
+  unicornstudio-react@1.4.33(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+    dependencies:
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
 
   unified@11.0.5:
     dependencies:
