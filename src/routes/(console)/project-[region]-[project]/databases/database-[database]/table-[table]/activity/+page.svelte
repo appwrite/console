@@ -2,7 +2,11 @@
     import { Activity } from '$lib/layout';
     import type { PageData } from './$types';
 
-    export let data: PageData;
+    const {
+        data
+    }: {
+        data: PageData;
+    } = $props();
 </script>
 
 <div class="wide-screen-wrapper databases-spreadsheet">

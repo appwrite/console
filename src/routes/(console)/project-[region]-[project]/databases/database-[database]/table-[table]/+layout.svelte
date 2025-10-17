@@ -23,7 +23,6 @@
     import { realtime, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import {
-        table,
         columnsOrder,
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
@@ -35,18 +34,18 @@
         spreadsheetRenderKey,
         expandTabs,
         databaseRelatedRowSheetOptions,
-        rowPermissionSheet
+        rowPermissionSheet,
+        type Columns
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
     import { CreateColumnPanel } from '$lib/commandCenter/panels';
-    import { database, showCreateTable } from '../store';
+    import { showCreateEntity } from '../store';
     import { project } from '../../../store';
     import { page } from '$app/state';
-    import { base } from '$app/paths';
     import { canWriteTables } from '$lib/stores/roles';
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
-    import SideSheet from './layout/sidesheet.svelte';
+    import { type Field, SideSheet } from '$database/(entity)';
     import EditRow from './rows/edit.svelte';
     import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
@@ -57,15 +56,20 @@
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
     import { sleep } from '$lib/helpers/promises';
-    import CreateIndex from './indexes/createIndex.svelte';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
     import { buildRowUrl, isRelationship } from './rows/store';
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
+    import type { LayoutData } from './$types';
+
+    import { CreateIndex } from '$database/(entity)';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
     import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
+
+    export let data: LayoutData;
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -82,6 +86,12 @@
      */
     let isWaterfallFromFaker = false;
 
+    $: table = data.table;
+    $: basePath = resolveRoute(
+        '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]',
+        page.params
+    );
+
     onMount(() => {
         expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
 
@@ -94,8 +104,8 @@
                 ) {
                     // don't invalidate when -
                     // 1. from faker
-                    // 2. ai columns creation
-                    // 3. ai indexes creation
+                    // 2. ai indexes creation
+                    // 3. ai columns creation
                     if (
                         !isWaterfallFromFaker &&
                         !$showIndexesSuggestions &&
@@ -111,8 +121,8 @@
     $: $registerCommands([
         {
             label: 'Create row',
-            keys: page.url.pathname.endsWith($table.$id) ? ['t'] : ['t', 'd'],
-            callback: () => ($showCreateTable = true),
+            keys: page.url.pathname.endsWith(table?.$id) ? ['t'] : ['t', 'd'],
+            callback: () => ($showCreateEntity = true),
             icon: IconPlus,
             group: 'rows'
         },
@@ -130,20 +140,16 @@
             label: 'Go to rows',
             keys: ['g', 'd'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}`
-                );
+                goto(basePath);
             },
-            disabled: page.url.pathname.endsWith($table.$id),
+            disabled: page.url.pathname.endsWith(table?.$id),
             group: 'tables'
         },
         {
             label: 'Go to columns',
             keys: ['g', 'a'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/columns`
-                );
+                goto(withPath(basePath, '/columns'));
             },
             disabled: page.url.pathname.endsWith('columns'),
             group: 'tables'
@@ -152,9 +158,7 @@
             label: 'Go to indexes',
             keys: ['g', 'i'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/indexes`
-                );
+                goto(withPath(basePath, '/indexes'));
             },
             disabled: page.url.pathname.endsWith('indexes'),
             group: 'tables'
@@ -163,9 +167,7 @@
             label: 'Go to activity',
             keys: ['g', 'c'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/activity`
-                );
+                goto(withPath(basePath, '/activity'));
             },
             disabled: page.url.pathname.endsWith('activity'),
             group: 'tables'
@@ -174,9 +176,7 @@
             label: 'Go to usage',
             keys: ['g', 'u'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/usage`
-                );
+                goto(withPath(basePath, '/usage'));
             },
             disabled: page.url.pathname.endsWith('usage'),
             group: 'tables'
@@ -185,19 +185,15 @@
             label: 'Go to settings',
             keys: ['g', 's'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/settings`
-                );
+                goto(withPath(basePath, '/settings'));
             },
             disabled: page.url.pathname.endsWith('settings') || !$canWriteTables,
             group: 'tables'
         },
         {
             label: 'Display Name',
-            async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$table.$id}/settings#display-name`
-                );
+            callback() {
+                goto(withPath(basePath, '/settings#display-name'));
             },
             group: 'tables',
             disabled:
@@ -208,10 +204,8 @@
         },
         {
             label: 'Permissions',
-            async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$table.$id}/settings#permissions`
-                );
+            callback() {
+                goto(withPath(basePath, '/settings#permissions'));
             },
             group: 'tables',
             disabled:
@@ -222,10 +216,8 @@
         },
         {
             label: 'Row security',
-            async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$table.$id}/settings#row-security`
-                );
+            callback() {
+                goto(withPath(basePath, '/settings#row-security'));
             },
             group: 'tables',
             disabled:
@@ -259,9 +251,12 @@
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
-        let columns = $table.columns;
-        const hasAnyRelationships = columns.some((column) => isRelationship(column));
-        const filteredColumns = columns.filter((col) => col.type !== 'relationship');
+        let columns: Columns[] = [];
+        const currentFields = table.fields;
+        const hasAnyRelationships = currentFields.some((field: Field) => isRelationship(field));
+        const filteredColumns = currentFields.filter(
+            (field: Field) => field.type !== 'relationship'
+        );
 
         if (!filteredColumns.length) {
             try {
@@ -344,7 +339,7 @@
 </script>
 
 <svelte:head>
-    <title>{$table?.name ?? 'Table'} - Appwrite</title>
+    <title>{table?.name ?? 'Table'} - Appwrite</title>
 </svelte:head>
 
 <slot />
@@ -412,6 +407,7 @@
         value: buildRowUrl($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id)
     }}>
     <EditRow
+        {table}
         bind:this={editRow}
         bind:row={$databaseRowSheetOptions.row}
         bind:rowId={$databaseRowSheetOptions.rowId} />
@@ -443,9 +439,23 @@
         }
     }}>
     <CreateIndex
+        entity={table}
         bind:this={createIndex}
         bind:showCreateIndex={$showCreateIndexSheet.show}
-        externalColumnKey={$showCreateIndexSheet.column} />
+        externalFieldKey={$showCreateIndexSheet.column}
+        onCreateIndex={async (index) => {
+            await sdk.forProject(page.params.region, page.params.project).tablesDB.createIndex({
+                databaseId: page.params.database,
+                tableId: page.params.table,
+                key: index.key,
+                type: index.type,
+                columns: index.fields,
+                lengths: index.lengths,
+                orders: index.orders
+            });
+
+            await invalidate(Dependencies.TABLE);
+        }} />
 </SideSheet>
 
 <SideSheet
@@ -457,7 +467,7 @@
         disabled: editRowPermissions?.disableSubmit(),
         onClick: async () => editRowPermissions?.updatePermissions()
     }}>
-    <EditRowPermissions bind:this={editRowPermissions} bind:row={$rowPermissionSheet.row} />
+    <EditRowPermissions {table} bind:this={editRowPermissions} bind:row={$rowPermissionSheet.row} />
 </SideSheet>
 
 <SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
@@ -482,4 +492,4 @@
     </svelte:fragment>
 </Dialog>
 
-<IndexesSuggestions />
+<IndexesSuggestions {table} />
