@@ -508,13 +508,14 @@
                             $jsonEditorDocument.show = true;
                             $jsonEditorDocument.document = document;
                         }}
-                        style="background: rebeccapurple">
+                        style:cursor="pointer">
                         <Spreadsheet.Row.Base
                             {root}
                             {index}
                             id={document?.$id}
                             virtualItem={item}
-                            select={rowSelection}>
+                            select={rowSelection}
+                            isSelected={$jsonEditorDocument?.document?.$id === document.$id}>
                             {#each $collectionColumns as { id: columnId } (columnId)}
                                 <Spreadsheet.Cell {root} isEditable={false} column={columnId}>
                                     {#if columnId === '$id'}
