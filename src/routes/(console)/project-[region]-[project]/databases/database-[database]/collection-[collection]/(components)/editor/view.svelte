@@ -882,7 +882,6 @@
                         <Icon icon={IconDuplicate} size="s" />
                     </Button>
 
-                    <!-- Claude: message not updating -->
                     <span slot="tooltip">{tooltipMessage}</span>
                 </Tooltip>
             {/if}
