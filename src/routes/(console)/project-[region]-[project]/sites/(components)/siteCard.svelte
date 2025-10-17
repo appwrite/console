@@ -48,6 +48,7 @@
             return 0;
         })
     );
+    let primaryDomain = $derived(sortedDomains?.[0]?.domain);
 
     function getScreenshot(theme: string, deployment: Models.Deployment) {
         if (theme === 'dark') {
@@ -75,11 +76,21 @@
 <Card padding="s" radius="m" {variant}>
     <Layout.Stack gap="l">
         <div class="card-grid">
-            <a
-                href={`${$regionalProtocol}${sortedDomains?.[0]?.domain}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Open site">
+            {#if primaryDomain}
+                <a
+                    href={`${$regionalProtocol}${primaryDomain}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Open site">
+                    <Image
+                        border
+                        radius="s"
+                        ratio="16/9"
+                        style="width: 100%; align-self: start"
+                        src={getScreenshot($app.themeInUse, deployment)}
+                        alt="Screenshot" />
+                </a>
+            {:else}
                 <Image
                     border
                     radius="s"
@@ -87,7 +98,7 @@
                     style="width: 100%; align-self: start"
                     src={getScreenshot($app.themeInUse, deployment)}
                     alt="Screenshot" />
-            </a>
+            {/if}
 
             <Layout.Stack gap="xl">
                 <Layout.Stack direction="row" alignItems="flex-start">
