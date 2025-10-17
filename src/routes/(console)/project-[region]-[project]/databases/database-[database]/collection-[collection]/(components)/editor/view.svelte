@@ -97,6 +97,8 @@
     const readOnlyCompartment = new Compartment();
     const wrapCompartment = new Compartment();
 
+    let tooltipMessage = $state('Copy document');
+
     // Store the original data to preserve system values
     let originalData = $state<JsonValue>(data);
 
@@ -874,11 +876,14 @@
                         class="icon-button"
                         on:click={async () => {
                             await copy(JSON.stringify(data, null, 2));
+                            tooltipMessage = 'Copied';
+                            setTimeout(() => (tooltipMessage = 'Copy document'), 1000);
                         }}>
                         <Icon icon={IconDuplicate} size="s" />
                     </Button>
 
-                    <span slot="tooltip"> Copy object </span>
+                    <!-- Claude: message not updating -->
+                    <span slot="tooltip">{tooltipMessage}</span>
                 </Tooltip>
             {/if}
         {/if}
