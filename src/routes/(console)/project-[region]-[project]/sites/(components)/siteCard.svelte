@@ -10,7 +10,6 @@
         Icon,
         Image,
         Layout,
-        Link,
         Status,
         Tooltip,
         Typography
@@ -76,21 +75,11 @@
 <Card padding="s" radius="m" {variant}>
     <Layout.Stack gap="l">
         <div class="card-grid">
-            {#if proxyRuleList?.total}
-                <Link.Anchor
-                    href={`${$regionalProtocol}${sortedDomains?.[0]?.domain}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Open site">
-                    <Image
-                        border
-                        radius="s"
-                        ratio="16/9"
-                        style="width: 100%; align-self: start"
-                        src={getScreenshot($app.themeInUse, deployment)}
-                        alt="Screenshot" />
-                </Link.Anchor>
-            {:else}
+            <a
+                href={`${$regionalProtocol}${sortedDomains?.[0]?.domain}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open site">
                 <Image
                     border
                     radius="s"
@@ -98,7 +87,7 @@
                     style="width: 100%; align-self: start"
                     src={getScreenshot($app.themeInUse, deployment)}
                     alt="Screenshot" />
-            {/if}
+            </a>
 
             <Layout.Stack gap="xl">
                 <Layout.Stack direction="row" alignItems="flex-start">
