@@ -10,6 +10,7 @@
         Icon,
         Image,
         Layout,
+        Link,
         Status,
         Tooltip,
         Typography
@@ -23,15 +24,31 @@
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { capitalize } from '$lib/helpers/string';
+    import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
-    export let deployment: Models.Deployment;
-    export let proxyRuleList: Models.ProxyRuleList;
-    export let hideQRCode = false;
-    export let variant: 'primary' | 'secondary' = 'primary';
+    let {
+        deployment,
+        proxyRuleList,
+        hideQRCode = false,
+        variant = 'primary'
+    }: {
+        deployment: Models.Deployment;
+        proxyRuleList: Models.ProxyRuleList;
+        hideQRCode?: boolean;
+        variant?: 'primary' | 'secondary';
+    } = $props();
 
-    let show = false;
+    let show = $state(false);
 
-    $: totalSize = humanFileSize(deployment?.totalSize ?? 0);
+    let totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
+
+    let sortedDomains = $derived(
+        proxyRuleList?.rules?.slice()?.sort((a, b) => {
+            if (a?.trigger === 'manual' && b?.trigger !== 'manual') return -1;
+            if (a?.trigger !== 'manual' && b?.trigger === 'manual') return 1;
+            return 0;
+        })
+    );
 
     function getScreenshot(theme: string, deployment: Models.Deployment) {
         if (theme === 'dark') {
@@ -59,13 +76,29 @@
 <Card padding="s" radius="m" {variant}>
     <Layout.Stack gap="l">
         <div class="card-grid">
-            <Image
-                border
-                radius="s"
-                ratio="16/9"
-                style="width: 100%; align-self: start"
-                src={getScreenshot($app.themeInUse, deployment)}
-                alt="Screenshot" />
+            {#if proxyRuleList?.total}
+                <Link.Anchor
+                    href={`${$regionalProtocol}${sortedDomains?.[0]?.domain}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Open site">
+                    <Image
+                        border
+                        radius="s"
+                        ratio="16/9"
+                        style="width: 100%; align-self: start"
+                        src={getScreenshot($app.themeInUse, deployment)}
+                        alt="Screenshot" />
+                </Link.Anchor>
+            {:else}
+                <Image
+                    border
+                    radius="s"
+                    ratio="16/9"
+                    style="width: 100%; align-self: start"
+                    src={getScreenshot($app.themeInUse, deployment)}
+                    alt="Screenshot" />
+            {/if}
 
             <Layout.Stack gap="xl">
                 <Layout.Stack direction="row" alignItems="flex-start">
