@@ -15,16 +15,16 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { BillingPlan } from '$lib/constants';
     import { organization } from '$lib/stores/organization';
-    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import EmptyDarkMobile from '$lib/images/backups/upgrade/backups-mobile-dark.png';
     import EmptyLightMobile from '$lib/images/backups/upgrade/backups-mobile-light.png';
     import { app } from '$lib/stores/app';
-    import EmptyDarkTablet from '$lib/images/backups/upgrade/backups-tablet-dark.png';
-    import EmptyLightTablet from '$lib/images/backups/upgrade/backups-tablet-light.png';
     import { sdk } from '$lib/stores/sdk';
     import { trackEvent } from '$lib/actions/analytics';
     import CreatePolicy from '$database/backups/createPolicy.svelte';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
+
+    import Mongo from '../(assets)/mongo.svelte';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     let formComponent: Form;
 
@@ -43,10 +43,7 @@
     let type = $state(typeFromParams ?? 'tablesdb') as DatabaseType;
 
     const isDark = $derived($app.themeInUse === 'dark');
-
-    const theme = $derived(isDark ? 'u-only-dark' : 'u-only-light');
-    const mobileImg = $derived(isDark ? EmptyDarkMobile : EmptyLightMobile);
-    const tabletImg = $derived(isDark ? EmptyDarkTablet : EmptyLightTablet);
+    const backupsImg = $derived(isDark ? EmptyDarkMobile : EmptyLightMobile);
 
     const databaseTypes: Array<{
         type: DatabaseType;
@@ -171,6 +168,12 @@
     columnSize="s">
     <Form bind:this={formComponent} onSubmit={createDatabase} bind:isSubmitting>
         <Layout.Stack gap="xxl">
+            {#if typeFromParams === null}
+                <Fieldset legend="Database type">
+                    {@render selectDatabaseType()}
+                </Fieldset>
+            {/if}
+
             <Fieldset legend="Details">
                 <Layout.Stack direction="column" gap="l">
                     <InputText
@@ -193,12 +196,6 @@
                     <CustomId bind:show={showCustomId} name="Database" bind:id={databaseId} />
                 </Layout.Stack>
             </Fieldset>
-
-            {#if typeFromParams === null}
-                <Fieldset legend="Database type">
-                    {@render selectDatabaseType()}
-                </Fieldset>
-            {/if}
 
             <Fieldset legend="Backups">
                 {#if isCloud}
@@ -248,82 +245,31 @@
 
 {#snippet selfHostedBackupOptions()}
     <Layout.Stack gap="xl" style="position: relative;">
-        {@const length = $isTabletViewport ? 2 : 3}
-        {@const gridsColumn = $isSmallViewport ? 2 : 3}
-        <Layout.Grid columns={gridsColumn} columnsS={1}>
-            {#if $isSmallViewport}
-                <div
-                    style:--p-file-preview-border-color="transparent"
-                    class="is-full-cover-image is-full-width-mobile u-height-100-percent">
-                    <!-- mobile -->
-                    <div
-                        style:min-height="172px"
-                        class="is-only-mobile u-width-full-line u-height-100-percent">
-                        <img
-                            src={mobileImg}
-                            style:width="100vw"
-                            class="placeholder u-image-object-fit-contain {theme}"
-                            alt="Mock Numbers Example" />
-                    </div>
-                </div>
-            {:else if $isTabletViewport}
-                <!-- tablet -->
-                <div
-                    style:--p-file-preview-border-color="transparent"
-                    class="is-full-cover-image is-full-width-mobile u-height-100-percent">
-                    <div style:min-height="140px" class="is-tablet">
-                        <img
-                            src={tabletImg}
-                            style:width="100vw"
-                            class="u-image-object-fit-contain {theme}"
-                            alt="Backups Example" />
-                    </div>
-                </div>
-            {:else}
-                {#each Array.from({ length }) as _, index}
-                    {@const options = [
-                        {
-                            title: 'Backup every 24 hours',
-                            description: 'One backup every 24 hours, retained for 30 days'
-                        },
-                        {
-                            title: 'Custom policy',
-                            description: 'Define your own schedule and retention'
-                        },
-                        {
-                            title: 'No backup',
-                            description: 'Skip backups. You can change this later'
-                        }
-                    ]}
-                    <Card.Selector
-                        group={undefined}
-                        name={`backup-${index}`}
-                        id={`backup-${index}`}
-                        value={`backup-${index}`}
-                        title={options[index].title}
-                        imageRadius="s"
-                        disabled>
-                        {options[index].description}
-                    </Card.Selector>
-                {/each}
-            {/if}
-        </Layout.Grid>
+        <Layout.Stack direction={!$isTabletViewport ? 'row' : 'column'}>
+            <img src={backupsImg} style:width="100vw" class="backups-promo" alt="Backups promo" />
 
-        <Layout.Stack gap="l">
-            <Layout.Stack gap="xs">
-                <Typography.Text variant="m-600">
-                    Database Backups are available on Appwrite Cloud
-                </Typography.Text>
+            <Layout.Stack gap="l">
+                <Layout.Stack gap="xs">
+                    <Typography.Text variant="m-600">
+                        Backups are available on Appwrite Cloud
+                    </Typography.Text>
 
-                <Typography.Text>
-                    Sign up now to access Appwrite's backups. Schedule automatic or manual backups
-                    to protect your data and ensure quick recovery.
-                </Typography.Text>
+                    <Typography.Text>
+                        Sign up to access backups. Schedule automatic or manual backups to protect
+                        your data and ensure quick recovery.
+                    </Typography.Text>
+                </Layout.Stack>
+
+                <Layout.Stack inline alignItems="flex-start">
+                    <Button
+                        external
+                        secondary
+                        fullWidthMobile
+                        href="https://cloud.appwrite.io/register">
+                        Sign up to Cloud
+                    </Button>
+                </Layout.Stack>
             </Layout.Stack>
-
-            <Button external secondary fullWidthMobile href="https://cloud.appwrite.io/register">
-                Sign up
-            </Button>
         </Layout.Stack>
     </Layout.Stack>
 {/snippet}
@@ -331,16 +277,42 @@
 {#snippet selectDatabaseType()}
     <Layout.Grid columns={2} columnsS={1}>
         {#each databaseTypes as databaseType}
-            <Card.Selector
-                variant="secondary"
-                bind:group={type}
-                name={databaseType.type}
-                id={databaseType.type}
-                value={databaseType.type}
-                title={databaseType.title}
-                imageRadius="s">
-                {databaseType.subtitle}
-            </Card.Selector>
+            <div class="card-selector">
+                <Card.Selector
+                    variant="secondary"
+                    bind:group={type}
+                    name={databaseType.type}
+                    id={databaseType.type}
+                    value={databaseType.type}
+                    title={databaseType.title}
+                    imageRadius="s"
+                    icon={databaseType.type === 'documentsdb' ? Mongo : undefined}>
+                    {databaseType.subtitle}
+                </Card.Selector>
+            </div>
         {/each}
     </Layout.Grid>
 {/snippet}
+
+<style lang="scss">
+    :global(img.backups-promo) {
+        width: 220px !important;
+
+        @media (max-width: 768px) {
+            width: 100% !important;
+            height: unset !important;
+        }
+    }
+
+    :global(.card-selector) {
+        & :global(div:has(p:first-child)) {
+            /* make the title take only fitting space so the icon is beside it */
+            width: fit-content;
+        }
+
+        & :global(i:has(.custom-tag)) {
+            /* fitting space for tag and icon */
+            width: unset;
+        }
+    }
+</style>
