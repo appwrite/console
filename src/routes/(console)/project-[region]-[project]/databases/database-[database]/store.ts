@@ -95,6 +95,10 @@ export const randomDataModalState = writable<RandomDataSchema>({
     value: 25 // initial value!
 });
 
+export const spreadsheetLoading = writable(false);
+
+export const spreadsheetRenderKey = writable('initial');
+
 export function buildEntityRoute(page: Page, entityType: string, entityId: string): string {
     return withPath(
         resolveRoute(

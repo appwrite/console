@@ -118,6 +118,7 @@
         {:else}
             <EmptySheet
                 mode="records"
+                type="documentsdb"
                 showActions={$canWriteRows}
                 actions={{
                     primary: {

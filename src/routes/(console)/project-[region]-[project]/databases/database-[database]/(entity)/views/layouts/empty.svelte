@@ -11,11 +11,11 @@
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
-    import { getTerminologies, SpreadsheetContainer } from '$database/(entity)';
+    import { type DatabaseType, getTerminologies, SpreadsheetContainer } from '$database/(entity)';
     import { onDestroy, onMount } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
-    import { expandTabs } from '$database/store';
-    import { spreadsheetLoading } from '$database/table-[table]/store';
+    import { expandTabs, spreadsheetLoading } from '$database/store';
+    import { NoSqlEditor } from '$database/collection-[collection]/(components)/editor';
 
     type Mode = 'records' | 'records-filtered' | 'indexes';
 
@@ -26,6 +26,7 @@
     }
 
     const {
+        type = 'tablesdb',
         mode,
         title,
         actions,
@@ -33,6 +34,7 @@
         customColumns = [],
         onOpenCreateColumn
     }: {
+        type?: DatabaseType;
         mode: Mode;
         title?: string;
         showActions?: boolean;
@@ -255,6 +257,12 @@
                 {/if}
             </svelte:fragment>
         </Spreadsheet.Root>
+
+        {#snippet noSqlEditor()}
+            {#if type === 'documentsdb' && $spreadsheetLoading}
+                <NoSqlEditor loading />
+            {/if}
+        {/snippet}
     </SpreadsheetContainer>
 
     {#if !$spreadsheetLoading}

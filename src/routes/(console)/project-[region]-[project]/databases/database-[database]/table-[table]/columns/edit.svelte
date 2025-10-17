@@ -8,11 +8,12 @@
     import { Button, InputText } from '$lib/elements/forms';
     import deepEqual from 'deep-equal';
     import { addNotification } from '$lib/stores/notifications';
-    import { type Columns, columnsOrder, databaseColumnSheetOptions } from '../store';
+    import { columnsOrder, databaseColumnSheetOptions } from '../store';
     import { columnOptions, type Option } from './store';
     import { onMount } from 'svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { preferences } from '$lib/stores/preferences';
+    import type { Columns } from '$database/store';
 
     export let isModal = true;
     export let showEdit = false;

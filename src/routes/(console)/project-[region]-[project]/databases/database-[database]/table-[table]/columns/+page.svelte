@@ -18,7 +18,6 @@
     import { isRelationship, isSpatialType, isString } from '../rows/store';
     import {
         columns,
-        type Columns,
         type ColumnsWidth,
         indexes,
         isTablesCsvImportInProgress,
@@ -51,6 +50,7 @@
     import { page } from '$app/state';
     import { debounce } from '$lib/helpers/debounce';
     import type { PageData } from './$types';
+    import { type Columns } from '$database/store';
 
     const {
         data

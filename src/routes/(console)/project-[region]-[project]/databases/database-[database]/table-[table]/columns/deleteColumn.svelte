@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
-    import type { Columns } from '../store';
+    import type { Columns } from '$database/store';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isRelationship } from '../rows/store';

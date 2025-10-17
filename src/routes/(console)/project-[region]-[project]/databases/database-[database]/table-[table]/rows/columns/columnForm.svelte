@@ -1,9 +1,9 @@
 <script lang="ts">
-    import CustomId from '$lib/components/customId.svelte';
-    import { Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
-    import type { Columns } from '../../store';
     import ColumnItem from './columnItem.svelte';
+    import type { Columns } from '$database/store';
+    import CustomId from '$lib/components/customId.svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
 
     let {
         columns = [],

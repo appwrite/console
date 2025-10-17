@@ -127,8 +127,6 @@ export function reorderItems<T extends { id: string } | { key: string }>(
     ];
 }
 
-export const spreadsheetLoading = writable(false);
-
 // noinspection JSUnusedGlobalSymbols
 export enum Deletion {
     setNull = 'Set row ID as NULL in all related rows',
@@ -147,8 +145,6 @@ export const rowPermissionSheet = writable({
     show: false,
     row: null as Models.Row
 });
-
-export const spreadsheetRenderKey = writable('initial');
 
 export const paginatedRowsLoading = writable(false);
 export const paginatedRows = createSparsePagedDataStore<Models.DefaultRow>(SPREADSHEET_PAGE_LIMIT);

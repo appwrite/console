@@ -23,3 +23,15 @@ export const INDENT_CACHE = Array.from({ length: 21 }, (_, i) => '  '.repeat(i))
 export function getIndent(level: number): string {
     return level < INDENT_CACHE.length ? INDENT_CACHE[level] : '  '.repeat(level);
 }
+
+// skeleton line configuration for loading state
+const buildLines = (indent: number, ...widths: number[]) =>
+    widths.map((w) => ({ indent, width: w }));
+
+export const SKELETON_LINES = [
+    ...buildLines(0, 8), // opening bracket
+    ...buildLines(16, 172, 150, 193, 100, 287, 186, 64), // outer items
+    ...buildLines(32, 141, 91, 105, 112), // nested items
+    ...buildLines(16, 8, 236, 236), // more outer items
+    ...buildLines(0, 8) // closing bracket
+];

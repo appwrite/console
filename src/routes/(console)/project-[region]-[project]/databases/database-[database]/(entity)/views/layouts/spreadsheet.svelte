@@ -125,19 +125,21 @@
     class:has-json-editor={typeof noSqlEditor !== 'undefined'}>
     {@render children()}
 
-    {#if !$isSmallViewport}
-        {@render noSqlEditor?.()}
-    {:else}
-        <SideSheet
-            noContentPadding
-            title="Edit document"
-            bind:show={showEditorSideSheet}
-            submit={{
-                text: 'Update'
-            }}>
+    <div class="no-sql-editor" style:height={spreadsheetHeight}>
+        {#if !$isSmallViewport}
             {@render noSqlEditor?.()}
-        </SideSheet>
-    {/if}
+        {:else}
+            <SideSheet
+                noContentPadding
+                title="Edit document"
+                bind:show={showEditorSideSheet}
+                submit={{
+                    text: 'Update'
+                }}>
+                {@render noSqlEditor?.()}
+            </SideSheet>
+        {/if}
+    </div>
 </div>
 
 <style lang="scss">
@@ -154,6 +156,10 @@
             }
 
             @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+            }
+
+            &:has(.no-sql-editor:empty) {
                 grid-template-columns: 1fr;
             }
         }

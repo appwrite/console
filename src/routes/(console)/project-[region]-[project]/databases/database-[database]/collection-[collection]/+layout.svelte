@@ -18,14 +18,18 @@
     import { IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
     import { preferences } from '$lib/stores/preferences';
 
-    import { expandTabs, randomDataModalState } from '../store';
+    import {
+        expandTabs,
+        randomDataModalState,
+        spreadsheetRenderKey,
+        spreadsheetLoading
+    } from '../store';
     import type { LayoutData } from './$types';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { generateFakeRecords } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
     import { sleep } from '$lib/helpers/promises';
     import { hash } from '$lib/helpers/string';
-    import { spreadsheetLoading, spreadsheetRenderKey } from './store';
 
     export let data: LayoutData;
 

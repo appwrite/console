@@ -41,12 +41,15 @@
     import {
         collectionColumns,
         paginatedDocuments,
-        spreadsheetLoading,
-        spreadsheetRenderKey,
         paginatedDocumentsLoading,
         sortState
     } from './store';
-    import { type SortState, randomDataModalState } from '$database/store';
+    import {
+        type SortState,
+        randomDataModalState,
+        spreadsheetRenderKey,
+        spreadsheetLoading
+    } from '$database/store';
     import { NoSqlEditor, type JsonValue } from './(components)/editor';
 
     export let data: PageData;

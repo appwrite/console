@@ -12,7 +12,7 @@ import Datetime, { submitDatetime, updateDatetime } from './datetime.svelte';
 import Point, { submitPoint, updatePoint } from './point.svelte';
 import Line, { submitLine, updateLine } from './line.svelte';
 import Polygon, { submitPolygon, updatePolygon } from './polygon.svelte';
-import type { Columns } from '../store';
+import type { Columns } from '$database/store';
 import Relationship, { submitRelationship, updateRelationship } from './relationship.svelte';
 import {
     IconCalendar,

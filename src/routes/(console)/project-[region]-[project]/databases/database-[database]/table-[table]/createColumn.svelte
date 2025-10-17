@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { type Columns, type ColumnDirection } from './store';
+    import { type ColumnDirection } from './store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Layout } from '@appwrite.io/pink-svelte';
@@ -11,6 +11,7 @@
     import type { Column } from '$lib/helpers/types';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
+    import type { Columns } from '$database/store';
 
     let {
         direction = null,

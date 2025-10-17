@@ -40,7 +40,7 @@
     import type { Text } from '@codemirror/state';
     import { onMount, onDestroy } from 'svelte';
     import Id, { truncateId } from '$lib/components/id.svelte';
-    import { Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Skeleton, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { copy } from '$lib/helpers/copy';
@@ -62,12 +62,14 @@
         WHITESPACE_REGEX,
         WHITESPACE_ONLY_REGEX,
         NESTED_KEY_REGEX,
+        SKELETON_LINES,
         getIndent
     } from './helpers/constants';
     import { toLocaleDateTime } from '$lib/helpers/date';
 
     interface Props {
         data?: JsonValue;
+        loading?: boolean;
         onchange?: (newData: JsonValue) => void;
         readonly?: boolean;
         wrapLines?: boolean;
@@ -77,12 +79,14 @@
     let {
         data = $bindable(),
         onchange,
+        loading = false,
         readonly = false,
         wrapLines = true,
         errorInPlace = true
     }: Props = $props();
 
-    let editorContainer: HTMLDivElement;
+    let editorContainer: HTMLDivElement = $state(null);
+
     let editorView: EditorView | null = null;
     let errorMessage = $state<string | null>(null);
     let changeTimer: number | null = null; // debounce timer for parse + onchange
@@ -844,35 +848,39 @@
 
 <div class="editor-container">
     <div class="editor-header">
-        <Layout.Stack direction="row">
-            {#if documentId}
-                <div class="id-tag-button-wrapper">
-                    <Id value={documentId} tooltipPlacement="top">{truncateId(documentId)}</Id>
+        {#if loading}
+            <Skeleton variant="line" height="12px" width="143px" />
+        {:else}
+            <Layout.Stack direction="row">
+                {#if documentId}
+                    <div class="id-tag-button-wrapper">
+                        <Id value={documentId} tooltipPlacement="top">{truncateId(documentId)}</Id>
+                    </div>
+                {/if}
+            </Layout.Stack>
+
+            {#if errorMessage && !$isSmallViewport}
+                <div class="editor-header">
+                    <span class="error-message">{errorMessage}</span>
                 </div>
             {/if}
-        </Layout.Stack>
 
-        {#if errorMessage && !$isSmallViewport}
-            <div class="editor-header">
-                <span class="error-message">{errorMessage}</span>
-            </div>
-        {/if}
+            {#if documentId}
+                <Tooltip placement="top">
+                    <Button
+                        icon
+                        secondary
+                        size="xs"
+                        class="icon-button"
+                        on:click={async () => {
+                            await copy(JSON.stringify(data, null, 2));
+                        }}>
+                        <Icon icon={IconDuplicate} size="s" />
+                    </Button>
 
-        {#if documentId}
-            <Tooltip placement="top">
-                <Button
-                    icon
-                    secondary
-                    size="xs"
-                    class="icon-button"
-                    on:click={async () => {
-                        await copy(JSON.stringify(data, null, 2));
-                    }}>
-                    <Icon icon={IconDuplicate} size="s" />
-                </Button>
-
-                <span slot="tooltip"> Copy object </span>
-            </Tooltip>
+                    <span slot="tooltip"> Copy object </span>
+                </Tooltip>
+            {/if}
         {/if}
     </div>
 
@@ -882,7 +890,31 @@
                 >{errorMessage}</Typography.Caption>
         </div>
     {/if}
-    <div bind:this={editorContainer} class="cm-editor-wrapper"></div>
+
+    {#if loading}
+        <div class="cm-editor-skeleton">
+            <div class="cm-gutters-skeleton">
+                {#each Array.from({ length: 16 }) as _, index (index)}
+                    <div class="cm-gutter-skeleton-line">{index + 1}</div>
+                {/each}
+            </div>
+            <div class="cm-content-skeletons">
+                {#each SKELETON_LINES as line}
+                    <div
+                        style:min-height="16px"
+                        style={line.indent > 0 ? `margin-inline-start: ${line.indent}px;` : ''}>
+                        <Skeleton
+                            variant="line"
+                            height="14px"
+                            width={`${line.width}px`}
+                            style="opacity: 0.5;" />
+                    </div>
+                {/each}
+            </div>
+        </div>
+    {:else}
+        <div bind:this={editorContainer} class="cm-editor-wrapper"></div>
+    {/if}
 </div>
 
 <style lang="scss">
@@ -891,6 +923,42 @@
         flex-direction: column;
         height: 100%;
         overflow: hidden;
+    }
+
+    .cm-editor-skeleton {
+        display: flex;
+        flex: 1;
+        background-color: var(--bgcolor-neutral-primary);
+        overflow: hidden;
+    }
+
+    .cm-gutters-skeleton {
+        display: flex;
+        padding: 4px;
+        min-width: 38px;
+        flex-shrink: 0;
+        font-size: 13px;
+        line-height: 21px;
+        user-select: none;
+        max-height: 17px;
+        flex-direction: column;
+        font-family: var(--font-family-code);
+        color: var(--fgcolor-neutral-tertiary);
+        background-color: var(--bgcolor-neutral-primary);
+    }
+
+    .cm-gutter-skeleton-line {
+        text-align: right;
+        padding-right: 8px;
+    }
+
+    .cm-content-skeletons {
+        gap: 5px;
+        flex: 1;
+        padding: 8px;
+        display: flex;
+        max-height: 21px;
+        flex-direction: column;
     }
 
     .editor-header {

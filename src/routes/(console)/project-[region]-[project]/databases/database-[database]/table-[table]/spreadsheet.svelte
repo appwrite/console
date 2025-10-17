@@ -28,13 +28,11 @@
         reorderItems,
         columnsOrder,
         columnsWidth,
-        spreadsheetLoading,
         showCreateIndexSheet,
         Deletion,
         rowActivitySheet,
         paginatedRows,
         paginatedRowsLoading,
-        spreadsheetRenderKey,
         databaseRelatedRowSheetOptions,
         rowPermissionSheet
     } from './store';
@@ -92,7 +90,9 @@
         type Columns,
         buildWildcardEntitiesQuery,
         type SortState,
-        randomDataModalState
+        randomDataModalState,
+        spreadsheetLoading,
+        spreadsheetRenderKey
     } from '$database/store';
 
     export let data: PageData;

@@ -28,9 +28,7 @@
         databaseRowSheetOptions,
         showCreateColumnSheet,
         showCreateIndexSheet,
-        spreadsheetLoading,
         rowActivitySheet,
-        spreadsheetRenderKey,
         databaseRelatedRowSheetOptions,
         rowPermissionSheet,
         showRowCreateSheet
@@ -57,8 +55,12 @@
     import { buildRowUrl, isRelationship } from './rows/store';
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-
-    import { expandTabs, randomDataModalState } from '../store';
+    import {
+        expandTabs,
+        spreadsheetLoading,
+        randomDataModalState,
+        spreadsheetRenderKey
+    } from '../store';
 
     import type { LayoutData } from './$types';
 
