@@ -31,8 +31,10 @@
         return columns;
     });
 
+    // TODO: get proper images for documentsDB
     function getImageRoute(type: 'light' | 'dark'): string {
-        return withPath(resolveRoute('/'), `/images/empty-database-${type}.svg`);
+        const base = terminology.type === 'documentsdb' ? 'empty-documents-db' : 'empty-database';
+        return withPath(resolveRoute('/'), `/images/${base}-${type}.svg`);
     }
 
     const emptyPageText = $derived.by(() => {
@@ -94,26 +96,36 @@
         </EmptySearch>
     {:else}
         <Card.Base padding="none">
-            <Empty
-                src={getImageRoute($app.themeInUse)}
-                title="Create your first {entityLower.singular}">
-                <span slot="description">{emptyPageText}</span>
+            <div class="empty-container">
+                <Empty
+                    src={getImageRoute($app.themeInUse)}
+                    title="Create your first {entityLower.singular}">
+                    <span slot="description">{emptyPageText}</span>
 
-                <span slot="actions">
-                    <Button
-                        external
-                        href="https://appwrite.io/docs/products/databases/databases"
-                        text
-                        event="empty_documentation"
-                        ariaLabel="create {entityLower.singular}">Documentation</Button>
+                    <span slot="actions">
+                        <Button
+                            external
+                            href="https://appwrite.io/docs/products/databases/databases"
+                            text
+                            event="empty_documentation"
+                            ariaLabel="create {entityLower.singular}">Documentation</Button>
 
-                    {#if $canWriteTables}
-                        <Button secondary on:click={() => ($showCreateEntity = true)}>
-                            Create {entityLower.singular}
-                        </Button>
-                    {/if}
-                </span>
-            </Empty>
+                        {#if $canWriteTables}
+                            <Button secondary on:click={() => ($showCreateEntity = true)}>
+                                Create {entityLower.singular}
+                            </Button>
+                        {/if}
+                    </span>
+                </Empty>
+            </div>
         </Card.Base>
     {/if}
 </Container>
+
+<style lang="scss">
+    /* temporary */
+    .empty-container :global(img) {
+        height: auto;
+        border-radius: unset;
+    }
+</style>

@@ -4,7 +4,7 @@
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { Icon, Layout, Divider } from '@appwrite.io/pink-svelte';
-    import type { PageData } from './$types';
+    import type { PageProps } from './$types';
     import FilePicker from '$lib/components/filePicker.svelte';
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
@@ -19,11 +19,9 @@
     import { canWriteRows } from '$lib/stores/roles';
     import SpreadSheet from './spreadsheet.svelte';
 
-    export let data: PageData;
+    const { data }: PageProps = $props();
 
-    $: collection = data.collection;
-
-    let showImportCSV = false;
+    let showImportCSV = $state(false);
 
     async function onSelect(file: Models.File, localFile = false) {
         $isCollectionsCsvImportInProgress = true;
