@@ -2,7 +2,7 @@
     import { page } from '$app/state';
     import { goto, invalidate } from '$app/navigation';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Confirm, Id } from '$lib/components';
+    import { Confirm, Id, SortButton } from '$lib/components';
     import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
     import { Button as ConsoleButton, InputSelect } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -231,6 +231,7 @@
         spreadsheetContainer.restoreGridSheetScroll();
 
         $spreadsheetLoading = false;
+        markFirstDocumentSelected();
     }
 
     async function handleDelete() {
@@ -559,6 +560,8 @@
                                 <Typography.Text truncate>
                                     {column.title}
                                 </Typography.Text>
+
+                                <SortButton onSort={sort} column={column.id} state={sortState} />
                             </Layout.Stack>
                         {/if}
                     </Spreadsheet.Header.Cell>
