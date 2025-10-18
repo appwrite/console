@@ -910,7 +910,7 @@
             {/if}
         </Layout.Stack>
 
-        {#if errorMessage && !$isSmallViewport}
+        {#if errorMessage && !$isSmallViewport && !loading}
             <div class="editor-header">
                 <span class="error-message">{errorMessage}</span>
             </div>
@@ -957,7 +957,7 @@
         {/if}
     </div>
 
-    {#if errorMessage && $isSmallViewport}
+    {#if errorMessage && $isSmallViewport && !loading}
         <div class="editor-header mobile" transition:slide={{ duration: 150 }}>
             <Typography.Caption variant="500" color="--fgcolor-neutral-primary"
                 >{errorMessage}</Typography.Caption>
