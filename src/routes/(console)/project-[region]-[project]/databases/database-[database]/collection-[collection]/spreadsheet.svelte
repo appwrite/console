@@ -386,22 +386,11 @@
                     data: documentWithoutDates ?? []
                 });
 
-                await invalidate(Dependencies.DOCUMENTS);
                 trackEvent(Submit.DocumentCreate);
                 addNotification({
                     message: 'Document has been created',
                     type: 'success'
                 });
-
-                noSqlDocument.update(() => {
-                    return {
-                        isNew: false,
-                        show: false,
-                        document: {}
-                    };
-                });
-
-                spreadsheetRenderKey;
             } else {
                 // update
                 await documentsDB.updateDocument({
@@ -412,7 +401,6 @@
                     permissions: document.$permissions ?? []
                 });
 
-                await invalidate(Dependencies.DOCUMENT);
                 trackEvent(Submit.DocumentUpdate);
                 addNotification({
                     message: 'Document has been updated',
@@ -420,8 +408,17 @@
                 });
             }
 
+            await invalidate(Dependencies.DOCUMENTS);
+            noSqlDocument.update(() => {
+                return {
+                    isNew: false,
+                    show: false,
+                    document: {}
+                };
+            });
+
             // re-render spreadsheet!
-            spreadsheetRenderKey.set(hash($id));
+            spreadsheetRenderKey.set(hash(Date.now().toString()));
             const firstDocument = $documents?.documents?.[0];
             if (firstDocument) {
                 $noSqlDocument.document = firstDocument;
@@ -431,7 +428,7 @@
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.DocumentUpdatePermissions);
+            trackError(error, Submit.DocumentUpdate);
         }
     }
 
