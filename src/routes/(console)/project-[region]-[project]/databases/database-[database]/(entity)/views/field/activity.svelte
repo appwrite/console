@@ -47,7 +47,7 @@
                 .tablesDB.listRowLogs({
                     databaseId: databaseId,
                     tableId: entityId,
-                    rowId: $recordId,
+                    rowId: recordId,
                     queries: [Query.limit(limit), Query.offset(offset)]
                 });
         }
