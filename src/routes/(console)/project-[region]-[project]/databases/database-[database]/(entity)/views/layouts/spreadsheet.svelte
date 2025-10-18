@@ -127,7 +127,7 @@
 
     <div class="no-sql-editor">
         {#if !$isSmallViewport}
-            <div style:height={spreadsheetHeight}>
+            <div class="no-sql-editor desktop" style:height={spreadsheetHeight}>
                 {@render noSqlEditor?.()}
             </div>
         {:else}
@@ -161,7 +161,8 @@
                 grid-template-columns: 1fr;
             }
 
-            &:has(.no-sql-editor:empty) {
+            &:has(.no-sql-editor:empty),
+            &:has(.no-sql-editor.desktop:empty) {
                 grid-template-columns: 1fr;
             }
         }
