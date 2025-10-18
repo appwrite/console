@@ -1,10 +1,10 @@
 import { page } from '$app/stores';
+import type { Column } from '$lib/helpers/types';
+import type { SortState } from '$database/store';
 import { derived, writable } from 'svelte/store';
 import type { Models } from '@appwrite.io/console';
 import { SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
 import { createSparsePagedDataStore } from '@appwrite.io/pink-svelte';
-import type { Column } from '$lib/helpers/types';
-import type { SortState } from '$database/store';
 
 export const indexes = derived(page, ($page) => $page.data.collection.indexes as Models.Index[]);
 
@@ -35,6 +35,11 @@ export const noSqlDocument = writable<{
 });
 
 export const documentPermissionSheet = writable({
+    show: false,
+    document: null as Models.Document
+});
+
+export const documentActivitySheet = writable({
     show: false,
     document: null as Models.Document
 });

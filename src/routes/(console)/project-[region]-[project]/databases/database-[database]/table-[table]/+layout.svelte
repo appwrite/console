@@ -43,7 +43,6 @@
     import EditRow from './rows/edit.svelte';
     import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
-    import RowActivity from './rows/activity.svelte';
     import { Layout, Selector } from '@appwrite.io/pink-svelte';
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
@@ -62,7 +61,13 @@
 
     import type { LayoutData } from './$types';
 
-    import { CreateIndex, EditRecordPermissions, type Field, SideSheet } from '$database/(entity)';
+    import {
+        CreateIndex,
+        EditRecordPermissions,
+        type Field,
+        SideSheet,
+        RecordActivity
+    } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
     import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
@@ -484,7 +489,7 @@
 </SideSheet>
 
 <SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
-    <RowActivity />
+    <RecordActivity record={$rowActivitySheet.row} />
 </SideSheet>
 
 <IndexesSuggestions {table} />

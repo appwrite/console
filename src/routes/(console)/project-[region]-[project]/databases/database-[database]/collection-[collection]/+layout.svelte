@@ -30,8 +30,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sleep } from '$lib/helpers/promises';
     import { hash } from '$lib/helpers/string';
-    import { documentPermissionSheet } from './store';
-    import { SideSheet, EditRecordPermissions } from '$database/(entity)';
+    import { documentActivitySheet, documentPermissionSheet } from './store';
+    import { SideSheet, EditRecordPermissions, RecordActivity } from '$database/(entity)';
 
     export let data: LayoutData;
 
@@ -240,4 +240,8 @@
         entity={collection}
         bind:this={editRecordPermissions}
         bind:record={$documentPermissionSheet.document} />
+</SideSheet>
+
+<SideSheet title="Document activity" bind:show={$documentActivitySheet.show} closeOnBlur>
+    <RecordActivity record={$documentActivitySheet.document} />
 </SideSheet>

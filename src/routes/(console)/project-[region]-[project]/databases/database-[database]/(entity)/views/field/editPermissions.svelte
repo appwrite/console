@@ -3,19 +3,23 @@
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Alert } from '@appwrite.io/pink-svelte';
-    import type { Models } from '@appwrite.io/console';
     import { Permissions } from '$lib/components/permissions';
     import { addNotification } from '$lib/stores/notifications';
     import { symmetricDifference } from '$lib/helpers/array';
     import { trackEvent, trackError } from '$lib/actions/analytics';
-    import { type Entity, getTerminologies } from '$database/(entity)';
+    import {
+        type Entity,
+        type Record,
+        getTerminologies,
+        toSupportiveRecord
+    } from '$database/(entity)';
 
     let {
         entity,
         record = $bindable(null)
     }: {
         entity: Entity;
-        record: Models.DefaultDocument | Models.Document | Models.DefaultRow | Models.Row;
+        record: Record;
     } = $props();
 
     let permissions = $state(record.$permissions);
@@ -36,23 +40,21 @@
 
     export async function updatePermissions() {
         try {
-            const { $databaseId: databaseId, $id: recordId } = record;
+            const { $databaseId: databaseId, $id: recordId, entityId } = toSupportiveRecord(record);
 
             if (terminology.type === 'documentsdb') {
-                const collectionId = (record as Models.Document).$collectionId;
                 await sdk
                     .forProject(page.params.region, page.params.project)
                     .documentsDB.updateDocument({
                         databaseId,
-                        collectionId,
+                        collectionId: entityId,
                         documentId: recordId,
                         permissions
                     });
             } else {
-                const tableId = (record as Models.Row).$tableId;
                 await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                     databaseId,
-                    tableId,
+                    tableId: entityId,
                     rowId: recordId,
                     permissions
                 });

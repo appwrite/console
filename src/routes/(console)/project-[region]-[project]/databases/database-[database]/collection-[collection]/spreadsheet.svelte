@@ -39,6 +39,7 @@
     import { expandTabs, buildWildcardEntitiesQuery } from '$database/store';
     import {
         collectionColumns,
+        documentActivitySheet,
         documentPermissionSheet,
         noSqlDocument,
         paginatedDocuments,
@@ -358,8 +359,8 @@
         }
 
         if (action === 'activity') {
-            // $rowActivitySheet.row = row;
-            // $rowActivitySheet.show = true;
+            $documentActivitySheet.show = true;
+            $documentActivitySheet.document = document;
         }
     }
 

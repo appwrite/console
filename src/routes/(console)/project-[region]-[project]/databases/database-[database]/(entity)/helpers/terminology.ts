@@ -1,19 +1,23 @@
 import type { Page } from '@sveltejs/kit';
 
 import { capitalize, plural } from '$lib/helpers/string';
-import type { Attributes, Columns, Table } from '$database/store';
 import { AppwriteException, type Models } from '@appwrite.io/console';
+import type { Attributes, Collection, Columns, Table } from '$database/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
 export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectordb';
 
-export type Entity = Partial<Models.Collection | Table> & {
+export type Entity = Partial<Collection | Table> & {
     indexes?: Index[];
     fields?: (Attributes | Columns)[];
     recordSecurity?: Models.Collection['documentSecurity'] | Models.Table['rowSecurity'];
 };
 
 export type Field = Partial<Attributes> | Partial<Columns>;
+
+export type Record = Partial<Models.Document | Models.Row> & {
+    entityId?: Models.Document['$collectionId'] | Models.Row['$tableId'];
+};
 
 export type Index = Partial<Models.Index | Models.ColumnIndex> & {
     fields: Models.Index['attributes'] | Models.ColumnIndex['columns'];
@@ -100,6 +104,22 @@ export function toSupportiveEntity(raw: Models.Collection | Models.Table): Entit
 
 export function toRelationalField(raw: Field): Columns {
     return raw as Columns;
+}
+
+export function toSupportiveRecord(raw: Record | Models.Document | Models.Row): Record {
+    const isRow = '$tableId' in raw;
+    const isRecord = 'entityId' in raw;
+
+    if (isRecord && raw.entityId) {
+        return raw as Record;
+    }
+
+    const entityId = isRow ? (raw as Models.Row).$tableId : (raw as Models.Document).$collectionId;
+
+    return {
+        ...raw,
+        entityId
+    } as Record;
 }
 
 /**

@@ -134,8 +134,6 @@ export enum Deletion {
     restrict = 'Row can not be deleted'
 }
 
-export const scrollStore = writable(null);
-
 export const rowActivitySheet = writable({
     show: false,
     row: null as Models.Row
