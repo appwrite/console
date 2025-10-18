@@ -250,6 +250,12 @@
             resizable: true
         },
         {
+            id: 'type',
+            width: 150,
+            minimumWidth: 150,
+            resizable: false
+        },
+        {
             id: 'indexed',
             width: getColumnWidth('indexed', 150),
             minimumWidth: 150,
@@ -309,6 +315,7 @@
             on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}>
             <svelte:fragment slot="header" let:root>
                 <Spreadsheet.Header.Cell column="key" {root}>Column name</Spreadsheet.Header.Cell>
+                <Spreadsheet.Header.Cell column="type" {root}>Type</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="indexed" {root}>Indexed</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="default" {root}
                     >Default value</Spreadsheet.Header.Cell>
@@ -412,6 +419,10 @@
                                 </Typography.Caption>
                             {/if}
                         </Layout.Stack>
+                    </Spreadsheet.Cell>
+                    <Spreadsheet.Cell column="type" {root} isEditable={false}>
+                        {@const columnType = column['format'] ? column['format'] : column.type}
+                        {columnType.toLowerCase()}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="indexed" {root} isEditable={false}>
                         {@const isActuallyIndexed = $indexes.some((index) =>
