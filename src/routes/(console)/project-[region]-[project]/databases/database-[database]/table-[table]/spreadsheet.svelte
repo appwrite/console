@@ -72,10 +72,14 @@
         IconToggle,
         IconViewList
     } from '@appwrite.io/pink-icons-svelte';
-    import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
-    import SheetOptions from './sheetOptions.svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
-    import { type Field, SpreadsheetContainer } from '$database/(entity)';
+    import {
+        type Field,
+        SpreadsheetContainer,
+        SpreadsheetOptions,
+        type HeaderCellAction,
+        type RowCellAction
+    } from '$database/(entity)';
     import EditRowCell from './rows/cell/edit.svelte';
     import { copy } from '$lib/helpers/copy';
     import { writable } from 'svelte/store';
@@ -494,6 +498,7 @@
     async function onSelectSheetOption(
         action: HeaderCellAction | RowCellAction,
         columnId: string,
+        column: Columns,
         type: 'header' | 'row',
         row: Models.Row | null = null
     ) {
@@ -505,7 +510,15 @@
             }
 
             if (action === 'column-left' || action === 'column-right') {
-                const { to, neighbour } = $databaseColumnSheetOptions.direction;
+                const neighbour = columnId;
+                const to = action === 'column-left' ? 'left' : 'right';
+
+                $databaseColumnSheetOptions.column = column;
+                $databaseColumnSheetOptions.direction = {
+                    neighbour: columnId,
+                    to: action === 'column-left' ? 'left' : 'right'
+                };
+
                 $showCreateColumnSheet.title = `Create column to the ${to} of ${neighbour}`;
                 $showCreateColumnSheet.direction = $databaseColumnSheetOptions.direction;
                 $showCreateColumnSheet.columns = $tableColumns;
@@ -802,12 +815,12 @@
                         </Spreadsheet.Header.Cell>
                     {:else}
                         {@const structureColumn = $columns.find((col) => col.key === column.id)}
-                        <SheetOptions
+                        <SpreadsheetOptions
                             type="header"
                             columnId={column.id}
                             column={structureColumn}
                             onSelect={(option, columnId) =>
-                                onSelectSheetOption(option, columnId, 'header')}>
+                                onSelectSheetOption(option, columnId, structureColumn, 'header')}>
                             {#snippet children(toggle)}
                                 <Spreadsheet.Header.Cell
                                     {root}
@@ -836,7 +849,7 @@
                                     </Layout.Stack>
                                 </Spreadsheet.Header.Cell>
                             {/snippet}
-                        </SheetOptions>
+                        </SpreadsheetOptions>
                     {/if}
                 {/each}
             </svelte:fragment>
@@ -879,11 +892,11 @@
                                         time={row[columnId]}
                                         canShowPopover={canShowDatetimePopover} />
                                 {:else if columnId === 'actions'}
-                                    <SheetOptions
+                                    <SpreadsheetOptions
                                         type="row"
                                         column={rowColumn}
                                         onSelect={(option) =>
-                                            onSelectSheetOption(option, null, 'row', row)}
+                                            onSelectSheetOption(option, null, null, 'row', row)}
                                         onVisibilityChanged={(visible) => {
                                             canShowDatetimePopover = !visible;
                                         }}>
@@ -897,7 +910,7 @@
                                                     color="--fgcolor-neutral-primary" />
                                             </Button.Button>
                                         {/snippet}
-                                    </SheetOptions>
+                                    </SpreadsheetOptions>
                                 {:else if isRelationship(rowColumn)}
                                     {@const args = getDisplayNamesForTable(row[columnId])}
                                     {#if !isRelationshipToMany(rowColumn)}
@@ -1004,7 +1017,13 @@
                                                     rowColumn
                                                 );
                                             } else {
-                                                onSelectSheetOption('update', null, 'row', row);
+                                                onSelectSheetOption(
+                                                    'update',
+                                                    null,
+                                                    null,
+                                                    'row',
+                                                    row
+                                                );
                                             }
                                         }} />
                                 </svelte:fragment>
