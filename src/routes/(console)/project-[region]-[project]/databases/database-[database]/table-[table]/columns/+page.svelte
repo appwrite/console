@@ -251,7 +251,7 @@
         },
         {
             id: 'type',
-            width: getColumnWidth('type', 150),
+            width: 150,
             minimumWidth: 150,
             resizable: false
         },
