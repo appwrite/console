@@ -40,7 +40,8 @@
         IconTrash,
         IconViewList,
         IconLockClosed,
-        IconFingerPrint
+        IconFingerPrint,
+        IconMail
     } from '@appwrite.io/pink-icons-svelte';
     import { type ComponentProps, onDestroy, onMount } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -125,7 +126,7 @@
     const columnFormatIcon = {
         ip: IconLocationMarker,
         url: IconLink,
-        email: IconLink,
+        email: IconMail,
         enum: IconViewList
     };
 
