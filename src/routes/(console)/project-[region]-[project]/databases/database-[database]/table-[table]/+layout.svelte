@@ -416,7 +416,7 @@
         value: buildFieldUrl(
             'row',
             $databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id
-            )
+        )
     }}>
     <EditRow
         {table}

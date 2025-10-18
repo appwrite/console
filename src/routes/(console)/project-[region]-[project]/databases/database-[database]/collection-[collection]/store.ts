@@ -24,8 +24,12 @@ export const noSqlDocument = writable<{
     show: boolean;
     document?: Models.Document | object;
     isNew?: boolean;
+    loading?: boolean;
+    documentId?: string /* for loading from a given id */;
 }>({
     show: false,
     document: null,
-    isNew: false
+    isNew: false,
+    loading: false,
+    documentId: null
 });

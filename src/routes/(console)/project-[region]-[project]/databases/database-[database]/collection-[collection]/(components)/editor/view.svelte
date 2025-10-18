@@ -896,63 +896,64 @@
     });
 </script>
 
-<div class="editor-container">
+<div class="editor-container" class:loading>
     <div class="editor-header">
         {#if loading}
             <Skeleton variant="line" height="12px" width="143px" />
-        {:else}
-            <Layout.Stack direction="row">
-                {#if documentId}
-                    <div class="id-tag-button-wrapper">
-                        <Id value={documentId} tooltipPlacement="top">{truncateId(documentId)}</Id>
-                    </div>
-                {/if}
-            </Layout.Stack>
+        {/if}
 
-            {#if errorMessage && !$isSmallViewport}
-                <div class="editor-header">
-                    <span class="error-message">{errorMessage}</span>
+        <Layout.Stack direction="row">
+            {#if documentId && !loading}
+                <div class="id-tag-button-wrapper">
+                    <Id value={documentId} tooltipPlacement="top">{truncateId(documentId)}</Id>
                 </div>
             {/if}
+        </Layout.Stack>
 
-            {#if documentId}
-                <Layout.Stack direction="row" inline gap="s">
-                    <Tooltip placement="top" disabled={!hasDataChanged}>
-                        <Button
-                            icon
-                            secondary
-                            size="xs"
-                            disabled={!hasDataChanged}
-                            class="icon-button"
-                            on:click={handleSave}>
-                            {#if isSaving}
-                                <Spinner size="s" />
-                            {:else}
-                                <Icon icon={IconCheck} size="s" />
-                            {/if}
-                        </Button>
+        {#if errorMessage && !$isSmallViewport}
+            <div class="editor-header">
+                <span class="error-message">{errorMessage}</span>
+            </div>
+        {/if}
 
-                        <span slot="tooltip">Save</span>
-                    </Tooltip>
+        {#if documentId}
+            <Layout.Stack direction="row" inline gap="s">
+                <Tooltip placement="top" disabled={!hasDataChanged}>
+                    <Button
+                        icon
+                        secondary
+                        size="xs"
+                        disabled={!hasDataChanged}
+                        class="icon-button"
+                        on:click={handleSave}>
+                        {#if isSaving}
+                            <Spinner size="s" />
+                        {:else}
+                            <Icon icon={IconCheck} size="s" />
+                        {/if}
+                    </Button>
 
-                    <Tooltip placement="top">
-                        <Button
-                            icon
-                            secondary
-                            size="xs"
-                            class="icon-button"
-                            on:click={async () => {
-                                await copy(JSON.stringify(data, null, 2));
-                                tooltipMessage = 'Copied';
-                                setTimeout(() => (tooltipMessage = 'Copy document'), 1000);
-                            }}>
-                            <Icon icon={IconDuplicate} size="s" />
-                        </Button>
+                    <span slot="tooltip">Save</span>
+                </Tooltip>
 
-                        <span slot="tooltip">{tooltipMessage}</span>
-                    </Tooltip>
-                </Layout.Stack>
-            {/if}
+                <Tooltip placement="top">
+                    <Button
+                        icon
+                        secondary
+                        size="xs"
+                        class="icon-button"
+                        disabled={loading}
+                        on:click={async () => {
+                            await copy(JSON.stringify(data, null, 2));
+                            tooltipMessage = 'Copied';
+                            setTimeout(() => (tooltipMessage = 'Copy document'), 1000);
+                        }}>
+                        <Icon icon={IconDuplicate} size="s" />
+                    </Button>
+
+                    <span slot="tooltip">{tooltipMessage}</span>
+                </Tooltip>
+            </Layout.Stack>
         {/if}
     </div>
 
@@ -966,7 +967,7 @@
     {#if loading}
         <div class="cm-editor-skeleton">
             <div class="cm-gutters-skeleton">
-                {#each Array.from({ length: 16 }) as _, index (index)}
+                {#each Array.from({ length: $isSmallViewport ? 14 : 16 }) as _, index (index)}
                     <div class="cm-gutter-skeleton-line">{index + 1}</div>
                 {/each}
             </div>
@@ -984,33 +985,36 @@
                 {/each}
             </div>
         </div>
-    {:else}
-        <div bind:this={editorContainer} class="cm-editor-wrapper"></div>
     {/if}
+
+    <div bind:this={editorContainer} class="cm-editor-wrapper" class:loading></div>
 </div>
 
 <style lang="scss">
     .editor-container {
         display: flex;
-        flex-direction: column;
         height: 100%;
         overflow: hidden;
+        flex-direction: column;
+
+        &.loading {
+            overflow: visible;
+        }
     }
 
     .cm-editor-skeleton {
-        display: flex;
         flex: 1;
+        display: flex;
         background-color: var(--bgcolor-neutral-primary);
-        overflow: hidden;
     }
 
     .cm-gutters-skeleton {
         display: flex;
+        margin-top: 4px;
         padding: 4px;
         min-width: 38px;
         flex-shrink: 0;
         font-size: 13px;
-        line-height: 21px;
         user-select: none;
         max-height: 17px;
         flex-direction: column;
@@ -1020,28 +1024,33 @@
     }
 
     .cm-gutter-skeleton-line {
+        min-width: 20px;
+        font-size: 14px;
         text-align: right;
-        padding-right: 8px;
+        white-space: nowrap;
+        font-family: monospace;
+        padding: 0 3px 0 5px;
     }
 
     .cm-content-skeletons {
-        gap: 5px;
         flex: 1;
+        gap: 3.5px;
         padding: 8px;
+        margin-top: 4px;
         display: flex;
-        max-height: 21px;
+        max-height: 80px;
         flex-direction: column;
     }
 
     .editor-header {
+        height: 40px;
         display: flex;
+        flex-shrink: 0;
         align-items: center;
         gap: var(--space-8);
-        height: 40px;
         padding: 0 var(--space-4);
         background: var(--bgcolor-neutral-secondary);
         border-bottom: 1px solid var(--border-neutral);
-        flex-shrink: 0;
 
         &.mobile {
             background: var(--bgcolor-error);
@@ -1066,6 +1075,10 @@
     .cm-editor-wrapper {
         flex: 1;
         overflow: auto;
+
+        &.loading {
+            display: none;
+        }
 
         :global(.cm-editor) {
             height: 100%;

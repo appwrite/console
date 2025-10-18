@@ -87,6 +87,43 @@
     let showDelete = false;
     let selectedDocumentForDelete: Models.Document['$id'] | null = null;
 
+    async function loadRemoteDocument() {
+        try {
+            $noSqlDocument.show = true;
+            $noSqlDocument.loading = true;
+            const documentId = $noSqlDocument.documentId;
+            $noSqlDocument.documentId = null; // reset for later!
+
+            const loadedDocument = await sdk
+                .forProject(page.params.region, page.params.project)
+                .documentsDB.getDocument({
+                    databaseId: page.params.database,
+                    collectionId: page.params.collection,
+                    documentId
+                });
+
+            if (loadedDocument) {
+                $noSqlDocument.isNew = false;
+                $noSqlDocument.document = loadedDocument;
+            }
+        } catch (e) {
+            markFirstDocumentSelected();
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        } finally {
+            $noSqlDocument.loading = false;
+        }
+    }
+
+    function markFirstDocumentSelected() {
+        const firstDocument = $documents?.documents?.[0];
+        if (firstDocument) {
+            $noSqlDocument.document = firstDocument;
+        }
+    }
+
     onMount(async () => {
         sortState.set(data.currentSort as SortState);
 
@@ -95,14 +132,11 @@
             paginatedDocuments.setPage(1, data.documents.documents);
         }
 
-        // rowId exists, we have someone from old url format!
-        // if ($databaseRowSheetOptions && $databaseRowSheetOptions.rowId) {
-        //     setTimeout(() => ($databaseRowSheetOptions.show = true), 250);
-        // }
-
-        const firstDocument = $documents?.documents?.[0];
-        if (firstDocument) {
-            $noSqlDocument.document = firstDocument;
+        // documentId exists!
+        if ($noSqlDocument.documentId) {
+            await loadRemoteDocument();
+        } else {
+            markFirstDocumentSelected();
         }
     });
 
@@ -262,7 +296,7 @@
             noSqlDocument.set({
                 document: document,
                 isNew: false,
-                show: true,
+                show: true
             });
         }
 
@@ -276,7 +310,7 @@
             noSqlDocument.set({
                 document: documentWithoutDates,
                 isNew: true,
-                show: true,
+                show: true
             });
         }
 
@@ -579,18 +613,16 @@
                                             onVisibilityChanged={(visible) => {
                                                 canShowDatetimePopover = !visible;
                                             }}>
-
                                             {#snippet children(toggle)}
                                                 <Button.Button
                                                     icon
                                                     variant="extra-compact"
-                                                    on:click={toggle}
-                                                >
+                                                    on:click={toggle}>
                                                     <Icon
                                                         icon={IconDotsHorizontal}
                                                         color="--fgcolor-neutral-primary" />
                                                 </Button.Button>
-                                        {/snippet}
+                                            {/snippet}
                                         </SheetOptions>
                                     {/if}
                                 </Spreadsheet.Cell>
@@ -668,6 +700,7 @@
         <NoSqlEditor
             ctrlSave
             isNew={$noSqlDocument.isNew}
+            loading={$noSqlDocument.loading}
             bind:data={$noSqlDocument.document}
             onSave={async (document) => await createOrUpdateDocument(document)} />
     {/snippet}
