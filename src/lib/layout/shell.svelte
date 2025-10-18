@@ -175,6 +175,8 @@
 
     $: isProjectPage = $page.route?.id?.includes('project-');
 
+    $: isOrganizationPage = $page.route?.id?.includes('organization-');
+
     $: {
         if ($isSidebarOpen) {
             yOnMenuOpen = window.scrollY;
@@ -205,9 +207,10 @@
         <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
     {/if}
 
-    {#if !$isNewWizardStatusOpen && isProjectPage}
+    {#if !$isNewWizardStatusOpen && (isProjectPage || isOrganizationPage)}
         <Sidebar
             project={selectedProject}
+            organizationId={$organization?.$id}
             progressCard={getProgressCard()}
             avatar={navbarProps.avatar}
             bind:subNavigation
