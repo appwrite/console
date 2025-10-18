@@ -651,6 +651,7 @@
 
     {#snippet noSqlEditor()}
         <NoSqlEditor
+            ctrlSave
             isNew={$noSqlDocument.isNew}
             bind:data={$noSqlDocument.document}
             onSave={async (document) => await createOrUpdateDocument(document)} />

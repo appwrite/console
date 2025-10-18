@@ -79,6 +79,7 @@
         readonly?: boolean;
         wrapLines?: boolean;
         errorInPlace?: boolean;
+        ctrlSave?: boolean;
     }
 
     let {
@@ -90,7 +91,8 @@
         loading = false,
         readonly = false,
         wrapLines = true,
-        errorInPlace = true
+        errorInPlace = true,
+        ctrlSave = false
     }: Props = $props();
 
     let editorContainer: HTMLDivElement = $state(null);
@@ -119,7 +121,7 @@
     let wasNew = isNew;
 
     // Generate a stable ID once for new documents
-    const generatedId = ID.unique();
+    let generatedId = $state(ID.unique());
 
     // Get $id from data
     const documentId = $derived(
@@ -694,6 +696,25 @@
         }
     }
 
+    // Handle save logic - called from both button and keyboard shortcut
+    async function handleSave(): Promise<void> {
+        if (!hasDataChanged) return;
+
+        isSaving = true;
+
+        let dataToSave = data;
+        if (isNew && typeof data === 'object' && data !== null && !Array.isArray(data)) {
+            const dataObj = data;
+            if (!dataObj['$id']) {
+                dataToSave = { $id: generatedId, ...dataObj };
+            }
+        }
+
+        await sleep(2500);
+        await onSave?.(dataToSave);
+        isSaving = false;
+    }
+
     onMount(() => {
         if (!editorContainer) return;
 
@@ -729,7 +750,9 @@
                 }
             }),
             // Override Enter and Shift-Enter to keep current indent, no extra +indentUnit
-            keymap.of(createEditorKeymaps(insertNewlineKeepIndent)),
+            keymap.of(
+                createEditorKeymaps(insertNewlineKeepIndent, ctrlSave ? handleSave : undefined)
+            ),
             keymap.of(secondaryKeymaps),
             javascript(),
             customSyntaxHighlighting,
@@ -804,6 +827,7 @@
     $effect(() => {
         if (isNew && !wasNew) {
             originalData = $state.snapshot(data);
+            generatedId = ID.unique();
         }
         wasNew = isNew;
     });
@@ -857,10 +881,11 @@
     });
 
     // React to read-only prop changes via Compartment reconfigure
+    // Also make editor read-only while saving to prevent concurrent edits
     $effect(() => {
         if (!editorView) return;
         editorView.dispatch({
-            effects: readOnlyCompartment.reconfigure(EditorState.readOnly.of(readonly))
+            effects: readOnlyCompartment.reconfigure(EditorState.readOnly.of(readonly || isSaving))
         });
     });
 
@@ -901,27 +926,7 @@
                             size="xs"
                             disabled={!hasDataChanged}
                             class="icon-button"
-                            on:click={async () => {
-                                isSaving = true;
-
-                                // For new documents, ensure $id is added to data before saving
-                                let dataToSave = data;
-                                if (
-                                    isNew &&
-                                    typeof data === 'object' &&
-                                    data !== null &&
-                                    !Array.isArray(data)
-                                ) {
-                                    const dataObj = data;
-                                    if (!dataObj['$id']) {
-                                        dataToSave = { $id: generatedId, ...dataObj };
-                                    }
-                                }
-
-                                await sleep(2500);
-                                await onSave?.(dataToSave);
-                                isSaving = false;
-                            }}>
+                            on:click={handleSave}>
                             {#if isSaving}
                                 <Spinner size="s" />
                             {:else}
