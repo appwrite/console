@@ -27,7 +27,6 @@
         IconDotsHorizontal,
         IconFingerPrint
     } from '@appwrite.io/pink-icons-svelte';
-    import type { RowCellAction } from '../table-[table]/sheetOptions.svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { SpreadsheetContainer } from '$database/(entity)';
     import { copy } from '$lib/helpers/copy';
@@ -40,6 +39,7 @@
     import { expandTabs, buildWildcardEntitiesQuery } from '$database/store';
     import {
         collectionColumns,
+        documentPermissionSheet,
         noSqlDocument,
         paginatedDocuments,
         paginatedDocumentsLoading,
@@ -53,10 +53,12 @@
     } from '$database/store';
     import { type JsonValue, NoSqlEditor } from './(components)/editor';
 
-    // TODO: need to move these somewhere else for reuse!
     import { buildFieldUrl } from '$database/table-[table]/rows/store';
-    import SheetOptions from '../table-[table]/sheetOptions.svelte';
-    import type { HeaderCellAction } from '$database/table-[table]/sheetOptions.svelte';
+    import {
+        SpreadsheetOptions,
+        type HeaderCellAction,
+        type RowCellAction
+    } from '$database/(entity)';
 
     export let data: PageData;
 
@@ -315,8 +317,8 @@
         }
 
         if (action === 'permissions') {
-            // $rowPermissionSheet.row = row;
-            // $rowPermissionSheet.show = true;
+            $documentPermissionSheet.show = true;
+            $documentPermissionSheet.document = document;
         }
 
         if (action === 'copy-url') {
@@ -605,7 +607,7 @@
                                             time={document[columnId]}
                                             canShowPopover={canShowDatetimePopover} />
                                     {:else if columnId === 'actions'}
-                                        <SheetOptions
+                                        <SpreadsheetOptions
                                             type="row"
                                             onSelect={(option) => {
                                                 onSelectSheetOption(option, document);
@@ -623,7 +625,7 @@
                                                         color="--fgcolor-neutral-primary" />
                                                 </Button.Button>
                                             {/snippet}
-                                        </SheetOptions>
+                                        </SpreadsheetOptions>
                                     {/if}
                                 </Spreadsheet.Cell>
                             {/each}

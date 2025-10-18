@@ -30,6 +30,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sleep } from '$lib/helpers/promises';
     import { hash } from '$lib/helpers/string';
+    import { documentPermissionSheet } from './store';
+    import { SideSheet, EditRecordPermissions } from '$database/(entity)';
 
     export let data: LayoutData;
 
@@ -38,6 +40,8 @@
      * and will keep invalidating the `Dependencies.COLLECTION` making a lot of API noise!
      */
     let isWaterfallFromFaker = false;
+
+    let editRecordPermissions: EditRecordPermissions;
 
     $: collection = data.collection;
     $: basePath = resolveRoute(
@@ -222,3 +226,18 @@
 </svelte:head>
 
 <slot />
+
+<SideSheet
+    closeOnBlur
+    title="Document permissions"
+    bind:show={$documentPermissionSheet.show}
+    submit={{
+        text: 'Update',
+        disabled: editRecordPermissions?.disableSubmit(),
+        onClick: async () => editRecordPermissions?.updatePermissions()
+    }}>
+    <EditRecordPermissions
+        entity={collection}
+        bind:this={editRecordPermissions}
+        bind:record={$documentPermissionSheet.document} />
+</SideSheet>

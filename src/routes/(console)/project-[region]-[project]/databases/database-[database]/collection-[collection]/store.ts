@@ -33,3 +33,8 @@ export const noSqlDocument = writable<{
     loading: false,
     documentId: null
 });
+
+export const documentPermissionSheet = writable({
+    show: false,
+    document: null as Models.Document
+});

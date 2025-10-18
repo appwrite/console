@@ -40,12 +40,10 @@
     import { page } from '$app/state';
     import { canWriteTables } from '$lib/stores/roles';
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
-    import { type Field, SideSheet } from '$database/(entity)';
     import EditRow from './rows/edit.svelte';
     import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
     import RowActivity from './rows/activity.svelte';
-    import EditRowPermissions from './rows/editPermissions.svelte';
     import { Layout, Selector } from '@appwrite.io/pink-svelte';
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
@@ -64,7 +62,7 @@
 
     import type { LayoutData } from './$types';
 
-    import { CreateIndex } from '$database/(entity)';
+    import { CreateIndex, EditRecordPermissions, type Field, SideSheet } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
     import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
@@ -73,7 +71,7 @@
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
-    let editRowPermissions: EditRowPermissions;
+    let editRecordPermissions: EditRecordPermissions;
 
     let createIndex: CreateIndex;
     let createColumn: CreateColumn;
@@ -476,10 +474,13 @@
     bind:show={$rowPermissionSheet.show}
     submit={{
         text: 'Update',
-        disabled: editRowPermissions?.disableSubmit(),
-        onClick: async () => editRowPermissions?.updatePermissions()
+        disabled: editRecordPermissions?.disableSubmit(),
+        onClick: async () => editRecordPermissions?.updatePermissions()
     }}>
-    <EditRowPermissions {table} bind:this={editRowPermissions} bind:row={$rowPermissionSheet.row} />
+    <EditRecordPermissions
+        entity={table}
+        bind:this={editRecordPermissions}
+        bind:record={$rowPermissionSheet.row} />
 </SideSheet>
 
 <SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
