@@ -593,7 +593,7 @@
                             id={document?.$id}
                             virtualItem={item}
                             select={rowSelection}
-                            isSelected={$noSqlDocument?.document?.$id === document.$id}>
+                            isSelected={$noSqlDocument?.document?.['$id'] === document.$id}>
                             {#each $collectionColumns as { id: columnId } (columnId)}
                                 <Spreadsheet.Cell {root} isEditable={false} column={columnId}>
                                     {#if columnId === '$id'}
