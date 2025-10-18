@@ -46,6 +46,6 @@ export function isSpatialType(
     return spatialTypes.includes(field.type.toLowerCase());
 }
 
-export function buildRowUrl(rowId: string) {
-    return `${page.url}/row-${rowId}`;
+export function buildFieldUrl(recordType: 'row' | 'document', recordId: string) {
+    return `${page.url}/${recordType}-${recordId}`;
 }

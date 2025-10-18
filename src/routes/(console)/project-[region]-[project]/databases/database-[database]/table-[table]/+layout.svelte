@@ -52,7 +52,7 @@
     import { sleep } from '$lib/helpers/promises';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
-    import { buildRowUrl, isRelationship } from './rows/store';
+    import { buildFieldUrl, isRelationship } from './rows/store';
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import {
@@ -413,7 +413,10 @@
         mode: 'copy-tag',
         text: 'Row URL',
         show: !!($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id),
-        value: buildRowUrl($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id)
+        value: buildFieldUrl(
+            'row',
+            $databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id
+            )
     }}>
     <EditRow
         {table}

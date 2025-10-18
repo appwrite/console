@@ -12,7 +12,7 @@
     import { type ComponentType, onDestroy, onMount } from 'svelte';
     import type { PageData } from './$types';
     import {
-        buildRowUrl,
+        buildFieldUrl,
         isRelationship,
         isRelationshipToMany,
         isSpatialType,
@@ -562,7 +562,7 @@
 
             if (action === 'copy-url') {
                 try {
-                    await copy(buildRowUrl(row.$id));
+                    await copy(buildFieldUrl('row', row.$id));
                     addNotification({
                         type: 'success',
                         message: 'Row url copied'

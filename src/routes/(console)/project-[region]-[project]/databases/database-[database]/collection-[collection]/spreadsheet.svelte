@@ -53,6 +53,11 @@
     } from '$database/store';
     import { type JsonValue, NoSqlEditor } from './(components)/editor';
 
+    // TODO: need to move these somewhere else for reuse!
+    import { buildFieldUrl } from '$database/table-[table]/rows/store';
+    import SheetOptions from '../table-[table]/sheetOptions.svelte';
+    import type { HeaderCellAction } from '$database/table-[table]/sheetOptions.svelte';
+
     export let data: PageData;
 
     $: collection = data.collection;
@@ -250,13 +255,15 @@
     }
 
     async function onSelectSheetOption(
-        action: RowCellAction,
+        action: HeaderCellAction | RowCellAction,
         document: Models.Document | null = null
     ) {
         if (action === 'update') {
-            // $databaseRowSheetOptions.show = true;
-            // $databaseRowSheetOptions.row = row;
-            // $databaseRowSheetOptions.title = 'Update row';
+            noSqlDocument.set({
+                document: document,
+                isNew: false,
+                show: true,
+            });
         }
 
         if (action === 'duplicate-row') {
@@ -266,8 +273,11 @@
              */
             const { $createdAt, $updatedAt, ...documentWithoutDates } = document;
 
-            // showRowCreateSheet.row = documentWithoutDates;
-            // showRowCreateSheet.show = true;
+            noSqlDocument.set({
+                document: documentWithoutDates,
+                isNew: true,
+                show: true,
+            });
         }
 
         if (action === 'permissions') {
@@ -277,7 +287,7 @@
 
         if (action === 'copy-url') {
             try {
-                // await copy(buildRowUrl(row.$id));
+                await copy(buildFieldUrl('document', document.$id));
                 addNotification({
                     type: 'success',
                     message: 'Document url copied'
@@ -561,22 +571,27 @@
                                             time={document[columnId]}
                                             canShowPopover={canShowDatetimePopover} />
                                     {:else if columnId === 'actions'}
-                                        <!--                                    <SheetOptions-->
-                                        <!--                                        type="row"-->
-                                        <!--                                        column={rowColumn}-->
-                                        <!--                                        onSelect={(option) =>-->
-                                        <!--                                            onSelectSheetOption(option, null, 'row', row)}-->
-                                        <!--                                        onVisibilityChanged={(visible) => {-->
-                                        <!--                                            canShowDatetimePopover = !visible;-->
-                                        <!--                                        }}>-->
-                                        <!--                                        {#snippet children(toggle)}-->
-                                        <Button.Button icon variant="extra-compact">
-                                            <Icon
-                                                icon={IconDotsHorizontal}
-                                                color="--fgcolor-neutral-primary" />
-                                        </Button.Button>
-                                        <!--{/snippet}-->
-                                        <!--                                    </SheetOptions>-->
+                                        <SheetOptions
+                                            type="row"
+                                            onSelect={(option) => {
+                                                onSelectSheetOption(option, document);
+                                            }}
+                                            onVisibilityChanged={(visible) => {
+                                                canShowDatetimePopover = !visible;
+                                            }}>
+
+                                            {#snippet children(toggle)}
+                                                <Button.Button
+                                                    icon
+                                                    variant="extra-compact"
+                                                    on:click={toggle}
+                                                >
+                                                    <Icon
+                                                        icon={IconDotsHorizontal}
+                                                        color="--fgcolor-neutral-primary" />
+                                                </Button.Button>
+                                        {/snippet}
+                                        </SheetOptions>
                                     {/if}
                                 </Spreadsheet.Cell>
                             {/each}

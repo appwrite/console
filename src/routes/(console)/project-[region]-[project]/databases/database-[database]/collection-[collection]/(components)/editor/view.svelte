@@ -67,7 +67,6 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { ID } from '@appwrite.io/console';
     import { areObjectsSame } from '$lib/helpers/object';
-    import { sleep } from '$lib/helpers/promises';
 
     interface Props {
         isNew?: boolean;
@@ -710,7 +709,6 @@
             }
         }
 
-        await sleep(2500);
         await onSave?.(dataToSave);
         isSaving = false;
     }

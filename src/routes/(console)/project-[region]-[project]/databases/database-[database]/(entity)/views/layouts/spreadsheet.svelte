@@ -125,9 +125,11 @@
     class:has-json-editor={typeof noSqlEditor !== 'undefined'}>
     {@render children()}
 
-    <div class="no-sql-editor" style:height={spreadsheetHeight}>
+    <div class="no-sql-editor">
         {#if !$isSmallViewport}
-            {@render noSqlEditor?.()}
+            <div style:height={spreadsheetHeight}>
+                {@render noSqlEditor?.()}
+            </div>
         {:else}
             <SideSheet
                 noContentPadding

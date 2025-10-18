@@ -85,7 +85,7 @@
         onVisibilityChanged,
         type
     }: {
-        column: Columns;
+        column?: Columns;
         columnId?: string;
         type: 'header' | 'row';
         onVisibilityChanged?: (visible: boolean) => void;
