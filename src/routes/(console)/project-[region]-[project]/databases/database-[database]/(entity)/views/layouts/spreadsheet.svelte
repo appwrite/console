@@ -163,5 +163,15 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .no-sql-editor {
+            &:empty {
+                display: none;
+            }
+
+            &:has(:global(.sheet-container:empty)) {
+                display: none;
+            }
+        }
     }
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts" module>
-    export type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
+    export type JsonValue = string | number | boolean | null | JsonObject | JsonArray | object;
     export type JsonObject = { [key: string]: JsonValue };
     export type JsonArray = JsonValue[];
 </script>
@@ -40,8 +40,8 @@
     import type { Text } from '@codemirror/state';
     import { onMount, onDestroy } from 'svelte';
     import Id, { truncateId } from '$lib/components/id.svelte';
-    import { Icon, Layout, Skeleton, Tooltip, Typography } from '@appwrite.io/pink-svelte';
-    import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, Skeleton, Spinner, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { IconCheck, IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { copy } from '$lib/helpers/copy';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -55,7 +55,6 @@
         SYSTEM_KEYS,
         DEBOUNCE_DELAY,
         LINTER_DELAY,
-        UNQUOTED_KEY_REGEX,
         INDENT_REGEX,
         SCALAR_VALUE_REGEX,
         TRAILING_COMMA_REGEX,
@@ -66,19 +65,28 @@
         getIndent
     } from './helpers/constants';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { ID } from '@appwrite.io/console';
+    import { areObjectsSame } from '$lib/helpers/object';
+    import { sleep } from '$lib/helpers/promises';
 
     interface Props {
+        isNew?: boolean;
         data?: JsonValue;
+        isSaving?: boolean;
         loading?: boolean;
-        onchange?: (newData: JsonValue) => void;
+        onChange?: (newData: JsonValue) => Promise<void> | void;
+        onSave?: (newData: JsonValue) => Promise<void> | void;
         readonly?: boolean;
         wrapLines?: boolean;
         errorInPlace?: boolean;
     }
 
     let {
+        isNew = false,
         data = $bindable(),
-        onchange,
+        onChange,
+        onSave,
+        isSaving = $bindable(false),
         loading = false,
         readonly = false,
         wrapLines = true,
@@ -89,7 +97,7 @@
 
     let editorView: EditorView | null = null;
     let errorMessage = $state<string | null>(null);
-    let changeTimer: number | null = null; // debounce timer for parse + onchange
+    let changeTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for parse + onChange
     let pendingCanonicalize = false; // set when a full-document replace (paste-all) occurs
     let lastExpectedContent = ''; // track latest serialized data to avoid spurious rewrites
     let lastDocId: string | null = null; // track current document identity for history reset
@@ -100,16 +108,24 @@
     let tooltipMessage = $state('Copy document');
 
     // Store the original data to preserve system values
-    let originalData = $state<JsonValue>(data);
+    let originalData = $state<JsonValue>($state.snapshot(data));
 
-    // Track if we're currently updating from editor to prevent loops
+    // Check for enable, disable save button.
+    const hasDataChanged = $derived(!areObjectsSame(data, originalData));
+
     let isUpdatingFromEditor = false;
+
+    // Track previous isNew state to detect transitions
+    let wasNew = isNew;
+
+    // Generate a stable ID once for new documents
+    const generatedId = ID.unique();
 
     // Get $id from data
     const documentId = $derived(
-        data && typeof data === 'object' && !Array.isArray(data) && '$id' in data
+        data && typeof data === 'object' && !Array.isArray(data) && '$id' in data && data.$id
             ? String(data.$id)
-            : null
+            : generatedId
     );
 
     // Convert data to formatted JavaScript object notation (no quotes on keys)
@@ -200,7 +216,11 @@
     }
 
     // Find ranges of system keys (lines starting with $id, $createdAt, $updatedAt)
+    // When isNew=true, skip all readonly range detection since we don't have timestamps yet
     function findReadOnlyRanges(doc: Text): Array<{ from: number; to: number }> {
+        // When creating a new document, allow editing everything
+        if (isNew) return [];
+
         const ranges: Array<{ from: number; to: number }> = [];
         let found = 0;
 
@@ -234,12 +254,15 @@
             const originalObj = originalData as JsonObject;
 
             // Restore only the editor-visible system fields from the original document
-            if (originalObj.$id !== undefined) {
+            // Skip $id preservation when creating a new document to allow user edits
+            if (!isNew && originalObj.$id !== undefined) {
                 parsedObj.$id = originalObj.$id;
             }
+
             if (originalObj.$createdAt !== undefined) {
                 parsedObj.$createdAt = originalObj.$createdAt;
             }
+
             if (originalObj.$updatedAt !== undefined) {
                 parsedObj.$updatedAt = originalObj.$updatedAt;
             }
@@ -635,27 +658,12 @@
     );
 
     // Safe parse variant that indicates success without mutating editor on failure
-    function tryParseEditorContent(content: string): { ok: boolean; value: JsonValue } {
-        // 1) Strict JSON
+    async function tryParseEditorContent(
+        content: string
+    ): Promise<{ ok: boolean; value: JsonValue }> {
         try {
-            return { ok: true, value: JSON.parse(content) };
-        } catch {
-            /* empty */
-        }
-
-        // 2) JSON with unquoted keys
-        try {
-            const withQuotedKeys = content.replace(UNQUOTED_KEY_REGEX, '$1"$2":');
-            return { ok: true, value: JSON.parse(withQuotedKeys) };
-        } catch {
-            /* empty */
-        }
-
-        // 3) JSON with unquoted keys and trailing commas removed
-        try {
-            const withQuotedKeys = content.replace(UNQUOTED_KEY_REGEX, '$1"$2":');
-            const noTrailingCommas = withQuotedKeys.replace(/,\s*([}\]])/g, '$1');
-            return { ok: true, value: JSON.parse(noTrailingCommas) };
+            const value = await parse<JsonValue>(content);
+            return { ok: true, value };
         } catch {
             /* empty */
         }
@@ -742,15 +750,16 @@
                     }
                 });
 
-                // Debounce parse + onchange work
+                // Debounce parse + onChange work
                 if (changeTimer) {
                     clearTimeout(changeTimer);
                     changeTimer = null;
                 }
-                changeTimer = window.setTimeout(() => {
+
+                changeTimer = setTimeout(async () => {
                     const state = update.view.state;
                     const newContent = state.doc.toString();
-                    const res = tryParseEditorContent(newContent);
+                    const res = await tryParseEditorContent(newContent);
                     if (!res.ok) {
                         return; // linter will surface the error
                     }
@@ -764,7 +773,7 @@
                     }
 
                     data = parsed;
-                    onchange?.(parsed);
+                    onChange?.(parsed);
                     lastExpectedContent = dataToString(parsed);
                 }, DEBOUNCE_DELAY);
             }),
@@ -791,28 +800,44 @@
         editorView = null;
     });
 
+    // Reset originalData when transitioning to new document mode
+    $effect(() => {
+        if (isNew && !wasNew) {
+            originalData = $state.snapshot(data);
+        }
+        wasNew = isNew;
+    });
+
     // Update originalData and editor when data or document changes externally
     $effect(() => {
         if (!editorView) return;
 
-        // Capture new system values from the external document
-        originalData = data;
-
-        // Detect document switch and reset history/state entirely
+        // Detect document switch
         if (documentId !== lastDocId) {
             lastDocId = documentId;
-            const expected = dataToString(data);
-            lastExpectedContent = expected;
-            if (changeTimer) {
-                clearTimeout(changeTimer);
-                changeTimer = null;
+
+            // For existing documents only:
+            // capture snapshot and reset editor state/history
+            if (!isNew) {
+                // Capture original data snapshot when switching documents
+                originalData = $state.snapshot(data);
+                const expected = dataToString(data);
+
+                lastExpectedContent = expected;
+
+                if (changeTimer) {
+                    clearTimeout(changeTimer);
+                    changeTimer = null;
+                }
+
+                pendingCanonicalize = false;
+                isUpdatingFromEditor = true;
+
+                const newState = EditorState.create({ doc: expected, extensions: baseExtensions });
+                editorView.setState(newState);
+                queueMicrotask(() => (isUpdatingFromEditor = false));
+                return;
             }
-            pendingCanonicalize = false;
-            isUpdatingFromEditor = true;
-            const newState = EditorState.create({ doc: expected, extensions: baseExtensions });
-            editorView.setState(newState);
-            queueMicrotask(() => (isUpdatingFromEditor = false));
-            return;
         }
 
         // Only react when the external data actually changed
@@ -868,22 +893,62 @@
             {/if}
 
             {#if documentId}
-                <Tooltip placement="top">
-                    <Button
-                        icon
-                        secondary
-                        size="xs"
-                        class="icon-button"
-                        on:click={async () => {
-                            await copy(JSON.stringify(data, null, 2));
-                            tooltipMessage = 'Copied';
-                            setTimeout(() => (tooltipMessage = 'Copy document'), 1000);
-                        }}>
-                        <Icon icon={IconDuplicate} size="s" />
-                    </Button>
+                <Layout.Stack direction="row" inline gap="s">
+                    <Tooltip placement="top" disabled={!hasDataChanged}>
+                        <Button
+                            icon
+                            secondary
+                            size="xs"
+                            disabled={!hasDataChanged}
+                            class="icon-button"
+                            on:click={async () => {
+                                isSaving = true;
 
-                    <span slot="tooltip">{tooltipMessage}</span>
-                </Tooltip>
+                                // For new documents, ensure $id is added to data before saving
+                                let dataToSave = data;
+                                if (
+                                    isNew &&
+                                    typeof data === 'object' &&
+                                    data !== null &&
+                                    !Array.isArray(data)
+                                ) {
+                                    const dataObj = data;
+                                    if (!dataObj['$id']) {
+                                        dataToSave = { $id: generatedId, ...dataObj };
+                                    }
+                                }
+
+                                await sleep(2500);
+                                await onSave?.(dataToSave);
+                                isSaving = false;
+                            }}>
+                            {#if isSaving}
+                                <Spinner size="s" />
+                            {:else}
+                                <Icon icon={IconCheck} size="s" />
+                            {/if}
+                        </Button>
+
+                        <span slot="tooltip">Save</span>
+                    </Tooltip>
+
+                    <Tooltip placement="top">
+                        <Button
+                            icon
+                            secondary
+                            size="xs"
+                            class="icon-button"
+                            on:click={async () => {
+                                await copy(JSON.stringify(data, null, 2));
+                                tooltipMessage = 'Copied';
+                                setTimeout(() => (tooltipMessage = 'Copy document'), 1000);
+                            }}>
+                            <Icon icon={IconDuplicate} size="s" />
+                        </Button>
+
+                        <span slot="tooltip">{tooltipMessage}</span>
+                    </Tooltip>
+                </Layout.Stack>
             {/if}
         {/if}
     </div>

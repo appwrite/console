@@ -15,7 +15,7 @@
     import type { Models } from '@appwrite.io/console';
     import { expandTabs, randomDataModalState } from '$database/store';
     import { EmptySheet } from '$database/(entity)';
-    import { isCollectionsCsvImportInProgress } from './store';
+    import { isCollectionsCsvImportInProgress, noSqlDocument } from './store';
     import { canWriteRows } from '$lib/stores/roles';
     import SpreadSheet from './spreadsheet.svelte';
 
@@ -66,7 +66,20 @@
                         Import CSV
                     </Button>
                     {#if !$isSmallViewport}
-                        <Button secondary event="create_document">
+                        <Button
+                            secondary
+                            event="create_document"
+                            on:click={() => {
+                                if (!$noSqlDocument.isNew) {
+                                    noSqlDocument.update(() => {
+                                        return {
+                                            show: true,
+                                            isNew: true,
+                                            document: {}
+                                        };
+                                    });
+                                }
+                            }}>
                             <Icon icon={IconPlus} slot="start" size="s" />
                             Create document
                         </Button>

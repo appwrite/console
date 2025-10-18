@@ -40,6 +40,7 @@
     import { expandTabs, buildWildcardEntitiesQuery } from '$database/store';
     import {
         collectionColumns,
+        noSqlDocument,
         paginatedDocuments,
         paginatedDocumentsLoading,
         sortState
@@ -50,7 +51,7 @@
         spreadsheetRenderKey,
         spreadsheetLoading
     } from '$database/store';
-    import { NoSqlEditor, type JsonValue } from './(components)/editor';
+    import { type JsonValue, NoSqlEditor } from './(components)/editor';
 
     export let data: PageData;
 
@@ -63,14 +64,6 @@
 
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
-
-    let jsonEditorDocument = writable<{
-        show: boolean;
-        document?: Models.Document;
-    }>({
-        show: false,
-        document: null
-    });
 
     const emptyCellsLimit = $spreadsheetLoading
         ? 30
@@ -104,7 +97,7 @@
 
         const firstDocument = $documents?.documents?.[0];
         if (firstDocument) {
-            $jsonEditorDocument.document = firstDocument;
+            $noSqlDocument.document = firstDocument;
         }
     });
 
@@ -325,32 +318,72 @@
     }
 
     // possibly for auto-save!
-    async function updateDocumentContents(document: Models.Document) {
+    async function createOrUpdateDocument(jsonValue: JsonValue) {
+        const document = jsonValue as Models.Document;
+        const documentsDB = sdk.forProject(page.params.region, page.params.project).documentsDB;
+
+        /**
+         * remove dates because
+         * console can override timestamps!
+         */
+        const { $createdAt, $updatedAt, $id, ...documentWithoutDates } = document;
+
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .documentsDB.updateDocument({
+            if ($noSqlDocument.isNew) {
+                // create
+                await documentsDB.createDocument({
                     databaseId,
                     collectionId,
-                    documentId: document.$id,
-                    data: document,
-                    permissions: document.$permissions
+                    documentId: $id,
+                    data: documentWithoutDates ?? []
                 });
 
-            invalidate(Dependencies.DOCUMENT);
-            trackEvent(Submit.DocumentUpdate);
-            addNotification({
-                message: 'Document has been updated',
-                type: 'success'
-            });
-            return true;
+                await invalidate(Dependencies.DOCUMENTS);
+                trackEvent(Submit.DocumentCreate);
+                addNotification({
+                    message: 'Document has been created',
+                    type: 'success'
+                });
+
+                noSqlDocument.update(() => {
+                    return {
+                        isNew: false,
+                        show: false,
+                        document: {}
+                    };
+                });
+
+                spreadsheetRenderKey;
+            } else {
+                // update
+                await documentsDB.updateDocument({
+                    databaseId,
+                    collectionId,
+                    documentId: $id,
+                    data: documentWithoutDates,
+                    permissions: document.$permissions ?? []
+                });
+
+                await invalidate(Dependencies.DOCUMENT);
+                trackEvent(Submit.DocumentUpdate);
+                addNotification({
+                    message: 'Document has been updated',
+                    type: 'success'
+                });
+            }
+
+            // re-render spreadsheet!
+            spreadsheetRenderKey.set(hash($id));
+            const firstDocument = $documents?.documents?.[0];
+            if (firstDocument) {
+                $noSqlDocument.document = firstDocument;
+            }
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
             trackError(error, Submit.DocumentUpdatePermissions);
-            return false;
         }
     }
 
@@ -436,7 +469,7 @@
 
 <SpreadsheetContainer
     bind:this={spreadsheetContainer}
-    bind:showEditorSideSheet={$jsonEditorDocument.show}>
+    bind:showEditorSideSheet={$noSqlDocument.show}>
     {#key $spreadsheetRenderKey}
         <Spreadsheet.Root
             height="100%"
@@ -505,8 +538,9 @@
                 {:else}
                     <button
                         onclick={() => {
-                            $jsonEditorDocument.show = true;
-                            $jsonEditorDocument.document = document;
+                            $noSqlDocument.show = true;
+                            $noSqlDocument.isNew = false;
+                            $noSqlDocument.document = document;
                         }}
                         style:cursor="pointer">
                         <Spreadsheet.Row.Base
@@ -515,7 +549,7 @@
                             id={document?.$id}
                             virtualItem={item}
                             select={rowSelection}
-                            isSelected={$jsonEditorDocument?.document?.$id === document.$id}>
+                            isSelected={$noSqlDocument?.document?.$id === document.$id}>
                             {#each $collectionColumns as { id: columnId } (columnId)}
                                 <Spreadsheet.Cell {root} isEditable={false} column={columnId}>
                                     {#if columnId === '$id'}
@@ -617,10 +651,9 @@
 
     {#snippet noSqlEditor()}
         <NoSqlEditor
-            bind:data={$jsonEditorDocument.document}
-            onchange={(value: JsonValue) => {
-                console.log(value);
-            }} />
+            isNew={$noSqlDocument.isNew}
+            bind:data={$noSqlDocument.document}
+            onSave={async (document) => await createOrUpdateDocument(document)} />
     {/snippet}
 
     {#if selectedDocuments.length > 0}

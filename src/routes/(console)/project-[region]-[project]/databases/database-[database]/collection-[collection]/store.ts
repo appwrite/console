@@ -19,3 +19,13 @@ export const sortState = writable<SortState>({
     column: null,
     direction: 'default'
 });
+
+export const noSqlDocument = writable<{
+    show: boolean;
+    document?: Models.Document | object;
+    isNew?: boolean;
+}>({
+    show: false,
+    document: null,
+    isNew: false
+});
