@@ -14,6 +14,7 @@
     import { showColumnsSuggestionsModal } from '../(suggestions)/store';
     import IconAINotification from '../(suggestions)/icon/aiNotification.svelte';
     import { type Columns, type ColumnDirection, showCreateColumnSheet } from './store';
+    import { isCloud } from '$lib/system';
 
     let {
         direction = null,
@@ -37,9 +38,6 @@
 
     const tableId = page.params.table;
     const databaseId = page.params.database;
-
-    // flow isn't complete yet!
-    const isSuggestionsFeatureEnabled = true;
 
     let key: string = $state(column?.key ?? null);
     let data: Partial<Columns> = $state({
@@ -186,7 +184,7 @@
 </script>
 
 <Layout.Stack gap="xl">
-    {#if isSuggestionsFeatureEnabled}
+    {#if isCloud}
         <div class="custom-inline-alert">
             <Alert.Inline>
                 <svelte:fragment slot="icon">
