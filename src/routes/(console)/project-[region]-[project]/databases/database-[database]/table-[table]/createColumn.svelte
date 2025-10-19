@@ -38,7 +38,7 @@
     const databaseId = page.params.database;
 
     // flow isn't complete yet!
-    const isSuggestionsFeatureEnabled = false;
+    const isSuggestionsFeatureEnabled = true;
 
     let key: string = $state(column?.key ?? null);
     let data: Partial<Columns> = $state({

@@ -1543,7 +1543,7 @@
         background: linear-gradient(
             180deg,
             rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.86) 32.25%,
+            rgba(255, 255, 255, 0.86) 85%, /* show more of the bottom area */
             #fff 100%
         );
         z-index: 20; /* under overlay */
@@ -1558,7 +1558,7 @@
         background: linear-gradient(
             180deg,
             rgba(29, 29, 33, 0) 0%,
-            rgba(29, 29, 33, 0.86) 21%,
+            rgba(29, 29, 33, 0.86) 85%, /* show more of the bottom area */
             #1d1d21 100%
         );
     }

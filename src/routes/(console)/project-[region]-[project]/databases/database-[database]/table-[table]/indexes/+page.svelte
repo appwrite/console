@@ -293,7 +293,7 @@
             <EmptySheet mode="indexes">
                 {#snippet subtitle()}
                     <Typography.Text align="center">
-                        Create indexes to improve query and sorting performance. Learn more in the
+                        Need a hand? Learn more in the
                         <Link.Anchor
                             target="_blank"
                             href="https://appwrite.io/docs/products/databases/tables#indexes">
