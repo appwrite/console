@@ -6,7 +6,7 @@
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteTables, canWriteRows } from '$lib/stores/roles';
-    import { Icon, Layout, Divider, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Divider, Tooltip, Typography, Link } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import {
         table,
@@ -257,6 +257,20 @@
             <SuggestionsEmptySheet userColumns={$tableColumns} />
         {:else}
             <EmptySheet mode="rows" showActions={$canWriteTables} title="You have no columns yet">
+                {#snippet subtitle()}
+                    {#if !isCloud}
+                        <!-- shown on self-hosted -->
+                        <Typography.Text align="center">
+                            Need a hand? Learn more in the
+                            <Link.Anchor
+                                target="_blank"
+                                href="https://appwrite.io/docs/products/databases">
+                                docs.
+                            </Link.Anchor>
+                        </Typography.Text>
+                    {/if}
+                {/snippet}
+
                 {#snippet actions()}
                     <EmptySheetCards
                         icon={IconPlus}
@@ -266,14 +280,16 @@
                             $showCreateColumnSheet.show = true;
                         }} />
 
-                    <!-- TODO: gate for cloud only! need design -->
-                    <EmptySheetCards
-                        icon={IconAI}
-                        title="Suggest columns"
-                        subtitle="Use AI to generate columns"
-                        onClick={() => {
-                            $showColumnsSuggestionsModal = true;
-                        }} />
+                    {#if isCloud}
+                        <!-- shown on cloud -->
+                        <EmptySheetCards
+                            icon={IconAI}
+                            title="Suggest columns"
+                            subtitle="Use AI to generate columns"
+                            onClick={() => {
+                                $showColumnsSuggestionsModal = true;
+                            }} />
+                    {/if}
 
                     <EmptySheetCards
                         icon={IconViewBoards}
@@ -283,11 +299,14 @@
                             $randomDataModalState.show = true;
                         }} />
 
-                    <EmptySheetCards
-                        icon={IconBookOpen}
-                        title="Documentation"
-                        subtitle="Read the Appwrite Databases docs"
-                        href="https://appwrite.io/docs/products/databases" />
+                    {#if isCloud}
+                        <!-- shown on cloud because self-hosted shows a link above -->
+                        <EmptySheetCards
+                            icon={IconBookOpen}
+                            title="Documentation"
+                            subtitle="Read the Appwrite docs"
+                            href="https://appwrite.io/docs/products/databases" />
+                    {/if}
                 {/snippet}
             </EmptySheet>
         {/if}

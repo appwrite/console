@@ -331,7 +331,7 @@
                         <EmptySheetCards
                             icon={IconBookOpen}
                             title="Documentation"
-                            subtitle="Read the Appwrite Databases docs"
+                            subtitle="Read the Appwrite docs"
                             href="https://appwrite.io/docs/products/databases/tables#indexes" />
                     {/if}
                 {/snippet}
@@ -373,7 +373,7 @@
                     <EmptySheetCards
                         icon={IconBookOpen}
                         title="Documentation"
-                        subtitle="Read the Appwrite Databases docs"
+                        subtitle="Read the Appwrite docs"
                         href="https://appwrite.io/docs/products/databases/tables#indexes" />
                 {/if}
             {/snippet}
