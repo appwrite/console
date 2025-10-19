@@ -446,15 +446,18 @@
                             }} />
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="default" {root} isEditable={false}>
-                        {@const _default =
-                            column?.default !== null && column?.default !== undefined
-                                ? column?.default
-                                : null}
+                        {@const _default = column.required
+                            ? '-'
+                            : column?.default !== null && column?.default !== undefined
+                              ? column?.default
+                              : null}
 
                         {#if _default === null}
                             <Badge variant="secondary" content="NULL" size="xs" />
+                        {:else if isSpatialType(column)}
+                            {JSON.stringify(_default)}
                         {:else}
-                            {isSpatialType(column) ? JSON.stringify(_default) : _default}
+                            {_default}
                         {/if}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="actions" {root} isEditable={false}>
