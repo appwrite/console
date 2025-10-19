@@ -1251,61 +1251,63 @@
         <!-- undo or delete and cancel sub action -->
         {@const isUndoDeleteMode = columnBeingDeleted && columnBeingDeleted?.key !== null}
         {@const columnName = isUndoDeleteMode ? columnBeingDeleted?.key : selectedColumnName}
-
         {@const hasSelection = selectedColumnId !== null || isUndoDeleteMode}
-        <div class="floating-action-wrapper expanded" class:selection={hasSelection}>
-            <FloatingActionBar>
-                <svelte:fragment slot="start">
-                    <Typography.Caption
-                        variant="400"
-                        color="--fgcolor-neutral-primary"
-                        style="white-space: nowrap;">
-                        <Badge
-                            size="xs"
-                            variant="secondary"
-                            content={columnName}
-                            type={isUndoDeleteMode ? 'error' : undefined} />
 
-                        {#if isUndoDeleteMode}
-                            was deleted. You can undo this action.
-                        {:else}
-                            column selected
-                        {/if}
-                    </Typography.Caption>
-                </svelte:fragment>
+        {#if !creatingColumns}
+            <div class="floating-action-wrapper expanded" class:selection={hasSelection}>
+                <FloatingActionBar>
+                    <svelte:fragment slot="start">
+                        <Typography.Caption
+                            variant="400"
+                            color="--fgcolor-neutral-primary"
+                            style="white-space: nowrap;">
+                            <Badge
+                                size="xs"
+                                variant="secondary"
+                                content={columnName}
+                                type={isUndoDeleteMode ? 'error' : undefined} />
 
-                <svelte:fragment slot="end">
-                    <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
-                        {#if !isUndoDeleteMode}
+                            {#if isUndoDeleteMode}
+                                was deleted. You can undo this action.
+                            {:else}
+                                column selected
+                            {/if}
+                        </Typography.Caption>
+                    </svelte:fragment>
+
+                    <svelte:fragment slot="end">
+                        <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                            {#if !isUndoDeleteMode}
+                                <Button.Button
+                                    size="xs"
+                                    variant="text"
+                                    on:click={() => (selectedColumnId = null)}>
+                                    Cancel
+                                </Button.Button>
+                            {/if}
                             <Button.Button
                                 size="xs"
-                                variant="text"
-                                on:click={() => (selectedColumnId = null)}>
-                                Cancel
+                                variant="secondary"
+                                disabled={!isUndoDeleteMode &&
+                                    customColumns.filter((col) => !col.isPlaceholder).length <= 1}
+                                on:click={() => {
+                                    if (isUndoDeleteMode) {
+                                        undoDelete();
+                                    } else {
+                                        deleteColumn(selectedColumnName);
+                                    }
+                                }}>
+                                {#if isUndoDeleteMode}
+                                    Undo
+                                {:else}
+                                    Delete
+                                {/if}
                             </Button.Button>
-                        {/if}
-                        <Button.Button
-                            size="xs"
-                            variant="secondary"
-                            disabled={!isUndoDeleteMode &&
-                                customColumns.filter((col) => !col.isPlaceholder).length <= 1}
-                            on:click={() => {
-                                if (isUndoDeleteMode) {
-                                    undoDelete();
-                                } else {
-                                    deleteColumn(selectedColumnName);
-                                }
-                            }}>
-                            {#if isUndoDeleteMode}
-                                Undo
-                            {:else}
-                                Delete
-                            {/if}
-                        </Button.Button>
-                    </Layout.Stack>
-                </svelte:fragment>
-            </FloatingActionBar>
-        </div>
+                        </Layout.Stack>
+                    </svelte:fragment>
+                </FloatingActionBar>
+            </div>
+        {/if}
 
         <!-- review columns action -->
         <div
