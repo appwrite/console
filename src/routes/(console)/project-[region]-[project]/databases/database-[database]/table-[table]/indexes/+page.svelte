@@ -290,7 +290,7 @@
                 </Spreadsheet.Root>
             </SpreadsheetContainer>
         {:else}
-            <EmptySheet mode="indexes" showActions>
+            <EmptySheet mode="indexes" showActions={$canWriteTables}>
                 {#snippet subtitle()}
                     <Typography.Text align="center">
                         Need a hand? Learn more in the
