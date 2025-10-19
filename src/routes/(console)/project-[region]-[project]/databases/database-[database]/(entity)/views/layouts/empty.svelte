@@ -249,7 +249,7 @@
     data-loading={$spreadsheetLoading}
     bind:this={spreadsheetContainer}
     class="databases-spreadsheet spreadsheet-container-outer">
-    <SpreadsheetContainer showEditorSideSheet={type === 'documentsdb'}>
+    <SpreadsheetContainer>
         <Spreadsheet.Root
             {emptyCells}
             allowSelection
@@ -312,7 +312,9 @@
         </Spreadsheet.Root>
 
         {#snippet noSqlEditor()}
-            <NoSqlEditor loading />
+            {#if type === 'documentsdb'}
+                <NoSqlEditor loading />
+            {/if}
         {/snippet}
     </SpreadsheetContainer>
 
@@ -377,7 +379,7 @@
         position: fixed;
         overflow: hidden;
 
-        &[data-mode='records'] {
+        &[data-mode='records'][data-type='tablesdb'] {
             & :global([role='rowheader'] :nth-last-child(2) [role='presentation']) {
                 display: none;
             }
@@ -393,6 +395,14 @@
             }
         }
 
+        &[data-mode='records'][data-type='documentsdb'] {
+            position: unset;
+            // disable animation when not loading!
+            &[data-loading='false'] :global(.skeleton) {
+                animation: none;
+            }
+        }
+
         & :global(.spreadsheet-container) {
             overflow-x: hidden;
             overflow-y: hidden;
@@ -401,13 +411,6 @@
         & :global([data-select='true']) {
             opacity: 0.85;
             pointer-events: none;
-        }
-
-        &[data-mode='records'][data-type='documentsdb'] {
-            position: unset;
-            &[data-loading='false'] :global(.skeleton) {
-                animation: none;
-            }
         }
     }
 
