@@ -73,12 +73,13 @@
         data?: JsonValue;
         isSaving?: boolean;
         loading?: boolean;
-        onChange?: (newData: JsonValue) => Promise<void> | void;
+        onChange?: (newData: JsonValue, hasChanged: boolean) => Promise<void> | void;
         onSave?: (newData: JsonValue) => Promise<void> | void;
         readonly?: boolean;
         wrapLines?: boolean;
         errorInPlace?: boolean;
         ctrlSave?: boolean;
+        showHeaderActions?: boolean;
     }
 
     let {
@@ -91,7 +92,8 @@
         readonly = false,
         wrapLines = true,
         errorInPlace = true,
-        ctrlSave = false
+        ctrlSave = false,
+        showHeaderActions = true
     }: Props = $props();
 
     let editorContainer: HTMLDivElement = $state(null);
@@ -794,7 +796,7 @@
                     }
 
                     data = parsed;
-                    onChange?.(parsed);
+                    onChange?.(parsed, hasDataChanged);
                     lastExpectedContent = dataToString(parsed);
                 }, DEBOUNCE_DELAY);
             }),
@@ -897,65 +899,67 @@
 </script>
 
 <div class="editor-container" class:loading>
-    <div class="editor-header">
-        {#if loading}
-            <Skeleton variant="line" height="12px" width="143px" />
-        {/if}
+    {#if showHeaderActions}
+        <div class="editor-header">
+            {#if loading}
+                <Skeleton variant="line" height="12px" width="143px" />
+            {/if}
 
-        <Layout.Stack direction="row">
-            {#if documentId && !loading}
-                <div class="id-tag-button-wrapper">
-                    <Id value={documentId} tooltipPlacement="top">{truncateId(documentId)}</Id>
+            <Layout.Stack direction="row">
+                {#if documentId && !loading}
+                    <div class="id-tag-button-wrapper">
+                        <Id value={documentId} tooltipPlacement="top">{truncateId(documentId)}</Id>
+                    </div>
+                {/if}
+            </Layout.Stack>
+
+            {#if errorMessage && !$isSmallViewport && !loading}
+                <div class="editor-header">
+                    <span class="error-message">{errorMessage}</span>
                 </div>
             {/if}
-        </Layout.Stack>
 
-        {#if errorMessage && !$isSmallViewport && !loading}
-            <div class="editor-header">
-                <span class="error-message">{errorMessage}</span>
-            </div>
-        {/if}
+            {#if documentId}
+                <Layout.Stack direction="row" inline gap="s">
+                    <Tooltip placement="top" disabled={!hasDataChanged}>
+                        <Button
+                            icon
+                            secondary
+                            size="xs"
+                            disabled={!hasDataChanged}
+                            class="icon-button"
+                            on:click={handleSave}>
+                            {#if isSaving}
+                                <Spinner size="s" />
+                            {:else}
+                                <Icon icon={IconCheck} size="s" />
+                            {/if}
+                        </Button>
 
-        {#if documentId}
-            <Layout.Stack direction="row" inline gap="s">
-                <Tooltip placement="top" disabled={!hasDataChanged}>
-                    <Button
-                        icon
-                        secondary
-                        size="xs"
-                        disabled={!hasDataChanged}
-                        class="icon-button"
-                        on:click={handleSave}>
-                        {#if isSaving}
-                            <Spinner size="s" />
-                        {:else}
-                            <Icon icon={IconCheck} size="s" />
-                        {/if}
-                    </Button>
+                        <span slot="tooltip">Save</span>
+                    </Tooltip>
 
-                    <span slot="tooltip">Save</span>
-                </Tooltip>
+                    <Tooltip placement="top">
+                        <Button
+                            icon
+                            secondary
+                            size="xs"
+                            class="icon-button"
+                            disabled={loading}
+                            on:click={async () => {
+                                await copy(JSON.stringify(data, null, 2));
+                                tooltipMessage = 'Copied';
+                                setTimeout(() => (tooltipMessage = 'Copy document'), 1000);
+                            }}>
+                            <Icon icon={IconDuplicate} size="s" />
+                        </Button>
 
-                <Tooltip placement="top">
-                    <Button
-                        icon
-                        secondary
-                        size="xs"
-                        class="icon-button"
-                        disabled={loading}
-                        on:click={async () => {
-                            await copy(JSON.stringify(data, null, 2));
-                            tooltipMessage = 'Copied';
-                            setTimeout(() => (tooltipMessage = 'Copy document'), 1000);
-                        }}>
-                        <Icon icon={IconDuplicate} size="s" />
-                    </Button>
-
-                    <span slot="tooltip">{tooltipMessage}</span>
-                </Tooltip>
-            </Layout.Stack>
-        {/if}
-    </div>
+                        <span slot="tooltip">{tooltipMessage}</span>
+                    </Tooltip>
+                </Layout.Stack>
+            {/if}
+        </div>
+    {/if}
 
     {#if errorMessage && $isSmallViewport && !loading}
         <div class="editor-header mobile" transition:slide={{ duration: 150 }}>
@@ -1053,7 +1057,7 @@
         border-bottom: 1px solid var(--border-neutral);
 
         &.mobile {
-            background: var(--bgcolor-error);
+            background: var(--bgcolor-error-weak);
         }
 
         .error-message {

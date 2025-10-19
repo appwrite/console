@@ -11,6 +11,7 @@
     let {
         show = $bindable(false),
         title,
+        headerEnd,
         closeOnBlur = false,
         submit,
         cancel,
@@ -51,6 +52,7 @@
             | undefined;
         children?: Snippet;
         footer?: Snippet | null;
+        headerEnd?: Snippet | null;
     } & HTMLAttributes<HTMLDivElement> = $props();
 
     let form: Form;
@@ -90,6 +92,8 @@
                         {/if}
                     {/if}
                 </Layout.Stack>
+
+                {@render headerEnd?.()}
             </Layout.Stack>
         </div>
 

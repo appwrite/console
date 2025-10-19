@@ -25,6 +25,7 @@
     import {
         IconCalendar,
         IconDotsHorizontal,
+        IconDuplicate,
         IconFingerPrint
     } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
@@ -411,9 +412,10 @@
             await invalidate(Dependencies.DOCUMENTS);
             noSqlDocument.update(() => {
                 return {
-                    isNew: false,
                     show: false,
-                    document: {}
+                    isNew: false,
+                    document: {},
+                    hasDataChanged: false
                 };
             });
 
@@ -514,7 +516,15 @@
 
 <SpreadsheetContainer
     bind:this={spreadsheetContainer}
-    bind:showEditorSideSheet={$noSqlDocument.show}>
+    bind:showEditorSideSheet={$noSqlDocument.show}
+    sideSheetOptions={{
+        sideSheetTitle: $noSqlDocument.document?.$id,
+        submit: {
+            text: 'Update',
+            disabled: !$noSqlDocument.hasDataChanged,
+            onClick: async () => await createOrUpdateDocument($noSqlDocument.document)
+        }
+    }}>
     {#key $spreadsheetRenderKey}
         <Spreadsheet.Root
             height="100%"
@@ -596,7 +606,7 @@
                             id={document?.$id}
                             virtualItem={item}
                             select={rowSelection}
-                            isSelected={$noSqlDocument?.document?.['$id'] === document.$id}>
+                            isSelected={$noSqlDocument?.document?.$id === document.$id}>
                             {#each $collectionColumns as { id: columnId } (columnId)}
                                 <Spreadsheet.Cell {root} isEditable={false} column={columnId}>
                                     {#if columnId === '$id'}
@@ -705,7 +715,28 @@
             isNew={$noSqlDocument.isNew}
             loading={$noSqlDocument.loading}
             bind:data={$noSqlDocument.document}
+            showHeaderActions={!$isSmallViewport}
+            onChange={(_, hasDataChanged) => {
+                $noSqlDocument.hasDataChanged = hasDataChanged;
+            }}
             onSave={async (document) => await createOrUpdateDocument(document)} />
+    {/snippet}
+
+    {#snippet sideSheetHeaderAction()}
+        <Button.Button
+            icon
+            variant="secondary"
+            size="xs"
+            on:click={async () => {
+                await copy(JSON.stringify($noSqlDocument.document, null, 2));
+                addNotification({
+                    type: 'success',
+                    message: 'Document copied',
+                    timeout: 1250
+                });
+            }}>
+            <Icon icon={IconDuplicate}></Icon>
+        </Button.Button>
     {/snippet}
 
     {#if selectedDocuments.length > 0}

@@ -8,11 +8,24 @@
     let {
         children,
         noSqlEditor,
+        sideSheetHeaderAction,
+        sideSheetOptions = null,
         showEditorSideSheet = $bindable(false)
     }: {
         children: Snippet;
         noSqlEditor?: Snippet;
+        sideSheetHeaderAction?: Snippet;
         showEditorSideSheet?: boolean;
+        sideSheetOptions?: {
+            sideSheetTitle?: string;
+            submit?:
+                | {
+                      text: string;
+                      disabled?: boolean;
+                      onClick?: () => boolean | void | Promise<boolean | void>;
+                  }
+                | undefined;
+        };
     } = $props();
 
     let spreadsheetWrapper: HTMLDivElement;
@@ -133,12 +146,14 @@
         {:else}
             <SideSheet
                 noContentPadding
-                title="Edit document"
                 bind:show={showEditorSideSheet}
-                submit={{
-                    text: 'Update'
-                }}>
+                submit={sideSheetOptions?.submit}
+                title={sideSheetOptions?.sideSheetTitle ?? 'Edit document'}>
                 {@render noSqlEditor?.()}
+
+                {#snippet headerEnd()}
+                    {@render sideSheetHeaderAction?.()}
+                {/snippet}
             </SideSheet>
         {/if}
     </div>

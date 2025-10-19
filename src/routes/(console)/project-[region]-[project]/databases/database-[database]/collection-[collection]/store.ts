@@ -22,16 +22,18 @@ export const sortState = writable<SortState>({
 
 export const noSqlDocument = writable<{
     show: boolean;
-    document?: Models.Document | object;
+    document?: Models.Document | (object & { $id?: string });
     isNew?: boolean;
     loading?: boolean;
     documentId?: string /* for loading from a given id */;
+    hasDataChanged?: boolean;
 }>({
     show: false,
     document: null,
     isNew: false,
     loading: false,
-    documentId: null
+    documentId: null,
+    hasDataChanged: false
 });
 
 export const documentPermissionSheet = writable({
