@@ -290,7 +290,7 @@
                 </Spreadsheet.Root>
             </SpreadsheetContainer>
         {:else}
-            <EmptySheet mode="indexes">
+            <EmptySheet mode="indexes" showActions>
                 {#snippet subtitle()}
                     <Typography.Text align="center">
                         Need a hand? Learn more in the
@@ -304,21 +304,21 @@
 
                 {#snippet actions()}
                     <EmptySheetCards
-                        icon={IconPlus}
-                        title="Create index"
-                        disabled={!$table?.columns?.length}
-                        subtitle="Create indexes manually"
-                        onClick={() => {
-                            showIndexesSuggestions.update(() => true);
-                        }} />
-
-                    <EmptySheetCards
                         icon={IconAI}
                         title="Suggest indexes"
                         disabled={!$table?.columns?.length}
                         subtitle="Use AI to generate indexes"
                         onClick={() => {
                             showIndexesSuggestions.update(() => true);
+                        }} />
+
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create index"
+                        disabled={!$table?.columns?.length}
+                        subtitle="Create indexes manually"
+                        onClick={() => {
+                            showCreateIndex = true;
                         }} />
                 {/snippet}
             </EmptySheet>
